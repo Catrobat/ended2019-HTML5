@@ -75,29 +75,50 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	var x2 = new SmartJs.Event.EventListener(hdl, this);
 
 	var y = new ns.Y();
-	y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
+	var result = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
+	assert.ok(result, "listener added: return value");
 	y.divClicked.dispatchEvent();
 	assert.ok(clicked, "listener added and dispatched- minimal parameter");
 
 	var clicked = false;
-	y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl));
+	result = y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl));
+	assert.ok(result, "listener removed: return value");
 	y.divClicked.dispatchEvent();
 	assert.equal(clicked, false, "listener removed correctly");
 
 	count = 0;
-	y.divClicked.addEventListener(x);
-	y.divClicked.addEventListener(x);
+	result = y.divClicked.addEventListener(x);
+	var result2nd = y.divClicked.addEventListener(x);
+	assert.ok(result && !result2nd, "listener not added twice: return value");
 	y.divClicked.dispatchEvent();
 	assert.equal(count, 1, "listener added only once & dispatched using scope");
 	assert.ok(!y.divClicked.addEventListener(x2), "same listener but different instance not added twice");
 
+	result = y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl, { asd: "asd" }));    //pseudo scope
+	assert.ok(result == false, "listener removed: unknown listener");
 
-	//TODO:
+
 	//check listener including scope
-	//try to remove a listener that was not added
-	//add/remove should return true/false based on success
+	var testObject = { x: 1, handler: function () { return true; } };
+	count = 0;
+	y = new ns.Y();
+	result = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
+	result2nd = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
+	assert.ok(result && !result2nd, "listener not added twice: other listeners but same handlers and scope");
+
+	y = new ns.Y();
+	result = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
+	result2nd = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl, testObject));
+	assert.ok(result && result2nd, "listener added twice: other listeners with same handler and different scope");
+	assert.equal(y.divClicked._listeners.length, 2, "registered twice in listener array");
+
+	testObject._disposed = true;
+	y.divClicked.dispatchEvent();
+	assert.equal(y.divClicked._listeners.length, 1, "delete disposed item during dispatch");
 
 	count = 0;
+	y = new ns.Y();
+	y.divClicked.addEventListener(x);
 	eventArgs = undefined;
 	y.testArgsAndTarget();
 	assert.equal(count, 1, "dispatch using args and target");

@@ -13,7 +13,7 @@ PocketCode.Model.Sprite = (function () {
         this.name = "";
         this.looks = [];
         this.sounds = [];
-        this.variables = [];
+        this._variables = {};
 
         this._bricks = [];
         //TODO: if not each brick instance of RootContainerBrick throw error
@@ -22,6 +22,21 @@ PocketCode.Model.Sprite = (function () {
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
     }
+
+    //properties
+    Object.defineProperties(Sprite.prototype, {
+        variables: {
+            set: function (varArray) {
+                if (!(varArray instanceof Array))
+                    throw new Error('variable setter expects type Array');
+
+                for (i = 0, l = varArray.length; i < l; i++)
+                    this._variables[varArray[i].id] = varArray[i];
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+    });
 
     //events
     Object.defineProperties(Sprite.prototype, {
@@ -77,13 +92,16 @@ PocketCode.Model.Sprite = (function () {
 
         //variables
         getVariable: function (varId) {
-            //todo implement this
-            //if not local (in this sprite) get global by
-            //return this._program.getGlobalVariable()
+            if (this._variables[varId])
+                return this._variables[varId];
+            else //gloable lookup
+                return this._program.getGlobalVariable(varId);
         },
         setVariable: function (varId, value) {
-            //if not local (in this sprite) get global by
-            //this._program.getGlobalVariable().value = value;
+            if (this._variables[varId])
+                this._variables[varId].value = value;
+            else //gloable lookup
+                return this._program.setGlobalVariable(varId, value);
         },
     });
 

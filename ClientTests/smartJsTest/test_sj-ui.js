@@ -57,6 +57,12 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
     tn5.dispose();
     assert.equal(vp._dom.innerHTML, " A  C  F ", "textnode: dispose single node references");
 
+    //dispose from document dom (without sj-ui-control as parent)
+    tn = new SmartJs.Ui.TextNode("ANOTHER TEXT");
+    dom.appendChild(tn._dom);
+    tn.dispose();
+    assert.equal(document.body.contains(tn._dom), false, "textnode: delete from dom during dispose");
+
 });
 
 

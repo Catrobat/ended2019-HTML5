@@ -19,10 +19,9 @@ PocketCode.Model.Program = (function () {
 		this.sprites = [];
 
 		this.resourceBaseUrl = "";
-		this.images = [];
-		this.sounds = [];
-
-		this.variables = [];
+		this._images = {};
+		this._sounds = {};
+		this._variables = {};
 
 		this._broadcasts = [];
 		this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -32,6 +31,56 @@ PocketCode.Model.Program = (function () {
 		this._onExecuted = new SmartJs.Event.Event(this);
 		this._onTabbedAction = new SmartJs.Event.Event(this);
 	}
+
+	//properties
+	Object.defineProperties(Program.prototype, {
+	    images: {
+	        set: function (images) {
+	            if (!(images instanceof Array))
+	                throw new Error('setter expects type Array');
+
+	            for (i = 0, l = images.length; i < l; i++)
+	                this._images[images[i].id] = images[i];
+	        },
+	        //enumerable: false,
+	        //configurable: true,
+	    },
+	    sounds: {
+	        set: function (sounds) {
+	            if (!(sounds instanceof Array))
+	                throw new Error('setter expects type Array');
+
+	            for (i = 0, l = sounds.length; i < l; i++)
+	                this._sounds[sounds[i].id] = sounds[i];
+	        },
+	        //enumerable: false,
+	        //configurable: true,
+	    },
+	    variables: {
+	        set: function (variables) {
+	            if (!(variables instanceof Array))
+	                throw new Error('setter expects type Array');
+
+	            for (i = 0, l = variables.length; i < l; i++)
+	                this._variables[variables[i].id] = variables[i];
+	        },
+	        //enumerable: false,
+	        //configurable: true,
+	    },
+	    broadcasts: {
+	        set: function (broadcasts) {
+	            if (!(broadcasts instanceof Array))
+	                throw new Error('setter expects type Array');
+
+	            //for (i = 0, l = broadcasts.length; i < l; i++)
+	            //    this._broadcasts[broadcasts[i].id] = broadcasts[i];
+	            this._broadcasts = broadcasts;
+	            this._broadcastMgr.init(broadcasts);
+	        },
+	        //enumerable: false,
+	        //configurable: true,
+	    },
+	});
 
 	//events
 	Object.defineProperties(Program.prototype, {
@@ -115,10 +164,16 @@ PocketCode.Model.Program = (function () {
 		},
 
 		getGlobalVariable: function (varId) {
-			//todo implement this: global variables
+		    if (this._variables[varId])
+		        return this._variables[varId];
+		    else
+		        throw new Error('unknown variable id: ' + varId);
 		},
 		setGlobalVariable: function (varId, value) {
-			//todo implement this: global variables
+		    if (this._variables[varId])
+		        return this._variables[varId].value = value;
+		    else
+		        throw new Error('unknown variable id: ' + varId);
 		},
 	});
 
