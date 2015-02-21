@@ -57,7 +57,7 @@ SmartJs.Ui = {
             else if (typeof element === 'string')
                 this._dom = document.createElement(element);
 
-            if(!this._dom || this._dom instanceof HTMLUnknownElement)
+            if(!this._dom)  // || this._dom instanceof HTMLUnknownElement)
                 throw new Error('invalid argument: expected parameter "element" as valid HTMLElement or string');
 
             this._dom.id = this._id;

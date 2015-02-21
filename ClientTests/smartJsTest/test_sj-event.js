@@ -51,9 +51,9 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 		//tested with public property this.divClicked first and renamed the property to get a readOnly Event 
 		Object.defineProperties(Y.prototype, {
 			divClicked: {
-			    get: function () { return this._divClicked },
-			    //value: function () { return this._divClicked }(),
-			    //writable: false,
+				get: function () { return this._divClicked },
+				//value: function () { return this._divClicked }(),
+				//writable: false,
 				enumerable: false,
 				configurable: true,
 			},
@@ -77,19 +77,25 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	var y = new ns.Y();
 	y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
 	y.divClicked.dispatchEvent();
-	assert.ok(clicked, "handler added and dispatched- minimal parameter");
+	assert.ok(clicked, "listener added and dispatched- minimal parameter");
 
 	var clicked = false;
 	y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl));
 	y.divClicked.dispatchEvent();
-	assert.equal(clicked, false, "handler removed correctly");
+	assert.equal(clicked, false, "listener removed correctly");
 
 	count = 0;
 	y.divClicked.addEventListener(x);
 	y.divClicked.addEventListener(x);
 	y.divClicked.dispatchEvent();
-	assert.equal(count, 1, "handler added only once & dispatched using scope");
-	assert.ok(!y.divClicked.addEventListener(x2), "same handler but different instance not added twice");
+	assert.equal(count, 1, "listener added only once & dispatched using scope");
+	assert.ok(!y.divClicked.addEventListener(x2), "same listener but different instance not added twice");
+
+
+	//TODO:
+	//check listener including scope
+	//try to remove a listener that was not added
+	//add/remove should return true/false based on success
 
 	count = 0;
 	eventArgs = undefined;

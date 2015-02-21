@@ -12,7 +12,7 @@ PocketCode.Formula = (function () {
 	    this.json = jsonFormula;
 	}
 
-	//TODO: add setter for this._json and update calculate() on edit
+	//accessors
 	Object.defineProperties(Formula.prototype, {
 	    json: {
 	        get: function () {

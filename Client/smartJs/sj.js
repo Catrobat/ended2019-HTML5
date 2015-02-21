@@ -37,7 +37,7 @@
 
 Object.prototype.merge = function (o) {
 
-    if (typeof this !== 'object' || this instanceof Array)
+    if (this instanceof Array)
         throw new Error('Object.merge not valid on simple data types and arrays');
 
     for (var m in o) {
@@ -121,12 +121,12 @@ var SmartJs = {
     isBrowserCompatible: function () {
         var _result = true;
         var _tests = {
-            navigator_OperaMini: function () {
-                if (window.operamini) {
-                    _result = false;
-                    return false;
-                }
-            }(),
+            //navigator_OperaMini: function () {
+            //    if (window.operamini) {
+            //        _result = false;
+            //        return false;
+            //    }
+            //}(),
             Object_getPrototypeOf: function() {
                 if (!Object.getPrototypeOf) {
                     _result = false;

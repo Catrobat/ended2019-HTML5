@@ -75,6 +75,11 @@ SmartJs.Event = {
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
+                    if (!item || !item.handler || (item.scope && item.scope._disposed)) {
+                        this._listeners.splice(i, 1); //this.removeEventListener(item);
+                        continue;
+                    }
+
                     if (item.scope)
                         item.handler.call(item.scope, a);
                     else

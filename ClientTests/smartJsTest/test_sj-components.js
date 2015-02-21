@@ -10,7 +10,7 @@ QUnit.module("sj-components.js");
 
 QUnit.test("SmartJs.Components.Timer", function (assert) {
 
-	assert.expect(7);   //init async asserts (to wait for)
+	assert.expect(8);   //init async asserts (to wait for)
 	var done1 = assert.async();
 	var done2 = assert.async();
 	var done3 = assert.async();
@@ -18,6 +18,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	var done5 = assert.async();
 	var done6 = assert.async();
 	var done7 = assert.async();
+	var done8 = assert.async();
 
 	
 	var testHandler1 = function () {
@@ -46,12 +47,14 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	
 	var testHandler4 = function () {
 		testFinished = true;
-		assert.ok(pauseCount == 4 && resumeCount == 4, "pause resume");
+		assert.equal(pauseCount, 4, "pause");
 		done4();
+		assert.equal(resumeCount, 4, "resume");
+		done5();
 
 		var time = 1400 + 4 * 300;
 		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time = 2600 ms +/- 100ms");
-		done5();
+		done6();
 		//console.log("pauseCount: " + pauseCount + ", resumeCount: " + resumeCount);
 		//console.log("finished after: " + (new Date() - start));
 	};
@@ -78,10 +81,10 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 
 	//argument callback argmument
 	//assert.ok(true, "test");
-	//done6();
+	//done7();
 	var testHandler6 = function (e) {
 		assert.ok(e.threadId === 25, "callback with constructor argument");
-		done6();
+		done7();
 	};
 
 	var p1 = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler6, this), 20, { threadId: 25 });
@@ -95,5 +98,5 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	p1.stop();
 
 	assert.ok(true, "stop timer: see handler called message if timer was stopped"); //^^ test will fail if handler is called
-	done7();
+	done8();
 });

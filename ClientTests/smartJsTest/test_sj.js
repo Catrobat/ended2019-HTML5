@@ -6,14 +6,8 @@ QUnit.module("sj.js");
 
 QUnit.test("Object.prototype.merge", function (assert) {
 
-	var x = "asd";
-	var y = { b: 2 };
-	assert.throws(function () { x.merge(y); },
-		function (err) { return err.message === "Object.merge not valid on simple data types and arrays"; },
-		"ERROR merging simple objects");
-
-	x = [1, 2];
-	y = [3, 4];
+	var x = [1, 2];
+	var y = [3, 4];
 	assert.throws(function () { x.merge(y); },
 		function (err) { return err.message === "Object.merge not valid on simple data types and arrays"; },
 		"ERROR merging arrays");
