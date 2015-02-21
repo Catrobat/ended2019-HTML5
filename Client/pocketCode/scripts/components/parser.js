@@ -49,13 +49,21 @@ PocketCode.BrickFactory = (function () {
 		this._total = totalCount;
 		this._parsed = 0;
 		this._updatePercentage = 0;
+		this._unsupportedBricks = [];
+
 		this._onProgressChange = new SmartJs.Event.Event(this);
+		this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);
 	}
 
 	//events
 	Object.defineProperties(BrickFactory.prototype, {
 		onProgressChange: {
 			get: function () { return this._onProgressChange; },
+			//enumerable: false,
+			//configurable: true,
+		},
+		onUnsupportedBrickFound: {
+			get: function () { return this._onUnsupportedBricksFound; },
 			//enumerable: false,
 			//configurable: true,
 		},
@@ -85,8 +93,10 @@ PocketCode.BrickFactory = (function () {
 				default:
 					if (PocketCode.Bricks[type + 'Brick'])
 						var brick = new PocketCode.Bricks[type + 'Brick'](this._device, currentSprite, jsonBrick);
-					else
+					else {
 						var brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+						this._unsupportedBricks.push(brick);
+					}
 			}
 
 			//trigger event
@@ -98,6 +108,9 @@ PocketCode.BrickFactory = (function () {
 				brick.ifBricks = this._createList(jsonBrick.ifBricks);
 				brick.elseBricks = this._createList(jsonBrick.elseBricks);
 			}
+
+			if (this._total == this._parsed && this._unsupportedBricks.length > 0)
+				this._onUnsupportedBrickFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
 
 			return brick;
 		},
@@ -134,8 +147,8 @@ PocketCode.FormulaParser = new ( (function () {
 		},
 
 		_parseJsonType: function (jsonFormula) {
-		    if (jsonFormula == null)
-		        return '';
+			if (jsonFormula == null)
+				return '';
 
 			/* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
 			*  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING
@@ -154,7 +167,7 @@ PocketCode.FormulaParser = new ( (function () {
 					return this._parseJsonSensor(jsonFormula);
 
 				case 'USER_VARIABLE':
-				    return 'this._sprite.getVariable(' + jsonFormula.value + ').value';
+					return 'this._sprite.getVariable(' + jsonFormula.value + ').value';
 
 				case 'BRACKET':
 					if (!jsonFormula.right)
@@ -350,25 +363,25 @@ PocketCode.FormulaParser = new ( (function () {
 
 				//sprite
 				case 'OBJECT_BRIGHTNESS':
-				    return 'this._sprite.brightness';
+					return 'this._sprite.brightness';
 
 				case 'OBJECT_GHOSTEFFECT':
-				    return 'this._sprite.transparency';
+					return 'this._sprite.transparency';
 
 				case 'OBJECT_LAYER':
-				    return 'this._sprite.layer';
+					return 'this._sprite.layer';
 
 				case 'OBJECT_ROTATION': //=direction
-				    return 'this._sprite.rotation';
+					return 'this._sprite.rotation';
 
 				case 'OBJECT_SIZE':
-				    return 'this._sprite.size';
+					return 'this._sprite.size';
 
 				case 'OBJECT_X':
-				    return 'this._sprite.x';
+					return 'this._sprite.x';
 
 				case 'OBJECT_Y':
-				    return 'this._sprite.y';
+					return 'this._sprite.y';
 
 				default:
 					throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);
