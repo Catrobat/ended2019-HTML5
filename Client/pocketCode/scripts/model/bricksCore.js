@@ -45,7 +45,7 @@ PocketCode.Bricks = {
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].pause)
-                        brick[i].pause();
+                        bricks[i].pause();
                 }
             },
 
@@ -53,7 +53,7 @@ PocketCode.Bricks = {
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].resume)
-                        brick[i].resume();
+                        bricks[i].resume();
                 }
             },
             stop: function () {
@@ -110,12 +110,13 @@ PocketCode.Bricks.ThreadedBrick = (function () {
             this._execute(id);
         },
         _return: function (id, loopDelay) {
-            if (!this._pendingOps[id])  //stopped
+            var po = this._pendingOps[id];
+            if (!po)  //stopped
                 return;
 
             var loopD = loopDelay || false;
-            var listener = this._pendingOps[id].listener;
-            var threadId = this._pendingOps[id].threadId;
+            var listener = po.listener;
+            var threadId = po.threadId;
             delete this._pendingOps[id];
             if (listener)
                 listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
@@ -138,9 +139,27 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
         //this._bricks typeof PocketCode.Bricks.BrickContainer
     }
 
+    //properties
+    Object.defineProperties(SingleContainerBrick.prototype, {
+        bricks: {
+            set: function (brickContainer) {
+                if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+                    this._bricks = brickContainer;
+                else
+                    throw new Error('invalid argument brickContainer: expected type PocketCode.Bricks.BrickContainer');
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+    });
+
+    //methods
     SingleContainerBrick.prototype.merge({
+        _returnHandler: function (e) {
+            this._return(e.id, e.loopDelay)
+        },
         _execute: function (threadId) {
-            this._bricks.execute(new SmartJs.Event.EventListener(this._return, this), threadId);
+            this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
         },
         pause: function () {
             this._bricks.pause();
@@ -157,6 +176,7 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
 PocketCode.Bricks.RootContainerBrick = (function () {
     RootContainerBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
 
+    //ctr
     function RootContainerBrick(device, sprite) {
         PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
 
@@ -167,21 +187,24 @@ PocketCode.Bricks.RootContainerBrick = (function () {
         this._onExecuted = new SmartJs.Event.Event(this);
     }
 
-    RootContainerBrick.prototype.merge({
+    //events
+    Object.defineProperties(RootContainerBrick.prototype, {
         onExecuted: {
             get: function () { return this._onExecuted; },
             //enumerable: false,
             //configurable: true,
         },
-        //_execute: function (threadId) {
-        //    this._bricks.execute(new SmartJs.Event.EventListener(this._return, this), threadId);
-        //},
-        //pause: function () {
-        //    this._bricks.pause();
-        //},
-        //resume: function () {
-        //    this._bricks.resume();
-        //},
+    });
+
+    //methods
+    RootContainerBrick.prototype.merge({
+        /* override */
+        _return: function (id, loopDelay) {
+            //call super
+            PocketCode.Bricks.ThreadedBrick.prototype._return.call(this, id, loopDelay);
+
+            this._onExecuted.dispatchEvent();
+        },
     });
 
     return RootContainerBrick;
@@ -241,7 +264,7 @@ PocketCode.Bricks.UnsupportedBrick = (function () {
     }
 
     UnsupportedBrick.prototype._execute = function () {
-        console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml);
+        console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml + ', type= ' + this._brickType);
         this._return();
     };
 

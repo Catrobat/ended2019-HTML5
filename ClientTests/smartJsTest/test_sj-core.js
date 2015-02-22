@@ -188,7 +188,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 	//	a.objClassName = "override";    //to make this test browser compatible
 	//}, Error, "ERROR: (merging) internal: set write protected property");
 
-	//^^ IE9 will not throw an error on but ignores it
+	//^^ IE9 will not throw an error but ignores it
 	a = new SmartJs.Core.Component();
 	try {
 		a = new SmartJs.Core.Component({ objClassName: "override" });

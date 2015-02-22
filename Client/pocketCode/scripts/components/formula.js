@@ -21,6 +21,7 @@ PocketCode.Formula = (function () {
 	        set: function (value) {
 	            this._json = value;
 	            this.calculate = PocketCode.FormulaParser.parseJson(value);
+	            this._validateFormula();
 	        },
 	        //enumerable: false,
 	        //configurable: true,
@@ -37,6 +38,15 @@ PocketCode.Formula = (function () {
 		},
 		_log10: function(val) {
 			return Math.log(val) / Math.LN10;
+		},
+
+		_validateFormula: function () {
+		    try {
+		        var test = this.calculate();
+		    }
+		    catch (e) {
+		        throw new Error('Error parsing formula: ' + e.message);
+		    }
 		},
 	});
 	

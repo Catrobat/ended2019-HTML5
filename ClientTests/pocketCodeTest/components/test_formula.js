@@ -31,6 +31,9 @@ QUnit.test("Formula", function (assert) {
 
     var result = Math.round(f._log10(10000000) * 1000)  / 1000;
     assert.equal(result, 7.0, "helper: log10");
-
+/*
+    json = JSON.parse('{"type":"NUMBER","value":"500","right":{"type":"NUMBER","value":"500","right":null,"left":null},"left":null}');
+    assert.throws(function () { var f = new PocketCode.Formula(undefined, undefined, json); }, Error, "ERROR: formula parsing error detection");
+*/
 });
 

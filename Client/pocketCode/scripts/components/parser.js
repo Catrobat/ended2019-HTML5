@@ -25,9 +25,13 @@ PocketCode.ProgramParser = (function () {
 		},
 	});
 
-	ProgramParser.prototype.parse = function (jsonProgram) {
+	ProgramParser.prototype.parse = function (jsonProgram) {    //, bricksCount) {
+		//this._bricksCount = bricksCount || this._bricksCount;
+
 		if (!this._brickFactory)
 			this._brickFactory = new PocketCode.BrickFactory(this._device, this, this._broadcastMgr, this._bricksCount);
+		else
+			this._brickFactory.bricksCount = this._bricksCount;
 
 		//TODO:
 		//_brickFactory.parseJson(currentSprite, json);
@@ -95,15 +99,18 @@ PocketCode.BrickFactory = (function () {
 						var brick = new PocketCode.Bricks[type + 'Brick'](this._device, currentSprite, jsonBrick);
 					else {
 						var brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-						this._unsupportedBricks.push(brick);
 					}
 			}
+
+			if (brick instanceof PocketCode.Bricks.UnsupportedBrick)
+			    this._unsupportedBricks.push(brick);
+
 
 			//trigger event
 			this._parsed++;
 			this._updateProgress();
 			if (jsonBrick.bricks)   //all loops
-				brick.bricks = this._createList(jsonBrick.bricks);
+				brick.bricks = this._createList(jsonBrick.bricks);          //ERROR: //TODO: set as a BrickContainer
 			else if (brick.ifBricks && brick.elseBricks) {  //if then else
 				brick.ifBricks = this._createList(jsonBrick.ifBricks);
 				brick.elseBricks = this._createList(jsonBrick.elseBricks);
@@ -111,6 +118,11 @@ PocketCode.BrickFactory = (function () {
 
 			if (this._total == this._parsed && this._unsupportedBricks.length > 0)
 				this._onUnsupportedBrickFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
+
+			//add event listener
+			if (brick instanceof PocketCode.Bricks.RootContainerBrick) {
+				//TODO:
+			}
 
 			return brick;
 		},

@@ -125,10 +125,10 @@ PocketCode.Bricks.merge({
 
 
 	BroadcastReceive: (function () {
-		BroadcastReceive.extends(PocketCode.Bricks.SingleContainerBrick, false);
+		BroadcastReceive.extends(PocketCode.Bricks.RootContainerBrick, false);
 
 		function BroadcastReceive(device, sprite, broadcastMgr, propObject) {
-			PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
+		    PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
 
 			//this._broadcastMgr = broadcastMgr;
 			//this._receiveMsgId = propObject.receiveMsgId;
@@ -144,8 +144,11 @@ PocketCode.Bricks.merge({
 				else
 					this.execute();
 			},
+			//_returnHandler: function(e) {
+			//    this._return(e.id, e.loopDelay)
+			//},
 			_execute: function (id) {
-				this._bricks.execute(new SmartJs.Event.EventListener(this._return, this), id);
+			    this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);
 				//this._return(id);
 			},
 			//pause: function () {
@@ -190,9 +193,12 @@ PocketCode.Bricks.merge({
 		}
 
 		BroadcastAndWaitBrick.prototype.merge({
-			_execute: function (id) {
+		    _returnHandler: function (e) {
+		        this._return(e.id, e.loopDelay)
+		    },
+		    _execute: function (id) {
 				//this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(_waitHandler, this), id);
-				this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(this._return, this), id);
+		        this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(this._returnHandler, this), id);
 			},
 			//_waitHandler: function (callId, loopDelay) {
 			//    this._return(callId, loopDelay)
@@ -254,6 +260,31 @@ PocketCode.Bricks.merge({
 			//this._elseBricks; type of PocketCode.Bricks.BrickContainer
 		}
 
+	    //properties
+		Object.defineProperties(IfThenElseBrick.prototype, {
+		    ifBricks: {
+		        set: function (brickContainer) {
+		            if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+		                this._ifBricks = brickContainer;
+		            else
+		                throw new Error('invalid argument brickConatiner: expected type PocketCode.Bricks.BrickContainer');
+		        },
+		        //enumerable: false,
+		        //configurable: true,
+		    },
+		    elseBricks: {
+		        set: function (brickContainer) {
+		            if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+		                this._elseBricks = brickContainer;
+		            else
+		                throw new Error('invalid argument brickConatiner: expected type PocketCode.Bricks.BrickContainer');
+		        },
+		        //enumerable: false,
+		        //configurable: true,
+		    },
+		});
+
+	    //methods
 		IfThenElseBrick.prototype.merge({
 			_execute: function () {
 				//TODO: implement this

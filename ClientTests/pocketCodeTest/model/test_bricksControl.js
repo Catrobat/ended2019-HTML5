@@ -1,8 +1,8 @@
+/// <reference path="../../qunit/qunit-1.16.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
-/// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
 QUnit.module("bricksControl.js");
