@@ -22,7 +22,7 @@ PocketCode.Bricks.merge({
 
 		ProgramStartBrick.prototype.merge({
 			_execute: function (id) {
-				this._bricks.execute(new SmartJs.Event.EventListener(_return, this), id);
+				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);
 				//this._return();
 			},
 			//pause: function () {
@@ -54,7 +54,7 @@ PocketCode.Bricks.merge({
 					this.execute();
 			},
 			_execute: function (id) {
-				this._bricks.execute(new SmartJs.Event.EventListener(_return, this), id);   //return is called with 2 args: id & loopDelay
+				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);   //return is called with 2 args: id & loopDelay
 				//this._return();
 			},
 			//pause: function () {
@@ -242,13 +242,20 @@ PocketCode.Bricks.merge({
 		}
 
 		ForeverBrick.prototype.merge({
-			_returnHandler: function(e) {
-			    this._execute(e.id);
-			    //this._return(e.id, e.loopDelay);  //_return will never be called in a forever loop
+			/* override */
+			_loopConditionMet: function () {
+				//alwys true for endless loop
+				return true;    
 			},
+			//_returnHandler: function (e) {
+			//	this._return(e.id, e.loopDelay);  
+			//},
 			_execute: function (threadId) {
 				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
 			},
+			//stop: function () {
+			//	//required? 
+			//},
 		});
 
 		return ForeverBrick;

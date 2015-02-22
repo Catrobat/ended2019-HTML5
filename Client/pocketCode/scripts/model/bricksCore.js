@@ -48,7 +48,6 @@ PocketCode.Bricks = {
                         bricks[i].pause();
                 }
             },
-
             resume: function () {
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
@@ -58,11 +57,17 @@ PocketCode.Bricks = {
             },
             stop: function () {
                 this._pendingOps = {};
+                var bricks = this._bricks;
+                for (var i = 0, l = bricks.length; i < l; i++) {
+                    if (bricks[i].stop)
+                        bricks[i].stop();
+                }
             },
         });
 
         return BrickContainer;
     })(),
+
 
     BaseBrick: (function () {
         BaseBrick.extends(SmartJs.Core.Component);
@@ -121,6 +126,12 @@ PocketCode.Bricks.ThreadedBrick = (function () {
             if (listener)
                 listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
         },
+        //pause: function() {
+
+        //},
+        //resume: function() {
+
+        //},
         stop: function () {
             this._pendingOps = {};
         },
@@ -166,6 +177,10 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
         },
         resume: function () {
             this._bricks.resume();
+        },
+        stop: function () {
+            PocketCode.Bricks.ThreadedBrick.prototype.stop.call(this);
+            this._bricks.stop();
         },
     });
 
@@ -225,13 +240,26 @@ PocketCode.Bricks.LoopBrick = (function () {
             var id = SmartJs._getId();
             this._pendingOps[id] = { callId: callId, listener: onExecutedListener, childIdx: 0, startTime: new Date() };
 
-            if (!this._bricks)
-                this._return(id);
-            else
+            //if (!this._bricks)
+            //    this._return(id);
+            //else if (this._loopConditionMet())
+            //    this._execute(id);
+            //else ...
+
+            if (this.bricks && this._loopConditionMet())
                 this._execute(id);
+            else
+                this._return(id);
+        },
+        _loopConditionMet: function() {
+            //the loop condition is overridden in any individual loop brick
+            return false;   
         },
         _return: function (id, loopDelay) {
             var op = this._pendingOps[id];
+            if (!op)  //stopped
+                return;
+
             var listener = op.listener;
             var callId = op.callId;
 
@@ -240,14 +268,27 @@ PocketCode.Bricks.LoopBrick = (function () {
                 executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
             delete this._pendingOps[id];
 
-            if (executionDelay > 0)
-                window.setTimeout(function () {
-                    listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-                }, executionDelay);
+            //decision to recall the loop or return
+            var _self = this;
+            if (executionDelay > 0) {
+                if (this._bricks && this._loopConditionMet())
+                    window.setTimeout(function () {
+                        _self.execute(listener, callId);
+                    }, executionDelay);
+                else
+                    window.setTimeout(function () {
+                        listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
+                    }, executionDelay);
+            }
             else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
-                window.setTimeout(function () {
-                    listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-                }, 3);
+                if (this._bricks && this._loopConditionMet())
+                    window.setTimeout(function () {
+                        _self.execute(listener, callId);
+                    }, 3);
+                else
+                    window.setTimeout(function () {
+                        listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
+                    }, 3);
                 //listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
             }
         },
@@ -268,7 +309,7 @@ PocketCode.Bricks.UnsupportedBrick = (function () {
     }
 
     UnsupportedBrick.prototype._execute = function () {
-        console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml + ', type= ' + this._brickType);
+        //console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml + ', type= ' + this._brickType);
         this._return();
     };
 

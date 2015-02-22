@@ -7,7 +7,7 @@ QUnit.module("bricksCore.js");
 
 QUnit.test("BrickContainer", function (assert) {
 
-    assert.expect(14);
+    assert.expect(15);
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
@@ -31,7 +31,7 @@ QUnit.test("BrickContainer", function (assert) {
         done3();
 
         proceedTests();
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     assert.ok(bc._bricks.length === 0, "brick created and properties set correctly");   //initialized as array
@@ -41,7 +41,7 @@ QUnit.test("BrickContainer", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     bc.execute(new SmartJs.Event.EventListener(handler2, this), "pc234");    //call on empty container
     assert.ok(handler1Called, "empty container: handler called");
     assert.ok(!handler1LoopDelay, "empty container: loopDelay handled corrrectly");
@@ -92,6 +92,9 @@ QUnit.test("BrickContainer", function (assert) {
             resume: function () {
                 this.paused = false;
             },
+            stop: function () {
+                this.stopped = true;
+            },
         });
 
         return TestBrick2;
@@ -137,6 +140,8 @@ QUnit.test("BrickContainer", function (assert) {
         assert.equal(bc._bricks[1].paused, true, "bricks paused");
         bc.resume();
         assert.equal(bc._bricks[1].paused, false, "bricks resumed");
+        bc.stop();
+        assert.equal(bc._bricks[1].stopped, true, "bricks stopped");
 
         doneFinal();
     }
@@ -175,7 +180,7 @@ QUnit.test("BaseBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     assert.throws(function () { testBrick.execute(l1, 23); }, Error, "ERROR: simple argument error check");
@@ -220,7 +225,7 @@ QUnit.test("ThreadedBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     assert.throws(function () { testBrick.execute(l1, 23); }, Error, "ERROR: simple argument error check");
@@ -240,7 +245,7 @@ QUnit.test("ThreadedBrick", function (assert) {
 
 QUnit.test("SingleContainerBrick", function (assert) {
 
-    assert.expect(7);   //init async asserts (to wait for)
+    assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
 
     var b = new PocketCode.Bricks.SingleContainerBrick("device", "sprite");
@@ -259,7 +264,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     var cont = new PocketCode.Bricks.BrickContainer();  //empty conatiner
@@ -291,6 +296,9 @@ QUnit.test("SingleContainerBrick", function (assert) {
             resume: function () {
                 this.paused = false;
             },
+            stop: function () {
+                this.stopped = true;
+            },
         });
 
         return TestBrick2;
@@ -314,10 +322,20 @@ QUnit.test("SingleContainerBrick", function (assert) {
         assert.equal(handler1CallId, "newTID", "bricks executed");
         assert.equal(b._pendingOps["newTID"], undefined, "pending ops cleared");
         done1();
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     b.bricks = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+
+    //simulate pending operation
+    b._pendingOps["sim"] = { is: "anything" };
+    b.pause();
+    assert.ok(b._bricks._bricks[0].paused && b._bricks._bricks[1].paused && b._bricks._bricks[2].paused && b._bricks._bricks[3].paused, "brick pause");
+    b.resume();
+    assert.ok(!b._bricks._bricks[0].paused && !b._bricks._bricks[1].paused && !b._bricks._bricks[2].paused && !b._bricks._bricks[3].paused, "brick resume");
+    b.stop();
+    assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "brick stop");
+    assert.ok(!b._pendingOps["sim"], "delete pending ops when stop() is called");
     b.execute(l1, "newTID");
     
 });
@@ -345,7 +363,7 @@ QUnit.test("RootContainerBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     b.bricks = new PocketCode.Bricks.BrickContainer();  //empty conatiner
@@ -374,7 +392,7 @@ QUnit.test("LoopBrick", function (assert) {
         var execTime = new Date() - startTime;
         assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
         done1();
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     b.execute(l1, "loopId");
@@ -397,7 +415,7 @@ QUnit.test("UnsupportedBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
-    }
+    };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     b.execute(l1, "s23");
