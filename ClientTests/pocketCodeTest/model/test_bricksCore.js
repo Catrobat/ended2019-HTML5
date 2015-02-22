@@ -357,12 +357,27 @@ QUnit.test("RootContainerBrick", function (assert) {
 
 QUnit.test("LoopBrick", function (assert) {
 
+    assert.expect(5);   //init async asserts (to wait for)
+    var done1 = assert.async();
+
     var b = new PocketCode.Bricks.LoopBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.LoopBrick, "instance check");
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 
+    //the only test case we can trigger here is an empty loop due to the fact the return handler is always called from inside a specific loop implementation
+    var startTime = new Date();
+    var handler1 = function (e) {
+        assert.equal(e.id, "loopId", "loop id returned correctly");
+
+        var execTime = new Date() - startTime;
+        assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
+        done1();
+    }
+    var l1 = new SmartJs.Event.EventListener(handler1, this);
+
+    b.execute(l1, "loopId");
 
 });
 

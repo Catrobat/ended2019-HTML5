@@ -224,7 +224,11 @@ PocketCode.Bricks.LoopBrick = (function () {
         execute: function (onExecutedListener, callId) {
             var id = SmartJs._getId();
             this._pendingOps[id] = { callId: callId, listener: onExecutedListener, childIdx: 0, startTime: new Date() };
-            this._execute(id);
+
+            if (!this._bricks)
+                this._return(id);
+            else
+                this._execute(id);
         },
         _return: function (id, loopDelay) {
             var op = this._pendingOps[id];
@@ -240,11 +244,11 @@ PocketCode.Bricks.LoopBrick = (function () {
                 window.setTimeout(function () {
                     listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
                 }, executionDelay);
-            else {  //spend 5ms on a roundtrip to avoid long running script messages + enable UI update
-                //window.setTimeout(function () {
-                //    listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-                //}, 5);
-                listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
+            else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
+                window.setTimeout(function () {
+                    listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
+                }, 3);
+                //listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
             }
         },
     });
