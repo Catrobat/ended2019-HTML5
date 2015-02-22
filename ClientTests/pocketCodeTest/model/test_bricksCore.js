@@ -355,21 +355,23 @@ QUnit.test("RootContainerBrick", function (assert) {
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
 
-    var handler1Called = false;
-    var handler1LoopDelay = false;
-    var handler1CallId = undefined;
+    //var handler1Called = false;
+    //var handler1LoopDelay = false;
+    //var handler1CallId = undefined;
 
-    var handler1 = function (e) {
-        handler1Called = true;
-        handler1LoopDelay = e.loopDelay;
-        handler1CallId = e.id;
-    };
-    var l1 = new SmartJs.Event.EventListener(handler1, this);
+    //var handler1 = function (e) {
+    //    handler1Called = true;
+    //    handler1LoopDelay = e.loopDelay;
+    //    handler1CallId = e.id;
+    //};
+    //var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     b.bricks = new PocketCode.Bricks.BrickContainer();  //empty conatiner
-    b.execute(l1, "rootcont");
-    assert.ok(handler1Called && !handler1LoopDelay && handler1CallId === "rootcont", "call on empty container");
+    b.execute();
+    //assert.ok(handler1Called && !handler1LoopDelay && handler1CallId === "rootcont", "call on empty container");
     assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
+
+    //assert.throws(function () { b.execute(l1, "rootcont"); }, Error, "ERROR: on call execute()");
 
 });
 

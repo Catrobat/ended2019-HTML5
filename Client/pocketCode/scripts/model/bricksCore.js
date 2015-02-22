@@ -147,7 +147,7 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
     function SingleContainerBrick(device, sprite) {
         PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
 
-        //this._bricks typeof PocketCode.Bricks.BrickContainer
+        this._bricks = new PocketCode.Bricks.BrickContainer([]);
     }
 
     //properties
@@ -167,6 +167,7 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
     //methods
     SingleContainerBrick.prototype.merge({
         _returnHandler: function (e) {
+            //helper method to make event binding easier
             this._return(e.id, e.loopDelay)
         },
         _execute: function (threadId) {
@@ -213,13 +214,18 @@ PocketCode.Bricks.RootContainerBrick = (function () {
 
     //methods
     RootContainerBrick.prototype.merge({
-        /* override */
-        _return: function (id, loopDelay) {
-            //call super
-            PocketCode.Bricks.ThreadedBrick.prototype._return.call(this, id, loopDelay);
-
-            this._onExecuted.dispatchEvent();
+        ///* override */
+        execute: function () {
+            PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs._getId());
+            //throw new Error('execute() cannot be called directly on root containers')
         },
+    //    /* override */
+    //    _return: function (id, loopDelay) {
+    //        //call super
+    //        PocketCode.Bricks.ThreadedBrick.prototype._return.call(this, id, loopDelay);
+
+    //        this._onExecuted.dispatchEvent();
+    //    },
     });
 
     return RootContainerBrick;
@@ -271,7 +277,7 @@ PocketCode.Bricks.LoopBrick = (function () {
             //decision to recall the loop or return
             var _self = this;
             if (executionDelay > 0) {
-                if (this._bricks && this._loopConditionMet())
+                if (this._loopConditionMet())   //this._bricks && 
                     window.setTimeout(function () {
                         _self.execute(listener, callId);
                     }, executionDelay);
@@ -281,7 +287,7 @@ PocketCode.Bricks.LoopBrick = (function () {
                     }, executionDelay);
             }
             else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
-                if (this._bricks && this._loopConditionMet())
+                if (this._loopConditionMet())   //this._bricks && 
                     window.setTimeout(function () {
                         _self.execute(listener, callId);
                     }, 3);

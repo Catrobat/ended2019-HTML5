@@ -53,7 +53,7 @@ PocketCode.BroadcastManager = (function () {
             }
         },
 
-        _handleBroadcastWait: function (brId, pubListener, threadId) {
+        _handleBroadcastWait: function (brId, pubListener, callId) {
             if (!(pubListener instanceof SmartJs.Event.EventListener))
                 throw new Error('invalid argument: publisher Listener, expected type: SmartJs.Event.EventListener');
 
@@ -62,12 +62,12 @@ PocketCode.BroadcastManager = (function () {
 
             if (subsCount > 0) {
                 var threadId = SmartJs._getId();            //each br wait call has its own unique id
-                this._pendingBW[threadId] = { threadId: threadId, broadcastId: brId, counter: subsCount, listener: pubListener, loopDelay: false };
+                this._pendingBW[threadId] = { callId: callId, broadcastId: brId, counter: subsCount, listener: pubListener, loopDelay: false };
                 //notify subscribers
                 //var subsCount = this._subscriptions[brId];
                 for (var i = 0; i < subsCount; i++) {
                     var subListener = subs[i];  //listening brick
-                    subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) });
+                    subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
                     //add event to brick to get return value
                     //brick.execute(new SmartJs.Event.EventListener(_brickExecutedHandler, this), threadId);
                 }
@@ -76,24 +76,24 @@ PocketCode.BroadcastManager = (function () {
                 this._notifyPublisher(pubListener, threadId);
         },
         
-        _brickExecutedHandler: function (id, loopDelay) {
-            var pendingBW = this._pendingBW[args.id];
+        _brickExecutedHandler: function (e) {   //id, loopDelay) {
+            var pendingBW = this._pendingBW[e.id];
             //var counter = pendingBW.counter;
             if (pendingBW.counter === 1) {    //last
-                var threadId = pendingBW.threadId;
+                var callId = pendingBW.callId;
                 var pubListener = pendingBW.listener;
-                var loopDelay = pendingBW.loopDelay;
-                delete this._pendingBW[args.id];    //remove from pending broadcasts
-                this._notifyPublisher(pubListener, threadId, loopDelay);
+                var loopDelay = pendingBW.loopDelay || e.loopDelay;
+                delete this._pendingBW[e.id];    //remove from pending broadcasts
+                this._notifyPublisher(pubListener, callId, loopDelay);
             }
             else {
                 pendingBW.counter--;
-                pendingBW.loopDelay = loopDelay;
+                pendingBW.loopDelay = pendingBW.loopDelay || e.loopDelay;
             }
         },
 
         _notifyPublisher: function (pubListener, threadId, loopDelay) {
-            pubListener.handler.call(pubListener.scope, threadId, loopDelay);
+            pubListener.handler.call(pubListener.scope, { id: threadId, loopDelay: loopDelay });
         },
     });
 
