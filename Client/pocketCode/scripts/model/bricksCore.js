@@ -25,6 +25,9 @@ PocketCode.Bricks = {
 
             _executeContainerItem: function (args) {
                 var op = this._pendingOps[args.id];
+                if (!op)  //stopped
+                    return;
+
                 if (args.loopDelay)
                     op.loopDelay = op.loopDelay || args.loopDelay;
                 var idx = op.childIdx;
@@ -219,13 +222,13 @@ PocketCode.Bricks.RootContainerBrick = (function () {
             PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs._getId());
             //throw new Error('execute() cannot be called directly on root containers')
         },
-    //    /* override */
-    //    _return: function (id, loopDelay) {
-    //        //call super
-    //        PocketCode.Bricks.ThreadedBrick.prototype._return.call(this, id, loopDelay);
+        //    /* override */
+        //    _return: function (id, loopDelay) {
+        //        //call super
+        //        PocketCode.Bricks.ThreadedBrick.prototype._return.call(this, id, loopDelay);
 
-    //        this._onExecuted.dispatchEvent();
-    //    },
+        //        this._onExecuted.dispatchEvent();
+        //    },
     });
 
     return RootContainerBrick;
@@ -243,27 +246,51 @@ PocketCode.Bricks.LoopBrick = (function () {
 
     LoopBrick.prototype.merge({
         execute: function (onExecutedListener, callId) {
-            
-            if (!this._pendingOps[callId]) {  //execute is called n times 
-                var id = SmartJs._getId();
-                this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
-            }
-            //if (!this._bricks)
-            //    this._return(id);
-            //else if (this._loopConditionMet())
-            //    this._execute(id);
-            //else ...
+            var id = SmartJs._getId();
+            this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
 
             if (this._bricks && this._loopConditionMet(id))
                 this._execute(id);
             else
                 this._return(id);
         },
-        _loopConditionMet: function() {
-            //the loop condition is overridden in every single loop brick
-            return false;   
+        _endOfLoopHandler: function (e) {
+            var id = e.id;
+            //var loopDelay
+            var op = this._pendingOps[id];
+            if (!op)  //stopped
+                return;
+
+            if (this._bricks && this._loopConditionMet(id)) {
+                var executionDelay = 0;
+                if (e.loopDelay) {
+                    executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
+                    //console.log("loop delay: ");
+                }
+                op.startTime = new Date();  //re-init for each loop
+                var _self = this;
+                if (executionDelay > 0) {
+                    window.setTimeout(function () {
+                        _self._execute(id);
+                    }, executionDelay);
+                    //console.log("delay: " + executionDelay);
+                }
+                else {
+                    window.setTimeout(function () {
+                        _self._execute(id);
+                    }, 3);
+                    //console.log("delay: 3");
+                }
+            }
+            else
+                this._return(id);
+
         },
-        _return: function (id, loopDelay) {
+        _loopConditionMet: function () {
+            //the loop condition is overridden in every single loop brick
+            return false;
+        },
+        _return: function (id) {
             var op = this._pendingOps[id];
             if (!op)  //stopped
                 return;
@@ -271,38 +298,22 @@ PocketCode.Bricks.LoopBrick = (function () {
             var listener = op.listener;
             var callId = op.callId;
 
-            var executionDelay = 0;
-            if (loopDelay)
-                executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
-            //delete this._pendingOps[id];
+            //var executionDelay = 0;
+            //if (loopDelay)
+            //    executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
+            delete this._pendingOps[id];
 
-            //decision to recall the loop or return
-            var _self = this;
-            if (executionDelay > 0) {
-                if (this._loopConditionMet(id))   //this._bricks && 
-                    window.setTimeout(function () {
-                        _self.execute(listener, callId);
-                    }, executionDelay);
-                else {
-                    delete this._pendingOps[id];    //pending ops have to be stored as long as the loop is running
-                    window.setTimeout(function () {
-                        listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-                    }, executionDelay);
-                }
-            }
-            else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
-                if (this._loopConditionMet(id))   //this._bricks && 
-                    window.setTimeout(function () {
-                        _self.execute(listener, callId);
-                    }, 3);
-                else {
-                    delete this._pendingOps[id];
-                    window.setTimeout(function () {
-                        listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-                    }, 3);
-                }
-                //listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
-            }
+            //if (executionDelay > 0) {
+            //    window.setTimeout(function () {
+            //        listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
+            //    }, executionDelay);
+            //}
+            //else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
+                //window.setTimeout(function () {
+                //    listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
+                //}, 3);
+                listener.handler.call(listener.scope, { id: callId, loopDelay: false });
+            //}
         },
     });
 

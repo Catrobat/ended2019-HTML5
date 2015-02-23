@@ -245,7 +245,7 @@ QUnit.test("ThreadedBrick", function (assert) {
 
 QUnit.test("SingleContainerBrick", function (assert) {
 
-    assert.expect(11);   //init async asserts (to wait for)
+    assert.expect(12);   //init async asserts (to wait for)
     var done1 = assert.async();
 
     var b = new PocketCode.Bricks.SingleContainerBrick("device", "sprite");
@@ -254,7 +254,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SingleContainerBrick, "instance check");
     assert.ok(b.objClassName === "SingleContainerBrick", "objClassName check");
 
-    assert.throws(function () { b.bricks = []; }, Error, "ERROR: validating bricks setter")
+    assert.throws(function () { b.bricks = []; }, Error, "ERROR: validating bricks setter");
 
     var handler1Called = false;
     var handler1LoopDelay = false;
@@ -325,7 +325,10 @@ QUnit.test("SingleContainerBrick", function (assert) {
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
-    b.bricks = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    var bc= new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    b.bricks = bc;
+
+    assert.equal(b._bricks, bc, "bricks setter");
 
     //simulate pending operation
     b._pendingOps["sim"] = { is: "anything" };
@@ -377,7 +380,7 @@ QUnit.test("RootContainerBrick", function (assert) {
 
 QUnit.test("LoopBrick", function (assert) {
 
-    assert.expect(5);   //init async asserts (to wait for)
+    assert.expect(4);   //init async asserts (to wait for)
     var done1 = assert.async();
 
     var b = new PocketCode.Bricks.LoopBrick("device", "sprite");
@@ -392,7 +395,8 @@ QUnit.test("LoopBrick", function (assert) {
         assert.equal(e.id, "loopId", "loop id returned correctly");
 
         var execTime = new Date() - startTime;
-        assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
+        //assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
+        //^^ test case removed: only a recalled loop has a delay, a single cycle is not delayed
         done1();
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);

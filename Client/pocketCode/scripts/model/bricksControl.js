@@ -272,7 +272,7 @@ PocketCode.Bricks.merge({
 			//	this._return(e.id, e.loopDelay);  
 			//},
 			_execute: function (callId) {
-				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
+			    this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
 			},
 			//stop: function () {
 			//	//required? 
@@ -320,8 +320,15 @@ PocketCode.Bricks.merge({
 
 		//methods
 		IfThenElseBrick.prototype.merge({
-			_execute: function () {
-				//TODO: implement this
+		    _returnHandler: function (e) {
+		        //helper method to make event binding easier
+		        this._return(e.id, e.loopDelay)
+		    },
+		    _execute: function (threadId) {
+		        if (this._condition.calculate())
+		            this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+		        else
+		            this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
 			},
 			pause: function () {
 				this._ifBricks.pause();
@@ -332,8 +339,9 @@ PocketCode.Bricks.merge({
 			    this._elseBricks.resume();
 			},
 			stop: function () {
-			    this._ifBricks.resume();
-			    this._elseBricks.resume();
+			    PocketCode.Bricks.ThreadedBrick.prototype.stop.call(this);
+			    this._ifBricks.stop();
+			    this._elseBricks.stop();
 			},
 		});
 
@@ -355,7 +363,7 @@ PocketCode.Bricks.merge({
 		    /* override */
 		    _loopConditionMet: function (callId) {
 		        var po = this._pendingOps[callId];
-		        if (!po.loopCounter)
+		        if (po.loopCounter === undefined)
 		            po.loopCounter = Math.round(this._timesToRepeat.calculate());
 
 		        if (po.loopCounter > 0)
@@ -371,9 +379,9 @@ PocketCode.Bricks.merge({
 		        var po = this._pendingOps[callId];
 		        //if (!po.loopCounter)  //not required: loopCondition has to be checkt first
 		        //    po.loopCounter = this._timesToRepeat.calculate();
-		        po.loopCounter--;
+		        po.loopCounter--;// = po.loopCounter - 1;
 
-		        this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
+		        this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
 			},
 		});
 
