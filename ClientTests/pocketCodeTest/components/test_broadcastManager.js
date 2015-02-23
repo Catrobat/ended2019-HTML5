@@ -29,6 +29,16 @@ QUnit.test("BroadcastManager", function (assert) {
         handler3Called = true;
     };
 
+    
+    //pending broadcast
+    assert.equal(b._pendingBW.length,undefined, "no pending broadcasts");
+   
+    //
+    
+    //no subscribers
+    assert.ok(b._subscriptions.s12.length == 0, "no subscribers yet");
+   
+    
     //subscribe
     assert.throws(function () { b.subscribe(12, new SmartJs.Event.EventListener(handler1, this)); }, Error, "ERROR: subscribe: invalid argument: broadcast id");
     assert.throws(function () { b.subscribe("s12", new Function()); }, Error, "ERROR: subscribe: invalid argument: subscriber listener");
