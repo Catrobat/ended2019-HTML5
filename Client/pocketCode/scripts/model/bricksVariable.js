@@ -13,12 +13,12 @@ PocketCode.Bricks.merge({
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
-            this._formula = new PocketCode.Formula(device, sprite, propObject.value);
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         SetVariableBrick.prototype._execute = function () {
             var variable = this._sprite.getVariable(this._varId);
-            variable.value = this._formula.calculate();
+            variable.value = this._value.calculate();
             this._return();
         };
 
@@ -33,12 +33,12 @@ PocketCode.Bricks.merge({
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
-            this._formula = new PocketCode.Formula(device, sprite, propObject.value);
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         ChangeVariableBrick.prototype._execute = function () {
             var variable = this._sprite.getVariable(this._varId);
-            variable.value += this._formula.calculate();
+            variable.value += this._value.calculate();
             this._return();
         };
 
