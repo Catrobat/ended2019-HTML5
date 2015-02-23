@@ -92,16 +92,19 @@ PocketCode.Bricks.merge({
 		}
 
 		WaitBrick.prototype.merge({
-			_timerExpiredHandler: function(e) {
-				var currentOp = this._pendingOps[e.threadId];
-				var callId = currentOp.callId;
-				delete this._pendingOps[e.threadId];
+		    _timerExpiredHandler: function (e) {
+		        //var callId = e.callId;
+				//var currentOp = this._pendingOps[e.threadId];
+				//var callId = currentOp.callId;
+				//delete this._pendingOps[e.threadId];
 
-				this._return(callId);
+				this._return(e.callId);
 			},
 			_execute: function (callId) {
-				var threadId = SmartJs._newId();
-				this._pendingOps[threadId] = { callId: callId, timer: new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { threadId: threadId }) };
+			    var po = this._pendingOps[callId];
+			    po.timer = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { callId: callId });
+				//var threadId = SmartJs._getId();
+				//this._pendingOps[threadId] = { callId: callId, timer: new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { threadId: threadId }) };
 				//TODO: tricky -> this._duration.calculate will be called periodically here until the return value
 				//var id = 
 				//this._return(id);
@@ -109,24 +112,24 @@ PocketCode.Bricks.merge({
 			pause: function () {
 				var po = this._pendingOps;
 				for (var o in po) {
-					var timer = o.timer;
-					if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.timer) 
+					var timer = po[o].timer;
+					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.timer) 
 						timer.pause();
 				}
 			},
 			resume: function () {
 				var po = this._pendingOps;
 				for (var o in po) {
-					var timer = o.timer;
-					if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+				    var timer = po[o].timer;
+					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
 						timer.resume();
 				}
 			},
 			stop: function () {
 				var po = this._pendingOps;
 				for (var o in po) {
-					var timer = o.timer;
-					if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+				    var timer = po[o].timer;
+					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
 						timer.stop();
 				}
 				this._pendingOps = {};
