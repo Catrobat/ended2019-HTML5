@@ -30,8 +30,10 @@ PocketCode.Model.Sprite = (function () {
                 if (!(varArray instanceof Array))
                     throw new Error('variable setter expects type Array');
 
-                for (i = 0, l = varArray.length; i < l; i++)
+                for (i = 0, l = varArray.length; i < l; i++) {
+                    varArray[i].value = 0;  //init
                     this._variables[varArray[i].id] = varArray[i];
+                }
             },
             //enumerable: false,
             //configurable: true,
@@ -97,12 +99,12 @@ PocketCode.Model.Sprite = (function () {
             else //gloable lookup
                 return this._program.getGlobalVariable(varId);
         },
-        setVariable: function (varId, value) {
-            if (this._variables[varId])
-                this._variables[varId].value = value;
-            else //gloable lookup
-                return this._program.setGlobalVariable(varId, value);
-        },
+        //setVariable: function (varId, value) {
+        //    if (this._variables[varId])
+        //        this._variables[varId].value = value;
+        //    else //gloable lookup
+        //        return this._program.setGlobalVariable(varId, value);
+        //},
     });
 
     return Sprite;

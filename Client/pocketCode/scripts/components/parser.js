@@ -336,9 +336,9 @@ PocketCode.FormulaParser = new ( (function () {
 					return jsonFormula.left.substr(idx, 1);
 					break;
 
-				case 'JOIN':    //string
-					throw new Error('formula parser: join not implemented');	//TODO
-					break;
+				//case 'JOIN':    //string
+				//	throw new Error('formula parser: join not implemented');	//TODO
+				//	break;
 
 				default:
 					throw new Error('formula parser: unknown function: ' + jsonFormula.value);

@@ -61,8 +61,10 @@ PocketCode.Model.Program = (function () {
 	            if (!(variables instanceof Array))
 	                throw new Error('setter expects type Array');
 
-	            for (i = 0, l = variables.length; i < l; i++)
+	            for (i = 0, l = variables.length; i < l; i++) {
+	                varArray[i].value = 0;  //init
 	                this._variables[variables[i].id] = variables[i];
+	            }
 	        },
 	        //enumerable: false,
 	        //configurable: true,
@@ -169,12 +171,12 @@ PocketCode.Model.Program = (function () {
 		    else
 		        throw new Error('unknown variable id: ' + varId);
 		},
-		setGlobalVariable: function (varId, value) {
-		    if (this._variables[varId])
-		        return this._variables[varId].value = value;
-		    else
-		        throw new Error('unknown variable id: ' + varId);
-		},
+		//setGlobalVariable: function (varId, value) {
+		//    if (this._variables[varId])
+		//        return this._variables[varId].value = value;
+		//    else
+		//        throw new Error('unknown variable id: ' + varId);
+		//},
 	});
 
 	return Program;
