@@ -257,7 +257,7 @@ PocketCode.Bricks.merge({
 		ForeverBrick.extends(PocketCode.Bricks.LoopBrick, false);
 
 		function ForeverBrick(device, sprite) {
-			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		    PocketCode.Bricks.LoopBrick.call(this, device, sprite);
 
 			//this._bricks = propObject.bricks;
 		}
@@ -265,14 +265,14 @@ PocketCode.Bricks.merge({
 		ForeverBrick.prototype.merge({
 			/* override */
 			_loopConditionMet: function () {
-				//alwys true for endless loop
+				//always true for endless loop
 				return true;    
 			},
 			//_returnHandler: function (e) {
 			//	this._return(e.id, e.loopDelay);  
 			//},
-			_execute: function (threadId) {
-				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+			_execute: function (callId) {
+				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
 			},
 			//stop: function () {
 			//	//required? 
@@ -352,13 +352,28 @@ PocketCode.Bricks.merge({
 		}
 
 		RepeatBrick.prototype.merge({
-			_returnHandler: function (e) {
+		    /* override */
+		    _loopConditionMet: function (callId) {
+		        var po = this._pendingOps[callId];
+		        if (!po.loopCounter)
+		            po.loopCounter = Math.round(this._timesToRepeat.calculate());
+
+		        if (po.loopCounter > 0)
+		            return true;
+		        return false;
+		    },
+		    //_returnHandler: function (e) {
 				//TODO: loop counter and increment
 				//rerun _execute on container n times and than call _return
 				//this._return(e.id, e.loopDelay);
-			},
-			_execute: function (threadId) {
-				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+			//},
+		    _execute: function (callId) {
+		        var po = this._pendingOps[callId];
+		        //if (!po.loopCounter)  //not required: loopCondition has to be checkt first
+		        //    po.loopCounter = this._timesToRepeat.calculate();
+		        po.loopCounter--;
+
+		        this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
 			},
 		});
 

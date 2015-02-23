@@ -80,7 +80,7 @@ PocketCode.Bricks = {
         BaseBrick.prototype.merge({
             execute: function (onExecutedListener, threadId) {
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
-                    throw new Error('BrickContainer: missing or invalid arguments on execute()');
+                    throw new Error('BaseBrick: missing or invalid arguments on execute()');
 
                 this._onExecutedListener = onExecutedListener;
                 this._threadId = threadId;
@@ -108,7 +108,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
     ThreadedBrick.prototype.merge({
         execute: function (onExecutedListener, threadId) {    //parameters can be null, e.g. ProgramStartBrick, WhenActionBrick, BroadcastReceiveBrick if not triggerend by BroadcastWaitBrick
             if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
-                throw new Error('BrickContainer: missing or invalid arguments on execute()');
+                throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
 
             var id = SmartJs._getId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
@@ -243,22 +243,24 @@ PocketCode.Bricks.LoopBrick = (function () {
 
     LoopBrick.prototype.merge({
         execute: function (onExecutedListener, callId) {
-            var id = SmartJs._getId();
-            this._pendingOps[id] = { callId: callId, listener: onExecutedListener, childIdx: 0, startTime: new Date() };
-
+            
+            if (!this._pendingOps[callId]) {  //execute is called n times 
+                var id = SmartJs._getId();
+                this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
+            }
             //if (!this._bricks)
             //    this._return(id);
             //else if (this._loopConditionMet())
             //    this._execute(id);
             //else ...
 
-            if (this.bricks && this._loopConditionMet())
+            if (this._bricks && this._loopConditionMet(id))
                 this._execute(id);
             else
                 this._return(id);
         },
         _loopConditionMet: function() {
-            //the loop condition is overridden in any individual loop brick
+            //the loop condition is overridden in every single loop brick
             return false;   
         },
         _return: function (id, loopDelay) {
@@ -272,29 +274,33 @@ PocketCode.Bricks.LoopBrick = (function () {
             var executionDelay = 0;
             if (loopDelay)
                 executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
-            delete this._pendingOps[id];
+            //delete this._pendingOps[id];
 
             //decision to recall the loop or return
             var _self = this;
             if (executionDelay > 0) {
-                if (this._loopConditionMet())   //this._bricks && 
+                if (this._loopConditionMet(id))   //this._bricks && 
                     window.setTimeout(function () {
                         _self.execute(listener, callId);
                     }, executionDelay);
-                else
+                else {
+                    delete this._pendingOps[id];    //pending ops have to be stored as long as the loop is running
                     window.setTimeout(function () {
                         listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
                     }, executionDelay);
+                }
             }
             else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
-                if (this._loopConditionMet())   //this._bricks && 
+                if (this._loopConditionMet(id))   //this._bricks && 
                     window.setTimeout(function () {
                         _self.execute(listener, callId);
                     }, 3);
-                else
+                else {
+                    delete this._pendingOps[id];
                     window.setTimeout(function () {
                         listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
                     }, 3);
+                }
                 //listener.handler.call(listener.scope, { id: callId, loopDelay: loopDelay });
             }
         },
