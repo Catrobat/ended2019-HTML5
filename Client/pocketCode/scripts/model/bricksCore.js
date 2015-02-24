@@ -28,8 +28,8 @@ PocketCode.Bricks = {
                 if (!op)  //stopped
                     return;
 
-                if (args.loopDelay)
-                    op.loopDelay = op.loopDelay || args.loopDelay;
+                //if (args.loopDelay)
+                op.loopDelay = args.loopDelay ? args.loopDelay : op.loopDelay;
                 var idx = op.childIdx;
 
                 var bricks = this._bricks;
@@ -122,7 +122,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
             if (!po)  //stopped
                 return;
 
-            var loopD = loopDelay || false;
+            var loopD = loopDelay ? loopDelay : false;
             var listener = po.listener;
             var threadId = po.threadId;
             delete this._pendingOps[id];
