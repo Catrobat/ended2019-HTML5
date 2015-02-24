@@ -102,7 +102,7 @@ PocketCode.Bricks.merge({
 			},
 			_execute: function (callId) {
 			    var po = this._pendingOps[callId];
-			    po.timer = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { callId: callId });
+			    po.timer = new SmartJs.Components.Timer(this._duration.calculate(), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
 				//var threadId = SmartJs._getId();
 				//this._pendingOps[threadId] = { callId: callId, timer: new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { threadId: threadId }) };
 				//TODO: tricky -> this._duration.calculate will be called periodically here until the return value

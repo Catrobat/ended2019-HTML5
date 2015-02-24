@@ -8,23 +8,35 @@ SmartJs.Components = {
 
     Timer: (function () {
 
-        function Timer(listener, delay, callbackArgs) {
+        function Timer(delay, listener, startOnInit, callbackArgs) {
             this._delay = delay;
-            this.remainingTime = delay;
-            this._callBackArgs = callbackArgs;  //introduces to enable threaded timer identification
+            this._remainingTime = delay;
+            this._callBackArgs = callbackArgs;  //introduced to enable threaded timer identification
             this._paused = false;
 
             //events
             this._onExpire = new SmartJs.Event.Event(this);
-            this._onExpire.addEventListener(listener);
+            if (listener)
+                this._onExpire.addEventListener(listener);
 
-            this.start();
+            if (startOnInit)
+                this.start();
         }
 
-        //events
+        //events + properties
         Object.defineProperties(Timer.prototype, {
             onExpire: {
                 get: function () { return this._onExpire; },
+                //enumerable: false,
+                //configurable: true,
+            },
+            remainingTime: {
+                get: function () {
+                    if (this._paused || this._remainingTime === 0)
+                        return this._remainingTime;
+                    else
+                        return this._remainingTime - (new Date() - this._startTime);
+                },
                 //enumerable: false,
                 //configurable: true,
             },
@@ -36,7 +48,7 @@ SmartJs.Components = {
                 this._clearTimeout();
 
                 this._startTime = new Date();
-                this.remainingTime = this._delay;
+                this._remainingTime = this._delay;
                 this._setTimeout(this._delay);
                 this._paused = false;
             },
@@ -45,7 +57,7 @@ SmartJs.Components = {
                     return;
 
                 this._clearTimeout();
-                this.remainingTime -= (new Date() - this._startTime);
+                this._remainingTime -= (new Date() - this._startTime);
                 this._paused = true;
             },
             resume: function () {
@@ -53,7 +65,7 @@ SmartJs.Components = {
                     return;
 
                 this._startTime = new Date();
-                this._setTimeout(this.remainingTime);
+                this._setTimeout(this._remainingTime);
                 this._paused = false;
             },
             stop: function() {
@@ -66,8 +78,8 @@ SmartJs.Components = {
 
                 var self = this;
                 this._timeoutId = window.setTimeout(function () {
-                    self.remainingTime = 0;
-                    self.onExpire.dispatchEvent(self._callBackArgs);
+                    self._remainingTime = 0;
+                    self._onExpire.dispatchEvent(self._callBackArgs);
                 }, delay);
             },
             _clearTimeout: function () {
