@@ -99,6 +99,12 @@ PocketCode.Model.Sprite = (function () {
             else //gloable lookup
                 return this._program.getGlobalVariable(varId);
         },
+        getVariableNames: function () {
+            var variables = {};
+            //TODO: id: {name: ?, type: [local/global]} 
+            variables.merge(this._program.getGlobalVariableNames());
+            return variables;
+        },
         //setVariable: function (varId, value) {
         //    if (this._variables[varId])
         //        this._variables[varId].value = value;

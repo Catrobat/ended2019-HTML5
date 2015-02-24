@@ -10,6 +10,7 @@ PocketCode.Formula = (function () {
 	    this._sprite = sprite;
 
 	    this.json = jsonFormula;
+	    this._uiString = '';
 	}
 
 	//accessors
@@ -21,10 +22,16 @@ PocketCode.Formula = (function () {
 	        set: function (value) {
 	            this._json = value;
 	            this.calculate = PocketCode.FormulaParser.parseJson(value);
+	            this._uiString = PocketCode.FormulaParser.getUiString(value, this._sprite.getVariableNames());
 	            this._validateFormula();
 	        },
 	        //enumerable: false,
 	        //configurable: true,
+	    },
+	    uiString: {
+	        get: function () {
+	            return this._uiString;
+	        },
 	    },
 	});
 

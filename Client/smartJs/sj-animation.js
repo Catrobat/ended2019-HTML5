@@ -12,9 +12,9 @@ SmartJs.Animation = {
             //returns the animation progress based on a animation function f(1) = 1
             return progress;
         },
-        QUAD: function (progress) {
-            return Math.pow(progress, 2);
-        },
+        //QUAD: function (progress) {
+        //    return Math.pow(progress, 2);
+        //},
 
         LINEAR2D: function (progress) {
             return { x: progress, y: progress };
@@ -25,6 +25,9 @@ SmartJs.Animation = {
 
         //ctr
         function Animation(start, end, time, /* function */ render, listener, startOnInit, callbackArgs) {
+            if (typeof start !== 'number' || typeof end !== 'number')
+                throw new Error('invalif argument: start and/or end: expected type: number');
+
             this._paused = false;
 
             this._start = start;
@@ -35,7 +38,11 @@ SmartJs.Animation = {
 
             this._animationTime = time;
             this._render = render;
-            this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
+            if (callbackArgs) {
+                if (typeof callbackArgs !== 'object' && !(callbackArgs instanceof Array))
+                    throw new Error('invalif argument: callbackArgs: expected type: object');
+                this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
+            }
 
             this._timer = new SmartJs.Components.Timer(this._animationTime);
             this._frameId = undefined;
@@ -43,8 +50,11 @@ SmartJs.Animation = {
             //events
             this._onUpdate = new SmartJs.Event.Event(this);
             this._onExecuted = new SmartJs.Event.Event(this);
-            if (listener)
+            if (listener) {
+                if (!(listener instanceof SmartJs.Event.EventListener))
+                    throw new Error('invalif argument: listener: expected type: SmartJs.Event.EventListener');
                 this._onExecuted.addEventListener(listener);
+            }
 
             if (startOnInit)
                 this.start();
@@ -125,7 +135,13 @@ SmartJs.Animation.Animation2D = (function () {
 
     //ctr
     function Animation2D(start, end, time, /* function */ render, listener, startOnInit, callbackArgs) {
-        SmartJs.Animation.Animation.call(this, start, end, time, render, listener, startOnInit, callbackArgs);
+        SmartJs.Animation.Animation.call(this, 0, 0, time, render, listener, startOnInit, callbackArgs);
+
+        if (typeof start !== 'object' || typeof start.x !== 'number' || typeof start.y !== 'number' || typeof end !== 'object' || typeof end.x !== 'number' || typeof end.y !== 'number')
+            throw new Error('invalif argument: start and/or end: expected type: object { x: [number], y: [number] }');
+
+        this._start = start;
+        this._end = end;
 
         this._diff = {
             x: end.x - start.x,

@@ -171,7 +171,12 @@ PocketCode.Model.Program = (function () {
 		    else
 		        throw new Error('unknown variable id: ' + varId);
 		},
-		//setGlobalVariable: function (varId, value) {
+		getGlobalVariableNames: function () {
+		    var variables = {};
+		    //TODO: id: {name: ?, type: [local/global]}
+		    return variables;
+		}
+	    //setGlobalVariable: function (varId, value) {
 		//    if (this._variables[varId])
 		//        return this._variables[varId].value = value;
 		//    else

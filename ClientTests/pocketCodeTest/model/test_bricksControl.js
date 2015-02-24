@@ -143,11 +143,12 @@ QUnit.test("WaitBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var sprite = "sprite";
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
     var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
     assert.ok(b instanceof PocketCode.Bricks.WaitBrick, "instance check");
     assert.ok(b.objClassName === "WaitBrick", "objClassName check");
 
@@ -540,11 +541,13 @@ QUnit.test("IfThenElseBrick", function (assert) {
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
-    var b = new PocketCode.Bricks.IfThenElseBrick("device", "sprite", { condition: cond });
+    var b = new PocketCode.Bricks.IfThenElseBrick("device", sprite, { condition: cond });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  //condition is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");  //condition is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Bricks.IfThenElseBrick, "instance check");
     assert.ok(b.objClassName === "IfThenElseBrick", "objClassName check");
 
@@ -577,7 +580,10 @@ QUnit.test("IfThenElseBrick", function (assert) {
     handler1LoopDelay = false;
     handler1CallId = undefined;
     cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
-    b._condition = new PocketCode.Formula("device", "sprite", cond);
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    b._condition = new PocketCode.Formula("device", sprite, cond);
     //check the condition is valid: only for this test case
     assert.ok(!b._condition.calculate(), "2nd condition checked -> now false");
 
@@ -662,9 +668,11 @@ QUnit.test("RepeatBrick", function (assert) {
     var done2 = assert.async();
 
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
-    var b = new PocketCode.Bricks.RepeatBrick("device", "sprite", { timesToRepeat: nTimes });
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+    var b = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Bricks.RepeatBrick, "instance check");
     assert.ok(b.objClassName === "RepeatBrick", "objClassName check");
 
@@ -705,7 +713,7 @@ QUnit.test("RepeatBrick", function (assert) {
     //test empty not possible
     //loop delay = false
     var bca = [];
-    var tb = new TestBrick2("device", "sprite");
+    var tb = new TestBrick2("device", sprite);
 
     bca.push(tb);
     //without delay
@@ -740,7 +748,7 @@ QUnit.test("RepeatBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Bricks.RepeatBrick("device", "sprite", { timesToRepeat: nTimes });
+    var b2 = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
     var tb2 = new TestBrick2("device", "sprite");
     tb2.loopDelay = true;
     bca = [];

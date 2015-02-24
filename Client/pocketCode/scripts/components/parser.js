@@ -152,13 +152,19 @@ PocketCode.FormulaParser = new ( (function () {
 	}
 
 	FormulaParser.prototype.merge({
+	    getUiString: function (jsonFormula, variableNames) {
+	        if (!variableNames)
+	            throw new Error('invalid argument: variableNames (lookup dictionary required)');
+	        this._variableNames = variableNames;
 
+	        return this._parseJsonType(jsonFormula, true);
+	    },
 		parseJson: function (jsonFormula) {
 			var formulaString = this._parseJsonType(jsonFormula);
 			return new Function('return ' + formulaString + ';');
 		},
 
-		_parseJsonType: function (jsonFormula) {
+		_parseJsonType: function (jsonFormula, uiString) {
 			if (jsonFormula == null)
 				return '';
 
@@ -167,25 +173,27 @@ PocketCode.FormulaParser = new ( (function () {
 			*/
 			switch (jsonFormula.type) {
 				case 'OPERATOR':
-					return this._parseJsonOperator(jsonFormula);
+				    return this._parseJsonOperator(jsonFormula, uiString);
 
 				case 'FUNCTION':
-					return this._parseJsonFunction(jsonFormula);
+				    return this._parseJsonFunction(jsonFormula, uiString);
 
 				case 'NUMBER':
 					return jsonFormula.value;// + '';  //as string?
 
 				case 'SENSOR':
-					return this._parseJsonSensor(jsonFormula);
+				    return this._parseJsonSensor(jsonFormula, uiString);
 
-				case 'USER_VARIABLE':
+			    case 'USER_VARIABLE':
+			        if (uiString)
+			            return this._variableNames[jsonFormula.value].name;
 					return 'this._sprite.getVariable(' + jsonFormula.value + ').value';
 
 				case 'BRACKET':
 					if (!jsonFormula.right)
 						return '()';
 
-					return '(' + this._parseJsonType(jsonFormula.right) + ')';
+					return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
 				case 'STRING':
 					return jsonFormula.value;
@@ -195,47 +203,63 @@ PocketCode.FormulaParser = new ( (function () {
 			}
 		},
 
-		_concatOperatorFormula: function (jsonFormula, operator) {
-			return this._parseJsonType(jsonFormula.left) + operator + this._parseJsonType(jsonFormula.right);
+		_concatOperatorFormula: function (jsonFormula, operator, uiString) {
+		    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 		},
-		_parseJsonOperator: function (jsonFormula) {
+		_parseJsonOperator: function (jsonFormula, uiString) {
 			/* package org.catrobat.catroid.formulaeditor: enum Operators */
 			switch (jsonFormula.value) {
 				case 'LOGICAL_AND':
-					return this._concatOperatorFormula(jsonFormula, ' && ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' AND ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' && ');
 
-				case 'LOGICAL_OR':
+			    case 'LOGICAL_OR':
+			        if (uiString)
+			            return this._concatOperatorFormula(jsonFormula, ' OR ', uiString);
 					return this._concatOperatorFormula(jsonFormula, ' || ');
 
 				case 'EQUAL':
-					return this._concatOperatorFormula(jsonFormula, ' === ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' = ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' === ');
 
 				case 'NOT_EQUAL':
-					return this._concatOperatorFormula(jsonFormula, ' !== ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' ≠ ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' !== ');
 
 				case 'SMALLER_OR_EQUAL':
-					return this._concatOperatorFormula(jsonFormula, ' <= ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' ≤ ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' <= ');
 
 				case 'GREATER_OR_EQUAL':
-					return this._concatOperatorFormula(jsonFormula, ' >= ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' ≥ ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' >= ');
 
 				case 'SMALLER_THAN':
-					return this._concatOperatorFormula(jsonFormula, ' < ');
+				    return this._concatOperatorFormula(jsonFormula, ' < ', uiString);
 
 				case 'GREATER_THAN':
-					return this._concatOperatorFormula(jsonFormula, ' > ');
+				    return this._concatOperatorFormula(jsonFormula, ' > ', uiString);
 
 				case 'PLUS':
-					return this._concatOperatorFormula(jsonFormula, ' + ');
+				    return this._concatOperatorFormula(jsonFormula, ' + ', uiString);
 
 				case 'MINUS':
-					return '-' + this._parseJsonType(jsonFormula.right);
+				    return '-' + this._parseJsonType(jsonFormula.right, uiString);
 
-				case 'MULT':
+			    case 'MULT':
+			        if (uiString)
+			            return this._concatOperatorFormula(jsonFormula, ' x ', uiString);
 					return this._concatOperatorFormula(jsonFormula, ' * ');
 
 				case 'DIVIDE':
-					return this._concatOperatorFormula(jsonFormula, ' / ');
+				    if (uiString)
+				        return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString);
+				    return this._concatOperatorFormula(jsonFormula, ' / ');
 
 					//case 'MOD':
 					//    return this._concatOperatorFormula(jsonFormula, ' % ');
@@ -244,97 +268,128 @@ PocketCode.FormulaParser = new ( (function () {
 					//    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
 				case 'LOGICAL_NOT':
-					return '!' + this._parseJsonType(jsonFormula.right);
+				    if (uiString)
+				        return ' NOT ' + this._parseJsonType(jsonFormula.right, uiString);
+				    return '!' + this._parseJsonType(jsonFormula.right);
 
 				default:
 					throw new Error('formula parser: unknown operator: ' + jsonFormula.value);
 			}
 		},
-		/*_degree2radian: function(val) {
-			return val * (Math.PI / 180);
-		},
-		_radian2degree: function(val) {
-			return val * (180 / Math.PI);
-		},
-		_log10: function(val) {
-			return return Math.log(val) / Math.LN10;
-		}
-		*/
-		_parseJsonFunction: function (jsonFormula) {
+
+		_parseJsonFunction: function (jsonFormula, uiString) {
 			/* package org.catrobat.catroid.formulaeditor: enum Functions
 			*  SIN, COS, TAN, LN, LOG, SQRT, RAND, ROUND, ABS, PI, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
 			*/
 			switch (jsonFormula.value) {
 				case 'SIN':
-					return 'Math.sin(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'sin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.sin(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'COS':
-					return 'Math.cos(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'cos( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.cos(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'TAN':
-					return 'Math.tan(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'tan( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.tan(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'LN':
-					return 'Math.log(' + this._parseJsonType(jsonFormula.left) + ')';
+				    if (uiString)
+				        return 'ln( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.log(' + this._parseJsonType(jsonFormula.left) + ')';
 
 				case 'LOG':
-					return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
+				    if (uiString)
+				        return 'log( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
 
 				case 'SQRT':
-					return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
+				    if (uiString)
+				        return 'sqrt( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
 
 				case 'RAND':
 					//var left = this._parseJsonType(jsonFormula.left); = min
 					//var right = this._parseJsonType(jsonFormula.right); = max
-					return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
+				    if (uiString)
+				        return 'random( ' + this._parseJsonType(jsonFormula.left, uiString) + ', '+ this._parseJsonType(jsonFormula.right, uiString) + ' )';    //TODO:
+				    return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
-				case 'ROUND':
+			    case 'ROUND':
+			        if (uiString)
+			            return 'round( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 					return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
 				case 'ABS':
-					return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
+				    if (uiString)
+				        return 'abs( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
 
-				case 'PI':
+			    case 'PI':
+			        if (uiString)
+			            return 'pi';
 					return 'Math.PI';
 
-				case 'MOD':
+			    case 'MOD':
+			        if (uiString)
+			            return 'mod( ' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ' )';
 					return this._concatOperatorFormula(jsonFormula, ' % ');
 
 				case 'ARCSIN':
-					return 'this._toDeg(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'arcsin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'this._toDeg(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'ARCCOS':
-					return 'this._toDeg(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'arccos( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'this._toDeg(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'ARCTAN':
-					return 'this._toDeg(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
+				    if (uiString)
+				        return 'arctan( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'this._toDeg(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
 
 				case 'EXP':
-					return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
+				    if (uiString)
+				        return 'exp( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+				    return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
 
 				case 'MAX':
-					return 'Math.max(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
+				    if (uiString)
+				        return 'max( ' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ' )';
+				    return 'Math.max(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
 				case 'MIN':
-					return 'Math.min(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
+				    if (uiString)
+				        return 'min( ' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ' )';
+				    return 'Math.min(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
-				case 'TRUE':
+			    case 'TRUE':
+			        if (uiString)
+			            return 'TRUE';
 					return 'true';
 
 				case 'FALSE':
-					return 'false';
+				    if (uiString)
+				        return 'FALSE';
+				    return 'false';
 
-				case 'LENGTH':  //string //TODO:
-					if (jsonFormula.left)
-						return jsonFormula.left.length;
-					return 0;
+				//case 'LENGTH':  //string //TODO:
+				//	if (jsonFormula.left)
+				//		return jsonFormula.left.length;
+				//	return 0;
 
-				case 'LETTER':  //string
-					var idx = jsonFormula.left - 1;
-					if (idx < 0 || idx >= jsonFormula.left.length)
-						return '';
-					return jsonFormula.left.substr(idx, 1);
-					break;
+				//case 'LETTER':  //string
+				//	var idx = jsonFormula.left - 1;
+				//	if (idx < 0 || idx >= jsonFormula.left.length)
+				//		return '';
+				//	return jsonFormula.left.substr(idx, 1);
+				//	break;
 
 				//case 'JOIN':    //string
 				//	throw new Error('formula parser: join not implemented');	//TODO
@@ -346,54 +401,82 @@ PocketCode.FormulaParser = new ( (function () {
 			}
 		},
 
-		_parseJsonSensor: function (jsonFormula) {
+		_parseJsonSensor: function (jsonFormula, uiString) {
 			/* package org.catrobat.catroid.formulaeditor: enum Sensors
 			*  X_ACCELERATION, Y_ACCELERATION, Z_ACCELERATION, COMPASS_DIRECTION, X_INCLINATION, Y_INCLINATION, LOUDNESS, FACE_DETECTED, FACE_SIZE, FACE_X_POSITION, FACE_Y_POSITION, OBJECT_X(true), OBJECT_Y(true), OBJECT_GHOSTEFFECT(true), OBJECT_BRIGHTNESS(true), OBJECT_SIZE(true), OBJECT_ROTATION(true), OBJECT_LAYER(true)
 			*/
 			switch (jsonFormula.value) {
 				//sensors
 				case 'X_ACCELERATION':
-					return 'this._device.accelerationX';
+				    if (uiString)
+				        return 'acceleration_x';
+				    return 'this._device.accelerationX';
 
 				case 'Y_ACCELERATION':
-					return 'this._device.accelerationY';
+				    if (uiString)
+				        return 'acceleration_y';
+				    return 'this._device.accelerationY';
 
 				case 'Z_ACCELERATION':
-					return 'this._device.accelerationZ';
+				    if (uiString)
+				        return 'acceleration_z';
+				    return 'this._device.accelerationZ';
 
 				case 'COMPASS_DIRECTION':
-					return 'this._device.compassDirection';
+				    if (uiString)
+				        return 'compass_direction';
+				    return 'this._device.compassDirection';
 
 				case 'X_INCLINATION':
-					return 'this._device.inclinationX';
+				    if (uiString)
+				        return 'inclination_x';
+				    return 'this._device.inclinationX';
 
 				case 'Y_INCLINATION':
-					return 'this._device.inclinationY';
+				    if (uiString)
+				        return 'inclination_y';
+				    return 'this._device.inclinationY';
 
 				case 'LOUDNESS':
-					return 'this._device.loudness';
+				    if (uiString)
+				        return 'loudness';
+				    return 'this._device.loudness';
 
 				//sprite
 				case 'OBJECT_BRIGHTNESS':
-					return 'this._sprite.brightness';
+				    if (uiString)
+				        return 'brightness';
+				    return 'this._sprite.brightness';
 
 				case 'OBJECT_GHOSTEFFECT':
-					return 'this._sprite.transparency';
+				    if (uiString)
+				        return 'transparency';
+				    return 'this._sprite.transparency';
 
 				case 'OBJECT_LAYER':
-					return 'this._sprite.layer';
+				    if (uiString)
+				        return 'layer';
+				    return 'this._sprite.layer';
 
 				case 'OBJECT_ROTATION': //=direction
-					return 'this._sprite.rotation';
+				    if (uiString)
+				        return 'direction';
+				    return 'this._sprite.rotation';
 
 				case 'OBJECT_SIZE':
-					return 'this._sprite.size';
+				    if (uiString)
+				        return 'size';
+				    return 'this._sprite.size';
 
 				case 'OBJECT_X':
-					return 'this._sprite.x';
+				    if (uiString)
+				        return 'position_x';
+				    return 'this._sprite.x';
 
 				case 'OBJECT_Y':
-					return 'this._sprite.y';
+				    if (uiString)
+				        return 'position_y';
+				    return 'this._sprite.y';
 
 				default:
 					throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);
