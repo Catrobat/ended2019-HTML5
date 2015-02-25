@@ -24,7 +24,7 @@ SmartJs.Animation = {
     Animation: (function () {
 
         //ctr
-        function Animation(start, end, time, /* function */ render, listener, startOnInit, callbackArgs) {
+        function Animation(start, end, time, /* function */ render/*, updateListener, startOnInit, callbackArgs*/) {
             if (typeof start !== 'number' || typeof end !== 'number')
                 throw new Error('invalif argument: start and/or end: expected type: number');
 
@@ -32,17 +32,17 @@ SmartJs.Animation = {
 
             this._start = start;
             this._end = end;
-            if (typeof start === 'number' && typeof end === 'number')
-                this._diff = end - start;   //make sure this does work for inherited classes too (base ctr call)
+            //if (typeof start === 'number' && typeof end === 'number')
+            this._diff = end - start;   //make sure this does work for inherited classes too (base ctr call)
             this._current = start;
 
             this._animationTime = time;
             this._render = render;
-            if (callbackArgs) {
-                if (typeof callbackArgs !== 'object' && !(callbackArgs instanceof Array))
-                    throw new Error('invalif argument: callbackArgs: expected type: object');
-                this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
-            }
+            //if (callbackArgs) {
+            //    if (typeof callbackArgs !== 'object' && !(callbackArgs instanceof Array))
+            //        throw new Error('invalif argument: callbackArgs: expected type: object');
+            //    this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
+            //}
 
             this._timer = new SmartJs.Components.Timer(this._animationTime);
             this._frameId = undefined;
@@ -50,14 +50,14 @@ SmartJs.Animation = {
             //events
             this._onUpdate = new SmartJs.Event.Event(this);
             this._onExecuted = new SmartJs.Event.Event(this);
-            if (listener) {
-                if (!(listener instanceof SmartJs.Event.EventListener))
-                    throw new Error('invalif argument: listener: expected type: SmartJs.Event.EventListener');
-                this._onExecuted.addEventListener(listener);
-            }
+            //if (updateListener) {
+            //    if (!(updateListener instanceof SmartJs.Event.EventListener))
+            //        throw new Error('invalif argument: listener: expected type: SmartJs.Event.EventListener');
+            //    this._onUpdate.addEventListener(updateListener);
+            //}
 
-            if (startOnInit)
-                this.start();
+            //if (startOnInit)
+            //    this.start();
         }
 
         //events
@@ -74,57 +74,76 @@ SmartJs.Animation = {
             },
         });
 
-        Animation.prototype = {
+        //methods
+        Animation.prototype.merge({
             _requestAnimationFrame: function () {
-                return window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || /*window.msRequestAnimationFrame ||*/
-                    function (render) { return setTimeout(render, 16); };   //~1000/60 (60fps)
+                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
+                    function (callback) { return window.setTimeout(callback, 16); };   //~1000/60 (60fps)
             }(),
             _cancelAnimationFrame: function () {
-                return window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || /*window.msCancelAnimationFrame ||*/ clearTimeout;
+                return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame ||
+                    function (id) { window.clearTimeout(id) };
             }(),
-            _updateValue: function (value) {
-                value = Math.round(value);  //makes sure we only trigger updates if pixes change
+            _updateValue: function (factor) {
+                var value = Math.round(this._start + factor * this._diff);  //makes sure we only trigger updates if pixels change
                 if (this._current === value)
                     return;
 
                 this._current = value;
-                this._onUpdate.dispatchEvent({ value: value });
+                //if (this._end != value)
+                    this._onUpdate.dispatchEvent({ value: value });
             },
             _executeAnimation: function () {
                 var remaining = this._timer.remainingTime;
                 if (remaining === 0) {
-                    this._updateValue(this._end);
-                    this._onExecuted.dispatchEvent(self._callBackArgs);
+                    this._updateValue(this._render(1.0));
+                    this._onExecuted.dispatchEvent(this._callBackArgs);
                     return;
                 }
                 else {
                     var progress = (this._animationTime - remaining) / this._animationTime;
-                    this._updateValue(this._start + this._render(progress) * this._diff);
+                    //if (progress <= 1.0)
+                        this._updateValue(this._render(progress));
+                    //else //{
+                    //    this._updateValue(1.0);
+                        //return;
+                    //}
 
-                    if (!this._paused && remaining !== 0)
-                        this._frameId = this._requestAnimationFrame(this._executeAnimation.bind());
+                    if (!this._paused && remaining !== 0) {
+                        var _self = this;
+                        this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
+                    }
                 }
             },
-            start: function () {
+            start: function (callbackArgs) {
+                if (callbackArgs) {
+                    if (typeof callbackArgs !== 'object' && !(callbackArgs instanceof Array))
+                        throw new Error('invalif argument: callbackArgs: expected type: object');
+                    this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
+                }
                 this._timer.start();
-                this._frameId = this._requestAnimationFrame(this._executeAnimation.bind());
+                var _self = this;
+                this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
             },
             pause: function () {
                 this._timer.pause();
-                this._cancelAnimationFrame(this._frameId);
+                var _self = this;
+                this._cancelAnimationFrame.call(window, _self._frameId);
                 this._paused = true;
             },
             resume: function () {
                 this._timer.resume();
                 this._paused = false;
-                this._frameId = this._requestAnimationFrame(this._executeAnimation.bind());
+                var _self = this;
+                this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
             },
             stop: function () {
                 this._timer.stop();
-                this._cancelAnimationFrame(this._frameId);
+                var _self = this;
+                this._cancelAnimationFrame.call(window, _self._frameId);
                 this._paused = false;
             },
-        }
+        });
 
         return Animation;
     })(),
@@ -134,11 +153,10 @@ SmartJs.Animation.Animation2D = (function () {
     Animation2D.extends(SmartJs.Animation.Animation, false);
 
     //ctr
-    function Animation2D(start, end, time, /* function */ render, listener, startOnInit, callbackArgs) {
-        SmartJs.Animation.Animation.call(this, 0, 0, time, render, listener, startOnInit, callbackArgs);
-
-        if (typeof start !== 'object' || typeof start.x !== 'number' || typeof start.y !== 'number' || typeof end !== 'object' || typeof end.x !== 'number' || typeof end.y !== 'number')
-            throw new Error('invalif argument: start and/or end: expected type: object { x: [number], y: [number] }');
+    function Animation2D(start, end, time, /* function */ render/*, listener, startOnInit, callbackArgs*/) {
+        SmartJs.Animation.Animation.call(this, 0, 0, time, render/*, listener, startOnInit, callbackArgs*/);
+        if (typeof start.x !== 'number' || typeof start.y !== 'number' || typeof end.x !== 'number' || typeof end.y !== 'number')
+            throw new Error('invalid argument: start and/or end: expected type: object { x: [number], y: [number] }');
 
         this._start = start;
         this._end = end;
@@ -147,39 +165,43 @@ SmartJs.Animation.Animation2D = (function () {
             x: end.x - start.x,
             y: end.y - start.y,
         };
+        this._current = start;
     }
 
     Animation2D.prototype.merge({
         /* override */
-        _updateValue: function (value) {
-            value = {
-                x: Math.round(value.x),  //makes sure we only trigger updates if pixes change
-                y: Math.round(value.x),
+        _updateValue: function (factor) {
+            var value = {
+                x: Math.round(this._start.x + factor.x * this._diff.x),  //makes sure we only trigger updates if pixels change
+                y: Math.round(this._start.y + factor.y * this._diff.y),
             };
 
-            if (this._current.x === value.x && this._current.y === value.y);
+            if (this._current.x === value.x && this._current.y === value.y)
                 return;
 
             this._current = value;
-            this._onUpdate.dispatchEvent({ value: value });
+            //if (this._end.x != value.x || this._end.y != value.y)
+                this._onUpdate.dispatchEvent({ value: value });
         },
         /* override */
-        _executeAnimation: function () {
-            var remaining = this._timer.remainingTime;
-            if (remaining === 0) {
-                this._updateValue(this._end);
-                this._onExecuted.dispatchEvent(self._callBackArgs);
-                return;
-            }
-            else {
-                var progress = (this._animationTime - remaining) / this._animationTime;
-                var factor = this._render(progress);
-                this._updateValue( {x: this._start.x + factor.x * this._diff.x, y: this._start.y + factor.y * this._diff.y } );
+        //_executeAnimation: function () {
+        //    var remaining = this._timer.remainingTime;
+        //    if (remaining === 0) {
+        //        this._updateValue(this._end);
+        //        this._onExecuted.dispatchEvent(this._callBackArgs);
+        //        return;
+        //    }
+        //    else {
+        //        var progress = (this._animationTime - remaining) / this._animationTime;
+        //        var factor = this._render(progress);
+        //        this._updateValue( {x: this._start.x + factor.x * this._diff.x, y: this._start.y + factor.y * this._diff.y } );
 
-                if (!this._paused && remaining !== 0)
-                    this._frameId = this._requestAnimationFrame(this._executeAnimation.bind());
-            }
-        },
+        //        if (!this._paused && remaining !== 0) {
+        //            var _self = this;
+        //            this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
+        //        }
+        //    }
+        //},
 
     });
 

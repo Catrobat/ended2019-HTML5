@@ -1,4 +1,7 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj-core.js" />
+/// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-animation.js" />
 /// <reference path="../core.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
@@ -206,20 +209,59 @@ PocketCode.Bricks.merge({
 
 
     GlideToBrick: (function () {
-        GlideToBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        GlideToBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
 
         function GlideToBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
         }
 
-        GlideToBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
-        };
+        GlideToBrick.prototype.merge({
+            _updatePositionHandler: function(e) {
+                this._sprite.setPosition(e.value.x, e.value.y);
+            },
+            _returnHandler: function (e) {
+                var callId = e.callId;
+                this._return(callId);
+            },
+            _execute: function (callId) {
+                var sprite = this._sprite;
+                var po = this._pendingOps[callId];
+                var animation = new SmartJs.Animation.Animation2D({ x: sprite.x, y: sprite.y }, { x: this._x.calculate(), y: this._y.calculate }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
+                animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
+                po.animation = animation;
+                animation.start(callId);
+            },
+            pause: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.pause();
+                }
+            },
+            resume: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.resume();
+                }
+            },
+            stop: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.stop();
+                }
+                this._pendingOps = {};
+            },
+        });
 
         return GlideToBrick;
     })(),

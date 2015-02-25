@@ -10,7 +10,7 @@ SmartJs.Components = {
 
         function Timer(delay, listener, startOnInit, callbackArgs) {
             this._delay = delay;
-            this._remainingTime = delay;
+            //this._remainingTime = delay;  //init on start()
             this._callBackArgs = callbackArgs;  //introduced to enable threaded timer identification
             this._paused = false;
 
@@ -49,6 +49,10 @@ SmartJs.Components = {
 
                 this._startTime = new Date();
                 this._remainingTime = this._delay;
+                if (this._remainingTime === 0) {
+                    this._onExpire.dispatchEvent(this._callBackArgs);
+                    return;
+                }
                 this._setTimeout(this._delay);
                 this._paused = false;
             },
@@ -58,6 +62,8 @@ SmartJs.Components = {
 
                 this._clearTimeout();
                 this._remainingTime -= (new Date() - this._startTime);
+                if (this._remainingTime < 0)    //
+                    this._remainingTime = 0;
                 this._paused = true;
             },
             resume: function () {
@@ -70,6 +76,7 @@ SmartJs.Components = {
             },
             stop: function() {
                 this._clearTimeout();
+                this._remainingTime = 0;
                 this._paused = false;
             },
 

@@ -93,27 +93,17 @@ PocketCode.Bricks.merge({
 
 		WaitBrick.prototype.merge({
 		    _timerExpiredHandler: function (e) {
-		        //var callId = e.callId;
-				//var currentOp = this._pendingOps[e.threadId];
-				//var callId = currentOp.callId;
-				//delete this._pendingOps[e.threadId];
-
 				this._return(e.callId);
 			},
 			_execute: function (callId) {
 			    var po = this._pendingOps[callId];
 			    po.timer = new SmartJs.Components.Timer(this._duration.calculate(), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
-				//var threadId = SmartJs._getId();
-				//this._pendingOps[threadId] = { callId: callId, timer: new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { threadId: threadId }) };
-				//TODO: tricky -> this._duration.calculate will be called periodically here until the return value
-				//var id = 
-				//this._return(id);
 			},
 			pause: function () {
 				var po = this._pendingOps;
 				for (var o in po) {
 					var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.timer) 
+					if (timer)
 						timer.pause();
 				}
 			},
@@ -121,7 +111,7 @@ PocketCode.Bricks.merge({
 				var po = this._pendingOps;
 				for (var o in po) {
 				    var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+					if (timer)
 						timer.resume();
 				}
 			},
@@ -129,7 +119,7 @@ PocketCode.Bricks.merge({
 				var po = this._pendingOps;
 				for (var o in po) {
 				    var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+					if (timer)
 						timer.stop();
 				}
 				this._pendingOps = {};
