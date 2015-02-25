@@ -196,7 +196,7 @@ PocketCode.FormulaParser = new ( (function () {
 					return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
 				case 'STRING':
-					return jsonFormula.value;
+					return '"' + jsonFormula.value + '"';
 
 				default:
 					throw new Error('formula parser: unknown type: ' + jsonFormula.type);

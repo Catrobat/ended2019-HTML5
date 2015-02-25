@@ -4,6 +4,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 'use strict';
 
 QUnit.module("bricksControl.js");
@@ -73,6 +74,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
 
 });
 
+
 QUnit.test("WhenActionBrick", function (assert) {
 
     var done1 = assert.async();
@@ -135,6 +137,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
 });
 
+
 QUnit.test("WaitBrick", function (assert) {
 
     //assert.expect(10);   //init async asserts (to wait for)
@@ -148,7 +151,7 @@ QUnit.test("WaitBrick", function (assert) {
     var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
+    assert.ok(b._device === "device" && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
     assert.ok(b instanceof PocketCode.Bricks.WaitBrick, "instance check");
     assert.ok(b.objClassName === "WaitBrick", "objClassName check");
 
@@ -259,6 +262,7 @@ QUnit.test("WaitBrick", function (assert) {
 
 });
 
+
 QUnit.test("BroadcastReceive", function (assert) {
 
     var done1 = assert.async();
@@ -334,6 +338,7 @@ QUnit.test("BroadcastReceive", function (assert) {
 
 });
 
+
 QUnit.test("BroadcastBrick", function (assert) {
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
@@ -362,6 +367,7 @@ QUnit.test("BroadcastBrick", function (assert) {
 
     assert.equal(count, 1, "broadcast was handled by broadcast manager");
 });
+
 
 QUnit.test("BroadcastAndWaitBrick", function (assert) {
 
@@ -416,6 +422,7 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
 
 });
 
+
 QUnit.test("NoteBrick", function (assert) {
 
     var b = new PocketCode.Bricks.NoteBrick("device", "sprite", { text: "s12" });
@@ -436,6 +443,7 @@ QUnit.test("NoteBrick", function (assert) {
     assert.equal(id, "sdf", "return handler dispatcht and id set correctly");
     assert.equal(loopDelay, undefined, "loop delay set correctly");
 });
+
 
 QUnit.test("ForeverBrick", function (assert) {
 
@@ -535,6 +543,7 @@ QUnit.test("ForeverBrick", function (assert) {
     b2.execute(new SmartJs.Event.EventListener(neverCalled, this), "forever");
 
 });
+
 
 QUnit.test("IfThenElseBrick", function (assert) {
 
@@ -660,6 +669,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     assert.equal(!b._ifBricks._bricks[1].paused, true, "resumed");
 
 });
+
 
 QUnit.test("RepeatBrick", function (assert) {
 
