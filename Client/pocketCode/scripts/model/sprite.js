@@ -9,7 +9,7 @@ PocketCode.Model.Sprite = (function () {
         this._program = program;
         this.running = false;
 
-        this.id = undefined;
+        this._id = undefined;
         this.name = "";
         this.looks = [];
         this.sounds = [];
@@ -22,6 +22,7 @@ PocketCode.Model.Sprite = (function () {
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
+        //TODO: this._onRenderingRequired = new SmartJs.Event.Event(this);
     }
 
     //properties
@@ -35,6 +36,36 @@ PocketCode.Model.Sprite = (function () {
         positionY: {
             get: function () {
                 //TODO
+
+            },
+        },
+        transparency: {
+            get: function () {
+                //TODO
+
+            },
+        },
+        brightness: {
+            get: function () {
+                //TODO
+
+            },
+        },
+        size: {     //percentage
+            get: function () {
+                //TODO
+
+            },
+        },
+        direction: {
+            get: function () {
+                //TODO
+
+            },
+        },
+        layer: {
+            get: function () {
+                return this._program.getSpriteLayer(this._id);
 
             },
         },
@@ -136,18 +167,17 @@ PocketCode.Model.Sprite = (function () {
             //TODO:
             return true;
         },
-        pointTo: function (brickId) {
+        pointTo: function (spriteId) {
+            var pointTo = this._program.getSprite(spriteId);
             //TODO:
             return true;
         },
         //motion: layer
         goBack: function (layers) {
-            //TODO:
-            return true;
+            return this._program.setSpriteLayerBack(this._id, layers);
         },
         comeToFront: function () {
-            //TODO:
-            return true;
+            return this._program.setSpriteLayerToFront(this._id);
         },
 
         //looks:

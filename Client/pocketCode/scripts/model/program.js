@@ -160,11 +160,18 @@ PocketCode.Model.Program = (function () {
 			//dispatch program.onExecuted event
 		},
 
+		//Brick-Sprite Interacttion
 		getSprite: function (spriteId) {
 			//todo implement this
 		},
 		getSpriteLayer: function (spriteId) {
 			//todo implement this
+		},
+		setSpriteLayerBack: function(spriteId, layers) {
+			//TODO: returns true or false: sprite layer changed?
+		},
+		setSpriteLayerToFront: function(spriteId){
+		    //TODO: returns true or false: sprite layer changed?
 		},
 
 		//variables
