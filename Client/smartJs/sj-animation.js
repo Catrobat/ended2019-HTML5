@@ -110,8 +110,8 @@ SmartJs.Animation = {
                     //}
 
                     if (!this._paused && remaining !== 0) {
-                        var _self = this;
-                        this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
+                        //var _self = this;
+                        this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
                     }
                 }
             },
@@ -122,25 +122,25 @@ SmartJs.Animation = {
                     this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
                 }
                 this._timer.start();
-                var _self = this;
-                this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
+                //var _self = this;
+                this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
             },
             pause: function () {
                 this._timer.pause();
-                var _self = this;
-                this._cancelAnimationFrame.call(window, _self._frameId);
+                //var _self = this;
+                this._cancelAnimationFrame.call(window, this._frameId);
                 this._paused = true;
             },
             resume: function () {
                 this._timer.resume();
                 this._paused = false;
-                var _self = this;
-                this._frameId = this._requestAnimationFrame.call(window, function () { _self._executeAnimation(); });
+               // var _self = this;
+                this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
             },
             stop: function () {
                 this._timer.stop();
-                var _self = this;
-                this._cancelAnimationFrame.call(window, _self._frameId);
+                //var _self = this;
+                this._cancelAnimationFrame.call(window, this._frameId);
                 this._paused = false;
             },
         });

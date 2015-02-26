@@ -261,6 +261,10 @@ QUnit.test("Function.prototype.extends (including namespaces)", function (assert
 				get: function () { return 123; },
 				//enumerable: false,
 				//configurable: true,
+				set: function (value) {
+				    var temp = value;
+				    return false;
+				},
 			},
 		});
 
@@ -283,7 +287,8 @@ QUnit.test("Function.prototype.extends (including namespaces)", function (assert
 	assert.equal(combined.x2, "sj123", "advanced: base constructor call on several base classes");
 	assert.equal(combined.propA, "propA_GET", "advanced: property check on inherited classes: using Object.defineProperties");
 
-
+	//var returnValueOnSetter = (combined.propB = "test");
+	//assert.equal(returnValueOnSetter, false, "check out if there is a support for return values on setters");
 });
 
 

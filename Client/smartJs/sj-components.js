@@ -79,15 +79,15 @@ SmartJs.Components = {
                 this._remainingTime = 0;
                 this._paused = false;
             },
-
+            _dispatchExpire: function () {
+                this._remainingTime = 0;
+                this._onExpire.dispatchEvent(this._callBackArgs);
+            },
             _setTimeout: function (delay) {
                 this._clearTimeout();
 
-                var self = this;
-                this._timeoutId = window.setTimeout(function () {
-                    self._remainingTime = 0;
-                    self._onExpire.dispatchEvent(self._callBackArgs);
-                }, delay);
+                //var callback = this._dispatchExpire;
+                this._timeoutId = window.setTimeout(this._dispatchExpire.bind(this), delay);
             },
             _clearTimeout: function () {
                 if (this._timeoutId) {

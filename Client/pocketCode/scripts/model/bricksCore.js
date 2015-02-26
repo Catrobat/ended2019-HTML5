@@ -270,15 +270,11 @@ PocketCode.Bricks.LoopBrick = (function () {
                 op.startTime = new Date();  //re-init for each loop
                 var _self = this;
                 if (executionDelay > 0) {
-                    window.setTimeout(function () {
-                        _self._execute(id);
-                    }, executionDelay);
+                    window.setTimeout(this._execute.bind(this, id), executionDelay);
                     //console.log("delay: " + executionDelay);
                 }
                 else {
-                    window.setTimeout(function () {
-                        _self._execute(id);
-                    }, 3);
+                    window.setTimeout(this._execute.bind(this, id), 3);
                     //console.log("delay: 3");
                 }
             }
@@ -286,6 +282,9 @@ PocketCode.Bricks.LoopBrick = (function () {
                 this._return(id);
 
         },
+        //_executeCallback: function () {
+        //    this._execute(id);
+        //},
         _loopConditionMet: function () {
             //the loop condition is overridden in every single loop brick
             return false;
