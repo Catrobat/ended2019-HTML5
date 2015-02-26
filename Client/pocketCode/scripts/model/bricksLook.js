@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../core.js" />
+/// <reference path="sprite.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
 
@@ -15,8 +16,8 @@ PocketCode.Bricks.merge({
         }
 
         SetLookBrick.prototype._execute = function () {
-            this._sprite.setLook(this._lookId);
-            this._return(true);
+            var change = this._sprite.setLook(this._lookId);
+            this._return(change);
         };
 
         return SetLookBrick;
@@ -32,8 +33,8 @@ PocketCode.Bricks.merge({
         }
 
         NextLookBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.nextLook();
+            this._return(change);
         };
 
         return NextLookBrick;
@@ -50,8 +51,8 @@ PocketCode.Bricks.merge({
         }
 
         SetSizeToBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.setSize(this._percentage.calculate());
+            this._return(change);
         };
 
         return SetSizeToBrick;
@@ -68,8 +69,8 @@ PocketCode.Bricks.merge({
         }
 
         ChangeSizeBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.changeSize(this._value.calculate());
+            this._return(change);
         };
 
         return ChangeSizeBrick;
@@ -84,8 +85,8 @@ PocketCode.Bricks.merge({
         }
 
         HideBrick.prototype._execute = function () {
-            this._sprite.hide();
-            this._return();
+            var change = this._sprite.hide();
+            this._return(change);
         };
 
         return HideBrick;
@@ -100,8 +101,8 @@ PocketCode.Bricks.merge({
         }
 
         ShowBrick.prototype._execute = function () {
-            this._sprite.show();
-            this._return();
+            var change = this._sprite.show();
+            this._return(change);
         };
 
         return ShowBrick;
@@ -118,8 +119,8 @@ PocketCode.Bricks.merge({
         }
 
         SetTransparencyBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.setTransparency(this._percentage.calculate());
+            this._return(change);
         };
 
         return SetTransparencyBrick;
@@ -136,8 +137,8 @@ PocketCode.Bricks.merge({
         }
 
         ChangeTransparencyBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.changeTransparency(this._value.calculate());
+            this._return(change);
         };
 
         return ChangeTransparencyBrick;
@@ -154,8 +155,8 @@ PocketCode.Bricks.merge({
         }
 
         SetBrightnessBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.setBrightness(this._percentage.calculate());
+            this._return(change);
         };
 
         return SetBrightnessBrick;
@@ -172,8 +173,8 @@ PocketCode.Bricks.merge({
         }
 
         ChangeBrightnessBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            var change = this._sprite.changeTransparency(this._value.calculate());
+            this._return(change);
         };
 
         return ChangeBrightnessBrick;
@@ -189,8 +190,8 @@ PocketCode.Bricks.merge({
         }
 
         ClearGraphicEffectBrick.prototype._execute = function () {
-            this._sprite.cleadGraphicEffects();
-            this._return();
+            var change = this._sprite.cleadGraphicEffects();
+            this._return(change);
         };
 
         return ClearGraphicEffectBrick;

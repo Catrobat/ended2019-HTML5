@@ -22,6 +22,7 @@ PocketCode.Model.Program = (function () {
 		this._images = {};
 		this._sounds = {};
 		this._variables = {};
+		this._variableNames = {};
 
 		this._broadcasts = [];
 		this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -34,54 +35,55 @@ PocketCode.Model.Program = (function () {
 
 	//properties
 	Object.defineProperties(Program.prototype, {
-	    images: {
-	        set: function (images) {
-	            if (!(images instanceof Array))
-	                throw new Error('setter expects type Array');
+		images: {
+			set: function (images) {
+				if (!(images instanceof Array))
+					throw new Error('setter expects type Array');
 
-	            for (i = 0, l = images.length; i < l; i++)
-	                this._images[images[i].id] = images[i];
-	        },
-	        //enumerable: false,
-	        //configurable: true,
-	    },
-	    sounds: {
-	        set: function (sounds) {
-	            if (!(sounds instanceof Array))
-	                throw new Error('setter expects type Array');
+				for (i = 0, l = images.length; i < l; i++)
+					this._images[images[i].id] = images[i];
+			},
+			//enumerable: false,
+			//configurable: true,
+		},
+		sounds: {
+			set: function (sounds) {
+				if (!(sounds instanceof Array))
+					throw new Error('setter expects type Array');
 
-	            for (i = 0, l = sounds.length; i < l; i++)
-	                this._sounds[sounds[i].id] = sounds[i];
-	        },
-	        //enumerable: false,
-	        //configurable: true,
-	    },
-	    variables: {
-	        set: function (variables) {
-	            if (!(variables instanceof Array))
-	                throw new Error('setter expects type Array');
+				for (i = 0, l = sounds.length; i < l; i++)
+					this._sounds[sounds[i].id] = sounds[i];
+			},
+			//enumerable: false,
+			//configurable: true,
+		},
+		variables: {
+			set: function (variables) {
+				if (!(variables instanceof Array))
+					throw new Error('setter expects type Array');
 
-	            for (i = 0, l = variables.length; i < l; i++) {
-	                varArray[i].value = 0;  //init
-	                this._variables[variables[i].id] = variables[i];
-	            }
-	        },
-	        //enumerable: false,
-	        //configurable: true,
-	    },
-	    broadcasts: {
-	        set: function (broadcasts) {
-	            if (!(broadcasts instanceof Array))
-	                throw new Error('setter expects type Array');
+				for (i = 0, l = variables.length; i < l; i++) {
+					varArray[i].value = 0;  //init
+					this._variables[variables[i].id] = variables[i];
+					this._variableNames[variables[i].id] = { name: variables[i].name, scope: 'global' };
+				}
+			},
+			//enumerable: false,
+			//configurable: true,
+		},
+		broadcasts: {
+			set: function (broadcasts) {
+				if (!(broadcasts instanceof Array))
+					throw new Error('setter expects type Array');
 
-	            //for (i = 0, l = broadcasts.length; i < l; i++)
-	            //    this._broadcasts[broadcasts[i].id] = broadcasts[i];
-	            this._broadcasts = broadcasts;
-	            this._broadcastMgr.init(broadcasts);
-	        },
-	        //enumerable: false,
-	        //configurable: true,
-	    },
+				//for (i = 0, l = broadcasts.length; i < l; i++)
+				//    this._broadcasts[broadcasts[i].id] = broadcasts[i];
+				this._broadcasts = broadcasts;
+				this._broadcastMgr.init(broadcasts);
+			},
+			//enumerable: false,
+			//configurable: true,
+		},
 	});
 
 	//events
@@ -165,18 +167,17 @@ PocketCode.Model.Program = (function () {
 			//todo implement this
 		},
 
+		//variables
 		getGlobalVariable: function (varId) {
-		    if (this._variables[varId])
-		        return this._variables[varId];
-		    else
-		        throw new Error('unknown variable id: ' + varId);
+			if (this._variables[varId])
+				return this._variables[varId];
+			else
+				throw new Error('unknown variable id: ' + varId);
 		},
 		getGlobalVariableNames: function () {
-		    var variables = {};
-		    //TODO: id: {name: ?, type: [local/global]}
-		    return variables;
+			return this._variableNames;
 		}
-	    //setGlobalVariable: function (varId, value) {
+		//setGlobalVariable: function (varId, value) {
 		//    if (this._variables[varId])
 		//        return this._variables[varId].value = value;
 		//    else

@@ -14,6 +14,7 @@ PocketCode.Model.Sprite = (function () {
         this.looks = [];
         this.sounds = [];
         this._variables = {};
+        this._variableNames = {};
 
         this._bricks = [];
         //TODO: if not each brick instance of RootContainerBrick throw error
@@ -25,7 +26,21 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
-        variables: {
+        positionX: {
+            get: function () {
+                //TODO
+
+            },
+        },
+        positionY: {
+            get: function () {
+                //TODO
+
+            },
+        },
+
+        //variables
+        variables: {    //[{id: [id], name: [name]}, ... ]
             set: function (varArray) {
                 if (!(varArray instanceof Array))
                     throw new Error('variable setter expects type Array');
@@ -33,6 +48,7 @@ PocketCode.Model.Sprite = (function () {
                 for (i = 0, l = varArray.length; i < l; i++) {
                     varArray[i].value = 0;  //init
                     this._variables[varArray[i].id] = varArray[i];
+                    this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };
                 }
             },
             //enumerable: false,
@@ -78,32 +94,125 @@ PocketCode.Model.Sprite = (function () {
             this.running = false;
         },
 
+        //motion: position
+        setPosition: function (x, y) {
+            //TODO:
+            return true;
+        },
+        setPositionX: function (x) {
+            //TODO:
+            return true;
+        },
+        changePositionX: function (value) {
+            //TODO:
+            return true;
+        },
+        setPositionY: function (y) {
+            //TODO:
+            return true;
+        },
+        changePositionY: function (value) {
+            //TODO:
+            return true;
+        },
+        ifOnEdgeBounce: function () {
+            //TODO:
+            return true;
+        },
+        move: function (steps) {
+            //TODO:
+            return true;
+        },
+        //motion:direction
+        turnLeft: function (degree) {
+            //TODO:
+            return true;
+        },
+        turnRight: function (degree) {
+            //TODO:
+            return true;
+        },
+        setDirection: function (degree) {
+            //TODO:
+            return true;
+        },
+        pointTo: function (brickId) {
+            //TODO:
+            return true;
+        },
+        //motion: layer
+        goBack: function (layers) {
+            //TODO:
+            return true;
+        },
+        comeToFront: function () {
+            //TODO:
+            return true;
+        },
+
         //looks:
         setLook: function (lookId) {
             //TODO:
+            return true;
+        },
+        nextLook: function () {
+            //TODO:
+            return true;
+        },
+        setSize: function(percentage) {
+            //TODO:
+            return true;
+        },
+        changeSize: function(value) {
+            //TODO:
+            return true;
         },
         hide: function () {
             //TODO:
+            return true;
         },
         show: function () {
             //TODO:
+            return true;
+        },
+        setTransparency: function(percentage) {
+            //TODO:
+            return true;
+        },
+        changeTransparency: function(value) {
+            //TODO:
+            return true;
+        },
+        setBrightness: function(percentage) {
+            //TODO:
+            return true;
+        },
+        changeBrightness: function(value) {
+            //TODO:
+            return true;
         },
         cleadGraphicEffects: function () {
-                //TODO:
+            //TODO:
+            return true;
         },
 
         //variables
         getVariable: function (varId) {
             if (this._variables[varId])
                 return this._variables[varId];
-            else //gloable lookup
+            else //global lookup
                 return this._program.getGlobalVariable(varId);
         },
         getVariableNames: function () {
-            var variables = {};
-            //TODO: id: {name: ?, type: [local/global]} 
-            variables.merge(this._program.getGlobalVariableNames());
-            return variables;
+            //clone
+            var variableNames = {};
+            var names = this._variableNames;
+            for (var v in names)
+                if (names.hasOwnProperty(v))
+                    variableNames[v] = names[v];
+            //include global variables
+            variableNames.merge(this._program.getGlobalVariableNames());
+            return variableNames;
         },
         //setVariable: function (varId, value) {
         //    if (this._variables[varId])

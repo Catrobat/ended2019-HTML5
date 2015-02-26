@@ -151,7 +151,7 @@ QUnit.test("WaitBrick", function (assert) {
     var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
 
-    assert.ok(b._device === "device" && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
+    assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
     assert.ok(b instanceof PocketCode.Bricks.WaitBrick, "instance check");
     assert.ok(b.objClassName === "WaitBrick", "objClassName check");
 
