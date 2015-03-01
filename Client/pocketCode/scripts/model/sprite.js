@@ -223,7 +223,7 @@ PocketCode.Model.Sprite = (function () {
         turnLeft: function (degree) {
             if (!degree)
                 return false;
-            this.turnRight(degree * -1.0);
+            return this.turnRight(degree * -1.0);
         },
         turnRight: function (degree) {
             if (!degree)// || degree === 0)
@@ -235,7 +235,7 @@ PocketCode.Model.Sprite = (function () {
             if (nd > 180.0)
                 nd -= 360;
             if (d === nd)
-                return
+                return false;
 
             this.direction = nd;
             this._triggerOnChange([{ direction: nd }]);
@@ -252,6 +252,9 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         pointTo: function (spriteId) {
+            return false;
+            //TODO: point to undefined until implementation
+
             var pointTo = this._program.getSprite(spriteId);
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
@@ -275,6 +278,9 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         setLook: function (lookId) {
+            return false;
+            //TODO: current look undefined due to missing implementation
+
             if (this._currentLook.id === lookId)
                 return false;
 
@@ -292,6 +298,9 @@ PocketCode.Model.Sprite = (function () {
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         nextLook: function () {
+            return false;
+            //TODO: current look undefined due to missing implementation
+
             var looks = this._looks;
             var count = looks.length;
             if (count < 2)

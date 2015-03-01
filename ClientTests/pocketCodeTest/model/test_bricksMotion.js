@@ -10,6 +10,8 @@ QUnit.module("bricksMotion.js");
 
 QUnit.test("PlaceAtBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
@@ -22,10 +24,20 @@ QUnit.test("PlaceAtBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.PlaceAtBrick, "instance check");
     assert.ok(b.objClassName === "PlaceAtBrick", "objClassName check");
 
+    //execute
+    var handler = function(e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("SetXBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -38,10 +50,20 @@ QUnit.test("SetXBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetXBrick, "instance check");
     assert.ok(b.objClassName === "SetXBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("SetYBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -54,10 +76,20 @@ QUnit.test("SetYBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetYBrick, "instance check");
     assert.ok(b.objClassName === "SetYBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ChangeXBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -70,10 +102,20 @@ QUnit.test("ChangeXBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ChangeXBrick, "instance check");
     assert.ok(b.objClassName === "ChangeXBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ChangeYBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -86,10 +128,20 @@ QUnit.test("ChangeYBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ChangeYBrick, "instance check");
     assert.ok(b.objClassName === "ChangeYBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("IfOnEdgeBounceBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -101,10 +153,20 @@ QUnit.test("IfOnEdgeBounceBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.IfOnEdgeBounceBrick, "instance check");
     assert.ok(b.objClassName === "IfOnEdgeBounceBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("MoveNStepsBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -117,10 +179,20 @@ QUnit.test("MoveNStepsBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.MoveNStepsBrick, "instance check");
     assert.ok(b.objClassName === "MoveNStepsBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("TurnLeftBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -133,10 +205,20 @@ QUnit.test("TurnLeftBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.TurnLeftBrick, "instance check");
     assert.ok(b.objClassName === "TurnLeftBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("TurnRightBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -149,10 +231,20 @@ QUnit.test("TurnRightBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.TurnRightBrick, "instance check");
     assert.ok(b.objClassName === "TurnRightBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("PointInDirectionBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -165,10 +257,20 @@ QUnit.test("PointInDirectionBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.PointInDirectionBrick, "instance check");
     assert.ok(b.objClassName === "PointInDirectionBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("PointToBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -181,6 +283,14 @@ QUnit.test("PointToBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.PointToBrick, "instance check");
     assert.ok(b.objClassName === "PointToBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
@@ -320,6 +430,8 @@ QUnit.test("GlideToBrick", function (assert) {
 
 QUnit.test("GoBackBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
@@ -331,10 +443,20 @@ QUnit.test("GoBackBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.GoBackBrick, "instance check");
     assert.ok(b.objClassName === "GoBackBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ComeToFrontBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -346,6 +468,14 @@ QUnit.test("ComeToFrontBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ComeToFrontBrick, "instance check");
     assert.ok(b.objClassName === "ComeToFrontBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 

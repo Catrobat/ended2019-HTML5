@@ -10,6 +10,8 @@ QUnit.module("bricksLook.js");
 
 QUnit.test("SetLookBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
@@ -20,10 +22,20 @@ QUnit.test("SetLookBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetLookBrick, "instance check");
     assert.ok(b.objClassName === "SetLookBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("NextLookBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -35,10 +47,20 @@ QUnit.test("NextLookBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.NextLookBrick, "instance check");
     assert.ok(b.objClassName === "NextLookBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("SetSizeToBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -51,10 +73,20 @@ QUnit.test("SetSizeToBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetSizeToBrick, "instance check");
     assert.ok(b.objClassName === "SetSizeToBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ChangeSizeBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -67,10 +99,20 @@ QUnit.test("ChangeSizeBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ChangeSizeBrick, "instance check");
     assert.ok(b.objClassName === "ChangeSizeBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("HideBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -82,10 +124,20 @@ QUnit.test("HideBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.HideBrick, "instance check");
     assert.ok(b.objClassName === "HideBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ShowBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -97,10 +149,20 @@ QUnit.test("ShowBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ShowBrick, "instance check");
     assert.ok(b.objClassName === "ShowBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("SetTransparencyBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -113,10 +175,20 @@ QUnit.test("SetTransparencyBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetTransparencyBrick, "instance check");
     assert.ok(b.objClassName === "SetTransparencyBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ChangeTransparencyBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -129,10 +201,20 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ChangeTransparencyBrick, "instance check");
     assert.ok(b.objClassName === "ChangeTransparencyBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("SetBrightnessBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -145,10 +227,20 @@ QUnit.test("SetBrightnessBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.SetBrightnessBrick, "instance check");
     assert.ok(b.objClassName === "SetBrightnessBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ChangeBrightnessBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -161,10 +253,20 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ChangeBrightnessBrick, "instance check");
     assert.ok(b.objClassName === "ChangeBrightnessBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
 QUnit.test("ClearGraphicEffectBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -176,6 +278,14 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Bricks.ClearGraphicEffectBrick, "instance check");
     assert.ok(b.objClassName === "ClearGraphicEffectBrick", "objClassName check");
 
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
 
