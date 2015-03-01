@@ -49,7 +49,7 @@ QUnit.test("Formula", function (assert) {
     json = JSON.parse('{"type":"NUMBER","value":"500","right":{"type":"NUMBER","value":"500","right":null,"left":null},"left":null}');
     assert.throws(function () { var f = new PocketCode.Formula(undefined, undefined, json); }, Error, "ERROR: formula parsing error detection");
 */
-
+    assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "setter validation check");
 
 });
 
