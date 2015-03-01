@@ -50,7 +50,7 @@ SmartJs.Ui = {
         UiControl.extends(SmartJs.Core.EventTarget, false);
 
         function UiControl(element, propObject) {
-            this._id = SmartJs._getId();
+            this._id = SmartJs.getNewId();
 
             if (element instanceof HTMLElement)
                 this._dom = element;
@@ -589,6 +589,7 @@ SmartJs.Ui.ViewPort = (function () {
             SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
         },
     });
+
     return ViewPort;
 })();
 

@@ -14,6 +14,8 @@ PocketCode.Model.Program = (function () {
 		this.title = "";
 		this.description = "";
 		this.author = "";
+		this.originalHeight = 0;
+		this.originalWidth = 0;
 
 		this.background = undefined;
 		this.sprites = [];
@@ -30,6 +32,7 @@ PocketCode.Model.Program = (function () {
 		//events
 		this._onProgramStart = new SmartJs.Event.Event(this);
 		this._onExecuted = new SmartJs.Event.Event(this);
+		this._onSpriteChange = new SmartJs.Event.Event(this);
 		this._onTabbedAction = new SmartJs.Event.Event(this);
 	}
 
@@ -95,6 +98,11 @@ PocketCode.Model.Program = (function () {
 		},
 		onExecuted: {
 			get: function () { return this._onExecuted; },
+			//enumerable: false,
+			//configurable: true,
+		},
+		onSpriteChange: {
+			get: function () { return this._onSpriteChange; },
 			//enumerable: false,
 			//configurable: true,
 		},
@@ -168,10 +176,24 @@ PocketCode.Model.Program = (function () {
 			//todo implement this
 		},
 		setSpriteLayerBack: function(spriteId, layers) {
-			//TODO: returns true or false: sprite layer changed?
+		    //TODO: returns true or false: sprite layer changed?
+		    var ids = [];
+		    var sprites = this.sprites;
+		    for (var i = 0, l = sprites.length; i < l; i++) {
+		        ids.push(sprites[i]);
+		    }
+		    this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { 'layer': ids } }, this.getSprite(spriteId));
+		    return true;
 		},
 		setSpriteLayerToFront: function(spriteId){
-		    //TODO: returns true or false: sprite layer changed?
+			//TODO: returns true or false: sprite layer changed?
+		    var ids = [];
+		    var sprites = this.sprites;
+		    for (var i = 0, l = sprites.length; i < l; i++) {
+		        ids.push(sprites[i]);
+		    }
+		    this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { 'layer': ids } }, this.getSprite(spriteId));
+		    return true;
 		},
 
 		//variables

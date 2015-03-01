@@ -23,7 +23,7 @@ PocketCode.Bricks.merge({
 
 		ProgramStartBrick.prototype.merge({
 			//_programStartHandler: function(e) {
-			//    this.execute(new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs._getId());
+			//    this.execute(new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs.getNewId());
 			//	//when this._returnHandler is called this handler calls _return() for us which is overridden
 			//	//to call our custom event
 			//},

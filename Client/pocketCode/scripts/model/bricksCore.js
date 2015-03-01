@@ -18,7 +18,7 @@ PocketCode.Bricks = {
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                     throw new Error('BrickContainer: missing or invalid arguments on execute()');
 
-                var id = SmartJs._getId();
+                var id = SmartJs.getNewId();
                 this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener, loopDelay: false, childIdx: 0 };
                 this._executeContainerItem({ id: id, loopDelay: false });
             },
@@ -113,7 +113,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
             if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                 throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
 
-            var id = SmartJs._getId();
+            var id = SmartJs.getNewId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
             this._execute(id);
         },
@@ -219,7 +219,7 @@ PocketCode.Bricks.RootContainerBrick = (function () {
     RootContainerBrick.prototype.merge({
         ///* override */
         execute: function () {
-            PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs._getId());
+            PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs.getNewId());
             //throw new Error('execute() cannot be called directly on root containers')
         },
         //    /* override */
@@ -246,7 +246,7 @@ PocketCode.Bricks.LoopBrick = (function () {
 
     LoopBrick.prototype.merge({
         execute: function (onExecutedListener, callId) {
-            var id = SmartJs._getId();
+            var id = SmartJs.getNewId();
             this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
 
             if (this._bricks && this._loopConditionMet(id))
