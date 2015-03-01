@@ -114,7 +114,7 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('variable setter expects type Array');
 
                 for (i = 0, l = varArray.length; i < l; i++) {
-                    varArray[i].value = 0;  //init
+                    varArray[i].value = 0.0;  //init
                     this._variables[varArray[i].id] = varArray[i];
                     this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };
                 }
@@ -167,45 +167,47 @@ PocketCode.Model.Sprite = (function () {
         },
 
         //motion: position
-        setPosition: function (x, y) {
+        setPosition: function (x, y, triggerEvent) {
+            triggerEvent = triggerEvent || true;    //default
             if (this._positionX === x && this._positionY === y)
                 return false;
             this._positionX = x;
             this._positionY = y;
-            this._triggerOnChange([{ 'positionX': x }, { 'positionY': y }]);
+            if (triggerEvent)
+                this._triggerOnChange([{ positionX: x }, { positionY: y }]);
             return true;
         },
         setPositionX: function (x) {
             if (this._positionX === x)
                 return false;
             this._positionX = x;
-            this._triggerOnChange([{ 'positionX': x }]);
+            this._triggerOnChange([{ positionX: x }]);
             return true;
         },
         changePositionX: function (value) {
             if (!value || value === 0)
                 return false;
             this._positionX += value;
-            this._triggerOnChange([{ 'positionX': this._positionX }]);
+            this._triggerOnChange([{ positionX: this._positionX }]);
             return true;
         },
         setPositionY: function (y) {
             if (this._positionY === y)
                 return false;
             this._positionY = y;
-            this._triggerOnChange([{ 'positionY': y }]);
+            this._triggerOnChange([{ positionY: y }]);
             return true;
         },
         changePositionY: function (value) {
             if (!value || value === 0)
                 return false;
             this._positionY += value;
-            this._triggerOnChange([{ 'positionY': this._positionY }]);
+            this._triggerOnChange([{ positionY: this._positionY }]);
             return true;
         },
         ifOnEdgeBounce: function () {
-            //TODO:
-            return true;
+            return this._program.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
+            //onChange event is triggered by program in this case
         },
         move: function (steps) {
             if (!steps || steps === 0)
@@ -236,15 +238,17 @@ PocketCode.Model.Sprite = (function () {
                 return
 
             this.direction = nd;
-            this._triggerOnChange([{ 'direction': nd }]);
+            this._triggerOnChange([{ direction: nd }]);
             return true;
         },
-        setDirection: function (degree) {
+        setDirection: function (degree, triggerEvent) {
+            triggerEvent = triggerEvent || true;    //default
             if (!degree || this.direction === degree)
                 return false;
 
             this.direction = degree;
-            this._triggerOnChange([{ 'direction': degree }]);
+            if (triggerEvent)
+                this._triggerOnChange([{ direction: degree }]);
             return true;
         },
         pointTo: function (spriteId) {
@@ -256,7 +260,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this.direction = Math.atan2(offsetY, offsetX) * (180.0 / Math.PI);
-            this._triggerOnChange([{ 'direction': this.direction }]);
+            this._triggerOnChange([{ direction: this.direction }]);
             return true;
         },
         //motion: layer
@@ -280,7 +284,7 @@ PocketCode.Model.Sprite = (function () {
                 look = looks[i];
                 if (look.id === lookId) {
                     this._currentLook = look;
-                    this._triggerOnChange(['look']);
+                    this._triggerOnChange([{ look: look }]);
                     return true;
                 }
             }
@@ -306,7 +310,7 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
 
-            this._triggerOnChange(['look']);
+            this._triggerOnChange([{ look: this._currentLook }]);
             return true;
         },
         setSize: function (percentage) {
@@ -316,7 +320,7 @@ PocketCode.Model.Sprite = (function () {
             this._size = percentage;
             if (this._size < 0)
                 this._size = 0;
-            this._triggerOnChange(['size']);
+            this._triggerOnChange([{ size: this._size }]);
             return true;
         },
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
@@ -326,7 +330,7 @@ PocketCode.Model.Sprite = (function () {
             this._size += value;
             if (this._size < 0)
                 this._size = 0;
-            this._triggerOnChange(['size']);
+            this._triggerOnChange([{ size: this._size }]);
             return true;
         },
         hide: function () {
@@ -334,7 +338,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._visible = false;
-            this._triggerOnChange(['visible']);
+            this._triggerOnChange([{ visible: false }]);
             return true;
         },
         show: function () {
@@ -342,39 +346,74 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._visible = true;
-            this._triggerOnChange(['visible']);
+            this._triggerOnChange([{ visible: true }]);
             return true;
         },
         setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
-            if (!percentage || this._transparency === percentage)
+            if (!percentage)
+                return false;
+
+            if (percentage < 0.0)
+                percentage = 0.0;
+            if (percentage > 100.0)
+                percentage = 100.0;
+
+            if (this._transparency === percentage)
                 return false;
 
             this._transparency = percentage;
-            this._triggerOnChange(['transparency']);
+            this._triggerOnChange([{ transparency: percentage }]);
             return true;
         },
         changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (!value)
                 return false;
 
-            this._transparency += value;
-            this._triggerOnChange(['transparency']);
+            value = this._transparency + value;
+            if (value < 0.0)
+                value = 0.0;
+            if (value > 100.0)
+                value = 100.0;
+
+            if (this._transparency === value)
+                return false;
+
+            this._transparency = value;
+            this._triggerOnChange([{ transparency: value }]);
             return true;
         },
         setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
-            if (!percentage || this._brightness === percentage)
+            if (!percentage)
                 return false;
 
+            if (percentage < 0.0)
+                percentage = 0.0;
+            if (percentage > 100.0)
+                percentage = 100.0;
+
+            if (this._brightness === percentage)
+                return false;
+
+
             this._brightness = percentage;
-            this._triggerOnChange(['brightness']);
+            this._triggerOnChange([{ brightness: percentage }]);
             return true;
         },
         changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (!value)
                 return false;
 
-            this._brightness += value;
-            this._triggerOnChange(['brightness']);
+            value = this._brightness + value;
+            if (value < 0.0)
+                value = 0.0;
+            if (value > 100.0)
+                value = 100.0;
+
+            if (this._brightness === value)
+                return false;
+
+            this._brightness = value;
+            this._triggerOnChange([{ brightness: value }]);
             return true;
         },
         clearGraphicEffects: function () {
@@ -384,11 +423,11 @@ PocketCode.Model.Sprite = (function () {
 
             if (this._transparency != 0.0) {
                 this._transparency = 0.0;
-                ops.push('transparency');
+                ops.push({ transparency: 0.0 });
             }
             if (this._brightness != 100.0) {
                 this._brightness = 100.0;
-                ops.push('brightness');
+                ops.push({ brightness: 100.0 });
             }
             this._triggerOnChange(ops);
             return true;
