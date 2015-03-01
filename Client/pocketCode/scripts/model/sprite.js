@@ -171,10 +171,18 @@ PocketCode.Model.Sprite = (function () {
             triggerEvent = triggerEvent || true;    //default
             if (this._positionX === x && this._positionY === y)
                 return false;
-            this._positionX = x;
-            this._positionY = y;
+
+            var ops = [];
+            if (this._positionX != x) {
+                this._positionX = x;
+                ops.push({ positionX: x });
+            }
+            if (this._positionY != y) {
+                this._positionY = y;
+                ops.push({ positionY: y });
+            }
             if (triggerEvent)
-                this._triggerOnChange([{ positionX: x }, { positionY: y }]);
+                this._triggerOnChange(ops);
             return true;
         },
         setPositionX: function (x) {

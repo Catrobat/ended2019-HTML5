@@ -117,8 +117,8 @@ SmartJs.Animation = {
             },
             start: function (callbackArgs) {
                 if (callbackArgs) {
-                    if (typeof callbackArgs !== 'object' && !(callbackArgs instanceof Array))
-                        throw new Error('invalif argument: callbackArgs: expected type: object');
+                    if (typeof callbackArgs !== 'object' || (callbackArgs instanceof Array))
+                        throw new Error('invalid argument: callbackArgs: expected type: object');
                     this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
                 }
                 this._timer.start();

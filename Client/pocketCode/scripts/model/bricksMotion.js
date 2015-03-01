@@ -217,11 +217,11 @@ PocketCode.Bricks.merge({
             _execute: function (callId) {
                 var sprite = this._sprite;
                 var po = this._pendingOps[callId];
-                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
+                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
                 animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
                 po.animation = animation;
-                animation.start(callId);
+                animation.start({ callId: callId });
             },
             pause: function () {
                 var po = this._pendingOps;

@@ -297,17 +297,20 @@ QUnit.test("PointToBrick", function (assert) {
 QUnit.test("GlideToBrick", function (assert) {
 
     //assert.expect(10);   //init async asserts (to wait for)
-    //var done1 = assert.async();
-    //var done2 = assert.async();
-    //var done3 = assert.async();
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
+    //^^ initialized with x/y = 0/0
+    sprite._positionX = -10;
+    sprite._positionY = -30;
 
     var x = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"50","right":null,"left":null}');
-    var duration = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
+    var duration = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.GlideToBrick(device, sprite, { x: x, y: y, duration: duration });
 
@@ -316,115 +319,114 @@ QUnit.test("GlideToBrick", function (assert) {
     assert.ok(b.objClassName === "GlideToBrick", "objClassName check");
 
     //alert(b._duration.calculate);
-    assert.equal(b._duration.calculate(), 5, "formula created correctly");
-
-
-    //TODO: 
-    return;
-
+    assert.equal(b._x.calculate(), 20, "formula x created correctly");
+    assert.equal(b._y.calculate(), 50, "formula y created correctly");
+    assert.equal(b._duration.calculate(), 1, "formula duration created correctly");
 
 
     var asyncHandler1 = function (e) {
-        assert.equal(e.loopDelay, false, "loop delay event arg");
-        assert.equal(e.id, "waitPlease", "loop delay id");
-        done1();
+        var end = new Date();
+        assert.equal(e.loopDelay, true, "loop delay event arg");
+        assert.equal(e.id, "gliding", "loop delay id");
 
-        test2();
+        var delay = end - start;
+        assert.ok(delay > 1000, "execution time check: 1s = 1000ms, real: " + delay);
+        assert.equal(sprite.positionX, 20, "x end position check");
+        assert.equal(sprite.positionY, 50, "y end position check");
+
+        done1();
     };
     var l1 = new SmartJs.Event.EventListener(asyncHandler1, this);
-    b.execute(l1, "waitPlease");
 
-    //multiple calls
-    var s1, s2, s3, s4;
+    var start = new Date();
+    b.execute(l1, "gliding");
+
+    //test position updates
+    var spriteMock = new PocketCode.Model.Sprite(program);
+    spriteMock._positionX = -10;
+    spriteMock._positionY = -30;
+
+    var positions = [];
+    //override function
+    spriteMock.setPosition = function (x, y) {
+        //store positions
+        positions.push({ x: x, y: y });
+        this._positionX = x;
+        this._positionY = y;
+    };
+
+    var b2 = new PocketCode.Bricks.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
+
     var asyncHandler2 = function (e) {
+        var end = new Date();
+        assert.equal(e.loopDelay, true, "check positions: loop delay event arg");
+        assert.equal(e.id, "gliding2", "check positions: loop delay id");
 
-        switch (e.id) {
-            case "s1":
-                s1 = new Date();
-                break;
-            case "s2":
-                s2 = new Date();
-                break;
-            case "s3":
-                s3 = new Date();
-                break;
-            case "s4":
-                s4 = new Date();
-                break;
+        var delay = end - start;
+        assert.ok(delay > 1000 && delay < 1200, "check positions: execution time check: 1s = 1000ms, real: " + delay);
+        assert.equal(sprite.positionX, 20, "check positions: x end position check");
+        assert.equal(sprite.positionY, 50, "check positions: y end position check");
+
+        var passed = true;
+        for (var i = 1, l = positions.length; i < l; i++) {
+            if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not chech for array length < 1 because this should never happen
+                passed = false;
         }
-
-        if (s1 != undefined && s2 != undefined && s3 != undefined && s4 != undefined) {
-            s1 = new Date() - s1;
-            s2 = new Date() - s2;
-            s3 = new Date() - s3;
-            s4 = new Date() - s4;
-
-            assert.ok(s1 < s2 && s2 < s3 && s3 < s4, "testing threaded calls");
-            done2();
-
-        }
+        assert.ok(passed, "check positions: continous coordinates");
+        assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
+        done2();
     };
+    var l2 = new SmartJs.Event.EventListener(asyncHandler2, this);
 
-    l1 = new SmartJs.Event.EventListener(asyncHandler2, this);
+    var start = new Date();
+    b2.execute(l2, "gliding2");
 
-    var test2 = function () {
-        b.execute(l1, "s1");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"400","right":null,"left":null}'));
-        b.execute(l1, "s2");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"300","right":null,"left":null}'));
-        b.execute(l1, "s3");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"200","right":null,"left":null}'));
-        b.execute(l1, "s4");
+    //pause, resume, stop
+    var spriteMock2 = new PocketCode.Model.Sprite(program);
+    spriteMock2._positionX = -10;
+    spriteMock2._positionY = -30;
 
-        //test pause
-        b.pause();
-        var po = b._pendingOps;
-        var set = true;
-        for (var o in po) {
-            set = set && po[o].timer._paused;
-        }
-        assert.ok(set, "all timers paused");
+    var b3 = new PocketCode.Bricks.GlideToBrick(device, spriteMock2, { x: x, y: y, duration: duration });
 
-        b.resume();
-        var set = false;
-        for (var o in po) {
-            set = set || po[o].timer._paused;
-        }
-        assert.ok(!set, "all timers resumed");
-
-    };
-
-    //var count = 0;
-    var b2 = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
     var asyncHandler3 = function (e) {
-        //count++;
-        b2.stop();
+        //handler not called because the animation is stopped
+        assert.ok(false, "stop was not called correctly");
+        done3();
+    };
+    var l3 = new SmartJs.Event.EventListener(asyncHandler3, this);
 
-        assert.ok(false, "brick NOT stopped");
-        done3();    //this will throw an error if called more than once
+
+    var x, y;
+
+    var test_pause = function () {
+        b3.pause();
+        assert.ok(spriteMock2._positionX > -10, "pause: x position test");
+        assert.ok(spriteMock2._positionY > -30, "pause: y position test");
+
+        x = spriteMock2._positionX;
+        y = spriteMock2._positionY;
+        window.setTimeout(function () { test_resume(); }, 200);
     };
 
-    var l2 = new SmartJs.Event.EventListener(asyncHandler3, this);
+    var test_resume = function () {
+        assert.equal(x, spriteMock2._positionX, "resume: x not changed during paused state");
+        assert.equal(y, spriteMock2._positionY, "resume: y not changed during paused state");
+        b3.resume();
 
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"50","right":null,"left":null}'));
-    b2.execute(l2, "s1");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}'));
-    b2.execute(l2, "s2");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"43","right":null,"left":null}'));
-    b2.execute(l2, "s3");
-    //b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"100","right":null,"left":null}'));
-    //b2.execute(l1, "s4");
-    b2.stop();
+        window.setTimeout(function () { test_stop(); }, 200);
+    };
 
-    var timeoutId = undefined;
-    var po = b2._pendingOps;
-    for (var o in po) {
-        timeoutId = timeoutId || po[o].timer._timeoutId;
-    }
+    var test_stop = function () {
+        b3.stop();
+        assert.ok(spriteMock2._positionX > x, "stop: x position test");
+        assert.ok(spriteMock2._positionY > y, "stop: y position test");
 
-    assert.ok(timeoutId === undefined, "all timers stopped");
-    //assert.ok(true, "brick stopped");
-    done3();    //this will throw an error if called more than once
+        done3();
+        b3.resume();  //should not work on stoped brick
+    };
+
+    b3.execute(l3, "gliding3");
+    window.setTimeout(function () { test_pause(); }, 200);
 
 });
 
