@@ -144,7 +144,7 @@ PocketCode.Bricks.merge({
 
 		BroadcastReceive.prototype.merge({
 			_onBroadcastHandler: function (e) { 
-				if (e) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
+			    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
 					PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
 				}
 				else {

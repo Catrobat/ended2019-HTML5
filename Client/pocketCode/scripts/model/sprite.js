@@ -228,7 +228,7 @@ PocketCode.Model.Sprite = (function () {
         turnRight: function (degree) {
             if (!degree)// || degree === 0)
                 return false;
-            var d = this.direction;
+            var d = this._direction;
             var nd = (d + degree) % 360;
             if (nd < -180.0)
                 nd += 360;
@@ -237,7 +237,7 @@ PocketCode.Model.Sprite = (function () {
             if (d === nd)
                 return false;
 
-            this.direction = nd;
+            this._direction = nd;
             this._triggerOnChange([{ direction: nd }]);
             return true;
         },

@@ -48,15 +48,12 @@ PocketCode.BroadcastManager = (function () {
                 for (var i = 0, l = subs.length; i < l; i++) {
                     //this._subscriptions[bcId].execute();    //each brick supports .execute()
                     var subListener = subs[i];
-                    subListener.handler.call(subListener.scope);
+                    subListener.handler.call(subListener.scope, {});
                 }
             }
         },
 
         _handleBroadcastWait: function (brId, pubListener, callId) {
-            if (!(pubListener instanceof SmartJs.Event.EventListener))
-                throw new Error('invalid argument: publisher Listener, expected type: SmartJs.Event.EventListener');
-
             var subs = this._subscriptions[brId];
             var subsCount = subs.length;    //how many listeners
 
@@ -73,7 +70,7 @@ PocketCode.BroadcastManager = (function () {
                 }
             }
             else    //no subscribers
-                this._notifyPublisher(pubListener, threadId);
+                this._notifyPublisher(pubListener, callId);
         },
         
         _brickExecutedHandler: function (e) {   //id, loopDelay) {
@@ -92,8 +89,8 @@ PocketCode.BroadcastManager = (function () {
             }
         },
 
-        _notifyPublisher: function (pubListener, threadId, loopDelay) {
-            pubListener.handler.call(pubListener.scope, { id: threadId, loopDelay: loopDelay });
+        _notifyPublisher: function (pubListener, callId, loopDelay) {
+            pubListener.handler.call(pubListener.scope, { id: callId, loopDelay: loopDelay });
         },
     });
 

@@ -6,38 +6,36 @@
 
 PocketCode.SoundManager = (function () {
 
-    //ctr: sounds = [{id: "s12", name:"asd", url:""}, {...}]
-    function SoundManager(sounds) {	
+	//ctr: sounds = [{id: "s12", name:"asd", url:""}, {...}]
+	function SoundManager(sounds) {	
 		this.init(sounds);
-    }
+	}
 
-    //methods
-    SoundManager.prototype.merge({
-        init: function(sounds) {
+	//methods
+	SoundManager.prototype.merge({
+		init: function(sounds) {
 			this.createjs
-        },
+		},
 
-        startSound: function (id) {
-        },
+		startSound: function (id) {
+		},
 
-        pauseSounds: function () {
-        },
+		pauseSounds: function () {
+		},
 
-        resumeSounds: function () {
-        },
+		resumeSounds: function () {
+		},
 
-        stopAllSounds: function () {
-        },
+		stopAllSounds: function () {
+		},
 
-        setVolume: function () {
-        },
+		setVolume: function () {
+		},
 		
-        getVolume: function () {
-        },
-    });
+		getVolume: function () {
+		},
+	});
 
-    return SoundManager;
+	return SoundManager;
 })();
 
-var s = new PocketCode.SoundManager([]);
-//x.int
