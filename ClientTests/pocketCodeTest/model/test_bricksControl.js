@@ -505,7 +505,7 @@ QUnit.test("ForeverBrick", function (assert) {
 
         //async
         var finishTime = new Date();
-        assert.equal(tb.executed, 5, "loop running continously");
+        assert.equal(tb.executed, 5, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 5 times without loop delay = " + delay + "ms");
         assert.ok(delay >= 10 /*&& delay <= 35*/, "threading: without loop delay");
@@ -523,7 +523,7 @@ QUnit.test("ForeverBrick", function (assert) {
 
         //async
         var finishTime = new Date();
-        assert.equal(tb.executed, 5, "loop delay: loop running continously");
+        assert.equal(tb.executed, 5, "loop delay: loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 5 times without loop delay = " + delay + "ms");
         assert.ok(delay >= 40 /*&& delay <= 120*/, "loop delay: execution time");
@@ -730,7 +730,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var testFinishedHandler1 = function (e) {
         //async
         var finishTime = new Date();
-        //assert.equal(tb.executed, 6, "loop running continously");
+        //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
         assert.ok(delay >= 10, "threading: without loop delay");
@@ -748,7 +748,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var testFinishedHandler2 = function (e) {
         //async
         var finishTime = new Date();
-        //assert.equal(tb.executed, 6, "loop running continously");
+        //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
         assert.ok(delay >= 50, "loop delay: threading: including loop delay");

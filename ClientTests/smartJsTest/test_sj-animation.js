@@ -40,7 +40,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
             break;
         }
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value);
-        assert.ok(!error, "continous event & value update");
+        assert.ok(!error, "continuous event & value update");
         done1();
     }
     a.onUpdate.addEventListener(new SmartJs.Event.EventListener(updateEventHandler, this));
@@ -103,8 +103,8 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
             }
         }
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value.x + ", " + events[events.length - 1].value.y);
-        assert.ok(!errorX, "continous event & x value update");
-        assert.ok(!errorX, "continous event & y value update");
+        assert.ok(!errorX, "continuous event & x value update");
+        assert.ok(!errorX, "continuous event & y value update");
 
         assert.ok(stopTime - startTime > 600, "pause/resume checked");
         done1();
