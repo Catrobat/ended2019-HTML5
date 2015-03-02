@@ -2,16 +2,34 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
 'use strict';
-
+/**
+ * @fileOverview BroadcastManager is responsible for creating
+ * @author catrobat HTML5 team
+ * @version 1.1
+ *
+ */
 PocketCode.BroadcastManager = (function () {
 
     //ctr: broadcast = [{id: "s12", name:"asd"}, {...}]
+    /**
+     *  This is just a sample text
+     * @param broadcasts The given broadcasts from the parsing
+     * @constructor
+     */
     function BroadcastManager(broadcasts) {
         this.init(broadcasts);
     }
 
     //methods
+
+    /**
+     *
+     */
     BroadcastManager.prototype.merge({
+        /**
+         *
+         * @param broadcasts
+         */
         init: function(broadcasts) {
             this._pendingBW = {};
 
@@ -20,7 +38,11 @@ PocketCode.BroadcastManager = (function () {
                 this._subscriptions[broadcasts[i].id] = [];
             }
         },
-
+        /**
+         *
+         * @param bcId
+         * @param listener
+         */
         subscribe: function (bcId, listener) {
             if (typeof bcId !== 'string')
                 throw new Error('invalid argument: broadcast id, expected type: string');
@@ -31,7 +53,12 @@ PocketCode.BroadcastManager = (function () {
                 throw new Error('invalid argument: invalid (unknown) broadcast id');
             this._subscriptions[bcId].push(listener);
         },
-
+        /**
+         *
+         * @param bcId
+         * @param pubListener
+         * @param threadId
+         */
         publish: function (bcId, pubListener, threadId) {  //listener type of SmartJs.Event.EventListener
             if (typeof bcId !== 'string' || !this._subscriptions[bcId])
                 throw new Error('invalid argument: broadcast id not found');
@@ -52,7 +79,13 @@ PocketCode.BroadcastManager = (function () {
                 }
             }
         },
-
+        /**
+         *
+         * @param brId
+         * @param pubListener
+         * @param callId
+         * @private
+         */
         _handleBroadcastWait: function (brId, pubListener, callId) {
             if (!(pubListener instanceof SmartJs.Event.EventListener))
                 throw new Error('invalid argument: publisher Listener, expected type: SmartJs.Event.EventListener');
@@ -75,7 +108,11 @@ PocketCode.BroadcastManager = (function () {
             else    //no subscribers
                 this._notifyPublisher(pubListener, threadId);
         },
-        
+        /**
+         *
+         * @param e
+         * @private
+         */
         _brickExecutedHandler: function (e) {   //id, loopDelay) {
             var pendingBW = this._pendingBW[e.id];
             //var counter = pendingBW.counter;
@@ -86,12 +123,18 @@ PocketCode.BroadcastManager = (function () {
                 delete this._pendingBW[e.id];    //remove from pending broadcasts
                 this._notifyPublisher(pubListener, callId, loopDelay);
             }
-            else {
+            else { // termination?
                 pendingBW.counter--;
                 pendingBW.loopDelay = pendingBW.loopDelay || e.loopDelay;
             }
         },
-
+        /**
+         *
+         * @param pubListener
+         * @param threadId
+         * @param loopDelay
+         * @private
+         */
         _notifyPublisher: function (pubListener, threadId, loopDelay) {
             pubListener.handler.call(pubListener.scope, { id: threadId, loopDelay: loopDelay });
         },

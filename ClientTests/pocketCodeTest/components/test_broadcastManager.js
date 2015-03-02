@@ -8,6 +8,10 @@ QUnit.module("broadcastManager.js");
 
 QUnit.test("BroadcastManager", function (assert) {
 
+    /**
+     *
+     * @type {PocketCode.BroadcastManager}
+     */
     var b = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
 
     assert.ok(typeof b._pendingBW === "object", "init pending operations");
@@ -27,18 +31,13 @@ QUnit.test("BroadcastManager", function (assert) {
 
     var handler3 = function (e) {
         handler3Called = true;
-    };
-
-    
+    };    
     //pending broadcast
-    assert.equal(b._pendingBW.length,undefined, "no pending broadcasts");
-   
-    //
-    
+    assert.deepEqual(b._pendingBW,{}, "empty pending broadcasts");
+     
     //no subscribers
     assert.ok(b._subscriptions.s12.length == 0, "no subscribers yet");
-   
-    
+       
     //subscribe
     assert.throws(function () { b.subscribe(12, new SmartJs.Event.EventListener(handler1, this)); }, Error, "ERROR: subscribe: invalid argument: broadcast id");
     assert.throws(function () { b.subscribe("s12", new Function()); }, Error, "ERROR: subscribe: invalid argument: subscriber listener");
@@ -87,6 +86,8 @@ QUnit.test("BroadcastManager", function (assert) {
     //b.publish("s12");
     //assert.ok(handler1Called, "single subscriber, simple broadcast");
 
+    
+    //broadcastWait calls broadcastWait
 
 });
 
