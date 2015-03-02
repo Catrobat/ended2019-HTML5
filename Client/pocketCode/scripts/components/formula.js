@@ -5,50 +5,59 @@
 
 PocketCode.Formula = (function () {
 
-	function Formula(device, sprite, jsonFormula) {
-	    this._device = device;
-	    this._sprite = sprite;
+    function Formula(device, sprite, jsonFormula) {
+        this._device = device;
+        this._sprite = sprite;
 
-	    this.json = jsonFormula;
-	}
+        this.json = jsonFormula;
+        //this._uiString = '';
+    }
 
-	//accessors
-	Object.defineProperties(Formula.prototype, {
-	    json: {
-	        get: function () {
-	            return this._json;
-	        },
-	        set: function (value) {
-	            this._json = value;
-	            this.calculate = PocketCode.FormulaParser.parseJson(value);
-	            this._validateFormula();
-	        },
-	        //enumerable: false,
-	        //configurable: true,
-	    },
-	});
+    //accessors
+    Object.defineProperties(Formula.prototype, {
+        json: {
+            get: function () {
+                return this._json;
+            },
+            set: function (value) {
+                this._json = value;
+                this.calculate = PocketCode.FormulaParser.parseJson(value);
+                this._uiString = undefined;
+                this._validateFormula();
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        uiString: {
+            get: function () {
+                if (!this._uiString)
+                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getVariableNames());
+                return this._uiString;
+            },
+        },
+    });
 
-	//methods
-	Formula.prototype.merge({
-		_degree2radian: function(val) {
-			return val * (Math.PI / 180.0);
-		},
-		_radian2degree: function(val) {
-			return val * (180.0 / Math.PI);
-		},
-		_log10: function(val) {
-			return Math.log(val) / Math.LN10;
-		},
+    //methods
+    Formula.prototype.merge({
+        _degree2radian: function (val) {
+            return val * (Math.PI / 180.0);
+        },
+        _radian2degree: function (val) {
+            return val * (180.0 / Math.PI);
+        },
+        _log10: function (val) {
+            return Math.log(val) / Math.LN10;
+        },
 
-		_validateFormula: function () {
-		    try {
-		        var test = this.calculate();
-		    }
-		    catch (e) {
-		        throw new Error('Error parsing formula: ' + e.message);
-		    }
-		},
-	});
-	
-	return Formula;
+        _validateFormula: function () {
+            try {
+                var test = this.calculate();
+            }
+            catch (e) {
+                throw new Error('Error parsing formula: ' + e.message);
+            }
+        },
+    });
+
+    return Formula;
 })();

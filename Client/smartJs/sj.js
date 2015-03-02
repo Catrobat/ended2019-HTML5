@@ -111,7 +111,7 @@ var SmartJs = {
 
     _version: 0.1,
     _objectId: 0,
-    _getId: function () { return 'sj' + this._objectId++; },
+    getNewId: function () { return 'sj' + this._objectId++; },
 
     Device: {
         isMobile: (typeof window.orientation !== "undefined") || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),

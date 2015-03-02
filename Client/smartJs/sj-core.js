@@ -8,8 +8,9 @@
 SmartJs.Core = {};
 
 SmartJs.Core.Component = (function () {
+    //ctr
     function Component(propObject) {
-        //this._id = SmartJs._getId();
+        //this._id = SmartJs.getNewId();
         //this._disposed = false;   -> not required: if (this._disposed) returns false for false and undefined
         this._mergeProperties(propObject);
     }
@@ -123,11 +124,12 @@ SmartJs.Core.EventTarget = (function () {
 
     EventTarget.prototype.merge({
         _addDomListener: function (target, eventName, eventHandler) {
-            var _self = this;
-            var handler = function (e) {
-                e.stopPropagation();
-                return eventHandler.call(_self, e);
-            };
+            //var _self = this;
+            //var handler = function (e) {
+            //    e.stopPropagation();
+            //    return eventHandler.call(_self, e);
+            //};
+            var handler = eventHandler.bind(this);
             target.addEventListener(eventName, handler, false);
             return handler;
         },

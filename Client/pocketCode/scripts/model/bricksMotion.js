@@ -1,4 +1,7 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj-core.js" />
+/// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-animation.js" />
 /// <reference path="../core.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
@@ -16,8 +19,7 @@ PocketCode.Bricks.merge({
         }
 
         PlaceAtBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
         };
 
         return PlaceAtBrick;
@@ -34,8 +36,7 @@ PocketCode.Bricks.merge({
         }
 
         SetXBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.setPositionX(this._x.calculate()));
         };
 
         return SetXBrick;
@@ -52,8 +53,7 @@ PocketCode.Bricks.merge({
         }
 
         SetYBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.setPositionY(this._y.calculate()));
         };
 
         return SetYBrick;
@@ -70,8 +70,7 @@ PocketCode.Bricks.merge({
         }
 
         ChangeXBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.changePositionX(this._x.calculate()));
         };
 
         return ChangeXBrick;
@@ -88,8 +87,7 @@ PocketCode.Bricks.merge({
         }
 
         ChangeYBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.changePositionY(this._y.calculate()));
         };
 
         return ChangeYBrick;
@@ -105,8 +103,7 @@ PocketCode.Bricks.merge({
         }
 
         IfOnEdgeBounceBrick.prototype._execute = function () {
-            //todo implement
-            this._return();
+            this._return(this._sprite.ifOnEdgeBounce());
         };
 
         return IfOnEdgeBounceBrick;
@@ -123,15 +120,13 @@ PocketCode.Bricks.merge({
         }
 
         MoveNStepsBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.move(this._steps.calculate()));
         };
 
         return MoveNStepsBrick;
     })(),
 
 
-    //TODO use point in direction?
     TurnLeftBrick: (function () {
         TurnLeftBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
@@ -142,15 +137,13 @@ PocketCode.Bricks.merge({
         }
 
         TurnLeftBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.turnLeft(this._degrees.calculate()));
         };
 
         return TurnLeftBrick;
     })(),
 
 
-    //TODO use point in direction?
     TurnRightBrick: (function () {
         TurnRightBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
@@ -161,8 +154,7 @@ PocketCode.Bricks.merge({
         }
 
         TurnRightBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.turnRight(this._degrees.calculate()));
         };
 
         return TurnRightBrick;
@@ -179,8 +171,7 @@ PocketCode.Bricks.merge({
         }
 
         PointInDirectionBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.setDirection(this._degrees.calculate()));
         };
 
         return PointInDirectionBrick;
@@ -197,8 +188,7 @@ PocketCode.Bricks.merge({
         }
 
         PointToBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.pointTo(this._spriteId));
         };
 
         return PointToBrick;
@@ -206,20 +196,59 @@ PocketCode.Bricks.merge({
 
 
     GlideToBrick: (function () {
-        GlideToBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        GlideToBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
 
         function GlideToBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
         }
 
-        GlideToBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
-        };
+        GlideToBrick.prototype.merge({
+            _updatePositionHandler: function(e) {
+                this._sprite.setPosition(e.value.x, e.value.y);
+            },
+            _returnHandler: function (e) {
+                var callId = e.callId;
+                this._return(callId, true);
+            },
+            _execute: function (callId) {
+                var sprite = this._sprite;
+                var po = this._pendingOps[callId];
+                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
+                animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
+                po.animation = animation;
+                animation.start({ callId: callId });
+            },
+            pause: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.pause();
+                }
+            },
+            resume: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.resume();
+                }
+            },
+            stop: function () {
+                var po = this._pendingOps;
+                for (var o in po) {
+                    var animation = po[o].animation;
+                    if (animation)
+                        animation.stop();
+                }
+                this._pendingOps = {};
+            },
+        });
 
         return GlideToBrick;
     })(),
@@ -235,8 +264,7 @@ PocketCode.Bricks.merge({
         }
 
         GoBackBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.goBack(this._layers.calculate()));
         };
 
         return GoBackBrick;
@@ -252,8 +280,7 @@ PocketCode.Bricks.merge({
         }
 
         ComeToFrontBrick.prototype._execute = function () {
-            //todo implement this
-            this._return();
+            this._return(this._sprite.comeToFront());
         };
 
         return ComeToFrontBrick;

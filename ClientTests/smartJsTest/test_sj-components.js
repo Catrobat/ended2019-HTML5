@@ -1,16 +1,16 @@
-﻿/// <reference path="../../client/smartJs/sj.js" />
+﻿/// <reference path="../qunit/qunit-1.16.0.js" />
+/// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-error.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
 /// <reference path="../../client/smartJs/sj-components.js" />
-/// <reference path="../qunit/qunit-1.16.0.js" />
 'use strict';
 
 QUnit.module("sj-components.js");
 
 QUnit.test("SmartJs.Components.Timer", function (assert) {
 
-	assert.expect(8);   //init async asserts (to wait for)
+	//assert.expect(15);   //init async asserts (to wait for)
 	var done1 = assert.async();
 	var done2 = assert.async();
 	var done3 = assert.async();
@@ -19,6 +19,10 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	var done6 = assert.async();
 	var done7 = assert.async();
 	var done8 = assert.async();
+	//added tests after changing constructor and adding remainingTime
+	var done9 = assert.async();
+	var done10 = assert.async();
+	//var done11 = assert.async();
 
 	
 	var testHandler1 = function () {
@@ -34,11 +38,12 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		done3();
 	};
 
-	var t = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler1, this), 800);
+	var t = new SmartJs.Components.Timer(800, new SmartJs.Event.EventListener(testHandler1, this), true);
+	assert.ok(t instanceof SmartJs.Components.Timer, "instance check");
 
-	t = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler2, this), 500);
+	t = new SmartJs.Components.Timer(500, new SmartJs.Event.EventListener(testHandler2, this), true);
 
-	var i = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler3, this), 0);
+	var i = new SmartJs.Components.Timer(0, new SmartJs.Event.EventListener(testHandler3, this), true);
 	
 	//test: pause & resume
 	var start = new Date();
@@ -58,7 +63,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		//console.log("pauseCount: " + pauseCount + ", resumeCount: " + resumeCount);
 		//console.log("finished after: " + (new Date() - start));
 	};
-	var p = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler4, this), 1400);
+	var p = new SmartJs.Components.Timer(1400, new SmartJs.Event.EventListener(testHandler4, this), true);
 
 	var pauseHandler = function () {
 		//console.log("pause after: " + (new Date() - start));
@@ -87,16 +92,60 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		done7();
 	};
 
-	var p1 = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler6, this), 20, { threadId: 25 });
+	var p1 = new SmartJs.Components.Timer(20, new SmartJs.Event.EventListener(testHandler6, this), true, { threadId: 25 });
 
 	//stop start
 	var testHandler7 = function (e) {   //this funciton should never be called due to stop()
 		assert.ok(false, "stop timer: handler called");
 	};
 
-	p1 = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(testHandler7, this), 20, { threadId: 25 });
+	p1 = new SmartJs.Components.Timer(20, new SmartJs.Event.EventListener(testHandler7, this), true, { threadId: 25 });
 	p1.stop();
 
 	assert.ok(true, "stop timer: see handler called message if timer was stopped"); //^^ test will fail if handler is called
 	done8();
+
+	//after changing ctr & adding remainingTime
+	var testHandler9 = function (e) {
+		assert.equal(e.target, p9, "event attached and dispatched: event args target check");
+		done9();
+	};
+
+	var p9 = new SmartJs.Components.Timer(20);
+	p9.onExpire.addEventListener(new SmartJs.Event.EventListener(testHandler9, this));
+
+	p9.start();
+	var remainingRunning = p9.remainingTime;
+	//console.log(remainingRunning);
+	p9.pause();
+	var remaining = p9.remainingTime;
+	//console.log(remaining);
+	assert.ok(remainingRunning >= remaining, "remaining at runtime");
+	assert.ok(remaining >= 0 && remaining <= 20, "reamining timer on pause");
+	p9.pause();
+	assert.equal(remaining, p9.remainingTime, "timer change when pause() is calaled more than once");
+	p9.resume();
+	p9.resume();
+
+	var p10 = new SmartJs.Components.Timer(20);
+	var testHandler10 = function (e) {
+	    var diff = new Date() - startTime;
+	    assert.ok(diff >= 25, "check pause time part of full time");
+	    done10();
+	};
+	p10.onExpire.removeEventListener(new SmartJs.Event.EventListener(testHandler9, this));
+	p10.onExpire.addEventListener(new SmartJs.Event.EventListener(testHandler10, this));
+
+	var restart = function () {
+	    assert.ok(remainingRunning <= 12, "test paused timer remaining time");
+	    window.setTimeout(function () { p10.resume(); }, 10);
+	};
+
+	var startTime = new Date();
+	p10.start();
+	window.setTimeout(function () { remainingRunning = p10.remainingTime; p10.pause(); restart(); }, 10);
+
+	//done11();
+
+
 });

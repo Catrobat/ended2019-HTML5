@@ -5,7 +5,14 @@
 QUnit.module("parser.js");
 
 
-QUnit.test("FormulaParser", function (assert) {
+QUnit.test("FormulaParser: JSON", function (assert) {
+
+    var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
+    assert.ok(true, "TODO:");
+
+});
+
+QUnit.test("FormulaParser: UI String", function (assert) {
 
     var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
     assert.ok(true, "TODO:");

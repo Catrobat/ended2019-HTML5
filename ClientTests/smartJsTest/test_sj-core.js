@@ -11,7 +11,7 @@ QUnit.test("SmartJs.Core", function (assert) {
 	var compatible = SmartJs.isBrowserCompatible();
 	assert.ok(compatible.result, "browser compatibility check");
 
-	var x = SmartJs._getId(), y = SmartJs._getId();
+	var x = SmartJs.getNewId(), y = SmartJs.getNewId();
 	assert.ok(x != y, "unique ids");
 
 	var js398378 = SmartJs.Core.Component;

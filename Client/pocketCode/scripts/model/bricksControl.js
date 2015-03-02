@@ -23,7 +23,7 @@ PocketCode.Bricks.merge({
 
 		ProgramStartBrick.prototype.merge({
 			//_programStartHandler: function(e) {
-			//    this.execute(new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs._getId());
+			//    this.execute(new SmartJs.Event.EventListener(function () { this._onExecuted.dispatchEvent(); }, this), SmartJs.getNewId());
 			//	//when this._returnHandler is called this handler calls _return() for us which is overridden
 			//	//to call our custom event
 			//},
@@ -93,27 +93,17 @@ PocketCode.Bricks.merge({
 
 		WaitBrick.prototype.merge({
 		    _timerExpiredHandler: function (e) {
-		        //var callId = e.callId;
-				//var currentOp = this._pendingOps[e.threadId];
-				//var callId = currentOp.callId;
-				//delete this._pendingOps[e.threadId];
-
 				this._return(e.callId);
 			},
 			_execute: function (callId) {
 			    var po = this._pendingOps[callId];
-			    po.timer = new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { callId: callId });
-				//var threadId = SmartJs._getId();
-				//this._pendingOps[threadId] = { callId: callId, timer: new SmartJs.Components.Timer(new SmartJs.Event.EventListener(this._timerExpiredHandler, this), this._duration.calculate(), { threadId: threadId }) };
-				//TODO: tricky -> this._duration.calculate will be called periodically here until the return value
-				//var id = 
-				//this._return(id);
+			    po.timer = new SmartJs.Components.Timer(this._duration.calculate(), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
 			},
 			pause: function () {
 				var po = this._pendingOps;
 				for (var o in po) {
 					var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.timer) 
+					if (timer)
 						timer.pause();
 				}
 			},
@@ -121,7 +111,7 @@ PocketCode.Bricks.merge({
 				var po = this._pendingOps;
 				for (var o in po) {
 				    var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+					if (timer)
 						timer.resume();
 				}
 			},
@@ -129,7 +119,7 @@ PocketCode.Bricks.merge({
 				var po = this._pendingOps;
 				for (var o in po) {
 				    var timer = po[o].timer;
-					//if (timer && timer instanceof SmartJs.Components.Timer)   //(po.hasOwnProperty(o) && o.resume) 
+					if (timer)
 						timer.stop();
 				}
 				this._pendingOps = {};
@@ -154,7 +144,7 @@ PocketCode.Bricks.merge({
 
 		BroadcastReceive.prototype.merge({
 			_onBroadcastHandler: function (e) { 
-				if (e) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
+			    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
 					PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
 				}
 				else {
@@ -272,7 +262,7 @@ PocketCode.Bricks.merge({
 			//	this._return(e.id, e.loopDelay);  
 			//},
 			_execute: function (callId) {
-				this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
+			    this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
 			},
 			//stop: function () {
 			//	//required? 
@@ -320,8 +310,15 @@ PocketCode.Bricks.merge({
 
 		//methods
 		IfThenElseBrick.prototype.merge({
-			_execute: function () {
-				//TODO: implement this
+		    _returnHandler: function (e) {
+		        //helper method to make event binding easier
+		        this._return(e.id, e.loopDelay)
+		    },
+		    _execute: function (threadId) {
+		        if (this._condition.calculate())
+		            this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+		        else
+		            this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
 			},
 			pause: function () {
 				this._ifBricks.pause();
@@ -332,8 +329,9 @@ PocketCode.Bricks.merge({
 			    this._elseBricks.resume();
 			},
 			stop: function () {
-			    this._ifBricks.resume();
-			    this._elseBricks.resume();
+			    PocketCode.Bricks.ThreadedBrick.prototype.stop.call(this);
+			    this._ifBricks.stop();
+			    this._elseBricks.stop();
 			},
 		});
 
@@ -355,7 +353,7 @@ PocketCode.Bricks.merge({
 		    /* override */
 		    _loopConditionMet: function (callId) {
 		        var po = this._pendingOps[callId];
-		        if (!po.loopCounter)
+		        if (po.loopCounter === undefined)
 		            po.loopCounter = Math.round(this._timesToRepeat.calculate());
 
 		        if (po.loopCounter > 0)
@@ -371,9 +369,9 @@ PocketCode.Bricks.merge({
 		        var po = this._pendingOps[callId];
 		        //if (!po.loopCounter)  //not required: loopCondition has to be checkt first
 		        //    po.loopCounter = this._timesToRepeat.calculate();
-		        po.loopCounter--;
+		        po.loopCounter--;// = po.loopCounter - 1;
 
-		        this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), callId);
+		        this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
 			},
 		});
 

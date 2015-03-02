@@ -149,13 +149,13 @@ QUnit.test("Function.prototype.extends", function (assert) {
 
 	//inheritance without constructor call
 	C = (function () {
-	    C.extends(BX, false);
-	    function C(x, y) {
-	        BX.call(this, x);   //super constructor call 
-	        this.y = y;
-	        this.z = { a: 1, b: 2 };
-	    };
-	    return C;
+		C.extends(BX, false);
+		function C(x, y) {
+			BX.call(this, x);   //super constructor call 
+			this.y = y;
+			this.z = { a: 1, b: 2 };
+		};
+		return C;
 	})();
 	c = new C();
 	assert.ok(c instanceof A && c instanceof BX && c instanceof C, "instanceof (inheritance): without base constructor call in Object.extends()");
@@ -242,6 +242,53 @@ QUnit.test("Function.prototype.extends (including namespaces)", function (assert
 	c = new nsChange(1, 2);
 	assert.ok(c instanceof ns.C, "instanceof (call reference for new changed)");
 
+	//test including properties
+	ns.C = (function () {
+		C.extends(ns.BX);
+		function C(x, y) {
+			ns.BX.call(this, x);   //super constructor call 
+			this.y = y;
+			this.z = { a: 1, b: 2 };
+		};
+
+		Object.defineProperties(C.prototype, {
+			propA: {
+				get: function () { return "propA_GET"; },
+				//enumerable: false,
+				//configurable: true,
+			},
+			propB: {
+				get: function () { return 123; },
+				//enumerable: false,
+				//configurable: true,
+				set: function (value) {
+				    var temp = value;
+				    return false;
+				},
+			},
+		});
+
+		//method: fn4 (returns 2)
+		return C;
+	})();
+
+	ns.D = (function () {
+		D.extends(ns.C, false);
+		function D(x, y) {
+			ns.C.call(this, x, y);   //super constructor call 
+			//this.y = y;
+			//this.z = { a: 1, b: 2 };
+		};
+		return D;
+	})();
+
+	var combined = new ns.D("sj123", "sj124");
+	assert.equal(combined.fn4(), "sj124", "advanced: inherited method call");
+	assert.equal(combined.x2, "sj123", "advanced: base constructor call on several base classes");
+	assert.equal(combined.propA, "propA_GET", "advanced: property check on inherited classes: using Object.defineProperties");
+
+	//var returnValueOnSetter = (combined.propB = "test");
+	//assert.equal(returnValueOnSetter, false, "check out if there is a support for return values on setters");
 });
 
 

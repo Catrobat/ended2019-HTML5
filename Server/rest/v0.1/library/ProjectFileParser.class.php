@@ -833,7 +833,7 @@ class ProjectFileParser {
     if (property_exists($formula, "leftChild"))
       $f->left = $this->parseFormula($formula->leftChild);
     if (property_exists($formula, "rightChild"))
-      $f->left = $this->parseFormula($formula->rightChild);
+      $f->right = $this->parseFormula($formula->rightChild);
 
     return $f;
   }
