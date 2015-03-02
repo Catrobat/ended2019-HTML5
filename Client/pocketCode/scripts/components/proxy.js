@@ -3,6 +3,14 @@
 /// <reference path="../core.js" />
 'use strict';
 
+PocketCode._serviceEndPoint = '';    //TODO:
+PocketCode.Services = {
+    PROJETCS: 'projects/',
+    I18N: 'i18n',
+    TTS: 'tts',
+    //TODO:
+};
+
 PocketCode.Proxy = (function () {
     function Proxy(totalCount) {
         this._total = totalCount;
@@ -24,10 +32,16 @@ PocketCode.Proxy = (function () {
 
     //methods
     Proxy.prototype.merge({
+        getServiceEndpoint: function (service) {
+            if (!services)
+                return PocketCode._serviceEndPoint;
+            else
+                return PocketCode._serviceEndPoint + service;
+        },
         create: function (jsonBrick) {
             var type = jsonBrick.type;
             var brick = new PocketCode.Bricks[type + 'Brick'](jsonBrick);   //TODO: BrickFactory???
-            
+
             //trigger event
             this._parsed++;
             this._updateProgress();
@@ -37,7 +51,7 @@ PocketCode.Proxy = (function () {
                 brick.ifBricks = this._createList(jsonBrick.ifBricks);
                 brick.elseBricks = this._createList(jsonBrick.elseBricks);
             }
-            
+
             return brick;
         },
     });

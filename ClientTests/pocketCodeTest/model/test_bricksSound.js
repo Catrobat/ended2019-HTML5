@@ -15,7 +15,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var soundId = "soundId";
 
-    var b = new PocketCode.Bricks.PlaySoundBrick(device, sprite, { soundId: soundId });
+    var b = new PocketCode.Bricks.PlaySoundBrick(device, sprite, program._soundManager, { soundId: soundId });
 
     assert.ok(b._device === device && b._sprite === sprite && b._soundId === soundId, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.PlaySoundBrick, "instance check");
@@ -46,7 +46,7 @@ QUnit.test("SetVolumeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"80","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetVolumeBrick(device, sprite, { percentage: percentage });
+    var b = new PocketCode.Bricks.SetVolumeBrick(device, sprite, program._soundManager, { percentage: percentage });
 
     assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetVolumeBrick, "instance check");
@@ -62,7 +62,7 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeVolumeBrick(device, sprite, { value: value });
+    var b = new PocketCode.Bricks.ChangeVolumeBrick(device, sprite, program._soundManager, { value: value });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeVolumeBrick, "instance check");
@@ -78,7 +78,7 @@ QUnit.test("SpeakBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SpeakBrick(device, sprite, { text: text });
+    var b = new PocketCode.Bricks.SpeakBrick(device, sprite, program._soundManager, { text: text });
 
     assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SpeakBrick, "instance check");
