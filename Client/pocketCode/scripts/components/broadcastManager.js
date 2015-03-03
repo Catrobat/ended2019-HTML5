@@ -95,7 +95,7 @@ PocketCode.BroadcastManager = (function () {
                 for (var i = 0, l = subs.length; i < l; i++) {
                     //this._subscriptions[bcId].execute();    //each brick supports .execute()
                     var subListener = subs[i];
-                    subListener.handler.call(subListener.scope);
+                    subListener.handler.call(subListener.scope, {});
                 }
             }
         },
@@ -157,8 +157,8 @@ PocketCode.BroadcastManager = (function () {
          * @param loopDelay
          * @private
          */
-        _notifyPublisher: function (pubListener, threadId, loopDelay) {
-            pubListener.handler.call(pubListener.scope, { id: threadId, loopDelay: loopDelay });
+        _notifyPublisher: function (pubListener, callId, loopDelay) {
+            pubListener.handler.call(pubListener.scope, { id: callId, loopDelay: loopDelay });
         },
     });
 
