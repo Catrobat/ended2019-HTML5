@@ -372,7 +372,7 @@ QUnit.test("GlideToBrick", function (assert) {
             if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not chech for array length < 1 because this should never happen
                 passed = false;
         }
-        assert.ok(passed, "check positions: continous coordinates");
+        assert.ok(passed, "check positions: continuous coordinates");
         assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
         done2();
     };

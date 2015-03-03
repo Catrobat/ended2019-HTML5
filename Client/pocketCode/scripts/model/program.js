@@ -1,16 +1,17 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="broadcastManager.js" />
+/// <reference path="../components/broadcastManager.js" />
+/// <reference path="../components/soundManager.js" />
 'use strict';
 
 PocketCode.Model.Program = (function () {
 
-    function Program() {
+    function Program(id) {
         this._running = false;  //TODO: change to PocketCode.ExecutingState (core.js)
         this._paused = false;
 
-        this.id = undefined;
+        this._id = id;
         this.title = "";
         this.description = "";
         this.author = "";
@@ -23,6 +24,7 @@ PocketCode.Model.Program = (function () {
         this.resourceBaseUrl = "";
         this._images = {};
         this._sounds = {};
+        this._soundManager = new PocketCode.SoundManager(this._id);
         this._variables = {};
         this._variableNames = {};
 
@@ -49,7 +51,7 @@ PocketCode.Model.Program = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        sounds: {
+        sounds: {   //TODO: Change this using the soundManager
             set: function (sounds) {
                 if (!(sounds instanceof Array))
                     throw new Error('setter expects type Array');
@@ -116,6 +118,7 @@ PocketCode.Model.Program = (function () {
     //methods
     Program.prototype.merge({
         start: function () {
+            //this._soundManager.pauseSounds(); //TODO: loading???
             if (this._running)
                 return;
             if (!this.background && this.sprites.length === 0)
@@ -131,6 +134,7 @@ PocketCode.Model.Program = (function () {
             this.start();
         },
         pause: function () {
+            this._soundManager.pauseSounds();
             if (!this._running || this._paused)
                 return;
 
@@ -142,6 +146,7 @@ PocketCode.Model.Program = (function () {
             this._paused = true;
         },
         resume: function () {
+            this._soundManager.resumeSounds();
             if (!this._paused)
                 return;
 
@@ -153,6 +158,7 @@ PocketCode.Model.Program = (function () {
             this._paused = false;
         },
         stop: function () {
+            this._soundManager.stopAllSounds();
             this.background.stop();
 
             for (var i = 0, l = this.sprites.length; i < l; i++) {
