@@ -4,7 +4,8 @@ class ProjectFileParser {
 
   protected $projectId = null;
   protected $resourceBaseUrl = "";
-  
+  protected $cacheDir = "";
+	
   protected $simpleXml = null;  //simpleXml Object
   
   protected $sprites = array();
@@ -30,10 +31,11 @@ class ProjectFileParser {
   //the object (sprite) the parser is currently parsing
   protected $currentSprite = null;
   
-  public function __construct($projectId, $resourceBaseUrl, $simpleXml) { 
+  public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml) { 
     $this->projectId = $projectId;
     $this->resourceBaseUrl = $resourceBaseUrl;
-    
+    $this->cacheDir = $cacheDir;
+		
     $this->tts = new TextToSpeechProvider($projectId);
 
     $this->simpleXml = $simpleXml;
@@ -274,7 +276,8 @@ class ProjectFileParser {
       $res = $this->findResourceInArray("images/" . (string)$look->fileName, $this->images); //= false, if not found
       if($res === false) {
         $id = $this->getNewId();
-        array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName));
+				$size = filesize($this->cacheDir . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName);	//str_replace("/", DIRECTORY_SEPARATOR, 
+        array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
       }
       else {
         $id = $res->id;
@@ -290,10 +293,11 @@ class ProjectFileParser {
     foreach($sprite->soundList->children() as $sound) {
       $sound = $this->getObject($sound, $this->cpp);
       
-      $res = $this->findResourceInArray("sounds/" . (string)$sound->fileName, $this->sounds); //= false, if not found
+      $res = $this->findResourceInArray("sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName, $this->sounds); //= false, if not found
       if($res === false) {
         $id = $this->getNewId();
-        array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName));
+				$size = filesize($this->cacheDir . "sounds/" . (string)$sound->fileName);
+        array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
       }
       else 
         $id = $res->id;
@@ -338,7 +342,7 @@ class ProjectFileParser {
 					
 					case "ForeverBrick":      //"loopEndlessBrick"
 						//$loopEndBrick = $script->loopEndBrick;
-						$brick = new ForeverCBrickDto();
+						$brick = new ForeverBrickDto();
 						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using eqaul or operator (===) is not available in simleXML
 						$idx++;
 						
@@ -373,7 +377,7 @@ class ProjectFileParser {
 						
 					case "RepeatBrick":       //"loopEndBrick"
 						$ttr = $script->timesToRepeat;
-						$brick = new RepeatCBrickDto($this->parseFormula($ttr->formulaTree));
+						$brick = new RepeatBrickDto($this->parseFormula($ttr->formulaTree));
 						
 						$nestedCounter = 0;
 						$idx++;
@@ -408,7 +412,7 @@ class ProjectFileParser {
 					
 					case "IfLogicBeginBrick": //"ifLogicElseBrick", "ifLogicEndBrick"
 						$condition = $script->ifCondition;
-						$brick = new IfThenElseCBrickDto($this->parseFormula($condition->formulaTree));
+						$brick = new IfThenElseBrickDto($this->parseFormula($condition->formulaTree));
 						
 						$nestedCounter = 0;
 						$idx++;   //skip begin brick
@@ -483,7 +487,7 @@ class ProjectFileParser {
 				
 				/*1st level bricks*/
 				case "StartScript":
-					$brick = new ProgramStartCBrickDto();
+					$brick = new ProgramStartBrickDto();
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
 					
@@ -504,7 +508,7 @@ class ProjectFileParser {
 						$id = $res->id;
 					}
 				
-					$brick = new BroadcastReceiveCBrickDto($id);
+					$brick = new BroadcastReceiveBrickDto($id);
 
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
@@ -517,7 +521,7 @@ class ProjectFileParser {
 					
 				case "WhenScript":
 					//$action = $script->action;
-					$brick = new WhenActionCBrickDto((string)$script->action);
+					$brick = new WhenActionBrickDto((string)$script->action);
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
 					

@@ -4,7 +4,7 @@
   
     const CACHING_ENABLED = false;
     const INCREMENT_PROJECT_VIEW_COUNTER = false;
-	const SERVER_ROOT = "/var/www/";
+		const SERVER_ROOT = "/var/www/";	//"D:/xampp/htdocs/";	//;
   
     public function __construct($request) {
       parent::__construct($request);
@@ -46,7 +46,7 @@
         $project = $data->CatrobatProjects[0];
       }
       catch(Exception $e) {
-        throw new ProjectNotFoundException($projectId);
+        throw new ProjectNotFoundException($e);
       }
       $details = new ProjectDetailsDto($projectId, $project->ProjectName, $project->Description, $info->BaseUrl, $project->ScreenshotBig, $project->Author);
       
@@ -205,9 +205,9 @@
         //load parser using catrobat file version
         $parser = null;
         if ($fileVersion >= 0.6 && $fileVersion < 0.93)
-          $parser = new ProjectFileParser($projectId, $resourceRoot, $xml);
+          $parser = new ProjectFileParser($projectId, $resourceRoot, $cacheDir, $xml);
         else if ($fileVersion === 0.93)
-          $parser = new ProjectFileParser_v0_93($projectId, $resourceRoot, $xml);
+          $parser = new ProjectFileParser_v0_93($projectId, $resourceRoot, $cacheDir, $xml);
         else
           throw new FileParserException("no parser specified for catrobat language version: " . $fileVersion);
         
