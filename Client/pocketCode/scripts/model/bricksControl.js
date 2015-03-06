@@ -130,10 +130,10 @@ PocketCode.Bricks.merge({
 	})(),
 
 
-	BroadcastReceive: (function () {
-		BroadcastReceive.extends(PocketCode.Bricks.RootContainerBrick, false);
+	BroadcastReceiveBrick: (function () {
+	    BroadcastReceiveBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
 
-		function BroadcastReceive(device, sprite, broadcastMgr, propObject) {
+		function BroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
 			PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
 
 			//this._broadcastMgr = broadcastMgr;
@@ -142,7 +142,7 @@ PocketCode.Bricks.merge({
 			//this._bricks; type of PocketCode.Bricks.BrickContainer
 		}
 
-		BroadcastReceive.prototype.merge({
+		BroadcastReceiveBrick.prototype.merge({
 			_onBroadcastHandler: function (e) { 
 			    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
 					PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
@@ -170,7 +170,7 @@ PocketCode.Bricks.merge({
 			//},
 		});
 
-		return BroadcastReceive;
+		return BroadcastReceiveBrick;
 	})(),
 
 

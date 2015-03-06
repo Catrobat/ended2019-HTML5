@@ -53,7 +53,7 @@ PocketCode.BrickFactory = (function () {
 
 		this._total = totalCount;
 		this._parsed = 0;
-		this._updatePercentage = 0;
+		this._updatePercentage = 0.0;
 		this._unsupportedBricks = [];
 
 		this._onProgressChange = new SmartJs.Event.Event(this);
@@ -67,7 +67,7 @@ PocketCode.BrickFactory = (function () {
 			//enumerable: false,
 			//configurable: true,
 		},
-		onUnsupportedBrickFound: {
+		onUnsupportedBricksFound: {
 			get: function () { return this._onUnsupportedBricksFound; },
 			//enumerable: false,
 			//configurable: true,
@@ -77,18 +77,19 @@ PocketCode.BrickFactory = (function () {
 	//methods
 	BrickFactory.prototype.merge({
 		create: function (currentSprite, jsonBrick) {
-			var type = jsonBrick.type;
+		    var type = jsonBrick.type + 'Brick';
+		    var brick = undefined;
 
 			switch (type) {
 				case 'ProgramStartBrick':
 				case 'WhenActionBrick':
-					var brick = new PocketCode.Bricks[type + 'Brick'](this._device, this._program, currentSprite, jsonBrick);
+					brick = new PocketCode.Bricks[type](this._device, this._program, currentSprite, jsonBrick);
 					break;
 
-				case 'BroadcastReceive':
-				case 'Broadcast':
+			    case 'BroadcastReceiveBrick':
+			    case 'BroadcastBrick':
 				case 'BroadcastAndWaitBrick':
-					var brick = new PocketCode.Bricks[type + 'Brick'](this._device, currentSprite, this._broadcastMgr, jsonBrick);
+					brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
 					break;
 
 				case 'PlaySoundBrick':
@@ -96,52 +97,59 @@ PocketCode.BrickFactory = (function () {
 				case 'SetVolumeBrick':
 				case 'ChangeVolumeBrick':
 				case 'SpeakBrick':
-					var brick = new PocketCode.Bricks[type + 'Brick'](this._device, currentSprite, this._soundMgr, jsonBrick);
+					brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
 					break;
 
 				default:
-					if (PocketCode.Bricks[type + 'Brick'])
-						var brick = new PocketCode.Bricks[type + 'Brick'](this._device, currentSprite, jsonBrick);
+					if (PocketCode.Bricks[type])
+						brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
 					else {
-						var brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+					    brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+					    //this._unsupportedBricks.push(brick);
 					}
 			}
 
+			//if (!brick)
+			//    throw new Err("parsing failed: " + jsonBrick);
 			if (brick instanceof PocketCode.Bricks.UnsupportedBrick)
 				this._unsupportedBricks.push(brick);
 
 
-			//trigger event
-			this._parsed++;
-			this._updateProgress();
-			if (jsonBrick.bricks)   //all loops
-				brick.bricks = this._createList(jsonBrick.bricks);          //ERROR: //TODO: set as a BrickContainer
-			else if (brick.ifBricks && brick.elseBricks) {  //if then else
-				brick.ifBricks = this._createList(jsonBrick.ifBricks);
-				brick.elseBricks = this._createList(jsonBrick.elseBricks);
+		    //load sub bricks
+			if (!(brick instanceof PocketCode.Bricks.UnsupportedBrick)) {
+			    if (jsonBrick.bricks)   //all loops
+			        brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
+			    else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
+			        brick._ifBricks = this._createList(currentSprite, jsonBrick.ifBricks);
+			        brick._elseBricks = this._createList(currentSprite, jsonBrick.elseBricks);
+			    }
 			}
 
-			if (this._total == this._parsed && this._unsupportedBricks.length > 0)
-				this._onUnsupportedBrickFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
+			this._parsed++; //this has to be incremented after creating the sub items to avoid the unsupported brick event trigger more than once
+			this._updateProgress();
 
 			//add event listener
-			if (brick instanceof PocketCode.Bricks.RootContainerBrick) {
-				//TODO:
-			}
+			//if (brick instanceof PocketCode.Bricks.RootContainerBrick) {
+			//	//TODO: this has to be handled bei the bricks theirself: check if there is a testcast for adding an event handler
+			//}
+
+			if (this._total === this._parsed && this._unsupportedBricks.length > 0)
+			    this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
 
 			return brick;
 		},
-		_createList: function (jsonBricks) {
+		_createList: function (currentSprite, jsonBricks) {    //returns bricks as a BrickContainer
 			var bricks = [];
-			for (var i = 0, l = jsonBrick.length; i < l; i++)
-				bricks.push(this.create(jsonBricks[i]));
-			return bricks;
+			for (var i = 0, l = jsonBricks.length; i < l; i++)
+			    bricks.push(this.create(currentSprite, jsonBricks[i]));
+			return new PocketCode.Bricks.BrickContainer(bricks);
 		},
 		_updateProgress: function () {
-			var progress = 100 / this._total * this._parsed;
+			var progress = 100.0 / this._total * this._parsed;
 			//we do not want to trigger several hundred progress updates.. every 5% should be enough
-			if (progress - this._updatePercentage >= 5.0) {
-				this._updatePercentage = progress;
+			if (progress === 100.0 || (progress - this._updatePercentage) >= 5.0) {
+			    this._updatePercentage = progress;
+			    progress = Math.round(progress * 10) / 10;  //show only one decimal place
 				this._onProgressChange.dispatchEvent({ progress: progress });
 			}
 

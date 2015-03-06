@@ -27,10 +27,6 @@ PocketCode.BroadcastManager = (function () {
     }
 
     //methods
-
-    /**
-     * merge method
-     */
     BroadcastManager.prototype.merge({
         /**
          * Initialization method which takes the tuple list of broadcasts and creates a subscription list where

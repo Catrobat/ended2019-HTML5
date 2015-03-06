@@ -263,17 +263,17 @@ QUnit.test("WaitBrick", function (assert) {
 });
 
 
-QUnit.test("BroadcastReceive", function (assert) {
+QUnit.test("BroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Bricks.BroadcastReceive("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
+    var b = new PocketCode.Bricks.BroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.BroadcastReceive, "instance check");
-    assert.ok(b.objClassName === "BroadcastReceive", "objClassName check");
+    assert.ok(b instanceof PocketCode.Bricks.BroadcastReceiveBrick, "instance check");
+    assert.ok(b.objClassName === "BroadcastReceiveBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
