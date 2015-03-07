@@ -6,7 +6,7 @@ class SetYBrickDto extends BaseBrickDto {
 
   
   public function __construct($value) {
-	parent::__construct("SetYBrick");
+	parent::__construct("SetY");
 	
 	$this->value = $value;
   }

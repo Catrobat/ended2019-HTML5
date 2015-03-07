@@ -3,8 +3,8 @@
 class ProjectFileParser_v0_93 extends ProjectFileParser {
 
     
-  public function __construct($projectId, $resourceBaseUrl, $simpleXml) {
-    parent::__construct($projectId, $resourceBaseUrl, $simpleXml);
+  public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml) {
+    parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
   
   }
 
@@ -51,7 +51,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					
 					case "ForeverBrick":      //"loopEndlessBrick"
 						//$loopEndBrick = $script->loopEndBrick;
-						$brick = new ForeverCBrickDto();
+						$brick = new ForeverBrickDto();
 						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using eqaul or operator (===) is not available in simleXML
 						$idx++;
 						
@@ -87,7 +87,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					case "RepeatBrick":       //"loopEndBrick"
 						$ttr = $script->formulaList;
 						array_push($this->cpp, $ttr);
-						$brick = new RepeatCBrickDto($this->parseFormula($ttr->formula));
+						$brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
 						array_pop($this->cpp);
 						
 						$nestedCounter = 0;
@@ -124,7 +124,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					case "IfLogicBeginBrick": //"ifLogicElseBrick", "ifLogicEndBrick"
 						$condition = $script->formulaList;
 						array_push($this->cpp, $condition);
-						$brick = new IfThenElseCBrickDto($this->parseFormula($condition->formula));
+						$brick = new IfThenElseBrickDto($this->parseFormula($condition->formula));
 						array_pop($this->cpp);
 						
 						$nestedCounter = 0;
@@ -200,7 +200,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 				
 				/*1st level bricks*/
 				case "StartScript":
-					$brick = new ProgramStartCBrickDto();
+					$brick = new ProgramStartBrickDto();
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
 					
@@ -221,7 +221,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 						$id = $res->id;
 					}
 				
-					$brick = new BroadcastReceiveCBrickDto($id);
+					$brick = new BroadcastReceiveBrickDto($id);
 
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
@@ -234,7 +234,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					
 				case "WhenScript":
 					//$action = $script->action;
-					$brick = new WhenActionCBrickDto((string)$script->action);
+					$brick = new WhenActionBrickDto((string)$script->action);
 					$brickList = $script->brickList;
 					array_push($this->cpp, $brickList);
 					

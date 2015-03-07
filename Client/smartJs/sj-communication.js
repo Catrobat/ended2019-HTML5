@@ -3,6 +3,14 @@
 /// <reference path="sj-event.js" />
 'use strict';
 
+
+SmartJs.RequestMethod = {
+    GET: 'GET',
+    PUT: 'PUT',
+    POST: 'POST';
+    DELETE: 'DELETE',
+};
+
 SmartJs.Communication = {
     AjaxRequest: (function () {
         AjaxRequest.extends(SmartJs.Core.EventTarget);

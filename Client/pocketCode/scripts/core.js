@@ -1,10 +1,17 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 'use strict';
 
-//core namespace
+
+/**
+ * PocketCode Core Namespace
+ * @namespace PocketCode
+ */
 var PocketCode = {};
 
-//ui namespace
+/**
+ * PocketCode User Interface Namespace
+ * @namespace PocketCode.Ui
+ */
 PocketCode.Ui = {};
 
 

@@ -93,7 +93,7 @@ PocketCode.Bricks.merge({
         }
 
         SpeakBrick.prototype._execute = function () {
-            var text = this._value.calculate();
+            var text = this._text.calculate();
             var service = PocketCode.Proxy.getServiceEndpoint(PocketCode.Services.TTS);
             this._soundManager.startSoundFromUrl(service + text);   //TODO: check if this works
             this._return();

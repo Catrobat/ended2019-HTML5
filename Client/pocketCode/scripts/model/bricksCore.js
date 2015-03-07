@@ -328,6 +328,7 @@ PocketCode.Bricks.UnsupportedBrick = (function () {
 
         this._xml = propObject.xml;
         this._brickType = propObject.brickType;
+        this._json = propObject;
     }
 
     UnsupportedBrick.prototype._execute = function () {

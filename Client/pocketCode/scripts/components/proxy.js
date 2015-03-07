@@ -11,7 +11,7 @@ PocketCode.Services = {
     //TODO:
 };
 
-PocketCode.Proxy = (function () {
+PocketCode.Proxy = new ((function () {
     function Proxy(totalCount) {
         this._total = totalCount;
         this._parsed = 0;
@@ -33,7 +33,7 @@ PocketCode.Proxy = (function () {
     //methods
     Proxy.prototype.merge({
         getServiceEndpoint: function (service) {
-            if (!services)
+            if (!service)
                 return PocketCode._serviceEndPoint;
             else
                 return PocketCode._serviceEndPoint + service;
@@ -57,4 +57,4 @@ PocketCode.Proxy = (function () {
     });
 
     return Proxy;
-})();
+})());
