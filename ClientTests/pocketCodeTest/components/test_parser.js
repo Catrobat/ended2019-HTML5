@@ -38,14 +38,6 @@ QUnit.test("BrickFactory", function (assert) {
 
     var allBricksProject = project1;    //using tests_testData.js
     //^^ includes all types of bricks 
-    //adding unsupported brick
-    //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
-    //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
-    //sprite = new PocketCode.Model.Sprite(program);
-
-    allBricksProject.background.bricks.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
-    allBricksProject.background.bricks.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
-    allBricksProject.header.bricksCount += 2;
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
     var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
@@ -122,92 +114,99 @@ QUnit.test("BrickFactory", function (assert) {
     assert.equal(progress[progress.length - 1], 100, "progress reached 100%");
     assert.ok(progress.length <= 20, "limited progress events");
 
-    //assert.equal(unsupportedCalled, 0, "no unsupported bricks found, handler not called");
-    assert.equal(unsupportedCalled, 1, "unsupported: unsupported bricks found, handler called once");
-    assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
+    assert.equal(unsupportedCalled, 0, "unsupported bricks not found, handler not called");
+    assert.equal(unsupportedBricks.length, 0, "no unsupported found");
 
 
+    //TEST INCLUDING UNSUPPORTED
+    var allBricksProject = project1;    //using tests_testData.js
+    //^^ includes all types of bricks 
     //adding unsupported brick
     //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
     //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
-    //sprite = new PocketCode.Model.Sprite(program);
+    sprite = new PocketCode.Model.Sprite(program);
 
-    //allBricksProject.background.bricks.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
-    //allBricksProject.background.bricks.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
-    //allBricksProject.header.bricksCount += 2;
-    //var bf2 = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+    allBricksProject.background.bricks.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
+    allBricksProject.background.bricks.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
+    allBricksProject.header.bricksCount += 2;
 
-    //var progress2 = [];
-    //var progressHandler2 = function (e) {
-    //    progress2.push(e.progress);
-    //};
+    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
 
-    //bf2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(progressHandler2, this));
+    var device = new PocketCode.Device();
+    var program = new PocketCode.Model.Program(allBricksProject.id);
+    var sprite = new PocketCode.Model.Sprite(program);
 
-    //var unsupportedBricks2 = [];
-    //var unsupportedCalled2 = 0;
-    //var unsupportedHandler2 = function (e) {
-    //    unsupportedCalled2++;
-    //    unsupportedBricks2 = e.unsupportedBricks;
-    //};
+    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+    assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
-    //bf2.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler2, this));
+    assert.ok(bf._device === device && bf._program === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount, "properties set correctly");
 
-    //var controlBricks = [];
-    //var soundBricks = [];
-    //var motionBricks = [];
-    //var lookBricks = [];
-    //var variableBricks = [];
-    //var otherBricks = [];
+    var progress = [];
+    var progressHandler = function (e) {
+        progress.push(e.progress);
+    };
 
-    ////background:
-    ////var count = 0;
-    //var bricks = allBricksProject.background.bricks;
-    //for (var i = 0, l = bricks.length; i < l; i++) {
-    //    controlBricks.push(bf2.create(sprite, bricks[i]));
-    //    //count++;
-    //}
+    bf.onProgressChange.addEventListener(new SmartJs.Event.EventListener(progressHandler, this));
 
-    ////all other sprites
-    ////we add all bricks to the same sprite as this makes no difference in this bricks factory test
-    //var currentSprite;
-    //for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
-    //    currentSprite = allBricksProject.sprites[i];
-    //    var bricks = otherBricks;
-    //    switch (i) {
-    //        case 0:
-    //            bricks = soundBricks;
-    //            break;
-    //        case 1:
-    //            bricks = motionBricks;
-    //            break;
-    //        case 2:
-    //            bricks = lookBricks;
-    //            break;
-    //        case 3:
-    //            bricks = variableBricks;
-    //            break;
-    //    }
+    var unsupportedBricks = [];
+    var unsupportedCalled = 0;
+    var unsupportedHandler = function (e) {
+        unsupportedCalled++;
+        unsupportedBricks = e.unsupportedBricks;
+    };
 
-    //    for (var j = 0, k = currentSprite.bricks.length; j < k; j++) {
-    //        bricks.push(bf2.create(sprite, currentSprite.bricks[j]));
-    //        //count++;
-    //    }
-    //}
+    bf.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
 
-    //bricks = allBricksProject.background.bricks;
-    //for (var i = 0, l = bricks.length; i < l; i++) {
-    //    controlBricks.push(bf2.create(sprite, bricks[i]));
-    //    //count++;
-    //}
+    var controlBricks = [];
+    var soundBricks = [];
+    var motionBricks = [];
+    var lookBricks = [];
+    var variableBricks = [];
+    var otherBricks = [];
 
-    //assert.equal(bf2._parsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
-    //assert.ok(progress2.length > 0, "unsupported: progress handler called");
-    //assert.equal(progress2[progress2.length - 1], 100, "unsupported: progress reached 100%");
-    //assert.ok(progress2.length <= 20, "unsupported: limited progress events");
+    //background:
+    var count = 0;
+    var bricks = allBricksProject.background.bricks;
+    for (var i = 0, l = bricks.length; i < l; i++) {
+        controlBricks.push(bf.create(sprite, bricks[i]));
+        count++;
+    }
 
-    //assert.equal(unsupportedCalled2, 1, "unsupported: unsupported bricks found, handler called once");
-    //assert.equal(unsupportedBricks2.length, 2, "unsupported: 2 found");
+    //all other sprites
+    //we add all bricks to the same sprite as this makes no difference in this bricks factory test
+    var currentSprite;
+    for (var i = 0, l = allBricksProject.sprites.length; i < l; i++) {
+        currentSprite = allBricksProject.sprites[i];
+        var bricks = otherBricks;
+        switch (i) {
+            case 0:
+                bricks = soundBricks;
+                break;
+            case 1:
+                bricks = motionBricks;
+                break;
+            case 2:
+                bricks = lookBricks;
+                break;
+            case 3:
+                bricks = variableBricks;
+                break;
+        }
+
+        for (var j = 0, k = currentSprite.bricks.length; j < k; j++) {
+            bricks.push(bf.create(sprite, currentSprite.bricks[j]));
+            count++;
+        }
+    }
+
+    assert.equal(bf._parsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
+    assert.ok(progress.length > 0, "unsupported: progress handler called");
+    assert.equal(progress[progress.length - 1], 100, "unsupported: progress reached 100%");
+    assert.ok(progress.length <= 20, "unsupported: limited progress events");
+
+    assert.equal(unsupportedCalled, 1, "unsupported: unsupported bricks found, handler called once");
+    assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
 
 
 });
