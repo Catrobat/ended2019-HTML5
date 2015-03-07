@@ -116,7 +116,7 @@ PocketCode.BroadcastManager = (function () {
             var subsCount = subs.length;    //how many listeners
 
             if (subsCount > 0) {
-                var threadId = SmartJs._getId();            //each bc wait call has its own unique id
+                var threadId = SmartJs.getNewId() ;       //each bc wait call has its own unique id
                 this._pendingBW[threadId] = { callId: callId, broadcastId: bcId, counter: subsCount, listener: pubListener, loopDelay: false };
                 //notify subscribers
                 //var subsCount = this._subscriptions[bcId];
