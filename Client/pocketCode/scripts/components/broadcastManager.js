@@ -35,7 +35,7 @@ PocketCode.BroadcastManager = (function () {
         /**
          * Initialization method which takes the tuple list of broadcasts and creates a subscription list where
          * each id is a tuple entry without subscriber. Pending broadcastWait list is also cleared.
-         * @param broadcasts: tuple list of broadcast [id,name]
+         * @param {List} broadcasts: tuple list of broadcast [id,name]
          */
         init: function(broadcasts) {
             this._pendingBW = {};
@@ -73,7 +73,7 @@ PocketCode.BroadcastManager = (function () {
          * @param {String} bcId: broadcast ID is required to call the method
          * @param {SmartJs.Event.EventListener} pubListener: Is optional for default broadcast handling, necessary for
          *                                                   broadcastWait handling
-         * @param threadId: Is optional for default broadcast handling, necessary for broadcastWait handling
+         * @param {String} threadId: Is optional for default broadcast handling, necessary for broadcastWait handling
          * @throws {Error} invalid argument: when type of listener is not SmartJs.Event.EventListener
          * @throws {Error} invalid argument: when type of bcId is not String
          * @throws {Error} invalid argument: when bcId is unknown
@@ -90,10 +90,8 @@ PocketCode.BroadcastManager = (function () {
             if (pubListener)
                 this._handleBroadcastWait(bcId, pubListener, threadId);
             else {
-                //handle default broadcast
                 var subs = this._subscriptions[bcId];
                 for (var i = 0, l = subs.length; i < l; i++) {
-                    //this._subscriptions[bcId].execute();    //each brick supports .execute()
                     var subListener = subs[i];
                     subListener.handler.call(subListener.scope, {});
                 }
@@ -107,7 +105,7 @@ PocketCode.BroadcastManager = (function () {
          * EventListener(brickExecutedHanlder,this)
          * @param {String} bcId: broadcast ID
          * @param {SmartJs.Event.EventListener} pubListener: publish listener
-         * @param callId: keeps track if already called
+         * @param {String} callId: keeps track if already called
          * @throws {Error} invalid argument: when type of listener is not SmartJs.Event.EventListener
          * @private
          */
@@ -124,20 +122,18 @@ PocketCode.BroadcastManager = (function () {
                     var subListener = subs[i];  //listening brick
                     subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
                     //add event to brick to get return value
-                    //brick.execute(new SmartJs.Event.EventListener(_brickExecutedHandler, this), threadId);
                 }
             }
             else    //no subscribers
                 this._notifyPublisher(pubListener, callId);
         },
         /**
-         * Gets called whenever a brick is executed and removes the
+         * Gets called whenever a brick is executed and removes the broadcast from the pending broadcastWait list
          * @param e
          * @private
          */
         _brickExecutedHandler: function (e) {   //id, loopDelay) {
             var pendingBW = this._pendingBW[e.id];
-            //var counter = pendingBW.counter;
             if (pendingBW.counter === 1) {    //last
                 var callId = pendingBW.callId;
                 var pubListener = pendingBW.listener;
@@ -151,9 +147,9 @@ PocketCode.BroadcastManager = (function () {
             }
         },
         /**
-         *
-         * @param pubListener
-         * @param threadId
+         * Notifys the publisher and calls the handler with the scope of the given pubListener
+         * @param {SmartJs.Event.EventListener} pubListener
+         * @param {String} threadId
          * @param loopDelay
          * @private
          */
