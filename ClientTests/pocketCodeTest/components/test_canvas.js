@@ -2,22 +2,53 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/canvas.js" />
 'use strict';
 
-//QUnit.module("canvas.js");
-//
-//
-//QUnit.test("Canvas", function (assert) {
-//	canvas = new PocketCode.Canvas("pcCanvas", 0.5);
-//	
-//	
-//	//create 10 sprites
-//	for(var i = 0; i < 10; i++){
-//		
-//		populateSprites(2, 'tree', 1, 200,180,0.2,0,0,currentLook2,true,1,1,0,false,false);
-//	}
-//	
-//    assert.ok(true, "TODO:");
-//
-//});
+QUnit.module("canvas.js");
+
+
+QUnit.test("Canvas", function (assert) {
+	var sprite2test = null; 
+	var el = fabric.document.createElement('canvas');
+	el.width = 600; el.height = 600;
+
+	canvas = new PocketCode.Canvas(el, 0.5);
+	
+	var currentLook = new Image ();
+	currentLook.src="_resources/img/tree-transparent.png";
+	var looks = [];
+	looks[0] = currentLook;
+	
+	//create 5 sprites
+	for(var i = 0; i < 5; i++){
+		canvas.addSprite(populateSprites(i, 'tree', i, 10*i,10*i,20,looks,true,100,100,0,false,false));
+	}
+	canvas.render();
+	
+    assert.ok(canvas._canvas.getObjects().length == 5, "sprite count");
+    
+    //insert element with id 5 (eleventh element) at layer 3 
+    canvas.addSprite(populateSprites(5, 'tree', 3, 15,15,20,looks,true,100,100,0,false,false));
+    canvas.render();
+    assert.ok(canvas.getSpriteById(5)._layer == 3 && canvas.getSpriteById(3)._layer == 4 && canvas.getSpriteById(2)._layer == 2 && canvas._canvas.getObjects().length == 6, "insert sprite at layer in use (move other sprites one layer to front)" );
+
+    // get sprite by id
+    sprite2test = canvas.getSpriteById(5);
+    assert.ok(sprite2test.id == 5, "get sprite by id");
+    
+    // move sprite with id 5 to position 300, 400
+    canvas.renderSpriteChange({id: 5, changes: [{property: '_positionX', value: 300}, {property: '_positionY', value: 400}]});
+    sprite2test = canvas.getSpriteById(5);
+    assert.ok(sprite2test._positionX == 300 && sprite2test._positionY == 400, "move sprite to position");
+
+    // change layer of sprite
+    canvas.renderSpriteChange({id: 5, changes:[{property: '_layer', value: 0}]});
+    sprite2test = canvas.getSpriteById(5);
+    assert.ok(sprite2test._layer == 0 && sprite2test.id == canvas._canvas.getObjects()[0].id && canvas.getSpriteById(0)._layer == 1 && canvas.getSpriteById(3)._layer == 4, "change layer of sprite");
+    
+    // sync of internal sprite list and sprites on canvas
+    sprite2test = canvas.getSpriteById(5);
+    var sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
+    assert.ok(sprite2test._positionX == sprite2testOnCanvas.top, "sync of internal sprite list and actual sprites on canvas");
+});
 
 
 
@@ -52,7 +83,7 @@ function changeSize(){
 	canvas.updateLayer({id:1, layer:0, });
 }
 
-function populateSprites(id, name, layer, x,y,scale,h,w,imgElement,visible,bright,transp,angle,flipX,flipV,spriteLayer){
+function populateSprites(id, name, layer, x,y,scale,imgElement,visible,bright,transp,angle){
 var sprite = new PocketCode.Model.Sprite(new PocketCode.Model.Program());
 	
 	sprite.id = id;
@@ -70,7 +101,8 @@ var sprite = new PocketCode.Model.Sprite(new PocketCode.Model.Program());
 	else
 		sprite.hide();
 	
-	canvas.addSprite(sprite);
+	return sprite;
+	
 //	
 //		canvas.addSprite({
 //		id: id, //TODO
@@ -106,12 +138,12 @@ function updateSprite(){
 	console.log(brightness)
 	var looks = [];
 	looks[0] = currentLook;
-	populateSprites(1, 'minion', 0, positionX,positionY,size,0,0,looks,visible,brightness,transparency,direction,flipH,flipV);
+	populateSprites(1, 'minion', 0, positionX,positionY,size,looks,visible,brightness,transparency,direction);
 
 	var currentLook2 = new Image ();
-	currentLook2.src="_resources/img/tree-transparent.png"
+	currentLook2.src="_resources/img/tree-transparent.png";
 	looks[0] = currentLook2;
-	populateSprites(2, 'tree', 1, 200,180,20,0,0,looks,true,100,100,0,false,false);
+	populateSprites(2, 'tree', 1, 200,180,20,looks,true,100,100,0);
 
 	canvas.render();
 

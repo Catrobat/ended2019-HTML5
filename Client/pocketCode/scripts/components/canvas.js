@@ -43,58 +43,104 @@ PocketCode.Canvas = (function(){
 	Canvas.prototype.merge({
 		
 		addSprite: function(sprite){
-			this.sprites[sprite._layer] = sprite;
+			if(sprite._layer > this.sprites.length){
+				this.sprites[sprite._layer] = sprite;
+			} else {
+				this.sprites.splice(sprite._layer,0,sprite);
+				this._addaptLayerAttr();
+			}
 		}, 
+		
+		overwriteSprite(sprite){
+			this.sprites[sprite._layer] = sprite;
+		},
 		
 		clickedSprite: function(sprite){
 			console.log(sprite.get('id'), sprite.get('name'), sprite._originalElement.id, sprite._originalElement.name);
 			//TODO
 		},
 		
-		//TODO - need to be tested
-		getSpriteByID: function(id, layer){
-			if (this.sprites[_layer].id == id){
-				return this.sprites[layer];
-			} else {
-				for(var i = 0; i < this.sprites.length; i++){
-					if(this.sprites[i].id == id){
-						return this.sprites[i];
-					}
+		getSpriteById: function(id){
+			for(var i = 0; i < this.sprites.length; i++){
+				if(this.sprites[i].id == id){
+					return this.sprites[i];
 				}
 			}
 		},
 		
-		updateLayers: function(renderingItem){
-			var spriteOpts = this.getSpriteByID(renderingItem.id, renderingItem.layer);
+		updateLayers: function(id, newLayer){
+			var spriteOpts = this.getSpriteById(id);
 			
 			//remove element at old index
-			this.sprites.splice(spriteOpts.layer,1);
+			this.sprites.splice(spriteOpts._layer,1);
 			
 			//insert element at new index)
-			spriteOpts.layer = renderingItem.layer;
-			this.sprites.splice(renderingItem.layer,0,spriteOpts);
+			spriteOpts._layer = newLayer;
+			this.sprites.splice(newLayer,0,spriteOpts);
+			this._addaptLayerAttr();
 			
 		},
 		
-		//renderingItem might not be used - properties are always form of a list
+		_addaptLayerAttr: function(){
+			for(var i=0; i<this.sprites.length; i++){
+				if(this.sprites[i]._layer != i){
+					this.sprites[i]._layer = i;
+				}
+			} 
+		},
+		
+		getSpriteOnCanvas: function(id){
+			// find Sprite on Canvas
+			var drawnSprites = this._canvas.getObjects();
+			
+			for(var i = 0; i<drawnSprites.length; i++){
+				if(drawnSprites[i].get('id') == id){
+					return drawnSprites[i];
+				}
+			}
+		},
+		
+		//expected: {id: xxx, changes: [{ property: xxx, value: xxx}]}
 		renderSpriteChange: function(renderingItem){
-			
-			var drawnSprits = this._canvas.getObjects();
-			var sprite2Change = null;
-			
-			for(var i = 0; i<drawnSprites.size(); i++){
-				if(drawnSprites[i].get('id') == renderingItem.id){
-					sprite2Change = drawnSprites[i];
+			var spriteOnCanvas = this.getSpriteOnCanvas(renderingItem.id);
+			var spriteInList = this.getSpriteById(renderingItem.id);
+			var properties2set = [];
+			for(var i = 0; i < renderingItem.changes.length; i++){
+				
+				switch (renderingItem.changes[i].property){
+					case "_positionX": 
+						spriteOnCanvas.set("top", renderingItem.changes[i].value);
+						spriteInList._positionX = renderingItem.changes[i].value;
+						break;
+					case "_positionY":
+						spriteOnCanvas.set("left", renderingItem.changes[i].value);
+						spriteInList._positionY = renderingItem.changes[i].value;
+						break;
+					case "_direction":
+						spriteOnCanvas.set("angle", renderingItem.changes[i].value);
+						spriteInList._direction = renderingItem.changes[i].value;
+						break;
+					case "_transparency":
+						spriteOnCanvas.set("opacity", renderingItem.changes[i].value);
+						spriteInList._transparency = renderingItem.changes[i].value;
+						break;
+					case "_visible":
+						spriteOnCanvas.set("visible", renderingItem.changes[i].value);
+						spriteInList._visible = renderingItem.changes[i].value;
+						break;
+					case "_layer":
+						this.updateLayers(renderingItem.id, renderingItem.changes[i].value);
+						this.render();
+						break;
 				}
 			}
 			
-			if(renderingItem.property == 'layer'){
-				this.updateLayers();
-			} else {
-				sprite2Change.set(renderingItem.property, renderingItem.value);
-			}
+			this.overwriteSprite(spriteInList);
 			
-			this._canvas.renderAll();
+			//			spriteOnCanvas.set(properties2set);
+			
+//			this.addSprite(spriteOnCanvas);
+//			this.render();
 		},
 		
 		render: function(){
