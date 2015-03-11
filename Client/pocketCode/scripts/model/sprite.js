@@ -54,11 +54,17 @@ PocketCode.Model.Sprite = (function () {
             },
         },
         direction: {
+        	set: function (direction) {
+        		this._direction = direction;
+        	},
             get: function () {
                 return this._direction;
             },
         },
         layer: {
+        	set: function (layer) {
+        		this._layer = layer;
+        	},
             get: function () {
                 return this._program.getSpriteLayer(this.id);
             },

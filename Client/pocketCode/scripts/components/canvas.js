@@ -43,7 +43,7 @@ PocketCode.Canvas = (function(){
 	Canvas.prototype.merge({
 		
 		addSprite: function(sprite){
-			this.sprites[sprite.layer] = sprite;
+			this.sprites[sprite._layer] = sprite;
 		}, 
 		
 		clickedSprite: function(sprite){
@@ -53,7 +53,7 @@ PocketCode.Canvas = (function(){
 		
 		//TODO - need to be tested
 		getSpriteByID: function(id, layer){
-			if (this.sprites[layer].id == id){
+			if (this.sprites[_layer].id == id){
 				return this.sprites[layer];
 			} else {
 				for(var i = 0; i < this.sprites.length; i++){
@@ -101,26 +101,28 @@ PocketCode.Canvas = (function(){
 			this._canvas.clear();
 			for (var i=0; i< this.sprites.length; i++){
 				
-				var currentLook = new Sprite(this.sprites[i].currentLook,{
+				var currentLook = new Sprite(this.sprites[i]._currentLook,{
 					centeredRotation: true,
 					centeredsize: true,
 					perPixelTargetFind: true,
-					top: this.sprites[i].positionX,
-					left: this.sprites[i].positionY,
-					angle:this.sprites[i].direction,
-					flipX: this.sprites[i].flipH,
-					flipY: this.sprites[i].flipV,
-					opacity: this.sprites[i].transparency,
-					visible: this.sprites[i].visible,
+					top: this.sprites[i]._positionX,
+					left: this.sprites[i]._positionY,
+					angle:this.sprites[i]._direction,
+//					flipX: this.sprites[i]._flipH,
+//					flipY: this.sprites[i]._flipV,
+					opacity: this.sprites[i]._transparency/100,
+//					opacity: 1,
+					visible: this.sprites[i]._visible,
 					originX: "center",
 					originY: "center",
 					name: this.sprites[i].name,
 					id: this.sprites[i].id,
 				});
 				
-				currentLook.scale(this.sprites[i].size*this._zoomfactor);
+				currentLook.scale(this.sprites[i]._size/100*this._zoomfactor);
 				
 				//TODO
+//				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: this.sprites[i]._brightness}));
 				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: 1}));
 				currentLook.applyFilters(this._canvas.renderAll.bind(this._canvas));
 				
