@@ -94,8 +94,9 @@ PocketCode.Bricks.merge({
 
         SpeakBrick.prototype._execute = function () {
             var text = this._text.calculate();
-            var service = PocketCode.Proxy.getServiceEndpoint(PocketCode.Services.TTS);
-            this._soundManager.startSoundFromUrl(service + text);   //TODO: check if this works
+            //we use a request object here to generate an url
+            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, {string: text});
+            this._soundManager.startSoundFromUrl(request.url);
             this._return();
         };
 

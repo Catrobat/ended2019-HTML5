@@ -363,7 +363,7 @@ QUnit.test("GlideToBrick", function (assert) {
         assert.equal(e.id, "gliding2", "check positions: loop delay id");
 
         var delay = end - start;
-        assert.ok(delay > 1000 && delay < 1200, "check positions: execution time check: 1s = 1000ms, real: " + delay);
+        assert.ok(delay > 990 && delay < 1200, "check positions: execution time check: 1s = 1000ms, real: " + delay);
         assert.equal(sprite.positionX, 20, "check positions: x end position check");
         assert.equal(sprite.positionY, 50, "check positions: y end position check");
 
@@ -372,7 +372,7 @@ QUnit.test("GlideToBrick", function (assert) {
             if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not chech for array length < 1 because this should never happen
                 passed = false;
         }
-        console.log(positions);
+        //console.log(positions);
         assert.ok(passed, "check positions: continuous coordinates");
         assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
         done2();
