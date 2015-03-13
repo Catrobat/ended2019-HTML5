@@ -34,7 +34,11 @@
 
 
 'use strict';
-
+/**
+ * Object.merge provides a simple way to merge an existing object with another
+ * All ixisting and writeable oject properties will be replaced, missing properties added
+ * @param o: object that is merged into the original object
+ */
 Object.prototype.merge = function (o) {
 
     if (this instanceof Array)
@@ -51,6 +55,12 @@ Object.prototype.merge = function (o) {
 };
 Object.defineProperty(Object.prototype, 'merge', { enumerable: false });
 
+/**
+ * Function.extends implements inheritance
+ * A given class definition function is manipulatet to inherit from superClass
+ * @param {function} superClass: class definition to inherit from
+ * @param {boolean} [execSuperCtor=true] - should super contructor be called during inheritance
+ */
 Function.prototype.extends = function (superClass, execSuperCtor) {
     execSuperCtor = execSuperCtor !== false ? true : false;
 
@@ -77,11 +87,20 @@ Function.prototype.extends = function (superClass, execSuperCtor) {
 };
 Object.defineProperty(Function.prototype, 'extends', { enumerable: false });
 
+/**
+ * Array.insert inserts an object o into an array at a given index idx
+ * @param {Array} o
+ * @param {number} idx
+ */
 Array.prototype.insert = function (o, idx) {
     this.splice(idx, 0, o);
 };
 Object.defineProperty(Array.prototype, 'insert', { enumerable: false });
 
+/**
+ * Array.remove removes an object o from an (cut out)
+ * @param o
+ */
 Array.prototype.remove = function (o) {
     var idx, counter = 0;
     while ((idx = this.indexOf(o)) !== -1) {
@@ -93,6 +112,9 @@ Array.prototype.remove = function (o) {
 };
 Object.defineProperty(Array.prototype, 'remove', { enumerable: false });
 
+/**
+ * Array.dispose disposes an Array by cutting out all items after trying to call dispose on them
+ */
 Array.prototype.dispose = function () {
 
     for (var i in this) {
@@ -111,13 +133,22 @@ var SmartJs = {
 
     _version: 0.1,
     _objectId: 0,
+    /**
+     * SmartJs.getNewId generates a new unique id (in this DOM instance only)
+     */
     getNewId: function () { return 'sj' + this._objectId++; },
 
+    /**
+     * SmartJs.Device is a helper object to simply indicate if a device supports touch events and/or is a mobile device
+     */
     Device: {
         isMobile: (typeof window.orientation !== "undefined") || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
         isTouch: ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0),
     },
 
+    /**
+     * SmartJs.isBrowserCompatible() tests the browser for compatibility with SmartJs
+     */
     isBrowserCompatible: function () {
         var _result = true;
         var _tests = {

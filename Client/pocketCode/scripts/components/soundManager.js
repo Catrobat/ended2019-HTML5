@@ -86,6 +86,10 @@ PocketCode.SoundManager = (function () {
 			createjs.Sound.registerSounds(sounds, "");
 		},
 
+    loadSoundFile: function (id, url) {
+            //added to cache static tts sound files- detected by parser
+    },
+
 		startSound: function (id) {
 			var soundInstance = createjs.Sound.createInstance(id);
 			soundInstance.addEventListener("succeeded", createjs.proxy(function(e, soundInstance){
@@ -138,5 +142,6 @@ PocketCode.SoundManager = (function () {
 	});
 
 	return SoundManager;
+
 })();
 

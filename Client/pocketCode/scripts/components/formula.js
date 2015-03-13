@@ -15,13 +15,26 @@ PocketCode.Formula = (function () {
 
     //accessors
     Object.defineProperties(Formula.prototype, {
+        isStatic: {
+            value: false,
+            writable: true,
+        },
         json: {
             get: function () {
                 return this._json;
             },
             set: function (value) {
                 this._json = value;
-                this.calculate = PocketCode.FormulaParser.parseJson(value);
+                var parsed = PocketCode.FormulaParser.parseJson(value); //return {calculate: [Function], isStatic: [boolean]}
+                if (parsed.isStatic) {
+                    this.isStatic = true;
+                    var val = parsed.calculate();
+                    val = (typeof val === 'string') ? '"' + val + '"' : val;
+                    this.calculate = new Function('return ' + val + ';');//'return ' + val + ';');
+                }
+                else
+                    this.calculate = parsed.calculate;
+
                 this._uiString = undefined;
                 this._validateFormula();
             },

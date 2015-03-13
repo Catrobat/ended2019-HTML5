@@ -4,6 +4,21 @@
 /// <reference path="sj-components.js" />
 'use strict';
 
+if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = function () {
+        return window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || 
+                function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+    }();
+    Object.defineProperty(Window.prototype, 'requestAnimationFrame', { enumerable: false });
+
+    window.cancelAnimationFrame = function () {
+        return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
+                function (id) { window.clearTimeout(id) };
+    }();
+    Object.defineProperty(Window.prototype, 'cancelAnimationFrame', { enumerable: false });
+}
+
+
 SmartJs.Animation = {
 
     Type: {
@@ -76,14 +91,14 @@ SmartJs.Animation = {
 
         //methods
         Animation.prototype.merge({
-            _requestAnimationFrame: function () {
-                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-                    function (callback) { return window.setTimeout(callback, 16); };   //~1000/60 (60fps)
-            }(),
-            _cancelAnimationFrame: function () {
-                return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame ||
-                    function (id) { window.clearTimeout(id) };
-            }(),
+            //_requestAnimationFrame: function () {
+            //    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
+            //        function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+            //}(),
+            //_cancelAnimationFrame: function () {
+            //    return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame ||
+            //        function (id) { window.clearTimeout(id) };
+            //}(),
             _updateValue: function (factor) {
                 var value = Math.round(this._start + factor * this._diff);  //makes sure we only trigger updates if pixels change
                 if (this._current === value)
@@ -111,7 +126,8 @@ SmartJs.Animation = {
 
                     if (!this._paused && remaining !== 0) {
                         //var _self = this;
-                        this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                        //this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                        this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
                     }
                 }
             },
@@ -123,24 +139,28 @@ SmartJs.Animation = {
                 }
                 this._timer.start();
                 //var _self = this;
-                this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                //this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
             },
             pause: function () {
                 this._timer.pause();
                 //var _self = this;
-                this._cancelAnimationFrame.call(window, this._frameId);
+                //this._cancelAnimationFrame.call(window, this._frameId);
+                window.cancelAnimationFrame(this._frameId);
                 this._paused = true;
             },
             resume: function () {
                 this._timer.resume();
                 this._paused = false;
                // var _self = this;
-                this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                //this._frameId = this._requestAnimationFrame.call(window, this._executeAnimation.bind(this));
+                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
             },
             stop: function () {
                 this._timer.stop();
                 //var _self = this;
-                this._cancelAnimationFrame.call(window, this._frameId);
+                //this._cancelAnimationFrame.call(window, this._frameId);
+                window.cancelAnimationFrame(this._frameId);
                 this._paused = false;
             },
         });
