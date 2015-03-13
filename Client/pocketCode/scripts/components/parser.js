@@ -176,6 +176,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
+                //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
                 //return new Function('return ' + formulaString + ';');
@@ -196,7 +197,12 @@ PocketCode.merge({
                         return this._parseJsonFunction(jsonFormula, uiString);
 
                     case 'NUMBER':
-                        return jsonFormula.value;// + '';  //as string?
+                        //if (uiString)
+                            return jsonFormula.value;
+                        //var num = Number(jsonFormula.value);
+                        //if (isNaN(num))
+                        //    throw new Error('invalid operator/type \'number\': string to number conversion failed');
+                        //return Number(jsonFormula.value);// + '';  //as string?
 
                     case 'SENSOR':
                         return this._parseJsonSensor(jsonFormula, uiString);
@@ -215,7 +221,7 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        return '"' + jsonFormula.value + '"';
+                        return '\'' + jsonFormula.value + '\'';
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);
@@ -398,21 +404,30 @@ PocketCode.merge({
                             return 'FALSE';
                         return 'false';
 
-                        //case 'LENGTH':  //string //TODO:
-                        //	if (jsonFormula.left)
-                        //		return jsonFormula.left.length;
-                        //	return 0;
+                    case 'LENGTH':  //string
+                        if (uiString)
+                            return 'LENGTH(' + jsonFormula.left + ')';
 
-                        //case 'LETTER':  //string
-                        //	var idx = jsonFormula.left - 1;
-                        //	if (idx < 0 || idx >= jsonFormula.left.length)
-                        //		return '';
-                        //	return jsonFormula.left.substr(idx, 1);
-                        //	break;
+                        if (jsonFormula.left)
+                        	return jsonFormula.left.length;
+                        return 0;
 
-                        //case 'JOIN':    //string
-                        //	throw new Error('formula parser: join not implemented');	//TODO
-                        //	break;
+                    case 'LETTER':  //string
+                        if (uiString)
+                            return 'LETTER(' + jsonFormula.left + ', ' + jsonFormula.right + ')';
+
+                        var idx = jsonFormula.left - 1; //given index (1..n)
+                        if (idx < 0 || idx >= jsonFormula.left.length)
+                        	return '';
+                        return jsonFormula.right.substr(idx, 1);
+                        break;
+
+                    case 'JOIN':    //string
+                        if (uiString)
+                            return 'JOIN(' + jsonFormula.left + ', ' + jsonFormula.right + ')';
+                        
+                        return jsonFormula.left + jsonFormula.right
+                    	break;
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);
