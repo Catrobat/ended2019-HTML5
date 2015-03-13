@@ -6,69 +6,73 @@
 
 PocketCode.SoundManager = (function () {
 
-	//ctr: sounds = [{id: "s12", name:"asd", url:""}, {...}]
-	function SoundManager(projectId, sounds) {
-		this._projectId = projectId + '_';
-		if (sounds)
-			this.init(sounds);
-		else
-		    this._volume = 1;   //TODO: find out if there is a default value & this is necessary
+    //ctr: sounds = [{id: "s12", name:"asd", url:""}, {...}]
+    function SoundManager(projectId, sounds) {
+        this._projectId = projectId + '_';
+        if (sounds)
+            this.init(sounds);
+        else
+            this._volume = 1;   //TODO: find out if there is a default value & this is necessary
 
-		//events
-		this._onLoadingProgress = new SmartJs.Event.Event(this);
-	}
+        //events
+        this._onLoadingProgress = new SmartJs.Event.Event(this);
+    }
 
-	//properties
-	Object.defineProperties(SoundManager.prototype, {
-		volume: {
-			get: function () {
-				return this._volume * 100.0;
-			},
-			set: function (value) {
-				this._volume = value / 100.0;   //TODO: round?
-			}
-		},
-	});
+    //properties
+    Object.defineProperties(SoundManager.prototype, {
+        volume: {
+            get: function () {
+                return this._volume * 100.0;
+            },
+            set: function (value) {
+                this._volume = value / 100.0;   //TODO: round?
+            }
+        },
+    });
 
-	//events
-	Object.defineProperties(SoundManager.prototype, {
-		onLoadingProgress: {
-			get: function () { return this._onLoadingProgress; },
-			//enumerable: false,
-			//configurable: true,
-		},
-	});
+    //events
+    Object.defineProperties(SoundManager.prototype, {
+        onLoadingProgress: {
+            get: function () { return this._onLoadingProgress; },
+            //enumerable: false,
+            //configurable: true,
+        },
+    });
 
-	//methods
-	SoundManager.prototype.merge({
-		init: function(sounds) {
-		    this._volume = 1;   //TODO: find out if there is a default value
+    //methods
+    SoundManager.prototype.merge({
+        init: function (sounds) {
+            this._volume = 1;   //TODO: find out if there is a default value
 
-		},
+        },
+        loadSoundFile: function (id, url) {
+            //added to cache static tts sound files- detected by parser
 
-		startSound: function (id) {
+        },
 
-		},
-		startSoundFromUrl: function(url) {
+        startSound: function (id) {
 
-		},
-		pauseSounds: function () {
+        },
+        startSoundFromUrl: function (url) {
 
-		},
+        },
+        pauseSounds: function () {
 
-		resumeSounds: function () {
+        },
 
-		},
+        resumeSounds: function () {
 
-		stopAllSounds: function () {
+        },
 
-		},
+        stopAllSounds: function () {
 
-		ChangeVolume: function (byValue) {
-			this._volume += byValue / 100.0;    //TODO: round? chech value >0 && <100?
-		},
-	});
+        },
 
-	return SoundManager;
+        ChangeVolume: function (byValue) {
+            this._volume += byValue / 100.0;    //TODO: round? chech value >0 && <100?
+        },
+    });
+
+    return SoundManager;
 })();
 

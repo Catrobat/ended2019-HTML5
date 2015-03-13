@@ -90,13 +90,26 @@ PocketCode.Bricks.merge({
 
             this._soundManager = soundManager;
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
+
+            if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
+                this._soundId = SmartJs.getNewId();
+                this._text = this._text.calculate();
+                //caching
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { string: this._text });
+                this._soundManager.loadSoundFile(this._soundId, request.url);
+            }
         }
 
         SpeakBrick.prototype._execute = function () {
-            var text = this._text.calculate();
-            //we use a request object here to generate an url
-            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, {string: text});
-            this._soundManager.startSoundFromUrl(request.url);
+            if (this._soundId) {
+                this._soundManager.startSound(this._soundId);
+            }
+            else {
+                var text = this._text.calculate();
+                //we use a request object here to generate an url
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { string: text });
+                this._soundManager.startSoundFromUrl(request.url);
+            }
             this._return();
         };
 

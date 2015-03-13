@@ -34,7 +34,7 @@ PocketCode.merge({
                 if (properties[key]) {
                     var value = properties[key];
                     delete properties[key];     //do not include property more than once
-                    return value;
+                    return encodeURIComponent(value);
                 }
                 else
                     throw new Error('missing required service property "' + key + '" in property collection');
@@ -46,7 +46,7 @@ PocketCode.merge({
                 if (properties.hasOwnProperty(p) && properties[p] !== undefined) {
                     this._service += first ? '?' : '&';
                     first = false;
-                    this._service += (p + '=' + properties[p]);
+                    this._service += (encodeURIComponent(p) + '=' + encodeURIComponent(properties[p]));
                 }
             }
 

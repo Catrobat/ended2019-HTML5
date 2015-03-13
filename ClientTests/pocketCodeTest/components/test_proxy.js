@@ -34,9 +34,11 @@ QUnit.test("ServiceRequest", function (assert) {
 
 QUnit.test("Proxy", function (assert) {
 
-    assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: no class definition/constructor");
+    assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: sigleton, no class definition/constructor");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
 
+    //var p = PocketCode.Proxy;   //this is not a constructor but a singleton
+    //assert.ok(p instanceof PocketCode.Proxy, "instance create correctly");
 
 });
 

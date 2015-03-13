@@ -29,7 +29,11 @@ QUnit.test("FormulaParser: JSON", function (assert) {
 
 QUnit.test("FormulaParser: UI String", function (assert) {
 
-    var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
+    assert.throws(function () { var a = new PocketCode.FormulaParser(); }, "ERROR: singleton, no constructor");
+
+    //var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
+    //assert.ok(p instanceof PocketCode.FormulaParser, "instance create correctly");
+
     assert.ok(true, "TODO:");
 
 });
