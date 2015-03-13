@@ -7,6 +7,16 @@
 /// <reference path="bricksCore.js" />
 'use strict';
 
+/**
+ * @fileOverview bricksControl
+ * @author catrobat HTML5 team
+ * @version 1.0
+ *
+ */
+
+/**
+ * @class BroadcastManager
+ */
 PocketCode.Bricks.merge({
 
 	ProgramStartBrick: (function () {
