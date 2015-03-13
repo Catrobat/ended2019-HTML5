@@ -51,7 +51,7 @@ PocketCode.Canvas = (function(){
 			}
 		}, 
 		
-		overwriteSprite(sprite){
+		overwriteSprite: function(sprite){
 			this.sprites[sprite._layer] = sprite;
 		},
 		
