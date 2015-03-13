@@ -15,8 +15,6 @@
  * @class BroadcastManager
  */
 PocketCode.BroadcastManager = (function () {
-
-    //ctr: broadcast = [{id: "s12", name:"asd"}, {...}]
     /**
      *  Constructor of the BroadcastManager which takes a list of broadcasts that emerged from parsing the application
      *  and then calls the initialisation method "init(list of broadcasts)"
@@ -79,7 +77,7 @@ PocketCode.BroadcastManager = (function () {
          * @throws {Error} invalid argument: when bcId is unknown
          * @throws {Error} invalid argument: when threadId is not given
          */
-        publish: function (bcId, pubListener, threadId) {  //listener type of SmartJs.Event.EventListener
+        publish: function (bcId, pubListener, threadId) {
             if (typeof bcId !== 'string' || !this._subscriptions[bcId])
                 throw new Error('invalid argument: broadcast id not found');
             if (pubListener && !(pubListener instanceof SmartJs.Event.EventListener))
@@ -111,46 +109,44 @@ PocketCode.BroadcastManager = (function () {
          */
         _handleBroadcastWait: function (bcId, pubListener, callId) {
             var subs = this._subscriptions[bcId];
-            var subsCount = subs.length;    //how many listeners
+            var subsCount = subs.length;
 
             if (subsCount > 0) {
-                var threadId = SmartJs.getNewId() ;       //each bc wait call has its own unique id
+                var threadId = SmartJs.getNewId() ;
                 this._pendingBW[threadId] = { callId: callId, broadcastId: bcId, counter: subsCount, listener: pubListener, loopDelay: false };
-                //notify subscribers
-                //var subsCount = this._subscriptions[bcId];
                 for (var i = 0; i < subsCount; i++) {
-                    var subListener = subs[i];  //listening brick
+                    var subListener = subs[i];
                     subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
-                    //add event to brick to get return value
                 }
             }
-            else    //no subscribers
+            else
                 this._notifyPublisher(pubListener, callId);
         },
         /**
-         * Gets called whenever a brick is executed and removes the broadcast from the pending broadcastWait list
+         * Gets called whenever a brick is executed and removes the broadcast from the pending broadcastWait list when
+         * last entry is reached
          * @param e
          * @private
          */
-        _brickExecutedHandler: function (e) {   //id, loopDelay) {
+        _brickExecutedHandler: function (e) {
             var pendingBW = this._pendingBW[e.id];
-            if (pendingBW.counter === 1) {    //last
+            if (pendingBW.counter === 1) {
                 var callId = pendingBW.callId;
                 var pubListener = pendingBW.listener;
                 var loopDelay = pendingBW.loopDelay || e.loopDelay;
-                delete this._pendingBW[e.id];    //remove from pending broadcasts
+                delete this._pendingBW[e.id];
                 this._notifyPublisher(pubListener, callId, loopDelay);
             }
-            else { // termination?
+            else {
                 pendingBW.counter--;
                 pendingBW.loopDelay = pendingBW.loopDelay || e.loopDelay;
             }
         },
         /**
-         * Notifys the publisher and calls the handler with the scope of the given pubListener
+         * Notifies the publisher and calls the handler with the scope of the given pubListener
          * @param {SmartJs.Event.EventListener} pubListener
          * @param {String} threadId
-         * @param loopDelay
+         * @param {Number} loopDelay
          * @private
          */
         _notifyPublisher: function (pubListener, callId, loopDelay) {
