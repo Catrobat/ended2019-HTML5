@@ -109,38 +109,32 @@ PocketCode.Canvas = (function(){
 				
 				switch (renderingItem.changes[i].property){
 					case "_positionX": 
-						spriteOnCanvas.set("top", renderingItem.changes[i].value);
 						spriteInList._positionX = renderingItem.changes[i].value;
 						break;
 					case "_positionY":
-						spriteOnCanvas.set("left", renderingItem.changes[i].value);
 						spriteInList._positionY = renderingItem.changes[i].value;
 						break;
 					case "_direction":
-						spriteOnCanvas.set("angle", renderingItem.changes[i].value);
 						spriteInList._direction = renderingItem.changes[i].value;
 						break;
 					case "_transparency":
-						spriteOnCanvas.set("opacity", renderingItem.changes[i].value);
 						spriteInList._transparency = renderingItem.changes[i].value;
 						break;
 					case "_visible":
-						spriteOnCanvas.set("visible", renderingItem.changes[i].value);
 						spriteInList._visible = renderingItem.changes[i].value;
+						break;
+					case "_brightness":
+						//TODO
 						break;
 					case "_layer":
 						this.updateLayers(renderingItem.id, renderingItem.changes[i].value);
-						this.render();
 						break;
 				}
 			}
 			
+			this.render();
 			this.overwriteSprite(spriteInList);
 			
-			//			spriteOnCanvas.set(properties2set);
-			
-//			this.addSprite(spriteOnCanvas);
-//			this.render();
 		},
 		
 		render: function(){
@@ -151,13 +145,13 @@ PocketCode.Canvas = (function(){
 					centeredRotation: true,
 					centeredsize: true,
 					perPixelTargetFind: true,
+					
+					//coordinates have to be adapted either here or at another level
 					top: this.sprites[i]._positionX,
 					left: this.sprites[i]._positionY,
-					angle:this.sprites[i]._direction,
-//					flipX: this.sprites[i]._flipH,
-//					flipY: this.sprites[i]._flipV,
-					opacity: this.sprites[i]._transparency/100,
-//					opacity: 1,
+					
+					angle:this.sprites[i]._direction - 90,
+					opacity: +(1 - this.sprites[i]._transparency / 100).toFixed(2),
 					visible: this.sprites[i]._visible,
 					originX: "center",
 					originY: "center",

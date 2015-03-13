@@ -257,6 +257,7 @@ PocketCode.Model.Sprite = (function () {
         },
         setDirection: function (degree, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
+            // why !degree??? degree of 0 should be allowed?!
             if (!degree || this.direction === degree)
                 return false;
 
