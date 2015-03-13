@@ -6,7 +6,7 @@ class ChangeVolumeBrickDto extends BaseBrickDto {
   
   
   public function __construct($value) {
-	parent::__construct("changeVolume");
+	parent::__construct("ChangeVolume");
 
 	$this->value = $value;
   }

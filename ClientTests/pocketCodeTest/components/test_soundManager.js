@@ -11,12 +11,11 @@ QUnit.test("SoundManager", function (assert) {
 
 
     var soundjsLoaded = function(){
-        createjs.Sound.removeAllEventListeners();
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
         var soundManager = new PocketCode.SoundManager("projectId",[]);
 
-        //assert.ok(instance.src === null, "Removed Sounds from createjs.Sounds on init.");
+        assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init.");
         assert.ok(soundManager._projectId = "projectId_", "SoundManager created with the correct projectId,");
         assert.ok(soundManager instanceof PocketCode.SoundManager, "instance check");
 
@@ -38,31 +37,42 @@ QUnit.test("SoundManager", function (assert) {
         soundManager.volume = 110;
         assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values.");
 
-        doneWithInitTests();
 
+        var invalidData = [{notUrl: "a"}];
+        assert.throws(function(){new PocketCode.SoundManager("id",invalidData)}, Error, "ERROR: passed invalid arguments to Soundmanager.");
+
+        doneWithInitTests();
 
         //playback tests
         var doneWithPlaybackTests = assert.async();
         var doneWithPlaybackComplete = assert.async();
 
-        //event handlers
-        var playCompleted = function(){
-
-            assert.ok(soundManager2.activeSounds.length === 6, "Completed sound removed from active sounds.");
-            assert.ok(this.src === null, "Completed sound deleted.");
-
+        var onPlayCompleted = function(){
+            assert.equal(soundManager2.activeSounds.length, 6, "Completed sound removed from active sounds.");
             doneWithPlaybackComplete();
         };
 
 
-        var fileLoaded = function(){
+        var onFileLoaded = function(e){
 
-            assert.ok(soundManager.activeSounds.length === 0, "No active sounds on init.");
+            var progressIncrease = e.progress - progress;
+            progress += e.progress;
+            var index = expectedProgressChanges.indexOf(progressIncrease);
+            if(index > -1){
+                expectedProgressChanges.splice(index,1);
+            }
+
+            if(e.progress < 100)
+                return;
+
+            assert.equal(expectedProgressChanges.length, 0, "Progress increased according to passed size");
+
+            assert.equal(soundManager.activeSounds.length, 0, "No active sounds on init.");
 
             soundManager2.startSound("projectId_sound");
             var soundInstance = soundManager2.activeSounds[0];
-            assert.ok(soundInstance.src === "_resources/sound/sound.mp3", "Correct sound added to active sounds.");
-            assert.ok(soundInstance.playState === "playSucceeded", "Sound started playing.");
+            assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds.");
+            assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing.");
 
             soundManager2.pauseSounds();
             assert.ok(soundInstance.paused, "Sound paused.");
@@ -71,8 +81,8 @@ QUnit.test("SoundManager", function (assert) {
             assert.ok(!soundInstance.paused, "Sound resumed.");
 
             soundManager2.stopAllSounds();
-            assert.ok(soundManager2.activeSounds.length === 0, "All sounds removed from active sounds on stopping.");
-            assert.ok(soundInstance.playState === "playFinished" && soundInstance.src === null, "All sounds have been stopped and references deleted.");
+            assert.equal(soundManager2.activeSounds.length, 0, "All sounds removed from active sounds on stopping.");
+            assert.equal(soundInstance.playState, "playFinished", "Sound has been stopped.");
 
 
             var timesToPlaySound = 6;
@@ -82,7 +92,7 @@ QUnit.test("SoundManager", function (assert) {
             soundManager2.startSound("projectId_sound2");
             soundManager2.pauseSounds();
 
-            assert.ok(soundManager2.activeSounds[soundManager2.activeSounds.length-1].src === "_resources/sound/sound2.mp3", "Second sound added to active sounds.");
+            assert.equal(soundManager2.activeSounds[soundManager2.activeSounds.length-1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds.");
             assert.equal(soundManager2.activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds.");
 
             var allSoundsStartedPlaying = true;
@@ -100,30 +110,28 @@ QUnit.test("SoundManager", function (assert) {
             doneWithPlaybackTests();
 
             var soundInstance2 = soundManager2.activeSounds[0];
-            soundInstance2.on("complete", playCompleted);
+            soundInstance2.on("complete", onPlayCompleted);
             soundInstance2.paused = false;
         };
+
+
         var soundSrc = "_resources/sound/sound.mp3";
         var soundSrc2 = "_resources/sound/sound2.mp3";
 
-        var sounds = [{url: soundSrc, id:"sound"}, {url: soundSrc2, id:"sound2"}];
-        //var sounds = [{url: soundSrc+".ogg", id:"sound"}, {url: soundSrc2+".ogg", id:"sound2"}, {url: "_resources/sound/sound3.mp3", id:"sound3"},{url: "_resources/sound/sound4.mp3", id:"sound4"},{url: "_resources/sound/sound5.mp3", id:"sound5"},{url: "_resources/sound/sound6.mp3", id:"sound6"},{url: "_resources/sound/sound7.mp3", id:"sound7"},{url: "_resources/sound/sound8.mp3", id:"sound8"},{url: "_resources/sound/sound9.mp3", id:"sound9"},];
+        var progress = 0;
+        var expectedProgressChanges = [60,40];
 
+        var sounds = [{url: soundSrc, id:"sound", size:3}, {url: soundSrc2, id:"sound2", size:2}];
         var soundManager2 = new PocketCode.SoundManager("projectId", sounds);
+        soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onFileLoaded));
 
-        //todo tests, make loadqueue local and dispatch on complete event here.
-        var onProgressHandler = function(progress){
-            console.log(progress);
-        };
-
-        soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onProgressHandler));
 
         assert.ok(sounds[0].id === "projectId_sound" && sounds[1].id === "projectId_sound2", "Ids set correctly");
         assert.ok((sounds[0].src === soundSrc && sounds[1].src === soundSrc2), "Src set correctly");
-        assert.ok(sounds[0].data === soundManager2.maxAmountOfSameSounds && sounds[1].data === soundManager2.maxAmountOfSameSounds, "Data set to defined value.");
-        soundManager2.loadQueue.on("complete", fileLoaded);
+        assert.ok(sounds[0].data === soundManager2.maxInstancesOfSameSound && sounds[1].data === soundManager2.maxInstancesOfSameSound, "Data set to defined value.");
 
     };
+
 
     createjs.Sound.addEventListener("event", "handler");
     createjs.Sound.setVolume(0.1);
