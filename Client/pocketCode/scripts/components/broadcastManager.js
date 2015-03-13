@@ -3,16 +3,17 @@
 /// <reference path="../core.js" />
 'use strict';
 /**
- * @fileOverview The broadcast manager is responsible for keeping track of all broadcasts which are either registered
- * by a broadcastBrick or a broadcastAndWaitBrick. Moreover it handles the notification of listening bricks
- * e.g. receiveBrick
+ * @fileOverview broadcastManager: This file contains the whole functionality of the broadcast manager
  * @author catrobat HTML5 team
- * @version 1.1
+ * @version 1.0
  *
  */
 
 /**
  * @class BroadcastManager
+ * The broadcast manager is responsible for keeping track of all broadcasts which are either registered
+ * by a broadcastBrick or a broadcastAndWaitBrick. Moreover it handles the notification of listening bricks
+ * e.g. receiveBrick
  */
 PocketCode.BroadcastManager = (function () {
     /**
