@@ -186,7 +186,6 @@ PocketCode.Bricks.ThreadedBrick = (function () {
          * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
          * SmartJs.Event.EventListener
          */
-         */
         execute: function (onExecutedListener, threadId) {
             if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                 throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
