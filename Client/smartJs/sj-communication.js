@@ -7,7 +7,7 @@
 SmartJs.RequestMethod = {
     GET: 'GET',
     PUT: 'PUT',
-    POST: 'POST';
+    POST: 'POST',
     DELETE: 'DELETE',
 };
 
