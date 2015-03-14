@@ -2,6 +2,8 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
+
+/// <reference path="../_resources/testDataFormula.js" />
 'use strict';
 
 QUnit.module("formula.js");

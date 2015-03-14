@@ -198,7 +198,7 @@ PocketCode.merge({
 
                     case 'NUMBER':
                         //if (uiString)
-                            return jsonFormula.value;
+                        return jsonFormula.value;
                         //var num = Number(jsonFormula.value);
                         //if (isNaN(num))
                         //    throw new Error('invalid operator/type \'number\': string to number conversion failed');
@@ -406,28 +406,29 @@ PocketCode.merge({
 
                     case 'LENGTH':  //string
                         if (uiString)
-                            return 'LENGTH(' + jsonFormula.left + ')';
+                            return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         if (jsonFormula.left)
-                        	return jsonFormula.left.length;
+                            return (this._parseJsonType(jsonFormula.left) + '').length;
                         return 0;
 
                     case 'LETTER':  //string
                         if (uiString)
-                            return 'LETTER(' + jsonFormula.left + ', ' + jsonFormula.right + ')';
+                            return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        var idx = jsonFormula.left - 1; //given index (1..n)
-                        if (idx < 0 || idx >= jsonFormula.left.length)
-                        	return '';
-                        return jsonFormula.right.substr(idx, 1);
-                        break;
+                        var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
+                        //if (idx < 0 || idx >= jsonFormula.left.length)
+                        //    return '';
+                        //return jsonFormula.right.substr(idx, 1);
+                        //break;
+                        return (this._parseJsonType(jsonFormula.right) + '').charAt(idx);
 
                     case 'JOIN':    //string
                         if (uiString)
-                            return 'JOIN(' + jsonFormula.left + ', ' + jsonFormula.right + ')';
-                        
-                        return jsonFormula.left + jsonFormula.right
-                    	break;
+                            return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+
+                        return (this._parseJsonType(jsonFormula.left) + '').concat(this._parseJsonType(jsonFormula.right));
+                        //break;
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);

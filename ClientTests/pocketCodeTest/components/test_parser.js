@@ -14,7 +14,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 
-/// <reference path="../_resources/tests_testDataProjects.js" />
+/// <reference path="../_resources/testDataProjects.js" />
 'use strict';
 
 QUnit.module("parser.js");
