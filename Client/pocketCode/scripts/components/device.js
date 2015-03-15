@@ -86,7 +86,35 @@ PocketCode.Device = (function () {
         },
         loudness: {
             get: function () {
-                this._soundMgr.volume;
+                return this._soundMgr.volume;
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        isFaceDetected: {
+            get: function () {
+                return false; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        faceSize: {
+            get: function () {
+                return 0; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        facePositionX: {
+            get: function () {
+                return 0; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        facePositionY: {
+            get: function () {
+                return 0; //TODO: 
             },
             //enumerable: false,
             //configurable: true,

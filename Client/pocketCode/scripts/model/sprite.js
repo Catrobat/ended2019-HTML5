@@ -2,7 +2,7 @@
 /// <reference path="program.js" />
 'use strict';
 
-PocketCode.Model = {};
+PocketCode.Model = PocketCode.Model || {};
 
 PocketCode.Model.Sprite = (function () {
 
@@ -119,7 +119,7 @@ PocketCode.Model.Sprite = (function () {
                 if (!(varArray instanceof Array))
                     throw new Error('variable setter expects type Array');
 
-                for (i = 0, l = varArray.length; i < l; i++) {
+                for (var i = 0, l = varArray.length; i < l; i++) {
                     varArray[i].value = 0.0;  //init
                     this._variables[varArray[i].id] = varArray[i];
                     this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };

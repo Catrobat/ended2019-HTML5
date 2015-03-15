@@ -65,18 +65,19 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.equal(f.uiString, "2.2 - 1", "string minus: float");
 
     f.json = divide;
-    assert.equal(f.calculate(), 2, "calc divide: int");
+    assert.equal(f.calculate(), 2, "calc divide");
     assert.equal(f.isStatic, true, "calc divide: isStatic");
     //assert.equal(f.uiString, "5 ÷ 2.5", "string divide: int");    //string compare does not work- parsed correctly
+    //assert.ok(f.uiString.substr(0,2), "5 ", "string divide: int");
 
     f.json = mult;
-    assert.equal(f.calculate(), 1, "calc mult: int");
+    assert.equal(f.calculate(), 1, "calc mult");
     assert.equal(f.isStatic, true, "calc mult: isStatic");
-    assert.equal(f.uiString, "0.5 x 2", "string mult: int");
+    assert.equal(f.uiString, "0.5 x 2", "string mult");
 
     f.json = mult2;
-    assert.equal(f.calculate(), 1.5, "calc mult with brackets: int");
-    assert.equal(f.uiString, "0.5 x (-1 + 2.0 x 2)", "string mult with brackets: int");
+    assert.equal(f.calculate(), 1.5, "calc mult with brackets");
+    assert.equal(f.uiString, "0.5 x (-1 + 2.0 x 2)", "string mult with brackets");
 
 });
 
@@ -89,81 +90,119 @@ QUnit.test("FormulaParser: functions", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
-    /*
+    
     f.json = sin;
-    assert.equal(f.calculate(), 1, "calc sin (deg): int");
+    assert.equal(f.calculate(), 1, "calc sin (deg)");
     assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
-    assert.equal(f.uiString, "2 - 1", "string sin: int");
+    assert.equal(f.uiString, "sin(90)", "string sin");
 
     f.json = cos;
-    assert.equal(f.calculate(), 1, "calc cos (rad): int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, -0.07, "calc cos (rad)");
     assert.equal(f.isStatic, true, "calc cos (rad): isStatic");
-    assert.equal(f.uiString, "2 - 1", "string cos: int");
+    assert.equal(f.uiString, "cos(pi x 30)", "string cos");
 
     f.json = cos2;
-    assert.equal(f.calculate(), 1, "calc cos (deg): int");
-    assert.equal(f.uiString, "2 - 1", "string cos: int");
+    assert.equal(f.calculate(), -1, "calc cos (deg)");
+    assert.equal(f.uiString, "cos(180)", "string cos");
 
     f.json = tan;
-    assert.equal(f.calculate(), 1, "calc tan (rad): int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
     assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
-    assert.equal(f.uiString, "2 - 1", "string tan: int");
+    //assert.equal(f.uiString, "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
+    assert.ok(f.uiString.substr(0,7), "tan(pi ", "string tan");
 
     f.json = tan2;
-    assert.equal(f.calculate(), 1, "calc tan (deg): int");
-    assert.equal(f.uiString, "2 - 1", "string tan: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (deg)");
+    assert.equal(f.uiString, "tan(1.57)", "string tan");
 
     f.json = arcsin;
-    assert.equal(f.calculate(), 1, "calc arcsin: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 80.06, "calc arcsin");
     assert.equal(f.isStatic, true, "calc arcsin: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string arcsin: int");
+    assert.equal(f.uiString, "arcsin(0.985)", "string arcsin");
 
     f.json = arccos;
-    assert.equal(f.calculate(), 1, "calc arccos: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 60, "calc arccos");
     assert.equal(f.isStatic, true, "calc arccos: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string arccos: int");
+    assert.equal(f.uiString, "arccos(0.5)", "string arccos");
 
     f.json = arctan;
-    assert.equal(f.calculate(), 1, "calc arctan: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 14.04, "calc arctan");
     assert.equal(f.isStatic, true, "calc arctan: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string arctan: int");
+    assert.equal(f.uiString, "arctan(0.25 x 1 + (2 - 3 + 1))", "string arctan");
 
     f.json = ln;
-    assert.equal(f.calculate(), 1, "calc ln: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 2.3, "calc ln");
     assert.equal(f.isStatic, true, "calc ln: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string ln: int");
+    assert.equal(f.uiString, "ln(10)", "string ln");
 
     f.json = log;
-    assert.equal(f.calculate(), 1, "calc log: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 2, "calc log");
     assert.equal(f.isStatic, true, "calc log: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string log: int");
+    assert.equal(f.uiString, "log(10 x 10)", "string log");
 
     f.json = pi;
-    assert.equal(f.calculate(), 1, "calc pi: int");
+    assert.equal(f.calculate(), Math.PI, "calc pi");
     assert.equal(f.isStatic, true, "calc pi: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string pi: int");
+    assert.equal(f.uiString, "pi", "string pi");
 
     f.json = sqrt;
-    assert.equal(f.calculate(), 1, "calc sqrt: int");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 3, "calc sqrt");
     assert.equal(f.isStatic, true, "calc sqrt: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string sqrt: int");
+    assert.equal(f.uiString, "sqrt(3 x 3 - 3 + 1.5 x 2)", "string sqrt");
 
     f.json = random;
-    assert.equal(f.calculate(), 1, "calc random: int");
-    assert.equal(f.isStatic, true, "calc random: isStatic");
-    assert.equal(f.uiString, "2 - 1", "string random: int");
+    var val = f.calculate();
+    assert.ok(val >= 0.8 && val <= 3.2, "calc random");
+    assert.equal(f.isStatic, false, "calc random: isStatic");
+    assert.equal(f.uiString, "random(0.8, 3.2)", "string random");
 
     f.json = random2;
-    assert.equal(f.calculate(), 1, "calc random (switched arguments): int");
-    assert.equal(f.isStatic, true, "calc random (switched arguments): isStatic");
-    assert.equal(f.uiString, "2 - 1", "string random (switched arguments): int");
+    val = f.calculate();
+    assert.ok(val === 5 || val === 6 || val === 7 || val === 8, "val=" + val + ", calc random (switched arguments)");
+    assert.equal(f.isStatic, false, "calc random (switched arguments): isStatic");
+    assert.equal(f.uiString, "random(8, 5)", "string random (switched arguments)");
 
     f.json = random3;
-    assert.equal(f.calculate(), 1, "calc random (float): int");
-    assert.equal(f.isStatic, true, "calc random (float): isStatic");
-    assert.equal(f.uiString, "2 - 1", "string random (float): int");
-    */
-    assert.ok(true, "TODO:");
+    val = f.calculate();
+    assert.ok(val >= 1 && val <= 1.01, "calc random (float)");
+    assert.equal(f.isStatic, false, "calc random (float): isStatic");
+    assert.equal(f.uiString, "random(1.0, 1.01)", "string random (float)");
+
+    f.json = abs;
+    assert.equal(f.calculate(), 3.2, "calc abs");
+    assert.equal(f.isStatic, true, "calc abs: isStatic");
+    assert.equal(f.uiString, "abs(-3.2)", "string abs");
+
+    f.json = round;
+    assert.equal(f.calculate(), -3, "calc round");
+    assert.equal(f.isStatic, true, "calc round: isStatic");
+    assert.equal(f.uiString, "round(-3.025)", "string round");
+
+    f.json = mod;
+    assert.equal(Math.round(f.calculate() * 100) / 100, 0.2, "calc mod");
+    assert.equal(f.isStatic, true, "calc mod: isStatic");
+    assert.equal(f.uiString, "mod(9, 2.2)", "string mod");
+
+    f.json = max;
+    assert.equal(f.calculate(), 18, "calc max");
+    assert.equal(f.isStatic, true, "calc max: isStatic");
+    assert.equal(f.uiString, "max(2 x (1 + 8), 17)", "string max");
+
+    f.json = exp;
+    assert.equal(Math.round(f.calculate() * 100) / 100, 1.65, "calc exp");
+    assert.equal(f.isStatic, true, "calc exp: isStatic");
+    assert.equal(f.uiString, "exp(0.5)", "string exp");
+
+    //f.json = exp2;
+    //assert.equal(f.calculate(), 1, "calc exp");
+    //assert.equal(f.isStatic, true, "calc exp: isStatic");
+    //assert.equal(f.uiString, "2 - 1", "string exp");
+
+    f.json = min;
+    assert.equal(f.calculate(), -1, "calc min");
+    assert.equal(f.isStatic, true, "calc min: isStatic");
+    assert.equal(f.uiString, "min(0, -1 + 1 - 1)", "string min");
+
 });
 
 QUnit.test("FormulaParser: functions (strings)", function (assert) {
@@ -176,7 +215,51 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
-    assert.ok(true, "TODO:");
+    f.json = stringPlus;    //TODO: catrobat does not allow a string cocatenation using a + operator showing an error but allowing to save this
+                            //unless this isn't changes we allow this operation on strings too
+    assert.equal(f.calculate(), "fghfghw", "string concat using + operator");
+    assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
+    assert.equal(f.uiString, "'fgh' + 'fghw'", "string concat using + operator: toString");
+
+    f.json = string;    //simple definition
+    assert.equal(f.calculate(), "test length operation", "string definition");
+    assert.equal(f.isStatic, true, "string definition: isStatic");
+    assert.equal(f.uiString, "'test length operation'", "string definition: toString");
+
+    var s11 = f.calculate();    //store in var to enable access
+    sprite.variables = [{id: "s11", name: "variableName"}];
+    sprite._variables.s11.value = s11;  //test length operation
+
+    f.json = length;    //hello world
+    assert.equal(f.calculate(), 11, "string length");
+    assert.equal(f.isStatic, true, "string length: isStatic");
+    assert.equal(f.uiString, "length('hello world')", "string length: toString");
+
+    f.json = length2;   //now we use s11
+    assert.equal(f.calculate(), 21, "string length from variable: " + f.calculate());
+    assert.equal(f.isStatic, false, "string length from variable: isStatic");
+    assert.equal(f.uiString, "length(\"variableName\")", "string length from variable: toString");
+
+    f.json = letter;
+    assert.equal(f.calculate(), "w", "letter");
+    assert.equal(f.isStatic, true, "letter: isStatic");
+    assert.equal(f.uiString, "letter(7, 'hello world')", "letter: toString");
+
+    f.json = letter2;
+    assert.equal(f.calculate(), "t", "letter from var");
+    assert.equal(f.isStatic, false, "letter from var: isStatic");
+    assert.equal(f.uiString, "letter(10, \"variableName\")", "letter from var: toString");
+
+    f.json = stringJoin;
+    assert.equal(f.calculate(), "hello-work", "string join");
+    assert.equal(f.isStatic, true, "string join: isStatic");
+    assert.equal(f.uiString, "join('hello', '-work')", "string join toString");
+
+    f.json = stringJoin2;
+    assert.equal(f.calculate(), "hello20", "string join: including formula");
+    assert.equal(f.isStatic, true, "string join: including formula: isStatic");
+    assert.equal(f.uiString, "join('hello', 3 x 6 + 2)", "string join: including formula: toString");
+
 });
 
 QUnit.test("FormulaParser: object (sprite)", function (assert) {
@@ -203,6 +286,8 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     assert.ok(true, "TODO:");
+    //TODO: add test data: comass, inclination x/y, loudness
+
 });
 
 QUnit.test("FormulaParser: logic", function (assert) {

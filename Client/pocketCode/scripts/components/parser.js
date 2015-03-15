@@ -176,6 +176,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
+                console.log(formulaString);
                 //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
@@ -205,14 +206,15 @@ PocketCode.merge({
                         //return Number(jsonFormula.value);// + '';  //as string?
 
                     case 'SENSOR':
+                        this._isStatic = false;
                         return this._parseJsonSensor(jsonFormula, uiString);
 
                     case 'USER_VARIABLE':
                         if (uiString)
-                            return this._variableNames[jsonFormula.value].name;
+                            return '"' + this._variableNames[jsonFormula.value].name + '"';
 
                         this._isStatic = false;
-                        return 'this._sprite.getVariable(' + jsonFormula.value + ').value';
+                        return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
 
                     case 'BRACKET':
                         if (!jsonFormula.right)
@@ -340,11 +342,42 @@ PocketCode.merge({
                         return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'RAND':
-                        //var left = this._parseJsonType(jsonFormula.left); = min
-                        //var right = this._parseJsonType(jsonFormula.right); = max
                         if (uiString)
-                            return 'random(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';    //TODO:
-                        return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
+                            return 'random(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+
+                        this._isStatic = false;
+                        //please notice: this function is quite tricky, as the 2 parametes can be switched (min, max) and we need to calculate this two values
+                        //at runtime to determine which one to use
+                        //if both partial results are integers, the random number will be a number without decimal places
+                        //for calculation we need the scope of the formula itself! To solve this, the whole logic is included in our dynamic function
+                        var lString = '(' + this._parseJsonType(jsonFormula.left) + ')';
+                        var rString = '(' + this._parseJsonType(jsonFormula.right) + ')';
+
+                        var stmt = '(' + lString + ' <= ' + rString + ') ? ';
+                        stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + rString + '+ 1 -' + lString + ') + ' + lString + ')) : (Math.random() * (' + rString + '-' + lString + ') + ' + lString + ')) : ';
+                        stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + lString + '+ 1 -' + rString + ') + ' + rString + ')) : (Math.random() * (' + lString + '-' + rString + ') + ' + rString + '))';
+                        //console.log(stmt);
+                        //var test = ((1.0) <= (1.01)) ? (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.01) - (1.0)) + (1.0))) : (Math.random() * ((1.01) - (1.0)) + (1.0))) : (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.0) - (1.01)) + (1.01))) : (Math.random() * ((1.0) - (1.01)) + (1.01)));
+
+                        return stmt;
+                        //var functionBody = 'var left = (' + this.parseJson(this._parseJsonType(jsonFormula.left)) + ').calculate(); ';
+                        //functionBody += 'var right = (' + this.parseJson(this._parseJsonType(jsonFormula.right)) + ').calculate(); ';
+                        ////functionBody += 'var returnInt = (left % 1 === 1 && right % 1 === 0); ';
+                        //functionBody += 'if (left < right) { ';
+                        //functionBody += 'var factor = (right - left); var offset = left; } else { ';
+                        //functionBody += 'var factor = (left - right); var offset = right; } ';
+                        //functionBody += 'if (left % 1 === 0 && right % 1 === 0) ';  //retrun value as integer 
+                        //functionBody += '';
+                        //functionBody += '';
+
+                        //var left = (this.parseJson(this._parseJsonType(jsonFormula.left))).calculate();
+                        //var right = (this.parseJson(this._parseJsonType(jsonFormula.right))).calculate();
+                        //if (left < right) //min = left
+                        //    return 'Math.random() * ' + (right - left) + ' + ' + left;// + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';
+                        //else
+                        //    return 'Math.random() * ' + (left - right) + ' + ' + right;// + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';
+                        ////return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
+                        ////return 'Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
                     case 'ROUND':
                         if (uiString)
@@ -411,7 +444,7 @@ PocketCode.merge({
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         if (jsonFormula.left)
-                            return (this._parseJsonType(jsonFormula.left) + '').length;
+                            return (jsonFormula.left.type === 'STRING') ? (this._parseJsonType(jsonFormula.left)).length - 2 : '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').length';
                         return 0;
 
                     case 'LETTER':  //string
@@ -423,13 +456,13 @@ PocketCode.merge({
                         //    return '';
                         //return jsonFormula.right.substr(idx, 1);
                         //break;
-                        return (this._parseJsonType(jsonFormula.right) + '').charAt(idx);
+                        return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
 
                     case 'JOIN':    //string
                         if (uiString)
                             return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        return (this._parseJsonType(jsonFormula.left) + '').concat(this._parseJsonType(jsonFormula.right));
+                        return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
                         //break;
 
                     default:
@@ -448,99 +481,127 @@ PocketCode.merge({
                         if (uiString)
                             return 'acceleration_x';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.accelerationX';
 
                     case 'Y_ACCELERATION':
                         if (uiString)
                             return 'acceleration_y';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.accelerationY';
 
                     case 'Z_ACCELERATION':
                         if (uiString)
                             return 'acceleration_z';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.accelerationZ';
 
                     case 'COMPASS_DIRECTION':
                         if (uiString)
                             return 'compass_direction';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.compassDirection';
 
                     case 'X_INCLINATION':
                         if (uiString)
                             return 'inclination_x';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.inclinationX';
 
                     case 'Y_INCLINATION':
                         if (uiString)
                             return 'inclination_y';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.inclinationY';
 
                     case 'LOUDNESS':
                         if (uiString)
                             return 'loudness';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._device.loudness';
+
+                    case 'FACE_DETECTED':
+                        if (uiString)
+                            return 'is_face_detected';
+
+                        //this._isStatic = false;
+                        return 'this._device.isFaceDetected';
+
+                    case 'FACE_SIZE':
+                        if (uiString)
+                            return 'face_size';
+
+                        //this._isStatic = false;
+                        return 'this._device.faceSize';
+
+                    case 'FACE_X_POSITION':
+                        if (uiString)
+                            return 'face_x_position';
+
+                        //this._isStatic = false;
+                        return 'this._device.facePositionX';
+
+                    case 'FACE_Y_POSITION':
+                        if (uiString)
+                            return 'face_y_position';
+
+                        //this._isStatic = false;
+                        return 'this._device.facePositionY';
 
                         //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.brightness';
 
                     case 'OBJECT_GHOSTEFFECT':
                         if (uiString)
                             return 'transparency';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.transparency';
 
                     case 'OBJECT_LAYER':
                         if (uiString)
                             return 'layer';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.layer';
 
                     case 'OBJECT_ROTATION': //=direction
                         if (uiString)
                             return 'direction';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.rotation';
 
                     case 'OBJECT_SIZE':
                         if (uiString)
                             return 'size';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.size';
 
                     case 'OBJECT_X':
                         if (uiString)
                             return 'position_x';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.x';
 
                     case 'OBJECT_Y':
                         if (uiString)
                             return 'position_y';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return 'this._sprite.y';
 
                     default:

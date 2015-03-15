@@ -37,9 +37,10 @@ PocketCode.Formula = (function () {
                     val = (typeof val === 'string') ? '"' + val + '"' : val;
                     this.calculate = new Function('return ' + val + ';');//'return ' + val + ';');
                 }
-                else
+                else {
+                    this.isStatic = false;
                     this.calculate = parsed.calculate;
-
+                }
                 this._uiString = undefined;
                 this._validateFormula();
             },
