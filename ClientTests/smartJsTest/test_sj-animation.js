@@ -16,7 +16,8 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     var a = new SmartJs.Animation.Animation(10, 20, 320, SmartJs.Animation.Type.LINEAR);
     assert.ok(a instanceof SmartJs.Animation.Animation, "instance check");
 
-    assert.throws(function () { var b = new SmartJs.Animation.Animation(10, "20", 1000, SmartJs.Animation.Type.LINEAR); }, Error, "simple argument check");
+    assert.throws(function () { var b = new SmartJs.Animation.Animation(10, "20", 1000, SmartJs.Animation.Type.LINEAR); }, Error, "ERROR: simple argument check");
+    assert.throws(function () { var b = new SmartJs.Animation.Animation(10, 20, 1000, function (progress) { return 2 * progress; }); }, Error, "ERROR: render function argument check");
 
     var events = [];
     var startTime;
@@ -73,7 +74,8 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     var a = new SmartJs.Animation.Animation2D({ x: 10, y: 10 }, { x: 20, y: 20 }, 500, SmartJs.Animation.Type.LINEAR2D);
     assert.ok(a instanceof SmartJs.Animation.Animation && a instanceof SmartJs.Animation.Animation2D, "instance check");
 
-    assert.throws(function () { var b = new SmartJs.Animation.Animation2D({ x: 10, y: 20 }, 20, 1000, SmartJs.Animation.Type.LINEAR); }, Error, "simple argument check");
+    assert.throws(function () { var b = new SmartJs.Animation.Animation2D({ x: 10, y: 20 }, 20, 1000, SmartJs.Animation.Type.LINEAR2D); }, Error, "ERROR: simple argument check");
+    assert.throws(function () { var b = new SmartJs.Animation.Animation2D({ x: 10, y: 20 }, { x: 20, y: 20 }, 1000, function (progress) { return { x: 2 * progress, y: progress }; }); }, Error, "ERROR: render function argument check");
 
     var events = [];
     var startTime;

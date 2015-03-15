@@ -43,6 +43,9 @@ SmartJs.Animation = {
             if (typeof start !== 'number' || typeof end !== 'number')
                 throw new Error('invalif argument: start and/or end: expected type: number');
 
+            if (render !== undefined && (typeof render !== 'function' || render(1) !== 1))  //!=undefined to allow base ctr calls
+                throw new Error('parameter \'render\' has to be a function with render(1) = 1 to terminate the animation correctly');
+
             this._paused = false;
 
             this._start = start;
@@ -174,9 +177,13 @@ SmartJs.Animation.Animation2D = (function () {
 
     //ctr
     function Animation2D(start, end, time, /* function */ render/*, listener, startOnInit, callbackArgs*/) {
-        SmartJs.Animation.Animation.call(this, 0, 0, time, render/*, listener, startOnInit, callbackArgs*/);
+        SmartJs.Animation.Animation.call(this, 0, 0, time);//, render/*, listener, startOnInit, callbackArgs*/);
         if (typeof start.x !== 'number' || typeof start.y !== 'number' || typeof end.x !== 'number' || typeof end.y !== 'number')
             throw new Error('invalid argument: start and/or end: expected type: object { x: [number], y: [number] }');
+
+        if (typeof render !== 'function' || render(1).x !== 1 || render(1).y !== 1)
+            throw new Error('parameter \'render\' has to be a function with render(1) = {x: 1, y: 1} to terminate the animation correctly');
+        this._render = render;
 
         this._start = start;
         this._end = end;
