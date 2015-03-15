@@ -183,7 +183,7 @@ PocketCode.merge({
             },
 
             _parseJsonType: function (jsonFormula, uiString) {
-                if (jsonFormula == null)
+                if (jsonFormula === null)
                     return '';
 
                 /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
@@ -274,7 +274,9 @@ PocketCode.merge({
                         return this._concatOperatorFormula(jsonFormula, ' + ', uiString);
 
                     case 'MINUS':
-                        return '-' + this._parseJsonType(jsonFormula.right, uiString);
+                        if (uiString && jsonFormula.left === null)    //singed number
+                            return this._concatOperatorFormula(jsonFormula, '-', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' - ', uiString);
 
                     case 'MULT':
                         if (uiString)
@@ -309,49 +311,49 @@ PocketCode.merge({
                 switch (jsonFormula.value) {
                     case 'SIN':
                         if (uiString)
-                            return 'sin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'Math.sin(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'sin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.sin(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'COS':
                         if (uiString)
-                            return 'cos( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'Math.cos(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'cos(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.cos(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'TAN':
                         if (uiString)
-                            return 'tan( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'Math.tan(this._toRad(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'tan(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.tan(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'LN':
                         if (uiString)
-                            return 'ln( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'ln(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.log(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'LOG':
                         if (uiString)
-                            return 'log( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'log(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'SQRT':
                         if (uiString)
-                            return 'sqrt( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'sqrt(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'RAND':
                         //var left = this._parseJsonType(jsonFormula.left); = min
                         //var right = this._parseJsonType(jsonFormula.right); = max
                         if (uiString)
-                            return 'random( ' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ' )';    //TODO:
+                            return 'random(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';    //TODO:
                         return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
                     case 'ROUND':
                         if (uiString)
-                            return 'round( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'ABS':
                         if (uiString)
-                            return 'abs( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'abs(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'PI':
@@ -361,37 +363,37 @@ PocketCode.merge({
 
                     case 'MOD':
                         if (uiString)
-                            return 'mod( ' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ' )';
+                            return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
                         return this._concatOperatorFormula(jsonFormula, ' % ');
 
                     case 'ARCSIN':
                         if (uiString)
-                            return 'arcsin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'this._toDeg(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'arcsin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'this._radian2degree(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'ARCCOS':
                         if (uiString)
-                            return 'arccos( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'this._toDeg(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'arccos(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'this._radian2degree(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'ARCTAN':
                         if (uiString)
-                            return 'arctan( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-                        return 'this._toDeg(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
+                            return 'arctan(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'this._radian2degree(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'EXP':
                         if (uiString)
-                            return 'exp( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MAX':
                         if (uiString)
-                            return 'max( ' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ' )';
+                            return 'max(' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ')';
                         return 'Math.max(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
                     case 'MIN':
                         if (uiString)
-                            return 'min( ' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ' )';
+                            return 'min(' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ')';
                         return 'Math.min(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
                     case 'TRUE':

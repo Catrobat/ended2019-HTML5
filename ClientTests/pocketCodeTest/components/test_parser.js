@@ -13,6 +13,9 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksVariable.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 
 /// <reference path="../_resources/testDataProjects.js" />
 'use strict';
@@ -20,22 +23,199 @@
 QUnit.module("parser.js");
 
 
-QUnit.test("FormulaParser: JSON", function (assert) {
+QUnit.test("FormulaParser: operators", function (assert) {
 
-    var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
-    assert.ok(true, "TODO:");
+    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+    assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
+    assert.equal((PocketCode.FormulaParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
+
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    f.json = plus;
+    assert.deepEqual(f.json, plus, "json getter using property setter");
+
+    f = new PocketCode.Formula(device, sprite, plus);   //using ctr setter
+    assert.deepEqual(f.json, plus, "json getter using ctr setter");
+
+    assert.equal(f.calculate(), 3, "calc plus: int");
+    assert.equal(f.isStatic, true, "calc plus: isStatic");
+    assert.equal(f.uiString, "1 + 2", "string plus: int");
+
+    f.json = plus2;
+    assert.equal(Math.round(f.calculate() * 100) / 100, 3.6, "plus: float");
+    assert.equal(f.uiString, "1 + 2.6", "string plus: float");
+
+    f.json = signed;
+    assert.equal(Math.round(f.calculate() * 100) / 100, -3.6, "signed (negative)");
+    assert.equal(f.uiString, "-1 + -2.6", "string: signed");
+
+    f.json = minus;
+    assert.equal(f.calculate(), 1, "calc minus: int");
+    assert.equal(f.isStatic, true, "calc minus: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string minus: int");
+
+    f.json = minus2;
+    assert.equal(Math.round(f.calculate() * 100) / 100, 1.2, "calc minus: float");
+    assert.equal(f.uiString, "2.2 - 1", "string minus: float");
+
+    f.json = divide;
+    assert.equal(f.calculate(), 2, "calc divide: int");
+    assert.equal(f.isStatic, true, "calc divide: isStatic");
+    //assert.equal(f.uiString, "5 ÷ 2.5", "string divide: int");    //string compare does not work- parsed correctly
+
+    f.json = mult;
+    assert.equal(f.calculate(), 1, "calc mult: int");
+    assert.equal(f.isStatic, true, "calc mult: isStatic");
+    assert.equal(f.uiString, "0.5 x 2", "string mult: int");
+
+    f.json = mult2;
+    assert.equal(f.calculate(), 1.5, "calc mult with brackets: int");
+    assert.equal(f.uiString, "0.5 x (-1 + 2.0 x 2)", "string mult with brackets: int");
 
 });
 
-QUnit.test("FormulaParser: UI String", function (assert) {
+QUnit.test("FormulaParser: functions", function (assert) {
 
-    assert.throws(function () { var a = new PocketCode.FormulaParser(); }, "ERROR: singleton, no constructor");
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
 
-    //var p = PocketCode.FormulaParser;   //this is not a constructor but a singleton
-    //assert.ok(p instanceof PocketCode.FormulaParser, "instance create correctly");
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+    /*
+    f.json = sin;
+    assert.equal(f.calculate(), 1, "calc sin (deg): int");
+    assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
+    assert.equal(f.uiString, "2 - 1", "string sin: int");
+
+    f.json = cos;
+    assert.equal(f.calculate(), 1, "calc cos (rad): int");
+    assert.equal(f.isStatic, true, "calc cos (rad): isStatic");
+    assert.equal(f.uiString, "2 - 1", "string cos: int");
+
+    f.json = cos2;
+    assert.equal(f.calculate(), 1, "calc cos (deg): int");
+    assert.equal(f.uiString, "2 - 1", "string cos: int");
+
+    f.json = tan;
+    assert.equal(f.calculate(), 1, "calc tan (rad): int");
+    assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
+    assert.equal(f.uiString, "2 - 1", "string tan: int");
+
+    f.json = tan2;
+    assert.equal(f.calculate(), 1, "calc tan (deg): int");
+    assert.equal(f.uiString, "2 - 1", "string tan: int");
+
+    f.json = arcsin;
+    assert.equal(f.calculate(), 1, "calc arcsin: int");
+    assert.equal(f.isStatic, true, "calc arcsin: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string arcsin: int");
+
+    f.json = arccos;
+    assert.equal(f.calculate(), 1, "calc arccos: int");
+    assert.equal(f.isStatic, true, "calc arccos: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string arccos: int");
+
+    f.json = arctan;
+    assert.equal(f.calculate(), 1, "calc arctan: int");
+    assert.equal(f.isStatic, true, "calc arctan: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string arctan: int");
+
+    f.json = ln;
+    assert.equal(f.calculate(), 1, "calc ln: int");
+    assert.equal(f.isStatic, true, "calc ln: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string ln: int");
+
+    f.json = log;
+    assert.equal(f.calculate(), 1, "calc log: int");
+    assert.equal(f.isStatic, true, "calc log: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string log: int");
+
+    f.json = pi;
+    assert.equal(f.calculate(), 1, "calc pi: int");
+    assert.equal(f.isStatic, true, "calc pi: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string pi: int");
+
+    f.json = sqrt;
+    assert.equal(f.calculate(), 1, "calc sqrt: int");
+    assert.equal(f.isStatic, true, "calc sqrt: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string sqrt: int");
+
+    f.json = random;
+    assert.equal(f.calculate(), 1, "calc random: int");
+    assert.equal(f.isStatic, true, "calc random: isStatic");
+    assert.equal(f.uiString, "2 - 1", "string random: int");
+
+    f.json = random2;
+    assert.equal(f.calculate(), 1, "calc random (switched arguments): int");
+    assert.equal(f.isStatic, true, "calc random (switched arguments): isStatic");
+    assert.equal(f.uiString, "2 - 1", "string random (switched arguments): int");
+
+    f.json = random3;
+    assert.equal(f.calculate(), 1, "calc random (float): int");
+    assert.equal(f.isStatic, true, "calc random (float): isStatic");
+    assert.equal(f.uiString, "2 - 1", "string random (float): int");
+    */
+    assert.ok(true, "TODO:");
+});
+
+QUnit.test("FormulaParser: functions (strings)", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     assert.ok(true, "TODO:");
+});
 
+QUnit.test("FormulaParser: object (sprite)", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(true, "TODO:");
+});
+
+QUnit.test("FormulaParser: sensors", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(true, "TODO:");
+});
+
+QUnit.test("FormulaParser: logic", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(true, "TODO:");
 });
 
 QUnit.test("BrickFactory", function (assert) {
@@ -112,7 +292,7 @@ QUnit.test("BrickFactory", function (assert) {
             count++;
         }
     }
-    
+
     assert.equal(bf._parsed, allBricksProject.header.bricksCount, "all bricks created");
     assert.ok(progress.length > 0, "progress handler called");
     assert.equal(progress[progress.length - 1], 100, "progress reached 100%");
