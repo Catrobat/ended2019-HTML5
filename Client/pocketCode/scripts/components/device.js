@@ -91,7 +91,7 @@ PocketCode.Device = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        isFaceDetected: {
+        faceDetected: {
             get: function () {
                 return false; //TODO: 
             },
@@ -116,6 +116,18 @@ PocketCode.Device = (function () {
             get: function () {
                 return 0; //TODO: 
             },
+            //enumerable: false,
+            //configurable: true,
+        },
+        flashlightOn: {
+            get: function () {
+                return false; //TODO: 
+            },
+            set: function (on) {
+                if (typeof on !== 'boolean')
+                    throw new Error('invalid parameter: expected type \'boolean\'');
+                //TODO:
+            }
             //enumerable: false,
             //configurable: true,
         },
@@ -160,7 +172,10 @@ PocketCode.Device = (function () {
             else    //unknown sensor
                 throw new Error('device: unknown sensor: ' + sensor);
         },
-
+        vibrate: function (seconds) {
+            var time = seconds * 1000;
+            //TODO:
+        },
     });
 
     return Device;

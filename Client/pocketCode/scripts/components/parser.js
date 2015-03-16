@@ -531,7 +531,7 @@ PocketCode.merge({
                             return 'is_face_detected';
 
                         //this._isStatic = false;
-                        return 'this._device.isFaceDetected';
+                        return 'this._device.faceDetected';
 
                     case 'FACE_SIZE':
                         if (uiString)
