@@ -4,6 +4,12 @@
 
 PocketCode.Model = PocketCode.Model || {};
 
+PocketCode.Model.SpriteRotationStyle = {
+    DO_NOT_ROTATE: 0,
+    LEFT_TO_RIGHT: 1,
+    ALL_AROUND: 3,
+};
+
 PocketCode.Model.Sprite = (function () {
 
     function Sprite(program, propObject) {
@@ -63,7 +69,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
         	set: function (layer) {
-        		this._layer = layer;
+        	    //TODO: in program : this._layer = layer;
         	},
             get: function () {
                 return this._program.getSpriteLayer(this.id);
@@ -141,7 +147,7 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
-        start: function() {
+        start: function () {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].start)
                     this.bricks[i].start();
@@ -168,8 +174,8 @@ PocketCode.Model.Sprite = (function () {
             this.running = false;
         },
 
-        _triggerOnChange: function(propertyArray) {
-            this._onChange.dispatchEvent({id: this.id, properties: propertyArray}, this);
+        _triggerOnChange: function (propertyArray) {
+            this._onChange.dispatchEvent({ id: this.id, properties: propertyArray }, this);
         },
 
         //motion: position

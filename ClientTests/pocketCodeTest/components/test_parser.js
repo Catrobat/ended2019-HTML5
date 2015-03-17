@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.16.0.js" />
+﻿/// <reference path="../../qunit/qunit-1.16.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
@@ -26,6 +26,7 @@ QUnit.module("parser.js");
 QUnit.test("FormulaParser: operators", function (assert) {
 
     assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+
     assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
     assert.equal((PocketCode.FormulaParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
 
@@ -36,6 +37,16 @@ QUnit.test("FormulaParser: operators", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.throws(function () { f.json = unknown_type; }, Error, "ERROR: unknown type");
+    assert.throws(function () { f.json = unknown_operator; }, Error, "ERROR: unknown operator");
+    assert.throws(function () { f.json = unknown_function; }, Error, "ERROR: unknown function");
+    assert.throws(function () { f.json = unknown_sensor; }, Error, "ERROR: unknown sensor");
+
+    //interfaces: device + sprite
+    assert.ok(device.accelerationX !== undefined && device.accelerationY !== undefined && device.accelerationZ !== undefined && device.compassDirection !== undefined && device.inclinationX !== undefined && device.inclinationY !== undefined && device.loudness !== undefined && device.faceDetected !== undefined && device.faceSize !== undefined && device.facePositionX !== undefined && device.facePositionY !== undefined, "interface: device");
+    assert.ok(sprite.brightness !== undefined && sprite.transparency !== undefined && sprite.layer !== undefined && sprite.direction !== undefined && sprite.size !== undefined && sprite.positionX !== undefined && sprite.positionY !== undefined, "interface: sprite");
+
 
     f.json = plus;
     assert.deepEqual(f.json, plus, "json getter using property setter");
@@ -67,7 +78,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
     f.json = divide;
     assert.equal(f.calculate(), 2, "calc divide");
     assert.equal(f.isStatic, true, "calc divide: isStatic");
-    //assert.equal(f.uiString, "5 � 2.5", "string divide: int");    //string compare does not work- parsed correctly
+    assert.equal(f.uiString, "5 ÷ 2.5", "string divide: int");    //string compare does not work- parsed correctly
     //assert.ok(f.uiString.substr(0,2), "5 ", "string divide: int");
 
     f.json = mult;
@@ -108,7 +119,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     f.json = tan;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
     assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
-    //assert.equal(f.uiString, "tan(pi � 2)", "string tan"); //checked and ok-> � compare failed
+    assert.equal(f.uiString, "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
     assert.ok(f.uiString.substr(0,7), "tan(pi ", "string tan");
 
     f.json = tan2;
@@ -240,6 +251,11 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.isStatic, false, "string length from variable: isStatic");
     assert.equal(f.uiString, "length(\"variableName\")", "string length from variable: toString");
 
+    f.json = length3;
+    assert.equal(f.calculate(), 0, "string length from empty string: " + f.calculate());
+    assert.equal(f.isStatic, true, "string length from empty string: isStatic");
+    assert.equal(f.uiString, "length()", "string length from empty string: toString");
+
     f.json = letter;
     assert.equal(f.calculate(), "w", "letter");
     assert.equal(f.isStatic, true, "letter: isStatic");
@@ -269,10 +285,57 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
+    //init sprite: test data
+    sprite._positionX = 3;
+    sprite._positionY = 4;
+    sprite._transparency = 46;
+    sprite._brightness = 123;
+    sprite._size = 84;
+    sprite._direction = 34;
+
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
-    assert.ok(true, "TODO:");
+    f.json = object_x;
+    assert.equal(f.calculate(), 6, "OBJECT_X: formula");
+    assert.equal(f.isStatic, false, "OBJECT_X: isStatic");
+    assert.equal(f.uiString, "position_x x (1 + 1.00)", "OBJECT_X: toString");
+
+    f.json = object_y;
+    assert.equal(f.calculate(), 6, "OBJECT_Y: formula");
+    assert.equal(f.isStatic, false, "OBJECT_Y: isStatic");
+    assert.equal(f.uiString, "position_y + 2", "OBJECT_Y: toString");
+
+    f.json = ghostEffect;
+    assert.equal(f.calculate(), 0.46, "transparency: formula");
+    assert.equal(f.isStatic, false, "transparency: isStatic");
+    assert.equal(f.uiString, "transparency ÷ 100", "transparency: toString");
+
+    f.json = brightness;
+    assert.equal(f.calculate(), 246, "brightness: formula");
+    assert.equal(f.isStatic, false, "brightness: isStatic");
+    assert.equal(f.uiString, "brightness x 2", "brightness: toString");
+
+    f.json = object_size;
+    assert.equal(f.calculate(), 0.84, "object_size: formula");
+    assert.equal(f.isStatic, false, "object_size: isStatic");
+    assert.equal(f.uiString, "size ÷ 100", "object_size: toString");
+
+    f.json = object_rotation;
+    assert.equal(f.calculate(), -56, "object_rotation: formula");
+    assert.equal(f.isStatic, false, "object_rotation: isStatic");
+    assert.equal(f.uiString, "direction - 90", "object_rotation: toString");
+
+    f.json = object_rotation2;
+    assert.equal(f.calculate(), 394, "object_rotation > 360: formula");
+    assert.equal(f.isStatic, false, "object_rotation > 360: isStatic");
+    assert.equal(f.uiString, "direction + 360", "object_rotation > 360: toString");
+
+    f.json = object_layer;
+    assert.equal(f.calculate(), 1.5, "object_layer: formula");
+    assert.equal(f.isStatic, false, "object_layer: isStatic");
+    assert.equal(f.uiString, "layer x 1.5", "object_layer: toString");
+
 });
 
 QUnit.test("FormulaParser: sensors", function (assert) {
@@ -285,9 +348,66 @@ QUnit.test("FormulaParser: sensors", function (assert) {
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
-    assert.ok(true, "TODO:");
-    //TODO: add test data: comass, inclination x/y, loudness
+    //manual tests required as values cannot be compared (change at any time if supported)
+    //tests check on numeric values only, but tests should fail on uiString if properties are not available (wrong mapping) 
+    f.json = acceleration_x;
+    assert.ok(typeof f.calculate() === 'number', "X_ACCELERATION: formula return type");
+    assert.equal(f.isStatic, false, "X_ACCELERATION: isStatic");
+    assert.equal(f.uiString, "acceleration_x x (1 + 1 - 1)", "X_ACCELERATION: toString");
 
+    f.json = acceleration_y;
+    assert.ok(typeof f.calculate() === 'number', "Y_ACCELERATION: formula return type");
+    assert.equal(f.isStatic, false, "Y_ACCELERATION: isStatic");
+    assert.equal(f.uiString, "acceleration_y x 1", "Y_ACCELERATION: toString");
+
+    f.json = acceleration_z;
+    assert.ok(typeof f.calculate() === 'number', "Z_ACCELERATION: formula return type");
+    assert.equal(f.isStatic, false, "Z_ACCELERATION: isStatic");
+    assert.equal(f.uiString, "acceleration_z x 1", "Z_ACCELERATION: toString");
+
+    f.json = compass;
+    assert.ok(typeof f.calculate() === 'number', "COMPASS_DIRECTION: formula return type");
+    assert.equal(f.isStatic, false, "COMPASS_DIRECTION: isStatic");
+    assert.equal(f.uiString, "compass_direction x 1.0", "COMPASS_DIRECTION: toString");
+
+    f.json = inclination_x;
+    assert.ok(typeof f.calculate() === 'number', "X_INCLINATION: formula return type");
+    assert.equal(f.isStatic, false, "X_INCLINATION: isStatic");
+    assert.equal(f.uiString, "inclination_x x 1.0 + 2", "X_INCLINATION: toString");
+
+    f.json = inclination_y;
+    assert.ok(typeof f.calculate() === 'number', "Y_INCLINATION: formula return type");
+    assert.equal(f.isStatic, false, "Y_INCLINATION: isStatic");
+    assert.equal(f.uiString, "inclination_y x (1.0 + 2.5)", "Y_INCLINATION: toString");
+
+    f.json = loudness;
+    assert.ok(typeof f.calculate() === 'number', "LOUDNESS: formula return type");
+    assert.equal(f.isStatic, false, "LOUDNESS: isStatic");
+    assert.equal(f.uiString, "loudness x (1.0 - 0.5)", "LOUDNESS: toString");
+
+    //face detection
+    f.json = face_detect;
+    assert.ok(typeof f.calculate() === 'boolean', "FACE_DETECTED: formula return type");
+    assert.equal(f.isStatic, false, "FACE_DETECTED: isStatic");
+    assert.equal(f.uiString, "is_face_detected AND TRUE", "FACE_DETECTED: toString");
+
+    f.json = face_size;
+    assert.ok(typeof f.calculate() === 'number', "FACE_SIZE: formula return type");
+    assert.equal(f.isStatic, false, "FACE_SIZE: isStatic");
+    assert.equal(f.uiString, "face_size x 1.0", "FACE_SIZE: toString");
+
+    f.json = face_pos_x;
+    assert.ok(typeof f.calculate() === 'number', "FACE_X_POSITION: formula return type");
+    assert.equal(f.isStatic, false, "FACE_X_POSITION: isStatic");
+    assert.equal(f.uiString, "face_x_position x 1.0", "FACE_X_POSITION: toString");
+
+    f.json = face_pos_y;
+    assert.ok(typeof f.calculate() === 'number', "FACE_Y_POSITION: formula return type");
+    assert.equal(f.isStatic, false, "FACE_Y_POSITION: isStatic");
+    assert.equal(f.uiString, "face_y_position + (3 x 3 - 9)", "FACE_Y_POSITION: toString");
+
+    //TODO: assert.ok(false, "MISSING: led on/of + vibration?");
+    //TODO: recheck sensor strings
 });
 
 QUnit.test("FormulaParser: logic", function (assert) {
@@ -300,7 +420,62 @@ QUnit.test("FormulaParser: logic", function (assert) {
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
-    assert.ok(true, "TODO:");
+    f.json = equal;
+    assert.equal(f.calculate(), true, "EQUAL int: formula");
+    assert.equal(f.isStatic, true, "EQUAL int: isStatic");
+    assert.equal(f.uiString, "2 = (2 x 1)", "EQUAL int: toString");
+
+    f.json = equal2;
+    assert.equal(f.calculate(), false, "EQUAL float: formula");
+    //assert.equal(f.isStatic, false, "EQUAL float: isStatic");
+    assert.equal(f.uiString, "2 = (2 x 2.02 - 2)", "EQUAL float: toString");
+
+    f.json = equal3;
+    assert.equal(f.calculate(), false, "EQUAL bool: formula");
+    //assert.equal(f.isStatic, false, "EQUAL bool: isStatic");
+    assert.equal(f.uiString, "TRUE = FALSE", "EQUAL bool: toString");
+
+    f.json = not_equal;
+    assert.equal(f.calculate(), true, "NOT_EQUAL: formula");
+    assert.equal(f.isStatic, true, "NOT_EQUAL: isStatic");
+    assert.equal(f.uiString, "TRUE ≠ FALSE", "NOT_EQUAL: toString");
+
+    f.json = greater_than;
+    assert.equal(f.calculate(), true, "GREATER_THAN: formula");
+    assert.equal(f.isStatic, true, "GREATER_THAN: isStatic");
+    assert.equal(f.uiString, "1.0001 > 1", "GREATER_THAN: toString");
+
+    f.json = smaller_than;
+    assert.equal(f.calculate(), false, "SMALLER_THAN: formula");
+    assert.equal(f.isStatic, true, "SMALLER_THAN: isStatic");
+    assert.equal(f.uiString, "1.0001 < 1", "SMALLER_THAN: toString");
+
+    f.json = smallerOrEqual;
+    assert.equal(f.calculate(), true, "SMALLER_OR_EQUAL: formula");
+    assert.equal(f.isStatic, true, "SMALLER_OR_EQUAL: isStatic");
+    assert.equal(f.uiString, "0.0 ≤ 0", "SMALLER_OR_EQUAL: toString");
+
+    f.json = logicalAnd;
+    assert.equal(f.calculate(), false, "LOGICAL_AND: formula");
+    assert.equal(f.isStatic, true, "LOGICAL_AND: isStatic");
+    assert.equal(f.uiString, "FALSE AND FALSE", "LOGICAL_AND: toString");
+
+    f.json = logicalOr;
+    assert.equal(f.calculate(), true, "LOGICAL_OR: formula");
+    assert.equal(f.isStatic, true, "LOGICAL_OR: isStatic");
+    assert.equal(f.uiString, "TRUE OR TRUE", "LOGICAL_OR: toString");
+
+    f.json = not;
+    assert.equal(f.calculate(), true, "LOGICAL_NOT: formula");
+    assert.equal(f.isStatic, true, "LOGICAL_NOT: isStatic");
+    assert.equal(f.uiString, "TRUE ≠  NOT TRUE", "LOGICAL_NOT: toString");
+
+    f.json = greaterOrEqual;
+    assert.equal(f.calculate(), true, "GREATER_OR_EQUAL: formula");
+    assert.equal(f.isStatic, true, "GREATER_OR_EQUAL: isStatic");
+    assert.equal(f.uiString, "6 ≥ 3", "GREATER_OR_EQUAL: toString");
+
+
 });
 
 QUnit.test("BrickFactory", function (assert) {

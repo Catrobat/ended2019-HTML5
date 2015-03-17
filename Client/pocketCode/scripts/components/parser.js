@@ -160,7 +160,7 @@ PocketCode.merge({
     })(),
 
 
-    FormulaParser: new ((function () {
+    FormulaParser: new ((function () {  //static class
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -176,7 +176,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                console.log(formulaString);
+                //console.log(formulaString);
                 //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
@@ -217,8 +217,8 @@ PocketCode.merge({
                         return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
 
                     case 'BRACKET':
-                        if (!jsonFormula.right)
-                            return '()';
+                        //if (!jsonFormula.right)
+                        //    return '()';
 
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
@@ -581,7 +581,7 @@ PocketCode.merge({
                             return 'direction';
 
                         //this._isStatic = false;
-                        return 'this._sprite.rotation';
+                        return 'this._sprite.direction';
 
                     case 'OBJECT_SIZE':
                         if (uiString)
@@ -595,14 +595,14 @@ PocketCode.merge({
                             return 'position_x';
 
                         //this._isStatic = false;
-                        return 'this._sprite.x';
+                        return 'this._sprite.positionX';
 
                     case 'OBJECT_Y':
                         if (uiString)
                             return 'position_y';
 
                         //this._isStatic = false;
-                        return 'this._sprite.y';
+                        return 'this._sprite.positionY';
 
                     default:
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);

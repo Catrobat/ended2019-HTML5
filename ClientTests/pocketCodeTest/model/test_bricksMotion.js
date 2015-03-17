@@ -369,11 +369,11 @@ QUnit.test("GlideToBrick", function (assert) {
 
         var passed = true;
         for (var i = 1, l = positions.length; i < l; i++) {
-            if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not chech for array length < 1 because this should never happen
+            if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not check for array length < 1 because this should never happen
                 passed = false;
         }
         //console.log(positions);
-        assert.ok(passed, "check positions: continuous coordinates");
+        assert.ok(passed, "check positions: continuous coordinates: " + JSON.stringify(positions));
         assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
         done2();
     };

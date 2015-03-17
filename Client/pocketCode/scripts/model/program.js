@@ -179,7 +179,7 @@ PocketCode.Model.Program = (function () {
             //TODO: implement this
         },
         getSpriteLayer: function (spriteId) {
-            //TODO: implement this
+            return 1; //to enable testing formulas //TODO: implement this
         },
         checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
             //program viewport
