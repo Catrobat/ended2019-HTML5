@@ -4,17 +4,27 @@
 
 PocketCode.Model = PocketCode.Model || {};
 
-PocketCode.Model.SpriteRotationStyle = {
-    DO_NOT_ROTATE: 0,
-    LEFT_TO_RIGHT: 1,
-    ALL_AROUND: 3,
+PocketCode.Model.RotationStyle = {
+    DO_NOT_ROTATE: 'don\'t rotate',
+    LEFT_TO_RIGHT: 'left-right',
+    ALL_AROUND: 'all around',
+};
+
+PocketCode.Model.GraphicEffect = {
+    COLOR: 'color',
+    FISHEYE: 'fisheye',
+    WHIRL: 'whirl',
+    PIXELATE: 'pixelate',
+    MOSAIC: 'mosaic',
+    BRIGHTNESS: 'brightness',
+    GHOST: 'ghost',     //opacity, transparency
 };
 
 PocketCode.Model.Sprite = (function () {
 
     function Sprite(program, propObject) {
         this._program = program;
-        this._onChange = program.onSpriteChange;
+        this._onChange = program.onSpriteChange;    //mapping event (defined in program)
         this.running = false;
 
         this.id = undefined;
@@ -48,6 +58,9 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
+        rotationStyle: {
+            value: PocketCode.Model.RotationStyle.ALL_AROUND,   //static property (right now)
+        },
         //motion
         positionX: {
             get: function () {

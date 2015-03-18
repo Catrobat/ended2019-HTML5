@@ -104,12 +104,10 @@ PocketCode.Bricks.merge({
 
 
     SetTransparencyBrick: (function () {
-        SetTransparencyBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetTransparencyBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
 
         function SetTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
+            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
         }
 
         SetTransparencyBrick.prototype._execute = function () {
@@ -121,12 +119,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeTransparencyBrick: (function () {
-        ChangeTransparencyBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeTransparencyBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
 
         function ChangeTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
         }
 
         ChangeTransparencyBrick.prototype._execute = function () {
@@ -138,12 +134,10 @@ PocketCode.Bricks.merge({
 
 
     SetBrightnessBrick: (function () {
-        SetBrightnessBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetBrightnessBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
 
         function SetBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
+            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
         }
 
         SetBrightnessBrick.prototype._execute = function () {
@@ -155,12 +149,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeBrightnessBrick: (function () {
-        ChangeBrightnessBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeBrightnessBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
 
         function ChangeBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
         }
 
         ChangeBrightnessBrick.prototype._execute = function () {

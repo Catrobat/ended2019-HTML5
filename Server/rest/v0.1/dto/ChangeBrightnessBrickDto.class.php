@@ -1,14 +1,12 @@
 <?php
 
-class ChangeBrightnessBrickDto extends BaseBrickDto {
+class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto {
 
-  public $value;	//type of FormulaDto
-  
-  
   public function __construct($value) {
-	parent::__construct("ChangeBrightness");
+		parent::__construct(EGraphicEffect.BRIGHTNESS, $value);
+		
+		$this->type = "ChangeBrightness";
 
-	$this->value = $value;
   }
 
 }
