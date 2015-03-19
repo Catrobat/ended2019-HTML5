@@ -69,7 +69,7 @@ PocketCode.Canvas = (function(){
 			}
 		}, 
 		
-		overwriteSprite: function (sprite){
+		overwriteSprite: function(sprite){
 			this.sprites[sprite._layer] = sprite;
 		},
 		
@@ -180,17 +180,46 @@ PocketCode.Canvas = (function(){
 				
 				currentLook.scale(this.sprites[i]._size/100*this._zoomfactor);
 				
-				//TODO
-				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: parseInt(this.sprites[i]._brightness, 10)}));
-//				currentLook.filters[0].brightness = parseInt(this.sprites[i]._brightness, 10 );
-				currentLook.applyFilters(this._canvas.renderAll.bind(this._canvas));
+				if(this.sprites[i]._brightness != 100){
+					this._applyBrightness(currentLook, this.sprites[i]._brightness);
+				}else {
+					this._canvas.add(currentLook);
+				}
 				
-				currentLook._originalElement.id = this.sprites[i].id;
-				currentLook._originalElement.name = this.sprites[i].name;
-				
-				this._canvas.add(currentLook);
 			}
 		},
+		
+		_applyBrightness: function(fabricSprite, brightness){
+			fabricSprite.filters.push(new fabric.Image.filters.Brightness({brightness: bright}));
+				
+			var replacement = fabric.util.createImage();
+			var imgEl = fabricSprite._originalElement;
+			var canvasEl = fabric.util.createCanvasElement();
+			var  _this = fabricSprite;
+			      
+			canvasEl.width = imgEl.width;
+			canvasEl.height = imgEl.height;
+			canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
+				
+			var bright = +((255/100)*(brightness - 100)).toFixed(0);
+			var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
+				
+			brightnessFilter.applyTo(canvasEl);
+			
+			replacement.width = canvasEl.width;
+			replacement.height = canvasEl.height;
+			
+			_this._element = replacement;
+			_this._filteredEl = replacement;
+			replacement.src = canvasEl.toDataURL('image/png');
+				
+			this._canvas.add(fabricSprite);
+		},
+		
+		addToCanvas: function(currentLook){
+			this._canvas.add(currentLook);
+		},
+		
 		
 		glideTo: function(layer,xPos, yPos, dur){
 			this._canvas.getObjects()[layer].animate({left: xPos, top: yPos}, {

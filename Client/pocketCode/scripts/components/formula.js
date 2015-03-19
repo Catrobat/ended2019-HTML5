@@ -6,10 +6,14 @@
 PocketCode.Formula = (function () {
 
     function Formula(device, sprite, jsonFormula) {
+
+        if (!device || !sprite)
+            throw new Error('invalid parameter: undeclared device or sprite');
         this._device = device;
         this._sprite = sprite;
 
-        this.json = jsonFormula;
+        if (jsonFormula)
+            this.json = jsonFormula;
         //this._uiString = '';
     }
 
@@ -28,13 +32,15 @@ PocketCode.Formula = (function () {
                 var parsed = PocketCode.FormulaParser.parseJson(value); //return {calculate: [Function], isStatic: [boolean]}
                 if (parsed.isStatic) {
                     this.isStatic = true;
-                    var val = parsed.calculate();
+                    this.calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
+                    var val = this.calculate();
                     val = (typeof val === 'string') ? '"' + val + '"' : val;
                     this.calculate = new Function('return ' + val + ';');//'return ' + val + ';');
                 }
-                else
+                else {
+                    this.isStatic = false;
                     this.calculate = parsed.calculate;
-
+                }
                 this._uiString = undefined;
                 this._validateFormula();
             },

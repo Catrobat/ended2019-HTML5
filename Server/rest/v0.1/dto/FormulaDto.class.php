@@ -6,8 +6,8 @@ class FormulaDto {
   public $value;	//dependency on type, e.g. (type, value) = OPERATOR -> EQUAL
   //public $stringOperator;	//insert: <, <=, ==, >, >=, &&, ||		//???
   
-  public $right;	//type of FormulaDto
   public $left;		//type of FormulaDto
+  public $right;	//type of FormulaDto
   
   
   public function __construct($type, $value) {

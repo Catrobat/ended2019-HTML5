@@ -2,6 +2,8 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
+
+/// <reference path="../_resources/testDataFormula.js" />
 'use strict';
 
 QUnit.module("formula.js");
@@ -9,12 +11,16 @@ QUnit.module("formula.js");
 
 QUnit.test("Formula", function (assert) {
 
+    var soundManager = new PocketCode.SoundManager("0815", []);
+    var device = new PocketCode.Device(soundManager);
+
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
 
-    var f = new PocketCode.Formula(undefined, sprite, json);
+    assert.throws(function () { var f = new PocketCode.Formula(undefined, sprite, json); }, Error, "");
+    var f = new PocketCode.Formula(device, sprite, json);
 
     assert.ok(f instanceof PocketCode.Formula, "instance check");
     assert.ok(typeof f.calculate === "function", "calculate created during ctr");

@@ -164,42 +164,51 @@ function updateSprite(){
 	currentLook.src="_resources/img/tree-transparent.png";
 	var looks = [];
 	looks[0] = currentLook;
+	
 	//create 5 sprites
 	for(var i = 0; i < 5; i++){
-		canvas.addSprite(populateSprites(i, 'tree', i, 50*i,50*i,20,looks,true,i*60,0,0));
+		canvas.addSprite(populateSprites(i, 'tree', i, 50*i,50*i,20,looks,true,i*60,0,90));
 	}
 	var currentLook2 = new Image ();
 	currentLook2.src="_resources/img/minion.jpg";
 	var looks2 = [];
 	looks2[0] = currentLook2;
-	canvas.addSprite(populateSprites(5, 'tree', 5, 200,400,100,looks2,true,255,0,0));
+	canvas.addSprite(populateSprites(5, 'tree', 5, 200,400,100,looks2,true,100,0,90));
 	canvas.render();
+	
 	//insert element with id 6 (eleventh element) at layer 3 
-	canvas.addSprite(populateSprites(6, 'tree', 3, 15,15,20,looks,true,-255,0,0));
+	canvas.addSprite(populateSprites(6, 'tree', 3, 15,15,20,looks,true,0,0,90));
 	canvas.render();
+	
 	// get sprite by id
 	sprite2test = canvas.getSpriteById(5);
+	
 	// move sprite with id 5 to position 300, 400
 	canvas.renderSpriteChange({id: 5, changes: [{property: '_positionX', value: 300}, {property: '_positionY', value: 400}]});
 	sprite2test = canvas.getSpriteById(5);
+	
 	// change layer of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_layer', value: 0}]});
 	sprite2test = canvas.getSpriteById(5);
+	
 	// sync of internal sprite list and sprites on canvas
 	sprite2test = canvas.getSpriteById(5);
 	var sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
+	
 	// change direction of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_direction', value: 180}]});
 	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
 	sprite2test = canvas.getSpriteById(5);
+	
 	// change transparency of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_transparency', value: 80}]});
 	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
 	sprite2test = canvas.getSpriteById(5);
-	// change visibility of sprite
-	canvas.renderSpriteChange({id: 5, changes:[{property: '_visible', value: false}]});
-	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
-	sprite2test = canvas.getSpriteById(5);
+	
+//	// change visibility of sprite
+//	canvas.renderSpriteChange({id: 5, changes:[{property: '_visible', value: false}]});
+//	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
+//	sprite2test = canvas.getSpriteById(5);
 	
 	canvas.showAxes = true;
 	

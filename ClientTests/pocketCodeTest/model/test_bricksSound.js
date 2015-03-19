@@ -114,6 +114,7 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
 QUnit.test("SpeakBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var device = "device";
     var program = new PocketCode.Model.Program();
@@ -135,6 +136,19 @@ QUnit.test("SpeakBrick", function (assert) {
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+
+    //test: using text generated at runtime (not static)
+    sprite._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    text = join;    //using testDataFormula.js
+    var b2 = new PocketCode.Bricks.SpeakBrick(device, sprite, program._soundManager, { text: text });
+
+    var handler2 = function (e) {
+        assert.ok(true, "dynamic text: executed");
+        assert.equal(e.id, "thread_id2", "dynamic text: threadId handled correctly");
+        done2();
+    };
+    b2.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
 
 });
 

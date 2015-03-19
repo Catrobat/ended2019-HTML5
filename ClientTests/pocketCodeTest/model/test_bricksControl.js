@@ -594,7 +594,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
 
     b._condition = new PocketCode.Formula("device", sprite, cond);
     //check the condition is valid: only for this test case
-    assert.ok(!b._condition.calculate(), "2nd condition checked -> now false");
+    assert.equal(b._condition.calculate(), false, "2nd condition checked -> now false");
 
     b.execute(new SmartJs.Event.EventListener(handler1, this), "else");
     assert.ok(handler1Called, "else bricks: empty executed");

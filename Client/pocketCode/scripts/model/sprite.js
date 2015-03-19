@@ -2,13 +2,29 @@
 /// <reference path="program.js" />
 'use strict';
 
-PocketCode.Model = {};
+PocketCode.Model = PocketCode.Model || {};
+
+PocketCode.Model.RotationStyle = {
+    DO_NOT_ROTATE: 'don\'t rotate',
+    LEFT_TO_RIGHT: 'left-right',
+    ALL_AROUND: 'all around',
+};
+
+PocketCode.Model.GraphicEffect = {
+    COLOR: 'color',
+    FISHEYE: 'fisheye',
+    WHIRL: 'whirl',
+    PIXELATE: 'pixelate',
+    MOSAIC: 'mosaic',
+    BRIGHTNESS: 'brightness',
+    GHOST: 'ghost',     //opacity, transparency
+};
 
 PocketCode.Model.Sprite = (function () {
 
     function Sprite(program, propObject) {
         this._program = program;
-        this._onChange = program.onSpriteChange;
+        this._onChange = program.onSpriteChange;    //mapping event (defined in program)
         this.running = false;
 
         this.id = undefined;
@@ -42,6 +58,9 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
+        rotationStyle: {
+            value: PocketCode.Model.RotationStyle.ALL_AROUND,   //static property (right now)
+        },
         //motion
         positionX: {
             get: function () {
@@ -63,7 +82,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
         	set: function (layer) {
-        		this._layer = layer;
+        	    //TODO: in program : this._layer = layer;
         	},
             get: function () {
                 return this._program.getSpriteLayer(this.id);
@@ -80,7 +99,7 @@ PocketCode.Model.Sprite = (function () {
         //looks
         looks: {
             set: function (looks) {
-                if (!looks || typeof looks !== 'object' || !(looks instanceof Array) || looks.length === 0)
+                if (looks === undefined || typeof looks !== 'object' || !(looks instanceof Array) || looks.length === 0)
                     throw new Error('invalid argument: expected looks type of array');
 
                 this._looks = looks;
@@ -119,7 +138,7 @@ PocketCode.Model.Sprite = (function () {
                 if (!(varArray instanceof Array))
                     throw new Error('variable setter expects type Array');
 
-                for (i = 0, l = varArray.length; i < l; i++) {
+                for (var i = 0, l = varArray.length; i < l; i++) {
                     varArray[i].value = 0.0;  //init
                     this._variables[varArray[i].id] = varArray[i];
                     this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };
@@ -141,7 +160,7 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
-        start: function() {
+        start: function () {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].start)
                     this.bricks[i].start();
@@ -168,8 +187,8 @@ PocketCode.Model.Sprite = (function () {
             this.running = false;
         },
 
-        _triggerOnChange: function(propertyArray) {
-            this._onChange.dispatchEvent({id: this.id, properties: propertyArray}, this);
+        _triggerOnChange: function (propertyArray) {
+            this._onChange.dispatchEvent({ id: this.id, properties: propertyArray }, this);
         },
 
         //motion: position
@@ -199,7 +218,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changePositionX: function (value) {
-            if (!value || value === 0)
+            if (!value)// || value === 0)
                 return false;
             this._positionX += value;
             this._triggerOnChange([{ positionX: this._positionX }]);
@@ -213,7 +232,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changePositionY: function (value) {
-            if (!value || value === 0)
+            if (!value)// || value === 0)
                 return false;
             this._positionY += value;
             this._triggerOnChange([{ positionY: this._positionY }]);
@@ -224,7 +243,7 @@ PocketCode.Model.Sprite = (function () {
             //onChange event is triggered by program in this case
         },
         move: function (steps) {
-            if (!steps || steps === 0)
+            if (!steps)// || steps === 0)
                 return false;
 
             var rad = this.direction * (Math.PI / 180.0);
@@ -257,8 +276,7 @@ PocketCode.Model.Sprite = (function () {
         },
         setDirection: function (degree, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
-            // why !degree??? degree of 0 should be allowed?!
-            if (!degree || this.direction === degree)
+            if (degree === undefined || this.direction === degree)
                 return false;
 
             this.direction = degree;
@@ -338,7 +356,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setSize: function (percentage) {
-            if (!percentage || this._size === percentage || (this._size === 0 && percentage <= 0))
+            if (percentage === undefined || this._size === percentage || (this._size === 0 && percentage <= 0))
                 return false;
 
             this._size = percentage;
@@ -374,7 +392,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
-            if (!percentage)
+            if (percentage === undefined)
                 return false;
 
             if (percentage < 0.0)
@@ -390,7 +408,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
-            if (!value)
+            if (value === undefined)
                 return false;
 
             value = this._transparency + value;
@@ -407,13 +425,13 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
-            if (!percentage)
+            if (percentage === undefined)
                 return false;
 
             if (percentage < 0.0)
                 percentage = 0.0;
-            if (percentage > 100.0)
-                percentage = 100.0;
+            if (percentage > 200.0)
+                percentage = 200.0;
 
             if (this._brightness === percentage)
                 return false;
@@ -424,14 +442,14 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
-            if (!value)
+            if (value === undefined)
                 return false;
 
             value = this._brightness + value;
             if (value < 0.0)
                 value = 0.0;
-            if (value > 100.0)
-                value = 100.0;
+            if (value > 200.0)
+                value = 200.0;
 
             if (this._brightness === value)
                 return false;

@@ -1,15 +1,13 @@
 <?php
 //ChangeGhostEffect
 
-class ChangeTransparencyBrickDto extends BaseBrickDto {
+class ChangeTransparencyBrickDto extends ChangeGraphicEffectBrickDto {
 
-  public $value;	//type of FormulaDto
-  
-  
   public function __construct($value) {
-	parent::__construct("ChangeTransparency");
-
-	$this->value = $value;
+		parent::__construct(EGraphicEffect.GHOST, $value);
+		
+		$this->type = "ChangeTransparency";
+		
   }
 
 }

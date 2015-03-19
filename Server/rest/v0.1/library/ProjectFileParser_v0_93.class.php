@@ -588,7 +588,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 				
 				/*default: return xml to verify which brick implementation is missing without generating a parser error*/
 				default:
-					$brick = new UnsupportedBrickDto($script->asXML(), $script["type"]);
+					$brick = new UnsupportedBrickDto($script->asXML(), (string)$script["type"]);
 			}
 			
 			array_pop($this->cpp);

@@ -12,7 +12,7 @@ class FileHelper {
         while ((($file=readdir($handle))!==false) && ($result)){
             if ($file!='.' && $file!='..'){
                 if (is_dir($dir . DIRECTORY_SEPARATOR . $file)){
-                    $result = deleteDirectory($dir . DIRECTORY_SEPARATOR . $file);
+                    $result = self::deleteDirectory($dir . DIRECTORY_SEPARATOR . $file);
                 } else {
                     $result = unlink($dir . DIRECTORY_SEPARATOR . $file);
                 }

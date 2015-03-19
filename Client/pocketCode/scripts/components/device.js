@@ -5,7 +5,9 @@
 
 PocketCode.Device = (function () {
 
-    function Device() {
+    function Device(soundManager) {
+        this._soundMgr = soundManager;
+
         this.sensorEmulation = false;
 
         this.isMobile = SmartJs.Device.isMobile;
@@ -13,16 +15,16 @@ PocketCode.Device = (function () {
 
         //events
         this._onKeypress = new SmartJs.Event.Event(this);
-        this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if sensor is used that is not supported
+        this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
 
         //init
         this._sensorSupport = {
             X_ACCELERATION: true,
             Y_ACCELERATION: true,
-            Z_ACCELERATION: true, 
+            Z_ACCELERATION: true,
             COMPASS_DIRECTION: true,    //?
-            X_INCLINATION: true, 
-            Y_INCLINATION: true, 
+            X_INCLINATION: true,
+            Y_INCLINATION: true,
             LOUDNESS: false,    //notify?
         };
         this._sensorEmulatedData = {
@@ -84,8 +86,48 @@ PocketCode.Device = (function () {
         },
         loudness: {
             get: function () {
-                return 0;   //TODO:
+                return this._soundMgr.volume;
             },
+            //enumerable: false,
+            //configurable: true,
+        },
+        faceDetected: {
+            get: function () {
+                return false; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        faceSize: {
+            get: function () {
+                return 0; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        facePositionX: {
+            get: function () {
+                return 0; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        facePositionY: {
+            get: function () {
+                return 0; //TODO: 
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        flashlightOn: {
+            get: function () {
+                return false; //TODO: 
+            },
+            set: function (on) {
+                if (typeof on !== 'boolean')
+                    throw new Error('invalid parameter: expected type \'boolean\'');
+                //TODO:
+            }
             //enumerable: false,
             //configurable: true,
         },
@@ -108,7 +150,7 @@ PocketCode.Device = (function () {
     //methods
     Device.prototype.merge({
         _initSensors: function () {
-            //TODO: check sensor support
+            //TODO: check sensor support: have a look at prototyping folder to implement this
             //http://www.html5rocks.com/en/tutorials/device/orientation/
             //if (window.DeviceOrientationEvent) { }
 
@@ -121,16 +163,19 @@ PocketCode.Device = (function () {
         },
         setSensorInUse: function (sensor) {
             if (this._sensorSupport[sensor]) {
-                var supported= this._sensorSupport[sensor];
+                var supported = this._sensorSupport[sensor];
                 if (!supported && !this.sensorEmulation) {
                     this.sensorEmulation = true;
-                    this.onSupportChange.dispatchEvent();
+                    this._onSupportChange.dispatchEvent();
                 }
             }
             else    //unknown sensor
                 throw new Error('device: unknown sensor: ' + sensor);
         },
-
+        vibrate: function (seconds) {
+            var time = seconds * 1000;
+            //TODO:
+        },
     });
 
     return Device;
