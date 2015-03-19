@@ -10,12 +10,21 @@ PocketCode.Canvas = (function(){
 		this._zoomfactor = zoomfactor;
 		this.sprites = [];
         this._onSpriteClicked = new SmartJs.Event.Event(this);
+        this._showAxes = false;
 
         //add listener to element selected event
         var _self = this;
-        this._canvas.on('object:selected', function(e) {
-//			  this.clickedSprite.bind(this, e.target);
-        	_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+        this._canvas.on('mouse:down', function(e) {
+        	if(typeof e.target != 'undefined'){
+        		console.log(e.target.id);
+        		_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+        	}
+        });
+        
+        this._canvas.on('after:render', function(e) {
+        	if(_self._showAxes){
+        		_self._toggleAxes();
+        	}
         });
 	}
 	
@@ -30,6 +39,15 @@ PocketCode.Canvas = (function(){
 	                return this._zoomfactor;
 	            },
 	        },
+	        showAxes: {
+	        	get: function() {
+	        		return this._showAxes;
+	        	},
+	        	set: function(flag){
+	        		this._showAxes = flag;
+	        		this.render();
+	        	}
+	        }
 	    });
 	 
 	 Object.defineProperties(Canvas.prototype, {
@@ -145,6 +163,7 @@ PocketCode.Canvas = (function(){
 					centeredRotation: true,
 					centeredsize: true,
 					perPixelTargetFind: true,
+					selectable: false,
 					
 					//coordinates have to be adapted either here or at another level
 					top: this.sprites[i]._positionX,
@@ -162,8 +181,8 @@ PocketCode.Canvas = (function(){
 				currentLook.scale(this.sprites[i]._size/100*this._zoomfactor);
 				
 				//TODO
-//				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: this.sprites[i]._brightness}));
-				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: 1}));
+				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: parseInt(this.sprites[i]._brightness, 10)}));
+//				currentLook.filters[0].brightness = parseInt(this.sprites[i]._brightness, 10 );
 				currentLook.applyFilters(this._canvas.renderAll.bind(this._canvas));
 				
 				currentLook._originalElement.id = this.sprites[i].id;
@@ -182,6 +201,31 @@ PocketCode.Canvas = (function(){
 		
 		setZoomfactor: function(zoomfactor){
 			this._zoomfactor = zoomfactor;
+		},
+		
+		_toggleAxes: function(){
+			this._canvas.getContext('2d').moveTo(this._canvas.getWidth()/2, 0);
+			this._canvas.getContext('2d').lineTo(this._canvas.getWidth()/2, this._canvas.getHeight());
+			
+			this._canvas.getContext('2d').moveTo(0, this._canvas.getHeight()/2);
+			this._canvas.getContext('2d').lineTo(this._canvas.getWidth(), this._canvas.getHeight()/2);
+		    
+			this._canvas.getContext('2d').strokeStyle = "#ff0000";
+			this._canvas.getContext('2d').lineWidth = 5;
+			
+			
+			this._canvas.getContext('2d').font="15px Arial";
+			this._canvas.getContext('2d').fillStyle= "#ff0000";
+			//center
+			this._canvas.getContext('2d').fillText("0",this._canvas.getWidth()/2 + 10,this._canvas.getHeight()/2 +15);
+			//width
+			this._canvas.getContext('2d').fillText("-" + this._canvas.getWidth()/2, 5 ,this._canvas.getHeight()/2 +15);
+			this._canvas.getContext('2d').fillText(this._canvas.getWidth()/2,this._canvas.getWidth() - 25,this._canvas.getHeight()/2 +15);
+			//height
+			this._canvas.getContext('2d').fillText("-" + this._canvas.getHeight()/2,this._canvas.getWidth()/2 +10, 15);
+			this._canvas.getContext('2d').fillText(this._canvas.getHeight()/2,this._canvas.getWidth()/2 + 10 ,this._canvas.getHeight() -5);
+			
+			this._canvas.getContext('2d').stroke();
 		}
 		
 	});
