@@ -13,8 +13,8 @@ PocketCode.merge({
         PROJECT_SEARCH: 'projects',
         PROJECT: 'projects/{id}',
         PROJECT_DETAILS: 'projects/{id}/details',
-        I18N: 'i18n/{language}',
         TTS: 'tts/{string}',
+        I18N: 'i18n/{language}',
         //TODO:
     },
 
@@ -50,7 +50,15 @@ PocketCode.merge({
                 }
             }
 
-            this.method = method;
+            //check: method PUT/DELETE -> method=POST + modify request properties
+            if (method === SmartJs.RequestMethod.PUT || method === SmartJs.RequestMethod.DELETE) {
+                this.method = SmartJs.RequestMethod.POST;
+                this._service += first ? '?' : '&';
+                this._service += 'method=' + method;
+            }
+            else
+                this.method = method;
+
             this._progressSupported = true;     //default for our services
 
             //events
@@ -141,21 +149,55 @@ PocketCode.merge({
                 if (!(request instanceof PocketCode.ServiceRequest))
                     throw new Error('invalid argument, expected: request type of PocketCode.ServiceRequest');
 
-                //check: same origin policy
-                //check CORS
-                //create smartJs request object	(ajax, cors, jsonp)
-                //check: method PUT/DELETE -> method=POST + modify request properties
-                //connect events or add handler to pocketCode._jsonpClientEndpoint
+                if (this._xhrSupported(request.url))
+                    this._sendUsingAjax(request);
+                else if (this._corsSupported())
+                    this._sendUsingCors(request);
+                else
+                    this._sendUsingJsonp(request);
+            },
+            _xhrSupported: function (url) {
+                var l = window.location;
+                var a = document.createElement('a');
+                a.href = url;
+
+                return a.hostname === l.hostname && a.port === l.port && a.protocol === l.protocol;
+            },
+            _corsSupported: function () {
+                if ('withCredentials' in new XMLHttpRequest())
+                    return true;
+                else if (window.XDomainRequest) //IE specific
+                    return true;
+                return false;
+            },
+            _sendUsingAjax: function (request) {
+                var xhr = new SmartJs.Communication.XmlHttpRequest();
+                //bind events: as event objects are not public, we inject our request events into the SmartJs request
+                xhr._onLoadStart = request.onLoadStart;
+                xhr._onLoad = request.onLoad;
+                xhr._onError = request.onError;
+                xhr._onAbort = request.onAbort;
+                xhr._onProgressChange = request.onProgressChange;
+                //TODO: request.onProgressSupportedChange?
                 //send
+                xhr.send(request.url, request.method, request.data);
             },
-            _sendUsingAjax: function () {
-                //TODO: 
+            _sendUsingCors: function (request) {
+                var cors = new SmartJs.Communication.CorsRequest();
+                //bind events: as event objects are not public, we inject our request events into the SmartJs request
+                cors._onLoadStart = request.onLoadStart;
+                cors._onLoad = request.onLoad;
+                cors._onError = request.onError;
+                cors._onAbort = request.onAbort;
+                cors._onProgressChange = request.onProgressChange;
+                //TODO: request.onProgressSupportedChange?
+                //send
+                cors.send(request.url, request.method, request.data);
             },
-            _sendUsingCors: function () {
-                //TODO: 
-            },
-            _sendUsingJsonp: function () {
-                //TODO: 
+            _sendUsingJsonp: function (request) {
+                //settings
+                //connect events
+                //send
             },
         });
 

@@ -12,13 +12,15 @@ SmartJs.RequestMethod = {
 };
 
 SmartJs.Communication = {
-    AjaxRequest: (function () {
-        AjaxRequest.extends(SmartJs.Core.EventTarget);
 
-        function AjaxRequest(url) {
-            this._url = url;
+    XmlHttpRequest: (function () {
+        XmlHttpRequest.extends(SmartJs.Core.EventTarget);
+
+        function XmlHttpRequest(url) {
+            if (url)
+                this._url = url;
             //this._pendingRequest = false;
-            this._xhr = new XMLHttpRequest();
+            //this._xhr = new XMLHttpRequest();
 
             //events
             this._onLoadStart = new SmartJs.Event.Event(this);
@@ -29,7 +31,7 @@ SmartJs.Communication = {
 
             var xhr = this._xhr;
             this._addDomListener(xhr, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'load', function (e) { this._onLoadStart.dispatchEvent(e); });
+            this._addDomListener(xhr, 'load', function (e) { this._onLoad.dispatchEvent(e); });
             /*
 if (xhr.readyState === 4) { 
       if (xhr.status === 200) {
@@ -38,20 +40,20 @@ if (xhr.readyState === 4) {
         console.error(xhr.statusText);
       }
     }            */
-            this._addDomListener(xhr, 'error', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'abort', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'progress', function (e) { if (e.lengthComputable) this._onLoadStart.dispatchEvent(e); });
+            this._addDomListener(xhr, 'error', function (e) { this._onError.dispatchEvent(e); });
+            this._addDomListener(xhr, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+            this._addDomListener(xhr, 'progress', function (e) { if (e.lengthComputable) this._onProgressChange.dispatchEvent(e); });
 
             xhr = xhr.upload;
             this._addDomListener(xhr, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'load', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'error', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'abort', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'progress', function (e) { if (e.lengthComputable) this._onLoadStart.dispatchEvent(e); });
+            this._addDomListener(xhr, 'load', function (e) { this._onLoad.dispatchEvent(e); });
+            this._addDomListener(xhr, 'error', function (e) { this._onError.dispatchEvent(e); });
+            this._addDomListener(xhr, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+            this._addDomListener(xhr, 'progress', function (e) { if (e.lengthComputable) this._onProgressChange.dispatchEvent(e); });
         }
 
         //properties
-        Object.defineProperties(AjaxRequest.prototype, {
+        Object.defineProperties(XmlHttpRequest.prototype, {
             url: {
                 get: function () {
                     return this._url;
@@ -110,7 +112,7 @@ if (xhr.readyState === 4) {
         });
 
         //events
-        Object.defineProperties(AjaxRequest.prototype, {
+        Object.defineProperties(XmlHttpRequest.prototype, {
             onLoadStart: {
                 get: function () { return this._onLoadStart; },
                 //enumerable: false,
@@ -139,9 +141,15 @@ if (xhr.readyState === 4) {
         });
 
         //methods
-        AjaxRequest.prototype.merge({
-            post: function (data) {
+        XmlHttpRequest.prototype.merge({
+            send: function (url, method, data) {
+                //TODO:
+            },
+            post: function (url, data) {
                 //TODO: check for this._pendingRequest
+                if (url)
+                    this._url = url;
+
                 var xhr = this._xhr;
 
                 //if (data instanceof File && xhr.setRequestHeader) {
@@ -152,7 +160,7 @@ if (xhr.readyState === 4) {
                 xhr.open('POST', this._url);
                 xhr.send(data);
             },
-            get: function(url) {
+            get: function (url) {
                 if (url)
                     this._url = url;
 
@@ -168,10 +176,77 @@ if (xhr.readyState === 4) {
             },
         });
 
-        return AjaxRequest;
+        return XmlHttpRequest;
     })(),
 
+
+    CorsRequest: (function () {     //http://www.html5rocks.com/en/tutorials/cors/, http://www.eriwen.com/javascript/how-to-cors/
+        CorsRequest.extends(SmartJs.Core.EventTarget);
+
+        function CorsRequest(url) {
+            if (url)
+                this._url = url;
+            //this._pendingRequest = false;
+            //this._xhr = new XMLHttpRequest();
+
+            //events
+            this._onLoadStart = new SmartJs.Event.Event(this);
+            this._onLoad = new SmartJs.Event.Event(this);
+            this._onError = new SmartJs.Event.Event(this);
+            this._onAbort = new SmartJs.Event.Event(this);
+            this._onProgressChange = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(CorsRequest.prototype, {
+            onLoadStart: {
+                get: function () { return this._onLoadStart; },
+                //enumerable: false,
+                //configurable: true,
+            },
+            onLoad: {
+                get: function () { return this._onLoad; },
+                //enumerable: false,
+                //configurable: true,
+            },
+            onError: {
+                get: function () { return this._onError; },
+                //enumerable: false,
+                //configurable: true,
+            },
+            onAbort: {
+                get: function () { return this._onAbort; },
+                //enumerable: false,
+                //configurable: true,
+            },
+            onProgressChange: {
+                get: function () { return this._onProgressChange; },
+                //enumerable: false,
+                //configurable: true,
+            },
+        });
+
+        //methods
+        CorsRequest.prototype.merge({
+            send: function (url, method, data) {
+                //TODO:
+            },
+        });
+
+        return CorsRequest;
+    })(),
+
+    //TODO: change binding to get an strong typed event target
+
+    //TODO: add event injection property & setter for event objects
+
+    //TODO: change namespace (using core namespace)
+
+    //TOD: add jsonp request?
+
+    //TOD: add resource loader
 };
+
 
 //file: http://www.binaryintellect.net/articles/859d32c8-945d-4e5d-8c89-775388598f62.aspx
 //form data: http://www.matlus.com/html5-file-upload-with-progress/
