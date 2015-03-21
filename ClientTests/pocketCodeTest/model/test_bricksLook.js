@@ -169,7 +169,8 @@ QUnit.test("SetTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetTransparencyBrick(device, sprite, { value: percentage });
+    var b = new PocketCode.Bricks.SetTransparencyBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.GHOST });
+    //^^ effect is set server side
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetTransparencyBrick, "instance check");
@@ -195,7 +196,7 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeTransparencyBrick(device, sprite, { value: value });
+    var b = new PocketCode.Bricks.ChangeTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeTransparencyBrick, "instance check");
@@ -221,7 +222,7 @@ QUnit.test("SetBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetBrightnessBrick(device, sprite, { value: percentage });
+    var b = new PocketCode.Bricks.SetBrightnessBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetBrightnessBrick, "instance check");
@@ -247,7 +248,7 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeBrightnessBrick(device, sprite, { value: value });
+    var b = new PocketCode.Bricks.ChangeBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeBrightnessBrick, "instance check");
