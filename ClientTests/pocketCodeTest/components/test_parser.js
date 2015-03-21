@@ -108,8 +108,8 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.uiString, "sin(90)", "string sin");
 
     f.json = cos;
-    assert.equal(Math.round(f.calculate() * 100) / 100, -0.07, "calc cos (rad)");
-    assert.equal(f.isStatic, true, "calc cos (rad): isStatic");
+    assert.equal(Math.round(f.calculate() * 100) / 100, -0.07, "calc cos (rad? - all values in degree)");
+    assert.equal(f.isStatic, true, "calc cos (rad? - all values in degree): isStatic");
     assert.equal(f.uiString, "cos(pi x 30)", "string cos");
 
     f.json = cos2;
@@ -117,8 +117,8 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.uiString, "cos(180)", "string cos");
 
     f.json = tan;
-    assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
-    assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad? - all values in degree)");
+    assert.equal(f.isStatic, true, "calc tan (rad? - all values in degree): isStatic");
     assert.equal(f.uiString, "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
     assert.ok(f.uiString.substr(0,7), "tan(pi ", "string tan");
 
