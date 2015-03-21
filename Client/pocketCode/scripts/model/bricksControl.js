@@ -251,8 +251,8 @@ PocketCode.Bricks.merge({
     ForeverBrick: (function () {
         ForeverBrick.extends(PocketCode.Bricks.LoopBrick, false);
 
-        function ForeverBrick(device, sprite) {
-            PocketCode.Bricks.LoopBrick.call(this, device, sprite);
+        function ForeverBrick(device, sprite, minLoopCycleTime) {
+            PocketCode.Bricks.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             //this._bricks = propObject.bricks;
         }
@@ -347,8 +347,8 @@ PocketCode.Bricks.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Bricks.LoopBrick, false);
 
-        function RepeatBrick(device, sprite, propObject) {
-            PocketCode.Bricks.LoopBrick.call(this, device, sprite);
+        function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
+            PocketCode.Bricks.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
             this._bricks = propObject.bricks;

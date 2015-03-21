@@ -59,7 +59,7 @@ PocketCode.Model.Sprite = (function () {
     //properties
     Object.defineProperties(Sprite.prototype, {
         rotationStyle: {
-            value: PocketCode.Model.RotationStyle.ALL_AROUND,   //static property (right now)
+            value: PocketCode.RotationStyle.ALL_AROUND,   //static property (right now)
         },
         //motion
         positionX: {

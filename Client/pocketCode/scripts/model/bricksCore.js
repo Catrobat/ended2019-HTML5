@@ -362,9 +362,10 @@ PocketCode.Bricks.LoopBrick = (function () {
      * @param sprite
      * @constructor
      */
-    function LoopBrick(device, sprite) {
+    function LoopBrick(device, sprite, minLoopCycleTime) {
         PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
 
+        this._minLoopCycleTime = minLoopCycleTime || 20;
         //this._bricks typeof PocketCode.Bricks.BrickContainer
     }
 
@@ -398,7 +399,7 @@ PocketCode.Bricks.LoopBrick = (function () {
             if (this._bricks && this._loopConditionMet(id)) {
                 var executionDelay = 0;
                 if (e.loopDelay) {
-                    executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
+                    executionDelay = this._minLoopCycleTime - (new Date() - op.startTime);  //20ms min loop cycle time
                     //console.log("loop delay: ");
                 }
                 op.startTime = new Date();  //re-init for each loop

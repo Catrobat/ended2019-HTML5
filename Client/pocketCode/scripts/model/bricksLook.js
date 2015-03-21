@@ -12,7 +12,7 @@ PocketCode.Bricks.merge({
         function SetGraphicEffectBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._effect = propObject.effect;    //typeof PocketCode.Model.GraphicEffect 
+            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -30,7 +30,7 @@ PocketCode.Bricks.merge({
         function ChangeGraphicEffectBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._effect = propObject.effect;    //typeof PocketCode.Model.GraphicEffect
+            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -147,6 +147,7 @@ PocketCode.Bricks.merge({
 
         function SetTransparencyBrick(device, sprite, propObject) {
             PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
         //SetTransparencyBrick.prototype._execute = function () {
@@ -162,6 +163,7 @@ PocketCode.Bricks.merge({
 
         function ChangeTransparencyBrick(device, sprite, propObject) {
             PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
         //ChangeTransparencyBrick.prototype._execute = function () {
@@ -177,6 +179,7 @@ PocketCode.Bricks.merge({
 
         function SetBrightnessBrick(device, sprite, propObject) {
             PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
         //SetBrightnessBrick.prototype._execute = function () {
@@ -192,6 +195,7 @@ PocketCode.Bricks.merge({
 
         function ChangeBrightnessBrick(device, sprite, propObject) {
             PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
         //ChangeBrightnessBrick.prototype._execute = function () {
