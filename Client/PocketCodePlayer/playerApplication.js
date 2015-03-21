@@ -13,7 +13,7 @@ PocketCodePlayer.Navigation = {
     },
 };
 
-PocketCodePlayer.NavigationRoot = PocketCode.Navigation.Projects;
+PocketCodePlayer.NavigationRoot = PocketCode.Navigation.EXPLORE;
 PocketCodePlayer.ApplicationTitle = "PocketCode HTML5 Player: ";
 
 PocketCode.PlayerApplication = (function () {
