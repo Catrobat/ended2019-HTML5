@@ -4,13 +4,13 @@
 
 PocketCode.Model = PocketCode.Model || {};
 
-PocketCode.Model.RotationStyle = {
+PocketCode.RotationStyle = {
     DO_NOT_ROTATE: 'don\'t rotate',
     LEFT_TO_RIGHT: 'left-right',
     ALL_AROUND: 'all around',
 };
 
-PocketCode.Model.GraphicEffect = {
+PocketCode.GraphicEffect = {
     COLOR: 'color',
     FISHEYE: 'fisheye',
     WHIRL: 'whirl',
@@ -391,6 +391,49 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ visible: true }]);
             return true;
         },
+        setGraphicEffect: function (effect, value) {
+            switch (effect) {
+                case PocketCode.GraphicEffect.GHOST:    //=transparency
+                    //TODO
+                    return false; //TODO
+                    break;
+                case PocketCode.GraphicEffect.BRIGHTNESS:
+                    //TODO:
+                    return false; //TODO
+                    break;
+                case PocketCode.GraphicEffect.COLOR:
+                case PocketCode.GraphicEffect.FISHEYE:
+                case PocketCode.GraphicEffect.MOSAIC:
+                case PocketCode.GraphicEffect.PIXELATE:
+                case PocketCode.GraphicEffect.WHIRL:
+                    return false;   //currently not supported
+
+                default:
+                    throw new Error('unknown graphic effect: ' + effect);
+            }
+        },
+        changeGraphicEffect: function (effect, value) {
+            switch (effect) {
+                case PocketCode.GraphicEffect.GHOST:    //=transparency
+                    //TODO
+                    return false; //TODO
+                    break;
+                case PocketCode.GraphicEffect.BRIGHTNESS:
+                    //TODO:
+                    return false; //TODO
+                    break;
+                case PocketCode.GraphicEffect.COLOR:
+                case PocketCode.GraphicEffect.FISHEYE:
+                case PocketCode.GraphicEffect.MOSAIC:
+                case PocketCode.GraphicEffect.PIXELATE:
+                case PocketCode.GraphicEffect.WHIRL:
+                    return false;   //currently not supported
+
+                default:
+                    throw new Error('unknown graphic effect: ' + effect);
+            }
+        },
+        /*obsolete: use set/change graphic effect instead*/
         setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
@@ -407,6 +450,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: percentage }]);
             return true;
         },
+        /*obsolete: use set/change graphic effect instead*/
         changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;
@@ -424,6 +468,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: value }]);
             return true;
         },
+        /*obsolete: use set/change graphic effect instead*/
         setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
@@ -441,6 +486,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ brightness: percentage }]);
             return true;
         },
+        /*obsolete: use set/change graphic effect instead*/
         changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;

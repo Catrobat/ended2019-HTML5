@@ -50,7 +50,7 @@ PocketCode.Bricks = {
                     loopDelay: false,
                     childIdx: 0
                 };
-                this._executeContainerItem({id: id, loopDelay: false});
+                this._executeContainerItem({ id: id, loopDelay: false });
             },
             /**
              * Goes through pendingOps and calls "execute()" on each bricks[id] entry
@@ -72,7 +72,7 @@ PocketCode.Bricks = {
                 else {
                     var listener = op.listener;
                     delete this._pendingOps[args.id];
-                    listener.handler.call(listener.scope, {id: op.threadId, loopDelay: op.loopDelay});
+                    listener.handler.call(listener.scope, { id: op.threadId, loopDelay: op.loopDelay });
                 }
             },
             /**
@@ -162,109 +162,78 @@ PocketCode.Bricks = {
 
 };
 
-PocketCode.Bricks.merge({
-
-    SetGraphicEffectBrick: (function () {
-        SetGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
-
-        function SetGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._effect = propObject.effect;    //typeof PocketCode.Model.GraphicEffect 
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
-        }
-
-        return SetGraphicEffectBrick;
-    })(),
-
-
-    ChangeGraphicEffectBrick: (function () {
-        ChangeGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
-
-        function ChangeGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._effect = propObject.effect;    //typeof PocketCode.Model.GraphicEffect
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
-        }
-
-        return ChangeGraphicEffectBrick;
-    })(),
-
-
+/**
+ * @class ThreadedBrick: Thread based type of Brick with unique Id
+ */
+PocketCode.Bricks.ThreadedBrick = (function () {
+    ThreadedBrick.extends(PocketCode.Bricks.BaseBrick, false);
     /**
-     * @class ThreadedBrick: Thread based type of Brick with unique Id
+     * Initializes pendingOps
+     * @param device
+     * @param sprite
+     * @constructor
      */
-    ThreadedBrick: (function () {
-        ThreadedBrick.extends(PocketCode.Bricks.BaseBrick, false);
+    function ThreadedBrick(device, sprite) {
+        PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        this._pendingOps = {};
+    }
+
+    ThreadedBrick.prototype.merge({
         /**
-         * Initializes pendingOps
-         * @param device
-         * @param sprite
-         * @constructor
+         * Calls "execute(id)" with a uniquely generated thread Id and adds an entry to pendingOps list. Parameters can
+         * be null e.g. ProgramStartBrick, WhenActionBrick, BroadcastReceiveBrick if not triggered by BroadcastWaitBrick
+         * @param {SmartJs.Event.EventListener} onExecutedListener: given executedListener
+         * @param {String} threadId: given thread ID
+         * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
+         * SmartJs.Event.EventListener
          */
-        function ThreadedBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        execute: function (onExecutedListener, threadId) {
+            if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+                throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
+
+            var id = SmartJs.getNewId();
+            this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
+            this._execute(id);
+        },
+        /**
+         *
+         * @param {String} id
+         * @param {number} loopDelay
+         * @private
+         */
+        _return: function (id, loopDelay) {
+            var po = this._pendingOps[id];
+            if (!po)  //stopped
+                return;
+
+            var loopD = loopDelay ? loopDelay : false;
+            var listener = po.listener;
+            var threadId = po.threadId;
+            delete this._pendingOps[id];
+            if (listener)
+                listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
+        },
+        //pause: function() {
+
+        //},
+        //resume: function() {
+
+        //},
+
+        /**
+         * clears pendingOps list
+         */
+        stop: function () {
             this._pendingOps = {};
-        }
+        },
+    });
 
-        ThreadedBrick.prototype.merge({
-            /**
-             * Calls "execute(id)" with a uniquely generated thread Id and adds an entry to pendingOps list. Parameters can
-             * be null e.g. ProgramStartBrick, WhenActionBrick, BroadcastReceiveBrick if not triggered by BroadcastWaitBrick
-             * @param {SmartJs.Event.EventListener} onExecutedListener: given executedListener
-             * @param {String} threadId: given thread ID
-             * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
-             * SmartJs.Event.EventListener
-             */
-            execute: function (onExecutedListener, threadId) {
-                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
-                    throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
+    return ThreadedBrick;
+})();
 
-                var id = SmartJs.getNewId();
-                this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
-                this._execute(id);
-            },
-            /**
-             *
-             * @param {String} id
-             * @param {number} loopDelay
-             * @private
-             */
-            _return: function (id, loopDelay) {
-                var po = this._pendingOps[id];
-                if (!po)  //stopped
-                    return;
-
-                var loopD = loopDelay ? loopDelay : false;
-                var listener = po.listener;
-                var threadId = po.threadId;
-                delete this._pendingOps[id];
-                if (listener)
-                    listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
-            },
-            //pause: function() {
-
-            //},
-            //resume: function() {
-
-            //},
-
-            /**
-             * clears pendingOps list
-             */
-            stop: function () {
-                this._pendingOps = {};
-            },
-        });
-
-        return ThreadedBrick;
-    })()
-});
-
-    /**
-     * @class SingleContainerBrick
-     */
+/**
+ * @class SingleContainerBrick
+ */
 PocketCode.Bricks.SingleContainerBrick = (function () {
     SingleContainerBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
     /**
@@ -335,9 +304,9 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
     return SingleContainerBrick;
 })();
 
-    /**
-     * @class RootContainerBrick
-     */
+/**
+ * @class RootContainerBrick
+ */
 PocketCode.Bricks.RootContainerBrick = (function () {
     RootContainerBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
     /**
@@ -382,9 +351,9 @@ PocketCode.Bricks.RootContainerBrick = (function () {
     return RootContainerBrick;
 })();
 
-    /**
-     * @class LoopBrick
-     */
+/**
+ * @class LoopBrick
+ */
 PocketCode.Bricks.LoopBrick = (function () {
     LoopBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
     /**
@@ -407,7 +376,7 @@ PocketCode.Bricks.LoopBrick = (function () {
          */
         execute: function (onExecutedListener, callId) {
             var id = SmartJs.getNewId();
-            this._pendingOps[id] = {callId: callId, listener: onExecutedListener, startTime: new Date()};
+            this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
 
             if (this._bricks && this._loopConditionMet(id))
                 this._execute(id);
@@ -482,7 +451,7 @@ PocketCode.Bricks.LoopBrick = (function () {
             //window.setTimeout(function () {
             //    listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
             //}, 3);
-            listener.handler.call(listener.scope, {id: callId, loopDelay: false});
+            listener.handler.call(listener.scope, { id: callId, loopDelay: false });
             //}
         },
     });
@@ -490,9 +459,9 @@ PocketCode.Bricks.LoopBrick = (function () {
     return LoopBrick;
 })();
 
-    /**
-     * @class UnsupportedBrick: for bricks which are currently not supported
-     */
+/**
+ * @class UnsupportedBrick: for bricks which are currently not supported
+ */
 PocketCode.Bricks.UnsupportedBrick = (function () {
     UnsupportedBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
