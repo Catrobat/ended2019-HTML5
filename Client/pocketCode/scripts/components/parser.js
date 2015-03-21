@@ -80,33 +80,44 @@ PocketCode.merge({
                 var type = jsonBrick.type + 'Brick';
                 var brick = undefined;
 
-                switch (type) {
-                    case 'ProgramStartBrick':
-                    case 'WhenActionBrick':
-                        brick = new PocketCode.Bricks[type](this._device, this._program, currentSprite, jsonBrick);
-                        break;
+                try {
+                    switch (type) {
+                        case 'ProgramStartBrick':
+                        case 'WhenActionBrick':
+                            brick = new PocketCode.Bricks[type](this._device, this._program, currentSprite, jsonBrick);
+                            break;
 
-                    case 'BroadcastReceiveBrick':
-                    case 'BroadcastBrick':
-                    case 'BroadcastAndWaitBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
-                        break;
+                        case 'BroadcastReceiveBrick':
+                        case 'BroadcastBrick':
+                        case 'BroadcastAndWaitBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
+                            break;
 
-                    case 'PlaySoundBrick':
-                    case 'StopAllSoundsBrick':
-                    case 'SetVolumeBrick':
-                    case 'ChangeVolumeBrick':
-                    case 'SpeakBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
-                        break;
+                        case 'PlaySoundBrick':
+                        case 'StopAllSoundsBrick':
+                        case 'SetVolumeBrick':
+                        case 'ChangeVolumeBrick':
+                        case 'SpeakBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
+                            break;
 
-                    default:
-                        if (PocketCode.Bricks[type])
-                            brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
-                        else {
-                            brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                            //this._unsupportedBricks.push(brick);
-                        }
+                        case 'ForeverBrick':
+                        case 'RepeatBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick, this._program.minLoopCycleTime);
+                            break;
+
+                        default:
+                            if (PocketCode.Bricks[type])
+                                brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
+                            else {
+                                brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                                //this._unsupportedBricks.push(brick);
+                            }
+                    }
+                }
+                catch (e) { //handle errors creating brinc, e.g. fomula parser errors
+                    brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                    brick.error = e;    //include error to drag problem
                 }
 
                 //if (!brick)
