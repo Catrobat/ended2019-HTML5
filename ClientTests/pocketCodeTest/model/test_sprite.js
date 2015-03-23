@@ -13,7 +13,7 @@ QUnit.test("Sprite", function (assert) {
     var sprite = new PocketCode.Model.Sprite(prog,null);
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
-
+    // ********************* GraphicEffects *********************
     assert.throws(function () {sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,"asdf")},Error, "invalid brightness percentage");
     assert.throws(function () {sprite.setGraphicEffect(null,50)},Error, "unknown graphic effect");
 
@@ -57,10 +57,34 @@ QUnit.test("Sprite", function (assert) {
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,60);
     assert.equal(sprite._brightness,110,"change brightness");
 
+    sprite.clearGraphicEffects();
+    assert.ok(sprite._brightness==100 && sprite._transparency==0, "graphic effects cleared");
+
+    // *************************************************************
+
+    // ********************* show/hide *********************
+    sprite.show();
+    assert.ok(sprite._visible,"show sprite");
+    sprite.hide();
+    assert.ok(!sprite._visible,"show sprite");
+    sprite.hide();
+    sprite.show();
+    assert.ok(sprite._visible,"show sprite");
+    // *************************************************************
+
+    // ********************* Size *********************
+    assert.throws(function () {sprite.setSize("asdf")},Error,"invalid percentage");
+
+    sprite.setSize(-20);
+    assert.equal(sprite._size,0,"set size below 0");
+    sprite.setSize(50);
+    assert.equal(sprite._size,50,"set size");
 
 
 
 
+
+    // *************************************************************
     /*  sprite.setBrightness(110);
       assert.equal(sprite.brightness, 100, "setBrightness over 100");
 

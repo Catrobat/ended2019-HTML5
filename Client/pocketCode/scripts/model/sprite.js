@@ -427,7 +427,9 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setSize: function (percentage) {
-            if (percentage === undefined || this._size === percentage || (this._size === 0 && percentage <= 0))
+            if (percentage === undefined || isNaN(percentage || percentage==null))
+                throw new Error('invalid percentage");
+            if( this._size === percentage || (this._size === 0 && percentage <= 0))
                 return false;
 
             this._size = percentage;
@@ -437,6 +439,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
+            if (percentage === undefined || isNaN(percentage || percentage==null))
+                throw new Error('invalid value');
             if (!value || (this._size === 0 && (this._size + value) <= 0))
                 return false;
 
@@ -464,7 +468,7 @@ PocketCode.Model.Sprite = (function () {
         },
         setGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
-                throw new Error('invalid value: ');
+                throw new Error('invalid value ');
                 return false;
             }
             switch (effect) {
@@ -509,7 +513,7 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('unknown graphic effect: ' + effect);
             }
         },
-        /*obsolete: use set/change graphic effect instead*/
+        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
         _setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
@@ -526,7 +530,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead*/
+        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
         _changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;
@@ -544,7 +548,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: value }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead*/
+        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
         _setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
@@ -562,7 +566,7 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ brightness: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead*/
+        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
         _changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;
