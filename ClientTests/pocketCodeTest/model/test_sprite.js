@@ -81,12 +81,25 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite._size,50,"set size");
     sprite.changeSize(-60);
     assert.equal(sprite._size,0,"change size below 0");
-
-
-
-
-
+    sprite.changeSize(20);
+    assert.equal(sprite._size,20,"change size upwards");
+    sprite.changeSize(15);
+    sprite.changeSize(20);
+    assert.equal(sprite._size,55,"double change size");
     // *************************************************************
+
+    // ********************* Position *********************
+    sprite.setPosition(10,10);
+    assert.ok(sprite._positionX==10 && sprite._positionY==10, "set Position");
+    sprite.setPositionY(90);
+    assert.ok(sprite._positionX==10 && sprite._positionY==90, "set PositionY");
+    sprite.setPositionX(35);
+    assert.ok(sprite._positionX==35 && sprite._positionY==90, "set PositionX");
+    sprite.changePositionX(50);
+    assert.ok(sprite._positionX==35+50 && sprite._positionY==90, "change PositionX");
+    sprite.changePositionY(-20);
+    assert.ok(sprite._positionX==35+50 && sprite._positionY==90-20, "change PositionY");
+
     /*  sprite.setBrightness(110);
       assert.equal(sprite.brightness, 100, "setBrightness over 100");
 

@@ -13,14 +13,7 @@
  */
 PocketCode.Model = PocketCode.Model || {};
 
-/**
- * @class Sprite balbalball
- * @property {number} running states if sprite is running
- * @property {number} id indicates the id of the sprite
- * @property {number} name indicates the name of the sprite
- * @property {number} name @default indicates the name of the sprite
- *
- */
+
 PocketCode.RotationStyle = {
     DO_NOT_ROTATE: 'don\'t rotate',
     LEFT_TO_RIGHT: 'left-right',
@@ -36,7 +29,14 @@ PocketCode.GraphicEffect = {
     BRIGHTNESS: 'brightness',
     GHOST: 'ghost',     //opacity, transparency
 };
-
+/**
+ * @class Sprite balbalball
+ * @property {number} running states if sprite is running
+ * @property {number} id indicates the id of the sprite
+ * @property {number} name indicates the name of the sprite
+ * @property {number} name @default indicates the name of the sprite
+ *
+ */
 PocketCode.Model.Sprite = (function () {
     /**
      * initializing bllablabl
@@ -62,12 +62,6 @@ PocketCode.Model.Sprite = (function () {
 
         //property initialization
         //motion
-        /**
-         * @property positionX
-         * @name Sprite#positionX
-         * @type number
-         * @default 0.0
-         */
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._direction = 90.0; //pointing to right: 0� means up
