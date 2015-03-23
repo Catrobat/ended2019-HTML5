@@ -79,6 +79,8 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite._size,0,"set size below 0");
     sprite.setSize(50);
     assert.equal(sprite._size,50,"set size");
+    sprite.changeSize(-60);
+    assert.equal(sprite._size,0,"change size below 0");
 
 
 

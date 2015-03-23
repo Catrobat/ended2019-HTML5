@@ -427,8 +427,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setSize: function (percentage) {
-            if (percentage === undefined || isNaN(percentage || percentage==null))
-                throw new Error('invalid percentage");
+            if (percentage === undefined || isNaN(percentage) || percentage==null)
+                throw new Error('invalid percentage ');
             if( this._size === percentage || (this._size === 0 && percentage <= 0))
                 return false;
 
@@ -439,7 +439,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
-            if (percentage === undefined || isNaN(percentage || percentage==null))
+            if (value === undefined || isNaN(value) || value==null)
                 throw new Error('invalid value');
             if (!value || (this._size === 0 && (this._size + value) <= 0))
                 return false;
