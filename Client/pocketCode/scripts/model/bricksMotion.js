@@ -286,5 +286,21 @@ PocketCode.Bricks.merge({
         return ComeToFrontBrick;
     })(),
 
+    VibrationBrick: (function () {
+        VibrationBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function VibrationBrick(device, sprite, propObject) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+			
+			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+        }
+
+        VibrationBrick.prototype._execute = function () {
+            this._return(this._device.vibrate(this._duration.calculate()));
+        };
+
+        return VibrationBrick;
+    })(),
+	
 });
 

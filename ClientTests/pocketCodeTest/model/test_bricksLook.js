@@ -290,3 +290,53 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
 });
 
+QUnit.test("LedOnBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var b = new PocketCode.Bricks.LedOnBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.LedOnBrick, "instance check");
+    assert.ok(b.objClassName === "LedOnBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+QUnit.test("LedOffBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var b = new PocketCode.Bricks.LedOffBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.LedOffBrick, "instance check");
+    assert.ok(b.objClassName === "LedOffBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+

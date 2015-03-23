@@ -221,4 +221,34 @@ PocketCode.Bricks.merge({
         return ClearGraphicEffectBrick;
     })(),
 
+    LedOnBrick: (function () {
+        LedOnBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function LedOnBrick(device, sprite) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        }
+
+        LedOnBrick.prototype._execute = function () {
+			this._device.flashlightOn = true;
+            this._return(true);
+        };
+
+        return LedOnBrick;
+    })(),	
+
+    LedOffBrick: (function () {
+        LedOffBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function LedOffBrick(device, sprite) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        }
+
+        LedOffBrick.prototype._execute = function () {
+			this._device.flashlightOn = false;
+            this._return(false);
+        };
+
+        return LedOffBrick;
+    })(),	
+	
 });

@@ -26,6 +26,8 @@ PocketCode.Device = (function () {
             X_INCLINATION: true,
             Y_INCLINATION: true,
             LOUDNESS: false,    //notify?
+			VIBRATE: true,
+			FLASHLIGHT: true
         };
         this._sensorEmulatedData = {
             X_ACCELERATION: 0,
@@ -35,6 +37,8 @@ PocketCode.Device = (function () {
             X_INCLINATION: 0,
             Y_INCLINATION: 0,
             LOUDNESS: 0,
+			VIBRATE: 0,
+			FLASHLIGHT: 0
         };
 
         this._initSensors();
@@ -175,6 +179,7 @@ PocketCode.Device = (function () {
         vibrate: function (seconds) {
             var time = seconds * 1000;
             //TODO:
+			return false;
         },
     });
 

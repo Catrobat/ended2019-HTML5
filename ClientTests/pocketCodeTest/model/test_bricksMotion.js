@@ -482,4 +482,29 @@ QUnit.test("ComeToFrontBrick", function (assert) {
 
 });
 
+QUnit.test("VibrationBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+	var duration = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
+	
+    var b = new PocketCode.Bricks.VibrationBrick(device, sprite, { duration: duration });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.VibrationBrick, "instance check");
+    assert.ok(b.objClassName === "VibrationBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
 
