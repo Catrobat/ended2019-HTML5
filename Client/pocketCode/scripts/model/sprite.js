@@ -467,11 +467,11 @@ PocketCode.Model.Sprite = (function () {
             }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
-                    this._setTransparency(value);
-                    break;
+                    return this._setTransparency(value);
+                    //break;
                 case PocketCode.GraphicEffect.BRIGHTNESS:
-                    this._setBrightness(value);
-                    break;
+                    return this._setBrightness(value);
+                    //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -490,12 +490,12 @@ PocketCode.Model.Sprite = (function () {
             }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
-                    this._changeTransparency(value);
-                    break;
+                    return this._changeTransparency(value);
+                    //break;
 
                 case PocketCode.GraphicEffect.BRIGHTNESS:
-                    this._changeBrightness(value);
-                    break;
+                    return this._changeBrightness(value);
+                    //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
