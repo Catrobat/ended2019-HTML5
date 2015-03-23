@@ -2,15 +2,37 @@
 /// <reference path="program.js" />
 'use strict';
 
+/**
+ * @fileOverview Sprite: This file contains
+ * @author catrobat HTML5 team
+ */
+
+/**
+ * @namespace Model
+ * @type {{}|*}
+ */
 PocketCode.Model = PocketCode.Model || {};
 
+/**
+ * @class Sprite balbalball
+ * @property {number} running states if sprite is running
+ * @property {number} id indicates the id of the sprite
+ * @property {number} name indicates the name of the sprite
+ * @property {number} name @default indicates the name of the sprite
+ *
+ */
 PocketCode.Model.Sprite = (function () {
-
+    /**
+     * initializing bllablabl
+     * @param program
+     * @param propObject
+     * @constructor
+     */
     function Sprite(program, propObject) {
+
         this._program = program;
         this._onChange = program.onSpriteChange;
         this.running = false;
-
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -24,9 +46,15 @@ PocketCode.Model.Sprite = (function () {
 
         //property initialization
         //motion
+        /**
+         * @property positionX
+         * @name Sprite#positionX
+         * @type number
+         * @default 0.0
+         */
         this._positionX = 0.0;
         this._positionY = 0.0;
-        this._direction = 90.0; //pointing to right: 0° means up
+        this._direction = 90.0; //pointing to right: 0ï¿½ means up
         //sound
         //looks
         this._currentLook = undefined;
@@ -41,8 +69,12 @@ PocketCode.Model.Sprite = (function () {
     }
 
     //properties
+    /**
+     *
+     */
     Object.defineProperties(Sprite.prototype, {
         //motion
+
         positionX: {
             get: function () {
                 return this._positionX;
@@ -53,6 +85,9 @@ PocketCode.Model.Sprite = (function () {
                 return this._positionY;
             },
         },
+        /**
+         * @property direction
+         */
         direction: {
         	set: function (direction) {
         		this._direction = direction;
@@ -132,6 +167,10 @@ PocketCode.Model.Sprite = (function () {
 
     //events
     Object.defineProperties(Sprite.prototype, {
+        /**
+         * @event
+         *
+         */
         onExecuted: {
             get: function () { return this._onExecuted; },
             //enumerable: false,
@@ -141,6 +180,9 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
+        /**
+         *
+         */
         start: function() {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].start)
@@ -148,6 +190,9 @@ PocketCode.Model.Sprite = (function () {
             }
             this.running = true;
         },
+        /**
+         *
+         */
         pause: function () {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].pause)
@@ -167,12 +212,23 @@ PocketCode.Model.Sprite = (function () {
             }
             this.running = false;
         },
-
+        /**
+         *
+         * @param propertyArray
+         * @private
+         */
         _triggerOnChange: function(propertyArray) {
             this._onChange.dispatchEvent({id: this.id, properties: propertyArray}, this);
         },
 
         //motion: position
+        /**
+         *
+         * @param x
+         * @param y
+         * @param triggerEvent
+         * @returns {boolean}
+         */
         setPosition: function (x, y, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
             if (this._positionX === x && this._positionY === y)
@@ -191,6 +247,11 @@ PocketCode.Model.Sprite = (function () {
                 this._triggerOnChange(ops);
             return true;
         },
+        /**
+         *
+         * @param x
+         * @returns {boolean}
+         */
         setPositionX: function (x) {
             if (this._positionX === x)
                 return false;
@@ -198,6 +259,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ positionX: x }]);
             return true;
         },
+        /**
+         *
+         * @param value
+         * @returns {boolean}
+         */
         changePositionX: function (value) {
             if (!value)// || value === 0)
                 return false;
@@ -223,6 +289,11 @@ PocketCode.Model.Sprite = (function () {
             return this._program.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
             //onChange event is triggered by program in this case
         },
+        /**
+         *
+         * @param steps
+         * @returns {boolean}
+         */
         move: function (steps) {
             if (!steps)// || steps === 0)
                 return false;
@@ -240,7 +311,7 @@ PocketCode.Model.Sprite = (function () {
             return this.turnRight(degree * -1.0);
         },
         turnRight: function (degree) {
-            if (!degree)// || degree === 0)
+            if (!degree)
                 return false;
             var d = this._direction;
             var nd = (d + degree) % 360;
