@@ -2,8 +2,25 @@
 /// <reference path="program.js" />
 'use strict';
 
+/**
+ * @fileOverview Sprite: This file contains
+ * @author catrobat HTML5 team
+ */
+
+/**
+ * @namespace Model
+ * @type {{}|*}
+ */
 PocketCode.Model = PocketCode.Model || {};
 
+/**
+ * @class Sprite balbalball
+ * @property {number} running states if sprite is running
+ * @property {number} id indicates the id of the sprite
+ * @property {number} name indicates the name of the sprite
+ * @property {number} name @default indicates the name of the sprite
+ *
+ */
 PocketCode.RotationStyle = {
     DO_NOT_ROTATE: 'don\'t rotate',
     LEFT_TO_RIGHT: 'left-right',
@@ -21,12 +38,17 @@ PocketCode.GraphicEffect = {
 };
 
 PocketCode.Model.Sprite = (function () {
-
+    /**
+     * initializing bllablabl
+     * @param program
+     * @param propObject
+     * @constructor
+     */
     function Sprite(program, propObject) {
+
         this._program = program;
         this._onChange = program.onSpriteChange;    //mapping event (defined in program)
         this.running = false;
-
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -40,9 +62,15 @@ PocketCode.Model.Sprite = (function () {
 
         //property initialization
         //motion
+        /**
+         * @property positionX
+         * @name Sprite#positionX
+         * @type number
+         * @default 0.0
+         */
         this._positionX = 0.0;
         this._positionY = 0.0;
-        this._direction = 90.0; //pointing to right: 0° means up
+        this._direction = 90.0; //pointing to right: 0ï¿½ means up
         //sound
         //looks
         this._currentLook = undefined;
@@ -57,11 +85,15 @@ PocketCode.Model.Sprite = (function () {
     }
 
     //properties
+    /**
+     *
+     */
     Object.defineProperties(Sprite.prototype, {
         rotationStyle: {
             value: PocketCode.RotationStyle.ALL_AROUND,   //static property (right now)
         },
         //motion
+
         positionX: {
             get: function () {
                 return this._positionX;
@@ -72,6 +104,9 @@ PocketCode.Model.Sprite = (function () {
                 return this._positionY;
             },
         },
+        /**
+         * @property direction
+         */
         direction: {
         	set: function (direction) {
         		this._direction = direction;
@@ -151,6 +186,10 @@ PocketCode.Model.Sprite = (function () {
 
     //events
     Object.defineProperties(Sprite.prototype, {
+        /**
+         * @event
+         *
+         */
         onExecuted: {
             get: function () { return this._onExecuted; },
             //enumerable: false,
@@ -160,13 +199,19 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
-        start: function () {
+        /**
+         *
+         */
+        start: function() {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].start)
                     this.bricks[i].start();
             }
             this.running = true;
         },
+        /**
+         *
+         */
         pause: function () {
             for (var i = 0, l = this.bricks.length; i < l; i++) {
                 if (this.bricks[i].pause)
@@ -186,12 +231,23 @@ PocketCode.Model.Sprite = (function () {
             }
             this.running = false;
         },
-
-        _triggerOnChange: function (propertyArray) {
-            this._onChange.dispatchEvent({ id: this.id, properties: propertyArray }, this);
+        /**
+         *
+         * @param propertyArray
+         * @private
+         */
+        _triggerOnChange: function(propertyArray) {
+            this._onChange.dispatchEvent({id: this.id, properties: propertyArray}, this);
         },
 
         //motion: position
+        /**
+         *
+         * @param x
+         * @param y
+         * @param triggerEvent
+         * @returns {boolean}
+         */
         setPosition: function (x, y, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
             if (this._positionX === x && this._positionY === y)
@@ -210,6 +266,11 @@ PocketCode.Model.Sprite = (function () {
                 this._triggerOnChange(ops);
             return true;
         },
+        /**
+         *
+         * @param x
+         * @returns {boolean}
+         */
         setPositionX: function (x) {
             if (this._positionX === x)
                 return false;
@@ -217,6 +278,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ positionX: x }]);
             return true;
         },
+        /**
+         *
+         * @param value
+         * @returns {boolean}
+         */
         changePositionX: function (value) {
             if (!value)// || value === 0)
                 return false;
@@ -242,6 +308,11 @@ PocketCode.Model.Sprite = (function () {
             return this._program.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
             //onChange event is triggered by program in this case
         },
+        /**
+         *
+         * @param steps
+         * @returns {boolean}
+         */
         move: function (steps) {
             if (!steps)// || steps === 0)
                 return false;
@@ -259,7 +330,7 @@ PocketCode.Model.Sprite = (function () {
             return this.turnRight(degree * -1.0);
         },
         turnRight: function (degree) {
-            if (!degree)// || degree === 0)
+            if (!degree)
                 return false;
             var d = this._direction;
             var nd = (d + degree) % 360;
@@ -392,14 +463,16 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         setGraphicEffect: function (effect, value) {
+            if (value === undefined || isNaN(value)) {
+                throw new Error('invalid value: ');
+                return false;
+            }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
-                    //TODO
-                    return false; //TODO
+                    this._setTransparency(value);
                     break;
                 case PocketCode.GraphicEffect.BRIGHTNESS:
-                    //TODO:
-                    return false; //TODO
+                    this._setBrightness(value);
                     break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
@@ -413,14 +486,17 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         changeGraphicEffect: function (effect, value) {
+            if (value === undefined || isNaN(value)) {
+                throw new Error('invalid value: ');
+                return false;
+            }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
-                    //TODO
-                    return false; //TODO
+                    this._changeTransparency(value);
                     break;
+
                 case PocketCode.GraphicEffect.BRIGHTNESS:
-                    //TODO:
-                    return false; //TODO
+                    this._changeBrightness(value);
                     break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
@@ -434,7 +510,7 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         /*obsolete: use set/change graphic effect instead*/
-        setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        _setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
 
@@ -451,7 +527,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /*obsolete: use set/change graphic effect instead*/
-        changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        _changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;
 
@@ -469,7 +545,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /*obsolete: use set/change graphic effect instead*/
-        setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        _setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
             if (percentage === undefined)
                 return false;
 
@@ -487,7 +563,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /*obsolete: use set/change graphic effect instead*/
-        changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        _changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
             if (value === undefined)
                 return false;
 

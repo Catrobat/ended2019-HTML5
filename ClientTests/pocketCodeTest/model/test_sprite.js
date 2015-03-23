@@ -14,38 +14,84 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
 
-    assert.throws(sprite.setBrightness("sdfsdf"),false, "invalid brightness percentage");
-    sprite.setBrightness(110);
-    assert.equal(sprite.brightness, 100, "setBrightness over 100");
+    assert.throws(function () {sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,"asdf")},Error, "invalid brightness percentage");
+    assert.throws(function () {sprite.setGraphicEffect(null,50)},Error, "unknown graphic effect");
 
-    sprite.setBrightness(-5);
-    assert.equal(sprite.brightness, 0, "setBrightness under 0");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,210);
+    assert.equal(sprite._brightness,200,"set brightness over 200");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,-210);
+    assert.equal(sprite._brightness,0,"set brightness under 0");
+
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST,110);
+    assert.equal(sprite._transparency,100.0,"set transparency over 100");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST,-110);
+    assert.equal(sprite._transparency,0.0,"set transparency under 0");
 
 
-    assert.throws(sprite.changeBrightness("sdfsdf"),false, "invalid brightness value");
-    sprite.setBrightness(90);
-    sprite.changeBrightness(12);
-    assert.equal(sprite.brightness, 100, "changeBrightness over 100");
+    assert.throws(function () {sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,"asdf")},Error, "invalid brightness percentage");
+    assert.throws(function () {sprite.changeGraphicEffect(null,50)},Error, "unknown graphic effect");
 
-    sprite.setBrightness(30);
-    sprite.changeBrightness(-32);
-    assert.equal(sprite.brightness, 0, "changeBrightness under 0");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,100);
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,110);
+    assert.equal(sprite._brightness,200,"change brightness over 200");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,100);
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,-110);
+    assert.equal(sprite._brightness,0,"change brightness under 0");
 
-    assert.throws(sprite.setTransparency("sdfsdf"),false, "invalid transparency percentage");
-    sprite.setTransparency(110);
-    assert.equal(sprite.transparency, 100, "setTransparency over 100");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST,50);
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST,60);
+    assert.equal(sprite._transparency,100.0,"change transparency over 100");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST,50);
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST,-60);
+    assert.equal(sprite._transparency,0.0,"change transparency under 0");
 
-    sprite.setTransparency(-5);
-    assert.equal(sprite.transparency, 0, "setTransparency under 0");
 
-    sprite.setTransparency(90);
-    sprite.changeTransparency(12);
-    assert.equal(sprite.transparency, 100, "setTransparency over 100");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST,50);
+    assert.equal(sprite._transparency,50.0,"set transparency");
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST,10);
+    assert.equal(sprite._transparency,60.0,"change transparency");
 
-    sprite.setTransparency(30);
-    sprite.changeTransparency(-32);
-    assert.equal(sprite.transparency, 0, "setTransparency under 0");
 
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,50);
+    assert.equal(sprite._brightness,50.0,"set brightness");
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS,60);
+    assert.equal(sprite._brightness,110,"change brightness");
+
+
+
+
+
+    /*  sprite.setBrightness(110);
+      assert.equal(sprite.brightness, 100, "setBrightness over 100");
+
+      sprite.setBrightness(-5);
+      assert.equal(sprite.brightness, 0, "setBrightness under 0");
+
+
+      assert.throws(sprite.changeBrightness("sdfsdf"),false, "invalid brightness value");
+      sprite.setBrightness(90);
+      sprite.changeBrightness(12);
+      assert.equal(sprite.brightness, 100, "changeBrightness over 100");
+
+      sprite.setBrightness(30);
+      sprite.changeBrightness(-32);
+      assert.equal(sprite.brightness, 0, "changeBrightness under 0");
+
+      assert.throws(sprite.setTransparency("sdfsdf"),false, "invalid transparency percentage");
+      sprite.setTransparency(110);
+      assert.equal(sprite.transparency, 100, "setTransparency over 100");
+
+      sprite.setTransparency(-5);
+      assert.equal(sprite.transparency, 0, "setTransparency under 0");
+
+      sprite.setTransparency(90);
+      sprite.changeTransparency(12);
+      assert.equal(sprite.transparency, 100, "setTransparency over 100");
+
+      sprite.setTransparency(30);
+      sprite.changeTransparency(-32);
+      assert.equal(sprite.transparency, 0, "setTransparency under 0");
+  */
 
 });
 
