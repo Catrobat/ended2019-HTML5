@@ -5,8 +5,6 @@
 /**
  * @fileOverview broadcastManager: This file contains the whole functionality of the broadcast manager
  * @author catrobat HTML5 team
- * @version 1.0
- *
  */
 
 /**
@@ -20,6 +18,7 @@ PocketCode.BroadcastManager = (function () {
      *  Constructor of the BroadcastManager which takes a list of broadcasts that emerged from parsing the application
      *  and then calls the initialisation method "init(list of broadcasts)"
      * @param broadcasts: list of broadcasts that emerged from parsing the application. Each entry is a tuple of [id, name]
+     * @constructor
      */
     function BroadcastManager(broadcasts) {
         this.init(broadcasts);
@@ -32,9 +31,8 @@ PocketCode.BroadcastManager = (function () {
      */
     BroadcastManager.prototype.merge({
         /**
-         * Initialization method which takes the tuple list of broadcasts and creates a subscription list where
-         * each id is a tuple entry without subscriber. Pending broadcastWait list is also cleared.
-         * @param {List} broadcasts: tuple list of broadcast [id,name]
+         * initializes the pending broadcastWait list and fills subscriptions list with id of given broadcasts
+         * @param broadcasts: given broadcast list of parsing
          */
         init: function(broadcasts) {
             this._pendingBW = {};
