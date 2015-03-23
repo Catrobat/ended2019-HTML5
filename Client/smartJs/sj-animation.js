@@ -120,10 +120,10 @@ SmartJs.Animation = {
                 }
                 else {
                     var progress = (this._animationTime - remaining) / this._animationTime;
-                    //if (progress <= 1.0)
+                    if (progress <= 1.0)    //timers are not exact
                         this._updateValue(this._render(progress));
-                    //else //{
-                    //    this._updateValue(1.0);
+                    else //{
+                        this._updateValue(1.0);
                         //return;
                     //}
 

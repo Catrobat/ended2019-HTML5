@@ -10,6 +10,7 @@ PocketCode.Model.Program = (function () {
     function Program(id) {
         this._running = false;  //TODO: change to PocketCode.ExecutingState (core.js)
         this._paused = false;
+        this.minLoopCycleTime = 25; //ms
 
         this._id = id;
         this.title = "";
@@ -179,7 +180,7 @@ PocketCode.Model.Program = (function () {
             //TODO: implement this
         },
         getSpriteLayer: function (spriteId) {
-            //TODO: implement this
+            return 1; //to enable testing formulas //TODO: implement this
         },
         checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
             //program viewport

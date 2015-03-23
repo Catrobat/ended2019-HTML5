@@ -6,6 +6,45 @@
 
 PocketCode.Bricks.merge({
 
+    SetGraphicEffectBrick: (function () {
+        SetGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function SetGraphicEffectBrick(device, sprite, propObject) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+
+            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect 
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+        }
+
+        SetGraphicEffectBrick.prototype._execute = function () {
+            this._return(this._sprite.setGraphicEffect(this._effect, this._value.calculate()));
+        };
+
+        return SetGraphicEffectBrick;
+    })(),
+
+
+    ChangeGraphicEffectBrick: (function () {
+        ChangeGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function ChangeGraphicEffectBrick(device, sprite, propObject) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+
+            this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+        }
+
+        ChangeGraphicEffectBrick.prototype._execute = function () {
+            this._return(this._sprite.changeGraphicEffect(this._effect, this._value.calculate()));
+        };
+
+        return ChangeGraphicEffectBrick;
+    })(),
+
+});
+
+PocketCode.Bricks.merge({
+
     SetLookBrick: (function () {
         SetLookBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
@@ -104,68 +143,64 @@ PocketCode.Bricks.merge({
 
 
     SetTransparencyBrick: (function () {
-        SetTransparencyBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetTransparencyBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
 
         function SetTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
+            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
-        SetTransparencyBrick.prototype._execute = function () {
-            this._return(this._sprite.setTransparency(this._percentage.calculate()));
-        };
+        //SetTransparencyBrick.prototype._execute = function () {
+        //    this._return(this._sprite.setTransparency(this._value.calculate()));
+        //};
 
         return SetTransparencyBrick;
     })(),
 
 
     ChangeTransparencyBrick: (function () {
-        ChangeTransparencyBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeTransparencyBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
 
         function ChangeTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
-        ChangeTransparencyBrick.prototype._execute = function () {
-            this._return(this._sprite.changeTransparency(this._value.calculate()));
-        };
+        //ChangeTransparencyBrick.prototype._execute = function () {
+        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //};
 
         return ChangeTransparencyBrick;
     })(),
 
 
     SetBrightnessBrick: (function () {
-        SetBrightnessBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetBrightnessBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
 
         function SetBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
+            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
-        SetBrightnessBrick.prototype._execute = function () {
-            this._return(this._sprite.setBrightness(this._percentage.calculate()));
-        };
+        //SetBrightnessBrick.prototype._execute = function () {
+        //    this._return(this._sprite.setBrightness(this._value.calculate()));
+        //};
 
         return SetBrightnessBrick;
     })(),
 
 
     ChangeBrightnessBrick: (function () {
-        ChangeBrightnessBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeBrightnessBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
 
         function ChangeBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
-        ChangeBrightnessBrick.prototype._execute = function () {
-            this._return(this._sprite.changeTransparency(this._value.calculate()));
-        };
+        //ChangeBrightnessBrick.prototype._execute = function () {
+        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //};
 
         return ChangeBrightnessBrick;
     })(),

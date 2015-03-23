@@ -70,9 +70,10 @@ PocketCode.Formula = (function () {
 
         _validateFormula: function () {
             try {
-                var test = this.calculate();
+                /*var test = */this.calculate();
             }
             catch (e) {
+                //catch is handled in brick factory resulting in an unsupported brick including a property 'error'
                 throw new Error('Error parsing formula: ' + e.message);
             }
         },

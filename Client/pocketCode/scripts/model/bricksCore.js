@@ -2,6 +2,7 @@
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
+/// <reference path="../components/formula.js" />
 'use strict';
 
 /**
@@ -49,7 +50,7 @@ PocketCode.Bricks = {
                     loopDelay: false,
                     childIdx: 0
                 };
-                this._executeContainerItem({id: id, loopDelay: false});
+                this._executeContainerItem({ id: id, loopDelay: false });
             },
             /**
              * Goes through pendingOps and calls "execute()" on each bricks[id] entry
@@ -71,7 +72,7 @@ PocketCode.Bricks = {
                 else {
                     var listener = op.listener;
                     delete this._pendingOps[args.id];
-                    listener.handler.call(listener.scope, {id: op.threadId, loopDelay: op.loopDelay});
+                    listener.handler.call(listener.scope, { id: op.threadId, loopDelay: op.loopDelay });
                 }
             },
             /**
@@ -161,9 +162,9 @@ PocketCode.Bricks = {
 
 };
 
-    /**
-     * @class ThreadedBrick: Thread based type of Brick with unique Id
-     */
+/**
+ * @class ThreadedBrick: Thread based type of Brick with unique Id
+ */
 PocketCode.Bricks.ThreadedBrick = (function () {
     ThreadedBrick.extends(PocketCode.Bricks.BaseBrick, false);
     /**
@@ -191,7 +192,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
                 throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
 
             var id = SmartJs.getNewId();
-            this._pendingOps[id] = {threadId: threadId, listener: onExecutedListener};
+            this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
             this._execute(id);
         },
         /**
@@ -210,7 +211,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
             var threadId = po.threadId;
             delete this._pendingOps[id];
             if (listener)
-                listener.handler.call(listener.scope, {id: threadId, loopDelay: loopD});
+                listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
         },
         //pause: function() {
 
@@ -230,9 +231,9 @@ PocketCode.Bricks.ThreadedBrick = (function () {
     return ThreadedBrick;
 })();
 
-    /**
-     * @class SingleContainerBrick
-     */
+/**
+ * @class SingleContainerBrick
+ */
 PocketCode.Bricks.SingleContainerBrick = (function () {
     SingleContainerBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
     /**
@@ -303,9 +304,9 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
     return SingleContainerBrick;
 })();
 
-    /**
-     * @class RootContainerBrick
-     */
+/**
+ * @class RootContainerBrick
+ */
 PocketCode.Bricks.RootContainerBrick = (function () {
     RootContainerBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
     /**
@@ -350,9 +351,9 @@ PocketCode.Bricks.RootContainerBrick = (function () {
     return RootContainerBrick;
 })();
 
-    /**
-     * @class LoopBrick
-     */
+/**
+ * @class LoopBrick
+ */
 PocketCode.Bricks.LoopBrick = (function () {
     LoopBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
     /**
@@ -361,9 +362,10 @@ PocketCode.Bricks.LoopBrick = (function () {
      * @param sprite
      * @constructor
      */
-    function LoopBrick(device, sprite) {
+    function LoopBrick(device, sprite, minLoopCycleTime) {
         PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
 
+        this._minLoopCycleTime = minLoopCycleTime || 20;
         //this._bricks typeof PocketCode.Bricks.BrickContainer
     }
 
@@ -375,7 +377,7 @@ PocketCode.Bricks.LoopBrick = (function () {
          */
         execute: function (onExecutedListener, callId) {
             var id = SmartJs.getNewId();
-            this._pendingOps[id] = {callId: callId, listener: onExecutedListener, startTime: new Date()};
+            this._pendingOps[id] = { callId: callId, listener: onExecutedListener, startTime: new Date() };
 
             if (this._bricks && this._loopConditionMet(id))
                 this._execute(id);
@@ -397,7 +399,7 @@ PocketCode.Bricks.LoopBrick = (function () {
             if (this._bricks && this._loopConditionMet(id)) {
                 var executionDelay = 0;
                 if (e.loopDelay) {
-                    executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
+                    executionDelay = this._minLoopCycleTime - (new Date() - op.startTime);  //20ms min loop cycle time
                     //console.log("loop delay: ");
                 }
                 op.startTime = new Date();  //re-init for each loop
@@ -450,7 +452,7 @@ PocketCode.Bricks.LoopBrick = (function () {
             //window.setTimeout(function () {
             //    listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
             //}, 3);
-            listener.handler.call(listener.scope, {id: callId, loopDelay: false});
+            listener.handler.call(listener.scope, { id: callId, loopDelay: false });
             //}
         },
     });
@@ -458,9 +460,9 @@ PocketCode.Bricks.LoopBrick = (function () {
     return LoopBrick;
 })();
 
-    /**
-     * @class UnsupportedBrick: for bricks which are currently not supported
-     */
+/**
+ * @class UnsupportedBrick: for bricks which are currently not supported
+ */
 PocketCode.Bricks.UnsupportedBrick = (function () {
     UnsupportedBrick.extends(PocketCode.Bricks.BaseBrick, false);
 

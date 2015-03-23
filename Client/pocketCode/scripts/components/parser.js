@@ -80,33 +80,44 @@ PocketCode.merge({
                 var type = jsonBrick.type + 'Brick';
                 var brick = undefined;
 
-                switch (type) {
-                    case 'ProgramStartBrick':
-                    case 'WhenActionBrick':
-                        brick = new PocketCode.Bricks[type](this._device, this._program, currentSprite, jsonBrick);
-                        break;
+                try {
+                    switch (type) {
+                        case 'ProgramStartBrick':
+                        case 'WhenActionBrick':
+                            brick = new PocketCode.Bricks[type](this._device, this._program, currentSprite, jsonBrick);
+                            break;
 
-                    case 'BroadcastReceiveBrick':
-                    case 'BroadcastBrick':
-                    case 'BroadcastAndWaitBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
-                        break;
+                        case 'BroadcastReceiveBrick':
+                        case 'BroadcastBrick':
+                        case 'BroadcastAndWaitBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
+                            break;
 
-                    case 'PlaySoundBrick':
-                    case 'StopAllSoundsBrick':
-                    case 'SetVolumeBrick':
-                    case 'ChangeVolumeBrick':
-                    case 'SpeakBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
-                        break;
+                        case 'PlaySoundBrick':
+                        case 'StopAllSoundsBrick':
+                        case 'SetVolumeBrick':
+                        case 'ChangeVolumeBrick':
+                        case 'SpeakBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
+                            break;
 
-                    default:
-                        if (PocketCode.Bricks[type])
-                            brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
-                        else {
-                            brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                            //this._unsupportedBricks.push(brick);
-                        }
+                        case 'ForeverBrick':
+                        case 'RepeatBrick':
+                            brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick, this._program.minLoopCycleTime);
+                            break;
+
+                        default:
+                            if (PocketCode.Bricks[type])
+                                brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
+                            else {
+                                brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                                //this._unsupportedBricks.push(brick);
+                            }
+                    }
+                }
+                catch (e) { //handle errors creating brinc, e.g. fomula parser errors
+                    brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                    brick.error = e;    //include error to drag problem
                 }
 
                 //if (!brick)
@@ -160,7 +171,7 @@ PocketCode.merge({
     })(),
 
 
-    FormulaParser: new ((function () {
+    FormulaParser: new ((function () {  //static class
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -176,7 +187,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                console.log(formulaString);
+                //console.log(formulaString);
                 //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
@@ -217,8 +228,8 @@ PocketCode.merge({
                         return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
 
                     case 'BRACKET':
-                        if (!jsonFormula.right)
-                            return '()';
+                        //if (!jsonFormula.right)
+                        //    return '()';
 
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
@@ -531,7 +542,7 @@ PocketCode.merge({
                             return 'is_face_detected';
 
                         //this._isStatic = false;
-                        return 'this._device.isFaceDetected';
+                        return 'this._device.faceDetected';
 
                     case 'FACE_SIZE':
                         if (uiString)
@@ -581,7 +592,7 @@ PocketCode.merge({
                             return 'direction';
 
                         //this._isStatic = false;
-                        return 'this._sprite.rotation';
+                        return 'this._sprite.direction';
 
                     case 'OBJECT_SIZE':
                         if (uiString)
@@ -595,14 +606,14 @@ PocketCode.merge({
                             return 'position_x';
 
                         //this._isStatic = false;
-                        return 'this._sprite.x';
+                        return 'this._sprite.positionX';
 
                     case 'OBJECT_Y':
                         if (uiString)
                             return 'position_y';
 
                         //this._isStatic = false;
-                        return 'this._sprite.y';
+                        return 'this._sprite.positionY';
 
                     default:
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);

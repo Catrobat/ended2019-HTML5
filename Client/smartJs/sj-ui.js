@@ -57,7 +57,7 @@ SmartJs.Ui = {
             else if (typeof element === 'string')
                 this._dom = document.createElement(element);
 
-            if(!this._dom)  // || this._dom instanceof HTMLUnknownElement)
+            if (!this._dom)  // || this._dom instanceof HTMLUnknownElement)
                 throw new Error('invalid argument: expected parameter "element" as valid HTMLElement or string');
 
             this._dom.id = this._id;
@@ -85,7 +85,7 @@ SmartJs.Ui = {
                 }
                 var parent = this._parent;
                 if (parent && parent !== e.caller)
-                    this._parent.onLayoutChange.dispatchEvent({caller: this});
+                    this._parent.onLayoutChange.dispatchEvent({ caller: this });
             }, this));
 
             this._onLayoutChange = new SmartJs.Event.Event(this);
@@ -116,7 +116,7 @@ SmartJs.Ui = {
                 get: function () {
                     //return (node === document.body) ? false : document.body.contains(node);
                     //if (this._dom)
-                        return document.body.contains(this._dom);
+                    return document.body.contains(this._dom);
                     //return false;
                 },
                 //enumerable: false,
@@ -283,7 +283,7 @@ SmartJs.Ui = {
                 if (this.hidden) return;
 
                 var size = this._cachedSize;
-                if (size.height !== this.height || size.width !== this.width) 
+                if (size.height !== this.height || size.width !== this.width)
                     this.onResize.dispatchEvent({ caller: caller });
             },
             addClassName: function (className) {
@@ -344,7 +344,7 @@ SmartJs.Ui = {
                 if (typeof existingClass !== 'string' || typeof newClass !== 'string')
                     throw new Error('invalid argument: expected typeof string');
 
-                if (typeof newClass === undefined || newClass.trim() === '') 
+                if (typeof newClass === undefined || newClass.trim() === '')
                     return this.removeClassName(existingClass);
 
                 var domClasses = this._dom.className.split(/\s+/);
@@ -363,7 +363,7 @@ SmartJs.Ui = {
                 this.__addClassName(classString, newClass);
                 this.verifyResize(this);
             },
-            _insertAtIndex: function(uiControl, idx) {
+            _insertAtIndex: function (uiControl, idx) {
                 if (uiControl._disposed)
                     throw new Error('object disposed');
                 if (!(uiControl instanceof SmartJs.Ui.Control) && !(uiControl instanceof SmartJs.Ui.TextNode))
@@ -484,12 +484,12 @@ SmartJs.Ui = {
                     this._parent._removeChild(this);
                 else if (this.rendered)    //in DOM but no parent: rootElement (viewPort)
                     this._dom.parentNode.removeChild(this._dom);
-                
+
                 //dispose childs first to avoid DOM level recursion error 
                 //(deleting this._dom will delete all _dom sub elements as well)
                 var childs = this._childs;
                 if (childs) {
-                    for (var i = 0, l = childs.length; i < l; i++) 
+                    for (var i = 0, l = childs.length; i < l; i++)
                         childs[i].dispose();
                 }
                 SmartJs.Core.EventTarget.prototype.dispose.call(this);  //super.dispose();
@@ -566,31 +566,61 @@ SmartJs.Ui.ContainerControl = (function () {
 })();
 
 
-SmartJs.Ui.ViewPort = (function () {
-    ViewPort.extends(SmartJs.Ui.Control, false);
+SmartJs.Ui.merge({
+    Page: (function () {
+        Page.extends(SmartJs.Ui.Control, false);
 
-    function ViewPort() {//propObject) {
-        SmartJs.Ui.Control.call(this, 'div', { style: {height: "100%", width: "100%", }});
+        function Page() {//propObject) {
+            SmartJs.Ui.Control.call(this, 'div', { style: { height: "100%", width: "100%", } });
 
-        //var onResizeHandler = function () { };
-        if (window.orientationchange)
-            this._resizeHandlerReference = this._addDomListener(window, 'orientationchange', this.verifyResize);
-        else
-            this._resizeHandlerReference = this._addDomListener(window, 'resize', this.verifyResize);
-        //TODO: close, refresh: dispose
-    }
+            //var onResizeHandler = function () { };
+            if (window.orientationchange)
+                this._resizeHandlerReference = this._addDomListener(window, 'orientationchange', this.verifyResize);
+            else
+                this._resizeHandlerReference = this._addDomListener(window, 'resize', this.verifyResize);
+            //TODO: close, refresh: dispose
+        }
 
-    ViewPort.prototype.merge({
-        //TODO: load view/presenter
-        dispose: function () {
-            this._removeDomListener(this, 'orientationchange', this._resizeHandlerReference);
-            this._removeDomListener(this, 'resize', this._resizeHandlerReference);
+        Page.prototype.merge({
+            //TODO: load view/presenter
+            dispose: function () {
+                this._removeDomListener(this, 'orientationchange', this._resizeHandlerReference);
+                this._removeDomListener(this, 'resize', this._resizeHandlerReference);
 
-            SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
-        },
-    });
+                SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
+            },
+        });
 
-    return ViewPort;
-})();
+        return Page;
+    })(),
+
+    ViewPort: (function () {
+        ViewPort.extends(SmartJs.Ui.Control, false);
+
+        function ViewPort() {//propObject) {
+            SmartJs.Ui.Control.call(this, 'div', { style: { height: "100%", width: "100%", } });
+
+            //var onResizeHandler = function () { };
+            if (window.orientationchange)
+                this._resizeHandlerReference = this._addDomListener(window, 'orientationchange', this.verifyResize);
+            else
+                this._resizeHandlerReference = this._addDomListener(window, 'resize', this.verifyResize);
+            //TODO: close, refresh: dispose
+        }
+
+        ViewPort.prototype.merge({
+            //TODO: load view/presenter
+            dispose: function () {
+                this._removeDomListener(this, 'orientationchange', this._resizeHandlerReference);
+                this._removeDomListener(this, 'resize', this._resizeHandlerReference);
+
+                SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
+            },
+        });
+
+        return ViewPort;
+    })(),
+});
+
 
 

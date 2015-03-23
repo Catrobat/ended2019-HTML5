@@ -1,15 +1,13 @@
 <?php
 //SetGhostEffect
 
-class SetTransparencyBrickDto extends BaseBrickDto {
+class SetTransparencyBrickDto extends SetGraphicEffectBrickDto {
 
-  public $percentage;	//type of FormulaDto
-  
-  
-  public function __construct($percentage) {
-	parent::__construct("SetTransparency");
+  public function __construct($value) {
+		parent::__construct(EGraphicEffect::GHOST, $value);
+		
+		$this->type = "SetTransparency";
 
-	$this->percentage = $percentage;
   }
 
 }

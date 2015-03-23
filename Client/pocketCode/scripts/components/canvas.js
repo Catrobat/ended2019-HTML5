@@ -10,12 +10,21 @@ PocketCode.Canvas = (function(){
 		this._zoomfactor = zoomfactor;
 		this.sprites = [];
         this._onSpriteClicked = new SmartJs.Event.Event(this);
+        this._showAxes = false;
 
         //add listener to element selected event
         var _self = this;
-        this._canvas.on('object:selected', function(e) {
-//			  this.clickedSprite.bind(this, e.target);
-        	_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+        this._canvas.on('mouse:down', function(e) {
+        	if(typeof e.target != 'undefined'){
+        		console.log(e.target.id);
+        		_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+        	}
+        });
+        
+        this._canvas.on('after:render', function(e) {
+        	if(_self._showAxes){
+        		_self._toggleAxes();
+        	}
         });
 	}
 	
@@ -30,6 +39,15 @@ PocketCode.Canvas = (function(){
 	                return this._zoomfactor;
 	            },
 	        },
+	        showAxes: {
+	        	get: function() {
+	        		return this._showAxes;
+	        	},
+	        	set: function(flag){
+	        		this._showAxes = flag;
+	        		this.render();
+	        	}
+	        }
 	    });
 	 
 	 Object.defineProperties(Canvas.prototype, {
@@ -145,6 +163,7 @@ PocketCode.Canvas = (function(){
 					centeredRotation: true,
 					centeredsize: true,
 					perPixelTargetFind: true,
+					selectable: false,
 					
 					//coordinates have to be adapted either here or at another level
 					top: this.sprites[i]._positionX,
@@ -161,17 +180,46 @@ PocketCode.Canvas = (function(){
 				
 				currentLook.scale(this.sprites[i]._size/100*this._zoomfactor);
 				
-				//TODO
-//				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: this.sprites[i]._brightness}));
-				currentLook.filters.push(new fabric.Image.filters.Brightness({brightness: 1}));
-				currentLook.applyFilters(this._canvas.renderAll.bind(this._canvas));
+				if(this.sprites[i]._brightness != 100){
+					this._applyBrightness(currentLook, this.sprites[i]._brightness);
+				}else {
+					this._canvas.add(currentLook);
+				}
 				
-				currentLook._originalElement.id = this.sprites[i].id;
-				currentLook._originalElement.name = this.sprites[i].name;
-				
-				this._canvas.add(currentLook);
 			}
 		},
+		
+		_applyBrightness: function(fabricSprite, brightness){
+			fabricSprite.filters.push(new fabric.Image.filters.Brightness({brightness: bright}));
+				
+			var replacement = fabric.util.createImage();
+			var imgEl = fabricSprite._originalElement;
+			var canvasEl = fabric.util.createCanvasElement();
+			var  _this = fabricSprite;
+			      
+			canvasEl.width = imgEl.width;
+			canvasEl.height = imgEl.height;
+			canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
+				
+			var bright = +((255/100)*(brightness - 100)).toFixed(0);
+			var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
+				
+			brightnessFilter.applyTo(canvasEl);
+			
+			replacement.width = canvasEl.width;
+			replacement.height = canvasEl.height;
+			
+			_this._element = replacement;
+			_this._filteredEl = replacement;
+			replacement.src = canvasEl.toDataURL('image/png');
+				
+			this._canvas.add(fabricSprite);
+		},
+		
+		addToCanvas: function(currentLook){
+			this._canvas.add(currentLook);
+		},
+		
 		
 		glideTo: function(layer,xPos, yPos, dur){
 			this._canvas.getObjects()[layer].animate({left: xPos, top: yPos}, {
@@ -182,6 +230,31 @@ PocketCode.Canvas = (function(){
 		
 		setZoomfactor: function(zoomfactor){
 			this._zoomfactor = zoomfactor;
+		},
+		
+		_toggleAxes: function(){
+			this._canvas.getContext('2d').moveTo(this._canvas.getWidth()/2, 0);
+			this._canvas.getContext('2d').lineTo(this._canvas.getWidth()/2, this._canvas.getHeight());
+			
+			this._canvas.getContext('2d').moveTo(0, this._canvas.getHeight()/2);
+			this._canvas.getContext('2d').lineTo(this._canvas.getWidth(), this._canvas.getHeight()/2);
+		    
+			this._canvas.getContext('2d').strokeStyle = "#ff0000";
+			this._canvas.getContext('2d').lineWidth = 5;
+			
+			
+			this._canvas.getContext('2d').font="15px Arial";
+			this._canvas.getContext('2d').fillStyle= "#ff0000";
+			//center
+			this._canvas.getContext('2d').fillText("0",this._canvas.getWidth()/2 + 10,this._canvas.getHeight()/2 +15);
+			//width
+			this._canvas.getContext('2d').fillText("-" + this._canvas.getWidth()/2, 5 ,this._canvas.getHeight()/2 +15);
+			this._canvas.getContext('2d').fillText(this._canvas.getWidth()/2,this._canvas.getWidth() - 25,this._canvas.getHeight()/2 +15);
+			//height
+			this._canvas.getContext('2d').fillText("-" + this._canvas.getHeight()/2,this._canvas.getWidth()/2 +10, 15);
+			this._canvas.getContext('2d').fillText(this._canvas.getHeight()/2,this._canvas.getWidth()/2 + 10 ,this._canvas.getHeight() -5);
+			
+			this._canvas.getContext('2d').stroke();
 		}
 		
 	});
