@@ -100,15 +100,41 @@ QUnit.test("Sprite", function (assert) {
     sprite.changePositionY(-20);
     assert.ok(sprite._positionX==35+50 && sprite._positionY==90-20, "change PositionY");
     // *************************************************************
-    console.log("direction: "+sprite._direction);
+  /*  console.log("direction: "+sprite._direction);
     console.log("x: "+sprite._positionX);
     console.log("y: "+sprite._positionY);
     sprite.move(10);
     console.log("x: "+sprite._positionX);
-    console.log("y: "+sprite._positionY);
+    console.log("y: "+sprite._positionY);*/
     sprite.setPosition(-10,-10);
     sprite.move(25);
-    assert.ok(sprite._positionX==15 && sprite._positionY==-10 && sprite._direction==90, "move steps");
+    assert.ok(sprite._positionX==15 && sprite._positionY==-10 && sprite._direction==90, "move steps 90°");
+
+    var triggerEvent;
+    sprite.setDirection(-90,triggerEvent);
+    sprite.setPosition(-10,-10);
+    sprite.move(25);
+    assert.ok(sprite._positionX==-35 && sprite._positionY==-10 && sprite._direction==-90, "move steps -90°");
+
+    sprite.setDirection(-180,triggerEvent);
+    sprite.setPosition(-10,-10);
+    sprite.move(25);
+    assert.ok(sprite._positionX==-10 && sprite._positionY==-35 && sprite._direction==-180, "move steps -180°");
+
+    sprite.setDirection(180,triggerEvent);
+    sprite.setPosition(-10,-10);
+    sprite.move(25);
+    assert.ok(sprite._positionX==-10 && sprite._positionY==-35 && sprite._direction==180, "move steps 180°");
+
+    sprite.setDirection(0,triggerEvent);
+    sprite.setPosition(-10,-10);
+    sprite.move(25);
+    assert.ok(sprite._positionX==-10 && sprite._positionY==15 && sprite._direction==0, "move steps 0°");
+
+    console.log("direction: "+sprite._direction);
+    console.log("x: "+sprite._positionX);
+    console.log("y: "+sprite._positionY);
+
     var steps=10;
     var rad = sprite.direction * (Math.PI / 180.0);
     console.log("rad : "+rad);
