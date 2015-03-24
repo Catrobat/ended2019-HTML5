@@ -314,9 +314,11 @@ PocketCode.Model.Sprite = (function () {
             var rad = this.direction * (Math.PI / 180.0);
             var offsetX = Math.round(Math.sin(rad) * steps);
             var offsetY = Math.round(Math.cos(rad) * steps);
-            this.setPosition(this._positionX + offsetX, this._positionY + offsetY);
+            var triggerEvent;
+            this.setPosition(this._positionX + offsetX, this._positionY + offsetY,triggerEvent);
             return true;
         },
+
         //motion:direction
         turnLeft: function (degree) {
             if (!degree)
