@@ -144,11 +144,27 @@ QUnit.test("Sprite", function (assert) {
     sprite.turnRight(50);
     assert.ok( sprite._direction==140, "turn right 50°");
     sprite.turnRight(570); //710 --> -10
-    assert.ok( sprite._direction==-10, "turn right 50°");
+    assert.ok( sprite._direction==-10, "turn right to 710°");
     sprite.turnRight(-180); // -190 --> 170
-    assert.ok( sprite._direction==170, "turn right 50°");
+    assert.ok( sprite._direction==170, "turn right to -190°");
+
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnRight(100); //190 --> -170
+    assert.ok( sprite._direction==-170, "turn right to 190°");
+    sprite.turnRight(180); //-170 --> 10
+    assert.ok( sprite._direction==10, "turn right to 10°");
+    sprite.turnRight(-20); //-170 --> 10
+    assert.ok( sprite._direction==-10, "turn right to 10°");
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnRight(-100); //-10 --> -10
+    assert.ok( sprite._direction==-10, "turn right to -10°");
+    sprite.setDirection(0,triggerEvent);
+    sprite.turnRight(-350); //-350 --> 10
+    assert.ok( sprite._direction==10, "turn right to -10°");
+
 
     console.log("direction : "+sprite._direction);
+
 
     /*var steps=10;
     var rad = sprite.direction * (Math.PI / 180.0);

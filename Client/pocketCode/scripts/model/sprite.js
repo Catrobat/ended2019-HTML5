@@ -330,10 +330,12 @@ PocketCode.Model.Sprite = (function () {
                 return false;
             var d = this._direction;
             var nd = (d + degree) % 360;
-            if (nd < -180.0)
+            if (nd <= -180.0){
                 nd += 360;
-            if (nd > 180.0)
+            }
+            if (nd > 180.0){
                 nd -= 360;
+    }
             if (d === nd)
                 return false;
 
