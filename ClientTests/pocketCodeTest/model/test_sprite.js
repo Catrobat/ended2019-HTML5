@@ -106,6 +106,8 @@ QUnit.test("Sprite", function (assert) {
     sprite.move(10);
     console.log("x: "+sprite._positionX);
     console.log("y: "+sprite._positionY);*/
+
+    // ********************* Move *********************
     sprite.setPosition(-10,-10);
     sprite.move(25);
     assert.ok(sprite._positionX==15 && sprite._positionY==-10 && sprite._direction==90, "move steps 90°");
@@ -131,17 +133,32 @@ QUnit.test("Sprite", function (assert) {
     sprite.move(25);
     assert.ok(sprite._positionX==-10 && sprite._positionY==15 && sprite._direction==0, "move steps 0°");
 
-    console.log("direction: "+sprite._direction);
-    console.log("x: "+sprite._positionX);
-    console.log("y: "+sprite._positionY);
+    // *************************************************************
 
-    var steps=10;
+    // ********************* turn *********************
+    /*console.log("direction: "+sprite._direction);
+    console.log("x: "+sprite._positionX);
+    console.log("y: "+sprite._positionY);*/
+
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnRight(50);
+    assert.ok( sprite._direction==140, "turn right 50°");
+    sprite.turnRight(570); //710 --> -10
+    assert.ok( sprite._direction==-10, "turn right 50°");
+    sprite.turnRight(-180); // -190 --> 170
+    assert.ok( sprite._direction==170, "turn right 50°");
+
+    console.log("direction : "+sprite._direction);
+
+    /*var steps=10;
     var rad = sprite.direction * (Math.PI / 180.0);
     console.log("rad : "+rad);
     var offsetX = Math.round(Math.sin(rad) * steps);
     var offsetY = Math.round(Math.cos(rad) * steps);
     console.log("offsetX: "+offsetX);
-    console.log("offsetY: "+offsetY);
+    console.log("offsetY: "+offsetY); */
+
+    // *************************************************************
 
     /*  sprite.setBrightness(110);
       assert.equal(sprite.brightness, 100, "setBrightness over 100");
