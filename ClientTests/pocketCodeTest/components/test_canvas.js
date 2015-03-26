@@ -181,29 +181,28 @@ function updateSprite(){
 	canvas.render();
 	
 	// get sprite by id
-	sprite2test = canvas.getSpriteById(5);
+//	sprite2test = canvas.getSpriteById(5);
 	
 	// move sprite with id 5 to position 300, 400
 	canvas.renderSpriteChange({id: 5, changes: [{property: '_positionX', value: 300}, {property: '_positionY', value: 400}]});
-	sprite2test = canvas.getSpriteById(5);
+//	sprite2test = canvas.getSpriteById(5);
 	
-	// change layer of sprite
+//	 change layer of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_layer', value: 0}]});
-	sprite2test = canvas.getSpriteById(5);
 	
 	// sync of internal sprite list and sprites on canvas
-	sprite2test = canvas.getSpriteById(5);
+//	sprite2test = canvas.getSpriteById(5);
 	var sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
 	
 	// change direction of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_direction', value: 180}]});
 	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
-	sprite2test = canvas.getSpriteById(5);
+//	sprite2test = canvas.getSpriteById(5);
 	
 	// change transparency of sprite
 	canvas.renderSpriteChange({id: 5, changes:[{property: '_transparency', value: 80}]});
 	sprite2testOnCanvas = canvas.getSpriteOnCanvas(5);
-	sprite2test = canvas.getSpriteById(5);
+//	sprite2test = canvas.getSpriteById(5);
 	
 //	// change visibility of sprite
 //	canvas.renderSpriteChange({id: 5, changes:[{property: '_visible', value: false}]});

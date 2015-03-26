@@ -5,10 +5,9 @@
 
 PocketCode.Canvas = (function(){
 	function Canvas(htmlCanvasId, zoomfactor){
-		this._canvas = new fabric.Canvas(htmlCanvasId);
+		this._canvas = new fabric.Canvas(htmlCanvasId, {selection: false, skipTargetFind: false, renderOnAddRemove: false, stateful: false});
 		
 		this._zoomfactor = zoomfactor;
-		this.sprites = [];
         this._onSpriteClicked = new SmartJs.Event.Event(this);
         this._showAxes = false;
 
@@ -23,7 +22,7 @@ PocketCode.Canvas = (function(){
         
         this._canvas.on('after:render', function(e) {
         	if(_self._showAxes){
-        		_self._toggleAxes();
+        		_self._drawAxes();
         	}
         });
 	}
@@ -53,62 +52,58 @@ PocketCode.Canvas = (function(){
 	 Object.defineProperties(Canvas.prototype, {
 	        onSpriteClicked: {
 	            get: function () { return this._onSpriteClicked; },
-	            //enumerable: false,
-	            //configurable: true,
 	        },
 	 });
 	
 	Canvas.prototype.merge({
 		
-		addSprite: function(sprite){
-			if(sprite._layer > this.sprites.length){
-				this.sprites[sprite._layer] = sprite;
+		/**
+		 * adds a pocket code sprite to the canvas 
+		 * @param {PocketCode.Model.Sprite} pcSprite 
+		 */
+		addSprite: function(pcSprite){
+			var sprites = this._canvas.getObjects();
+			
+			// is new sprite on top of all other elements
+			if(pcSprite._layer >= sprites.length){
+				this._canvas.add(this._createCanvasSprite(pcSprite));
 			} else {
-				this.sprites.splice(sprite._layer,0,sprite);
-				this._addaptLayerAttr();
+				sprites.splice(pcSprite._layer,0,this._createCanvasSprite(pcSprite));
 			}
 		}, 
 		
-		overwriteSprite: function(sprite){
-			this.sprites[sprite._layer] = sprite;
-		},
-		
-		clickedSprite: function(sprite){
-			console.log(sprite.get('id'), sprite.get('name'), sprite._originalElement.id, sprite._originalElement.name);
-			//TODO
-		},
-		
-		getSpriteById: function(id){
-			for(var i = 0; i < this.sprites.length; i++){
-				if(this.sprites[i].id == id){
-					return this.sprites[i];
-				}
-			}
-		},
-		
+		/**
+		 * updates the layer of the sprites on the canvas  
+		 * @param {int} id: id of the sprite that shall change its layer
+		 * @param {int} newLayer: integer of the new layer of the respective sprite 
+		 */
 		updateLayers: function(id, newLayer){
-			var spriteOpts = this.getSpriteById(id);
+			
+			var sprite2change = this.getSpriteOnCanvas(id);
+			var sprites = this._canvas.getObjects();
 			
 			//remove element at old index
-			this.sprites.splice(spriteOpts._layer,1);
+			sprites.splice(sprites.indexOf(sprite2change),1);
 			
 			//insert element at new index)
-			spriteOpts._layer = newLayer;
-			this.sprites.splice(newLayer,0,spriteOpts);
-			this._addaptLayerAttr();
+			sprites.splice(newLayer,0,sprite2change);
 			
 		},
 		
-		_addaptLayerAttr: function(){
-			for(var i=0; i<this.sprites.length; i++){
-				if(this.sprites[i]._layer != i){
-					this.sprites[i]._layer = i;
-				}
-			} 
-		},
+//		_addaptLayerAttr: function(){
+//			for(var i=0; i<this.sprites.length; i++){
+//				if(this.sprites[i]._layer != i){
+//					this.sprites[i]._layer = i;
+//				}
+//			} 
+//		},
 		
+		
+		/**
+		 * finds the respective sprite on the canvas via its id  
+		 * @param {int} id: id of the sprite to find 
+		 */
 		getSpriteOnCanvas: function(id){
-			// find Sprite on Canvas
 			var drawnSprites = this._canvas.getObjects();
 			
 			for(var i = 0; i<drawnSprites.length; i++){
@@ -118,121 +113,85 @@ PocketCode.Canvas = (function(){
 			}
 		},
 		
-		//expected: {id: xxx, changes: [{ property: xxx, value: xxx}]}
+		/**
+		 * will be called when a change to a sprite should be made on the canvas
+		 * expects an object in the format of {id: xxx, changes: [{ property: xxx, value: xxx}]}
+		 * @param {object} renderingItem: has to be in the format of {id: xxx, changes: [{ property: xxx, value: xxx}]}
+		 */
 		renderSpriteChange: function(renderingItem){
 			var spriteOnCanvas = this.getSpriteOnCanvas(renderingItem.id);
-			var spriteInList = this.getSpriteById(renderingItem.id);
-			var properties2set = [];
 			for(var i = 0; i < renderingItem.changes.length; i++){
 				
 				switch (renderingItem.changes[i].property){
 					case "_positionX": 
-						spriteInList._positionX = renderingItem.changes[i].value;
+						spriteOnCanvas.setTop(renderingItem.changes[i].value);
 						break;
 					case "_positionY":
-						spriteInList._positionY = renderingItem.changes[i].value;
+						spriteOnCanvas.setLeft(renderingItem.changes[i].value);
 						break;
 					case "_direction":
-						spriteInList._direction = renderingItem.changes[i].value;
+						spriteOnCanvas.setAngle(renderingItem.changes[i].value);
 						break;
 					case "_transparency":
-						spriteInList._transparency = renderingItem.changes[i].value;
+						spriteOnCanvas.setOpacity(renderingItem.changes[i].value);
 						break;
 					case "_visible":
-						spriteInList._visible = renderingItem.changes[i].value;
+						spriteOnCanvas.setVisible(renderingItem.changes[i].value);
 						break;
 					case "_brightness":
-						//TODO
+						spriteOnCanvas.applyBrightness(this.sprites[i]._brightness);
 						break;
 					case "_layer":
 						this.updateLayers(renderingItem.id, renderingItem.changes[i].value);
 						break;
 				}
 			}
-			
-			this.render();
-			this.overwriteSprite(spriteInList);
-			
+			this._canvas.renderAll();
 		},
 		
-		render: function(){
-			this._canvas.clear();
-			for (var i=0; i< this.sprites.length; i++){
-				
-				var currentLook = new Sprite(this.sprites[i]._currentLook,{
-					centeredRotation: true,
-					centeredsize: true,
-					perPixelTargetFind: true,
-					selectable: false,
-					
-					//coordinates have to be adapted either here or at another level
-					top: this.sprites[i]._positionX,
-					left: this.sprites[i]._positionY,
-					
-					angle:this.sprites[i]._direction - 90,
-					opacity: +(1 - this.sprites[i]._transparency / 100).toFixed(2),
-					visible: this.sprites[i]._visible,
-					originX: "center",
-					originY: "center",
-					name: this.sprites[i].name,
-					id: this.sprites[i].id,
-				});
-				
-				currentLook.scale(this.sprites[i]._size/100*this._zoomfactor);
-				
-				if(this.sprites[i]._brightness != 100){
-					this._applyBrightness(currentLook, this.sprites[i]._brightness);
-				}else {
-					this._canvas.add(currentLook);
-				}
-				
+		/**
+		 * creates a new object of type Sprite which extends fabric.js's Image Class. This object can then be added to a fabric.js Canvas  
+		 * @param {PocketCode.Model.Sprite} pcSprite: sprite that shall be converted into an object that can be added to the canvas 
+		 */
+		_createCanvasSprite: function(pcSprite){
+			var sprite = new Sprite(pcSprite._currentLook,{
+				name: pcSprite.name,
+				id: pcSprite.id,
+				top: pcSprite._positionX,
+				left: pcSprite._positionY,
+				visible: pcSprite._visible,
+				angle: pcSprite._direction,
+				opacity: pcSprite._transparency,
+			});
+			
+			sprite.scale(pcSprite._size/100*this._zoomfactor);
+			
+			if(pcSprite._brightness != 100){
+				sprite.applyBrightness(pcSprite._brightness);
 			}
-		},
-		
-		_applyBrightness: function(fabricSprite, brightness){
-			fabricSprite.filters.push(new fabric.Image.filters.Brightness({brightness: bright}));
-				
-			var replacement = fabric.util.createImage();
-			var imgEl = fabricSprite._originalElement;
-			var canvasEl = fabric.util.createCanvasElement();
-			var  _this = fabricSprite;
-			      
-			canvasEl.width = imgEl.width;
-			canvasEl.height = imgEl.height;
-			canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
-				
-			var bright = +((255/100)*(brightness - 100)).toFixed(0);
-			var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
-				
-			brightnessFilter.applyTo(canvasEl);
 			
-			replacement.width = canvasEl.width;
-			replacement.height = canvasEl.height;
-			
-			_this._element = replacement;
-			_this._filteredEl = replacement;
-			replacement.src = canvasEl.toDataURL('image/png');
-				
-			this._canvas.add(fabricSprite);
+			return sprite;
 		},
 		
-		addToCanvas: function(currentLook){
-			this._canvas.add(currentLook);
+		/**
+		 * renders the canvas
+		 */
+		render: function(){
+			this._canvas.renderAll();
 		},
 		
-		
-		glideTo: function(layer,xPos, yPos, dur){
-			this._canvas.getObjects()[layer].animate({left: xPos, top: yPos}, {
-			      duration: dur,
-			      onChange: this._canvas.renderAll.bind(this._canvas),
-			      });
-		},
-		
+		/**
+		 * sets the zoomfactor
+		 * @param {float} zoomfactor
+		 */
 		setZoomfactor: function(zoomfactor){
 			this._zoomfactor = zoomfactor;
 		},
 		
-		_toggleAxes: function(){
+		/**
+		 * draws axes on the canvas
+		 */
+		_drawAxes: function(){
 			this._canvas.getContext('2d').moveTo(this._canvas.getWidth()/2, 0);
 			this._canvas.getContext('2d').lineTo(this._canvas.getWidth()/2, this._canvas.getHeight());
 			
@@ -270,8 +229,22 @@ var Sprite = fabric.util.createClass(fabric.Image, {
 	    options || (options = { });
 	
 	    this.callSuper('initialize', element, options);
-	    this.set('id', options.id || '');
-	    this.set('name', options.name || '');
+	    
+	    this.set({
+	    	id: options.id,
+	    	name: options.name,
+	    	
+		    perPixelTargetFind: true,
+			selectable: false,
+			hasControls: false, 
+			hasBorders: false,
+			hasRotatingPoint: false,
+			originX: "center",
+			originY: "center",
+	    });
+	    
+	    this.setAngle(options.angle);
+	    this.setOpacity(options.opacity);
 	  },
 	  
 	  toObject: function() {
@@ -284,5 +257,39 @@ var Sprite = fabric.util.createClass(fabric.Image, {
 	  _render: function(ctx) {
 		    this.callSuper('_render', ctx);
 	  }, 
+	  
+	 setAngle: function(direction){
+	  		this.angle = direction - 90;
+	 },
+	 
+	 setOpacity: function(transparency){
+		  		this.opacity = +(1 - transparency / 100).toFixed(2);
+	 },
+	  
+	  applyBrightness: function(brightness){
+			this.filters.push(new fabric.Image.filters.Brightness({brightness: bright}));
+				
+			var replacement = fabric.util.createImage();
+			var imgEl = this._originalElement;
+			var canvasEl = fabric.util.createCanvasElement();
+			var  _this = this;
+			      
+			canvasEl.width = imgEl.width;
+			canvasEl.height = imgEl.height;
+			canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
+				
+			var bright = +((255/100)*(brightness - 100)).toFixed(0);
+			var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
+				
+			brightnessFilter.applyTo(canvasEl);
+			
+			replacement.width = canvasEl.width;
+			replacement.height = canvasEl.height;
+			
+			_this._element = replacement;
+			_this._filteredEl = replacement;
+			replacement.src = canvasEl.toDataURL('image/png');
+				
+		},
 	  	  
 	});

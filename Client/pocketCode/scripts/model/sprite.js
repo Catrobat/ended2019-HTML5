@@ -82,7 +82,8 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
         	set: function (layer) {
-        	    //TODO: in program : this._layer = layer;
+        	    //TODO: in program : meanwhile just for testing...
+        		this._layer = layer;
         	},
             get: function () {
                 return this._program.getSpriteLayer(this.id);
