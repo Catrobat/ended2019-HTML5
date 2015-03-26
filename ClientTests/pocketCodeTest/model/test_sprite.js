@@ -158,11 +158,45 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(90,triggerEvent);
     sprite.turnRight(-100); //-10 --> -10
     assert.ok( sprite._direction==-10, "turn right to -10°");
+
     sprite.setDirection(0,triggerEvent);
     sprite.turnRight(-350); //-350 --> 10
-    assert.ok( sprite._direction==10, "turn right to -10°");
+    assert.ok( sprite._direction==10, "turn right to 10°");
+    sprite.setDirection(0,triggerEvent);
+    sprite.turnRight(350); //350 --> -10
+    assert.ok( sprite._direction==-10, "turn right to -10°");
+    sprite.setDirection(0,triggerEvent);
+    sprite.turnLeft(350); //350 --> 10
+    assert.ok( sprite._direction==10, "turn left to 10°");
+    sprite.setDirection(0,triggerEvent);
+    sprite.turnLeft(-350); //-350 --> -10
+    assert.ok( sprite._direction==-10, "turn left to -10°");
 
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnRight(-540); //-350 --> 10
+    assert.ok( sprite._direction==-90, "turn right to -90°");
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnRight(541); //350 --> -10
+    assert.ok( sprite._direction==-89, "turn right to -89°");
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnLeft(540); //350 --> 10
+    assert.ok( sprite._direction==-90, "turn left to -90°");
+    sprite.setDirection(90,triggerEvent);
+    sprite.turnLeft(-541); //-350 --> -10
+    assert.ok( sprite._direction==-89, "turn left to -89°");
 
+    sprite.setDirection(-90,triggerEvent);
+    sprite.turnRight(-450); //-350 --> 10
+    assert.ok( sprite._direction==180, "turn right to 180°");
+    sprite.setDirection(-90,triggerEvent);
+    sprite.turnRight(450); //350 --> -10
+    assert.ok( sprite._direction==0, "turn right to 0°");
+    sprite.setDirection(-90,triggerEvent);
+    sprite.turnLeft(450); //350 --> 10
+    assert.ok( sprite._direction==180, "turn left to 180°");
+    sprite.setDirection(-90,triggerEvent);
+    sprite.turnLeft(-450); //-350 --> -10
+    assert.ok( sprite._direction==0, "turn left to 0°");
     console.log("direction : "+sprite._direction);
 
 
