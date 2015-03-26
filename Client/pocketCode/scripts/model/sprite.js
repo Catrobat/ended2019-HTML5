@@ -98,9 +98,6 @@ PocketCode.Model.Sprite = (function () {
                 return this._positionY;
             },
         },
-        /**
-         * @property direction
-         */
         direction: {
         	set: function (direction) {
         		this._direction = direction;
@@ -611,8 +608,10 @@ PocketCode.Model.Sprite = (function () {
             var variableNames = {};
             var names = this._variableNames;
             for (var v in names)
-                if (names.hasOwnProperty(v))
+                if (names.hasOwnProperty(v)){
                     variableNames[v] = names[v];
+                }
+
             //include global variables
             variableNames.merge(this._program.getGlobalVariableNames());
             return variableNames;

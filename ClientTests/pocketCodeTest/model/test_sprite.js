@@ -107,7 +107,7 @@ QUnit.test("Sprite", function (assert) {
     console.log("x: "+sprite._positionX);
     console.log("y: "+sprite._positionY);*/
 
-    // ********************* Move *********************
+    // ********************* Move/Direction *********************
     sprite.setPosition(-10,-10);
     sprite.move(25);
     assert.ok(sprite._positionX==15 && sprite._positionY==-10 && sprite._direction==90, "move steps 90°");
@@ -197,9 +197,29 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(-90,triggerEvent);
     sprite.turnLeft(-450); //-350 --> -10
     assert.ok( sprite._direction==0, "turn left to 0°");
-    console.log("direction : "+sprite._direction);
+    //console.log("direction : "+sprite._direction);
+
+    // *************************************************************
+
+    // ********************* variables *********************
+    var varArray=[{id: [21], name: ["two-one"]},{id: [24], name:["two-four"]}];
+    sprite.variables= varArray;
+    assert.ok( sprite._variables[21].value==0.0, "correct init");
+    assert.ok( sprite._variables[21].name=="two-one", "correct insertion of array entries");
+    assert.ok( sprite._variables[24].name=="two-four", "correct insertion of array entries");
+    var fakeArray= "error"
+    assert.throws(function () {sprite.variables=fakeArray},Error,"passing non Array");
+    var v=sprite.getVariable(21);
+    assert.ok(v.name=="two-one","get variable");
+    assert.throws(function () {sprite.getVariable(22)},Error,"unknown variable id");
+
+    var varNames=sprite.getVariableNames();
+    assert.ok(varNames[21].name=="two-one","get variableNames");
 
 
+
+
+    console.log("End");
     /*var steps=10;
     var rad = sprite.direction * (Math.PI / 180.0);
     console.log("rad : "+rad);
