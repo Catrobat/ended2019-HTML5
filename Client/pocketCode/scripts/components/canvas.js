@@ -59,6 +59,7 @@ PocketCode.Canvas = (function(){
 		
 		/**
 		 * adds a pocket code sprite to the canvas 
+		 * note: sprite will not be rendered - if requested call render() after this method
 		 * @param {PocketCode.Model.Sprite} pcSprite 
 		 */
 		addSprite: function(pcSprite){
@@ -77,9 +78,9 @@ PocketCode.Canvas = (function(){
 		 * @param {int} id: id of the sprite that shall change its layer
 		 * @param {int} newLayer: integer of the new layer of the respective sprite 
 		 */
-		updateLayers: function(id, newLayer){
+		_updateLayers: function(id, newLayer){
 			
-			var sprite2change = this.getSpriteOnCanvas(id);
+			var sprite2change = this._getSpriteOnCanvas(id);
 			var sprites = this._canvas.getObjects();
 			
 			//remove element at old index
@@ -90,20 +91,12 @@ PocketCode.Canvas = (function(){
 			
 		},
 		
-//		_addaptLayerAttr: function(){
-//			for(var i=0; i<this.sprites.length; i++){
-//				if(this.sprites[i]._layer != i){
-//					this.sprites[i]._layer = i;
-//				}
-//			} 
-//		},
-		
 		
 		/**
 		 * finds the respective sprite on the canvas via its id  
 		 * @param {int} id: id of the sprite to find 
 		 */
-		getSpriteOnCanvas: function(id){
+		_getSpriteOnCanvas: function(id){
 			var drawnSprites = this._canvas.getObjects();
 			
 			for(var i = 0; i<drawnSprites.length; i++){
@@ -115,11 +108,11 @@ PocketCode.Canvas = (function(){
 		
 		/**
 		 * will be called when a change to a sprite should be made on the canvas
-		 * expects an object in the format of {id: xxx, changes: [{ property: xxx, value: xxx}]}
-		 * @param {object} renderingItem: has to be in the format of {id: xxx, changes: [{ property: xxx, value: xxx}]}
+		 * expects an object in the format of {id: {int}, changes: [{ property: {String}, value: {float}]}
+		 * @param {object} renderingItem: has to be in the format of {id: {int}, changes: [{ property: {String}, value: {float}]}
 		 */
 		renderSpriteChange: function(renderingItem){
-			var spriteOnCanvas = this.getSpriteOnCanvas(renderingItem.id);
+			var spriteOnCanvas = this._getSpriteOnCanvas(renderingItem.id);
 			for(var i = 0; i < renderingItem.changes.length; i++){
 				
 				switch (renderingItem.changes[i].property){
@@ -139,10 +132,10 @@ PocketCode.Canvas = (function(){
 						spriteOnCanvas.setVisible(renderingItem.changes[i].value);
 						break;
 					case "_brightness":
-						spriteOnCanvas.applyBrightness(this.sprites[i]._brightness);
+						spriteOnCanvas.applyBrightness(renderingItem.changes[i].value);
 						break;
 					case "_layer":
-						this.updateLayers(renderingItem.id, renderingItem.changes[i].value);
+						this._updateLayers(renderingItem.id, renderingItem.changes[i].value);
 						break;
 				}
 			}
@@ -150,11 +143,11 @@ PocketCode.Canvas = (function(){
 		},
 		
 		/**
-		 * creates a new object of type Sprite which extends fabric.js's Image Class. This object can then be added to a fabric.js Canvas  
+		 * creates a new object of type CanvasSprite which extends fabric.js's Image Class. This object can then be added to a fabric.js Canvas  
 		 * @param {PocketCode.Model.Sprite} pcSprite: sprite that shall be converted into an object that can be added to the canvas 
 		 */
 		_createCanvasSprite: function(pcSprite){
-			var sprite = new Sprite(pcSprite._currentLook,{
+			var sprite = new CanvasSprite(pcSprite._currentLook,{
 				name: pcSprite.name,
 				id: pcSprite.id,
 				top: pcSprite._positionX,
@@ -222,7 +215,7 @@ PocketCode.Canvas = (function(){
 })();
 
 
-var Sprite = fabric.util.createClass(fabric.Image, {
+var CanvasSprite = fabric.util.createClass(fabric.Image, {
 	type: 'sprite',
 
 	initialize: function(element, options) {
@@ -266,30 +259,40 @@ var Sprite = fabric.util.createClass(fabric.Image, {
 		  		this.opacity = +(1 - transparency / 100).toFixed(2);
 	 },
 	  
-	  applyBrightness: function(brightness){
-			this.filters.push(new fabric.Image.filters.Brightness({brightness: bright}));
+	 applyBrightness: function(brightness){
+		var bright = +((255/100)*(brightness - 100)).toFixed(0);
+		var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
+		 
+		var overwriteFilter = false;
+		for (var i = 0; i < this.filters.length; i++){
+	 		if (this.filters[i].type == "Brightness"){
+	 			this.filters[i] = brightnessFilter;
+	 			overwriteFilter = true;
+	 		}
+	 	}
+		 
+		if (!overwriteFilter)
+			 this.filters.push(brightnessFilter);
 				
-			var replacement = fabric.util.createImage();
-			var imgEl = this._originalElement;
-			var canvasEl = fabric.util.createCanvasElement();
-			var  _this = this;
-			      
-			canvasEl.width = imgEl.width;
-			canvasEl.height = imgEl.height;
-			canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
-				
-			var bright = +((255/100)*(brightness - 100)).toFixed(0);
-			var brightnessFilter = new fabric.Image.filters.Brightness({brightness: bright});
-				
-			brightnessFilter.applyTo(canvasEl);
+		var replacement = fabric.util.createImage();
+		var imgEl = this._originalElement;
+		var canvasEl = fabric.util.createCanvasElement();
+		var  _this = this;
+		      
+		canvasEl.width = imgEl.width;
+		canvasEl.height = imgEl.height;
+		canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
 			
-			replacement.width = canvasEl.width;
-			replacement.height = canvasEl.height;
 			
-			_this._element = replacement;
-			_this._filteredEl = replacement;
-			replacement.src = canvasEl.toDataURL('image/png');
+		brightnessFilter.applyTo(canvasEl);
+		
+		replacement.width = canvasEl.width;
+		replacement.height = canvasEl.height;
+		
+		_this._element = replacement;
+		_this._filteredEl = replacement;
+		replacement.src = canvasEl.toDataURL('image/png');
 				
-		},
+	},
 	  	  
-	});
+});
