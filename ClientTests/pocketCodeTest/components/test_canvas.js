@@ -84,6 +84,8 @@ QUnit.test("Canvas", function (assert) {
         sprite2test = canvas._getSpriteOnCanvas(5);
         assert.ok(sprite2test.filters[0].brightness == -127, "change brightness to 50% (should be 127 on canvas)");
         
+        //TODO test Axes + click 
+        
         done(); //async tests completed
     };
 
