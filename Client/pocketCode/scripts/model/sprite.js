@@ -99,18 +99,17 @@ PocketCode.Model.Sprite = (function () {
             },
         },
         direction: {
-        	set: function (direction) {
-        		this._direction = direction;
-        	},
+            set: function (direction) {
+                this._direction = direction;
+            },
             get: function () {
                 return this._direction;
             },
         },
         layer: {
-        	set: function (layer) {
-        	    //TODO: in program : meanwhile just for testing...
-        		this._layer = layer;
-        	},
+            set: function (layer) {
+                //TODO: in program : this._layer = layer;
+            },
             get: function () {
                 return this._program.getSpriteLayer(this.id);
             },
@@ -333,7 +332,7 @@ PocketCode.Model.Sprite = (function () {
             }
             if (nd > 180.0){
                 nd -= 360;
-    }
+            }
             if (d === nd)
                 return false;
 
@@ -470,10 +469,10 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._setTransparency(value);
-                    //break;
+                //break;
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._setBrightness(value);
-                    //break;
+                //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -493,11 +492,11 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._changeTransparency(value);
-                    //break;
+                //break;
 
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._changeBrightness(value);
-                    //break;
+                //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
