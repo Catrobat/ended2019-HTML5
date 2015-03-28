@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-<<<<<<< HEAD
 	<name>HTML5</name>
-=======
-	<name>HTML5-git</name>
->>>>>>> 18967ba9f0cd729500ca8b280af758be3d774944
 	<comment></comment>
 	<projects>
 	</projects>
 	<buildSpec>
 	</buildSpec>
 	<natures>
-<<<<<<< HEAD
 		<nature>com.aptana.projects.webnature</nature>
-=======
->>>>>>> 18967ba9f0cd729500ca8b280af758be3d774944
 	</natures>
 </projectDescription>
