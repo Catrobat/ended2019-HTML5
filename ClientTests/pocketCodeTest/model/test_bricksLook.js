@@ -169,9 +169,10 @@ QUnit.test("SetTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetTransparencyBrick(device, sprite, { percentage: percentage });
+    var b = new PocketCode.Bricks.SetTransparencyBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.GHOST });
+    //^^ effect is set server side
 
-    assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetTransparencyBrick, "instance check");
     assert.ok(b.objClassName === "SetTransparencyBrick", "objClassName check");
 
@@ -195,7 +196,7 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeTransparencyBrick(device, sprite, { value: value });
+    var b = new PocketCode.Bricks.ChangeTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeTransparencyBrick, "instance check");
@@ -221,9 +222,9 @@ QUnit.test("SetBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetBrightnessBrick(device, sprite, { percentage: percentage });
+    var b = new PocketCode.Bricks.SetBrightnessBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetBrightnessBrick, "instance check");
     assert.ok(b.objClassName === "SetBrightnessBrick", "objClassName check");
 
@@ -247,7 +248,7 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeBrightnessBrick(device, sprite, { value: value });
+    var b = new PocketCode.Bricks.ChangeBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeBrightnessBrick, "instance check");
@@ -289,3 +290,52 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
 });
 
+QUnit.test("LedOnBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var b = new PocketCode.Bricks.LedOnBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.LedOnBrick, "instance check");
+    assert.ok(b.objClassName === "LedOnBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+QUnit.test("LedOffBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var program = new PocketCode.Model.Program();
+    var sprite = new PocketCode.Model.Sprite(program);
+
+    var b = new PocketCode.Bricks.LedOffBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.LedOffBrick, "instance check");
+    assert.ok(b.objClassName === "LedOffBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
