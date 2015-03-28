@@ -10,6 +10,7 @@ PocketCode.Model.Program = (function () {
     function Program(id) {
         this._running = false;  //TODO: change to PocketCode.ExecutingState (core.js)
         this._paused = false;
+        this.minLoopCycleTime = 25; //ms
 
         this._id = id;
         this.title = "";
