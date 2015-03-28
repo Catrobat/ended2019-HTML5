@@ -3,15 +3,15 @@
 
 class SetGraphicEffectBrickDto extends BaseBrickDto {
 
-  public $percentage;	//type of FormulaDto
+  public $value;	//type of FormulaDto
   public $effect;
 
   
-  public function __construct($effect, $percentage) {
+  public function __construct($effect, $value) {
 		parent::__construct("SetGraphicEffect");
 
 		$this->effect = $effect;
-		$this->percentage = $percentage;
+		$this->value = $value;
   }
 
 }
