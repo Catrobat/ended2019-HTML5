@@ -62,33 +62,32 @@ PocketCode.SoundManager = (function () {
 	//methods
 	SoundManager.prototype.merge({
 		init: function(sounds) {
-
+			var soundsFormatted = [];
 			var sizeOfAllSounds = 0;
-			for(var i = 0; i < sounds.length; i++){
-				if(!sounds[i].url || !sounds[i].id){
+			var l = sounds.length;
+			for(var i = 0; i < l; i++){
+				if(!sounds[i].hasOwnProperty("url") || !sounds[i].hasOwnProperty("id")){
 					throw new Error('Sounddata is missing id or url.');
 				}
-				sounds[i].id = this._projectId + sounds[i].id;
-				sounds[i].src = sounds[i].url;
-				sounds[i].data = this.maxInstancesOfSameSound;
+				soundsFormatted[i] = {id: this._projectId + sounds[i].id, src: sounds[i].url, data: this.maxInstancesOfSameSound, size: sounds[i].size};
 				sizeOfAllSounds += sounds[i].size;
 			}
 
 			var percentLoaded = 0;
 			createjs.Sound.addEventListener("fileload", createjs.proxy(function(e) {
-				var loadedFile = sounds.filter(function (sound) {return sound.src === e.src;});
+				var loadedFile = soundsFormatted.filter(function (sound) {return sound.src === e.src;});
 				if (loadedFile.length > 0){
 					percentLoaded +=  loadedFile[0].size / sizeOfAllSounds * 100;
 					this._onLoadingProgress.dispatchEvent({progress: percentLoaded});
 				}
 			},this));
 
-			createjs.Sound.registerSounds(sounds, "");
+			createjs.Sound.registerSounds(soundsFormatted, "");
 		},
 
-    loadSoundFile: function (id, url) {
-            //added to cache static tts sound files- detected by parser
-    },
+		loadSoundFile: function (id, url) {
+				//added to cache static tts sound files- detected by parser
+		},
 
 		startSound: function (id) {
 			var soundInstance = createjs.Sound.createInstance(id);

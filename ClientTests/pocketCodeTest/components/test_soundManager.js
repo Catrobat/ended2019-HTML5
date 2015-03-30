@@ -9,7 +9,6 @@ QUnit.test("SoundManager", function (assert) {
     //init and volume tests
     var doneWithInitTests = assert.async();
 
-
     var soundjsLoaded = function(){
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
@@ -38,7 +37,7 @@ QUnit.test("SoundManager", function (assert) {
         assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values.");
 
 
-        var invalidData = [{notUrl: "a"}];
+        var invalidData = [{notUrl: "a", id: "id"}];
         assert.throws(function(){new PocketCode.SoundManager("id",invalidData)}, Error, "ERROR: passed invalid arguments to Soundmanager.");
 
         doneWithInitTests();
@@ -54,7 +53,6 @@ QUnit.test("SoundManager", function (assert) {
 
 
         var onFileLoaded = function(e){
-
             var progressIncrease = e.progress - progress;
             progress += e.progress;
             var index = expectedProgressChanges.indexOf(progressIncrease);
@@ -83,7 +81,6 @@ QUnit.test("SoundManager", function (assert) {
             soundManager2.stopAllSounds();
             assert.equal(soundManager2.activeSounds.length, 0, "All sounds removed from active sounds on stopping.");
             assert.equal(soundInstance.playState, "playFinished", "Sound has been stopped.");
-
 
             var timesToPlaySound = 6;
             for(i = 0; i < timesToPlaySound; i++){
@@ -123,12 +120,24 @@ QUnit.test("SoundManager", function (assert) {
 
         var sounds = [{url: soundSrc, id:"sound", size:3}, {url: soundSrc2, id:"sound2", size:2}];
         var soundManager2 = new PocketCode.SoundManager("projectId", sounds);
+        var dataSetCorrectly = assert.async();
+        var filesLoaded = [];
+        createjs.Sound.on("fileload",function(e){
+            filesLoaded.push({data: e.data, id: e.id, src: e.src });
+            if(filesLoaded.length !== 2)
+                return;
+
+            var firstFile = filesLoaded.filter(function(file){return file.id === "projectId_sound"});
+            var secondFile = filesLoaded.filter(function(file){return file.id === "projectId_sound2"});
+            assert.deepEqual(firstFile.length, 1, "Id of first file set correctly.");
+            assert.deepEqual(secondFile.length, 1, "Id of second file set correctly.");
+            assert.ok(firstFile[0].src === soundSrc, "Src of first file set correctly.");
+            assert.ok(secondFile[0].src === soundSrc2, "Src of second file set correctly.");
+            assert.equal(firstFile[0].data,secondFile[0].data, 20, "Data set correctly.");
+
+            dataSetCorrectly();
+        });
         soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onFileLoaded));
-
-
-        assert.ok(sounds[0].id === "projectId_sound" && sounds[1].id === "projectId_sound2", "Ids set correctly");
-        assert.ok((sounds[0].src === soundSrc && sounds[1].src === soundSrc2), "Src set correctly");
-        assert.ok(sounds[0].data === soundManager2.maxInstancesOfSameSound && sounds[1].data === soundManager2.maxInstancesOfSameSound, "Data set to defined value.");
 
     };
 
@@ -137,6 +146,4 @@ QUnit.test("SoundManager", function (assert) {
     createjs.Sound.setVolume(0.1);
     createjs.Sound.on("fileload", soundjsLoaded, null, true);
     createjs.Sound.registerSound("_resources/sound/sound.mp3");
-
 });
-
