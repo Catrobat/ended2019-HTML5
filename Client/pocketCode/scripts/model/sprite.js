@@ -56,6 +56,8 @@ PocketCode.Model.Sprite = (function () {
         this._variables = {};
         this._variableNames = {};
 
+        //todo for testing
+        this.bricks = [];
         this._bricks = [];
         //TODO: if not each brick instance of RootContainerBrick throw error
         //attach to bricks onExecuted event, get sure all are executed an not running

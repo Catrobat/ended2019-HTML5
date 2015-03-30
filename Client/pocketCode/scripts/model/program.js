@@ -8,7 +8,7 @@
 PocketCode.Model.Program = (function () {
 
     function Program(id) {
-        this._running = false;  //TODO: change to PocketCode.ExecutingState (core.js)
+        this._executionState = PocketCode.ExecutingState.STOPPED;
         this._paused = false;
         this.minLoopCycleTime = 25; //ms
 
@@ -18,6 +18,9 @@ PocketCode.Model.Program = (function () {
         this.author = "";
         this.height = 0;
         this.width = 0;
+
+        //to have the same layer value as in catroid
+        this.backgroundOffset = 2;
 
         this.background = undefined;
         this.sprites = [];
@@ -46,19 +49,21 @@ PocketCode.Model.Program = (function () {
                 if (!(images instanceof Array))
                     throw new Error('setter expects type Array');
 
-                for (i = 0, l = images.length; i < l; i++)
+                for (var i = 0, l = images.length; i < l; i++)
                     this._images[images[i].id] = images[i];
             },
             //enumerable: false,
             //configurable: true,
         },
-        sounds: {   //TODO: Change this using the soundManager
+        sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
                     throw new Error('setter expects type Array');
 
-                for (i = 0, l = sounds.length; i < l; i++)
+                for (var i = 0, l = sounds.length; i < l; i++)
                     this._sounds[sounds[i].id] = sounds[i];
+
+                this._soundManager.init(sounds);
             },
             //enumerable: false,
             //configurable: true,
@@ -68,8 +73,8 @@ PocketCode.Model.Program = (function () {
                 if (!(variables instanceof Array))
                     throw new Error('setter expects type Array');
 
-                for (i = 0, l = variables.length; i < l; i++) {
-                    varArray[i].value = 0;  //init
+                for (var i = 0, l = variables.length; i < l; i++) {
+                    //varArray[i].value = 0;  //init //possibly todo - we will see
                     this._variables[variables[i].id] = variables[i];
                     this._variableNames[variables[i].id] = { name: variables[i].name, scope: 'global' };
                 }
@@ -119,15 +124,18 @@ PocketCode.Model.Program = (function () {
     //methods
     Program.prototype.merge({
         start: function () {
-            //this._soundManager.pauseSounds(); //TODO: loading???
-            if (this._running)
+            if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
             if (!this.background && this.sprites.length === 0)
                 throw new Error('no program loaded');
 
+            this.background.start();
+
             for (var i = 0, l = this.sprites.length; i < l; i++) {
                 this.sprites[i].start();
             }
+
+            this._executionState = PocketCode.ExecutingState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
         restart: function () {
@@ -135,28 +143,30 @@ PocketCode.Model.Program = (function () {
             this.start();
         },
         pause: function () {
-            this._soundManager.pauseSounds();
-            if (!this._running || this._paused)
+            if (this._executionState !== PocketCode.ExecutingState.RUNNING || this._executionState === PocketCode.ExecutingState.PAUSED)//(!this._running || this._paused)
                 return;
 
+            this._soundManager.pauseSounds();
             this.background.pause();
 
             for (var i = 0, l = this.sprites.length; i < l; i++) {
                 this.sprites[i].pause();
             }
-            this._paused = true;
+            //this._paused = true;
+            this._executionState = PocketCode.ExecutingState.PAUSED;
         },
         resume: function () {
-            this._soundManager.resumeSounds();
-            if (!this._paused)
+            if (this._executionState !== PocketCode.ExecutingState.PAUSED)//(!this._paused)
                 return;
 
+            this._soundManager.resumeSounds();
             this.background.resume();
 
             for (var i = 0, l = this.sprites.length; i < l; i++) {
                 this.sprites[i].resume();
             }
-            this._paused = false;
+            //this._paused = false;
+            this._executionState = PocketCode.ExecutingState.RUNNING;
         },
         stop: function () {
             this._soundManager.stopAllSounds();
@@ -165,8 +175,9 @@ PocketCode.Model.Program = (function () {
             for (var i = 0, l = this.sprites.length; i < l; i++) {
                 this.sprites[i].stop();
             }
-            this._running = false;
-            this._paused = false;
+            this._executionState = PocketCode.ExecutingState.STOPPED;
+            //this._running = false;
+            //this._paused = false;
         },
 
         _spriteOnExecudedHandler: function (e) {
@@ -177,10 +188,10 @@ PocketCode.Model.Program = (function () {
 
         //Brick-Sprite Interacttion
         getSprite: function (spriteId) {
-            //TODO: implement this
+            return this.sprites.filter(function (sprite) {return sprite.id === spriteId;})[0];
         },
         getSpriteLayer: function (spriteId) {
-            return 1; //to enable testing formulas //TODO: implement this
+            return this.sprites.indexOf(this.getSprite(spriteId)) + this.backgroundOffset;
         },
         checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
             //program viewport
@@ -192,20 +203,38 @@ PocketCode.Model.Program = (function () {
             //^^ only properties that really change
             return false;
         },
-        setSpriteLayerBack: function (spriteId, layers) {   //TODO: check parameters- sprite?
-            //TODO: implement logic, returns true or false: sprite layer changed?
-            var ids = [];
+        setSpriteLayerBack: function (spriteId) {
+            //TODO handle undefined spriteId
+            var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
             var sprites = this.sprites;
+            if (currentPosition === 0)
+                return false;
+
+            var nextSprite = sprites[currentPosition - 1];
+            sprites[currentPosition - 1] = sprites[currentPosition];
+            sprites[currentPosition] = nextSprite;
+
+            var ids = [];
             for (var i = 0, l = sprites.length; i < l; i++) {
                 ids.push(sprites[i]);
             }
             this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
             return true;
         },
-        setSpriteLayerToFront: function (spriteId) {    //TODO: check parameters- sprite?
-            //TODO: implement logic, returns true or false: sprite layer changed?
-            var ids = [];
+        setSpriteLayerToFront: function (spriteId) {
+            //TODO handle undefined spriteId
+            var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
             var sprites = this.sprites;
+            console.log(this.sprites);
+
+            if(currentPosition === sprites.length - 1)
+                return false;
+            var spriteToSetToFront = sprites[currentPosition];
+            sprites.splice(currentPosition, 1);
+            sprites.push(spriteToSetToFront);
+            console.log(this.sprites);
+
+            var ids = [];
             for (var i = 0, l = sprites.length; i < l; i++) {
                 ids.push(sprites[i]);
             }

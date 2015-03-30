@@ -16,7 +16,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.Model.Program();
-    program.background = "background";  //to avoid error on start
+    program.background = new PocketCode.Model.Sprite(program);  //to avoid error on start
 
     var b = new PocketCode.Bricks.ProgramStartBrick("device", program, "sprite");
 
@@ -70,6 +70,9 @@ QUnit.test("ProgramStartBrick", function (assert) {
         done1();
     };
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
+    //stop so that program can be started again
+    program.stop();
+
     program.start();
 
 });
