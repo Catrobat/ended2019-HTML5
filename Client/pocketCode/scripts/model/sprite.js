@@ -58,7 +58,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._bricks = [];
         //TODO: if not each brick instance of RootContainerBrick throw error
-        //attach to _bricks onExecuted event, get sure all are executed an not running
+        //attach to bricks onExecuted event, get sure all are executed an not running
 
         //property initialization
         //motion
@@ -378,7 +378,7 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         setLook: function (lookId) {
-            return false;
+           // return false;
             //TODO: current look undefined due to missing implementation
 
             if (this._currentLook.id === lookId)
@@ -398,7 +398,7 @@ PocketCode.Model.Sprite = (function () {
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         nextLook: function () {
-            return false;
+            //return false;
             //TODO: current look undefined due to missing implementation
 
             var looks = this._looks;

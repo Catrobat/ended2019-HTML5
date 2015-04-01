@@ -216,10 +216,6 @@ QUnit.test("Sprite", function (assert) {
     var varNames=sprite.getVariableNames();
     assert.ok(varNames[21].name=="two-one","get variableNames");
 
-
-
-
-    console.log("End");
     /*var steps=10;
      var rad = sprite.direction * (Math.PI / 180.0);
      console.log("rad : "+rad);
@@ -229,6 +225,18 @@ QUnit.test("Sprite", function (assert) {
      console.log("offsetY: "+offsetY); */
 
     // *************************************************************
+
+    // ********************* looks *********************
+
+    var look1= "look1";
+    var look2= "look2";
+    var looks=[];
+    looks[1]=look1;
+    looks[2]=look2;
+    sprite.looks(looks);
+    assert.ok(sprite._looks.length==2,"set looks");
+
+
 
     /*  sprite.setBrightness(110);
      assert.equal(sprite.brightness, 100, "setBrightness over 100");
