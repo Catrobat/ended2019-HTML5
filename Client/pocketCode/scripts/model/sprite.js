@@ -56,11 +56,9 @@ PocketCode.Model.Sprite = (function () {
         this._variables = {};
         this._variableNames = {};
 
-        //todo for testing
-        this.bricks = [];
         this._bricks = [];
         //TODO: if not each brick instance of RootContainerBrick throw error
-        //attach to bricks onExecuted event, get sure all are executed an not running
+        //attach to _bricks onExecuted event, get sure all are executed an not running
 
         //property initialization
         //motion
@@ -197,9 +195,9 @@ PocketCode.Model.Sprite = (function () {
          *
          */
         start: function() {
-            for (var i = 0, l = this.bricks.length; i < l; i++) {
-                if (this.bricks[i].start)
-                    this.bricks[i].start();
+            for (var i = 0, l = this._bricks.length; i < l; i++) {
+                if (this._bricks[i].start)
+                    this._bricks[i].start();
             }
             this.running = true;
         },
@@ -207,21 +205,21 @@ PocketCode.Model.Sprite = (function () {
          *
          */
         pause: function () {
-            for (var i = 0, l = this.bricks.length; i < l; i++) {
-                if (this.bricks[i].pause)
-                    this.bricks[i].pause();
+            for (var i = 0, l = this._bricks.length; i < l; i++) {
+                if (this._bricks[i].pause)
+                    this._bricks[i].pause();
             }
         },
         resume: function () {
-            for (var i = 0, l = this.bricks.length; i < l; i++) {
-                if (this.bricks[i].resume)
-                    this.bricks[i].resume();
+            for (var i = 0, l = this._bricks.length; i < l; i++) {
+                if (this._bricks[i].resume)
+                    this._bricks[i].resume();
             }
         },
         stop: function () {
-            for (var i = 0, l = this.bricks.length; i < l; i++) {
-                if (this.bricks[i].stop)
-                    this.bricks[i].stop();
+            for (var i = 0, l = this._bricks.length; i < l; i++) {
+                if (this._bricks[i].stop)
+                    this._bricks[i].stop();
             }
             this.running = false;
         },
