@@ -1,2 +1,12 @@
 ﻿body {
 }
+
+.pc-playerViewPort {
+    border: 0;
+}
+.pc-playerViewPort canvas {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #FFFFFF;
+}
