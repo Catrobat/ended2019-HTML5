@@ -8,51 +8,51 @@ PocketCode.Canvas = (function(){
 		this._canvas = new fabric.Canvas(htmlCanvasId, {selection: false, skipTargetFind: false, renderOnAddRemove: false, stateful: false});
 		
 		this._zoomfactor = zoomfactor;
-        this._onSpriteClicked = new SmartJs.Event.Event(this);
-        this._showAxes = false;
+		this._onSpriteClicked = new SmartJs.Event.Event(this);
+		this._showAxes = false;
 
-        //add listener to element selected event
-        var _self = this;
-        this._canvas.on('mouse:down', function(e) {
-        	if(typeof e.target != 'undefined'){
-        		console.log(e.target.id);
-        		_self._onSpriteClicked.dispatchEvent({id: e.target.id});
-        	}
-        });
-        
-        this._canvas.on('after:render', function(e) {
-        	if(_self._showAxes){
-        		_self._drawAxes();
-        	}
-        });
+		//add listener to element selected event
+		var _self = this;
+		this._canvas.on('mouse:down', function(e) {
+			if(typeof e.target != 'undefined'){
+				console.log(e.target.id);
+				_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+			}
+		});
+		
+		this._canvas.on('after:render', function(e) {
+			if(_self._showAxes){
+				_self._drawAxes();
+			}
+		});
 	}
 	
 	 Object.defineProperties(Canvas.prototype, {
-	    	canvas: {
-	            get: function () {
-	                return this._canvas;
-	            },
-	        },
-	        zoomfactor: {
-	            get: function () {
-	                return this._zoomfactor;
-	            },
-	        },
-	        showAxes: {
-	        	get: function() {
-	        		return this._showAxes;
-	        	},
-	        	set: function(flag){
-	        		this._showAxes = flag;
-	        		this.render();
-	        	}
-	        }
-	    });
+			canvas: {
+				get: function () {
+					return this._canvas;
+				},
+			},
+			zoomfactor: {
+				get: function () {
+					return this._zoomfactor;
+				},
+			},
+			showAxes: {
+				get: function() {
+					return this._showAxes;
+				},
+				set: function(flag){
+					this._showAxes = flag;
+					this.render();
+				}
+			}
+		});
 	 
 	 Object.defineProperties(Canvas.prototype, {
-	        onSpriteClicked: {
-	            get: function () { return this._onSpriteClicked; },
-	        },
+			onSpriteClicked: {
+				get: function () { return this._onSpriteClicked; },
+			},
 	 });
 	
 	Canvas.prototype.merge({
@@ -190,7 +190,7 @@ PocketCode.Canvas = (function(){
 			
 			this._canvas.getContext('2d').moveTo(0, this._canvas.getHeight()/2);
 			this._canvas.getContext('2d').lineTo(this._canvas.getWidth(), this._canvas.getHeight()/2);
-		    
+			
 			this._canvas.getContext('2d').strokeStyle = "#ff0000";
 			this._canvas.getContext('2d').lineWidth = 5;
 			
@@ -219,44 +219,44 @@ var CanvasSprite = fabric.util.createClass(fabric.Image, {
 	type: 'sprite',
 
 	initialize: function(element, options) {
-	    options || (options = { });
+		options || (options = { });
 	
-	    this.callSuper('initialize', element, options);
-	    
-	    this.set({
-	    	id: options.id,
-	    	name: options.name,
-	    	
-		    perPixelTargetFind: true,
+		this.callSuper('initialize', element, options);
+		
+		this.set({
+			id: options.id,
+			name: options.name,
+			
+			perPixelTargetFind: true,
 			selectable: false,
 			hasControls: false, 
 			hasBorders: false,
 			hasRotatingPoint: false,
 			originX: "center",
 			originY: "center",
-	    });
-	    
-	    this.setAngle(options.angle);
-	    this.setOpacity(options.opacity);
+		});
+		
+		this.setAngle(options.angle);
+		this.setOpacity(options.opacity);
 	  },
 	  
 	  toObject: function() {
-		    return fabric.util.object.extend(this.callSuper('toObject'), {
-		      id: this.get('id'),
-		      name: this.get('name'),
-		    });
+			return fabric.util.object.extend(this.callSuper('toObject'), {
+			  id: this.get('id'),
+			  name: this.get('name'),
+			});
 		  },
 
 	  _render: function(ctx) {
-		    this.callSuper('_render', ctx);
+			this.callSuper('_render', ctx);
 	  }, 
 	  
 	 setAngle: function(direction){
-	  		this.angle = direction - 90;
+			this.angle = direction - 90;
 	 },
 	 
 	 setOpacity: function(transparency){
-		  		this.opacity = +(1 - transparency / 100).toFixed(2);
+				this.opacity = +(1 - transparency / 100).toFixed(2);
 	 },
 	  
 	 applyBrightness: function(brightness){
@@ -265,11 +265,11 @@ var CanvasSprite = fabric.util.createClass(fabric.Image, {
 		 
 		var overwriteFilter = false;
 		for (var i = 0; i < this.filters.length; i++){
-	 		if (this.filters[i].type == "Brightness"){
-	 			this.filters[i] = brightnessFilter;
-	 			overwriteFilter = true;
-	 		}
-	 	}
+			if (this.filters[i].type == "Brightness"){
+				this.filters[i] = brightnessFilter;
+				overwriteFilter = true;
+			}
+		}
 		 
 		if (!overwriteFilter)
 			 this.filters.push(brightnessFilter);
@@ -278,7 +278,7 @@ var CanvasSprite = fabric.util.createClass(fabric.Image, {
 		var imgEl = this._originalElement;
 		var canvasEl = fabric.util.createCanvasElement();
 		var  _this = this;
-		      
+			  
 		canvasEl.width = imgEl.width;
 		canvasEl.height = imgEl.height;
 		canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
@@ -294,5 +294,5 @@ var CanvasSprite = fabric.util.createClass(fabric.Image, {
 		replacement.src = canvasEl.toDataURL('image/png');
 				
 	},
-	  	  
+		  
 });
