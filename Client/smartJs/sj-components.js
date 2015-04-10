@@ -2,9 +2,47 @@
 /// <reference path="sj-core.js" />
 /// <reference path="sj-event.js" />
 /// <reference path="sj-communication.js" />
+/// <reference path="sj-ui.js" />
 'use strict';
 
 SmartJs.Components = {
+
+    Application: (function () {
+        Application.extends(SmartJs.Core.EventTarget);
+
+        function Application() {
+            this._viewport = new SmartJs.Ui.Viewport();
+
+            this._onConnectionStatusChange = new SmartJs.Event.Event(this);
+
+            this._online = navigator.onLine;
+            this._addDomListener(window, 'offline', this._offlineHandler);
+            this._addDomListener(window, 'online', this._onlineHandler);
+        }
+
+        Object.defineProperties(Application.prototype, {
+            onConnectionStatusChange: {
+                get: function () { return this._onConnectionStatusChange; },
+                //enumerable: false,
+                //configurable: true,
+            },
+        });
+
+        Application.prototype.merge({
+            _offlineHandler: function () {
+                if (!this._online) return;
+                this._online = false;
+                this._onConnectionStatusChange.dispatchEvent({ online: false });
+            },
+            _onlineHandler: function () {
+                if (this._online) return;
+                this._online = true;
+                this._onConnectionStatusChange.dispatchEvent({ online: true });
+            },
+        });
+
+        return Application;
+    })(),
 
     Timer: (function () {
 
@@ -200,15 +238,7 @@ SmartJs.Components = {
         return FeedbackProvider;
     })(),
 
-    Application: (function () {
-        Application.extends(SmartJs.Core.EventTarget);
-
-        function Application() {
-
-        }
-
-        return Application;
-    })(),*/
+*/
 };
 
 
