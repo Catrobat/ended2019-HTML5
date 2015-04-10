@@ -612,7 +612,7 @@ PocketCode.merge({
         });
 
         return FormulaParser;
-    })()),
+    })())(),
 
 });
 
