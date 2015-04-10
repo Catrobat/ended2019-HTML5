@@ -8,6 +8,14 @@
 
 QUnit.module("sj-ui.js");
 
+QUnit.test("SmartJs.Ui.Window", function (assert) {
+
+    var vp = SmartJs.Ui.Window;
+    assert.ok(true, "TODO");
+
+});
+
+
 QUnit.test("SmartJs.Ui.TextNode", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
@@ -639,6 +647,14 @@ QUnit.test("SmartJs.Ui.Control: resize & layoutChange events", function (assert)
 });
 
 
+QUnit.test("SmartJs.Ui.Viewport", function (assert) {
+
+    var vp = new SmartJs.Ui.Viewport();
+    assert.ok(vp instanceof SmartJs.Ui.Viewport && vp instanceof SmartJs.Ui.Control && vp instanceof Object, "instance check");
+
+});
+
+
 QUnit.test("SmartJs.Ui.ContainerControl", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
@@ -659,10 +675,3 @@ QUnit.test("SmartJs.Ui.ContainerControl", function (assert) {
     //clear dom: cleanup is handled by QUnit
 });
 
-
-QUnit.test("SmartJs.Ui.ViewPort", function (assert) {
-
-    var vp = new SmartJs.Ui.ViewPort();
-    assert.ok(vp instanceof SmartJs.Ui.ViewPort && vp instanceof SmartJs.Ui.Control && vp instanceof Object, "instance check");
-
-});
