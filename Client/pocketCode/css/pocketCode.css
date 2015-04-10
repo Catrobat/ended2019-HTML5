@@ -1,0 +1,12 @@
+﻿body {
+}
+
+.pc-playerViewport {
+    border: 0;
+}
+.pc-playerViewport canvas {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background-color: #FFFFFF;
+}

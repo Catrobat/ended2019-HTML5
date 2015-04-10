@@ -14,7 +14,7 @@ PocketCode.Ui.PlayerViewport = (function () {
         this._canvas = document.createElement('canvas');
         this._dom.appendChild(this._canvas);
 
-        this.className = 'pc-playerViewPort';
+        this.className = 'pc-playerViewport';
 
         if (!originalHight || !originalWidth)
             throw new Error('invalid argument: missing hight and/or width property of original app screen');
