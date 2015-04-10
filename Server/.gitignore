@@ -1,2 +1,3 @@
 *.catrobat
 html5/projects/v0.1/*.*
+!/html5/projects/v0.1/.gitignore
