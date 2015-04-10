@@ -385,6 +385,14 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					array_pop($this->cpp);
 					$brick = new PointInDirectionBrickDto($degrees);
 					break;
+
+        case "Vibration":
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $duration = $this->parseFormula($fl->formula);
+          array_pop($this->cpp);
+          $brick = new VibrationBrickDto($duration);
+          break;
 					
 				case "PointToBrick":
 				if (property_exists($script, "pointedObject")) {
@@ -563,8 +571,15 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 				case "ClearGraphicEffectBrick":
 					$brick = new ClearGraphicEffectBrickDto();
 					break;
-				
-				
+
+        case "LedOffBrick":
+          $brick = new LedOffBrickDto();
+          break;
+
+        case "LedOnBrick":
+          $brick = new LedOnBrickDto();
+          break;
+
 				/*variable bricks*/
 				case "SetVariableBrick":
 					$var = $this->getObject($script->userVariable, $this->cpp); //variable definition
