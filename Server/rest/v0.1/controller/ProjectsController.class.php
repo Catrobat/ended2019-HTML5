@@ -1,5 +1,7 @@
 <?php
 
+require_once("BaseController.class.php");
+
   class ProjectsController extends BaseController {
   
     const CACHING_ENABLED = false;
