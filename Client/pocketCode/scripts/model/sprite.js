@@ -57,7 +57,6 @@ PocketCode.Model.Sprite = (function () {
         this._variableNames = {};
 
         this._bricks = [];
-        //TODO: if not each brick instance of RootContainerBrick throw error
         //attach to bricks onExecuted event, get sure all are executed an not running
 
         //property initialization
@@ -122,6 +121,17 @@ PocketCode.Model.Sprite = (function () {
         //        ;
         //    },
         //},
+
+        //bricks
+
+        bricks: {
+            set: function (bricks) {
+                this._bricks = bricks;
+            },
+            get: function () {
+                return this._bricks;
+            },
+        },
 
         //looks
         looks: {
@@ -194,10 +204,12 @@ PocketCode.Model.Sprite = (function () {
         /**
          *
          */
-        start: function() {
+        execute: function() {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].start)
-                    this._bricks[i].start();
+                if (this._bricks[i].execute) {
+                    this._bricks[i].execute();
+                    console.log("in if");
+                }
             }
             this.running = true;
         },
@@ -378,11 +390,10 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         setLook: function (lookId) {
-           // return false;
-            //TODO: current look undefined due to missing implementation
-
-            if(this._currentLook==undefined) //todo better check
-                return false
+            if (this._currentLook == undefined) {
+                throw new Error('current look is invalid');
+                return false;
+             }
 
             if (this._currentLook.id === lookId)
                 return false;
@@ -400,9 +411,10 @@ PocketCode.Model.Sprite = (function () {
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         nextLook: function () {
-            //return false;
-            //TODO: current look undefined due to missing implementation
-
+            if (this._currentLook == undefined) {
+                throw new Error('current look is invalid');
+                return false;
+            }
             var looks = this._looks;
             var count = looks.length;
             if (count < 2)

@@ -100,12 +100,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.changePositionY(-20);
     assert.ok(sprite._positionX==35+50 && sprite._positionY==90-20, "change PositionY");
     // *************************************************************
-    /*  console.log("direction: "+sprite._direction);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);
-     sprite.move(10);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);*/
 
     // ********************* Move/Direction *********************
     sprite.setPosition(-10,-10);
@@ -136,9 +130,6 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* turn *********************
-    /*console.log("direction: "+sprite._direction);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);*/
 
     sprite.setDirection(90,triggerEvent);
     sprite.turnRight(50);
@@ -225,6 +216,7 @@ QUnit.test("Sprite", function (assert) {
      console.log("offsetY: "+offsetY); */
 
     // *************************************************************
+
     // ********************* looks *********************
     var look1= new Object();
     look1.name= "look1";
@@ -244,11 +236,9 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._currentLook.name=="look2","set current look with id");
 
     sprite.nextLook();
-    console.log("test0: "+sprite._currentLook.name);
     assert.ok(sprite._currentLook.name=="look1","next look");
 
     sprite.nextLook();
-    console.log("test1: "+sprite._currentLook.name);
     assert.ok(sprite._currentLook.name=="look2","next look 2");
 
     var look3= new Object();
@@ -271,43 +261,41 @@ QUnit.test("Sprite", function (assert) {
     sprite.nextLook();
     assert.ok(sprite._currentLook.name=="look1","look loop 4 back to first");
 
+    // *************************************************************
+
+    // ********************* start/pause/resume/stop *********************
+    var brick1= new PocketCode.Bricks.RootContainerBrick();
+    brick1.start=false;
+
+    var brick2= new PocketCode.Bricks.RootContainerBrick();
+    var brick3= new PocketCode.Bricks.RootContainerBrick();
+    var tmpBricks=[];
+    tmpBricks[0]=brick1;
+    tmpBricks[1]=brick2;
+    tmpBricks[2]=brick3;
+    sprite.bricks=tmpBricks;
+    assert.ok(sprite._bricks.length==3,"bricks length");
+
+
+    sprite.start();
+    assert.ok(sprite.running==true,"start() call running true");
+
+    sprite.stop();
+    assert.ok(sprite.running==false,"stop() call running false");
 
 
 
 
+    // *************************************************************
 
+    // ********************* trigger on change *********************
+        // like broadcastmgr tests line 138
 
-    /*  sprite.setBrightness(110);
-     assert.equal(sprite.brightness, 100, "setBrightness over 100");
+    // ********************* come to front/go back *********************
+        //check interface functionality
 
-     sprite.setBrightness(-5);
-     assert.equal(sprite.brightness, 0, "setBrightness under 0");
-
-
-     assert.throws(sprite.changeBrightness("sdfsdf"),false, "invalid brightness value");
-     sprite.setBrightness(90);
-     sprite.changeBrightness(12);
-     assert.equal(sprite.brightness, 100, "changeBrightness over 100");
-
-     sprite.setBrightness(30);
-     sprite.changeBrightness(-32);
-     assert.equal(sprite.brightness, 0, "changeBrightness under 0");
-
-     assert.throws(sprite.setTransparency("sdfsdf"),false, "invalid transparency percentage");
-     sprite.setTransparency(110);
-     assert.equal(sprite.transparency, 100, "setTransparency over 100");
-
-     sprite.setTransparency(-5);
-     assert.equal(sprite.transparency, 0, "setTransparency under 0");
-
-     sprite.setTransparency(90);
-     sprite.changeTransparency(12);
-     assert.equal(sprite.transparency, 100, "setTransparency over 100");
-
-     sprite.setTransparency(30);
-     sprite.changeTransparency(-32);
-     assert.equal(sprite.transparency, 0, "setTransparency under 0");
-     */
+    // ********************* point to *********************
+        //
 
 });
 
