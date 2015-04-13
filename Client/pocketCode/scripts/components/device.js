@@ -25,7 +25,7 @@ PocketCode.Device = (function () {
             COMPASS_DIRECTION: true,    //?
             X_INCLINATION: true,
             Y_INCLINATION: true,
-            LOUDNESS: false,    //notify?
+            LOUDNESS: false    //notify?
         };
         this._sensorEmulatedData = {
             X_ACCELERATION: 0,
@@ -34,7 +34,7 @@ PocketCode.Device = (function () {
             COMPASS_DIRECTION: 0,
             X_INCLINATION: 0,
             Y_INCLINATION: 0,
-            LOUDNESS: 0,
+            LOUDNESS: 0
         };
 
         this._initSensors();
@@ -172,10 +172,11 @@ PocketCode.Device = (function () {
             else    //unknown sensor
                 throw new Error('device: unknown sensor: ' + sensor);
         },
-        vibrate: function (seconds) {
-            var time = seconds * 1000;
+        vibrate: function (duration) {
+            var time = duration * 1000;
+            return true;
             //TODO:
-        },
+        }
     });
 
     return Device;
