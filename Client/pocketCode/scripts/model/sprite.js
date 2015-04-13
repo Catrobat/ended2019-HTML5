@@ -381,9 +381,11 @@ PocketCode.Model.Sprite = (function () {
            // return false;
             //TODO: current look undefined due to missing implementation
 
+            if(this._currentLook==undefined) //todo better check
+                return false
+
             if (this._currentLook.id === lookId)
                 return false;
-
             var looks = this._looks;
             var look;
             for (var i = 0, l = looks.length; i < l; i++) {
@@ -405,12 +407,12 @@ PocketCode.Model.Sprite = (function () {
             var count = looks.length;
             if (count < 2)
                 return false;
-
             var look;
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
-                    if ((i + 1) < count) {
-                        this._currentLook = looks[i];
+                    if ((i + 1) < count) { //1+1=2 < 2    2<2
+                        var j=i+1;
+                        this._currentLook = looks[j];
                     }
                     else {
                         this._currentLook = looks[0];

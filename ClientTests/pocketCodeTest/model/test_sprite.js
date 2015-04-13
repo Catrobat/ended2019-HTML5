@@ -225,16 +225,55 @@ QUnit.test("Sprite", function (assert) {
      console.log("offsetY: "+offsetY); */
 
     // *************************************************************
-
     // ********************* looks *********************
-
-    var look1= "look1";
-    var look2= "look2";
+    var look1= new Object();
+    look1.name= "look1";
+    look1.id="first";
+    var look2 = new Object();
+    look2.name= "look2";
+    look2.id="second";
     var looks=[];
-    looks[1]=look1;
-    looks[2]=look2;
-    sprite.looks(looks);
-    assert.ok(sprite._looks.length==2,"set looks");
+    looks[0]=look1;
+    looks[1]=look2;
+    sprite.looks=looks;
+    assert.ok(sprite._looks[1].name=="look2","set looks1");
+    assert.ok(sprite._currentLook==looks[0],"set looks2");
+    assert.ok(sprite._currentLook.name=="look1","set looks3");
+
+    sprite.setLook("second");
+    assert.ok(sprite._currentLook.name=="look2","set current look with id");
+
+    sprite.nextLook();
+    console.log("test0: "+sprite._currentLook.name);
+    assert.ok(sprite._currentLook.name=="look1","next look");
+
+    sprite.nextLook();
+    console.log("test1: "+sprite._currentLook.name);
+    assert.ok(sprite._currentLook.name=="look2","next look 2");
+
+    var look3= new Object();
+    look3.name= "look3";
+    look3.id="third";
+    looks[2]=look3;
+    sprite.looks=looks;
+    assert.ok(sprite._currentLook.name=="look1","current look set back to first after look setter");
+    assert.ok(sprite._looks.length==3,"looks count increased");
+
+    sprite.setLook("third");
+    assert.ok(sprite._currentLook.name=="look3","next look to last look");
+
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look1","look loop 1");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look2","look loop 2");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look3","look loop 3");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look1","look loop 4 back to first");
+
+
+
+
 
 
 
