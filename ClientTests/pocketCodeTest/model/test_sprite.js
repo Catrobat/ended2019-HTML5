@@ -269,6 +269,8 @@ QUnit.test("Sprite", function (assert) {
 
     var brick2= new PocketCode.Bricks.RootContainerBrick();
     var brick3= new PocketCode.Bricks.RootContainerBrick();
+    var brick4= new PocketCode.Bricks.RootContainerBrick();
+    var brick5= new PocketCode.Bricks.RootContainerBrick();
     var tmpBricks=[];
     tmpBricks[0]=brick1;
     tmpBricks[1]=brick2;
@@ -277,7 +279,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._bricks.length==3,"bricks length");
 
 
-    sprite.start();
+    sprite.execute();
     assert.ok(sprite.running==true,"start() call running true");
 
     sprite.stop();

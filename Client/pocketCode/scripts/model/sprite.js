@@ -364,7 +364,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         pointTo: function (spriteId) {
-            return false;
+            //return false;
             //TODO: point to undefined until implementation
 
             var pointTo = this._program.getSprite(spriteId);
