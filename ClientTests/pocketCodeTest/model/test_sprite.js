@@ -265,8 +265,7 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* start/pause/resume/stop *********************
     var brick1= new PocketCode.Bricks.RootContainerBrick();
-    brick1.start=false;
-
+    brick1.id="first";
     var brick2= new PocketCode.Bricks.RootContainerBrick();
     var brick3= new PocketCode.Bricks.RootContainerBrick();
     var brick4= new PocketCode.Bricks.RootContainerBrick();
@@ -278,15 +277,17 @@ QUnit.test("Sprite", function (assert) {
     sprite.bricks=tmpBricks;
     assert.ok(sprite._bricks.length==3,"bricks length");
 
-
     sprite.execute();
     assert.ok(sprite.running==true,"start() call running true");
 
     sprite.stop();
     assert.ok(sprite.running==false,"stop() call running false");
 
+    sprite.resume();
+    assert.ok(sprite.running==false,"stop() call running false");
 
-
+    sprite.pause();
+    assert.ok(sprite.running==false,"stop() call running false");
 
     // *************************************************************
 
@@ -294,10 +295,73 @@ QUnit.test("Sprite", function (assert) {
         // like broadcastmgr tests line 138
 
     // ********************* come to front/go back *********************
-        //check interface functionality
+    var tmpprog= new PocketCode.Model.Program();
+
+    var newSprite = new PocketCode.Model.Sprite(tmpprog);
+    newSprite.id="test2";
+    newSprite.name="test2";
+    tmpprog.sprites.push(newSprite);
+    var firstLayer=newSprite.layer;
+
+    var newSprite2 = new PocketCode.Model.Sprite(tmpprog);
+    newSprite2.id="test3";
+    newSprite2.name="test3";
+    tmpprog.sprites.push(newSprite2);
+
+    var tmpsprite =  new PocketCode.Model.Sprite(tmpprog);
+    tmpsprite.id="test1";
+    tmpsprite.name="test1";
+    tmpprog.sprites.push(tmpsprite);
+
+    newSprite.comeToFront();
+    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    tmpsprite.comeToFront();
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    newSprite2.comeToFront();
+    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+
+    var layerBefore=newSprite.layer;
+    console.log(layerBefore);
+    console.log(newSprite.layer);
+    newSprite.goBack();
+    assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
+    layerBefore=newSprite2.layer;
+    newSprite2.goBack();
+    assert.ok(newSprite2.layer==layerBefore-1,"go back 2 layers");
+    layerBefore=tmpsprite.layer;
+    tmpsprite.goBack();
+    assert.ok(tmpsprite.layer==layerBefore-1,"go back 2 layers");
+    layerBefore=tmpsprite.layer;
+    tmpsprite.goBack();
+    assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
+    // *************************************************************
 
     // ********************* point to *********************
-        //
+    sprite.id="id1";
+    var newSprite = new PocketCode.Model.Sprite(prog);
+    newSprite.id="id2";
+    prog.sprites.push(newSprite);
+    var tmp= prog.getSprite("id2");
+
+    assert.ok(tmp=newSprite,"push sprite to program");
+
+    newSprite.setPosition(100,100);
+    sprite.setPosition(50,50);
+
+    sprite.pointTo("id2");
+    assert.ok(sprite.direction==45,"point to right up sprite");
+
+    newSprite.setPosition(0,0);
+    sprite.setPosition(50,50);
+
+    sprite.pointTo("id2");
+    assert.ok(sprite.direction==-180+45,"point to left down sprite");
+    // *************************************************************
+
+    // adapt to enumeration
+
+
+
 
 });
 

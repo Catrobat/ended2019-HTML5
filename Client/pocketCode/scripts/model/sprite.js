@@ -208,7 +208,6 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
                 if (this._bricks[i].execute) {
                     this._bricks[i].execute();
-                    console.log("in if");
                 }
             }
             this.running = true;
@@ -384,7 +383,7 @@ PocketCode.Model.Sprite = (function () {
         },
         //motion: layer
         goBack: function (layers) {
-            return this._program.setSpriteLayerBack(this.id, layers);
+            return this._program.setSpriteLayerBack(this.id);
             //onChange event is triggered by program in this case
         },
         comeToFront: function () {
