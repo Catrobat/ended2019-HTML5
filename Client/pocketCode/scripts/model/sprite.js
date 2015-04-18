@@ -364,10 +364,14 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         pointTo: function (spriteId) {
-            //return false;
+            if (!spriteId)
+                return false;
             //TODO: point to undefined until implementation
 
             var pointTo = this._program.getSprite(spriteId);
+            if(pointTo== undefined)
+                return false;
+
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
 
@@ -391,7 +395,7 @@ PocketCode.Model.Sprite = (function () {
         //looks
         setLook: function (lookId) {
             if (this._currentLook == undefined) {
-                throw new Error('current look is invalid');
+               // throw new Error('current look is invalid');
                 return false;
              }
 
@@ -412,7 +416,7 @@ PocketCode.Model.Sprite = (function () {
         },
         nextLook: function () {
             if (this._currentLook == undefined) {
-                throw new Error('current look is invalid');
+             //   throw new Error('current look is invalid');
                 return false;
             }
             var looks = this._looks;

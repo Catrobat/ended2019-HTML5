@@ -73,7 +73,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     //stop so that program can be started again
     program.stop();
 
-    program.start();
+    program.execute();
 
 });
 
