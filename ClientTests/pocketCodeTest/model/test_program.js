@@ -59,7 +59,7 @@ QUnit.test("Program", function (assert) {
         TestSprite.prototype.merge({
             timesStopped: 0,
             timesStarted: 0,
-            start: function (id) {
+            execute: function (id) {
                 this.status = PocketCode.ExecutingState.RUNNING;
                 this.timesStarted++;
             },
@@ -113,7 +113,7 @@ QUnit.test("Program", function (assert) {
         programStartEvent++;
     }));
 
-    program.start();
+    program.execute();
     assert.deepEqual(programStartEvent, 1, "Called onProgramStart.");
 
     var allSpritesStarted = true;
@@ -126,7 +126,7 @@ QUnit.test("Program", function (assert) {
     assert.deepEqual(program.background.status, PocketCode.ExecutingState.RUNNING, "Called backgrounds start method.");
     assert.deepEqual(program._executionState, PocketCode.ExecutingState.RUNNING, "Set programs execution state to RUNNING on start.");
 
-    program.start();
+    program.execute();
     assert.deepEqual(programStartEvent, 1, "Did not attempt to start running program.");
 
     program.pause();

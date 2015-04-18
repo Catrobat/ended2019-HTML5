@@ -123,24 +123,25 @@ PocketCode.Model.Program = (function () {
 
     //methods
     Program.prototype.merge({
-        start: function () {
+        execute: function () {
             if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
             if (!this.background && this.sprites.length === 0)
                 throw new Error('no program loaded');
 
-            this.background.start();
+            this.background.execute();
 
             for (var i = 0, l = this.sprites.length; i < l; i++) {
-                this.sprites[i].start();
+                this.sprites[i].execute();
             }
 
             this._executionState = PocketCode.ExecutingState.RUNNING;
+            this.background.status=PocketCode.ExecutingState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
         restart: function () {
             this.stop();
-            this.start();
+            this.execute();
         },
         pause: function () {
             if (this._executionState !== PocketCode.ExecutingState.RUNNING || this._executionState === PocketCode.ExecutingState.PAUSED)//(!this._running || this._paused)
