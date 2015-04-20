@@ -68,9 +68,15 @@ SmartJs.Event = {
                     throw new Error('invalid argument: expected optional bubbles type: boolean');
 
                 var a = args || {};
-                a.target = target || this.target;
-                a.bubbles = bubbles || false;
-
+                try {    //notice: params change if an event is passed as the properties are read only
+                    a.target = target || this.target;
+                    a.bubbles = bubbles || false;
+                }
+                catch (e) {
+                    a.sjTarget = target || this.target;
+                    a.sjBubbles = bubbles || false;
+                }
+                
                 var li = this._listeners;
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
