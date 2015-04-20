@@ -48,7 +48,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._program = program;
         this._onChange = program.onSpriteChange;    //mapping event (defined in program)
-        this.running = false;
+        this._executionState = PocketCode.ExecutingState.STOPPED;
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -108,7 +108,7 @@ PocketCode.Model.Sprite = (function () {
         layer: {
             set: function (layer) {
                 //TODO: in program : for testing issues
-                this._layer = layer;
+               // this._layer = layer;
             },
             get: function () {
                 return this._program.getSpriteLayer(this.id);
@@ -210,7 +210,7 @@ PocketCode.Model.Sprite = (function () {
                     this._bricks[i].execute();
                 }
             }
-            this.running = true;
+            this._executionState =  PocketCode.ExecutingState.RUNNING;;
         },
         /**
          *
@@ -232,7 +232,7 @@ PocketCode.Model.Sprite = (function () {
                 if (this._bricks[i].stop)
                     this._bricks[i].stop();
             }
-            this.running = false;
+            this._executionState = PocketCode.ExecutingState.STOPPED;
         },
         /**
          *
@@ -365,8 +365,6 @@ PocketCode.Model.Sprite = (function () {
         pointTo: function (spriteId) {
             if (!spriteId)
                 return false;
-            //TODO: point to undefined until implementation
-
             var pointTo = this._program.getSprite(spriteId);
             if(pointTo== undefined)
                 return false;
@@ -383,7 +381,7 @@ PocketCode.Model.Sprite = (function () {
         },
         //motion: layer
         goBack: function (layers) {
-            return this._program.setSpriteLayerBack(this.id);
+            return this._program.setSpriteLayerBack(this.id,layers);
             //onChange event is triggered by program in this case
         },
         comeToFront: function () {
@@ -410,7 +408,6 @@ PocketCode.Model.Sprite = (function () {
                     return true;
                 }
             }
-
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         nextLook: function () {
@@ -435,7 +432,6 @@ PocketCode.Model.Sprite = (function () {
                     break;
                 }
             }
-
             this._triggerOnChange([{ look: this._currentLook }]);
             return true;
         },
@@ -526,8 +522,8 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('unknown graphic effect: ' + effect);
             }
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _setTransparency: function (percentage) {
             if (percentage === undefined)
                 return false;
 
@@ -543,8 +539,8 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _changeTransparency: function (value) {
             if (value === undefined)
                 return false;
 
@@ -561,8 +557,8 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: value }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _setBrightness: function (percentage) {
             if (percentage === undefined)
                 return false;
 
@@ -574,13 +570,12 @@ PocketCode.Model.Sprite = (function () {
             if (this._brightness === percentage)
                 return false;
 
-
             this._brightness = percentage;
             this._triggerOnChange([{ brightness: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _changeBrightness: function (value) {
             if (value === undefined)
                 return false;
 
