@@ -105,12 +105,9 @@ PocketCode.merge({
                             brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
                         else {
                             brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                            //this._unsupportedBricks.push(brick);
                         }
                 }
 
-                //if (!brick)
-                //    throw new Err("parsing failed: " + jsonBrick);
                 if (brick instanceof PocketCode.Bricks.UnsupportedBrick)
                     this._unsupportedBricks.push(brick);
 
