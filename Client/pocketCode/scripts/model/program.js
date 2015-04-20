@@ -225,18 +225,18 @@ PocketCode.Model.Program = (function () {
         setSpriteLayerToFront: function (spriteId) {
             //TODO handle undefined spriteId
             var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
-            console.log(this.backgroundOffset); //2
+            //console.log(this.backgroundOffset); //2
             //currentPosition //0;
 
             var sprites = this.sprites;
-            console.log(this.sprites);
+            //console.log(this.sprites);
 
             if(currentPosition === sprites.length - 1)
                 return false;
             var spriteToSetToFront = sprites[currentPosition];
             sprites.splice(currentPosition, 1);
             sprites.push(spriteToSetToFront);
-            console.log(this.sprites);
+            //console.log(this.sprites);
 
             var ids = [];
             for (var i = 0, l = sprites.length; i < l; i++) {

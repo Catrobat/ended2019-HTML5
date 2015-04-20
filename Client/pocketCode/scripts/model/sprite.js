@@ -71,7 +71,6 @@ PocketCode.Model.Sprite = (function () {
         this._visible = true;
         this._transparency = 0.0;
         this._brightness = 100.0;
-        //this._layer = -1;   //for background only? No!
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);

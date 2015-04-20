@@ -278,21 +278,28 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._bricks.length==3,"bricks length");
 
     sprite.execute();
-    assert.ok(sprite.running==true,"start() call running true");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.RUNNING,"start() call running true");
 
     sprite.stop();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     sprite.resume();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     sprite.pause();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     // *************************************************************
 
     // ********************* trigger on change *********************
         // like broadcastmgr tests line 138
+
+    var degree= 90;
+    var direction =degree;
+
+    sprite._triggerOnChange([{direction: degree}]);
+    console.log("trigger event: "+sprite._onChange);
+
 
     // ********************* come to front/go back *********************
     var tmpprog= new PocketCode.Model.Program();
@@ -321,8 +328,6 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
 
     var layerBefore=newSprite.layer;
-    console.log(layerBefore);
-    console.log(newSprite.layer);
     newSprite.goBack();
     assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
     layerBefore=newSprite2.layer;
@@ -357,8 +362,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.pointTo("id2");
     assert.ok(sprite.direction==-180+45,"point to left down sprite");
     // *************************************************************
-
-    // adapt to enumeration
 
 
 
