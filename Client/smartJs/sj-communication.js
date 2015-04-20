@@ -100,22 +100,22 @@ SmartJs.Communication.merge({
 
             try {
                 this.progressSupported = ('onprogress' in xhr);
-                this._addDomListener(xhr, 'progress', this._onProgressHandler);//function (e) { if (e.lengthComputable) this._onProgressChange.dispatchEvent(e); });
-                this._addDomListener(xhru, 'progress', this._onProgressHandler);//function (e) { if (e.lengthComputable) this._onProgressChange.dispatchEvent(e); });
+                this._addDomListener(xhr, 'progress', this._onProgressHandler);
+                this._addDomListener(xhru, 'progress', this._onProgressHandler);
             }
             catch (e) {
                 this.progressSupported = false;
             }
             
-            this._addDomListener(xhr, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'load', function (e) { this._onLoad.dispatchEvent(e); });
-            this._addDomListener(xhr, 'error', function (e) { this._onError.dispatchEvent(e); });
-            this._addDomListener(xhr, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+            this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
+            this._addDomListener(xhr, 'load', this._onLoad.dispatchEvent);
+            this._addDomListener(xhr, 'error', this._onError.dispatchEvent);
+            this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
 
-            this._addDomListener(xhru, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhru, 'load', function (e) { this._onLoad.dispatchEvent(e); });
-            this._addDomListener(xhru, 'error', function (e) { this._onError.dispatchEvent(e); });
-            this._addDomListener(xhru, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+            this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
+            this._addDomListener(xhru, 'load', this._onLoad.dispatchEvent);
+            this._addDomListener(xhru, 'error', this._onError.dispatchEvent);
+            this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
 
             /*
 if (xhr.readyState === 4) { 
@@ -255,16 +255,16 @@ if (xhr.readyState === 4) {
                 this.progressSupported = false;
             }
 
-            this._addDomListener(xhr, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-            this._addDomListener(xhr, 'load', function (e) { this._onLoad.dispatchEvent(e); });
-            this._addDomListener(xhr, 'error', function (e) { this._onError.dispatchEvent(e); });
-            this._addDomListener(xhr, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+            this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
+            this._addDomListener(xhr, 'load', this._onLoad.dispatchEvent);
+            this._addDomListener(xhr, 'error', this._onError.dispatchEvent);
+            this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
 
             if (xhru) {
-                this._addDomListener(xhru, 'loadstart', function (e) { this._onLoadStart.dispatchEvent(e); });
-                this._addDomListener(xhru, 'load', function (e) { this._onLoad.dispatchEvent(e); });
-                this._addDomListener(xhru, 'error', function (e) { this._onError.dispatchEvent(e); });
-                this._addDomListener(xhru, 'abort', function (e) { this._onAbort.dispatchEvent(e); });
+                this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
+                this._addDomListener(xhru, 'load', this._onLoad.dispatchEvent);
+                this._addDomListener(xhru, 'error', this._onError.dispatchEvent);
+                this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
             }
         }
 

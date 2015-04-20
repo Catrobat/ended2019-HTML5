@@ -83,6 +83,8 @@ SmartJs.Event = {
                     item = li[i];
                     if (!item || !item.handler || (item.scope && item.scope._disposed)) {
                         this._listeners.splice(i, 1); //this.removeEventListener(item);
+                        l--;
+                        i--;
                         continue;
                     }
 
