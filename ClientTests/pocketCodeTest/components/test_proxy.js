@@ -14,7 +14,7 @@ QUnit.test("ServiceRequest", function (assert) {
     assert.throws(function () { var sr = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, {}); }, Error, "ERROR: missing argument");
 
     var sr = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "newId", prop1: "prop_1", prop2: "prop_2" });
-    assert.ok(sr instanceof PocketCode.ServiceRequest, "created: successfull");
+    assert.ok(sr instanceof PocketCode.ServiceRequest && sr instanceof SmartJs.Communication.ServiceRequest, "created: successfull");
     assert.ok(sr.method === "GET" && sr._progressSupported === true, "check constructor setters");
     assert.equal(sr._service, "projects/newId?prop1=prop_1&prop2=prop_2", "service url created correctly: properties already used removed");
 
@@ -27,7 +27,16 @@ QUnit.test("ServiceRequest", function (assert) {
     assert.equal(sr.progressSupported, true, "progressSupport accessor");
 
     assert.ok(sr.onLoadStart instanceof SmartJs.Event.Event && sr.onLoad instanceof SmartJs.Event.Event && sr.onError instanceof SmartJs.Event.Event &&
-        sr.onAbort instanceof SmartJs.Event.Event && sr.onProgressChange instanceof SmartJs.Event.Event && sr.onProgressSupportedChange instanceof SmartJs.Event.Event, "events: accessors");
+        sr.onProgressChange instanceof SmartJs.Event.Event && sr.onProgressSupportedChange instanceof SmartJs.Event.Event, "events: accessors");
+
+});
+
+
+QUnit.test("JsonpRequest", function (assert) {
+
+    var req = new PocketCode.JsonpRequest("new_url");
+
+    assert.ok(req instanceof PocketCode.JsonpRequest && req instanceof SmartJs.Communication.ServiceRequest, "instance create correctly");
 
 });
 

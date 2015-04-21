@@ -95,7 +95,7 @@ PocketCode.merge({
     })(),
 
     JsonpRequest: (function () {
-        XmlHttpRequest.extends(SmartJs.Communication.ServiceRequest, false);
+        JsonpRequest.extends(SmartJs.Communication.ServiceRequest, false);
 
         function JsonpRequest(url) {
             SmartJs.Communication.ServiceRequest.call(this, url);
@@ -104,7 +104,7 @@ PocketCode.merge({
         }
 
         return JsonpRequest;
-    }),
+    })(),
 
     Proxy: new ((function () {	//singleton
         //each single request has its events, the proxy only maps this events to internal strong typed requests and triggers send()
@@ -143,7 +143,7 @@ PocketCode.merge({
                 request._onLoadStart = this._onLoadStart;
                 request._onLoad = this._onLoad;
                 request._onError = this._onError;
-                request._onAbort = this._onAbort;
+                //request._onAbort = this._onAbort;
                 request._onProgressChange = this._onProgressChange;
             },
             _sendUsingXmlHttp: function (request) {
