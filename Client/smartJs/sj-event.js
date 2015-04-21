@@ -82,7 +82,7 @@ SmartJs.Event = {
                     a.sjBubbles = bubbles || false;
                 }
                 
-                var li = this._listeners;
+                var li = this._listeners || []; //necessary due to the fact that binded events may call a disposed event
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
