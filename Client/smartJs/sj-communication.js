@@ -17,12 +17,13 @@ SmartJs.Communication = {
 
         function ServiceRequest(url) {
             this._url = url || '';
+            this._xhr = undefined;
 
             //events
             this._onLoadStart = new SmartJs.Event.Event(this);
             this._onLoad = new SmartJs.Event.Event(this);
             this._onError = new SmartJs.Event.Event(this);
-            this._onAbort = new SmartJs.Event.Event(this);
+            //this._onAbort = new SmartJs.Event.Event(this);
             this._onProgressChange = new SmartJs.Event.Event(this);
             this._onProgressSupportedChange = new SmartJs.Event.Event(this);
         }
@@ -44,11 +45,11 @@ SmartJs.Communication = {
                 //enumerable: false,
                 //configurable: true,
             },
-            onAbort: {
-                get: function () { return this._onAbort; },
-                //enumerable: false,
-                //configurable: true,
-            },
+            //onAbort: {
+            //    get: function () { return this._onAbort; },
+            //    //enumerable: false,
+            //    //configurable: true,
+            //},
             onProgressChange: {
                 get: function () { return this._onProgressChange; },
                 //enumerable: false,
@@ -83,6 +84,75 @@ SmartJs.Communication = {
             },
         });
 
+        //methods
+        ServiceRequest.prototype.merge({
+            _onProgressHandler: function (e) {
+                if (e.lengthComputable) {
+                    //var percentComplete = e.loaded / e.total * 100;
+                    if (this._onProgressChange)
+                        this._onProgressChange.dispatchEvent({ progress: e.loaded / e.total * 100 });
+                }
+                else {
+                    // Unable to compute progress information since the total size is unknown
+                    if (this.progressSupported) {
+                        this.progressSupported = false;
+                        if (this._onProgressSupportedChange)
+                            this._onProgressSupportedChange.dispatchEvent({ progressSupport: false });
+                    }
+                }
+            },
+            //_onLoadstartHandler: function (e) {
+            //    //this._onLoadStart.dispatchEvent(e);
+            //},
+            //_onLoadHandler: function (e) {
+            //    //this._loaded = true;
+            //    //if (this._xmle.status !== 200)
+            //    //this._onLoad.dispatchEvent(e);
+            //},
+            //_onErrorHandler: function (e) {
+            //    //this._error = e;
+            //    //this._onError.dispatchEvent(e);
+            //},
+            //_onAbortHandler: function (e) {
+            //    this._onAbort.dispatchEvent(e);
+            //},
+            _onReadyStateChangeHandler: function (e) {
+                if (this._xhr.readyState === 1)
+                    this._onLoadStart.dispatchEvent();
+
+                if (this._xhr.readyState !== 4)
+                    return;
+
+                //console.log("onloadend ");
+                //if (this._error) {
+                //    this._onError.dispatchEvent(this._error);
+                //    //console.log("error1 ");
+                //}
+                //else {
+                    if (this._xhr.status !== 200) { //this._loaded && 
+                        //console.log("error2 ");
+                        var e = new Error(this._xhr.responseText);
+                        e.statusCode = this._xhr.status;
+                        this._onError.dispatchEvent(e);
+                    }
+                    else
+                        //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
+                        this._onLoad.dispatchEvent();
+                //}
+            },
+            dispose: function () {
+                if (this._xhr)
+                    this._xhr.abort();
+                this._onLoadStart = undefined;
+                this._onLoad = undefined;
+                this._onError = undefined;
+                this._onAbort = undefined;
+                this._onProgressChange = undefined;
+                this._onProgressSupportedChange = undefined;
+                SmartJs.Core.EventTarget.prototype.dispose.call(this);
+            },
+        });
+
         return ServiceRequest;
     })(),
 };
@@ -107,24 +177,17 @@ SmartJs.Communication.merge({
                 this.progressSupported = false;
             }
             
-            this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
-            this._addDomListener(xhr, 'load', this._onLoad.dispatchEvent);
-            this._addDomListener(xhr, 'error', this._onError.dispatchEvent);
-            this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
+            //this._addDomListener(xhr, 'loadstart', this._onLoadstartHandler);
+            //this._addDomListener(xhr, 'load', this._onLoadHandler);
+            //this._addDomListener(xhr, 'error', this._onErrorHandler);
+            //this._addDomListener(xhr, 'abort', this._onAbortHandler);
+            this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
 
-            this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
-            this._addDomListener(xhru, 'load', this._onLoad.dispatchEvent);
-            this._addDomListener(xhru, 'error', this._onError.dispatchEvent);
-            this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
-
-            /*
-if (xhr.readyState === 4) { 
-      if (xhr.status === 200) {
-        callback.apply(xhr, args);
-      } else {
-        console.error(xhr.statusText);
-      }
-    }            */
+            //this._addDomListener(xhru, 'loadstart', this._onLoadstartHandler);
+            //this._addDomListener(xhru, 'load', this._onLoadHandler);
+            //this._addDomListener(xhru, 'error', this._onErrorHandler);
+            //this._addDomListener(xhru, 'abort', this._onAbortHandler);
+            this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
         }
 
         //properties
@@ -185,51 +248,43 @@ if (xhr.readyState === 4) {
 
         //methods
         XmlHttpRequest.prototype.merge({
-            send: function (url, method, data) {
-                if (url)
-                    this._url = url;
-
+            send: function (method, url, data) {
                 if (method)
                     this.method = method;
 
-                if (this.method === SmartJs.RequestMethod.POST && data) {
-                    if (data instanceof File && xhr.setRequestHeader) {
-                        xhr.setRequestHeader('Content-type', data.type);
-                        xhr.setRequestHeader('X_FILE_NAME', data.name);
-                    }
+                if (url)
+                    this._url = url;
 
-                    this._xhr.open(SmartJs.RequestMethod.POST, this._url);
-                    this._xhr.send(data);
-                }
-                else {
-                    this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
-                    this._xhr.send();
-                }
-            },
-            _onProgressHandler: function(e) {
-                if (e.lengthComputable) {
-                    //var percentComplete = e.loaded / e.total * 100;
-                    this._onProgressChange.dispatchEvent({ progress: e.loaded / e.total * 100 });
-                }
-                else {
-                    // Unable to compute progress information since the total size is unknown
-                    if (this.progressSupported) {
-                        this.progressSupported = false;
-                        this._onProgressSupportedChange.dispatchEvent({ progressSupport: false });
+                try {
+                    if (this.method === SmartJs.RequestMethod.POST && data) {
+                        //if (data instanceof File && xhr.setRequestHeader) {
+                        //    xhr.setRequestHeader('Content-type', data.type);
+                        //    xhr.setRequestHeader('X_FILE_NAME', data.name);
+                        //}
+
+                        this._xhr.open(SmartJs.RequestMethod.POST, this._url);
+                        this._xhr.send(data);
+                    }
+                    else {
+                        this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
+                        this._xhr.send();
                     }
                 }
+                catch (e) {
+                    this._onError.dispatchEvent(e.merge({ statusCode: 0 }));
+                }
             },
-            dispose: function () {
-                this._xhr.abort();
-                SmartJs.Core.EventTarget.prototype.dispose.call(this);
-            },
+            //dispose: function () {
+            //    this._xhr.abort();
+            //    SmartJs.Core.EventTarget.prototype.dispose.call(this);
+            //},
         });
 
         return XmlHttpRequest;
     })(),
 
 
-    CorsRequest: (function () {     //http://www.html5rocks.com/en/tutorials/cors/, http://www.eriwen.com/javascript/how-to-cors/
+    CorsRequest: (function () {
         CorsRequest.extends(SmartJs.Communication.ServiceRequest, false);
 
         function CorsRequest(url) {
@@ -255,16 +310,16 @@ if (xhr.readyState === 4) {
                 this.progressSupported = false;
             }
 
-            this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
+            //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
             this._addDomListener(xhr, 'load', this._onLoad.dispatchEvent);
             this._addDomListener(xhr, 'error', this._onError.dispatchEvent);
-            this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
+            //this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
 
             if (xhru) {
-                this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
+                //this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
                 this._addDomListener(xhru, 'load', this._onLoad.dispatchEvent);
                 this._addDomListener(xhru, 'error', this._onError.dispatchEvent);
-                this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
+                //this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
             }
         }
 
@@ -315,11 +370,11 @@ if (xhr.readyState === 4) {
             },
             //__send: function() {
             //},
-            dispose: function () {
-                if (this._xhr.abort)
-                    this._xhr.abort();
-                SmartJs.Core.EventTarget.prototype.dispose.call(this);
-            },
+            //dispose: function () {
+            //    if (this._xhr.abort)
+            //        this._xhr.abort();
+            //    SmartJs.Core.EventTarget.prototype.dispose.call(this);
+            //},
         });
 
         return CorsRequest;
