@@ -54,6 +54,11 @@ SmartJs.Event = {
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
+                    if (!item) {
+                        this._listeners.splice(i, 1);
+                        i--; l--;
+                        continue;
+                    }
                     if (item.handler === listener.handler && item.scope === listener.scope)
                         return i;
                 }

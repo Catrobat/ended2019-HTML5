@@ -164,6 +164,42 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 		Error,
 		"ERROR dispatch invalid argument: bubbles");
 
+	//remove listener at runtime: (invalid) !item || !item.handler || (item.scope && item.scope._disposed)
+	y = new ns.Y();
+	var pseudoScope = {};
+	var h1called = 0,
+		h2called = 0,
+		h3called = 0,
+		h4called = 0;
+
+	var testHandler1 = function (e) {
+		h1called++;
+	};
+	var testHandler2 = function (e) {
+		h2called++;
+	};
+	var testHandler3 = function (e) {
+		h3called++;
+	};
+	var testHandler4 = function (e) {
+		h4called++;
+	};
+
+	y.divClicked.addEventListener(new SmartJs.Event.EventListener(testHandler1, this));
+	var h2 = new SmartJs.Event.EventListener(testHandler2, this);
+	y.divClicked.addEventListener(h2);
+	//h2 = undefined;
+	y.divClicked._listeners[1] = undefined;
+
+	y.divClicked.addEventListener(new SmartJs.Event.EventListener(testHandler3, pseudoScope));
+	pseudoScope._disposed = true;
+	y.divClicked.addEventListener(new SmartJs.Event.EventListener(testHandler4, this));
+
+	//testHandler2 = undefined;
+	y.divClicked.dispatchEvent({ a: 1, b: 2, c: 3 });
+
+	assert.equal(y.divClicked._listeners.length, 2, "listener removed during dispatch");
+	assert.ok(h1called === 1 && h2called === 0 && h3called === 0 && h4called === 1, h1called + ", " + h2called + ", " + h3called + ", " + h4called + ", " + "only valid handler called once");
 });
 
 
