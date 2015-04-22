@@ -186,6 +186,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
+    var done4 = assert.async();
 
     var req = new SmartJs.Communication.CorsRequest();
     assert.equal(req.url, "", "ctr without url + getter");
@@ -295,6 +296,8 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
         done3();
+
+        runTest4();
     };
 
     var runTest3 = function () {
@@ -315,6 +318,45 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
         req3.send();
     };
 
+
+    //cors to our service
+    var onLoadHandler4 = function (e) {
+        onLoad++;
+        //console.log('onLoad ');
+        assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "cors request: consuming out test service");
+        var res = JSON.parse(e.target.responseText);
+        assert.equal(res.id, 874, "response check");
+        //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
+        done4();
+    };
+    var onErrorHandler4 = function (e) {
+        onError++;
+        //console.log('onError ');
+        //assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
+        //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
+    };
+
+    var runTest4 = function () {
+        onLoadStart = 0;
+        onLoad = 0;
+        onProgressChange = 0;
+        onError = 0;
+
+        var req4 = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/rest/v0.1/projects/874");
+
+        req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
+        req4.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler4, this));
+        //req4.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
+        req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
+        req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+
+        req4.send();
+    };
+
+
+
+    //start async
     req.send(SmartJs.RequestMethod.GET, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST"); //start async requests 
 
 });
