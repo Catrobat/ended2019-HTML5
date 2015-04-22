@@ -1,4 +1,6 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';
 
 QUnit.module("device.js");
@@ -6,7 +8,12 @@ QUnit.module("device.js");
 
 QUnit.test("[missing]", function (assert) {
 
-    assert.ok(true, "TODO:");
+    var sm = new PocketCode.SoundManager("newId");
+    var dev = new PocketCode.Device(sm);
+
+    assert.ok(dev instanceof PocketCode.Device, "instance check");
+
+    assert.ok(true, "TODO: (Armend)");
 
 });
 
