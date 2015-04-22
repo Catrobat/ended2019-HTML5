@@ -26,6 +26,7 @@ QUnit.test("SoundManager", function (assert) {
     var soundjsLoaded = function () {
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
+        var soundManager = new PocketCode.SoundManager("projectId", []);    //reinit 
 
         assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init.");
         assert.ok(soundManager._projectId = "projectId_", "SoundManager created with the correct projectId,");
