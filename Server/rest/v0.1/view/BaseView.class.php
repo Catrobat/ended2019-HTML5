@@ -2,8 +2,8 @@
 
   abstract class BaseView {
   
-    const GZIP_SUPPORTED = true;	//this const is used for debugging if there is an configuration error
-	private $request;
+    const GZIP_SUPPORTED = true;	//this const is used for debugging if there is a configuration error
+		private $request;
 	
     public function __construct($request) {
       $this->request = $request;
@@ -59,12 +59,17 @@
 	
 	private function writeResponseHeader($outputObject) {
 
-      if (isset($_SERVER["HTTP_ACCEPT_ENCODING"]) && !(strpos($_SERVER["HTTP_ACCEPT_ENCODING"], "gzip") === false) && extension_loaded('zlib') && self::GZIP_SUPPORTED)
+    //insert headers to enable CORS
+	  header("Access-Control-Allow-Origin: *");
+	  header("Access-Control-Allow-Methods: GET, POST");
+	  header("Access-Control-Allow-Headers: X-Requested-With");
+
+		if (isset($_SERVER["HTTP_ACCEPT_ENCODING"]) && !(strpos($_SERVER["HTTP_ACCEPT_ENCODING"], "gzip") === false) && extension_loaded('zlib') && self::GZIP_SUPPORTED)
 	    header("Content-Encoding: gzip");
 
-      if (isset($this->request->jsonpCallbackFunction)) {
-        header("Content-Type: application/javascript; charset=utf-8");
-      }
+    if (isset($this->request->jsonpCallbackFunction)) {
+      header("Content-Type: application/javascript; charset=utf-8");
+    }
 	  else {
         header("Content-Type: " . $this->request->responseType . "; charset=utf-8");
 	  }
