@@ -278,21 +278,28 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._bricks.length==3,"bricks length");
 
     sprite.execute();
-    assert.ok(sprite.running==true,"start() call running true");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.RUNNING,"start() call running true");
 
     sprite.stop();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     sprite.resume();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     sprite.pause();
-    assert.ok(sprite.running==false,"stop() call running false");
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
 
     // *************************************************************
 
     // ********************* trigger on change *********************
         // like broadcastmgr tests line 138
+
+    var degree= 90;
+    var direction =degree;
+
+    sprite._triggerOnChange([{direction: degree}]);
+    console.log("trigger event: "+sprite._onChange);
+
 
     // ********************* come to front/go back *********************
     var tmpprog= new PocketCode.Model.Program();
@@ -321,18 +328,16 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
 
     var layerBefore=newSprite.layer;
-    console.log(layerBefore);
-    console.log(newSprite.layer);
-    newSprite.goBack();
+    newSprite.goBack(2);
     assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
     layerBefore=newSprite2.layer;
-    newSprite2.goBack();
-    assert.ok(newSprite2.layer==layerBefore-1,"go back 2 layers");
+    newSprite2.goBack(2);
+    assert.ok(newSprite2.layer==layerBefore-2,"go back 2 layers");
     layerBefore=tmpsprite.layer;
-    tmpsprite.goBack();
-    assert.ok(tmpsprite.layer==layerBefore-1,"go back 2 layers");
+    tmpsprite.goBack(2);
+    assert.ok(tmpsprite.layer==layerBefore-2,"go back 2 layers");
     layerBefore=tmpsprite.layer;
-    tmpsprite.goBack();
+    tmpsprite.goBack(2);
     assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
     // *************************************************************
 
@@ -357,8 +362,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.pointTo("id2");
     assert.ok(sprite.direction==-180+45,"point to left down sprite");
     // *************************************************************
-
-    // adapt to enumeration
 
 
 

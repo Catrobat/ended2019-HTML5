@@ -54,6 +54,11 @@ SmartJs.Event = {
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
+                    if (!item) {
+                        this._listeners.splice(i, 1);
+                        i--; l--;
+                        continue;
+                    }
                     if (item.handler === listener.handler && item.scope === listener.scope)
                         return i;
                 }
@@ -68,15 +73,23 @@ SmartJs.Event = {
                     throw new Error('invalid argument: expected optional bubbles type: boolean');
 
                 var a = args || {};
-                a.target = target || this.target;
-                a.bubbles = bubbles || false;
-
-                var li = this._listeners;
+                try {    //notice: params change if an event is passed as the properties are read only
+                    a.target = target || this.target;
+                    a.bubbles = bubbles || false;
+                }
+                catch (e) {
+                    a.sjTarget = target || this.target;
+                    a.sjBubbles = bubbles || false;
+                }
+                
+                var li = this._listeners || []; //necessary due to the fact that binded events may call a disposed event
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
                     if (!item || !item.handler || (item.scope && item.scope._disposed)) {
                         this._listeners.splice(i, 1); //this.removeEventListener(item);
+                        l--;
+                        i--;
                         continue;
                     }
 
