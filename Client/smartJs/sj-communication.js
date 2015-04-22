@@ -90,7 +90,7 @@ SmartJs.Communication = {
                 if (e.lengthComputable) {
                     //var percentComplete = e.loaded / e.total * 100;
                     if (this._onProgressChange)
-                        this._onProgressChange.dispatchEvent({ progress: e.loaded / e.total * 100 });
+                        this._onProgressChange.dispatchEvent({ progress: Math.round(e.loaded / e.total * 100) });
                 }
                 else {
                     // Unable to compute progress information since the total size is unknown
@@ -117,8 +117,10 @@ SmartJs.Communication = {
             //    this._onAbort.dispatchEvent(e);
             //},
             _onReadyStateChangeHandler: function (e) {
-                if (this._xhr.readyState === 1)
+                if (!this._started && this._xhr.readyState === 1) {
+                    this._started = true;   //make sure this event is only triggered oncec
                     this._onLoadStart.dispatchEvent();
+                }
 
                 if (this._xhr.readyState !== 4)
                     return;
@@ -129,15 +131,15 @@ SmartJs.Communication = {
                 //    //console.log("error1 ");
                 //}
                 //else {
-                    if (this._xhr.status !== 200) { //this._loaded && 
-                        //console.log("error2 ");
-                        var e = new Error(this._xhr.responseText);
-                        e.statusCode = this._xhr.status;
-                        this._onError.dispatchEvent(e);
-                    }
-                    else
-                        //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
-                        this._onLoad.dispatchEvent();
+                if (this._xhr.status !== 200) { //this._loaded && 
+                    //console.log("error2 ");
+                    var e = new Error(this._xhr.responseText);
+                    e.statusCode = this._xhr.status;
+                    this._onError.dispatchEvent(e);
+                }
+                else
+                    //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
+                    this._onLoad.dispatchEvent();
                 //}
             },
             dispose: function () {
@@ -176,7 +178,7 @@ SmartJs.Communication.merge({
             catch (e) {
                 this.progressSupported = false;
             }
-            
+
             //this._addDomListener(xhr, 'loadstart', this._onLoadstartHandler);
             //this._addDomListener(xhr, 'load', this._onLoadHandler);
             //this._addDomListener(xhr, 'error', this._onErrorHandler);
@@ -193,10 +195,10 @@ SmartJs.Communication.merge({
         //properties
         Object.defineProperties(XmlHttpRequest.prototype, {
             supported: {
-                get: function() {
+                get: function () {
                     if (typeof XmlHttpRequest === 'undefined')
                         return false;
-                    
+
                     //check: same origin policy
                     var loc = window.location, a = document.createElement('a');
                     a.href = this._url;
@@ -310,21 +312,37 @@ SmartJs.Communication.merge({
                 this.progressSupported = false;
             }
 
-            //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
-            this._addDomListener(xhr, 'load', this._onLoad.dispatchEvent);
-            this._addDomListener(xhr, 'error', this._onError.dispatchEvent);
-            //this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
+            if (this._xhr instanceof XMLHttpRequest) {
+                this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
+                if (xhru)
+                    this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
+            }
+            else {
+                //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
+                this._addDomListener(xhr, 'load', this._onLoadHandler);
+                this._addDomListener(xhr, 'error', this._onErrorHandler);
+                //this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
 
-            if (xhru) {
-                //this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
-                this._addDomListener(xhru, 'load', this._onLoad.dispatchEvent);
-                this._addDomListener(xhru, 'error', this._onError.dispatchEvent);
-                //this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
+                if (xhru) {
+                    //this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
+                    this._addDomListener(xhru, 'load', this._onLoadHandler);
+                    this._addDomListener(xhru, 'error', this._onErrorHandler);
+                    //this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
+                }
             }
         }
 
         //properties
         Object.defineProperties(CorsRequest.prototype, {
+            _onLoadHandler: function (e) {
+                //this._loaded = true;
+                //if (this._xmle.status !== 200)
+                //this._onLoad.dispatchEvent(e);
+            },
+            _onErrorHandler: function (e) {
+                //this._error = e;
+                //this._onError.dispatchEvent(e);
+            },
             supported: {
                 get: function () {
                     var xhr = new XMLHttpRequest();
@@ -342,32 +360,41 @@ SmartJs.Communication.merge({
                 },
             },
         });
-                
+
         //methods
         CorsRequest.prototype.merge({
-            send: function (url, method, data) {
-                if (url)
-                    this._url = url;
-
+            send: function (method, url, data) {
                 if (method)
                     this.method = method;
 
-                this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
-                this._xhr.send(data);
-            },
-            _onProgressHandler: function (e) {
-                if (e.lengthComputable) {
-                    //var percentComplete = e.loaded / e.total * 100;
-                    this._onProgressChange.dispatchEvent({ progress: e.loaded / e.total * 100 });
+                if (url)
+                    this._url = url;
+
+                try {
+                    if (!(this._xhr instanceof XMLHttpRequest)) //should be triggered even on error
+                        this._onLoadStart.dispatchEvent();
+
+                    this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
+                    this._xhr.send(data);
                 }
-                else {
-                    // Unable to compute progress information since the total size is unknown
-                    if (this.progressSupported) {
-                        this.progressSupported = false;
-                        this._onProgressSupportedChange.dispatchEvent({ progressSupport: false });
-                    }
+                catch (e) {
+                    //console.log("internal: error");
+                    this._onError.dispatchEvent(e.merge({ statusCode: 0 }));
                 }
             },
+            //_onProgressHandler: function (e) {
+            //    if (e.lengthComputable) {
+            //        //var percentComplete = e.loaded / e.total * 100;
+            //        this._onProgressChange.dispatchEvent({ progress: e.loaded / e.total * 100 });
+            //    }
+            //    else {
+            //        // Unable to compute progress information since the total size is unknown
+            //        if (this.progressSupported) {
+            //            this.progressSupported = false;
+            //            this._onProgressSupportedChange.dispatchEvent({ progressSupport: false });
+            //        }
+            //    }
+            //},
             //__send: function() {
             //},
             //dispose: function () {

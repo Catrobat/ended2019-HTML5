@@ -101,7 +101,50 @@ PocketCode.merge({
             SmartJs.Communication.ServiceRequest.call(this, url);
             //this._pendingRequest = false;
             //this._xhr = new XMLHttpRequest();
+            this._id = SmartJs.getNewId();
         }
+
+        //methods
+        JsonpRequest.prototype.merge({
+            _createServiceEndpoint: function () {
+                PocketCode._jsonpClientEndpoint[this._id] = this._handleResponse;//new Function('responseText', 'statusCode', '');
+            },
+            //_deleteServiceEndpoint: function() {
+            //    delete PocketCode._jsonpClientEndpoint[this._id];
+            //},
+            _handleResponse: function (rsponseText, statusCode) {
+                //TODO:
+
+                //delete service endpoint
+                delete PocketCode._jsonpClientEndpoint[this._id];
+            },
+            send: function (method, url, data) {
+                if (method)
+                    this.method = method;
+
+                if (url)
+                    this._url = url;
+
+                try {
+                    //if (this.method === SmartJs.RequestMethod.POST && data) {
+                    //    //if (data instanceof File && xhr.setRequestHeader) {
+                    //    //    xhr.setRequestHeader('Content-type', data.type);
+                    //    //    xhr.setRequestHeader('X_FILE_NAME', data.name);
+                    //    //}
+
+                    //    this._xhr.open(SmartJs.RequestMethod.POST, this._url);
+                    //    this._xhr.send(data);
+                    //}
+                    //else {
+                    //    this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
+                    //    this._xhr.send();
+                    //}
+                }
+                catch (e) {
+                    this._onError.dispatchEvent(e.merge({ statusCode: 0 }));
+                }
+            },
+        });
 
         return JsonpRequest;
     })(),
@@ -141,10 +184,20 @@ PocketCode.merge({
             _mapEventsToStrongTypedRequest: function (request) {
                 //we inject the requests events to the 'read' request (xmlHttp, cors, jsonp) object: as there is no public interface we override the private objects
                 request._onLoadStart = this._onLoadStart;
-                request._onLoad = this._onLoad;
+                request._onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
                 request._onError = this._onError;
                 //request._onAbort = this._onAbort;
                 request._onProgressChange = this._onProgressChange;
+            },
+            _onLoadHandler: function (e) {
+                //check for serverside error -> dispach onerror or onload
+                var result = JSON.parse(e.target.responseText);
+                if (result.type.search('Exception') !== -1) {
+                    var err = new Error();
+                    err.merge(e);
+                    this._onError.dispatchEvent(err);
+                }
+                this._onLoad.dispatchEvent(e);
             },
             _sendUsingXmlHttp: function (request) {
                 var req = new SmartJs.Communication.XmlHttpRequest(request.url);
@@ -152,7 +205,7 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req);
-
+                req.send(request.method);
                 return true;
             },
             _sendUsingCors: function (request) {
@@ -161,14 +214,14 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req);
-
+                req.send(request.method);
                 return true;
             },
             _sendUsingJsonp: function (request) {
                 var req = new PocketCode.JsonpRequest(request.url);
 
                 this._mapEventsToStrongTypedRequest(req);
-
+                req.send(request.method);
                 return true;
             },
         });
