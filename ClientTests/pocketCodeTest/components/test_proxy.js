@@ -212,6 +212,8 @@ QUnit.test("JsonpRequest", function (assert) {
 QUnit.test("Proxy", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
@@ -240,7 +242,7 @@ QUnit.test("Proxy", function (assert) {
         assert.ok(typeof e.json  === 'object', "response text parsed to json");
         done1();
 
-        //runTest2();
+        runTest2();
     };
     var onErrorHandler = function (e) {
         onError++;
@@ -274,6 +276,30 @@ QUnit.test("Proxy", function (assert) {
     req.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
     req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
 
+
+    //test2: cors
+    var runTest2 = function () {
+
+        //TODO:
+
+        done2();
+        runTest3();
+    };
+
+    //test3: jsonp
+    var runTest3 = function () {
+
+        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
+
+        //TODO:
+
+        done3();
+        
+    };
+
+
+
+    //start tests
     PocketCode.Proxy.send(req);
 
 });

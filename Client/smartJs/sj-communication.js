@@ -90,7 +90,7 @@ SmartJs.Communication = {
                 if (e.lengthComputable) {
                     //var percentComplete = e.loaded / e.total * 100;
                     if (this._onProgressChange)
-                        this._onProgressChange.dispatchEvent({ progress: Math.round(e.loaded / e.total * 100) }.merge(e));
+                        this._onProgressChange.dispatchEvent({ progress: Math.round(e.loaded / e.total * 100) });//.merge(e));
                 }
                 else {
                     // Unable to compute progress information since the total size is unknown
@@ -119,7 +119,7 @@ SmartJs.Communication = {
             _onReadyStateChangeHandler: function (e) {
                 if (!this._started && this._xhr.readyState === 1) {
                     this._started = true;   //make sure this event is only triggered oncec
-                    this._onLoadStart.dispatchEvent({}.merge(e));
+                    this._onLoadStart.dispatchEvent();//{}.merge(e));
                 }
 
                 if (this._xhr.readyState !== 4)
@@ -135,11 +135,11 @@ SmartJs.Communication = {
                     //console.log("error2 ");
                     var e = new Error(this._xhr.responseText);
                     e.statusCode = this._xhr.status;
-                    this._onError.dispatchEvent({}.merge(e));
+                    this._onError.dispatchEvent(e);//{}.merge(e));
                 }
                 else
                     //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
-                    this._onLoad.dispatchEvent({}.merge(e));
+                    this._onLoad.dispatchEvent({}.merge(e.target));
                 //}
             },
             dispose: function () {
@@ -273,7 +273,8 @@ SmartJs.Communication.merge({
                     }
                 }
                 catch (e) {
-                    this._onError.dispatchEvent({ statusCode: 0 }.merge(e));
+                    e.statusCode = 0;
+                    this._onError.dispatchEvent(e);//{ statusCode: 0 });//.merge(e));
                 }
             },
             //dispose: function () {
@@ -372,14 +373,15 @@ SmartJs.Communication.merge({
 
                 try {
                     if (!(this._xhr instanceof XMLHttpRequest)) //should be triggered even on error
-                        this._onLoadStart.dispatchEvent({}.merge(e));
+                        this._onLoadStart.dispatchEvent();//{}.merge(e));
 
                     this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
                     this._xhr.send(data);
                 }
                 catch (e) {
                     //console.log("internal: error");
-                    this._onError.dispatchEvent({ statusCode: 0 }.merge(e));
+                    e.statusCode = 0;
+                    this._onError.dispatchEvent(e);//{ statusCode: 0 }.merge(e));
                 }
             },
             //_onProgressHandler: function (e) {
