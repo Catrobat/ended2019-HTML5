@@ -54,10 +54,22 @@ QUnit.test("JsonpRequest", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        assert.equal(e.target, req, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler2 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req2, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler3 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req3, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
     var onLoadHandler = function (e) {
         onLoad++;
+        assert.equal(e.target, req, "onLoad target check");
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onProgressChange === 0 && onProgressSupportedChange === 1 && onLoad === 1 && onError === 0, "jsonp request: success");
         assert.ok(e.target.responseText.length > 0, "response text received");
@@ -68,6 +80,7 @@ QUnit.test("JsonpRequest", function (assert) {
     };
     var onErrorHandler = function (e) {
         onError++;
+        assert.equal(e.target, req, "onError target check");
         //console.log('onError ');
     };
     //var onAbortHandler = function (e) {
@@ -76,10 +89,32 @@ QUnit.test("JsonpRequest", function (assert) {
     //};
     var onProgressChangeHandler = function (e) {
         onProgressChange++;
+        assert.equal(e.target, req, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler2 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req2, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler3 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req3, "onProgressChange target check");
         //console.log('onProgressChange ' + e.progress);
     };
     var onProgressSupportedChangeHandler = function (e) {
         onProgressSupportedChange++;
+        assert.equal(e.target, req, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler2 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req2, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler3 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req3, "onProgressSupportedChange target check");
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
@@ -96,10 +131,12 @@ QUnit.test("JsonpRequest", function (assert) {
     //request fail: server error
     var onLoadHandler2 = function (e) {
         onLoad++;
+        assert.equal(e.target, req2, "onLoad target check");
         //console.log('onLoad ');
     };
     var onErrorHandler2 = function (e) {
         onError++;
+        assert.equal(e.target, req2, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "jsonp request: fail (server error)");
         //^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
@@ -108,19 +145,20 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest3();
     };
 
+    var req2;
     var runTest2 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
 
-        var req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/rest/v0.1/projects/8744/details");
+        req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/rest/v0.1/projects/8744/details");
 
-        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
         req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
         req2.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
         //req2.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
+        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
         req2.send(SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/rest/v0.1/projects/8744/details");
     };
@@ -128,6 +166,7 @@ QUnit.test("JsonpRequest", function (assert) {
     //invalid tag
     var onLoadHandler3 = function (e) {
         onLoad++;
+        assert.equal(e.target, req3, "onLoad target check");
         //console.log('onLoad ');
         //assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "ajax request: fail (missing endpoint)- no onError");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -135,6 +174,7 @@ QUnit.test("JsonpRequest", function (assert) {
     };
     var onErrorHandler3 = function (e) {
         onError++;
+        assert.equal(e.target, req3, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "jsonp request: fail (invalid endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -143,20 +183,21 @@ QUnit.test("JsonpRequest", function (assert) {
         //runTest4();
     };
 
+    var req3
     var runTest3 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
         onError = 0;
 
-        var req3 = new SmartJs.Communication.CorsRequest("https://pocketcode.org/images/logo/logo_text.png");//"/ClientTests/pocketCodeTest/_resources/notExisting.json");
+        req3 = new SmartJs.Communication.CorsRequest("https://pocketcode.org/images/logo/logo_text.png");//"/ClientTests/pocketCodeTest/_resources/notExisting.json");
 
-        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
         req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
         req3.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
         //req3.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler3, this));
+        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler3, this));
 
         req3.send("GET", "</script>");
     };

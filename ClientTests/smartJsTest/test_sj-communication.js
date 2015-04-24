@@ -72,10 +72,22 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        assert.equal(e.target, req, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler2 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req2, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler3 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req3, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
     var onLoadHandler = function (e) {
         onLoad++;
+        assert.equal(e.target, req, "onLoad target check");
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success (make sure you call the test on a server or localhost and not from local file system)");
         assert.ok(e.target.responseText.length > 0, "response text received");
@@ -85,6 +97,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
     };
     var onErrorHandler = function (e) {
         onError++;
+        assert.equal(e.target, req, "onError target check");
         //console.log('onError ');
     };
     //var onAbortHandler = function (e) {
@@ -93,10 +106,32 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
     //};
     var onProgressChangeHandler = function (e) {
         onProgressChange++;
+        assert.equal(e.target, req, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler2 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req2, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler3 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req3, "onProgressChange target check");
         //console.log('onProgressChange ' + e.progress);
     };
     var onProgressSupportedChangeHandler = function (e) {
         onProgressSupportedChange++;
+        assert.equal(e.target, req, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler2 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req2, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler3 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req3, "onProgressSupportedChange target check");
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
@@ -114,10 +149,12 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
     //request fail: same origin
     var onLoadHandler2 = function (e) {
         onLoad++;
+        assert.equal(e.target, req2, "onLoad target check");
         //console.log('onLoad ');
     };
     var onErrorHandler2 = function (e) {
         onError++;
+        assert.equal(e.target, req2, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "ajax request: fail (same origin policy)");
         //^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
@@ -126,19 +163,21 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
         runTest3();
     };
 
+    var req2;
+
     var runTest2 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
 
-        var req2 = new SmartJs.Communication.XmlHttpRequest("http://www.w3schools.com/ajax/demo_get.asp");
+        req2 = new SmartJs.Communication.XmlHttpRequest("http://www.w3schools.com/ajax/demo_get.asp");
 
-        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
         req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
         req2.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
         //req2.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
+        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
         req2.send();
     };
@@ -146,6 +185,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
     //request fail: missing endpoint
     var onLoadHandler3 = function (e) {
         onLoad++;
+        assert.equal(e.target, req3, "onLoad target check");
         //console.log('onLoad ');
         //assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "ajax request: fail (missing endpoint)- no onError");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -153,26 +193,28 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
     };
     var onErrorHandler3 = function (e) {
         onError++;
+        assert.equal(e.target, req3, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "ajax request: fail (missing endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
         done3();
     };
 
+    var req3;
     var runTest3 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
         onError = 0;
 
-        var req3 = new SmartJs.Communication.XmlHttpRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
+        req3 = new SmartJs.Communication.XmlHttpRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
 
-        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
         req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
         req3.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
         //req3.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler3, this));
+        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler3, this));
 
         req3.send();
     };
@@ -210,10 +252,27 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        assert.equal(e.target, req, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler2 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req2, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler3 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req3, "onLoadStart target check");
+        //console.log('onLoadStart ');
+    };
+    var onLoadStartHandler4 = function (e) {
+        onLoadStart++;
+        assert.equal(e.target, req4, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
     var onLoadHandler = function (e) {
         onLoad++;
+        assert.equal(e.target, req, "onLoad target check");
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && (onProgressChange > 0 || onProgressSupportedChange > 0) && onLoad === 1 && onError === 0, "cors request: success (make sure you call the test on a server or localhost and not from local file system)");
         //                              ^^ if progress is supported the event will trigger (Firefox), otherwise the support-change event is triggered (IE, Chrome)
@@ -224,6 +283,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     };
     var onErrorHandler = function (e) {
         onError++;
+        assert.equal(e.target, req, "onError target check");
         //console.log('onError ');
     };
     //var onAbortHandler = function (e) {
@@ -232,10 +292,42 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     //};
     var onProgressChangeHandler = function (e) {
         onProgressChange++;
+        assert.equal(e.target, req, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler2 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req2, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler3 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req3, "onProgressChange target check");
+        //console.log('onProgressChange ' + e.progress);
+    };
+    var onProgressChangeHandler4 = function (e) {
+        onProgressChange++;
+        assert.equal(e.target, req4, "onProgressChange target check");
         //console.log('onProgressChange ' + e.progress);
     };
     var onProgressSupportedChangeHandler = function (e) {
         onProgressSupportedChange++;
+        assert.equal(e.target, req, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler2 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req2, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler3 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req3, "onProgressSupportedChange target check");
+        //console.log('onProgressSupportedChange ' + e.progressSupport);
+    };
+    var onProgressSupportedChangeHandler4 = function (e) {
+        onProgressSupportedChange++;
+        assert.equal(e.target, req4, "onProgressSupportedChange target check");
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
@@ -253,10 +345,12 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     //request fail: same origin
     var onLoadHandler2 = function (e) {
         onLoad++;
+        assert.equal(e.target, req2, "onLoad target check");
         //console.log('onLoad ');
     };
     var onErrorHandler2 = function (e) {
         onError++;
+        assert.equal(e.target, req2, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (cors not enabled)");
         //^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
@@ -265,19 +359,20 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
         runTest3();
     };
 
+    var req2;
     var runTest2 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
 
-        var req2 = new SmartJs.Communication.CorsRequest("http://www.w3schools.com/ajax/demo_get.asp");
+        req2 = new SmartJs.Communication.CorsRequest("http://www.w3schools.com/ajax/demo_get.asp");
 
-        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
         req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
         req2.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
         //req2.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
+        req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
         req2.send();
     };
@@ -285,6 +380,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     //request fail: missing endpoint
     var onLoadHandler3 = function (e) {
         onLoad++;
+        assert.equal(e.target, req3, "onLoad target check");
         //console.log('onLoad ');
         //assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "ajax request: fail (missing endpoint)- no onError");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -292,6 +388,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     };
     var onErrorHandler3 = function (e) {
         onError++;
+        assert.equal(e.target, req3, "onError target check");
         //console.log('onError ');
         assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -300,20 +397,21 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
         runTest4();
     };
 
+    var req3;
     var runTest3 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
         onError = 0;
 
-        var req3 = new SmartJs.Communication.CorsRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
+        req3 = new SmartJs.Communication.CorsRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
 
-        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
         req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
         req3.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
         //req3.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler3, this));
+        req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler3, this));
 
         req3.send();
     };
@@ -322,6 +420,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     //cors to our service
     var onLoadHandler4 = function (e) {
         onLoad++;
+        assert.equal(e.target, req4, "onLoad target check");
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "cors request: consuming out test service");
         var res = JSON.parse(e.target.responseText);
@@ -331,25 +430,27 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
     };
     var onErrorHandler4 = function (e) {
         onError++;
+        assert.equal(e.target, req4, "onError target check");
         //console.log('onError ');
         //assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
     };
 
+    var req4;
     var runTest4 = function () {
         onLoadStart = 0;
         onLoad = 0;
         onProgressChange = 0;
         onError = 0;
 
-        var req4 = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/rest/v0.1/projects/874");
+        req4 = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/rest/v0.1/projects/874");
 
-        req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler4, this));
         req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
         req4.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler4, this));
         //req4.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
-        req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
-        req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler4, this));
+        req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler4, this));
 
         req4.send();
     };
