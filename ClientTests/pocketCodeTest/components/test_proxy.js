@@ -211,10 +211,12 @@ QUnit.test("JsonpRequest", function (assert) {
 
 QUnit.test("Proxy", function (assert) {
 
+    var done1 = assert.async();
+
     assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
 
-    var p = PocketCode.Proxy;   //this is not a constructor but a static class -> instanceof is not valid here
+    //var p = PocketCode.Proxy;   //this is not a constructor but a static class -> instanceof is not valid here
     //assert.ok(p instanceof PocketCode.Proxy, "instance check");
 
     var onLoadStart = 0,
@@ -226,19 +228,23 @@ QUnit.test("Proxy", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        assert.equal(e.target, req, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
     var onLoadHandler = function (e) {
         onLoad++;
+        assert.equal(e.target, req, "onLoad target check");
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success (make sure you call the test on a server or localhost and not from local file system)");
-        assert.ok(e.target.responseText.length > 0, "response text received");
+        assert.ok(e.responseText.length > 0, "response text received");
+        assert.ok(typeof e.json  === 'object', "response text parsed to json");
         done1();
 
-        runTest2();
+        //runTest2();
     };
     var onErrorHandler = function (e) {
         onError++;
+        assert.equal(e.target, req, "onError target check");
         //console.log('onError ');
     };
     //var onAbortHandler = function (e) {
@@ -247,14 +253,19 @@ QUnit.test("Proxy", function (assert) {
     //};
     var onProgressChangeHandler = function (e) {
         onProgressChange++;
+        assert.equal(e.target, req, "onProgressChange target check");
+
         //console.log('onProgressChange ' + e.progress);
     };
     var onProgressSupportedChangeHandler = function (e) {
         onProgressSupportedChange++;
+        assert.equal(e.target, req, "onProgressSupportedChange target check");
+
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
+    var req = new PocketCode.ServiceRequest("ClientTests/pocketCodeTest/_resources/testDataProjectJson.js", SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
+    //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
     req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -263,7 +274,7 @@ QUnit.test("Proxy", function (assert) {
     req.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
     req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
 
-    p.send(req);
+    PocketCode.Proxy.send(req);
 
 });
 

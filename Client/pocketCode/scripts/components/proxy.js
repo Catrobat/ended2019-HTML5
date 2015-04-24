@@ -225,20 +225,27 @@ PocketCode.merge({
             _mapEventsToStrongTypedRequest: function (reg, requestObject) {
                 //we inject the requests events to the 'read' request (xmlHttp, cors, jsonp) object: as there is no public interface we override the private objects
                 reg._onLoadStart = requestObject._onLoadStart;
-                reg._onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
+                reg.onLoadTarget = requestObject;   //store request object in strong Tped request to trigger the original event onLoad
+                reg.onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
                 reg._onError = requestObject._onError;
                 //reg._onAbort = requestObject._onAbort;
                 reg._onProgressChange = requestObject._onProgressChange;
             },
             _onLoadHandler: function (e) {
                 //check for serverside error -> dispach onerror or onload
-                var result = JSON.parse(e.target.responseText);
-                if (result.type.indexOf('Exception') !== -1) {  //TODO: check status code?
+                try {
+                    var result = JSON.parse(e.target.responseText);
+                }
+                catch (e) {
+                    result = { type: 'InvalidJsonFormatException' };
+                }
+                if (result.type && result.type.indexOf('Exception') !== -1) {  //TODO: check status code?
                     var err = new Error();
                     err.merge(e);
+                    err.json = result || {};
                     e.target._onError.dispatchEvent(err);
                 }
-                e.target._onLoad.dispatchEvent(e);
+                e.target.onLoadTarget.onLoad.dispatchEvent({ responseText: e.target.responseText, json: result }); //get original target and trigger on this target
             },
             _sendUsingXmlHttp: function (request, method, url) {
                 var req = new SmartJs.Communication.XmlHttpRequest(url || request.url);
