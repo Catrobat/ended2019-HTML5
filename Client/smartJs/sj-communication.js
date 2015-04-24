@@ -335,12 +335,12 @@ SmartJs.Communication.merge({
         //properties
         Object.defineProperties(CorsRequest.prototype, {
             _onLoadHandler: function (e) {
-                //this._loaded = true;
+                //this._loaded = true;              //TODO:
                 //if (this._xmle.status !== 200)
                 //this._onLoad.dispatchEvent(e);
             },
             _onErrorHandler: function (e) {
-                //this._error = e;
+                //this._error = e;                  //TODO:
                 //this._onError.dispatchEvent(e);
             },
             supported: {

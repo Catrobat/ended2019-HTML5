@@ -7,7 +7,7 @@
 
 PocketCode.merge({
 
-    _serviceEndpoint: '',    //TODO:
+    _serviceEndpoint: '/',    //TODO:
 
     Services: {
         PROJECT_SEARCH: 'projects',
@@ -26,10 +26,6 @@ PocketCode.merge({
         //ctr
         function ServiceRequest(service, method, properties) {
             SmartJs.Communication.ServiceRequest.call(this, PocketCode._serviceEndpoint);
-            //if (PocketCode._serviceEndpoint)
-            //this._url = PocketCode._serviceEndpoint;
-            //else
-            //    this._url = '';
 
             this._service = service.replace(/{([^}]*)}/g, function (prop) {
                 var key = prop.substr(1, prop.length - 2);
@@ -43,25 +39,17 @@ PocketCode.merge({
             });
 
             //add properties to request url
-            var first = true;
+            var firstProp = (this._service.indexOf('?') === -1);
             for (var p in properties) {
                 if (properties.hasOwnProperty(p) && properties[p] !== undefined) {
-                    this._service += first ? '?' : '&';
-                    first = false;
+                    this._service += (firstProp ? '?' : '&');
+                    firstProp = false;
                     this._service += (encodeURIComponent(p) + '=' + encodeURIComponent(properties[p]));
                 }
             }
 
-            this.method = method;
             this._progressSupported = true;     //default for our services
-
-            //events
-            //this._onLoadStart = new SmartJs.Event.Event(this);
-            //this._onLoad = new SmartJs.Event.Event(this);
-            //this._onError = new SmartJs.Event.Event(this);
-            //this._onAbort = new SmartJs.Event.Event(this);
-            //this._onProgressChange = new SmartJs.Event.Event(this);
-            //this._onProgressSupportedChange = new SmartJs.Event.Event(this);
+            this.method = method;
         }
 
         //properties
@@ -101,47 +89,108 @@ PocketCode.merge({
             SmartJs.Communication.ServiceRequest.call(this, url);
             //this._pendingRequest = false;
             //this._xhr = new XMLHttpRequest();
+            this.progressSupported = false;
             this._id = SmartJs.getNewId();
         }
 
+        //properties
+        Object.defineProperties(JsonpRequest.prototype, {
+            responseText: {
+                get: function () {
+                    return this._xhr.responseText;
+                },
+            },
+        });
+
         //methods
         JsonpRequest.prototype.merge({
-            _createServiceEndpoint: function () {
-                PocketCode._jsonpClientEndpoint[this._id] = this._handleResponse;//new Function('responseText', 'statusCode', '');
+            _onErrorHandler: function (e) {
+                console.log("error: " + this._id);
+                //this._error = e;                  //TODO:
+                this._deleteServiceEndpoint();
+                this._onError.dispatchEvent(e);
             },
-            //_deleteServiceEndpoint: function() {
-            //    delete PocketCode._jsonpClientEndpoint[this._id];
-            //},
-            _handleResponse: function (rsponseText, statusCode) {
-                //TODO:
-
-                //delete service endpoint
+            _createServiceEndpoint: function () {
+                PocketCode._jsonpClientEndpoint[this._id] = this._handleResponse.bind(this);//, responseText, statusCode);//new Function('responseText', 'statusCode', '');
+            },
+            _deleteServiceEndpoint: function() {
+                //delete tag and service endpoint
                 delete PocketCode._jsonpClientEndpoint[this._id];
+                if (!this._script)
+                    return;
+
+                var head = document.head || document.getElementsByTagName("head")[0];
+                //var script = document.getElementById(this._script);
+                head.removeChild(this._script);
+                this._script = undefined;
+            },
+            _handleResponse: function (responseText, statusCode) {
+                //console.log('receive id: ' + this._id);
+                this._deleteServiceEndpoint();
+
+                this._xhr = { status: statusCode, responseText: responseText };
+                if (statusCode !== 200) { //this._loaded && 
+                    //console.log("error2 ");
+                    var e = new Error(responseText);
+                    e.statusCode = statusCode;
+                    this._onError.dispatchEvent(e);
+                }
+                else
+                    //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
+                    this._onLoad.dispatchEvent();
             },
             send: function (method, url, data) {
+
+                if (this._script)
+                    throw new Error('this is an asynchronous request: you\'re not allowed to send it twice (simultanously). Create another instance');
+                //console.log('send id: ' + this._id);
                 if (method)
                     this.method = method;
 
                 if (url)
                     this._url = url;
+                else
+                    url = this._url;
 
+                var firstProp = (this._url.indexOf('?') === -1);
+                if (this.method !== SmartJs.RequestMethod.GET) {
+                    url = this._url + (firstProp ? '?' : '&');
+                    url += 'method=' + method;
+                    firstProp = false;
+                }
+
+                url += this._service + firstProp ? '?' : '&';
+                url += 'jsonpCallback=PocketCode._jsonpClientEndpoint.' + this._id;
+
+                this._onLoadStart.dispatchEvent();
+                this._onProgressSupportedChange.dispatchEvent({ progressSupport: false });
+                
                 try {
-                    //if (this.method === SmartJs.RequestMethod.POST && data) {
-                    //    //if (data instanceof File && xhr.setRequestHeader) {
-                    //    //    xhr.setRequestHeader('Content-type', data.type);
-                    //    //    xhr.setRequestHeader('X_FILE_NAME', data.name);
-                    //    //}
+                    this._createServiceEndpoint();
+                    //throw new Error("Test only");
 
-                    //    this._xhr.open(SmartJs.RequestMethod.POST, this._url);
-                    //    this._xhr.send(data);
-                    //}
-                    //else {
-                    //    this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
-                    //    this._xhr.send();
-                    //}
+                    var head = document.head || document.getElementsByTagName("head")[0];
+                    var script = document.createElement("script");
+                    this._script = script;
+                    //oScript.type = "text\/javascript";    //type optional in HTML5 -> default: "text\/javascript" 
+                    script.async = false;  //ensure execution order after async download
+                    //var _self = this;   //TODO: ???
+                    script.onerror = this._onErrorHandler.bind(this);//_onError.dispatchEvent.call(this);//, e);
+                    //script.onload = oScript.onreadystatechange = function () {
+                    //    if (!this._loaded && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
+                    //        this._loaded = true;
+                    //        oScript.onload = oScript.onreadystatechange = null;
+                    //        _self._onLoad.dispatchEvent();
+                    //    }
+                    //};
+                    head.appendChild(script);
+                    //oHead.insertBefore(oScript, oHead.firstChild);    //alternative
+                    //script.id = 
+                    script.src = url;
+                    //break;
                 }
                 catch (e) {
-                    this._onError.dispatchEvent(e.merge({ statusCode: 0 }));
+                    this._onErrorHandler(e.merge({ statusCode: 0 }));//_onError.dispatchEvent(e.merge({ statusCode: 0 }));
                 }
             },
         });
@@ -149,18 +198,11 @@ PocketCode.merge({
         return JsonpRequest;
     })(),
 
-    Proxy: new ((function () {	//singleton
+    Proxy: new ((function () {	//static
         //each single request has its events, the proxy only maps this events to internal strong typed requests and triggers send()
 
         //ctr
-        function Proxy() {
-            //this._total = totalCount;
-            //this._parsed = 0;
-
-            //this._updatePercentage = 0;
-            //this._onProgressChange = new SmartJs.Event.Event(this);
-
-        }
+        function Proxy() {}
 
         //methods
         Proxy.prototype.merge({
@@ -168,66 +210,66 @@ PocketCode.merge({
                 if (!(request instanceof PocketCode.ServiceRequest))
                     throw new Error('invalid argument, expected: request type of PocketCode.ServiceRequest');
 
-                if (this._sendUsingXmlHttp(request));
-                else if (this._sendUsingCors(request));
-                else (this._sendUsingJsonp(request));
-                //else
-                //    throw new Error('no request function supported by this browser- request could not be sent');
+                var method = request.method;
+                if (method !== 'GET' && method !== 'POST') {
+                    method = 'GET';
+                    var url = request.url;
+                    url += (this._service.indexOf('?') === -1) ? '?' : '&';
+                    url += 'method=' + request.method;
+                }
 
-                //check: same origin policy
-                //check CORS
-                //create smartJs request object	(ajax, cors, jsonp)
-                //check: method PUT/DELETE -> method=POST + modify request properties
-                //connect events or add handler to pocketCode._jsonpClientEndpoint
-                //send
+                if (this._sendUsingXmlHttp(request, method, url));
+                else if (this._sendUsingCors(request, method, url));
+                else (this._sendUsingJsonp(request, method, url));
             },
-            _mapEventsToStrongTypedRequest: function (request) {
+            _mapEventsToStrongTypedRequest: function (reg, requestObject) {
                 //we inject the requests events to the 'read' request (xmlHttp, cors, jsonp) object: as there is no public interface we override the private objects
-                request._onLoadStart = this._onLoadStart;
-                request._onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
-                request._onError = this._onError;
-                //request._onAbort = this._onAbort;
-                request._onProgressChange = this._onProgressChange;
+                reg._onLoadStart = requestObject._onLoadStart;
+                reg._onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
+                reg._onError = requestObject._onError;
+                //reg._onAbort = requestObject._onAbort;
+                reg._onProgressChange = requestObject._onProgressChange;
             },
             _onLoadHandler: function (e) {
                 //check for serverside error -> dispach onerror or onload
                 var result = JSON.parse(e.target.responseText);
-                if (result.type.search('Exception') !== -1) {
+                if (result.type.indexOf('Exception') !== -1) {  //TODO: check status code?
                     var err = new Error();
                     err.merge(e);
-                    this._onError.dispatchEvent(err);
+                    e.target._onError.dispatchEvent(err);
                 }
-                this._onLoad.dispatchEvent(e);
+                e.target._onLoad.dispatchEvent(e);
             },
-            _sendUsingXmlHttp: function (request) {
-                var req = new SmartJs.Communication.XmlHttpRequest(request.url);
+            _sendUsingXmlHttp: function (request, method, url) {
+                var req = new SmartJs.Communication.XmlHttpRequest(url || request.url);
                 if (!req.supported)
                     return false;
 
-                this._mapEventsToStrongTypedRequest(req);
-                req.send(request.method);
+                this._mapEventsToStrongTypedRequest(req, request);
+                req.send(method || request.method);
                 return true;
             },
-            _sendUsingCors: function (request) {
-                var req = new SmartJs.Communication.CorsRequest(request.url);
+            _sendUsingCors: function (request, method, url) {
+                var req = new SmartJs.Communication.CorsRequest(url || request.url);
                 if (!req.supported)
                     return false;
 
-                this._mapEventsToStrongTypedRequest(req);
-                req.send(request.method);
+                this._mapEventsToStrongTypedRequest(req, request);
+                req.send(method || request.method);
                 return true;
             },
-            _sendUsingJsonp: function (request) {
-                var req = new PocketCode.JsonpRequest(request.url);
+            _sendUsingJsonp: function (request, method, url) {
+                var req = new PocketCode.JsonpRequest(url || request.url);
 
-                this._mapEventsToStrongTypedRequest(req);
-                req.send(request.method);
+                this._mapEventsToStrongTypedRequest(req, request);
+                req.send(method || request.method);
                 return true;
             },
         });
 
         return Proxy;
-    })()),
+    })())(),
+
 });
 
 
