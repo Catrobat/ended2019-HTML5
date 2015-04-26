@@ -8,6 +8,14 @@
 
 QUnit.module("sj-components.js");
 
+QUnit.test("SmartJs.Components.Application", function (assert) {
+
+	var app = new SmartJs.Components.Application();
+	assert.ok(true, "TODO");
+
+});
+
+
 QUnit.test("SmartJs.Components.Timer", function (assert) {
 
 	//assert.expect(15);   //init async asserts (to wait for)
@@ -127,23 +135,23 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	p9.resume();
 	p9.resume();
 
-	var p10 = new SmartJs.Components.Timer(20);
+	var p10 = new SmartJs.Components.Timer(30);
 	var testHandler10 = function (e) {
-	    var diff = new Date() - startTime;
-	    assert.ok(diff >= 25, "check pause time part of full time");
-	    done10();
+		var diff = new Date() - startTime;
+		assert.ok(diff >= 40, diff + " >= 25, check pause time part of full time");
+		done10();
 	};
 	p10.onExpire.removeEventListener(new SmartJs.Event.EventListener(testHandler9, this));
 	p10.onExpire.addEventListener(new SmartJs.Event.EventListener(testHandler10, this));
 
 	var restart = function () {
-	    assert.ok(remainingRunning <= 12, "test paused timer remaining time");
-	    window.setTimeout(function () { p10.resume(); }, 10);
+	    assert.ok(remainingRunning <= 19, remainingRunning + " <= 12, test paused timer remaining time");
+		window.setTimeout(function () { p10.resume(); }, 10);
 	};
 
 	var startTime = new Date();
 	p10.start();
-	window.setTimeout(function () { remainingRunning = p10.remainingTime; p10.pause(); restart(); }, 10);
+	window.setTimeout(function () { remainingRunning = p10.remainingTime; p10.pause(); restart(); }, 15);
 
 	//done11();
 

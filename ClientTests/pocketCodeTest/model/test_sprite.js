@@ -100,12 +100,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.changePositionY(-20);
     assert.ok(sprite._positionX==35+50 && sprite._positionY==90-20, "change PositionY");
     // *************************************************************
-    /*  console.log("direction: "+sprite._direction);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);
-     sprite.move(10);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);*/
 
     // ********************* Move/Direction *********************
     sprite.setPosition(-10,-10);
@@ -136,9 +130,6 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* turn *********************
-    /*console.log("direction: "+sprite._direction);
-     console.log("x: "+sprite._positionX);
-     console.log("y: "+sprite._positionY);*/
 
     sprite.setDirection(90,triggerEvent);
     sprite.turnRight(50);
@@ -227,48 +218,153 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* looks *********************
-
-    var look1= "look1";
-    var look2= "look2";
+    var look1= new Object();
+    look1.name= "look1";
+    look1.id="first";
+    var look2 = new Object();
+    look2.name= "look2";
+    look2.id="second";
     var looks=[];
-    looks[1]=look1;
-    looks[2]=look2;
-    sprite.looks(looks);
-    assert.ok(sprite._looks.length==2,"set looks");
+    looks[0]=look1;
+    looks[1]=look2;
+    sprite.looks=looks;
+    assert.ok(sprite._looks[1].name=="look2","set looks1");
+    assert.ok(sprite._currentLook==looks[0],"set looks2");
+    assert.ok(sprite._currentLook.name=="look1","set looks3");
+
+    sprite.setLook("second");
+    assert.ok(sprite._currentLook.name=="look2","set current look with id");
+
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look1","next look");
+
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look2","next look 2");
+
+    var look3= new Object();
+    look3.name= "look3";
+    look3.id="third";
+    looks[2]=look3;
+    sprite.looks=looks;
+    assert.ok(sprite._currentLook.name=="look1","current look set back to first after look setter");
+    assert.ok(sprite._looks.length==3,"looks count increased");
+
+    sprite.setLook("third");
+    assert.ok(sprite._currentLook.name=="look3","next look to last look");
+
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look1","look loop 1");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look2","look loop 2");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look3","look loop 3");
+    sprite.nextLook();
+    assert.ok(sprite._currentLook.name=="look1","look loop 4 back to first");
+
+    // *************************************************************
+
+    // ********************* start/pause/resume/stop *********************
+    var brick1= new PocketCode.Bricks.RootContainerBrick();
+    brick1.id="first";
+    var brick2= new PocketCode.Bricks.RootContainerBrick();
+    var brick3= new PocketCode.Bricks.RootContainerBrick();
+    var brick4= new PocketCode.Bricks.RootContainerBrick();
+    var brick5= new PocketCode.Bricks.RootContainerBrick();
+    var tmpBricks=[];
+    tmpBricks[0]=brick1;
+    tmpBricks[1]=brick2;
+    tmpBricks[2]=brick3;
+    sprite.bricks=tmpBricks;
+    assert.ok(sprite._bricks.length==3,"bricks length");
+
+    sprite.execute();
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.RUNNING,"start() call running true");
+
+    sprite.stop();
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
+
+    sprite.resume();
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
+
+    sprite.pause();
+    assert.ok(sprite._executionState == PocketCode.ExecutingState.STOPPED,"stop() call running false");
+
+    // *************************************************************
+
+    // ********************* trigger on change *********************
+        // like broadcastmgr tests line 138
+
+    var degree= 90;
+    var direction =degree;
+
+    sprite._triggerOnChange([{direction: degree}]);
+    console.log("trigger event: "+sprite._onChange);
+
+
+    // ********************* come to front/go back *********************
+    var tmpprog= new PocketCode.Model.Program();
+
+    var newSprite = new PocketCode.Model.Sprite(tmpprog);
+    newSprite.id="test2";
+    newSprite.name="test2";
+    tmpprog.sprites.push(newSprite);
+    var firstLayer=newSprite.layer;
+
+    var newSprite2 = new PocketCode.Model.Sprite(tmpprog);
+    newSprite2.id="test3";
+    newSprite2.name="test3";
+    tmpprog.sprites.push(newSprite2);
+
+    var tmpsprite =  new PocketCode.Model.Sprite(tmpprog);
+    tmpsprite.id="test1";
+    tmpsprite.name="test1";
+    tmpprog.sprites.push(tmpsprite);
+
+    newSprite.comeToFront();
+    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    tmpsprite.comeToFront();
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    newSprite2.comeToFront();
+    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+
+    var layerBefore=newSprite.layer;
+    newSprite.goBack(2);
+    assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
+    layerBefore=newSprite2.layer;
+    newSprite2.goBack(2);
+    assert.ok(newSprite2.layer==layerBefore-2,"go back 2 layers");
+    layerBefore=tmpsprite.layer;
+    tmpsprite.goBack(2);
+    assert.ok(tmpsprite.layer==layerBefore-2,"go back 2 layers");
+    layerBefore=tmpsprite.layer;
+    tmpsprite.goBack(2);
+    assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
+    // *************************************************************
+
+    // ********************* point to *********************
+    sprite.id="id1";
+    var newSprite = new PocketCode.Model.Sprite(prog);
+    newSprite.id="id2";
+    prog.sprites.push(newSprite);
+    var tmp= prog.getSprite("id2");
+
+    assert.ok(tmp=newSprite,"push sprite to program");
+
+    newSprite.setPosition(100,100);
+    sprite.setPosition(50,50);
+
+    sprite.pointTo("id2");
+    assert.ok(sprite.direction==45,"point to right up sprite");
+
+    newSprite.setPosition(0,0);
+    sprite.setPosition(50,50);
+
+    sprite.pointTo("id2");
+    assert.ok(sprite.direction==-180+45,"point to left down sprite");
+    // *************************************************************
 
 
 
-    /*  sprite.setBrightness(110);
-     assert.equal(sprite.brightness, 100, "setBrightness over 100");
-
-     sprite.setBrightness(-5);
-     assert.equal(sprite.brightness, 0, "setBrightness under 0");
-
-
-     assert.throws(sprite.changeBrightness("sdfsdf"),false, "invalid brightness value");
-     sprite.setBrightness(90);
-     sprite.changeBrightness(12);
-     assert.equal(sprite.brightness, 100, "changeBrightness over 100");
-
-     sprite.setBrightness(30);
-     sprite.changeBrightness(-32);
-     assert.equal(sprite.brightness, 0, "changeBrightness under 0");
-
-     assert.throws(sprite.setTransparency("sdfsdf"),false, "invalid transparency percentage");
-     sprite.setTransparency(110);
-     assert.equal(sprite.transparency, 100, "setTransparency over 100");
-
-     sprite.setTransparency(-5);
-     assert.equal(sprite.transparency, 0, "setTransparency under 0");
-
-     sprite.setTransparency(90);
-     sprite.changeTransparency(12);
-     assert.equal(sprite.transparency, 100, "setTransparency over 100");
-
-     sprite.setTransparency(30);
-     sprite.changeTransparency(-32);
-     assert.equal(sprite.transparency, 0, "setTransparency under 0");
-     */
 
 });
 

@@ -2,7 +2,9 @@
 'use strict';
 
 PocketCode.Ui.PlayerSvgButton = (function () {
+    PlayerSvgButton.extends(SmartJs.Ui.Control, false);
 
+    //cntr
     function PlayerSvgButton() {
     }
 

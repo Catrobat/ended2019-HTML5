@@ -9,10 +9,24 @@ QUnit.test("SoundManager", function (assert) {
     //init and volume tests
     var doneWithInitTests = assert.async();
 
-    var soundjsLoaded = function(){
+    var soundManager = new PocketCode.SoundManager("projectId", []);
+
+    assert.ok(soundManager instanceof PocketCode.SoundManager, "instance check");
+
+    if (!soundManager.supported) {
+
+        assert.equal(soundManager.volume, 70, "volume getter");
+        soundManager.volume = 20;
+        assert.equal(soundManager.volume, 20, "volume setter");
+
+        //TODO: make sure our app does not throw any errors: you can test this issue in Safari 5.1.7 on Windows (without QuickTime installed)
+        doneWithInitTests();
+    }
+
+    var soundjsLoaded = function () {
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
-        var soundManager = new PocketCode.SoundManager("projectId",[]);
+        var soundManager = new PocketCode.SoundManager("projectId", []);    //reinit 
 
         assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init.");
         assert.ok(soundManager._projectId = "projectId_", "SoundManager created with the correct projectId,");
@@ -47,7 +61,7 @@ QUnit.test("SoundManager", function (assert) {
         var doneWithPlaybackComplete = assert.async();
 
         var onPlayCompleted = function(){
-            assert.equal(soundManager2.activeSounds.length, 6, "Completed sound removed from active sounds.");
+            assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds.");
             doneWithPlaybackComplete();
         };
 
@@ -65,10 +79,10 @@ QUnit.test("SoundManager", function (assert) {
 
             assert.equal(expectedProgressChanges.length, 0, "Progress increased according to passed size");
 
-            assert.equal(soundManager.activeSounds.length, 0, "No active sounds on init.");
+            assert.equal(soundManager._activeSounds.length, 0, "No active sounds on init.");
 
             soundManager2.startSound("projectId_sound");
-            var soundInstance = soundManager2.activeSounds[0];
+            var soundInstance = soundManager2._activeSounds[0];
             assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds.");
             assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing.");
 
@@ -79,7 +93,7 @@ QUnit.test("SoundManager", function (assert) {
             assert.ok(!soundInstance.paused, "Sound resumed.");
 
             soundManager2.stopAllSounds();
-            assert.equal(soundManager2.activeSounds.length, 0, "All sounds removed from active sounds on stopping.");
+            assert.equal(soundManager2._activeSounds.length, 0, "All sounds removed from active sounds on stopping.");
             assert.equal(soundInstance.playState, "playFinished", "Sound has been stopped.");
 
             var timesToPlaySound = 6;
@@ -89,16 +103,16 @@ QUnit.test("SoundManager", function (assert) {
             soundManager2.startSound("projectId_sound2");
             soundManager2.pauseSounds();
 
-            assert.equal(soundManager2.activeSounds[soundManager2.activeSounds.length-1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds.");
-            assert.equal(soundManager2.activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds.");
+            assert.equal(soundManager2._activeSounds[soundManager2._activeSounds.length-1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds.");
+            assert.equal(soundManager2._activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds.");
 
             var allSoundsStartedPlaying = true;
             var allSoundsPaused = true;
             for (var i = 0; i < timesToPlaySound + 1; i++) {
-                if (soundManager2.activeSounds[i].playState !== "playSucceeded"){
+                if (soundManager2._activeSounds[i].playState !== "playSucceeded"){
                     allSoundsStartedPlaying = false;
                 }
-                if (!soundManager2.activeSounds[i].paused){
+                if (!soundManager2._activeSounds[i].paused){
                     allSoundsPaused = false;
                 }
             }
@@ -106,7 +120,7 @@ QUnit.test("SoundManager", function (assert) {
             assert.ok(allSoundsPaused, "All sounds paused on calling pause");
             doneWithPlaybackTests();
 
-            var soundInstance2 = soundManager2.activeSounds[0];
+            var soundInstance2 = soundManager2._activeSounds[0];
             soundInstance2.on("complete", onPlayCompleted);
             soundInstance2.paused = false;
         };

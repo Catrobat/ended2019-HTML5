@@ -59,7 +59,7 @@ QUnit.test("Program", function (assert) {
         TestSprite.prototype.merge({
             timesStopped: 0,
             timesStarted: 0,
-            start: function (id) {
+            execute: function (id) {
                 this.status = PocketCode.ExecutingState.RUNNING;
                 this.timesStarted++;
             },
@@ -98,22 +98,12 @@ QUnit.test("Program", function (assert) {
     program.sprites.push(new TestSprite(program));
     program.sprites.push(new TestSprite(program));
 
-
-    //program.background = new PocketCode.Model.Sprite(program);
-    //program.sprites.push({id: "sprite1", status: null, start:function(){this.status = PocketCode.ExecutingState.RUNNING;}, stop:function(){this.status = PocketCode.ExecutingState.STOPPED;}, pause:function(){this.status = PocketCode.ExecutingState.PAUSED;}});
-    //program.sprites.push({id: "sprite2", status: null, start:function(){this.status = PocketCode.ExecutingState.RUNNING;}, stop:function(){this.status = PocketCode.ExecutingState.STOPPED;}, pause:function(){this.status = PocketCode.ExecutingState.PAUSED;}});
-    //program.sprites.push({id: "sprite3", status: null, start:function(){this.status = PocketCode.ExecutingState.RUNNING;}, stop:function(){this.status = PocketCode.ExecutingState.STOPPED;}, pause:function(){this.status = PocketCode.ExecutingState.PAUSED;}});
-
-
-
-    //program.background = {id: "bg", status: null, start:function(){this.status = PocketCode.ExecutingState.RUNNING;}, stop:function(){this.status = PocketCode.ExecutingState.STOPPED;},pause:function(){this.status = PocketCode.ExecutingState.PAUSED;}};
-
     var programStartEvent = 0;
     program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(function(){
         programStartEvent++;
     }));
 
-    program.start();
+    program.execute();
     assert.deepEqual(programStartEvent, 1, "Called onProgramStart.");
 
     var allSpritesStarted = true;
@@ -126,7 +116,7 @@ QUnit.test("Program", function (assert) {
     assert.deepEqual(program.background.status, PocketCode.ExecutingState.RUNNING, "Called backgrounds start method.");
     assert.deepEqual(program._executionState, PocketCode.ExecutingState.RUNNING, "Set programs execution state to RUNNING on start.");
 
-    program.start();
+    program.execute();
     assert.deepEqual(programStartEvent, 1, "Did not attempt to start running program.");
 
     program.pause();
@@ -181,8 +171,6 @@ QUnit.test("Program", function (assert) {
     assert.ok(program.sprites[0].timesStarted === spritesStarted + 1 && program.background.timesStarted === bgStarted + 1, "Started all sprites when restarting.")
     assert.ok(program._soundManager.status === PocketCode.ExecutingState.STOPPED, "Called SoundManagers stopAllSounds when restarting program.");
 
-    //TODO what happens if there is no bg??
-
     var sprite1 = new PocketCode.Model.Sprite(program);
     sprite1.id = "spriteId1";
     sprite1.name = "spriteName1";
@@ -198,13 +186,13 @@ QUnit.test("Program", function (assert) {
     var numberOfSprites = program.sprites.length;
     var currentSpriteLayer = program.getSpriteLayer("spriteId1");
     assert.deepEqual(program.getSpriteLayer("spriteId1"), numberOfSprites + program.backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.")
-    program.setSpriteLayerBack("spriteId1");
-    assert.deepEqual(program.getSpriteLayer("spriteId1"), currentSpriteLayer - 1, "Set sprite layer one Layer back with setSpriteLayerBack.");
-    program.setSpriteLayerBack("spriteId1");
-    assert.ok(program.setSpriteLayerBack("spriteId1"), "Setting Sprite layer back returns true.");
-    assert.deepEqual(spriteChanges, 3, "Sprite Change Event triggered every time layer got set back.");
-    assert.ok(!program.setSpriteLayerBack("spriteId1"),"Setting Sprite layer back returns false if Sprite is already on the bottom layer");
-    assert.deepEqual(spriteChanges, 3, "Sprite Change Event did not trigger when attempting to set sprite a layer back that was already in last position.");
+    program.setSpriteLayerBack("spriteId1",2);
+    assert.deepEqual(program.getSpriteLayer("spriteId1"), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack.");
+
+    assert.ok(program.setSpriteLayerBack("spriteId1",1), "Setting Sprite layer back returns true.");
+    assert.deepEqual(spriteChanges, 2, "Sprite Change Event triggered every time layer got set back.");
+    assert.ok(!program.setSpriteLayerBack("spriteId1",1),"Setting Sprite layer back returns false if Sprite is already on the bottom layer");
+    assert.deepEqual(spriteChanges, 2, "Sprite Change Event did not trigger when attempting to set sprite a layer back that was already in last position.");
 
     spriteChanges = 0;
 

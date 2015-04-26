@@ -4,6 +4,7 @@
 'use strict';
 
 PocketCode.Device = (function () {
+    Device.extends(SmartJs.Core.EventTarget);
 
     function Device(soundManager) {
         this._soundMgr = soundManager;
@@ -17,15 +18,27 @@ PocketCode.Device = (function () {
         this._onKeypress = new SmartJs.Event.Event(this);
         this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
 
-        //init
+        //init state variables: http://www.html5rocks.com/en/tutorials/device/orientation/
+        this._compass = 0;
+        this._alpha = 0;
+        this._beta = 0;
+        this._gamma = 0;
+
+        this._x = 0;
+        this._y = 0;
+        this._z = 0;
+
+        this._rotationRate = 0;
+
+        //sensor support
         this._sensorSupport = {
-            X_ACCELERATION: true,
-            Y_ACCELERATION: true,
-            Z_ACCELERATION: true,
-            COMPASS_DIRECTION: true,    //?
-            X_INCLINATION: true,
-            Y_INCLINATION: true,
-            LOUDNESS: false,    //notify?
+            X_ACCELERATION: false,
+            Y_ACCELERATION: false,
+            Z_ACCELERATION: false,
+            COMPASS_DIRECTION: false,
+            X_INCLINATION: false,
+            Y_INCLINATION: false,
+            //LOUDNESS: false    //notify?
         };
         this._sensorEmulatedData = {
             X_ACCELERATION: 0,
@@ -34,90 +47,90 @@ PocketCode.Device = (function () {
             COMPASS_DIRECTION: 0,
             X_INCLINATION: 0,
             Y_INCLINATION: 0,
-            LOUDNESS: 0,
+            //LOUDNESS: 0
         };
 
-        this._initSensors();
+        //bind events
+        if (window.DeviceOrientationEvent) {    //TODO: (Armend) this should not be executed on desktop -> it is on e.g. Firefox
+            this._addDomListener(window, 'deviceorientation', this._deviceorientationChangeHandler);
+            this._sensorSupport.COMPASS_DIRECTION = true;
+            //TODO: (Armend) set supported sensons to true (like compass above)
+        }
+        if (window.DeviceMotionEvent) {    //TODO: (Armend) this should not be executed on desktop -> it is on e.g. Firefox
+            this._addDomListener(window, 'devicemotion', this._devicemotionChangeHandler);
+            //TODO: (Armend) set supported sensons
+        }
+
     }
 
     //properties
     Object.defineProperties(Device.prototype, {
         accelerationX: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.X_ACCELERATION)
+                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                return this._sensorEmulatedData.X_ACCELERATION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         accelerationY: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.Y_ACCELERATION)
+                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                return this._sensorEmulatedData.Y_ACCELERATION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         accelerationZ: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.Z_ACCELERATION)
+                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                return this._sensorEmulatedData.Z_ACCELERATION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         compassDirection: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.COMPASS_DIRECTION)
+                    return this._compass;
+                return this._sensorEmulatedData.COMPASS_DIRECTION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         inclinationX: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.X_INCLINATION)
+                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                return this._sensorEmulatedData.X_INCLINATION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         inclinationY: {
             get: function () {
-                return 0;   //TODO:
+                if (this._sensorSupport.Y_INCLINATION)
+                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                return this._sensorEmulatedData.Y_INCLINATION;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         loudness: {
             get: function () {
                 return this._soundMgr.volume;
             },
-            //enumerable: false,
-            //configurable: true,
         },
         faceDetected: {
             get: function () {
                 return false; //TODO: 
             },
-            //enumerable: false,
-            //configurable: true,
         },
         faceSize: {
             get: function () {
                 return 0; //TODO: 
             },
-            //enumerable: false,
-            //configurable: true,
         },
         facePositionX: {
             get: function () {
                 return 0; //TODO: 
             },
-            //enumerable: false,
-            //configurable: true,
         },
         facePositionY: {
             get: function () {
                 return 0; //TODO: 
             },
-            //enumerable: false,
-            //configurable: true,
         },
         flashlightOn: {
             get: function () {
@@ -126,10 +139,9 @@ PocketCode.Device = (function () {
             set: function (on) {
                 if (typeof on !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
-                //TODO:
+
+                //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
-            //enumerable: false,
-            //configurable: true,
         },
     });
 
@@ -149,17 +161,30 @@ PocketCode.Device = (function () {
 
     //methods
     Device.prototype.merge({
-        _initSensors: function () {
-            //TODO: check sensor support: have a look at prototyping folder to implement this
-            //http://www.html5rocks.com/en/tutorials/device/orientation/
-            //if (window.DeviceOrientationEvent) { }
+        _deviceorientationChangeHandler: function (e) {
+            //check for iOS property
+            if (e.webkitCompassHeading) {
+                this._compass = -e.webkitCompassHeading;    //direction is reversed for iOS
+            }
+            else
+                this._compass = e.alpha;
 
-            //if (window.DeviceMotionEvent) { }
-
-            //compass: http://ai.github.io/compass.js/
-
-            //set this.sensorEmulation to true if theres no native device support
-            //
+            this._alpha = e.alpha;
+            this._beta = e.beta;
+            this._gamma = e.gamma;
+        },
+        _devicemotionChangeHandler: function (e) {
+            if (e.acceleration) {   //choose linear acceleration by default (conform andriod app)
+                this._x = e.acceleration.x;
+                this._y = e.acceleration.y;
+                this._z = e.acceleration.z;
+            }
+            else if (e.accelerationIncludingGravity) {
+                this._x = e.accelerationIncludingGravity.x;
+                this._y = e.accelerationIncludingGravity.y;
+                this._z = e.accelerationIncludingGravity.z;
+            }
+            this._rotationRate = e.rotationRate;
         },
         setSensorInUse: function (sensor) {
             if (this._sensorSupport[sensor]) {
@@ -172,10 +197,11 @@ PocketCode.Device = (function () {
             else    //unknown sensor
                 throw new Error('device: unknown sensor: ' + sensor);
         },
-        vibrate: function (seconds) {
-            var time = seconds * 1000;
+        vibrate: function (duration) {
+            var time = duration * 1000;
+            return true;
             //TODO:
-        },
+        }
     });
 
     return Device;

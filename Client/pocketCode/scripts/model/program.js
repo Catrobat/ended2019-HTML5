@@ -74,7 +74,7 @@ PocketCode.Model.Program = (function () {
                     throw new Error('setter expects type Array');
 
                 for (var i = 0, l = variables.length; i < l; i++) {
-                    //varArray[i].value = 0;  //init //possibly todo - we will see
+                    //varArray[i].value = 0;  //init
                     this._variables[variables[i].id] = variables[i];
                     this._variableNames[variables[i].id] = { name: variables[i].name, scope: 'global' };
                 }
@@ -123,24 +123,25 @@ PocketCode.Model.Program = (function () {
 
     //methods
     Program.prototype.merge({
-        start: function () {
+        execute: function () {
             if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
             if (!this.background && this.sprites.length === 0)
                 throw new Error('no program loaded');
 
-            this.background.start();
+            this.background.execute();
 
             for (var i = 0, l = this.sprites.length; i < l; i++) {
-                this.sprites[i].start();
+                this.sprites[i].execute();
             }
 
             this._executionState = PocketCode.ExecutingState.RUNNING;
+            this.background.status=PocketCode.ExecutingState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
         restart: function () {
             this.stop();
-            this.start();
+            this.execute();
         },
         pause: function () {
             if (this._executionState !== PocketCode.ExecutingState.RUNNING || this._executionState === PocketCode.ExecutingState.PAUSED)//(!this._running || this._paused)
@@ -188,9 +189,11 @@ PocketCode.Model.Program = (function () {
 
         //Brick-Sprite Interacttion
         getSprite: function (spriteId) {
+            //todo undefined
             return this.sprites.filter(function (sprite) {return sprite.id === spriteId;})[0];
         },
         getSpriteLayer: function (spriteId) {
+            //todo undefined
             return this.sprites.indexOf(this.getSprite(spriteId)) + this.backgroundOffset;
         },
         checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
@@ -203,16 +206,22 @@ PocketCode.Model.Program = (function () {
             //^^ only properties that really change
             return false;
         },
-        setSpriteLayerBack: function (spriteId) {
+        setSpriteLayerBack: function (spriteId, layers) {
             //TODO handle undefined spriteId
             var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
-            var sprites = this.sprites;
-            if (currentPosition === 0)
+
+            if(layers <= 0 || currentPosition <= 0)
                 return false;
 
-            var nextSprite = sprites[currentPosition - 1];
-            sprites[currentPosition - 1] = sprites[currentPosition];
-            sprites[currentPosition] = nextSprite;
+            var sprites = this.sprites;
+            var currentSprite = this.sprites[currentPosition];
+            sprites.remove(currentSprite);
+
+            var newPosition = currentPosition - layers;
+            if(newPosition < 0)
+                newPosition = 0;
+            sprites.insert(currentSprite, newPosition);
+
 
             var ids = [];
             for (var i = 0, l = sprites.length; i < l; i++) {
@@ -224,15 +233,14 @@ PocketCode.Model.Program = (function () {
         setSpriteLayerToFront: function (spriteId) {
             //TODO handle undefined spriteId
             var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
+
             var sprites = this.sprites;
-            console.log(this.sprites);
 
             if(currentPosition === sprites.length - 1)
                 return false;
             var spriteToSetToFront = sprites[currentPosition];
             sprites.splice(currentPosition, 1);
             sprites.push(spriteToSetToFront);
-            console.log(this.sprites);
 
             var ids = [];
             for (var i = 0, l = sprites.length; i < l; i++) {

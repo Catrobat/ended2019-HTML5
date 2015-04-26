@@ -113,8 +113,6 @@ SmartJs.Core.Component = (function () {
     return Component;
 })();
 
-
-
 SmartJs.Core.EventTarget = (function () {
     EventTarget.extends(SmartJs.Core.Component, false);
 
@@ -141,33 +139,4 @@ SmartJs.Core.EventTarget = (function () {
 
     return EventTarget;
 })();
-
-
-
-
-//application
-//        SmartJs.Core.Application = (function () {
-//            Application.extends(SmartJs.Core.Component);
-//            function Application() {
-//                //this.test = 'test';
-//                //document.addEventListener("DOMContentLoaded", function () {
-//                //    document.removeEventListener("DOMContentLoaded", arguments.callee, false);
-//                //    this._start();
-//                //}, false);
-//                this._start();
-//            }
-//TODO: use merge() here
-//            Application.prototype._start = function () {
-//                alert('test');   //TODO: remove this: test only
-
-//                //TODO: add individual app functionality
-//            };
-//            return Application;
-//        })();
-
-//    }
-//    catch (ex) {
-//        console.log('error initialising namespace SmartJs.Core: ' + ex.message);
-//    }
-//}
 

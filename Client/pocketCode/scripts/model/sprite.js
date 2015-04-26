@@ -48,7 +48,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._program = program;
         this._onChange = program.onSpriteChange;    //mapping event (defined in program)
-        this.running = false;
+        this._executionState = PocketCode.ExecutingState.STOPPED;
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -57,7 +57,6 @@ PocketCode.Model.Sprite = (function () {
         this._variableNames = {};
 
         this._bricks = [];
-        //TODO: if not each brick instance of RootContainerBrick throw error
         //attach to bricks onExecuted event, get sure all are executed an not running
 
         //property initialization
@@ -72,7 +71,6 @@ PocketCode.Model.Sprite = (function () {
         this._visible = true;
         this._transparency = 0.0;
         this._brightness = 100.0;
-        //this._layer = -1;   //for background only? No!
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -109,7 +107,7 @@ PocketCode.Model.Sprite = (function () {
         layer: {
             set: function (layer) {
                 //TODO: in program : for testing issues
-                this._layer = layer;
+               // this._layer = layer;
             },
             get: function () {
                 return this._program.getSpriteLayer(this.id);
@@ -122,6 +120,17 @@ PocketCode.Model.Sprite = (function () {
         //        ;
         //    },
         //},
+
+        //bricks
+
+        bricks: {
+            set: function (bricks) {
+                this._bricks = bricks;
+            },
+            get: function () {
+                return this._bricks;
+            },
+        },
 
         //looks
         looks: {
@@ -194,12 +203,13 @@ PocketCode.Model.Sprite = (function () {
         /**
          *
          */
-        start: function() {
+        execute: function() {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].start)
-                    this._bricks[i].start();
+                if (this._bricks[i].execute) {
+                    this._bricks[i].execute();
+                }
             }
-            this.running = true;
+            this._executionState =  PocketCode.ExecutingState.RUNNING;;
         },
         /**
          *
@@ -221,7 +231,7 @@ PocketCode.Model.Sprite = (function () {
                 if (this._bricks[i].stop)
                     this._bricks[i].stop();
             }
-            this.running = false;
+            this._executionState = PocketCode.ExecutingState.STOPPED;
         },
         /**
          *
@@ -352,10 +362,12 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         pointTo: function (spriteId) {
-            return false;
-            //TODO: point to undefined until implementation
-
+            if (!spriteId)
+                return false;
             var pointTo = this._program.getSprite(spriteId);
+            if(pointTo== undefined)
+                return false;
+
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
 
@@ -368,7 +380,7 @@ PocketCode.Model.Sprite = (function () {
         },
         //motion: layer
         goBack: function (layers) {
-            return this._program.setSpriteLayerBack(this.id, layers);
+            return this._program.setSpriteLayerBack(this.id,layers);
             //onChange event is triggered by program in this case
         },
         comeToFront: function () {
@@ -378,12 +390,13 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         setLook: function (lookId) {
-           // return false;
-            //TODO: current look undefined due to missing implementation
+            if (this._currentLook == undefined) {
+               // throw new Error('current look is invalid');
+                return false;
+             }
 
             if (this._currentLook.id === lookId)
                 return false;
-
             var looks = this._looks;
             var look;
             for (var i = 0, l = looks.length; i < l; i++) {
@@ -394,23 +407,23 @@ PocketCode.Model.Sprite = (function () {
                     return true;
                 }
             }
-
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         nextLook: function () {
-            //return false;
-            //TODO: current look undefined due to missing implementation
-
+            if (this._currentLook == undefined) {
+             //   throw new Error('current look is invalid');
+                return false;
+            }
             var looks = this._looks;
             var count = looks.length;
             if (count < 2)
                 return false;
-
             var look;
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
-                    if ((i + 1) < count) {
-                        this._currentLook = looks[i];
+                    if ((i + 1) < count) { //1+1=2 < 2    2<2
+                        var j=i+1;
+                        this._currentLook = looks[j];
                     }
                     else {
                         this._currentLook = looks[0];
@@ -418,7 +431,6 @@ PocketCode.Model.Sprite = (function () {
                     break;
                 }
             }
-
             this._triggerOnChange([{ look: this._currentLook }]);
             return true;
         },
@@ -509,8 +521,8 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('unknown graphic effect: ' + effect);
             }
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _setTransparency: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _setTransparency: function (percentage) {
             if (percentage === undefined)
                 return false;
 
@@ -526,8 +538,8 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _changeTransparency: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _changeTransparency: function (value) {
             if (value === undefined)
                 return false;
 
@@ -544,8 +556,8 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ transparency: value }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _setBrightness: function (percentage) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _setBrightness: function (percentage) {
             if (percentage === undefined)
                 return false;
 
@@ -557,13 +569,12 @@ PocketCode.Model.Sprite = (function () {
             if (this._brightness === percentage)
                 return false;
 
-
             this._brightness = percentage;
             this._triggerOnChange([{ brightness: percentage }]);
             return true;
         },
-        /*obsolete: use set/change graphic effect instead --> set to private and called from set/change graphic effect*/
-        _changeBrightness: function (value) {  //TODO: checkout default behaviour on <0 & >100
+        /* set to private and called from set/change graphic effect*/
+        _changeBrightness: function (value) {
             if (value === undefined)
                 return false;
 
