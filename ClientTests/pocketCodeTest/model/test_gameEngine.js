@@ -1,13 +1,13 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
-QUnit.module("program.js");
+QUnit.module("gameEngine.js");
 
 
-QUnit.test("Program", function (assert) {
+QUnit.test("GameEngine", function (assert) {
 
-    var program = new PocketCode.Model.Program();
-    assert.ok(program instanceof PocketCode.Model.Program, "instance check");
+    var program = new PocketCode.Model.GameEngine();
+    assert.ok(program instanceof PocketCode.Model.GameEngine, "instance check");
 
     assert.throws(function(){program.images = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.images.");
     assert.throws(function(){program.sounds = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.sounds.");
@@ -47,7 +47,7 @@ QUnit.test("Program", function (assert) {
     assert.equal(program._executionState, PocketCode.ExecutingState.STOPPED, "Created program not started");
     assert.throws(function(){program.start()}, Error, "ERROR: Tried to start program without any sprites.");
 
-    //Mock Program and SoundManagers start, pause, stop methods
+    //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
         TestSprite.extends(PocketCode.Model.Sprite, false);
 
@@ -59,7 +59,7 @@ QUnit.test("Program", function (assert) {
         TestSprite.prototype.merge({
             timesStopped: 0,
             timesStarted: 0,
-            execute: function (id) {
+            execute: function () {
                 this.status = PocketCode.ExecutingState.RUNNING;
                 this.timesStarted++;
             },
@@ -167,8 +167,8 @@ QUnit.test("Program", function (assert) {
     var bgStopped = program.background.timesStopped;
 
     program.restart();
-    assert.ok(program.sprites[0].timesStopped === spritesStopped + 1 && program.background.timesStopped === bgStopped + 1, "Stopped all sprites when restarting.")
-    assert.ok(program.sprites[0].timesStarted === spritesStarted + 1 && program.background.timesStarted === bgStarted + 1, "Started all sprites when restarting.")
+    assert.ok(program.sprites[0].timesStopped === spritesStopped + 1 && program.background.timesStopped === bgStopped + 1, "Stopped all sprites when restarting.");
+    assert.ok(program.sprites[0].timesStarted === spritesStarted + 1 && program.background.timesStarted === bgStarted + 1, "Started all sprites when restarting.");
     assert.ok(program._soundManager.status === PocketCode.ExecutingState.STOPPED, "Called SoundManagers stopAllSounds when restarting program.");
 
     var sprite1 = new PocketCode.Model.Sprite(program);
@@ -185,7 +185,7 @@ QUnit.test("Program", function (assert) {
 
     var numberOfSprites = program.sprites.length;
     var currentSpriteLayer = program.getSpriteLayer("spriteId1");
-    assert.deepEqual(program.getSpriteLayer("spriteId1"), numberOfSprites + program.backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.")
+    assert.deepEqual(program.getSpriteLayer("spriteId1"), numberOfSprites + program.backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.");
     program.setSpriteLayerBack("spriteId1",2);
     assert.deepEqual(program.getSpriteLayer("spriteId1"), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack.");
 
@@ -201,6 +201,69 @@ QUnit.test("Program", function (assert) {
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once.");
     assert.deepEqual(program.getSpriteLayer("spriteId1"), program.sprites.length - 1 + program.backgroundOffset,"Brought Layer to front.");
 
+    //todo migrate tests to parser
+    var testProject = strProject11;
+    program.loadProject(testProject);
+
+    assert.equal(program.background.id, testProject.background.id,"Correct Background set.");
+
+    assert.equal(program.sprites.length, testProject.sprites.length, "No excess sprites left.");
+    var spritesMatch = true;
+    var bricksMatch = true;
+    var looksMatch = true;
+    var varsMatch = true;
+    var l;
+    for(i = 0, l = program.sprites.length; i < l; i++){
+        if(program.sprites[i].id !== testProject.sprites[i].id ||
+           program.sprites[i].name !== testProject.sprites[i].name)
+            spritesMatch = false;
+
+        for(var j = 0, length = testProject.sprites[i].variables.length; j < length; j++){
+            console.log(program.sprites[i]._variables[testProject.sprites[i].variables[j].id]);
+            if(program.sprites[i]._variables[testProject.sprites[i].variables[j].id])
+                varsMatch = false;
+        }
+
+        for(j = 0, length = testProject.sprites[i].bricks.length; j < length; j++){
+            if(program.sprites[i].bricks[j].id !== testProject.sprites[i].bricks[j].id)
+                bricksMatch = false;
+        }
+
+        for(j = 0, length = testProject.sprites[i].looks.length; j < length; j++){
+            if(program.sprites[i]._looks[j].id !== testProject.sprites[i].looks[j].id)
+                looksMatch = false;
+        }
+    }
+
+    assert.ok(spritesMatch, "Sprites created correctly.");
+    assert.ok(looksMatch, "Sprites looks set correctly.");
+    //todo vars currently untested
+    assert.ok(varsMatch, "Sprite variables set correctly.");
+    assert.ok(bricksMatch, "Sprite bricks set correctly.");
+
+    varsMatch = true;
+    for(i = 0, l = testProject.variables.length; i < l; i++){
+        if(!program._variables[testProject.variables[i].id]){
+            varsMatch = false;
+        }
+    }
+    assert.ok(varsMatch, "Varibales set correctly.");
+
+    var soundsMatch = true;
+    for(i = 0, l = testProject.sounds.length; i < l; i++){
+        if(!program._sounds[testProject.sounds[i].id]){
+            soundsMatch = false;
+        }
+    }
+    assert.ok(soundsMatch, "Sounds set correctly.");
+
+    var imagesMatch = true;
+    for(i = 0, l = testProject.images.length; i < l; i++){
+        if(!program._images[testProject.images[i].id]){
+            imagesMatch = false;
+        }
+    }
+    assert.ok(imagesMatch, "Images set correctly.");
 });
 
 

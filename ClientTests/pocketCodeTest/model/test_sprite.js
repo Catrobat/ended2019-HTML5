@@ -9,7 +9,7 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var prog= new PocketCode.Model.Program();
+    var prog= new PocketCode.Model.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog,null);
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
@@ -302,7 +302,7 @@ QUnit.test("Sprite", function (assert) {
 
 
     // ********************* come to front/go back *********************
-    var tmpprog= new PocketCode.Model.Program();
+    var tmpprog= new PocketCode.Model.GameEngine();
 
     var newSprite = new PocketCode.Model.Sprite(tmpprog);
     newSprite.id="test2";
@@ -321,11 +321,11 @@ QUnit.test("Sprite", function (assert) {
     tmpprog.sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite.layer==tmpprog.sprites.length,"go back 2 layers");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length,"go back 2 layers");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite2.layer==tmpprog.sprites.length,"go back 2 layers");
 
     var layerBefore=newSprite.layer;
     newSprite.goBack(2);
