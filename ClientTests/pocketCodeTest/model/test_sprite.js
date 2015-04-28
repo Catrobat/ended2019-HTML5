@@ -321,11 +321,11 @@ QUnit.test("Sprite", function (assert) {
     tmpprog.sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite.layer==tmpprog.sprites.length,"go back 2 layers");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length,"go back 2 layers");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite2.layer==tmpprog.sprites.length,"go back 2 layers");
 
     var layerBefore=newSprite.layer;
     newSprite.goBack(2);

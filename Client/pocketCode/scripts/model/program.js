@@ -9,8 +9,8 @@ PocketCode.Model.Program = (function () {
 
     function Program(id) {
         this._executionState = PocketCode.ExecutingState.STOPPED;
-        this._paused = false;
         this.minLoopCycleTime = 25; //ms
+        this.programLoaded = false;
 
         this._id = id;
         this.title = "";
@@ -20,12 +20,15 @@ PocketCode.Model.Program = (function () {
         this.width = 0;
 
         //to have the same layer value as in catroid
-        this.backgroundOffset = 2;
+        this.backgroundOffset = 1;
 
         this.background = undefined;
         this.sprites = [];
 
         this.resourceBaseUrl = "";
+        //todo use this
+        this._layerObjectList = [];
+
         this._images = {};
         this._sounds = {};
         this._soundManager = new PocketCode.SoundManager(this._id);
@@ -44,6 +47,14 @@ PocketCode.Model.Program = (function () {
 
     //properties
     Object.defineProperties(Program.prototype, {
+        layerObjectList: {
+            get: function(){
+                //todo
+                this.layerObjectList = this.sprites.slice();
+                this.layerObjectList.unshift(this.background);
+                return this.layerObjectList;
+            }
+        },
         images: {
             set: function (images) {
                 if (!(images instanceof Array))
@@ -123,6 +134,72 @@ PocketCode.Model.Program = (function () {
 
     //methods
     Program.prototype.merge({
+        loadProject: function(jsonProject){
+            //todo loading progress
+
+            //cleanup
+            this._images = {};
+            this._sounds = {};
+            this.background = undefined;
+            this.sprites = [];
+            this._executionState = PocketCode.ExecutingState.STOPPED;
+            this._soundManager = new PocketCode.SoundManager();
+            this._variables = {};
+            this._variableNames = {};
+            this._broadcasts = [];
+
+            //set variables
+            this._id = jsonProject.id;
+            this.title = jsonProject.header.title;
+            this.description = jsonProject.header.description;
+            this.author = jsonProject.header.author;
+
+            this.images = jsonProject.images;
+            this.sounds = jsonProject.sounds;
+
+            this.broadcasts = jsonProject.broadcasts;
+            this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
+            this.variables = jsonProject.variables;
+
+            //todo migrate to parser
+            var device = new PocketCode.Device(this._soundManager);
+            var bricksCount = jsonProject.header.bricksCount;
+            var brickFactory = new PocketCode.BrickFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
+
+            var background = new PocketCode.Model.Sprite(this);
+            background.id = jsonProject.background.id;
+            background.name = jsonProject.background.name;
+
+            if(jsonProject.background.looks.length > 0)
+                background.looks = jsonProject.background.looks;
+
+            for (var i = 0, l = jsonProject.background.bricks.length; i < l; i++){
+                background._bricks.push(brickFactory.create(background, jsonProject.background.bricks[i]));
+            }
+            this.background = background;
+
+            for (i = 0, l = jsonProject.sprites.length; i < l; i++){
+                //todo sprites sounds
+                var jsonSprite = jsonProject.sprites[i];
+                var sprite = new PocketCode.Model.Sprite(this);
+                sprite.id = jsonSprite.id;
+                sprite.name = jsonSprite.name;
+
+                if(jsonSprite.looks.length > 0)
+                    sprite.looks = jsonSprite.looks;
+
+                for (var j = 0, k = jsonProject.sprites[i].bricks.length; j < k; j++){
+                    sprite._bricks.push(brickFactory.create(sprite, jsonProject.sprites[i].bricks[j]));
+                }
+
+                this.sprites.push(sprite);
+            }
+
+            for (i = 0, l = this.sprites.length; i < l; i++) {
+                this.sprites[i].onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecudedHandler, this));
+            }
+        },
+
         execute: function () {
             if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
@@ -136,6 +213,7 @@ PocketCode.Model.Program = (function () {
             }
 
             this._executionState = PocketCode.ExecutingState.RUNNING;
+            //todo
             this.background.status=PocketCode.ExecutingState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
@@ -180,13 +258,11 @@ PocketCode.Model.Program = (function () {
             //this._running = false;
             //this._paused = false;
         },
-
         _spriteOnExecudedHandler: function (e) {
-            //TODO: add handler to sprites on init
+            //TODO:
             //check all sprites if running
             //dispatch program.onExecuted event
         },
-
         //Brick-Sprite Interacttion
         getSprite: function (spriteId) {
             //todo undefined

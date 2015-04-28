@@ -285,6 +285,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
     var program = new PocketCode.Model.Program();
     var sprite = new PocketCode.Model.Sprite(program);
+    program.sprites.push(sprite);
     //init sprite: test data
     sprite._positionX = 3;
     sprite._positionY = 4;
