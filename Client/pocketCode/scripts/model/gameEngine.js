@@ -5,9 +5,9 @@
 /// <reference path="../components/soundManager.js" />
 'use strict';
 
-PocketCode.Model.Program = (function () {
+PocketCode.Model.GameEngine = (function () {
 
-    function Program(id) {
+    function GameEngine(id) {
         this._executionState = PocketCode.ExecutingState.STOPPED;
         this.minLoopCycleTime = 25; //ms
         this.programLoaded = false;
@@ -46,7 +46,7 @@ PocketCode.Model.Program = (function () {
     }
 
     //properties
-    Object.defineProperties(Program.prototype, {
+    Object.defineProperties(GameEngine.prototype, {
         layerObjectList: {
             get: function(){
                 //todo
@@ -109,7 +109,7 @@ PocketCode.Model.Program = (function () {
     });
 
     //events
-    Object.defineProperties(Program.prototype, {
+    Object.defineProperties(GameEngine.prototype, {
         onProgramStart: {
             get: function () { return this._onProgramStart; },
             //enumerable: false,
@@ -133,7 +133,7 @@ PocketCode.Model.Program = (function () {
     });
 
     //methods
-    Program.prototype.merge({
+    GameEngine.prototype.merge({
         loadProject: function(jsonProject){
             //todo loading progress
 
@@ -344,5 +344,5 @@ PocketCode.Model.Program = (function () {
         //},
     });
 
-    return Program;
+    return GameEngine;
 })();

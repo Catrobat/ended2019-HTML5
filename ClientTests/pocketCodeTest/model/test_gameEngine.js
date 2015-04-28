@@ -1,13 +1,13 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
-QUnit.module("program.js");
+QUnit.module("gameEngine.js");
 
 
-QUnit.test("Program", function (assert) {
+QUnit.test("GameEngine", function (assert) {
 
-    var program = new PocketCode.Model.Program();
-    assert.ok(program instanceof PocketCode.Model.Program, "instance check");
+    var program = new PocketCode.Model.GameEngine();
+    assert.ok(program instanceof PocketCode.Model.GameEngine, "instance check");
 
     assert.throws(function(){program.images = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.images.");
     assert.throws(function(){program.sounds = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.sounds.");
@@ -47,7 +47,7 @@ QUnit.test("Program", function (assert) {
     assert.equal(program._executionState, PocketCode.ExecutingState.STOPPED, "Created program not started");
     assert.throws(function(){program.start()}, Error, "ERROR: Tried to start program without any sprites.");
 
-    //Mock Program and SoundManagers start, pause, stop methods
+    //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
         TestSprite.extends(PocketCode.Model.Sprite, false);
 
