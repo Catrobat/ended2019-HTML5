@@ -10,7 +10,7 @@ QUnit.module("bricksVariable.js");
 
 QUnit.test("SetVariableBrick", function (assert) {
 
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     program.background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, {});
 
@@ -54,7 +54,7 @@ QUnit.test("SetVariableBrick", function (assert) {
 
 QUnit.test("ChangeVariableBrick", function (assert) {
 
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     program.background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, {});
 

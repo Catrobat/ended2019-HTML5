@@ -5,7 +5,7 @@
 /// <reference path="../components/soundManager.js" />
 'use strict';
 
-PocketCode.Model.GameEngine = (function () {
+PocketCode.GameEngine = (function () {
 
     function GameEngine(id) {
         this._executionState = PocketCode.ExecutingState.STOPPED;

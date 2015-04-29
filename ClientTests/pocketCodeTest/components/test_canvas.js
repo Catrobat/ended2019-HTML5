@@ -100,7 +100,7 @@ QUnit.test("Canvas", function (assert) {
 
 
 function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
-	var sprite = new PocketCode.Model.Sprite(new PocketCode.Model.GameEngine());
+	var sprite = new PocketCode.Model.Sprite(new PocketCode.GameEngine());
 	
 	sprite.id = id;
 	sprite.name = name;

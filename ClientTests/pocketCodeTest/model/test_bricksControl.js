@@ -15,7 +15,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     //assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     program.background = new PocketCode.Model.Sprite(program);  //to avoid error on start
 
     var b = new PocketCode.Bricks.ProgramStartBrick("device", program, "sprite");
@@ -82,7 +82,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, {});
     var b = new PocketCode.Bricks.WhenActionBrick("device", program, sprite, { action: "action" });
 
@@ -149,7 +149,7 @@ QUnit.test("WaitBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
@@ -553,7 +553,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
@@ -592,7 +592,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     handler1LoopDelay = false;
     handler1CallId = undefined;
     cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
 
     b._condition = new PocketCode.Formula("device", sprite, cond);
@@ -681,7 +681,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var done2 = assert.async();
 
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
-    var program = new PocketCode.Model.GameEngine();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var b = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
 
