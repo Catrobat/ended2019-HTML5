@@ -1,0 +1,47 @@
+/*        html, body {
+            height: 100%;
+            width: 100%;
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+        .hiddenOverflow {
+            overflow: hidden;
+        }
+*/
+        .pc-startButton, .pc-startButton:active {
+            background-color: transparent;
+            border: medium none;
+            color: #FFF;
+            cursor: pointer;
+            fill: #FFF;
+            height: 100%;
+            margin: 0;
+            outline: medium none;
+            padding: 0;
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            left: 0px;
+        }
+        .pc-startButton svg {
+            height: 50%;
+            left: 25%;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 25%;
+            width: 50%;
+        }
+        .pc-startButton:hover .pc-svgPlayerIconBorder , .pc-startButton:active .pc-svgPlayerIconSymbol {
+            fill: #ffffff;
+        }
+        .pc-startButton:active .pc-svgPlayerIconBorder, .pc-startButton:active .pc-svgPlayerIconSymbol {
+            fill: #17a5be;
+        }
+        .pc-startButton:active {
+            color: #17a5be;
+            margin: 0;
+            padding: 0;
+        }
+				
