@@ -9,7 +9,7 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var prog= new PocketCode.Model.Program();
+    var prog= new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog,null);
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
@@ -300,11 +300,9 @@ QUnit.test("Sprite", function (assert) {
     sprite._triggerOnChange([{direction: degree}]);
     console.log("trigger event: "+sprite._onChange);
 
-    assert.ok(sprite._onChange != undefined,"stop() call running false");
-
 
     // ********************* come to front/go back *********************
-    var tmpprog= new PocketCode.Model.Program();
+    var tmpprog= new PocketCode.GameEngine();
 
     var newSprite = new PocketCode.Model.Sprite(tmpprog);
     newSprite.id="test2";
@@ -323,24 +321,24 @@ QUnit.test("Sprite", function (assert) {
     tmpprog.sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"come to Front 1");
+    assert.ok(newSprite.layer==tmpprog.sprites.length,"go back 2 layers");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"come to Front 2");
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length,"go back 2 layers");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"come to Front 3");
+    assert.ok(newSprite2.layer==tmpprog.sprites.length,"go back 2 layers");
 
     var layerBefore=newSprite.layer;
-    newSprite.goBack();
-    assert.ok(newSprite.layer==firstLayer,"go back layer 1");
+    newSprite.goBack(2);
+    assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
     layerBefore=newSprite2.layer;
-    newSprite2.goBack();
-    assert.ok(newSprite2.layer==layerBefore-1,"go back layer 2");
+    newSprite2.goBack(2);
+    assert.ok(newSprite2.layer==layerBefore-2,"go back 2 layers");
     layerBefore=tmpsprite.layer;
-    tmpsprite.goBack();
-    assert.ok(tmpsprite.layer==layerBefore-1,"go back layer 3");
+    tmpsprite.goBack(2);
+    assert.ok(tmpsprite.layer==layerBefore-2,"go back 2 layers");
     layerBefore=tmpsprite.layer;
-    tmpsprite.goBack();
-    assert.ok(tmpsprite.layer==firstLayer,"go back layer 4");
+    tmpsprite.goBack(2);
+    assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
     // *************************************************************
 
     // ********************* point to *********************

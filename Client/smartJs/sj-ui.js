@@ -141,7 +141,7 @@ SmartJs.Ui.Window = new((function () {  //static class
             else
                 this._visible = true;	//default
 
-            this._onVisibilityChange.dispatchEvent(e, { visible: this._visible });
+            this._onVisibilityChange.dispatchEvent(e.merge({ visible: this._visible }));
         },
         //dispose: function () {
         //	this._removeDomListener(window, this._resizeEventName, this._resizeHandlerReference);

@@ -9,13 +9,13 @@ if (!window.requestAnimationFrame) {
         return window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || 
                 function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
     }();
-    Object.defineProperty(Window.prototype, 'requestAnimationFrame', { enumerable: false });
+    Object.defineProperty(window, 'requestAnimationFrame', { enumerable: false });
 
     window.cancelAnimationFrame = function () {
         return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
                 function (id) { window.clearTimeout(id) };
     }();
-    Object.defineProperty(Window.prototype, 'cancelAnimationFrame', { enumerable: false });
+    Object.defineProperty(window, 'cancelAnimationFrame', { enumerable: false });
 }
 
 
