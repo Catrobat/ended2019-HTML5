@@ -40,14 +40,14 @@ PocketCode.GraphicEffect = {
 PocketCode.Model.Sprite = (function () {
     /**
      * initializing bllablabl
-     * @param program
+     * @param gameEngine
      * @param propObject
      * @constructor
      */
-    function Sprite(program, propObject) {
+    function Sprite(gameEngine, propObject) {
 
-        this._program = program;
-        this._onChange = program.onSpriteChange;    //mapping event (defined in program)
+        this._gameEngine = gameEngine;
+        this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         this._executionState = PocketCode.ExecutingState.STOPPED;
         this.id = undefined;
         this.name = "";
@@ -110,10 +110,13 @@ PocketCode.Model.Sprite = (function () {
                // this._layer = layer;
             },
             get: function () {
-                return this._program.getSpriteLayer(this.id);
+                return this._gameEngine.getSpriteLayer(this.id);
             },
         },
 
+        onChange: {
+            get: function () { return this._gameEngine.onSpriteChange; },
+        },
         //sound
         //sounds: {
         //    set: function (sounds) {
@@ -307,7 +310,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         ifOnEdgeBounce: function () {
-            return this._program.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
+            return this._gameEngine.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
             //onChange event is triggered by program in this case
         },
         /**
@@ -364,7 +367,7 @@ PocketCode.Model.Sprite = (function () {
         pointTo: function (spriteId) {
             if (!spriteId)
                 return false;
-            var pointTo = this._program.getSprite(spriteId);
+            var pointTo = this._gameEngine.getSprite(spriteId);
             if(pointTo== undefined)
                 return false;
 
@@ -380,11 +383,11 @@ PocketCode.Model.Sprite = (function () {
         },
         //motion: layer
         goBack: function (layers) {
-            return this._program.setSpriteLayerBack(this.id,layers);
+            return this._gameEngine.setSpriteLayerBack(this.id,layers);
             //onChange event is triggered by program in this case
         },
         comeToFront: function () {
-            return this._program.setSpriteLayerToFront(this.id);
+            return this._gameEngine.setSpriteLayerToFront(this.id);
             //onChange event is triggered by program in this case
         },
 
@@ -613,7 +616,7 @@ PocketCode.Model.Sprite = (function () {
             if (this._variables[varId])
                 return this._variables[varId];
             else //global lookup
-                return this._program.getGlobalVariable(varId);
+                return this._gameEngine.getGlobalVariable(varId);
         },
         getVariableNames: function () {
             //clone
@@ -625,14 +628,14 @@ PocketCode.Model.Sprite = (function () {
                 }
 
             //include global variables
-            variableNames.merge(this._program.getGlobalVariableNames());
+            variableNames.merge(this._gameEngine.getGlobalVariableNames());
             return variableNames;
         },
         //setVariable: function (varId, value) {
         //    if (this._variables[varId])
         //        this._variables[varId].value = value;
         //    else //gloable lookup
-        //        return this._program.setGlobalVariable(varId, value);
+        //        return this._gameEngine.setGlobalVariable(varId, value);
         //},
     });
 
