@@ -300,6 +300,8 @@ QUnit.test("Sprite", function (assert) {
     sprite._triggerOnChange([{direction: degree}]);
     console.log("trigger event: "+sprite._onChange);
 
+    assert.ok(sprite._onChange != undefined,"stop() call running false");
+
 
     // ********************* come to front/go back *********************
     var tmpprog= new PocketCode.Model.Program();
@@ -321,24 +323,24 @@ QUnit.test("Sprite", function (assert) {
     tmpprog.sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"come to Front 1");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"come to Front 2");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"come to Front 3");
 
     var layerBefore=newSprite.layer;
     newSprite.goBack();
-    assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
+    assert.ok(newSprite.layer==firstLayer,"go back layer 1");
     layerBefore=newSprite2.layer;
     newSprite2.goBack();
-    assert.ok(newSprite2.layer==layerBefore-1,"go back 2 layers");
+    assert.ok(newSprite2.layer==layerBefore-1,"go back layer 2");
     layerBefore=tmpsprite.layer;
     tmpsprite.goBack();
-    assert.ok(tmpsprite.layer==layerBefore-1,"go back 2 layers");
+    assert.ok(tmpsprite.layer==layerBefore-1,"go back layer 3");
     layerBefore=tmpsprite.layer;
     tmpsprite.goBack();
-    assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
+    assert.ok(tmpsprite.layer==firstLayer,"go back layer 4");
     // *************************************************************
 
     // ********************* point to *********************
