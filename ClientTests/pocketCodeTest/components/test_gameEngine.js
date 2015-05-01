@@ -44,8 +44,12 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(program._broadcastMgr.initCalled, "Called BroadcastManagers init function");
     assert.equal(program._broadcasts, broadcasts, "broadcasts set correctly");
 
+    program.programReady = true;
     assert.equal(program._executionState, PocketCode.ExecutingState.STOPPED, "Created program not started");
-    assert.throws(function(){program.start()}, Error, "ERROR: Tried to start program without any sprites.");
+    assert.throws(function(){program.execute()}, Error, "ERROR: Tried to start program without any sprites.");
+    program.programReady = false;
+    assert.throws(function(){program.execute()}, Error, "ERROR: Program not ready.");
+    program.programReady = true;
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
@@ -202,12 +206,12 @@ QUnit.test("GameEngine", function (assert) {
     assert.deepEqual(program.getSpriteLayer("spriteId1"), program.sprites.length - 1 + program.backgroundOffset,"Brought Layer to front.");
 
     //todo migrate tests to parser
-    var testProject = strProject11;
+    var testProject = projectSounds;
     program.loadProject(testProject);
 
     assert.equal(program.background.id, testProject.background.id,"Correct Background set.");
-
     assert.equal(program.sprites.length, testProject.sprites.length, "No excess sprites left.");
+
     var spritesMatch = true;
     var bricksMatch = true;
     var looksMatch = true;
@@ -215,12 +219,12 @@ QUnit.test("GameEngine", function (assert) {
     var l;
     for(i = 0, l = program.sprites.length; i < l; i++){
         if(program.sprites[i].id !== testProject.sprites[i].id ||
-           program.sprites[i].name !== testProject.sprites[i].name)
+            program.sprites[i].name !== testProject.sprites[i].name)
             spritesMatch = false;
 
         for(var j = 0, length = testProject.sprites[i].variables.length; j < length; j++){
             console.log(program.sprites[i]._variables[testProject.sprites[i].variables[j].id]);
-            if(program.sprites[i]._variables[testProject.sprites[i].variables[j].id])
+            if(!program.sprites[i]._variables[testProject.sprites[i].variables[j].id])
                 varsMatch = false;
         }
 
@@ -237,7 +241,7 @@ QUnit.test("GameEngine", function (assert) {
 
     assert.ok(spritesMatch, "Sprites created correctly.");
     assert.ok(looksMatch, "Sprites looks set correctly.");
-    //todo vars currently untested
+    //todo currently no sprite variables in the project
     assert.ok(varsMatch, "Sprite variables set correctly.");
     assert.ok(bricksMatch, "Sprite bricks set correctly.");
 
@@ -265,5 +269,3 @@ QUnit.test("GameEngine", function (assert) {
     }
     assert.ok(imagesMatch, "Images set correctly.");
 });
-
-

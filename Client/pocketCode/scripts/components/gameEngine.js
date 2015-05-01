@@ -10,7 +10,9 @@ PocketCode.GameEngine = (function () {
     function GameEngine(id) {
         this._executionState = PocketCode.ExecutingState.STOPPED;
         this.minLoopCycleTime = 25; //ms
-        this.programLoaded = false;
+        this.soundsLoaded = false;
+        this.bricksLoaded = false;
+        this.programReady = false;
 
         this._id = id;
         this.title = "";
@@ -26,7 +28,6 @@ PocketCode.GameEngine = (function () {
         this.sprites = [];
 
         this.resourceBaseUrl = "";
-        //todo use this
         this._layerObjectList = [];
 
         this._images = {};
@@ -50,9 +51,9 @@ PocketCode.GameEngine = (function () {
         layerObjectList: {
             get: function(){
                 //todo
-                this.layerObjectList = this.sprites.slice();
-                this.layerObjectList.unshift(this.background);
-                return this.layerObjectList;
+                this._layerObjectList = this.sprites.slice();
+                this._layerObjectList.unshift(this.background);
+                return this._layerObjectList;
             }
         },
         images: {
@@ -135,7 +136,11 @@ PocketCode.GameEngine = (function () {
     //methods
     GameEngine.prototype.merge({
         loadProject: function(jsonProject){
-            //todo loading progress
+            this.programReady = false;
+            this._id = jsonProject.id;
+            this.title = jsonProject.header.title;
+            this.description = jsonProject.header.description;
+            this.author = jsonProject.header.author;
 
             //cleanup
             this._images = {};
@@ -143,16 +148,23 @@ PocketCode.GameEngine = (function () {
             this.background = undefined;
             this.sprites = [];
             this._executionState = PocketCode.ExecutingState.STOPPED;
-            this._soundManager = new PocketCode.SoundManager();
             this._variables = {};
             this._variableNames = {};
             this._broadcasts = [];
-
-            //set variables
-            this._id = jsonProject.id;
-            this.title = jsonProject.header.title;
-            this.description = jsonProject.header.description;
-            this.author = jsonProject.header.author;
+            this._soundManager = new PocketCode.SoundManager(this._id);
+            if(!this._soundManager.supported){
+                //todo handle unsupported mp3 playback
+                this.soundsLoaded = true;
+            }
+            var gameEngine = this;
+            this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function(e){
+                if(e.progress === 100){
+                    gameEngine.soundsLoaded = true;
+                    if(gameEngine.bricksLoaded){
+                        gameEngine.programReady = true;
+                    }
+                }
+            }));
 
             this.images = jsonProject.images;
             this.sounds = jsonProject.sounds;
@@ -165,6 +177,14 @@ PocketCode.GameEngine = (function () {
             var device = new PocketCode.Device(this._soundManager);
             var bricksCount = jsonProject.header.bricksCount;
             var brickFactory = new PocketCode.BrickFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
+            brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                if(e.progress === 100){
+                    gameEngine.bricksLoaded = true;
+                    if(gameEngine.soundsLoaded){
+                        gameEngine.programReady = true;
+                    }
+                }
+            }));
 
             var background = new PocketCode.Model.Sprite(this);
             background.id = jsonProject.background.id;
@@ -203,7 +223,7 @@ PocketCode.GameEngine = (function () {
         execute: function () {
             if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
-            if (!this.background && this.sprites.length === 0)
+            if (!this.background && this.sprites.length === 0 || !this.programReady)
                 throw new Error('no program loaded');
 
             this.background.execute();

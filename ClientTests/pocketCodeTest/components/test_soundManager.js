@@ -19,7 +19,6 @@ QUnit.test("SoundManager", function (assert) {
         soundManager.volume = 20;
         assert.equal(soundManager.volume, 20, "volume setter");
 
-        //TODO: make sure our app does not throw any errors: you can test this issue in Safari 5.1.7 on Windows (without QuickTime installed)
         doneWithInitTests();
     }
 
@@ -67,7 +66,6 @@ QUnit.test("SoundManager", function (assert) {
             assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds.");
             doneWithPlaybackComplete();
         };
-
 
         var onFileLoaded = function(e){
             var progressIncrease = e.progress - progress;
@@ -128,7 +126,6 @@ QUnit.test("SoundManager", function (assert) {
             soundInstance2.paused = false;
         };
 
-
         var soundSrc = "_resources/sound/sound.mp3";
         var soundSrc2 = "_resources/sound/sound2.mp3";
 
@@ -157,7 +154,6 @@ QUnit.test("SoundManager", function (assert) {
         soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onFileLoaded));
 
     };
-
 
     createjs.Sound.addEventListener("event", "handler");
     createjs.Sound.setVolume(0.1);
