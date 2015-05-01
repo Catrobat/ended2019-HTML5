@@ -36,7 +36,10 @@ QUnit.test("SoundManager", function (assert) {
         assert.ok(createjs.Sound.getVolume() === 0.7 && soundManager.volume === 70, "Volume Resets to 70% (default) on init.");
 
         soundManager.volume = 25;
+        soundManager.mute(true);
         assert.ok(soundManager.volume.toFixed(2) == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly.");
+
+        assert.ok(soundManager._muted && createjs.Sound.getMute(), "Muted set true and stays true after changing volume");
 
         soundManager.changeVolume(1);
         assert.ok(soundManager.volume.toFixed(2) == 26.00 && createjs.Sound.getVolume().toFixed(2) == 0.26, "Volume changed and converted correctly(+).");
@@ -49,7 +52,7 @@ QUnit.test("SoundManager", function (assert) {
 
         soundManager.volume = 110;
         assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values.");
-
+        soundManager.mute(false);
 
         var invalidData = [{notUrl: "a", id: "id"}];
         assert.throws(function(){new PocketCode.SoundManager("id",invalidData)}, Error, "ERROR: passed invalid arguments to Soundmanager.");
@@ -147,7 +150,7 @@ QUnit.test("SoundManager", function (assert) {
             assert.deepEqual(secondFile.length, 1, "Id of second file set correctly.");
             assert.ok(firstFile[0].src === soundSrc, "Src of first file set correctly.");
             assert.ok(secondFile[0].src === soundSrc2, "Src of second file set correctly.");
-            assert.equal(firstFile[0].data,secondFile[0].data, 20, "Data set correctly.");
+            assert.equal(firstFile[0].data, soundManager.maxInstancesOfSameSound, "Data set correctly.");
 
             dataSetCorrectly();
         });

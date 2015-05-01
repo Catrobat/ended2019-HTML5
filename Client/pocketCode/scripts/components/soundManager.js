@@ -17,6 +17,7 @@ PocketCode.SoundManager = (function () {
         }
 
         this.maxInstancesOfSameSound = 20;
+        this._muted = false;
 
         createjs.Sound.removeAllSounds();
         createjs.Sound.removeAllEventListeners();
@@ -142,6 +143,11 @@ PocketCode.SoundManager = (function () {
 
         changeVolume: function (byValue) {
             createjs.Sound.setVolume(createjs.Sound.getVolume() + byValue / 100.0);
+        },
+
+        mute: function (value){
+            this._muted = value;
+            createjs.Sound.setMute(value);
         }
     });
 
