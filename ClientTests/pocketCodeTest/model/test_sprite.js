@@ -342,7 +342,6 @@ QUnit.test("Sprite", function (assert) {
     newSprite.id="id2";
     prog.sprites.push(newSprite);
     var tmp= prog.getSprite("id2");
-
     assert.ok(tmp=newSprite,"push sprite to program");
 
     newSprite.setPosition(100,100);
@@ -357,9 +356,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.pointTo("id2");
     assert.ok(sprite.direction==-180+45,"point to left down sprite");
     // *************************************************************
-
-
-
 
 });
 
