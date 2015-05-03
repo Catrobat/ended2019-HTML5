@@ -7,6 +7,7 @@ class TtsController extends BaseController
 {
   const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
   const AUDIO_ROOT = "https://web-test.catrob.at/html5/audio/";
+  const MAX_LETTER_COUNT = 100;
 
   public $text;
   public $language;
@@ -29,7 +30,7 @@ class TtsController extends BaseController
 
   public function convertTTS($txt)
   {
-    $this->text = trim($txt);
+    $this->text = $this->tokenTruncate( trim($txt), MAX_LETTER_COUNT );
     if(empty($this->text))
       return null;
 
@@ -44,6 +45,22 @@ class TtsController extends BaseController
     }
     return self::AUDIO_ROOT . $hash . ".mp3";
   }
+
+  public function tokenTruncate( $string, $your_desired_width ) {
+    $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);
+    $parts_count = count($parts);
+
+    $length = 0;
+    $last_part = 0;
+    for (; $last_part < $parts_count; ++$last_part) {
+      $length += strlen($parts[$last_part]);
+      if ($length > $your_desired_width) { break; }
+    }
+
+    return implode(array_slice($parts, 0, $last_part));
+  }
 }
+
+
 
 ?>
