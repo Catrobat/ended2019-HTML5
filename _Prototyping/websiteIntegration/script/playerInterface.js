@@ -63,12 +63,14 @@ function play() {
     var pauseButton = document.getElementById("pauseButton");
     var muteButton = document.getElementById("muteButton");
     var restartButton = document.getElementById("restartButton");
+    var arrowPicture = document.getElementById("arrowPicture");
 
     startButton.style.visibility = "hidden";
 
     pauseButton.style.opacity = "1";
     muteButton.style.opacity = "1";
     restartButton.style.opacity = "1";
+    arrowPicture.style.opacity = "1";
 
     project.style.opacity = "1";
 

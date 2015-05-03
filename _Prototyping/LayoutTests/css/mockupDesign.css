@@ -74,15 +74,30 @@ body {
     z-index: 3;
 }
 
+#arrowPicture {
+    position: absolute;
+    width: 20%;
+    left: 5%;
+    bottom: 35%;
+
+    opacity: 0.3;
+}
+
 #muteButton {
+    width: 20%;
+    margin: 10px;
     opacity: 0.3;
 }
 
 #pauseButton {
+    width: 20%;
+    margin: 10px;
     opacity: 0.3;
 }
 
 #restartButton {
+    width: 20%;
+    margin: 10px;
     opacity: 0.3;
 }
 
