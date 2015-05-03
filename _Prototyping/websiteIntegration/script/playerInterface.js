@@ -48,6 +48,23 @@ if (isMobile() || isTablet()) {
     document.write('<link href="../css/common-mobile.css" rel="stylesheet">')
 }
 
+// is called when you click the "x" sign for closing on the top right
+// corner of the screen. only temporary !
+function goBack() {
+    window.history.back();
+}
+
+// is called when you press the "Play" button in the middle of the app preview
+// only temporary !
+function play() {
+
+    var project = document.getElementById("playerContainerTable_mid");
+    var button = document.getElementById("startButton");
+    project.style.opacity = "1";
+    button.style.visibility = "hidden";
+
+}
+
 function launchProject(projectId) {
 
     //if (!isDesktop()) {
@@ -56,6 +73,9 @@ function launchProject(projectId) {
     //}
 
     //open popup layer
-    alert("coming soon: project id= " + projectId);
+    //alert("coming so: project id= " + projectId);
+
+    window.location.href = "../LayoutTests/startpageMockup.html";
+
     //launch app
 }
