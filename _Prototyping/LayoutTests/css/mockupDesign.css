@@ -74,6 +74,19 @@ body {
     z-index: 3;
 }
 
+#muteButton {
+    opacity: 0.3;
+}
+
+#pauseButton {
+    opacity: 0.3;
+}
+
+#restartButton {
+    opacity: 0.3;
+}
+
+
 .pc-startButton, .pc-startButton:active {
     background-color: transparent;
     border: medium none;
