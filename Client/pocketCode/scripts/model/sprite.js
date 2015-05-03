@@ -264,7 +264,7 @@ PocketCode.Model.Sprite = (function () {
 
         //motion: position
         /**
-         *
+         * sets the position(x,y) of the sprite
          * @param {Number} x
          * @param {Number} y
          * @param {triggerEvent
@@ -289,8 +289,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param x
+         * sets the x position of the sprite
+         * @param {number} x
          * @returns {boolean}
          */
         setPositionX: function (x) {
@@ -301,8 +301,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param value
+         * changes the x position of the sprite by a value
+         * @param {number} value
          * @returns {boolean}
          */
         changePositionX: function (value) {
@@ -313,8 +313,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param y
+         * sets the y position of the sprite
+         * @param {number} y
          * @returns {boolean}
          */
         setPositionY: function (y) {
@@ -325,8 +325,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param value
+         * changes the y position of the sprite by a value
+         * @param {number} value
          * @returns {boolean}
          */
         changePositionY: function (value) {
@@ -337,7 +337,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
+         * checks if sprite flips at the edge
          * @returns {*}
          */
         ifOnEdgeBounce: function () {
@@ -345,8 +345,8 @@ PocketCode.Model.Sprite = (function () {
             //onChange event is triggered by program in this case
         },
         /**
-         *
-         * @param steps
+         * moves the sprite "value" steps in the direction of the current direction
+         * @param {number} steps
          * @returns {boolean}
          */
         move: function (steps) {
@@ -363,8 +363,8 @@ PocketCode.Model.Sprite = (function () {
 
         //motion:direction
         /**
-         *
-         * @param degree
+         * turns the sprite "value" degree left
+         * @param {number} degree
          * @returns {*}
          */
         turnLeft: function (degree) {
@@ -373,7 +373,7 @@ PocketCode.Model.Sprite = (function () {
             return this.turnRight(degree * -1.0);
         },
         /**
-         *
+         * turns the sprite "value" degree right
          * @param degree
          * @returns {boolean}
          */
@@ -396,8 +396,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param degree
+         * sets the direction of the sprite to degree value
+         * @param {number} degree
          * @param triggerEvent
          * @returns {boolean}
          */
@@ -412,7 +412,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
+         * sets the direction of current sprite so that it points to a given sprite
          * @param spriteId
          * @returns {boolean}
          */
@@ -435,8 +435,8 @@ PocketCode.Model.Sprite = (function () {
         },
         //motion: layer
         /**
-         *
-         * @param layers
+         * sets the sprite "value" layers back
+         * @param {number} layers
          * @returns {*}
          */
         goBack: function (layers) {
@@ -444,7 +444,7 @@ PocketCode.Model.Sprite = (function () {
             //onChange event is triggered by program in this case
         },
         /**
-         *
+         * sets the layer of the sprite to the foremost one
          * @returns {*}
          */
         comeToFront: function () {
@@ -454,7 +454,7 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         /**
-         *
+         * sets the look of the sprite
          * @param lookId
          * @returns {boolean}
          */
@@ -479,7 +479,7 @@ PocketCode.Model.Sprite = (function () {
             throw new Error('look with id ' + lookId + ' could not be found');
         },
         /**
-         *
+         * sets the current look of the sprite to the next one in the list
          * @returns {boolean}
          */
         nextLook: function () {
@@ -508,8 +508,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param percentage
+         * sets the size of the sprite with percentage "value"
+         * @param {number} percentage
          * @returns {boolean}
          */
         setSize: function (percentage) {
@@ -525,8 +525,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param value
+         * changes the current size by "value"
+         * @param {number} value
          * @returns {boolean}
          */
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
@@ -542,7 +542,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
+         * sets the sprite as not visible
          * @returns {boolean}
          */
         hide: function () {
@@ -554,7 +554,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
+         * sets the sprite as visible
          * @returns {boolean}
          */
         show: function () {
@@ -566,9 +566,9 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param effect
-         * @param value
+         * sets the graphicEffect of the sprite with a given effect and value of the effect
+         * @param {PocketCode.GraphicEffect} effect
+         * @param {number} value
          * @returns {*}
          */
         setGraphicEffect: function (effect, value) {
@@ -595,9 +595,9 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         /**
-         *
-         * @param effect
-         * @param value
+         * changes the graphicEffect with a given effect and value of the effect
+         * @param {PocketCode.GraphicEffect} effect
+         * @param {number} value
          * @returns {*}
          */
         changeGraphicEffect: function (effect, value) {
@@ -626,8 +626,8 @@ PocketCode.Model.Sprite = (function () {
         },
         /* set to private and called from set/change graphic effect*/
         /**
-         *
-         * @param percentage
+         * sets the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
          * @returns {boolean}
          * @private
          */
@@ -649,8 +649,8 @@ PocketCode.Model.Sprite = (function () {
         },
         /* set to private and called from set/change graphic effect*/
         /**
-         *
-         * @param value
+         * changes the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
          * @returns {boolean}
          * @private
          */
@@ -673,8 +673,8 @@ PocketCode.Model.Sprite = (function () {
         },
         /* set to private and called from set/change graphic effect*/
         /**
-         *
-         * @param percentage
+         * sets the brightness of the sprite by the "value" percentage
+         * @param {number} percentage
          * @returns {boolean}
          * @private
          */
@@ -696,8 +696,8 @@ PocketCode.Model.Sprite = (function () {
         },
         /* set to private and called from set/change graphic effect*/
         /**
-         *
-         * @param value
+         * changes the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
          * @returns {boolean}
          * @private
          */
@@ -719,7 +719,7 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
+         * clears all graphicEffects of the sprite
          * @returns {boolean}
          */
         clearGraphicEffects: function () {
@@ -741,7 +741,7 @@ PocketCode.Model.Sprite = (function () {
 
         //variables
         /**
-         *
+         * returns the global variable with the given id
          * @param varId
          * @returns {*}
          */
@@ -752,7 +752,7 @@ PocketCode.Model.Sprite = (function () {
                 return this._gameEngine.getGlobalVariable(varId);
         },
         /**
-         *
+         * returns all variable names
          * @returns {{}}
          */
         getVariableNames: function () {
