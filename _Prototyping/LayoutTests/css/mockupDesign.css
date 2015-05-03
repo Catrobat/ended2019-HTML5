@@ -12,7 +12,7 @@ body {
 
 #mainContainer {
     background-image: url("../resources/main.fw.png");
-    background-size: 1366px 768px;
+    background-size: 100% 100%;
     color: black;
     /*background-color: #05222a;*/
     position: absolute;
