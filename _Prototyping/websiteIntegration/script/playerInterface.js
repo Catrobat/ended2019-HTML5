@@ -59,9 +59,18 @@ function goBack() {
 function play() {
 
     var project = document.getElementById("playerContainerTable_mid");
-    var button = document.getElementById("startButton");
+    var startButton = document.getElementById("startButton");
+    var pauseButton = document.getElementById("pauseButton");
+    var muteButton = document.getElementById("muteButton");
+    var restartButton = document.getElementById("restartButton");
+
+    startButton.style.visibility = "hidden";
+
+    pauseButton.style.opacity = "1";
+    muteButton.style.opacity = "1";
+    restartButton.style.opacity = "1";
+
     project.style.opacity = "1";
-    button.style.visibility = "hidden";
 
 }
 
