@@ -127,9 +127,9 @@ function populateSprites(id, name, layer, x, y, scale, imgElement, visible, brig
 
 function updateSprite(){
 	var sprite2test = null;
-	canvas = new PocketCode.Canvas("pcCanvas", 0.5);
+	var canvas = new PocketCode.Canvas("pcCanvas", 0.5);
 	var currentLook = new Image ();
-	currentLook.src="_resources/img/tree-transparent.png";
+	currentLook.src="../../ClientTests/pocketCodeTest/_resources/img/tree-transparent.png";
 	var looks = [];
 	looks[0] = currentLook;
 	
@@ -138,7 +138,7 @@ function updateSprite(){
 		canvas.addSprite(populateSprites(i, 'tree', i, 50*i,50*i,20,looks,true,i*60,0,90));
 	}
 	var currentLook2 = new Image ();
-	currentLook2.src="_resources/img/minion.jpg";
+	currentLook2.src="../../ClientTests/pocketCodeTest/_resources/img/minion.jpg";
 	var looks2 = [];
 	looks2[0] = currentLook2;
 	canvas.addSprite(populateSprites(5, 'tree', 5, 200,400,100,looks2,true,100,0,90));
