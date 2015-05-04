@@ -146,7 +146,7 @@ PocketCode.BroadcastManager = (function () {
          * Notifies the publisher and calls the handler with the scope of the given pubListener
          * @param {SmartJs.Event.EventListener} pubListener
          * @param {String} threadId
-         * @param {Number} loopDelay
+         * @param {number} loopDelay
          * @private
          */
         _notifyPublisher: function (pubListener, callId, loopDelay) {

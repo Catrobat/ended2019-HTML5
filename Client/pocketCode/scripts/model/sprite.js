@@ -38,25 +38,25 @@ PocketCode.GraphicEffect = {
 };
 /**
  * @class Sprite whole functionality of a sprite object
- * @property {number} _executionState states if sprite is running/stopped
+ * @property {PocketCode.ExecutingState} _executionState states if sprite is running/stopped
  * @property {number} id indicates the id of the sprite
- * @property {number} name indicates the name of the sprite
+ * @property {String} name indicates the name of the sprite
  * @property {number} _gameEngine reference to gameEngine object
- * @property {number} _looks list of looks
- * @property {number} _sounds list of sounds
+ * @property {List} _looks list of looks
+ * @property {List} _sounds list of sounds
  * @property {number} _onChange maps events to gameEngine.onSpriteChange
- * @property {number} _variables set of variables
- * @property {number} _variableNames set of varialbe names
- * @property {number} _bricks list of bricks
+ * @property {List} _variables set of variables
+ * @property {List} _variableNames set of varialbe names
+ * @property {List} _bricks list of bricks
  * @property {number} _positionX horizontal position
  * @property {number} _positionY vertical position
  * @property {number} _direction indicates the direction the sprite points to in degree
- * @property {number} _currentLook indicates the current look of the sprite
+ * @property {Look} _currentLook indicates the current look of the sprite
  * @property {number} _size indicates the size of the sprite
- * @property {number} _visible indicates whether the sprite is visible or not
+ * @property {boolean} _visible indicates whether the sprite is visible or not
  * @property {number} _transparency transparency value of the sprite
  * @property {number} _brightness brightness value of the sprite
- * @property {number} _onExecuted indicates whether the sprite has been executed
+ * @property {SmartJs.Event} _onExecuted indicates whether the sprite has been executed
  *
  *
  */
@@ -65,9 +65,8 @@ PocketCode.Model.Sprite = (function () {
      * initializing of properties
      * @param gameEngine gameEngine instance as a reference
      * @param propObject object which can contains properties
-     * @constructor
      */
-    function Sprite(gameEngine, propObject) {
+    function constructor(gameEngine, propObject) {
 
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
@@ -265,8 +264,8 @@ PocketCode.Model.Sprite = (function () {
         //motion: position
         /**
          * sets the position(x,y) of the sprite
-         * @param {Number} x
-         * @param {Number} y
+         * @param {number} x
+         * @param {number} y
          * @param {triggerEvent
          * @returns {boolean}
          */

@@ -1,12 +1,13 @@
-prerequisites: 
-*java runtime installe
-*
+######## installation ##########
+prerequisites:
+*java runtime installed (including environment variables)
+*ksh interpreter installed (e.g. linux --> apt-get install ksh)
 
 1) download jsdoc-toolkit --> https://code.google.com/p/jsdoc-toolkit/downloads/list
 
 2) extract .zip file
 
-3) make "jsrun.jar" and "jsrun.sh" executeable (e.g. linux chmod a+x)
+3) make "jsrun.jar" and "jsrun.sh" executable (e.g. linux --> chmod a+x)
 
 4) create output directory (e.g. $HOME/doc)
 
@@ -16,3 +17,20 @@ e.g. --> ./jsrun.sh -t=/home/markus/local/jsdoc-toolkit/templates/jsdoc -d=$HOME
 6) documentation will be created in $HOME/doc
 
 7) template can be altered/changed in ../jsdoc-toolkit/templates
+
+
+######## best practice ##########
+
+used annotations:
+@fileOverview
+@author
+@namespace
+@type
+@class
+@property
+@param
+@constructor
+@event
+@private
+@returns
+@throws
