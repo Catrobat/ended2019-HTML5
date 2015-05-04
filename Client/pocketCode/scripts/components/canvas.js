@@ -184,6 +184,7 @@ PocketCode.Canvas = (function(){
 		/**
 		 * draws axes on the canvas
 		 */
+        // moves to playerviewport
 		_drawAxes: function(){
 			this._canvas.getContext('2d').moveTo(this._canvas.getWidth()/2, 0);
 			this._canvas.getContext('2d').lineTo(this._canvas.getWidth()/2, this._canvas.getHeight());

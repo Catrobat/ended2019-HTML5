@@ -172,3 +172,18 @@ function updateSprite(){
 }
 
 
+function download(url,name){
+    // create the link, set the href and download. (emulate dom click)
+    var a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.innerHTML = 'Screenshot';
+    a.setAttribute('download', name);
+    a.click();
+}
+
+function createDataURL(){
+//  convert the canvas to a data url and download it.
+    var canvas = document.getElementById("pcCanvas");
+    download(canvas.toDataURL(),'screenshot.png');
+}
+
