@@ -62,11 +62,11 @@ PocketCode.GraphicEffect = {
  */
 PocketCode.Model.Sprite = (function () {
     /**
-     * initializing of properties
+     * initialization of properties
      * @param gameEngine gameEngine instance as a reference
      * @param propObject object which can contains properties
      */
-    function constructor(gameEngine, propObject) {
+    function Sprite(gameEngine, propObject) {
 
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)

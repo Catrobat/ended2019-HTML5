@@ -20,17 +20,20 @@ e.g. --> ./jsrun.sh -t=/home/markus/local/jsdoc-toolkit/templates/jsdoc -d=$HOME
 
 
 ######## best practice ##########
+see sprite.js
 
 used annotations:
-@fileOverview
-@author
-@namespace
-@type
-@class
-@property
-@param
-@constructor
-@event
-@private
-@returns
-@throws
+@fileOverview : at the beginning of the file, describes what the file contains
+@author : at the beginning of the file, usually "catrobat HTML5 team"
+@namespace : defining namespaces
+@type : above enumerations, describes which types are possible
+@class : above class, describes what class is for (e.g. @class Sprite whole functionality of a sprite object)
+@property : above class, describes the property of the class. Use {} for the type of the property
+            (e.g.  @property {number} id indicates the id of the sprite)
+@param : above method, describes the input parameter of the mehtod
+@constructor : above constructor, describes special initialization and method calls
+@event : above event (on-".."), describes what the event does
+            (e.g. @event indicates whether the sprite finished execution onExecuted
+@private : above private method (_...), describes what the method does
+@returns : above method, describes what the method returns
+@throws : above method, describes when an error is thrown
