@@ -8,7 +8,7 @@
  */
 PocketCode.CV = PocketCode.CV || {};
 
-PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
+PocketCode.Ui.RenderingItem = fabric.util.createClass(fabric.Image, {
         type: 'sprite',
 
         initialize: function(element, options) {

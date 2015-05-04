@@ -147,7 +147,7 @@ PocketCode.Canvas = (function(){
 		 * @param {PocketCode.Model.Sprite} pcSprite: sprite that shall be converted into an object that can be added to the canvas 
 		 */
 		_createCanvasSprite: function(pcSprite){
-			var sprite = new PocketCode.RenderingItem(pcSprite._currentLook,{
+			var sprite = new PocketCode.Ui.RenderingItem(pcSprite._currentLook,{
 				name: pcSprite.name,
 				id: pcSprite.id,
 				top: pcSprite._positionX,
