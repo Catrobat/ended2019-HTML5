@@ -13,7 +13,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.Program();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var soundId = "soundId";
 
@@ -39,7 +39,7 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.Program();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
 
     var b = new PocketCode.Bricks.StopAllSoundsBrick(device, sprite, program._soundManager);
@@ -64,7 +64,7 @@ QUnit.test("SetVolumeBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.Program();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var percentage = JSON.parse('{"type":"NUMBER","value":"80","right":null,"left":null}');
 
@@ -90,7 +90,7 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.Program();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
@@ -117,7 +117,7 @@ QUnit.test("SpeakBrick", function (assert) {
     var done2 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.Model.Program();
+    var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 

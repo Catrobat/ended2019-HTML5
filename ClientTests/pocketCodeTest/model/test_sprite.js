@@ -9,7 +9,7 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var prog= new PocketCode.Model.Program();
+    var prog= new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog,null);
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
@@ -207,13 +207,6 @@ QUnit.test("Sprite", function (assert) {
     var varNames=sprite.getVariableNames();
     assert.ok(varNames[21].name=="two-one","get variableNames");
 
-    /*var steps=10;
-     var rad = sprite.direction * (Math.PI / 180.0);
-     console.log("rad : "+rad);
-     var offsetX = Math.round(Math.sin(rad) * steps);
-     var offsetY = Math.round(Math.cos(rad) * steps);
-     console.log("offsetX: "+offsetX);
-     console.log("offsetY: "+offsetY); */
 
     // *************************************************************
 
@@ -298,11 +291,13 @@ QUnit.test("Sprite", function (assert) {
     var direction =degree;
 
     sprite._triggerOnChange([{direction: degree}]);
-    console.log("trigger event: "+sprite._onChange);
+    console.log("trigger event: "+sprite.onChange);
+
+    assert.ok(sprite.onChange instanceof SmartJs.Event.Event,"trigger on change");
 
 
     // ********************* come to front/go back *********************
-    var tmpprog= new PocketCode.Model.Program();
+    var tmpprog= new PocketCode.GameEngine();
 
     var newSprite = new PocketCode.Model.Sprite(tmpprog);
     newSprite.id="test2";
@@ -321,24 +316,24 @@ QUnit.test("Sprite", function (assert) {
     tmpprog.sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite.layer==tmpprog.sprites.length,"come to front 1");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(tmpsprite.layer==tmpprog.sprites.length,"come to front 2");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer==tmpprog.sprites.length+1,"go back 2 layers");
+    assert.ok(newSprite2.layer==tmpprog.sprites.length,"come to front 3");
 
     var layerBefore=newSprite.layer;
     newSprite.goBack(2);
     assert.ok(newSprite.layer==firstLayer,"go back 2 layers");
     layerBefore=newSprite2.layer;
-    newSprite2.goBack(2);
-    assert.ok(newSprite2.layer==layerBefore-2,"go back 2 layers");
+    newSprite2.goBack(1);
+    assert.ok(newSprite2.layer==layerBefore-1,"go back 1 layers");
     layerBefore=tmpsprite.layer;
     tmpsprite.goBack(2);
     assert.ok(tmpsprite.layer==layerBefore-2,"go back 2 layers");
     layerBefore=tmpsprite.layer;
-    tmpsprite.goBack(2);
-    assert.ok(tmpsprite.layer==firstLayer,"go back 2 layers");
+    tmpsprite.goBack(3);
+    assert.ok(tmpsprite.layer==firstLayer,"go back 3 layers");
     // *************************************************************
 
     // ********************* point to *********************
@@ -347,7 +342,6 @@ QUnit.test("Sprite", function (assert) {
     newSprite.id="id2";
     prog.sprites.push(newSprite);
     var tmp= prog.getSprite("id2");
-
     assert.ok(tmp=newSprite,"push sprite to program");
 
     newSprite.setPosition(100,100);
@@ -362,9 +356,6 @@ QUnit.test("Sprite", function (assert) {
     sprite.pointTo("id2");
     assert.ok(sprite.direction==-180+45,"point to left down sprite");
     // *************************************************************
-
-
-
 
 });
 

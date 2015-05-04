@@ -5,7 +5,6 @@
 /**
  * @fileOverview broadcastManager: This file contains the whole functionality of the broadcast manager
  * @author catrobat HTML5 team
- * @version 1.0
  *
  */
 

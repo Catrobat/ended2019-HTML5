@@ -15,7 +15,7 @@
         return;
       }
 
-      var url = 'http://localhost/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
+      var url = 'https://web-test.catrob.at/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
 
       if (invocation)
       {
@@ -48,14 +48,17 @@
           {
             console.log('status 200: OK');
             document.getElementById("textDiv").innerHTML = invocation.response;
+            console.log('---------------------------');
           }
           else if(invocation.status == 404)
           {
             console.log("status 404: page not found...!");
+            console.log('---------------------------');
           }
           else
           {
             console.log("status " + invocation.status + ": error, maybe project does not exist?");
+            console.log('---------------------------');
           }
           break;
         default:

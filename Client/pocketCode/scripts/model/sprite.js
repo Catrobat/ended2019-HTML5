@@ -3,7 +3,7 @@
 'use strict';
 
 /**
- * @fileOverview Sprite: This file contains
+ * @fileOverview Sprite: This file contains every relevant functionality of a sprite
  * @author catrobat HTML5 team
  */
 
@@ -13,13 +13,20 @@
  */
 PocketCode.Model = PocketCode.Model || {};
 
-
+/**
+ * RotationStyles
+ * @type {{DO_NOT_ROTATE: string, LEFT_TO_RIGHT: string, ALL_AROUND: string}}
+ */
 PocketCode.RotationStyle = {
     DO_NOT_ROTATE: 'don\'t rotate',
     LEFT_TO_RIGHT: 'left-right',
     ALL_AROUND: 'all around',
 };
 
+/**
+ * GraphicEffects
+ * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
+ */
 PocketCode.GraphicEffect = {
     COLOR: 'color',
     FISHEYE: 'fisheye',
@@ -30,24 +37,40 @@ PocketCode.GraphicEffect = {
     GHOST: 'ghost',     //opacity, transparency
 };
 /**
- * @class Sprite balbalball
- * @property {number} running states if sprite is running
+ * @class Sprite whole functionality of a sprite object
+ * @property {number} _executionState states if sprite is running/stopped
  * @property {number} id indicates the id of the sprite
  * @property {number} name indicates the name of the sprite
- * @property {number} name @default indicates the name of the sprite
+ * @property {number} _gameEngine reference to gameEngine object
+ * @property {number} _looks list of looks
+ * @property {number} _sounds list of sounds
+ * @property {number} _onChange maps events to gameEngine.onSpriteChange
+ * @property {number} _variables set of variables
+ * @property {number} _variableNames set of varialbe names
+ * @property {number} _bricks list of bricks
+ * @property {number} _positionX horizontal position
+ * @property {number} _positionY vertical position
+ * @property {number} _direction indicates the direction the sprite points to in degree
+ * @property {number} _currentLook indicates the current look of the sprite
+ * @property {number} _size indicates the size of the sprite
+ * @property {number} _visible indicates whether the sprite is visible or not
+ * @property {number} _transparency transparency value of the sprite
+ * @property {number} _brightness brightness value of the sprite
+ * @property {number} _onExecuted indicates whether the sprite has been executed
+ *
  *
  */
 PocketCode.Model.Sprite = (function () {
     /**
-     * initializing bllablabl
-     * @param program
-     * @param propObject
+     * initializing of properties
+     * @param gameEngine gameEngine instance as a reference
+     * @param propObject object which can contains properties
      * @constructor
      */
-    function Sprite(program, propObject) {
+    function Sprite(gameEngine, propObject) {
 
-        this._program = program;
-        this._onChange = program.onSpriteChange;    //mapping event (defined in program)
+        this._gameEngine = gameEngine;
+        this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         this._executionState = PocketCode.ExecutingState.STOPPED;
         this.id = undefined;
         this.name = "";
@@ -55,10 +78,8 @@ PocketCode.Model.Sprite = (function () {
         this._sounds = [];
         this._variables = {};
         this._variableNames = {};
-
         this._bricks = [];
         //attach to bricks onExecuted event, get sure all are executed an not running
-
         //property initialization
         //motion
         this._positionX = 0.0;
@@ -76,10 +97,6 @@ PocketCode.Model.Sprite = (function () {
         this._onExecuted = new SmartJs.Event.Event(this);
     }
 
-    //properties
-    /**
-     *
-     */
     Object.defineProperties(Sprite.prototype, {
         rotationStyle: {
             value: PocketCode.RotationStyle.ALL_AROUND,   //static property (right now)
@@ -110,20 +127,11 @@ PocketCode.Model.Sprite = (function () {
                // this._layer = layer;
             },
             get: function () {
-                return this._program.getSpriteLayer(this.id);
+                return this._gameEngine.getSpriteLayer(this.id);
             },
         },
 
-        //sound
-        //sounds: {
-        //    set: function (sounds) {
-        //        ;
-        //    },
-        //},
-
-        //bricks
-
-        bricks: {
+         bricks: {
             set: function (bricks) {
                 this._bricks = bricks;
             },
@@ -189,19 +197,24 @@ PocketCode.Model.Sprite = (function () {
     Object.defineProperties(Sprite.prototype, {
         /**
          * @event
-         *
+         * returns the onSpriteChange of gameEngine
+         */
+        onChange: {
+            get: function () { return this._gameEngine.onSpriteChange; },
+        },
+        /**
+         * @event
+         * indicates whether the sprite finished execution
          */
         onExecuted: {
             get: function () { return this._onExecuted; },
-            //enumerable: false,
-            //configurable: true,
         },
     });
 
     //methods
     Sprite.prototype.merge({
         /**
-         *
+         * calls execute() on every brick as long as method is available
          */
         execute: function() {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
@@ -212,7 +225,7 @@ PocketCode.Model.Sprite = (function () {
             this._executionState =  PocketCode.ExecutingState.RUNNING;;
         },
         /**
-         *
+         * calls pause() on every brick as long as method is available
          */
         pause: function () {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
@@ -220,12 +233,18 @@ PocketCode.Model.Sprite = (function () {
                     this._bricks[i].pause();
             }
         },
+        /**
+         * calls resume() on every brick as long as method is available
+         */
         resume: function () {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
                 if (this._bricks[i].resume)
                     this._bricks[i].resume();
             }
         },
+        /**
+         * calls stop() on every brick as long as method is available
+         */
         stop: function () {
             for (var i = 0, l = this._bricks.length; i < l; i++) {
                 if (this._bricks[i].stop)
@@ -233,8 +252,9 @@ PocketCode.Model.Sprite = (function () {
             }
             this._executionState = PocketCode.ExecutingState.STOPPED;
         },
+
         /**
-         *
+         * @event
          * @param propertyArray
          * @private
          */
@@ -244,10 +264,10 @@ PocketCode.Model.Sprite = (function () {
 
         //motion: position
         /**
-         *
-         * @param x
-         * @param y
-         * @param triggerEvent
+         * sets the position(x,y) of the sprite
+         * @param {Number} x
+         * @param {Number} y
+         * @param {triggerEvent
          * @returns {boolean}
          */
         setPosition: function (x, y, triggerEvent) {
@@ -269,8 +289,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param x
+         * sets the x position of the sprite
+         * @param {number} x
          * @returns {boolean}
          */
         setPositionX: function (x) {
@@ -281,8 +301,8 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /**
-         *
-         * @param value
+         * changes the x position of the sprite by a value
+         * @param {number} value
          * @returns {boolean}
          */
         changePositionX: function (value) {
@@ -292,6 +312,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ positionX: this._positionX }]);
             return true;
         },
+        /**
+         * sets the y position of the sprite
+         * @param {number} y
+         * @returns {boolean}
+         */
         setPositionY: function (y) {
             if (this._positionY === y)
                 return false;
@@ -299,6 +324,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ positionY: y }]);
             return true;
         },
+        /**
+         * changes the y position of the sprite by a value
+         * @param {number} value
+         * @returns {boolean}
+         */
         changePositionY: function (value) {
             if (!value)// || value === 0)
                 return false;
@@ -306,13 +336,17 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ positionY: this._positionY }]);
             return true;
         },
+        /**
+         * checks if sprite flips at the edge
+         * @returns {*}
+         */
         ifOnEdgeBounce: function () {
-            return this._program.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
+            return this._gameEngine.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
             //onChange event is triggered by program in this case
         },
         /**
-         *
-         * @param steps
+         * moves the sprite "value" steps in the direction of the current direction
+         * @param {number} steps
          * @returns {boolean}
          */
         move: function (steps) {
@@ -328,11 +362,21 @@ PocketCode.Model.Sprite = (function () {
         },
 
         //motion:direction
+        /**
+         * turns the sprite "value" degree left
+         * @param {number} degree
+         * @returns {*}
+         */
         turnLeft: function (degree) {
             if (!degree)
                 return false;
             return this.turnRight(degree * -1.0);
         },
+        /**
+         * turns the sprite "value" degree right
+         * @param degree
+         * @returns {boolean}
+         */
         turnRight: function (degree) {
             if (!degree)
                 return false;
@@ -351,6 +395,12 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ direction: nd }]);
             return true;
         },
+        /**
+         * sets the direction of the sprite to degree value
+         * @param {number} degree
+         * @param triggerEvent
+         * @returns {boolean}
+         */
         setDirection: function (degree, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
             if (degree === undefined || this.direction === degree)
@@ -361,10 +411,15 @@ PocketCode.Model.Sprite = (function () {
                 this._triggerOnChange([{ direction: degree }]);
             return true;
         },
+        /**
+         * sets the direction of current sprite so that it points to a given sprite
+         * @param spriteId
+         * @returns {boolean}
+         */
         pointTo: function (spriteId) {
             if (!spriteId)
                 return false;
-            var pointTo = this._program.getSprite(spriteId);
+            var pointTo = this._gameEngine.getSprite(spriteId);
             if(pointTo== undefined)
                 return false;
 
@@ -379,16 +434,30 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         //motion: layer
+        /**
+         * sets the sprite "value" layers back
+         * @param {number} layers
+         * @returns {*}
+         */
         goBack: function (layers) {
-            return this._program.setSpriteLayerBack(this.id,layers);
+            return this._gameEngine.setSpriteLayerBack(this.id,layers);
             //onChange event is triggered by program in this case
         },
+        /**
+         * sets the layer of the sprite to the foremost one
+         * @returns {*}
+         */
         comeToFront: function () {
-            return this._program.setSpriteLayerToFront(this.id);
+            return this._gameEngine.setSpriteLayerToFront(this.id);
             //onChange event is triggered by program in this case
         },
 
         //looks
+        /**
+         * sets the look of the sprite
+         * @param lookId
+         * @returns {boolean}
+         */
         setLook: function (lookId) {
             if (this._currentLook == undefined) {
                // throw new Error('current look is invalid');
@@ -409,6 +478,10 @@ PocketCode.Model.Sprite = (function () {
             }
             throw new Error('look with id ' + lookId + ' could not be found');
         },
+        /**
+         * sets the current look of the sprite to the next one in the list
+         * @returns {boolean}
+         */
         nextLook: function () {
             if (this._currentLook == undefined) {
              //   throw new Error('current look is invalid');
@@ -434,6 +507,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ look: this._currentLook }]);
             return true;
         },
+        /**
+         * sets the size of the sprite with percentage "value"
+         * @param {number} percentage
+         * @returns {boolean}
+         */
         setSize: function (percentage) {
             if (percentage === undefined || isNaN(percentage) || percentage==null)
                 throw new Error('invalid percentage ');
@@ -446,6 +524,11 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ size: this._size }]);
             return true;
         },
+        /**
+         * changes the current size by "value"
+         * @param {number} value
+         * @returns {boolean}
+         */
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
             if (value === undefined || isNaN(value) || value==null)
                 throw new Error('invalid value');
@@ -458,6 +541,10 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ size: this._size }]);
             return true;
         },
+        /**
+         * sets the sprite as not visible
+         * @returns {boolean}
+         */
         hide: function () {
             if (!this._visible)
                 return false;
@@ -466,6 +553,10 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ visible: false }]);
             return true;
         },
+        /**
+         * sets the sprite as visible
+         * @returns {boolean}
+         */
         show: function () {
             if (this._visible)
                 return false;
@@ -474,6 +565,12 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ visible: true }]);
             return true;
         },
+        /**
+         * sets the graphicEffect of the sprite with a given effect and value of the effect
+         * @param {PocketCode.GraphicEffect} effect
+         * @param {number} value
+         * @returns {*}
+         */
         setGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
                 throw new Error('invalid value ');
@@ -497,6 +594,12 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('unknown graphic effect: ' + effect);
             }
         },
+        /**
+         * changes the graphicEffect with a given effect and value of the effect
+         * @param {PocketCode.GraphicEffect} effect
+         * @param {number} value
+         * @returns {*}
+         */
         changeGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
                 throw new Error('invalid value: ');
@@ -522,6 +625,12 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         /* set to private and called from set/change graphic effect*/
+        /**
+         * sets the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
         _setTransparency: function (percentage) {
             if (percentage === undefined)
                 return false;
@@ -539,6 +648,12 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /* set to private and called from set/change graphic effect*/
+        /**
+         * changes the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
         _changeTransparency: function (value) {
             if (value === undefined)
                 return false;
@@ -557,6 +672,12 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /* set to private and called from set/change graphic effect*/
+        /**
+         * sets the brightness of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
         _setBrightness: function (percentage) {
             if (percentage === undefined)
                 return false;
@@ -574,6 +695,12 @@ PocketCode.Model.Sprite = (function () {
             return true;
         },
         /* set to private and called from set/change graphic effect*/
+        /**
+         * changes the transparency of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
         _changeBrightness: function (value) {
             if (value === undefined)
                 return false;
@@ -591,6 +718,10 @@ PocketCode.Model.Sprite = (function () {
             this._triggerOnChange([{ brightness: value }]);
             return true;
         },
+        /**
+         * clears all graphicEffects of the sprite
+         * @returns {boolean}
+         */
         clearGraphicEffects: function () {
             var ops = [];
             if (this._transparency === 0.0 && this._brightness === 100.0)
@@ -609,12 +740,21 @@ PocketCode.Model.Sprite = (function () {
         },
 
         //variables
+        /**
+         * returns the global variable with the given id
+         * @param varId
+         * @returns {*}
+         */
         getVariable: function (varId) {
             if (this._variables[varId])
                 return this._variables[varId];
             else //global lookup
-                return this._program.getGlobalVariable(varId);
+                return this._gameEngine.getGlobalVariable(varId);
         },
+        /**
+         * returns all variable names
+         * @returns {{}}
+         */
         getVariableNames: function () {
             //clone
             var variableNames = {};
@@ -625,14 +765,14 @@ PocketCode.Model.Sprite = (function () {
                 }
 
             //include global variables
-            variableNames.merge(this._program.getGlobalVariableNames());
+            variableNames.merge(this._gameEngine.getGlobalVariableNames());
             return variableNames;
         },
         //setVariable: function (varId, value) {
         //    if (this._variables[varId])
         //        this._variables[varId].value = value;
         //    else //gloable lookup
-        //        return this._program.setGlobalVariable(varId, value);
+        //        return this._gameEngine.setGlobalVariable(varId, value);
         //},
     });
 
