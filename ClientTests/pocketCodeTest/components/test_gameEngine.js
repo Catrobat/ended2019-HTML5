@@ -111,7 +111,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.deepEqual(programStartEvent, 1, "Called onProgramStart.");
 
     var allSpritesStarted = true;
-    for(var i = 0; i < program.sprites.length; i++){
+    for(var i = 0, l = program.sprites.length; i < l; i++){
         if(program.sprites[i].status !== PocketCode.ExecutingState.RUNNING){
             allSpritesStarted = false;
         }
@@ -205,7 +205,6 @@ QUnit.test("GameEngine", function (assert) {
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once.");
     assert.deepEqual(program.getSpriteLayer("spriteId1"), program.sprites.length - 1 + program.backgroundOffset,"Brought Layer to front.");
 
-    //todo migrate tests to parser
     var testProject = projectSounds;
     program.loadProject(testProject);
 
@@ -213,39 +212,13 @@ QUnit.test("GameEngine", function (assert) {
     assert.equal(program.sprites.length, testProject.sprites.length, "No excess sprites left.");
 
     var spritesMatch = true;
-    var bricksMatch = true;
-    var looksMatch = true;
-    var varsMatch = true;
-    var l;
     for(i = 0, l = program.sprites.length; i < l; i++){
-        if(program.sprites[i].id !== testProject.sprites[i].id ||
-            program.sprites[i].name !== testProject.sprites[i].name)
+        if(program.sprites[i].id !== testProject.sprites[i].id)
             spritesMatch = false;
-
-        for(var j = 0, length = testProject.sprites[i].variables.length; j < length; j++){
-            console.log(program.sprites[i]._variables[testProject.sprites[i].variables[j].id]);
-            if(!program.sprites[i]._variables[testProject.sprites[i].variables[j].id])
-                varsMatch = false;
-        }
-
-        for(j = 0, length = testProject.sprites[i].bricks.length; j < length; j++){
-            if(program.sprites[i].bricks[j].id !== testProject.sprites[i].bricks[j].id)
-                bricksMatch = false;
-        }
-
-        for(j = 0, length = testProject.sprites[i].looks.length; j < length; j++){
-            if(program.sprites[i]._looks[j].id !== testProject.sprites[i].looks[j].id)
-                looksMatch = false;
-        }
     }
-
     assert.ok(spritesMatch, "Sprites created correctly.");
-    assert.ok(looksMatch, "Sprites looks set correctly.");
-    //todo currently no sprite variables in the project
-    assert.ok(varsMatch, "Sprite variables set correctly.");
-    assert.ok(bricksMatch, "Sprite bricks set correctly.");
 
-    varsMatch = true;
+    var varsMatch = true;
     for(i = 0, l = testProject.variables.length; i < l; i++){
         if(!program._variables[testProject.variables[i].id]){
             varsMatch = false;

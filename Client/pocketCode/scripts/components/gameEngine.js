@@ -7,14 +7,14 @@
 
 PocketCode.GameEngine = (function () {
 
-    function GameEngine(id) {
+    function GameEngine() {
         this._executionState = PocketCode.ExecutingState.STOPPED;
         this.minLoopCycleTime = 25; //ms
         this.soundsLoaded = false;
         this.bricksLoaded = false;
         this.programReady = false;
 
-        this._id = id;
+        this._id = "";
         this.title = "";
         this.description = "";
         this.author = "";
@@ -38,6 +38,7 @@ PocketCode.GameEngine = (function () {
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
+        this._brickFactory = new PocketCode.BrickFactory();
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
@@ -173,11 +174,10 @@ PocketCode.GameEngine = (function () {
             this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
             this.variables = jsonProject.variables;
 
-            //todo migrate to parser
             var device = new PocketCode.Device(this._soundManager);
             var bricksCount = jsonProject.header.bricksCount;
-            var brickFactory = new PocketCode.BrickFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
-            brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            this._brickFactory = new PocketCode.BrickFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
+            this._brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 if(e.progress === 100){
                     gameEngine.bricksLoaded = true;
                     if(gameEngine.soundsLoaded){
@@ -186,33 +186,11 @@ PocketCode.GameEngine = (function () {
                 }
             }));
 
-            var background = new PocketCode.Model.Sprite(this);
-            background.id = jsonProject.background.id;
-            background.name = jsonProject.background.name;
+            //console.log(jsonProject.background);
+            this.background = new PocketCode.Model.Sprite(this, jsonProject.background);
 
-            if(jsonProject.background.looks.length > 0)
-                background.looks = jsonProject.background.looks;
-
-            for (var i = 0, l = jsonProject.background.bricks.length; i < l; i++){
-                background._bricks.push(brickFactory.create(background, jsonProject.background.bricks[i]));
-            }
-            this.background = background;
-
-            for (i = 0, l = jsonProject.sprites.length; i < l; i++){
-                //todo sprites sounds
-                var jsonSprite = jsonProject.sprites[i];
-                var sprite = new PocketCode.Model.Sprite(this);
-                sprite.id = jsonSprite.id;
-                sprite.name = jsonSprite.name;
-
-                if(jsonSprite.looks.length > 0)
-                    sprite.looks = jsonSprite.looks;
-
-                for (var j = 0, k = jsonProject.sprites[i].bricks.length; j < k; j++){
-                    sprite._bricks.push(brickFactory.create(sprite, jsonProject.sprites[i].bricks[j]));
-                }
-
-                this.sprites.push(sprite);
+            for (var i = 0, l = jsonProject.sprites.length; i < l; i++){
+                this.sprites.push(new PocketCode.Model.Sprite(this, jsonProject.sprites[i]));
             }
 
             for (i = 0, l = this.sprites.length; i < l; i++) {
@@ -290,7 +268,7 @@ PocketCode.GameEngine = (function () {
         },
         getSpriteLayer: function (spriteId) {
             //todo undefined
-            return this.sprites.indexOf(this.getSprite(spriteId)) + this.backgroundOffset;
+            return this.layerObjectList.indexOf(this.getSprite(spriteId));
         },
         checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
             //program viewport
