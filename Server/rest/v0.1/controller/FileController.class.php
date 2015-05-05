@@ -44,15 +44,75 @@ class FileController extends BaseController
         return $this->mp3;
         break;
       case "screenshot":
-        // TODO
-        return new ServiceFileMethodNotImplementedException( "File-Method not found: ".implode("/", $this->request->serviceSubInfo) );
-        break;
+				return $this->convertImage();
+				break;
       default:
         return new ServiceFileMethodNotImplementedException( "File-Method not found: " . implode("/", $this->request->serviceSubInfo) );
         break;
     }
   }
 
+	private function convertImage() {
+		$fileName = "screenshot";
+		$base64string = "";
+		if (isset($_GET['fileName'])) {
+      $fileName = $_GET['fileName'];
+    }
+		if (isset($_GET['base64string'])) {
+      $base64string = $_GET['base64string'];
+    }
+		
+		if (empty($base64string))
+		  throw new Exception('missing request parameter: base64string');
+			
+		//$encodedData = str_replace(' ','+',$base64string);
+		//return base64_decode($encodedData);
+		$base64string = 'data://' . substr($base64string, 5);	//php needs "data://" canvas toDataURL() provides "data:" only
+		//return base64_decode($base64string);
+		
+		//If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into plusses. If you do not do that, the decoded data is corrupted
+		$encodedData = str_replace(' ','+',$base64string);
+
+		//$decodedData = 
+		return base64_decode($encodedData);
+
+/*		$extensions = array(
+			IMAGETYPE_GIF => "gif",
+			IMAGETYPE_JPEG => "jpg",
+			IMAGETYPE_PNG => "png",
+			IMAGETYPE_SWF => "swf",
+			IMAGETYPE_PSD => "psd",
+			IMAGETYPE_BMP => "bmp",
+			IMAGETYPE_TIFF_II => "tiff",
+			IMAGETYPE_TIFF_MM => "tiff",
+			IMAGETYPE_JPC => "jpc",
+			IMAGETYPE_JP2 => "jp2",
+			IMAGETYPE_JPX => "jpx",
+			IMAGETYPE_JB2 => "jb2",
+			IMAGETYPE_SWC => "swc",
+			IMAGETYPE_IFF => "iff",
+			IMAGETYPE_WBMP => "wbmp",
+			IMAGETYPE_XBM => "xbm",
+			IMAGETYPE_ICO => "ico"
+		);
+		
+		$file_info = new finfo(FILEINFO_MIME);
+		$mime_type = $file_info->buffer($decodedData);
+echo $mime_type;
+
+		$split = explode( '/', $mime_type );
+		$type = $split[1]; 
+		//$ext = '';
+		//if (array_key_exists( $extensions[$mime_type] ))
+		//	$ext = $extensions[$mime_type];
+		
+		$fp = fopen( 'screenshot.' . $type, 'wb' );
+		fwrite( $fp, $decodedData);
+		fclose( $fp );
+		return $fp;
+*/
+	}
+	
   private function getParsedUrl()
   {
     // get Google Speech
