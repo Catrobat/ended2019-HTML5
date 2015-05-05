@@ -12,7 +12,7 @@ PocketCode.GameEngine = (function () {
         this.minLoopCycleTime = 25; //ms
         this.soundsLoaded = false;
         this.bricksLoaded = false;
-        this.programReady = false;
+        this.projectReady = false;
 
         this._id = "";
         this.title = "";
@@ -139,7 +139,7 @@ PocketCode.GameEngine = (function () {
             this.soundsLoaded = false;
             this.bricksLoaded = false;
 
-            this.programReady = false;
+            this.projectReady = false;
             this._id = jsonProject.id;
             this.title = jsonProject.header.title;
             this.description = jsonProject.header.description;
@@ -159,12 +159,19 @@ PocketCode.GameEngine = (function () {
                 //todo handle unsupported mp3 playback
                 this.soundsLoaded = true;
             }
+
             var gameEngine = this;
+
+            this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function(e){
+                //todo handle missing sounds so that project does not get stuck loading
+                //throw new Error("Could not load sound" + e.src);
+            }));
+
             this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function(e){
                 if(e.progress === 100){
                     gameEngine.soundsLoaded = true;
                     if(gameEngine.bricksLoaded){
-                        gameEngine.programReady = true;
+                        gameEngine.projectReady = true;
                     }
                 }
             }));
@@ -187,7 +194,7 @@ PocketCode.GameEngine = (function () {
                 if(e.progress === 100){
                     gameEngine.bricksLoaded = true;
                     if(gameEngine.soundsLoaded){
-                        gameEngine.programReady = true;
+                        gameEngine.projectReady = true;
                     }
                 }
             }));
@@ -207,8 +214,8 @@ PocketCode.GameEngine = (function () {
         execute: function () {
             if (this._executionState === PocketCode.ExecutingState.RUNNING)
                 return;
-            if (!this.background && this.sprites.length === 0 || !this.programReady)
-                throw new Error('no program loaded');
+            if (!this.background && this.sprites.length === 0 || !this.projectReady)
+                throw new Error('no project loaded');
 
             this.background.execute();
 

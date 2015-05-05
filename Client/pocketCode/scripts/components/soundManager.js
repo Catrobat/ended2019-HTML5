@@ -26,6 +26,7 @@ PocketCode.SoundManager = (function () {
         this._activeSounds = [];
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
+        this._onLoadingError = new SmartJs.Event.Event(this);
         createjs.Sound.setVolume(0.7);  //initial
 
         if (sounds)
@@ -62,16 +63,25 @@ PocketCode.SoundManager = (function () {
             }
             //enumerable: false,
             //configurable: true,
+        },
+        onLoadingError: {
+            get: function () {
+                return this._onLoadingError;
+            }
+            //enumerable: false,
+            //configurable: true,
         }
     });
 
     //methods
     SoundManager.prototype.merge({
         init: function (sounds) {
+            if (!(sounds instanceof Array))
+                throw new Error('sounds expects type Array');
+
             var soundsFormatted = [];
             var sizeOfAllSounds = 0;
-            var l = sounds.length;
-            for (var i = 0; i < l; i++) {
+            for (var i = 0, l = sounds.length; i < l; i++) {
                 if (!sounds[i].hasOwnProperty("url") || !sounds[i].hasOwnProperty("id")) {
                     throw new Error('Sounddata is missing id or url.');
                 }
@@ -89,7 +99,7 @@ PocketCode.SoundManager = (function () {
             }, this));
 
             createjs.Sound.addEventListener("fileerror", createjs.proxy(function (e) {
-                //todo error event to avoid infinite loading
+                this._onLoadingError.dispatchEvent({src: e.src});
             }, this));
 
             createjs.Sound.registerSounds(soundsFormatted, "");
