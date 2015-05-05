@@ -116,11 +116,11 @@
 }
 .pc-leftCol, .pc-rightCol {
 	width: 50%;
-	min-width: 64px;
-}
-.pc-leftCol {
 	min-width: 80px;
 }
+/*.pc-leftCol {
+	min-width: 80px;
+}*/
 .pc-centerCol {
 	vertical-align: middle;
 }
@@ -148,7 +148,7 @@
 	/*height: 192px;*/
 	float: right;
 	/*vertical-align: top;*/
-	margin: 7px;
+	margin: 15px;
 	/*background-color: red;*/
 }
 .pc-webButton, .pc-webButton:active {
