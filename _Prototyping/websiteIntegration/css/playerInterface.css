@@ -81,6 +81,14 @@
 	opacity: 0.92;
 	filter: alpha(opacity = 92);
 }
+.pc-logo {
+	position:absolute; 
+	top:15px; 
+	left:15px;
+}
+.pc-logo img {
+	height: 53px;
+}
 
 .pc-webLayout {
 	position: absolute;
@@ -291,7 +299,16 @@
 }
 .pc-playerPreviewScreen img {
 	height: 100%;
+	background-color: #A5A5A5;
+	opacity: 0.3;
+	filter: alpha(opacity = 30);
 }
+.pc-playerPreviewScreen img .disabled {
+	background-color: #A5A5A5;
+	opacity: 0.3;
+	filter: alpha(opacity = 30);
+}
+
 .pc-playerPreviewScreen .pc-startButton svg {
 	height: 60%;
 	left: 20%;

@@ -301,11 +301,14 @@
 	<!-- ADDED SNIPPET: this content should be added dynamically -->
 	<div class="pc-webOverlay"> 
 		<div class="pc-webOpacity"></div>
-		<div class="pc-webLayout">
+		<div class="pc-logo"">
+			<img src="https://pocketcode.org/images/logo/logo_text.png" alt="Pocket Code" />
+		</div>
+		<div id="pcWebLayout" class="pc-webLayout">
 		<div class="pc-webLayoutRow">
 			<div class="pc-leftCol"></div>
 			<div class="pc-centerCol">
-				<div class="pc-webViewportContainer">
+				<div id="pcWebViewportContainer" class="pc-webViewportContainer">
 					<div class="pc-webViewport">
 						<div class="pc-webLayoutRow">
 							<div class="pc-playerMenuVContainer">
@@ -377,7 +380,8 @@
 								</div>
 							</div>
 							<div class="pc-playerPreviewScreen">
-							<img id="asd" src="https://pocketcode.org/resources/thumbnails/1532_large.png">
+								<img id="asd" class="disabled" src="https://pocketcode.org/resources/thumbnails/1532_large.png">
+								<!--div class="pc-disabled"></div-->
 								<button class="pc-startButton" onclick="javascript: launchProject(1532);" disabled="disabled">
                         <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
                             <path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />

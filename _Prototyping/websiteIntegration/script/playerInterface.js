@@ -1,4 +1,35 @@
-﻿function isTablet() {
+﻿
+if (!PocketCode)
+	var PocketCode = {};
+
+PocketCode.Web = {
+
+  hwRatio: 15 / 9,
+	hPixelOffset: 80,
+	vPixelOffset: 15,
+	vpMinHeight: 225,
+	vpMinWidth: 135,
+	
+	setHWRatio: function(ratio) {
+		PocketCode.Web.hwRatio = ratio;
+		PocketCode.Web.onResizeHandler();
+	},
+	
+	fullscreenApiAvailable: function() {
+		if (
+			document.fullscreenEnabled || 
+			document.webkitFullscreenEnabled || 
+			document.mozFullScreenEnabled ||
+			document.msFullscreenEnabled
+		) 
+			return true;
+			
+		return false;
+	}(),
+	//requestFullscreen, isFullScreen, cancelFullScreen, document.fullscreenchange
+	//http://www.sitepoint.com/use-html5-full-screen-api/
+	
+	isTablet: function() {
     var ua = navigator.userAgent;
 
     // Check if user agent is a Tablet
@@ -19,10 +50,10 @@
     }
 
     return false;
-}
-
-function isMobile() {
-    if (isTablet()) return false;
+	},//(),
+	
+	isMobile: function() {
+    if (PocketCode.isTablet()) return false;
 
     var ua = navigator.userAgent;
 
@@ -35,8 +66,68 @@ function isMobile() {
         return true;
     }
     return false;
-}
+	},//(),
+	
+	onResizeHandler: function() {
+		//var h = 
+		//console.log('event listener - resize');
+		var style = PocketCode.Web.ViewportContainer.style;
+		var webLayout = document.getElementById('pcWebLayout');
+		var aw = window.innerWidth - 2 * PocketCode.Web.hPixelOffset;	//available width/height	//webLayout.clientWidth
+		var ah = window.innerHeight - 2 * PocketCode.Web.vPixelOffset;													//webLayout.clientHeight
+		
+		var hwr = PocketCode.Web.hwRatio;
+		if (hwr > ah / aw) {
+			var h = ah;
+			var w = ah / hwr;
+		}
+		else {
+			var w = aw;
+			var h = aw * hwr
+		}
+		style.width = w + 'px';
+		style.height = h + 'px';
+	},
+	
+	launchProject: function(projectId) {
+		//show dialog
+		
+		//init refs
+		PocketCode.Web.ViewportContainer = document.getElementById('pcWebViewportContainer');
+		//attach resize handler
+		if(window.addEventListener)
+			window.addEventListener('resize', PocketCode.Web.onResizeHandler, false);
+		else
+		  window.attachEvent('onresize', PocketCode.Web.onResizeHandler);
+		
+		//trigger resize event (call)
+		PocketCode.Web.onResizeHandler();	//init size
+	},
+	
+	close: function() {
+		if(window.removeEventListener)
+			window.removeEventListener('resize', PocketCode.Web.onResizeHandler);
+		else
+			window.detachEvent('onresize', PocketCode.Web.onResizeHandler);
 
+		//remove from DOM
+		
+		//dispose app
+		
+		
+	},
+	
+	toggleFullScreen: function() {
+	
+	},
+	
+	toggleMute: function() {
+	
+	},
+	
+};
+
+/*
 function isDesktop() {
     if (false == isTablet() && false == isMobile()) {
         return true;
@@ -47,12 +138,13 @@ function isDesktop() {
 if (isMobile() || isTablet()) {
     document.write('<link href="../css/common-mobile.css" rel="stylesheet">')
 }
+*/
 
 // is called when you click the "x" sign for closing on the top right
 // corner of the screen. only temporary !
-function goBack() {
-    window.history.back();
-}
+//function goBack() {
+//    window.history.back();
+//}
 
 // is called when you press the "Play" button in the middle of the app preview
 // only temporary !
@@ -78,15 +170,24 @@ function play() {
 
 function launchProject(projectId) {
 
-    //if (!isDesktop()) {
+	//if (PocketCode.Web.isTablet || PocketCode.Web.isMobile) {
     //    window.location = "http://www.catrob.at/pocketcode/html5/" + projectId;
     //    return;
-    //}
+  //}
 
+	PocketCode.Web.launchProject(projectId);
     //open popup layer
     //alert("coming so: project id= " + projectId);
 
-    window.location.href = "../LayoutTests/startpageMockup.html";
+    //window.location.href = "../LayoutTests/startpageMockup.html";
 
     //launch app
 }
+
+//mockup test
+window.addEventListener("load", function load(event){
+    window.removeEventListener("load", load, false); //remove listener, no longer needed
+    launchProject(123);  
+},false);
+//mockup test end
+
