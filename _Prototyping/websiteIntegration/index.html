@@ -40,11 +40,11 @@
     </style>
     <!-- CHANGED SNIPPET -->
     <!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
-    <link rel="stylesheet" href="https://web-test.catrob.at/html5/websiteIntegration/css/playerInterface.css">
-    <script src="https://web-test.catrob.at/html5/websiteIntegration/script/playerInterface.js"></script>
+    <link rel="stylesheet" href="css/playerInterface.css">
+    <script src="script/playerInterface.js"></script>
     <!-- ADDED SNIPPET -->
 </head>
-<body>
+<body class="pc-webBody">
     <div id="wrapper">
 
         <header role="banner">
@@ -297,5 +297,131 @@
     <script src="https://pocketcode.org/cache/gcatroid1423867108.js"></script>
     <script src="https://pocketcode.org/cache/details1423867109.js"></script>
     <img id="ga" src="https://pocketcode.org/ga.php?utmac=&amp;utmn=415377903&amp;utmr=https%3A%2F%2Fpocketcode.org%2F&amp;utmp=%2Fdetails%2F1532&amp;guid=ON" pagespeed_url_hash="3548005739" onload="pagespeed.CriticalImages.checkImageForCriticality(this);" />
+	
+	<!-- ADDED SNIPPET: this content should be added dynamically -->
+	<div class="pc-webOverlay"> 
+		<div class="pc-webOpacity"></div>
+		<div class="pc-webLayout">
+		<div class="pc-webLayoutRow">
+			<div class="pc-leftCol"></div>
+			<div class="pc-centerCol">
+				<div class="pc-webViewportContainer">
+					<div class="pc-webViewport">
+						<div class="pc-webLayoutRow">
+							<div class="pc-playerMenuVContainer">
+								<div class="pc-playerMenu">
+					<button class="pc-playerButton" onclick="javascript: alert('TODO: back: disable');" disabled="disabled">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path class="pc-svgPlayerIcon" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+		C56.979,45.796,45.796,56.979,32,56.979z" />
+	<polygon class="pc-svgPlayerIcon" points="27.583,32 39.629,44.395 35.001,49 18.371,32 35.001,15 39.629,19.605" />
+						</svg>
+						<span>Back</span>
+					</button>
+					<button class="pc-playerButton" onclick="javascript: alert('TODO: restart');">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path class="pc-svgPlayerIcon" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+		C56.979,45.796,45.796,56.979,32,56.979z" />
+		<path d="M42.275,22.056l-3.266,3.267c-1.772-1.773-4.222-2.87-6.927-2.87c-5.41,0-9.796,4.389-9.796,9.8
+			c0,0.001,0-0.002,0,0h3.806l-6.079,6.075l-6.072-6.075h3.726c0-0.001,0,0,0,0c0-7.961,6.454-14.417,14.415-14.417
+			C36.063,17.835,39.666,19.448,42.275,22.056z" />
+		<path d="M50.059,31.747l-6.073-6.075l-6.079,6.075h3.808c0,0.002,0-0.001,0,0c0,5.411-4.387,9.799-9.797,9.799
+			c-2.706,0-5.154-1.097-6.927-2.868l-3.267,3.266c2.608,2.608,6.213,4.221,10.193,4.221c7.961,0,14.414-6.455,14.414-14.417
+			c0,0,0,0.001,0,0H50.059L50.059,31.747z" />
+						</svg>
+						<span>Restart</span>
+					</button>
+						<button class="pc-playerButton pc-menuBigButton" onclick="javascript: alert('TODO: start');" disabled="disabled">
+							<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+								<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+				 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+				C56.979,45.796,45.796,56.979,32,56.979z" />
+								<polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
+							</svg>
+							<span>Continue<!--/Start--></span>
+						</button>
+						<!--button class="pc-playerButton pc-menuBigButton" onclick="javascript: alert('TODO: pause');">
+							<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+								<path d="M32,1C14.88,1,1,14.88,1,31.999c0,17.122,13.88,31,31,31c17.121,0,31-13.879,31-31C63,14.88,49.121,1,32,1z
+		 M32,56.979c-13.796,0-24.98-11.185-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98c13.794,0,24.979,11.186,24.979,24.98
+		C56.979,45.796,45.796,56.979,32,56.979z" />
+	<path id="pause-3-icon" d="M29.95,45.617h-7.932V18.384h7.932V45.617z M42.949,45.617h-7.934V18.384h7.934V45.617z" />
+							</svg>
+							<span>Pause</span>
+						</button-->
+					<button class="pc-playerButton" onclick="javascript: alert('TODO: screenshot');">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+		C56.979,45.796,45.796,56.979,32,56.979z"/>
+	<path d="M35.486,32.488c0,1.867-1.519,3.385-3.385,3.385c-1.868,0-3.388-1.518-3.388-3.385
+		c0-1.867,1.52-3.385,3.388-3.385C33.968,29.103,35.486,30.622,35.486,32.488z"/>
+	<path d="M37.338,23.314v-2.832H26.662v2.832H17v18.204h30V23.314H37.338z M32.102,38.787
+		c-3.475,0-6.299-2.825-6.299-6.298s2.824-6.153,6.299-6.153c3.472,0,6.298,2.68,6.298,6.153S35.573,38.787,32.102,38.787z" />
+						</svg>
+						<span>Screenshot</span>
+					</button>
+					<button class="pc-playerButton pc-playerButtonChecked" onclick="javascript: alert('TODO: axes');">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+		C56.979,45.796,45.796,56.979,32,56.979z" />
+	<text transform="matrix(1 0 0 1 19.2988 29.2036)" font-family="Arial, sans-serif" font-weight="bold" font-size="15.6718">X</text>
+	<text transform="matrix(1 0 0 1 34.9707 46.7944)" font-family="Arial, sans-serif" font-weight="bold" font-size="15.6718">Y</text>
+	<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416 	" />
+						</svg>
+						<span>Axes</span>
+					</button>
+								</div>
+							</div>
+							<div class="pc-playerPreviewScreen">
+							<img id="asd" src="https://pocketcode.org/resources/thumbnails/1532_large.png">
+								<button class="pc-startButton" onclick="javascript: launchProject(1532);" disabled="disabled">
+                        <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
+                            <path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />
+                            <polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
+                        </svg>
+                    </button>
+							</div>
+							<div class="pc-playerSplashScreen">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pc-rightCol">
+				<div class="pc-webMenu">
+					<button class="pc-webButton" onclick="javascript: alert('TODO: close window');">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+			 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+			C56.979,45.796,45.796,56.979,32,56.979z" />
+			<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416 	" />
+						</svg>
+					</button>
+					<button class="pc-webButton pc-playerButtonChecked" onclick="javascript: alert('TODO: fullscreen');">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+			 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+			C56.979,45.796,45.796,56.979,32,56.979z" />
+			<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416 	" />
+						</svg>
+					</button>
+					<button class="pc-webButton" onclick="javascript: alert('TODO: mute');" disabled="disabled">
+						<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
+							<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
+			 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
+			C56.979,45.796,45.796,56.979,32,56.979z" />
+			<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416 	" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	<!-- ADDED SNIPPET -->
 </body>
 </html>
