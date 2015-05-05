@@ -88,6 +88,10 @@ PocketCode.SoundManager = (function () {
                 }
             }, this));
 
+            createjs.Sound.addEventListener("fileerror", createjs.proxy(function (e) {
+                //todo error event to avoid infinite loading
+            }, this));
+
             createjs.Sound.registerSounds(soundsFormatted, "");
         },
 

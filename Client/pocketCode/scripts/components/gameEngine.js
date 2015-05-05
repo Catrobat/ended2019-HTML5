@@ -51,7 +51,6 @@ PocketCode.GameEngine = (function () {
     Object.defineProperties(GameEngine.prototype, {
         layerObjectList: {
             get: function(){
-                //todo
                 this._layerObjectList = this.sprites.slice();
                 this._layerObjectList.unshift(this.background);
                 return this._layerObjectList;
@@ -137,6 +136,9 @@ PocketCode.GameEngine = (function () {
     //methods
     GameEngine.prototype.merge({
         loadProject: function(jsonProject){
+            this.soundsLoaded = false;
+            this.bricksLoaded = false;
+
             this.programReady = false;
             this._id = jsonProject.id;
             this.title = jsonProject.header.title;
@@ -169,6 +171,8 @@ PocketCode.GameEngine = (function () {
 
             this.images = jsonProject.images;
             this.sounds = jsonProject.sounds;
+            if(jsonProject.sounds.length <= 0)
+                this.soundsLoaded = true;
 
             this.broadcasts = jsonProject.broadcasts;
             this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -176,6 +180,8 @@ PocketCode.GameEngine = (function () {
 
             var device = new PocketCode.Device(this._soundManager);
             var bricksCount = jsonProject.header.bricksCount;
+            if(bricksCount <= 0)
+                this.bricksLoaded = true;
             this._brickFactory = new PocketCode.BrickFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
             this._brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 if(e.progress === 100){
@@ -215,10 +221,12 @@ PocketCode.GameEngine = (function () {
             this.background.status=PocketCode.ExecutingState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
+
         restart: function () {
             this.stop();
             this.execute();
         },
+
         pause: function () {
             if (this._executionState !== PocketCode.ExecutingState.RUNNING || this._executionState === PocketCode.ExecutingState.PAUSED)//(!this._running || this._paused)
                 return;
@@ -232,6 +240,7 @@ PocketCode.GameEngine = (function () {
             //this._paused = true;
             this._executionState = PocketCode.ExecutingState.PAUSED;
         },
+
         resume: function () {
             if (this._executionState !== PocketCode.ExecutingState.PAUSED)//(!this._paused)
                 return;
@@ -245,6 +254,7 @@ PocketCode.GameEngine = (function () {
             //this._paused = false;
             this._executionState = PocketCode.ExecutingState.RUNNING;
         },
+
         stop: function () {
             this._soundManager.stopAllSounds();
             this.background.stop();
@@ -256,32 +266,26 @@ PocketCode.GameEngine = (function () {
             //this._running = false;
             //this._paused = false;
         },
+
         _spriteOnExecudedHandler: function (e) {
             //TODO:
             //check all sprites if running
             //dispatch program.onExecuted event
         },
+
         //Brick-Sprite Interacttion
         getSprite: function (spriteId) {
-            //todo undefined
-            return this.sprites.filter(function (sprite) {return sprite.id === spriteId;})[0];
+            var sprite = this.sprites.filter(function (sprite) {return sprite.id === spriteId;})[0];
+            if(!sprite)
+                throw new Error('unknown sprite with id: ' + spriteId);
+            return sprite;
         },
+
         getSpriteLayer: function (spriteId) {
-            //todo undefined
             return this.layerObjectList.indexOf(this.getSprite(spriteId));
         },
-        checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
-            //program viewport
-            var h = this.height;
-            var w = this.width;
 
-            //TODO: implementation
-            //this._triggerOnChange([{ positionX: this._positionX }, { positionY: this._positionY }, { direction: this._direction }]);
-            //^^ only properties that really change
-            return false;
-        },
         setSpriteLayerBack: function (spriteId, layers) {
-            //TODO handle undefined spriteId
             var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
 
             if(layers <= 0 || currentPosition <= 0)
@@ -304,8 +308,8 @@ PocketCode.GameEngine = (function () {
             this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
             return true;
         },
+
         setSpriteLayerToFront: function (spriteId) {
-            //TODO handle undefined spriteId
             var currentPosition = this.getSpriteLayer(spriteId) - this.backgroundOffset;
 
             var sprites = this.sprites;
@@ -322,6 +326,17 @@ PocketCode.GameEngine = (function () {
             }
             this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
             return true;
+        },
+
+        checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
+            //program viewport
+            var h = this.height;
+            var w = this.width;
+
+            //TODO: implementation
+            //this._triggerOnChange([{ positionX: this._positionX }, { positionY: this._positionY }, { direction: this._direction }]);
+            //^^ only properties that really change
+            return false;
         },
 
         //variables

@@ -276,6 +276,9 @@ QUnit.test("PointToBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
     var spriteId = "spriteId";
+    sprite.id = spriteId;
+    program.sprites.push(sprite);
+
 
     var b = new PocketCode.Bricks.PointToBrick(device, sprite, { spriteId: spriteId });
 
@@ -438,6 +441,7 @@ QUnit.test("GoBackBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
+    program.sprites.push(sprite);
     var layers = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.GoBackBrick(device, sprite, { layers: layers });
@@ -464,6 +468,7 @@ QUnit.test("ComeToFrontBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
+    program.sprites.push(sprite);
 
     var b = new PocketCode.Bricks.ComeToFrontBrick(device, sprite);
 

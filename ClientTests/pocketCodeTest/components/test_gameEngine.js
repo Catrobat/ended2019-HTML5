@@ -9,10 +9,14 @@ QUnit.test("GameEngine", function (assert) {
     var program = new PocketCode.GameEngine();
     assert.ok(program instanceof PocketCode.GameEngine, "instance check");
 
-    assert.throws(function(){program.images = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.images.");
-    assert.throws(function(){program.sounds = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.sounds.");
-    assert.throws(function(){program.variables = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.variables.");
-    assert.throws(function(){program.broadcasts = "invalid argument"}, Error, "ERROR: passed invalid arguments to program.broadcasts.");
+    assert.throws(function(){program.images = "invalid argument"}, Error, "ERROR: passed invalid arguments to images.");
+    assert.throws(function(){program.sounds = "invalid argument"}, Error, "ERROR: passed invalid arguments to sounds.");
+    assert.throws(function(){program.variables = "invalid argument"}, Error, "ERROR: passed invalid arguments to variables.");
+    assert.throws(function(){program.broadcasts = "invalid argument"}, Error, "ERROR: passed invalid arguments to broadcasts.");
+    assert.throws(function(){program.setSpriteLayerBack("invalidId",5)}, Error, "ERROR: passed invalid id to setSpriteLayerBack.");
+    assert.throws(function(){program.setSpriteLayerToFront("invalidId")}, Error, "ERROR: passed invalid id to setSpriteLayerToFront.");
+    assert.throws(function(){program.getSprite("invalidId")}, Error, "ERROR: passed invalid id to getSprite.");
+    assert.throws(function(){program.getSpriteLayer("invalidId")}, Error, "ERROR: passed invalid id to getSpriteLayer.");
 
     var images = [{id:"1"},{id:"2"},{id:"3"}];
     program.images = images;
@@ -101,6 +105,16 @@ QUnit.test("GameEngine", function (assert) {
     program.sprites.push(new TestSprite(program));
     program.sprites.push(new TestSprite(program));
     program.sprites.push(new TestSprite(program));
+
+    var layers = program.layerObjectList;
+    assert.equal(layers[0], program.background, "Background in correct position in layer list.");
+    var spriteOrderCorrect = true;
+    for(i = 0, l = program.sprites.length; i < l; i++){
+        if(program.sprites[i] !== layers[i + 1]){
+            spriteOrderCorrect = false;
+        }
+    }
+    assert.ok(spriteOrderCorrect, "Sprites in correct position in layer list.");
 
     var programStartEvent = 0;
     program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(function(){
@@ -205,9 +219,30 @@ QUnit.test("GameEngine", function (assert) {
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once.");
     assert.deepEqual(program.getSpriteLayer("spriteId1"), program.sprites.length - 1 + program.backgroundOffset,"Brought Layer to front.");
 
+    var spriteBeforeLast = program.sprites[1];
+    spriteBeforeLast.id = "uniqueId";
+    program.setSpriteLayerBack(spriteBeforeLast.id,2);
+    assert.equal(program.getSpriteLayer(spriteBeforeLast.id),1,"Sprite positioned at first layer if when trying to set back more layers than currently available.");
+
+    var projectWithNoSounds = project1;
+    program.loadProject(projectWithNoSounds);
+    assert.ok(program.soundsLoaded, "SoundsLoaded set true if there are no sounds");
+
     var testProject = projectSounds;
+    var loadingHandled = assert.async();
+
     program.loadProject(testProject);
 
+    program._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function(e){
+        if(e.progress !== 100){
+            assert.ok(!program.soundsLoaded && !program.programReady, "Program not ready if sounds are not loaded");
+            return;
+        }else{
+            assert.ok(program.soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
+            assert.ok(program.programReady, "Program ready set to true after loading is done");
+        }
+        loadingHandled();
+    }));
     assert.equal(program.background.id, testProject.background.id,"Correct Background set.");
     assert.equal(program.sprites.length, testProject.sprites.length, "No excess sprites left.");
 
@@ -241,4 +276,8 @@ QUnit.test("GameEngine", function (assert) {
         }
     }
     assert.ok(imagesMatch, "Images set correctly.");
+
+   if(!program._soundManager.supported)
+        loadingHandled();
+
 });
