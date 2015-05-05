@@ -76,13 +76,17 @@ QUnit.test("Sprite", function (assert) {
 
     var device = new PocketCode.Device(this._soundManager);
     prog._brickFactory = new PocketCode.BrickFactory(device, prog, prog._broadcastMgr, prog._soundManager, 20);
-    var jsonSprite = projectSounds.sprites[0];
+
+    var jsonProject = JSON.parse(JSON.stringify(projectSounds));
+    var jsonSprite = jsonProject.sprites[0];
+    jsonSprite.sounds = jsonProject.sounds;
+    jsonSprite.variables = strProject11.variables;
+
     var testSprite = new PocketCode.Model.Sprite(prog, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly.");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly.");
 
-    //todo create testdata
     var varsMatch = true;
     for(var i = 0, length = jsonSprite.variables.length; i < length; i++){
         if(!testSprite._variables[jsonSprite.variables[i].id])
@@ -90,7 +94,6 @@ QUnit.test("Sprite", function (assert) {
     }
     assert.ok(varsMatch, "Variables set correctly.");
 
-    //todo create testdata
     var soundsMatch = true;
     for( i = 0, length = jsonSprite.sounds.length; i < length; i++){
         if(!testSprite._sounds[jsonSprite.sounds[i].id])
@@ -111,6 +114,22 @@ QUnit.test("Sprite", function (assert) {
             looksMatch = false;
     }
     assert.ok(looksMatch, "Looks set correctly.");
+
+    var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.bricks = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for bricks.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.sounds = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for sounds.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.variables = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for variables.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.looks = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for looks.");
 
 
     // *************************************************************

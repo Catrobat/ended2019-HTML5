@@ -100,9 +100,6 @@ PocketCode.Model.Sprite = (function () {
             this.id = propObject.id;
             this.name = propObject.name;
 
-            if(propObject.sounds.length > 0)
-                this.sounds = propObject.sounds;
-
             //looks
             if (propObject.looks === undefined || typeof propObject.looks !== 'object' || !(propObject.looks instanceof Array))
                 throw new Error('invalid argument: expected looks type of array');
@@ -121,7 +118,7 @@ PocketCode.Model.Sprite = (function () {
             }
 
             //sounds
-            if (!(propObject.variables instanceof Array))
+            if (!(propObject.sounds instanceof Array))
                 throw new Error('sounds setter expects type Array');
 
             for ( i = 0, l = propObject.sounds.length; i < l; i++) {
