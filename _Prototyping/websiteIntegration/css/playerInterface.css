@@ -113,6 +113,7 @@
 
 .pc-leftCol, .pc-rightCol, .pc-centerCol {
 	display: table-cell;
+	vertical-align: top;
 }
 .pc-leftCol, .pc-rightCol {
 	width: 50%;
@@ -143,6 +144,22 @@
 	font-family: Arial, sans-serif;
     color: #FFFFFF;
 }
+.pc-webLink {
+	height:83px; 
+	width:100%; 
+	max-width:324px; 
+	/*background-color:red; */
+	/*margin: 0px; 
+	float:left;*/
+}
+.pc-webLink a {
+	display:block; 
+	width:100%; 
+	height:100%; 
+	margin-right:80px; 
+	/*background-color:blue;*/
+	text-decoration: none;
+ }
 .pc-webMenu {
 	width: 50px;
 	/*height: 192px;*/
