@@ -165,13 +165,14 @@
 	/*height: 192px;*/
 	float: right;
 	/*vertical-align: top;*/
-	margin: 15px;
+	margin: 10px;
 	/*background-color: red;*/
 }
 .pc-webButton, .pc-webButton:active {
     padding: 0;
     /*margin: 0;*/
-	margin-bottom: 6px;
+	margin: 6px;
+	margin-bottom: 10px;
 	/*margin: 7px;
     display: inline;
     */background-color: transparent;
@@ -179,8 +180,8 @@
     cursor: pointer;
     position: relative;
     
-    width: 50px;
-    height: 50px;
+    width: 38px;
+    height: 38px;
     border: none;
     fill: #A9DCF1;
     /*color: #A9DCF1;*/
@@ -228,7 +229,7 @@
 	overflow: hidden;
 	/*background-color:red;*/
 }
-.pc-playerMenu {
+.pc-verticalAlignedCell {
 	/*background-color:green;*/
 	display: table-cell;
 	vertical-align: middle;
@@ -325,6 +326,32 @@
 	opacity: 0.3;
 	filter: alpha(opacity = 30);
 }
+.pc-playerPreviewScreen .pc-title {
+	position: absolute; 
+	top: 0;
+	left: 0;
+	color: #a9dcf1; 
+	font-size: 40px; 
+	font-weight: 700; 
+	overflow: hidden; 
+	padding: 15px;"
+}
+.pc-playerPreviewScreen .pc-loadingIndicator {
+	 position: absolute; 
+	 bottom: 0; 
+	 left: 0; 
+	 color: #ef7716;
+	font-size: 25px; 
+	font-weight: 700; 
+	 
+	 height: 25%; /* min-height = 113px according to container minimum size*/
+	 width: 100%; /* min-width = 270px */
+	 /*background-color:red;*/	/* TODO: change these settings (below) */
+	 /*opacity: 0.5; 
+	 display: table-cell;*/
+}
+/*.pc-playerPreviewScreen .pc-loadingIndicator div{
+}*/
 
 .pc-playerPreviewScreen .pc-startButton svg {
 	height: 50%;
