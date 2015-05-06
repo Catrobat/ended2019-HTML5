@@ -60,7 +60,8 @@
 	overflow: hidden;
 }
 .pc-webOverlay {
-    position: fixed;
+	font-family: sans-serif;
+  position: fixed;
 	width: 100%;
 	height: 100%;
 	top: 0;
@@ -219,21 +220,34 @@
 }
 
 /* player internal */
-.pc-playerMenuVContainer {
+.pc-playerMenuVContainer, .pc-playerMenuHContainer {
 	display: table;
 	position: absolute;
+	overflow: hidden;
+	/*background-color:red;*/
+}
+.pc-playerMenuVContainer {
 	top: 0px;
 	left: -82px;
 	width: 64px;
 	height: 100%;
-	overflow: hidden;
-	/*background-color:red;*/
 }
-.pc-verticalAlignedCell {
+.pc-playerMenuVContainer .pc-alignedCell {	/*vertical*/
 	/*background-color:green;*/
 	display: table-cell;
 	vertical-align: middle;
+	margin: 0 auto;
 }
+.pc-playerMenuHContainer {
+	height: 98px;
+	width: 100%;
+	left: 0px;
+	bottom: -104px;
+}
+.pc-playerMenuHContainer .pc-alignedCell {
+	display: block;
+}
+
 .pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
     padding: 0;
     margin:0;
