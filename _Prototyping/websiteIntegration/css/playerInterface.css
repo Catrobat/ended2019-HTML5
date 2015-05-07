@@ -239,14 +239,16 @@
 	margin: 0 auto;
 }
 .pc-playerMenuHContainer {
+	/*display: inline;*/
 	height: 98px;
 	width: 100%;
 	left: 0px;
 	bottom: -104px;
+	text-align: center;
 }
-.pc-playerMenuHContainer .pc-alignedCell {
-	display: block;
-}
+/*.pc-playerMenuHContainer .pc-alignedCell {
+	display: inline;
+}*/
 
 .pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
     padding: 0;
