@@ -160,7 +160,7 @@ QUnit.test("JsonpRequest", function (assert) {
         req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
         req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
-        req2.send(SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/rest/v0.1/projects/8744/details");
+        req2.send({ deleteId: 123 }, SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/rest/v0.1/projects/8744/details");
     };
 
     //invalid tag
@@ -199,7 +199,7 @@ QUnit.test("JsonpRequest", function (assert) {
         req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler3, this));
         req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler3, this));
 
-        req3.send("GET", "</script>");
+        req3.send({ prop1: "string", prop2: 3 }, "GET", "</script>");
     };
 
 
