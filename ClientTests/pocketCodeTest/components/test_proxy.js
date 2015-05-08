@@ -267,6 +267,7 @@ QUnit.test("Proxy", function (assert) {
     };
 
     var req = new PocketCode.ServiceRequest("ClientTests/pocketCodeTest/_resources/testDataProjectJson.js", SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
+    req._url = "/"; //overwrite default URL to request local server
     //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
