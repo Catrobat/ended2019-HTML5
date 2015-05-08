@@ -12,7 +12,8 @@ var PocketCode = {};
  * PocketCode User Interface Namespace
  * @namespace PocketCode.Ui
  */
-PocketCode.Ui = {};
+if (!PocketCode)
+    PocketCode.Ui = {};
 
 
 PocketCode.ExecutingState = {   //used for program, sprites and bricks
