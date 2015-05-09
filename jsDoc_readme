@@ -19,7 +19,7 @@ e.g. --> ./jsrun.sh -t=/home/markus/local/jsdoc-toolkit/templates/jsdoc -d=$HOME
 7) template can be altered/changed in ../jsdoc-toolkit/templates
 
 
-#######mehtod# best practice ##########
+######## best practice ##########
 see sprite.js
 
 used annotations:
