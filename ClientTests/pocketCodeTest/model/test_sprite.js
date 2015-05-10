@@ -9,7 +9,7 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var prog= new PocketCode.GameEngine();
+    var prog = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog,null);
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
@@ -70,6 +70,68 @@ QUnit.test("Sprite", function (assert) {
     sprite.hide();
     sprite.show();
     assert.ok(sprite._visible,"show sprite");
+    // *************************************************************
+
+    // ********************* Constructor *********************
+
+    var device = new PocketCode.Device(this._soundManager);
+    prog._brickFactory = new PocketCode.BrickFactory(device, prog, prog._broadcastMgr, prog._soundManager, 20);
+
+    var jsonProject = JSON.parse(JSON.stringify(projectSounds));
+    var jsonSprite = jsonProject.sprites[0];
+    jsonSprite.sounds = jsonProject.sounds;
+    jsonSprite.variables = strProject11.variables;
+
+    var testSprite = new PocketCode.Model.Sprite(prog, jsonSprite);
+
+    assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly.");
+    assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly.");
+
+    var varsMatch = true;
+    for(var i = 0, length = jsonSprite.variables.length; i < length; i++){
+        if(!testSprite._variables[jsonSprite.variables[i].id])
+            varsMatch = false;
+    }
+    assert.ok(varsMatch, "Variables set correctly.");
+
+    var soundsMatch = true;
+    for( i = 0, length = jsonSprite.sounds.length; i < length; i++){
+        if(!testSprite._sounds[jsonSprite.sounds[i].id])
+            soundsMatch = false;
+    }
+    assert.ok(soundsMatch, "Sounds set correctly.");
+
+    var bricksMatch = true;
+    for(i = 0, length = jsonSprite.bricks.length; i < length; i++){
+        if(testSprite.bricks[i].id !== jsonSprite.bricks[i].id)
+            bricksMatch = false;
+    }
+    assert.ok(bricksMatch, "Bricks set correctly.");
+
+    var looksMatch = true;
+    for(i = 0, length = jsonSprite.looks.length; i < length; i++){
+        if(testSprite._looks[i].id !== jsonSprite.looks[i].id)
+            looksMatch = false;
+    }
+    assert.ok(looksMatch, "Looks set correctly.");
+
+    var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.bricks = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for bricks.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.sounds = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for sounds.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.variables = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for variables.");
+
+    corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
+    corruptSprite.looks = {};
+    assert.throws(function () {new PocketCode.Model.Sprite(prog, corruptSprite)}, Error, "Error: incorrect argument for looks.");
+
+
     // *************************************************************
 
     // ********************* Size *********************
@@ -291,7 +353,6 @@ QUnit.test("Sprite", function (assert) {
     var direction =degree;
 
     sprite._triggerOnChange([{direction: degree}]);
-    console.log("trigger event: "+sprite.onChange);
 
     assert.ok(sprite.onChange instanceof SmartJs.Event.Event,"trigger on change");
 
@@ -338,11 +399,11 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* point to *********************
     sprite.id="id1";
-    var newSprite = new PocketCode.Model.Sprite(prog);
+    newSprite = new PocketCode.Model.Sprite(prog);
     newSprite.id="id2";
     prog.sprites.push(newSprite);
     var tmp= prog.getSprite("id2");
-    assert.ok(tmp=newSprite,"push sprite to program");
+    assert.ok(tmp===newSprite,"push sprite to program");
 
     newSprite.setPosition(100,100);
     sprite.setPosition(50,50);

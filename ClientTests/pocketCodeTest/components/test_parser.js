@@ -35,6 +35,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
+    program.sprites.push(sprite);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
