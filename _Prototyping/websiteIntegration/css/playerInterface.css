@@ -44,4 +44,127 @@
             margin: 0;
             padding: 0;
         }
-				
+
+
+#projectPlayer {
+    border-radius: 20px;
+    position: absolute;
+    width: 80%;
+    height: 96%;
+    top: 2%;
+    left: 10%;
+    opacity: 1;
+    z-index: 2;
+
+    background-color: lightgrey;
+
+    visibility: hidden;
+
+}
+
+#closeButtonImage {
+    width:50%;
+    height:auto;
+    opacity: 0.5;
+}
+
+#closeButtonImage:hover {
+    opacity: 1;
+}
+
+#playerContainerTable {
+    width: 100%;
+    height: 100%;
+}
+
+#playerContainerTable_left {
+    width: 30%;
+}
+
+#playerContainerTable_mid {
+    background-image: url("../../LayoutTests/resources/app_screenshot.png");
+    background-size: 90%;
+    border-radius: 10px;
+    width: 40%;
+    opacity: 0.5;
+}
+#playerContainerTable_right {
+    width: 30%;
+}
+
+#closeButton {
+
+    position: absolute;
+    right: 1%;
+    top: 2%;
+    z-index: 3;
+
+    visibility: hidden;
+}
+
+#arrowPicture {
+    position: absolute;
+    width: 20%;
+    left: 5%;
+    bottom: 35%;
+
+    opacity: 0.3;
+}
+
+#muteButton {
+    width: 20%;
+    margin: 10px;
+    opacity: 0.3;
+}
+
+#pauseButton {
+    width: 20%;
+    margin: 10px;
+    opacity: 0.3;
+}
+
+#restartButton {
+    width: 20%;
+    margin: 10px;
+    opacity: 0.3;
+}
+
+
+.pc-startButton, .pc-startButton:active {
+    background-color: transparent;
+    border: medium none;
+    color: #FFF;
+    cursor: pointer;
+    fill: #FFF;
+    height: 50%;
+    margin: 0;
+    outline: medium none;
+    padding: 0;
+    position: absolute;
+    width: 50%;
+    top: 25%;
+    left: 25%;
+    z-index: 100;
+}
+.pc-startButton svg {
+    height: 50%;
+    left: 25%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 25%;
+    width: 50%;
+}
+.pc-startButton:hover .pc-svgPlayerIconBorder , .pc-startButton:active .pc-svgPlayerIconSymbol {
+    fill: #ffffff;
+}
+.pc-startButton:active .pc-svgPlayerIconBorder, .pc-startButton:active .pc-svgPlayerIconSymbol {
+    fill: #17a5be;
+}
+.pc-startButton:active {
+    color: #17a5be;
+    margin: 0;
+    padding: 0;
+}
+
+

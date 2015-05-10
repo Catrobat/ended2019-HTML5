@@ -40,11 +40,42 @@
     </style>
     <!-- CHANGED SNIPPET -->
     <!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
-    <link rel="stylesheet" href="https://web-test.catrob.at/html5/websiteIntegration/css/playerInterface.css">
-    <script src="https://web-test.catrob.at/html5/websiteIntegration/script/playerInterface.js"></script>
+    <link rel="stylesheet" href="css/playerInterface.css">
+    <script src="script/playerInterface.js"></script>
     <!-- ADDED SNIPPET -->
 </head>
 <body>
+    <div id = "closeButton">
+        <img src="../LayoutTests/resources/close.fw.png" onclick="closePlayer();" id = "closeButtonImage">
+    </div>
+    <div id="projectPlayer">
+
+        <table id="playerContainerTable">
+            <tr>
+                <td rowspan="3" id="playerContainerTable_left">
+                    <img id = "arrowPicture" src="../LayoutTests/resources/arrows.fw.png">
+                </td>
+                <td rowspan="3" id="playerContainerTable_mid">
+                    <button id = "startButton" class="pc-startButton" onclick="play();">
+                        <svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64">
+                            <path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z"/>
+                            <polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934"/>
+                        </svg>
+                    </button>
+                </td>
+                <td id="playerContainerTable_right">
+                    <img id="muteButton" src="../LayoutTests/resources/mute.fw.png">
+                </td>
+            </tr>
+            <tr>
+                <td><img id="pauseButton" src="../LayoutTests/resources/pause.fw.png"></td>
+            </tr>
+            <tr>
+                <td><img id="restartButton" src="../LayoutTests/resources/restart.fw.png"></td>
+            </tr>
+        </table>
+    </div>
+
     <div id="wrapper">
 
         <header role="banner">
@@ -133,7 +164,7 @@
                     <!--a href="https://pocketcode.org/download/1532.catrobat?fname=Flap-Pac-Man"-->
                     <img id="projectDetailsThumbnailImage" src="https://pocketcode.org/resources/thumbnails/1532_large.png" alt="" pagespeed_url_hash="1423789905" onload="pagespeed.CriticalImages.checkImageForCriticality(this);" />
                     <!--/a-->
-                    <button class="pc-startButton" onclick="javascript: launchProject(1532);">
+                    <button class="pc-startButton" onclick="launchProject(1533);">
                         <svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64">
                             <path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />
                             <polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
@@ -220,7 +251,7 @@
     </div>
 
     <footer>
-        <div>
+        <div id = "footerContainer">
             <div id="largeFooterMenu">
                 <div>
                     <ul style="float: left;">

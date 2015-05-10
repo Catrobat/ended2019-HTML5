@@ -50,8 +50,20 @@ if (isMobile() || isTablet()) {
 
 // is called when you click the "x" sign for closing on the top right
 // corner of the screen. only temporary !
-function goBack() {
-    window.history.back();
+function closePlayer() {
+    var closeButton = document.getElementById("closeButton");
+    var projectPlayer = document.getElementById("projectPlayer");
+    var wrapper = document.getElementById("wrapper");
+    var footerContainer = document.getElementById("footerContainer");
+
+    //mainContainer.style.visibility = "visible";
+
+    closeButton.style.visibility = "hidden";
+    projectPlayer.style.visibility = "hidden";
+
+    wrapper.style.visibility = "visible";
+    footerContainer.style.visibility = "visible";
+
 }
 
 // is called when you press the "Play" button in the middle of the app preview
@@ -86,7 +98,22 @@ function launchProject(projectId) {
     //open popup layer
     //alert("coming so: project id= " + projectId);
 
-    window.location.href = "../LayoutTests/startpageMockup.html";
+    //window.location.href = "../LayoutTests/startpageMockup.html";
+
+
+    //var mainContainer = document.getElementById("mainContainer");
+    var closeButton = document.getElementById("closeButton");
+    var projectPlayer = document.getElementById("projectPlayer");
+    var wrapper = document.getElementById("wrapper");
+    var footerContainer = document.getElementById("footerContainer");
+
+    //mainContainer.style.visibility = "visible";
+
+    closeButton.style.visibility = "visible";
+    projectPlayer.style.visibility = "visible";
+
+    wrapper.style.visibility = "hidden";
+    footerContainer.style.visibility = "hidden";
 
     //launch app
 }
