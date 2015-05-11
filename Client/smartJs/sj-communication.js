@@ -263,13 +263,21 @@ SmartJs.Communication.merge({
                             throw new Error('invalid argument: expected: data typeof object');
 
                         if (this.method === SmartJs.RequestMethod.POST) {   //
-                            //if (data instanceof File && xhr.setRequestHeader) {
-                            //    xhr.setRequestHeader('Content-type', data.type);
-                            //    xhr.setRequestHeader('X_FILE_NAME', data.name);
-                            //}
-
-                            this._xhr.open(this.method, this._url);
-                            this._xhr.send(data);
+                            if (data instanceof File && xhr.setRequestHeader) {
+                                this._xhr.open(this.method, this._url);
+                                this._xhr.setRequestHeader('Content-type', data.type);
+                                this._xhr.setRequestHeader('X_FILE_NAME', data.name);
+                                this._xhr.send(data);
+                            }
+                            else {
+                                this._xhr.open(this.method, this._url);
+                                this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                //this._xhr.send("fname=Henry&lname=Ford");
+                                var form = "";
+                                for (var prop in data)
+                                    form += prop + '=' + data[prop] + '&';
+                                this._xhr.send(form);
+                            }
                         }
                         else {  //add data to request url
                             var firstProp = (this._url.indexOf('?') === -1);
@@ -397,13 +405,21 @@ SmartJs.Communication.merge({
                             throw new Error('invalid argument: expected: data typeof object');
 
                         if (this.method === SmartJs.RequestMethod.POST) {   //
-                            //if (data instanceof File && xhr.setRequestHeader) {
-                            //    xhr.setRequestHeader('Content-type', data.type);
-                            //    xhr.setRequestHeader('X_FILE_NAME', data.name);
-                            //}
-
-                            this._xhr.open(this.method, this._url);
-                            this._xhr.send(data);
+                            if (data instanceof File && xhr.setRequestHeader) {
+                                this._xhr.open(this.method, this._url);
+                                this._xhr.setRequestHeader('Content-type', data.type);
+                                this._xhr.setRequestHeader('X_FILE_NAME', data.name);
+                                this._xhr.send(data);
+                            }
+                            else {
+                                this._xhr.open(this.method, this._url);
+                                this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                //this._xhr.send("fname=Henry&lname=Ford");
+                                var form = "";
+                                for (var prop in data)
+                                    form += prop + '=' + data[prop] + '&';
+                                this._xhr.send(form);
+                            }
                         }
                         else {  //add data to request url
                             var firstProp = (this._url.indexOf('?') === -1);
