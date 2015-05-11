@@ -20,16 +20,9 @@ class FileView
     elseif((strpos($outputObject, 'data://image') !== false))
     {
       // handle base64 encoded image
-      /*
       $fp   = fopen($outputObject, 'r');
       $meta = stream_get_meta_data($fp);
       $mime_type = $meta['mediatype'];
-
-      $outputObject = file_get_contents($outputObject);
-      */
-
-      $file_info = new finfo(FILEINFO_MIME);
-      $mime_type = $file_info->buffer($outputObject);
 
       $outputObject = file_get_contents($outputObject);
 
