@@ -1,93 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>toDataURL example</title>
-    <style>
-        canvas {
-            border: solid black 1px;
-        }
+  <title>toDataURL example</title>
+  <style>
+    canvas {
+      border: solid black 1px;
+    }
 
-        img {
-            width: 400px;
-            height: 400px;
-            border: solid black 1px;
-        }
-    </style>
-    <script src="../../Client/smartJs/sj.js"></script>
-    <script src="../../Client/smartJs/sj-core.js"></script>
-    <script src="../../Client/smartJs/sj-event.js"></script>
-    <script src="../../Client/smartJs/sj-communication.js"></script>
-    <script src="../../Client/pocketCode/scripts/core.js"></script>
-    <script src="../../Client/pocketCode/scripts/components/proxy.js"></script>
+    img {
+      width: 400px;
+      height: 400px;
+      border: solid black 1px;
+    }
+  </style>
+  <script src="../../Client/smartJs/sj.js"></script>
+  <script src="../../Client/smartJs/sj-core.js"></script>
+  <script src="../../Client/smartJs/sj-event.js"></script>
+  <script src="../../Client/smartJs/sj-communication.js"></script>
+  <script src="../../Client/pocketCode/scripts/core.js"></script>
+  <script src="../../Client/pocketCode/scripts/components/proxy.js"></script>
 </head>
 <body>
-    <!--h1>Copy graphic using toDataURL</h1-->
+<!--h1>Copy graphic using toDataURL</h1-->
 
-    <div>
-        <!--button id="copy">Copy canvas image to image element</button> <br /-->
-        <canvas id="MyCanvas" width="40" height="40">This browser or document mode doesn't support canvas</canvas>
-        <!--img id="MyPix" src="" width="400" height="400" /-->
-        <br />
-        <button onclick="requestScreenShotGET()">download screenshot GET(JSON)</button>
-        <button onclick="requestScreenShotPOST()">download screenshot POST(JSON)</button>
-        <form method="POST" action="https://web-test.catrob.at/rest/v0.1/file/screenshot/">
-            <input type="submit" value="download screenshot (Form POST)" />
-            <input type="hidden" name="base64string" id="base64string" />
-        </form>
-    </div>
+<div>
+  <!--button id="copy">Copy canvas image to image element</button> <br /-->
+  <canvas id="MyCanvas" width="40" height="40">This browser or document mode doesn't support canvas</canvas>
+  <!--img id="MyPix" src="" width="400" height="400" /-->
+  <br/>
+  <button onclick="requestScreenShotGET()">download screenshot GET(JSON)</button>
+  <button onclick="requestScreenShotPOST()">download screenshot POST(JSON)</button>
+  <form method="POST" action="http://localhost/rest/v0.1/file/screenshot/">
+    <input type="submit" value="download screenshot (Form POST)"/>
+    <input type="hidden" name="base64string" id="base64string"/>
+  </form>
+</div>
 
-    <script>
+<script>
 
-        // Create some graphics on the canvas.
-        var canvas = document.getElementById("MyCanvas");
-        if (canvas.getContext) {
-            var ctx = canvas.getContext("2d");
-            ctx.fillStyle = "white";
-            ctx.beginPath();
-            ctx.rect(5, 5, 30, 25);
-            ctx.fill();
-            ctx.stroke();
-            ctx.arc(15, 15, 10, 0, Math.PI, false);
-            ctx.stroke();
-        }
+  // Create some graphics on the canvas.
+  var canvas = document.getElementById("MyCanvas");
+  if(canvas.getContext)
+  {
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.rect(5, 5, 30, 25);
+    ctx.fill();
+    ctx.stroke();
+    ctx.arc(15, 15, 10, 0, Math.PI, false);
+    ctx.stroke();
+  }
 
-        //add to form
-        //if (canvas.getContext) {
-            var ctx = canvas.getContext("2d");                // Get the context for the canvas.
-            var myImage = canvas.toDataURL("image/png");      // Get the data as an image.
-            var hi = document.getElementById("base64string");
-            hi.value = myImage; //write to hidden input (post form)
-        //}
+  //add to form
+  //if (canvas.getContext) {
+  var ctx = canvas.getContext("2d");                // Get the context for the canvas.
+  var myImage = canvas.toDataURL("image/png");      // Get the data as an image.
+  var hi = document.getElementById("base64string");
+  hi.value = myImage; //write to hidden input (post form)
+  //}
 
-        // catch the click from the button and copy the graphic
-        //document.getElementById("copy").addEventListener("click", function () {
-        //  var canvas1 = document.getElementById("MyCanvas");
-        //  if (canvas1.getContext) {
-        //    var ctx = canvas1.getContext("2d");                // Get the context for the canvas.
-        //    var myImage = canvas1.toDataURL("image/png");      // Get the data as an image.
-        //  }
-        //  var imageElement = document.getElementById("MyPix");  // Get the img object.
-        //  imageElement.src = myImage;                           // Set the src to data from the canvas.
-        //}, false);
+  // catch the click from the button and copy the graphic
+  //document.getElementById("copy").addEventListener("click", function () {
+  //  var canvas1 = document.getElementById("MyCanvas");
+  //  if (canvas1.getContext) {
+  //    var ctx = canvas1.getContext("2d");                // Get the context for the canvas.
+  //    var myImage = canvas1.toDataURL("image/png");      // Get the data as an image.
+  //  }
+  //  var imageElement = document.getElementById("MyPix");  // Get the img object.
+  //  imageElement.src = myImage;                           // Set the src to data from the canvas.
+  //}, false);
 
-            var onError = function (e) {
-                alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
-            }
-            function requestScreenShotGET() {
-                //TODO: exmple
-                var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.GET, { base64string: myImage });
-                sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
-                PocketCode.Proxy.send(sr);
-            }
+  var onError = function(e)
+  {
+    alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
+  }
+  function requestScreenShotGET()
+  {
+    //TODO: exmple
+    var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.GET, {base64string: myImage});
+    sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+    PocketCode.Proxy.send(sr);
+  }
 
-            function requestScreenShotPOST() {
-                //TODO: exmple
-                var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.POST);
-                sr.data = { base64string: myImage };
-                sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
-                PocketCode.Proxy.send(sr);
-            }
+  function requestScreenShotPOST()
+  {
+    //TODO: exmple
+    var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.POST);
+    sr.data = {base64string: myImage};
+    sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+    PocketCode.Proxy.send(sr);
+  }
 
-    </script>
+</script>
 </body>
 </html>
