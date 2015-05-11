@@ -386,67 +386,78 @@
 }
 
 
-.pc-cursorButton, .pc-cursorButton:active {
-    padding: 0;
-    margin:0;
-    margin-bottom: 7px;
-    /*display: inline;
-    */background-color: transparent;
-
-    cursor: pointer;
-    position: relative;
-
-    width: 80px;
-    height: 67px;
-    border: none;
-    fill: #A9DCF1;
-    color: #A9DCF1;
-    outline: none;
-}
-.pc-cursorButton svg {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    margin-left: 17px;
-    top:0;
-    left:0;
-}
-.pc-cursorButton span {
-    position: absolute;
-    font-size: 13px;
-    font-weight: bold;
-    /*width: inherit;*/
-    bottom: 3px;
-    left:0;
-    right:0;
-}
-.pc-cursorButton:hover  {
-    color: #fff;
-    fill: #fff;
-}
-.pc-cursorButton:active {
-    padding: 0;
-    /*margin:0;
-    */color: #17a5b8;
-    fill: #17a5b8;
-}
-.pc-cursorButton:disabled {
-    color: #A5A5A5;
-    fill: #A5A5A5;
-    cursor:default;
-}
+/* onscreen keyboard */
 .pc-cursorTable {
     display: table;
+		border-collapse: separate;	/* new (and below) */
+		border-spacing: 4px;
+		/* test only */	border: solid 1px green;
+										
 }
 .pc-cursorTableRow {
     display: table-row;
 }
 .pc-cursorTableCell {
     display: table-cell;
-   /* border: solid;*/
+   /* border: solid;
     border-width: thin;
     padding-left: 5px;
-    padding-right: 5px;
+    padding-right: 5px;*/
+}
+
+.pc-cursorButton, .pc-cursorButton:active {
+    padding: 0;
+    margin:0;
+    /*margin-bottom: 7px;
+    display: inline;
+    */background-color: transparent;
+
+    cursor: pointer;
+    position: relative;
+
+    width: 60px;
+    height: 60px;
+    border: solid 2px #A9DCF1;	/*none*/
+		border-radius: 10%;
+    fill: #A9DCF1;
+    color: #A9DCF1;
+    outline: none;
+}
+.pc-cursorButton svg {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    padding: 0;
+    margin: 20%;
+    /*margin-left: 17px;*/
+    top:0;
+    left:0;
+}
+/*
+.pc-cursorButton span {
+    position: absolute;
+    font-size: 13px;
+    font-weight: bold;
+    /width: inherit;/
+    bottom: 3px;
+    left:0;
+    right:0;
+}*/
+.pc-cursorButton:hover  {
+    color: #fff;
+    fill: #fff;
+		border-color: #fff;
+}
+.pc-cursorButton:active {
+    padding: 0;
+    /*margin:0;
+    */color: #17a5b8;
+    fill: #17a5b8;
+		border-color: #17a5b8;
+}
+.pc-cursorButton:disabled {
+    color: #A5A5A5;
+    fill: #A5A5A5;
+    cursor:default;
+		border-color: #A5A5A5;
 }
