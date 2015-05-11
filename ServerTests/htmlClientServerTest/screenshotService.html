@@ -76,7 +76,7 @@
             function requestScreenShotGET() {
                 //TODO: exmple
                 var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.GET, { base64string: myImage });
-                //sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+                sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
                 PocketCode.Proxy.send(sr);
             }
 
@@ -84,7 +84,7 @@
                 //TODO: exmple
                 var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.POST);
                 sr.data = { base64string: myImage };
-                //sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+                sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
                 PocketCode.Proxy.send(sr);
             }
 
