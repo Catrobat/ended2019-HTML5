@@ -250,7 +250,7 @@ SmartJs.Communication.merge({
 
         //methods
         XmlHttpRequest.prototype.merge({
-            send: function (method, url, data) {
+            send: function (data, method, url) {
                 if (method)
                     this.method = method;
 
@@ -258,14 +258,31 @@ SmartJs.Communication.merge({
                     this._url = url;
 
                 try {
-                    if (this.method === SmartJs.RequestMethod.POST && data) {
-                        //if (data instanceof File && xhr.setRequestHeader) {
-                        //    xhr.setRequestHeader('Content-type', data.type);
-                        //    xhr.setRequestHeader('X_FILE_NAME', data.name);
-                        //}
+                    if (data) {
+                        if (typeof data !== 'object')
+                            throw new Error('invalid argument: expected: data typeof object');
 
-                        this._xhr.open(SmartJs.RequestMethod.POST, this._url);
-                        this._xhr.send(data);
+                        if (this.method === SmartJs.RequestMethod.POST) {   //
+                            //if (data instanceof File && xhr.setRequestHeader) {
+                            //    xhr.setRequestHeader('Content-type', data.type);
+                            //    xhr.setRequestHeader('X_FILE_NAME', data.name);
+                            //}
+
+                            this._xhr.open(this.method, this._url);
+                            this._xhr.send(data);
+                        }
+                        else {  //add data to request url
+                            var firstProp = (this._url.indexOf('?') === -1);
+                            for (var prop in data) {
+                                this._url += (firstProp ? '?' : '&') + prop + '=' + data[prop];
+                                firstProp = false;
+                            }
+                            this._xhr.open(this.method, this._url);
+                            this._xhr.send();
+                            //var e = 
+                            //throw new Error('sending data requires RequestMethod.POST');
+                            //this._onError.dispatchEvent(e);
+                        }
                     }
                     else {
                         this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
@@ -295,7 +312,7 @@ SmartJs.Communication.merge({
 
             if (this.supported) {
                 this._xhr = new XMLHttpRequest();   //default
-                if (!('withCredentials' in this._xhr) && typeof XDomainRequest !== 'undefined')
+                if (!('withCredentials' in this._xhr) && typeof XDomainRequest !== 'undefined') //this will not be called (XDomainRequest masked in this.supported to avoid errors)
                     this._xhr = new XDomainRequest();
             }
 
@@ -349,8 +366,8 @@ SmartJs.Communication.merge({
                     var xhr = new XMLHttpRequest();
                     if ('withCredentials' in xhr)
                         return true;
-                    if (typeof XDomainRequest !== undefined)
-                        return true;
+                    //if (typeof XDomainRequest !== undefined)  //disabled due to missing testing infrastructure
+                    //    return true;
 
                     return false;
                 },
@@ -364,7 +381,7 @@ SmartJs.Communication.merge({
 
         //methods
         CorsRequest.prototype.merge({
-            send: function (method, url, data) {
+            send: function (data, method, url) {
                 if (method)
                     this.method = method;
 
@@ -372,11 +389,39 @@ SmartJs.Communication.merge({
                     this._url = url;
 
                 try {
-                    if (!(this._xhr instanceof XMLHttpRequest)) //should be triggered even on error
-                        this._onLoadStart.dispatchEvent();//{}.merge(e));
+                    if (!(this._xhr instanceof XMLHttpRequest)) //IE: XDomainRequest
+                        this._onLoadStart.dispatchEvent();  //should be triggered even on error
 
-                    this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
-                    this._xhr.send(data);
+                    if (data) {
+                        if (typeof data !== 'object')
+                            throw new Error('invalid argument: expected: data typeof object');
+
+                        if (this.method === SmartJs.RequestMethod.POST) {   //
+                            //if (data instanceof File && xhr.setRequestHeader) {
+                            //    xhr.setRequestHeader('Content-type', data.type);
+                            //    xhr.setRequestHeader('X_FILE_NAME', data.name);
+                            //}
+
+                            this._xhr.open(this.method, this._url);
+                            this._xhr.send(data);
+                        }
+                        else {  //add data to request url
+                            var firstProp = (this._url.indexOf('?') === -1);
+                            for (var prop in data) {
+                                this._url += (firstProp ? '?' : '&') + prop + '=' + data[prop];
+                                firstProp = false;
+                            }
+                            this._xhr.open(this.method, this._url);
+                            this._xhr.send();
+                            //var e = 
+                            //throw new Error('sending data requires RequestMethod.POST');
+                            //this._onError.dispatchEvent(e);
+                        }
+                    }
+                    else {
+                        this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
+                        this._xhr.send();
+                    }
                 }
                 catch (e) {
                     //console.log("internal: error");

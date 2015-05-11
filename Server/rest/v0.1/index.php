@@ -72,6 +72,10 @@
         case "ServiceMethodNotImplementedException":
           $result = new ExceptionDto("ServiceMethodNotImplementedException", $result->getMessage(), $result->getCode(), $result->getFile(), $result->getLine());
           break;
+
+        case "ServiceFileMethodNotImplementedException":
+          $result = new ExceptionDto("ServiceFileMethodNotImplementedException", $result->getMessage(), $result->getCode(), $result->getFile(), $result->getLine());
+          break;
           
         case "ServicePathViolationException":
           $result = new ExceptionDto("ServicePathViolationException", $result->getMessage(), $result->getCode(), $result->getFile(), $result->getLine());

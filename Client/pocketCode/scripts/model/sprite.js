@@ -38,34 +38,33 @@ PocketCode.GraphicEffect = {
 };
 /**
  * @class Sprite whole functionality of a sprite object
- * @property {number} _executionState states if sprite is running/stopped
- * @property {number} id indicates the id of the sprite
- * @property {number} name indicates the name of the sprite
- * @property {number} _gameEngine reference to gameEngine object
- * @property {number} _looks list of looks
- * @property {number} _sounds list of sounds
+ * @property {PocketCode.ExecutingState} _executionState states if sprite is running/stopped
+ * @property {String} id indicates the id of the sprite
+ * @property {String} name indicates the name of the sprite
+ * @property {PocketCode.GameEngine} _gameEngine reference to gameEngine object
+ * @property {Array} _looks list of looks
+ * @property {Array} _sounds list of sounds
  * @property {number} _onChange maps events to gameEngine.onSpriteChange
- * @property {number} _variables set of variables
- * @property {number} _variableNames set of varialbe names
- * @property {number} _bricks list of bricks
+ * @property {Array} _variables set of variables
+ * @property {Array} _variableNames set of varialbe names
+ * @property {Array} _bricks list of bricks
  * @property {number} _positionX horizontal position
  * @property {number} _positionY vertical position
  * @property {number} _direction indicates the direction the sprite points to in degree
- * @property {number} _currentLook indicates the current look of the sprite
+ * @property {Object} _currentLook indicates the current look of the sprite
  * @property {number} _size indicates the size of the sprite
- * @property {number} _visible indicates whether the sprite is visible or not
+ * @property {boolean} _visible indicates whether the sprite is visible or not
  * @property {number} _transparency transparency value of the sprite
  * @property {number} _brightness brightness value of the sprite
- * @property {number} _onExecuted indicates whether the sprite has been executed
+ * @property {SmartJs.Event} _onExecuted indicates whether the sprite has been executed
  *
  *
  */
 PocketCode.Model.Sprite = (function () {
     /**
-     * initializing of properties
+     * initialization of properties
      * @param gameEngine gameEngine instance as a reference
      * @param propObject object which can contains properties
-     * @constructor
      */
     function Sprite(gameEngine, propObject) {
 
@@ -79,6 +78,7 @@ PocketCode.Model.Sprite = (function () {
         this._variables = {};
         this._variableNames = {};
         this._bricks = [];
+
         //attach to bricks onExecuted event, get sure all are executed an not running
         //property initialization
         //motion
@@ -95,6 +95,44 @@ PocketCode.Model.Sprite = (function () {
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
+
+        if(propObject){
+            this.id = propObject.id;
+            this.name = propObject.name;
+
+            //looks
+            if (propObject.looks === undefined || typeof propObject.looks !== 'object' || !(propObject.looks instanceof Array))
+                throw new Error('invalid argument: expected looks type of array');
+
+            this._looks = propObject.looks;
+            this._currentLook = propObject.looks[0];
+
+            //variables
+            if (!(propObject.variables instanceof Array))
+                throw new Error('variable setter expects type Array');
+
+            for (var i = 0, l = propObject.variables.length; i < l; i++) {
+                propObject.variables[i].value = 0.0;  //init
+                this._variables[propObject.variables[i].id] = propObject.variables[i];
+                this._variableNames[propObject.variables[i].id] = { name: propObject.variables[i].name, scope: 'local' };
+            }
+
+            //sounds
+            if (!(propObject.sounds instanceof Array))
+                throw new Error('sounds setter expects type Array');
+
+            for ( i = 0, l = propObject.sounds.length; i < l; i++) {
+                this._sounds[propObject.sounds[i].id] = propObject.sounds[i];
+            }
+
+            //bricks
+            if (!(propObject.bricks instanceof Array))
+                throw new Error('bricks setter expects type Array');
+
+            for (i = 0, l = propObject.bricks.length; i < l; i++){
+                this._bricks.push(gameEngine._brickFactory.create(this, propObject.bricks[i]));
+            }
+        }
     }
 
     Object.defineProperties(Sprite.prototype, {
@@ -265,8 +303,8 @@ PocketCode.Model.Sprite = (function () {
         //motion: position
         /**
          * sets the position(x,y) of the sprite
-         * @param {Number} x
-         * @param {Number} y
+         * @param {number} x
+         * @param {number} y
          * @param {triggerEvent
          * @returns {boolean}
          */

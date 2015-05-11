@@ -1,18 +1,15 @@
-body {
-
+/*body {
     padding: 0px;
     margin: 0px;
     box-sizing: border-box;
-    /*background-color: red;*/
     font-family: Arial, sans-serif;
     color: red;
-    /*opacity: 0.3;*/
     z-index: 0;
-}
+}*/
 
 #mainContainer {
-    background-image: url("../resources/main.fw.png");
-    background-size: 100% 100%;
+    /*background-image: url("../resources/main.fw.png");
+    background-size: 100% 100%;*/
     color: black;
     /*background-color: #05222a;*/
     position: absolute;
@@ -20,7 +17,9 @@ body {
     height:100%;
     z-index: 1;
     opacity: 0.3;
+    visibility: hidden;
 }
+
 
 #projectPlayer {
     border-radius: 20px;
@@ -33,6 +32,7 @@ body {
     z-index: 2;
 
     background-color: lightgrey;
+    visibility: hidden;
 
 }
 
@@ -40,6 +40,7 @@ body {
     width:50%;
     height:auto;
     opacity: 0.5;
+    visibility: hidden;
 }
 
 #closeButtonImage:hover {

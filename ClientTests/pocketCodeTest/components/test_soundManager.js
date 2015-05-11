@@ -55,6 +55,8 @@ QUnit.test("SoundManager", function (assert) {
 
         var invalidData = [{notUrl: "a", id: "id"}];
         assert.throws(function(){new PocketCode.SoundManager("id",invalidData)}, Error, "ERROR: passed invalid arguments to Soundmanager.");
+        invalidData = {};
+        assert.throws(function(){new PocketCode.SoundManager("id",invalidData)}, Error, "ERROR: Soundmanager expects Array.");
 
         doneWithInitTests();
 
@@ -65,6 +67,14 @@ QUnit.test("SoundManager", function (assert) {
         var onPlayCompleted = function(){
             assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds.");
             doneWithPlaybackComplete();
+
+            var errorEventCaught = assert.async();
+            soundManager2 = new PocketCode.SoundManager("projectid",[{url: "invalid/url.mp3", id:"sound", size:3}]);
+            soundManager2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function(e){
+                assert.ok(e.src = "invalid/url.mpe", "Caught onLoadingError");
+                errorEventCaught();
+            }));
+
         };
 
         var onFileLoaded = function(e){

@@ -72,6 +72,8 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        //validate request url
+        assert.equal(req._url, "/ClientTests/pocketCodeTest/_resources/testDataProjects.js?a=eins&b=2", "valid  request url params: GET");
         assert.equal(e.target, req, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
@@ -219,7 +221,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
         req3.send();
     };
 
-    req.send(SmartJs.RequestMethod.GET, "/ClientTests/pocketCodeTest/_resources/testDataProjects.js"); //start async requests 
+    req.send({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "/ClientTests/pocketCodeTest/_resources/testDataProjects.js"); //start async requests 
 
 });
 
@@ -252,6 +254,8 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
+        //validate request url
+        assert.equal(req._url, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST&a=eins&b=2", "valid  request url params: GET");
         assert.equal(e.target, req, "onLoadStart target check");
         //console.log('onLoadStart ');
     };
@@ -458,7 +462,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 
 
     //start async
-    req.send(SmartJs.RequestMethod.GET, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST"); //start async requests 
+    req.send({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST"); //start async requests 
 
 });
 
