@@ -6,7 +6,6 @@ require_once("ProjectsController.class.php");
 class FileController extends BaseController
 {
   const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
-  const AUDIO_ROOT = "https://localhost/html5/audio/";
   const MAX_LETTER_COUNT = 100;
 
   public $text;

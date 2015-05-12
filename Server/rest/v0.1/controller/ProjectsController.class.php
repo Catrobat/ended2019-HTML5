@@ -6,14 +6,31 @@ require_once("BaseController.class.php");
   
     const CACHING_ENABLED = false;
     const INCREMENT_PROJECT_VIEW_COUNTER = false;
-		const SERVER_ROOT = "/var/www/";	//"D:/xampp/htdocs/";	//;
-  
-    public function __construct($request) {
+    public $SERVER_ROOT = "/var/www/";
+
+    // debug flag for working on localhost
+    public $LOCAL = true;
+
+    public function __construct($request)
+    {
       parent::__construct($request);
+
+      if($this->LOCAL)
+        $this->SERVER_ROOT = "D:/Dropbox/_Uni/_6. Semester/Bakk/HTML5/Server/";
+    }
+
+    public function SERVER_ROOT()
+    {
+      return $this->SERVER_ROOT;
+    }
+
+    public function isLocal()
+    {
+      return $this->LOCAL;
     }
   
     public function get() {
-      
+
       //try {
         $len = count($this->request->serviceSubInfo);
         
@@ -55,7 +72,7 @@ require_once("BaseController.class.php");
       //include data urls if requested
       if (isset($this->request->imgDataMax)) {
         //$path = $_SERVER["DOCUMENT_ROOT"] . DIRECTORY_SEPARATOR . "catroid" . DIRECTORY_SEPARATOR . $project->ScreenshotBig;
-        $path = str_replace("/", DIRECTORY_SEPARATOR, self::SERVER_ROOT . "catroid/" . $project->ScreenshotBig);
+        $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/" . $project->ScreenshotBig);
         $res = $this->loadBase64Image($path, $this->request->imgDataMax);
         if ($res !== false)
           $details->thumbnailUrl = $res;
@@ -68,10 +85,10 @@ require_once("BaseController.class.php");
     private function getProject($projectId) {
       
       //$projectFilePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'] . "/catroid/resources/projects/") . $projectId . ".catrobat";
-      $projectFilePath = str_replace("/", DIRECTORY_SEPARATOR, self::SERVER_ROOT . "catroid/resources/projects/") . $projectId . ".catrobat";
+      $projectFilePath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/resources/projects/") . $projectId . ".catrobat";
       
       //load zip
-      $cacheDir = str_replace("/", DIRECTORY_SEPARATOR, self::SERVER_ROOT . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/");
+      $cacheDir = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/");
       //$cacheDir = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'] . "/html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/");
       
       //if ($_SERVER["SERVER_NAME"] === $projectHost) {
@@ -334,7 +351,7 @@ require_once("BaseController.class.php");
       if (isset($this->request->imgDataMax)) {
         //include data urls
         //$localPath = $_SERVER["DOCUMENT_ROOT"] . DIRECTORY_SEPARATOR . "catroid" . DIRECTORY_SEPARATOR;
-        $localPath = str_replace("/", DIRECTORY_SEPARATOR, self::SERVER_ROOT . "catroid/");
+        $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/");
         
         foreach($projects->featured as $p) {
           $path = $localPath . $p->thumbnailUrl;
