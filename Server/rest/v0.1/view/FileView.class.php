@@ -10,6 +10,7 @@ class FileView {
 
   public function render($outputObject)
   {
+    //var_dump( "aaaa" );
     if( $outputObject instanceof ExceptionDto )
     {
       // Error handling - show exception

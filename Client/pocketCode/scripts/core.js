@@ -19,6 +19,6 @@ if (!PocketCode)
 PocketCode.ExecutingState = {   //used for program, sprites and bricks
     STOPPED: 0,
     RUNNING: 1,
-    PAUSED: 2,  //and running
+    PAUSED: 2  //and running
 };
 

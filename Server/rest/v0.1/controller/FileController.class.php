@@ -102,6 +102,15 @@ class FileController extends BaseController
 		if (isset($_GET['base64string'])) {
       $base64string = $_GET['base64string'];
     }
+
+    if (isset($_POST['fileName'])) {
+      $fileName = $_POST['fileName'];
+    }
+    if (isset($_POST['base64string'])) {
+      $base64string = $_POST['base64string'];
+    }
+
+    //var_dump( $base64string );
 		
 		if (empty($base64string))
 		  throw new Exception('missing request parameter: base64string');
@@ -110,11 +119,12 @@ class FileController extends BaseController
 		//return base64_decode($encodedData);
 		$base64string = 'data://' . substr($base64string, 5);	//php needs "data://" canvas toDataURL() provides "data:" only
 		//return base64_decode($base64string);
-		
+    //var_dump( $base64string );
 		//If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into plusses. If you do not do that, the decoded data is corrupted
 		$encodedData = str_replace(' ','+',$base64string);
-
-		//$decodedData = 
+    //var_dump( base64_decode($encodedData) );
+		//$decodedData =
+    return $encodedData;
 		return base64_decode($encodedData);
 
 /*		$extensions = array(
