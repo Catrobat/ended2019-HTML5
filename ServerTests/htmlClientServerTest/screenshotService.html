@@ -35,6 +35,18 @@
             <input type="hidden" name="base64string" id="base64string" />
         </form>
     </div>
+<div>
+  <!--button id="copy">Copy canvas image to image element</button> <br /-->
+  <canvas id="MyCanvas" width="40" height="40">This browser or document mode doesn't support canvas</canvas>
+  <!--img id="MyPix" src="" width="400" height="400" /-->
+  <br/>
+  <button onclick="requestScreenShotGET()">download screenshot GET(JSON)</button>
+  <button onclick="requestScreenShotPOST()">download screenshot POST(JSON)</button>
+  <form method="POST" action="http://localhost/rest/v0.1/file/screenshot/" accept-charset=utf-8>
+    <input type="submit" value="download screenshot (Form POST)"/>
+    <input type="hidden" name="base64string" id="base64string"/>
+  </form>
+</div>
 
     <script>
 
@@ -79,6 +91,18 @@
                 sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
                 PocketCode.Proxy.send(sr);
             }
+              var onError = function(e)
+              {
+                  if( e.statusCode != undefined )
+                    alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
+              }
+              function requestScreenShotGET()
+              {
+                //TODO: exmple
+                var sr = new PocketCode.ServiceRequest(PocketCode.Services.SCREENSHOT, SmartJs.RequestMethod.GET, {base64string: myImage});
+                sr.onError.addEventListener(new SmartJs.Event.EventListener(onError, this));
+                PocketCode.Proxy.send(sr);
+              }
 
             function requestScreenShotPOST() {
                 //TODO: exmple

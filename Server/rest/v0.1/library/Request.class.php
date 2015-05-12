@@ -54,14 +54,17 @@ class Request {
 
     //while GET & DELETE use the query string only, POST and PUT have properties included in the request body
     $body = file_get_contents("php://input");
+
 	$content_type = false;
-	
+    //var_dump( $_SERVER );
 	if(isset($_SERVER['CONTENT_TYPE'])) {
       $content_type = $_SERVER['CONTENT_TYPE'];
     }
-    
+
+
+
 	switch($content_type) {
-      case "application/json":
+      case "text/plain; charset=UTF-8":
 	    //TODO: this is a sample only (untested) & currently not in user
 		$body_params = json_decode($body);
         if($body_params) {
