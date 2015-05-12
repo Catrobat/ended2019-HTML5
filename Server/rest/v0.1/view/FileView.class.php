@@ -29,9 +29,9 @@ class FileView {
 
       header('Content-Disposition: attachment; filename=' . $filename );
       header("Content-Type: " . $mime_type);
-      //header('Content-Type:application/force-download');
       header("Content-Transfer-Encoding: binary");
-      $outputObject = file_get_contents($outputObject);
+      // JSON/POST - SWITCH
+      //$outputObject = file_get_contents($outputObject);
       echo $outputObject;
     }
     else

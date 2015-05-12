@@ -7,7 +7,6 @@ require_once("BaseController.class.php");
     const CACHING_ENABLED = false;
     const INCREMENT_PROJECT_VIEW_COUNTER = false;
     public $SERVER_ROOT = "/var/www/";
-    //public $josi_pfad = "D:/Dropbox/_Uni/_6. Semester/Bakk/HTML5/Server/";
     public $local_path = "./";
 
     public $whitelist = array(
@@ -16,7 +15,7 @@ require_once("BaseController.class.php");
     );
 
     // debug flag for working on localhost
-    // public $LOCAL = true;
+     public $LOCAL = false;
 
     public function __construct($request)
     {
@@ -25,6 +24,7 @@ require_once("BaseController.class.php");
       if(in_array($_SERVER['REMOTE_ADDR'], $this->whitelist)){
         // is localhost
         $this->SERVER_ROOT = $this->local_path;
+        $this->LOCAL = true;
       }
     }
 
