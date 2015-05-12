@@ -30,7 +30,8 @@
   <br/>
   <button onclick="requestScreenShotGET()">download screenshot GET(JSON)</button>
   <button onclick="requestScreenShotPOST()">download screenshot POST(JSON)</button>
-  <form method="POST" action="https://web-test.catrob.at/rest/v0.1/file/screenshot/">
+    <!--<form method="POST" action="https://web-test.catrob.at/rest/v0.1/file/screenshot/">-->
+  <form method="POST" action="http://localhost/rest/v0.1/file/screenshot/">
     <input type="submit" value="download screenshot (Form POST)"/>
     <input type="hidden" name="base64string" id="base64string"/>
   </form>
@@ -73,7 +74,8 @@
 
   var onError = function(e)
   {
-    alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
+      if(e.statusCode != undefined)
+        alert("onError: " + e.statusCode);//JSON.parse(e));// + e.fileName + ", " + lineNumber + ", " + e.stack);
   };
 
   function requestScreenShotGET()
