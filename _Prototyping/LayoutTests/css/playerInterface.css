@@ -132,7 +132,7 @@
     height: 750px; width:450px; /*test only*/
     border: solid 2px #17a5b8;
 }
-.pc-webViewport {
+.pc-playerViewport {
     position: relative;
     min-height: 450px;
     min-width: 270px;
