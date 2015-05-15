@@ -6,14 +6,14 @@
  * PocketCode Core Namespace
  * @namespace PocketCode
  */
-var PocketCode = {};
+if (!PocketCode)
+    var PocketCode = {};
 
 /**
  * PocketCode User Interface Namespace
  * @namespace PocketCode.Ui
  */
-if (!PocketCode)
-    PocketCode.Ui = {};
+PocketCode.Ui = {};
 
 
 PocketCode.ExecutingState = {   //used for program, sprites and bricks

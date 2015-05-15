@@ -622,7 +622,7 @@ SmartJs.Ui.merge({
                 var style = this._dom.style;
                 if (style.display === 'block') return;
 
-                style.display = 'block';
+                style.display = '';//'block';
                 if (this._parent)
                     this._parent.onLayoutChange.dispatchEvent({}, this);
             },

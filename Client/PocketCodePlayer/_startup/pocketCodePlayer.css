@@ -81,9 +81,11 @@
 	color: #FFFFFF;
 	box-sizing: border-box;
 }
-.pc-playerViewport * {
-	box-sizing: border-box;
-}
+
+	.pc-playerViewport * {
+		box-sizing: border-box;
+	}
+
 .pc-webLink {
 	height: 83px;
 	width: 100%;
@@ -155,3 +157,94 @@
 	fill: #A5A5A5;
 }
 
+
+
+/* splashScreen */
+.pc-splashScreen {
+	overflow: hidden;
+	font-size: 10px;
+	font-family: sans-serif;
+	background-color: #05222a;
+	box-sizing: border-box;
+}
+.pc-splashScreenBorder {
+    border: solid 2px #17a5b8;
+}
+.pc-splashDialog {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-top: -4.5em;
+	margin-left: -9.7em;
+	width: 19.4em;
+	height: 9.0em;
+	overflow: hidden;
+}
+
+.c { /*appLoadingTextColor*/
+	color: #17a5b8;
+}
+
+.d { /*appLoadingIndicatorBaseColor*/
+	background-color: #374E55;
+}
+
+.e { /*appLoadingIndicatorFillColor*/
+	background-color: #17a5b8;
+}
+
+.f {    /*logo2ndColor*/
+		color: #EF7716;
+	}
+
+.i, .j { /*appLoadingText, appLoadingSubText*/
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.8em;
+	padding-bottom: 0.2em;
+	white-space: nowrap;
+}
+
+.i { /*appLoadingText*/
+	font-size: 2.6em;
+}
+
+.h { /*appLoadingIndicatorContainer*/
+	height: 2.5em;
+	width: 19em;
+	margin-left: 0.15em;
+	margin-top: 0.2em;
+	position: relative;
+	overflow: hidden;
+}
+.b {/*.appLoadingIndicator*/
+	position: absolute;
+	width: 19.3em;
+}
+.b * {
+    box-sizing: content-box;
+}
+.x {
+	display: table-row;
+}
+.x > div {    /*.appLoadingIndicator*/
+	/* this has to be the same as: '.splashScreen' background-color */
+				/*position: relative;
+				float:left;*/
+				display: table-cell;
+				height: 2.5em;
+				/*border-left: solid 0.15em #05222a;*/
+				border: solid 0.2em #05222a;
+				width: 2.5em;
+	}
+.l { /*.appLoadingIndicator, appLoadingProgress*/
+	position: absolute;
+	height: 100%; /*2.7em;*/
+	top: 0.1em;
+	overflow: hidden;
+}
+
+.k { /*initProgress*/
+	/*width: 25%;*/
+	background-color: #17a5b8;
+}
