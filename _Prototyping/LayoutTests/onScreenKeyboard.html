@@ -1,95 +1,53 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
+    <title>Mockup: onscreen keyboard</title>
     <meta charset="utf-8" />
-    <title>Pocket Code Website - Flap-Pac-Man</title>
-    <meta name="description" content="Catrobat is a visual programming language and set of creativity tools for mobile devices.">
-    <meta name="viewport" content="width=device-width">
 
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-
-    <link rel="stylesheet" href="https://pocketcode.org/cache/gcatroid1423867094.css">
-    <link rel="stylesheet" href="https://pocketcode.org/cache/details1423867095.css">
-    <!--script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script-->
-    <script>window.jQuery || document.write('<script src="https://pocketcode.org/cache/jquery2.0.0.min.js"><\/script>')</script>
-    <script src="https://pocketcode.org/cache/jquery.history.js"></script>
-
-    <link rel="icon" href="https://pocketcode.org/images/logo/favicon.png?0.7.0" type="image/png" />
-    <!-- CHANGED SNIPPET -->
-    <style type="text/css">
-        /* this are changes made to your original styles - if you keep the layout it is you should integrate them into your existing styles
-                   and delete them here */
-
-        .projectDetailsThumbnail {
-            position: relative;
-        }
-
-        @media screen and (max-width: 800px) {
-            .projectDetailsThumbnail {
-                width: 100%;
-            }
-
-            .projectDetailsThumbnail img {
-                display: block;
-                margin-left: 25%;
-                margin-right: 25%;
-                max-width: 50%;
-                width: 50%;
-            }
-        }
-    </style>
-    <!-- CHANGED SNIPPET -->
-    <!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
-    <link rel="stylesheet" href="css/playerInterface.css">
-    <script src="script/playerInterface.js"></script>
-    <!-- ADDED SNIPPET -->
+    <link href="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
 </head>
-<body>
+<body style="background-color: darkgray">
 
 
-<div class="pc-cursorTable">
-    <div class="pc-cursorTableRow">
-        <div class="pc-cursorTableCell">
+    <div class="pc-cursorTable">
+        <div class="pc-cursorTableRow">
+            <div class="pc-cursorTableCell">
+            </div>
+            <div class="pc-cursorTableCell">
+                <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor up');">
+                    <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="32,11.037 60.983,52.963 3.017,52.963 " />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-cursorTableCell">
+            </div>
         </div>
-        <div class="pc-cursorTableCell">
-            <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor up');">
-                <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
-                    <polygon points="32,11.037 60.983,52.963 3.017,52.963 " />
-                </svg>
-            </button>
-        </div>
-        <div class="pc-cursorTableCell">
+        <div class="pc-cursorTableRow">
+            <div class="pc-cursorTableCell">
+                <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor left');">
+                    <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="52.963,3.018 52.963,60.982 11.037,32 " />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-cursorTableCell">
+                <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor down');">
+                    <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="3.018,11.037 60.982,11.037 32,52.963 " />
+                    </svg>
+                </button>
+            </div>
+            <div class="pc-cursorTableCell">
+                <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor right');">
+                    <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
+                        <polygon points="52.963,32 11.037,60.982 11.037,3.018 " />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="pc-cursorTableRow">
-        <div class="pc-cursorTableCell">
-            <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor left');">
-                <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
-                    <polygon points="52.963,3.018 52.963,60.982 11.037,32 "/>
-                </svg>
-            </button>
-        </div>
-        <div class="pc-cursorTableCell">
-            <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor down');">
-                <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
-                    <polygon points="3.018,11.037 60.982,11.037 32,52.963 "/>
-                </svg>
-            </button>
-        </div>
-        <div class="pc-cursorTableCell">
-            <button class="pc-cursorButton pc-playerButton" onclick="javascript: alert('TODO: cursor right');">
-                <svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
-                    <polygon points="52.963,32 11.037,60.982 11.037,3.018 "/>
-                </svg>
-            </button>
-        </div>
-    </div>
-</div>
-
-
-
-
-
 
 </body>
 </html>
