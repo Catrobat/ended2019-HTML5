@@ -13,11 +13,11 @@ PocketCode.Web = {
 
 	FullscreenApi: new ((function () {
 
-	    function FullscreenApi() {
-	        if (window.addEventListener)
-	            window.addEventListener('load', this._initOnLoad.bind(this), false);
-	        else
-	            window.attachEvent('onload', this._initOnLoad.bind(this));
+		function FullscreenApi() {
+			if (window.addEventListener)
+				window.addEventListener('load', this._initOnLoad.bind(this), false);
+			else
+				window.attachEvent('onload', this._initOnLoad.bind(this));
 		}
 
 		FullscreenApi.prototype = {
@@ -289,7 +289,7 @@ PocketCode.Web = {
 					this.fullscreenButton.disabled = true;
 
 				if (this._splashScreen)
-				    this._splashScreen.show();
+					this._splashScreen.show();
 
 				//trigger resize event (call)
 				this._onResizeHandler();	//init size
@@ -324,19 +324,18 @@ PocketCode.Web = {
 
 	LoadingIndicator: (function () {
 		function LoadingIndicator() {
-			//window.addEventListener("load", this._init.bind(this), false);
 			var dom = document.createElement('div');
-			dom.className = 'h d';
+			dom.className = 'pc-liContainer pc-liBaseColor';
 
 			this.progressBar = document.createElement('div');
-			this.progressBar.className = 'e l k';
+			this.progressBar.className = 'pc-liFillColor pc-liBar pc-liProgress';
 			dom.appendChild(this.progressBar);
 
 			var li = document.createElement('div');
-			li.className = 'b';
+			li.className = 'pc-li';
 			dom.appendChild(li);
 			this._progressItems = document.createElement('div');
-			this._progressItems.className = 'x';
+			this._progressItems.className = 'pc-liProgressStyle';
 			for (var i = 0; i < 7; i++) {
 				this._progressItems.appendChild(document.createElement('div'));
 			}
@@ -372,7 +371,6 @@ PocketCode.Web = {
 					this._pendingCount = 1;
 
 				for (var i = 1, l = ch.length; i <= l; i++) {
-					// start = this._pendingCount + 3;
 					if (i >= this._pendingCount - 3 && i <= this._pendingCount)
 						ch[i - 1].style.backgroundColor = '#ef7716';
 					else
@@ -418,12 +416,12 @@ PocketCode.Web = {
 			this._container.appendChild(dialog);
 
 			var headline = document.createElement('div');
-			headline.className = 'i c';
+			headline.className = 'pc-splashLoadingText pc-splashLoadingColor';
 			headline.innerHTML = '&lt;Pocket<span class="f">Code</span>&nbsp;/&gt;';
 			dialog.appendChild(headline);
 
 			var text = document.createElement('div');
-			text.className = 'c j';
+			text.className = 'pc-splashLoadingColor pc-splashLoadingSubText';
 			this._text = document.createTextNode(this._loadingText);
 			text.appendChild(this._text);
 			dialog.appendChild(text);
@@ -435,8 +433,8 @@ PocketCode.Web = {
 		}
 
 		SplashScreen.prototype = {
-		    show: function () {
-		        this._loadingIndicator.show();
+			show: function () {
+				this._loadingIndicator.show();
 				this._dom.style.display = '';
 			},
 			hide: function () {
@@ -450,7 +448,7 @@ PocketCode.Web = {
 				this._container.className = this._container.className.replace(' pc-splashScreenBorder ', '').trim();
 			},
 			setProgress: function (loaded, total) {
-				if (loaded !== total) { //perc < 100) {
+				if (loaded !== total) { //perc < 100
 					this._text.nodeValue = this._loadingText + '[' + loaded + '/' + total + ']';
 					this._loadingIndicator.setProgress(100 / total * loaded);
 				}
@@ -496,7 +494,7 @@ PocketCode.Web = {
 				var files = this._files;
 
 				//start requests
-				if (files.length > 0) { //start requests
+				if (files.length > 0) {
 					this._updateProgress(0, files.length);
 					this._loadingFileIdx = 0;
 					var file = files[0];
@@ -586,75 +584,73 @@ PocketCode.Web = {
 	})(),
 
 	PlayerInterface: new ((function () {
-	    function PlayerInterface() {
-	        this._domLoaded = false;
-	        if (window.addEventListener)
-	            window.addEventListener('load', this._initOnLoad.bind(this), false);
-	        else
-	            window.attachEvent('onload', this._initOnLoad.bind(this));
-	    }
+		function PlayerInterface() {
+			this._domLoaded = false;
+			if (window.addEventListener)
+				window.addEventListener('load', this._initOnLoad.bind(this), false);
+			else
+				window.attachEvent('onload', this._initOnLoad.bind(this));
+		}
 
-	    PlayerInterface.prototype = {
-	        _initOnLoad: function () {
-	            this._domLoaded = true;
-	            this._splashScreen = new PocketCode.Web.SplashScreen();
-	            this._loader = new PocketCode.Web.ResourceLoader(PocketCode.Web.resources);
-	            this._loader.onError = this._loaderOnError.bind(this);
-	            this._loader.onProgress = this._loaderOnProgress.bind(this);
+		PlayerInterface.prototype = {
+			_initOnLoad: function () {
+				this._domLoaded = true;
+				this._splashScreen = new PocketCode.Web.SplashScreen();
+				this._loader = new PocketCode.Web.ResourceLoader(PocketCode.Web.resources);
+				this._loader.onError = this._loaderOnError.bind(this);
+				this._loader.onProgress = this._loaderOnProgress.bind(this);
 
-	            if (this._projectId)
-	                this.launchProject();
-	        },
-	        _initApplication: function () {
-	            this._player = new PocketCode.PlayerApplication(this._splashScreen, this._playerViewport);
-	            this._player.loadProject(this._projectId);
-	        },
-	        launchProject: function (projectId) {
-	            if (projectId)
-	                this._projectId = projectId;
+				if (this._projectId)
+					this.launchProject();
+			},
+			_initApplication: function () {
+				this._player = new PocketCode.PlayerApplication(this._splashScreen, this._webOverlay);
+				this._player.loadProject(this._projectId);
+			},
+			launchProject: function (projectId) {
+				if (projectId)
+					this._projectId = projectId;
 
-	            if (!this._domLoaded)
-	                return;
+				if (!this._domLoaded)
+					return;
 
-	            if (document.body.innerHTML == '') {
-	                this._launchMobile();
-	                return;
-	            }
+				if (document.body.innerHTML == '') {
+					this._launchMobile();
+					return;
+				}
 
-	            //Desktop: UI
-	            var ol = new PocketCode.Web.WebOverlay();
-	            this._playerViewport = ol.viewportContainer;
+				//Desktop: UI
+				var ol = new PocketCode.Web.WebOverlay();
+				this._webOverlay = ol;
 
-	            ol.appendSplash(this._splashScreen);
-	            var fapi = PocketCode.Web.FullscreenApi;
-	            fapi.onFullscreenChange = function (state) {
-	                //console.log(state);
-	                var btn = ol.fullscreenButton;
-	                if (state)  //true
-	                    btn.className += ' pc-webButtonChecked ';
-	                else
-	                    btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
-	            };
-	            ol.show();
-	            this._loader.startLoading();
-	        },
-	        _launchMobile: function () {
-	            console.log('launch mobile');
-	            this._splashScreen.showBorder();
-	            document.body.appendChild(this._splashScreen._dom);
-	        },
-	        _loaderOnError: function () {
-	            this._splashScreen.showError();
-	            console.log('error');
-	        },
-	        _loaderOnProgress: function (current, total) {
-	            this._splashScreen.setProgress(current, total);
-	            //console.log('progress: ' + current + '/' + total);
-	            if (current === total)
-	                this._initApplication();
-	        },
-	    }
-	    return PlayerInterface;
+				ol.appendSplash(this._splashScreen);
+				var fapi = PocketCode.Web.FullscreenApi;
+				fapi.onFullscreenChange = function (state) {
+					var btn = ol.fullscreenButton;
+					if (state)  //true
+						btn.className += ' pc-webButtonChecked ';
+					else
+						btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+				};
+				ol.show();
+				this._loader.startLoading();
+			},
+			_launchMobile: function () {
+				//mobile UI
+				this._splashScreen.showBorder();
+				document.body.appendChild(this._splashScreen._dom);
+				this._loader.startLoading();
+			},
+			_loaderOnError: function () {
+				this._splashScreen.showError();
+			},
+			_loaderOnProgress: function (current, total) {
+				this._splashScreen.setProgress(current, total);
+				if (current === total)
+					this._initApplication();
+			},
+		}
+		return PlayerInterface;
 	})())(),
 
 };
