@@ -614,7 +614,7 @@ PocketCode.Web = {
 				if (!this._domLoaded)
 					return;
 
-				if (document.body.innerHTML == '') {
+				if (document.body.children.length == 1) {
 					this._launchMobile();
 					return;
 				}
