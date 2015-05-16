@@ -47,6 +47,7 @@ PocketCode.PlayerApplication = (function () {
 
 
             //TODO:
+            //check browser compatibility
             //add viewport to DOM
             //download project details
             //trigger ratio change

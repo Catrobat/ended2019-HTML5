@@ -270,9 +270,6 @@ PocketCode.Web = {
 
 				style.width = w + 'px';
 				style.height = h + 'px';
-
-				if (this._splashScreen)
-					this._splashScreen.setWidth(w);
 			},
 			_toggleFullscreenHandler: function (e) {
 				PocketCode.Web.FullscreenApi.toggleFullscreen();
@@ -291,9 +288,6 @@ PocketCode.Web = {
 				else
 					this.fullscreenButton.disabled = true;
 
-				if (this._splashScreen)
-					this._splashScreen.show();
-
 				//trigger resize event (call)
 				this._onResizeHandler();	//init size
 
@@ -301,6 +295,9 @@ PocketCode.Web = {
 				//append + change body styles
 				document.body.className += ' pc-webBody ';
 				document.body.appendChild(this._dom);
+
+				if (this._splashScreen)
+				    this._splashScreen.show();  //init size
 			},
 			_hide: function () {
 				document.body.removeChild(this._dom);
@@ -433,12 +430,30 @@ PocketCode.Web = {
 			dialog.appendChild(this._loadingIndicator._dom);
 
 			this._dom = dom;
+
+			//bind events
+			if (window.addEventListener) {
+				window.addEventListener('resize', this._onResizeHandler.bind(this), false);
+			}
+			else {
+				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
+			}
 		}
 
 		SplashScreen.prototype = {
+			_onResizeHandler: function (e) {
+				//font-size of 10px => 194px x 90px
+			    var fs = Math.round(this._dom.offsetWidth * 0.6 / 19.4);
+			    var fh = Math.round(window.innerHeight * 0.3 / 9.0);
+			    fs = (fs < fh) ? fs : fh;
+				fs = (fs < 10) ? 10 : fs;
+				fs = (fs > 14) ? 14 : fs;
+				this._dom.style.fontSize = fs + 'px';
+			},
 			show: function () {
 				this._loadingIndicator.show();
 				this._dom.style.display = '';
+				this._onResizeHandler();    //init size
 			},
 			hide: function () {
 				this._dom.style.display = 'none';
@@ -459,13 +474,6 @@ PocketCode.Web = {
 					this._text.nodeValue = this._initialisingText;
 					this._loadingIndicator.setPending();
 				}
-			},
-			setWidth: function (px) {
-				//font-size of 10px => 194px
-				var fs = Math.round(px * 0.6 / 19.4);
-				fs = (fs < 10) ? 10 : fs;
-				fs = (fs > 15) ? 15 : fs;
-				this._dom.style.fontSize = fs + 'px';
 			},
 			showError: function () {
 				this._loadingIndicator.setProgress(0);
@@ -635,25 +643,30 @@ PocketCode.Web = {
 				this._loader.startLoading();
 			},
 			_launchMobile: function () {
-				//mobile UI
+			    //mobile events
+			    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+			    window.addEventListener('orientationchange', function (e) { window.scrollTo(0, 0); }, false);
+
+			    //mobile UI
 				this._splashScreen.showBorder();
 				document.body.appendChild(this._splashScreen._dom);
+				this._splashScreen.show();  //init size
 				this._loader.startLoading();
 			},
 			_initApplication: function () {
-			    //the whole framework is already loaded
-			    var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-			    this._player = new PocketCode.PlayerApplication(vpc);//this._splashScreen, this._webOverlay);
-			    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-			    this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-			    this._player.loadProject(this._projectId);
+				//the whole framework is already loaded
+				var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
+				this._player = new PocketCode.PlayerApplication(vpc);//this._splashScreen, this._webOverlay);
+				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+				this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+				this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
-			    this._splashScreen.hide();
+				this._splashScreen.hide();
 			},
 			_applicationRatioChangetHandler: function (e) {
-			    if (this._webOverlay)
-			        this._webOverlay.setHWRatio(e.ratio);
+				if (this._webOverlay)
+					this._webOverlay.setHWRatio(e.ratio);
 			},
 			_loaderOnError: function () {
 				this._splashScreen.showError();
