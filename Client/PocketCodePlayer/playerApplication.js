@@ -10,25 +10,64 @@
 PocketCode.PlayerApplication = (function () {
     PlayerApplication.extends(SmartJs.Components.Application);
 
-    function PlayerApplication(splashScreen, webOverlay) {
+    function PlayerApplication(viewportContainer) {
+        this._vp = viewportContainer || document.documentElement;
         //webOverlay is undefined if running in mobile page, no viewport defined
-        this._splashScreen = splashScreen;
-        this._mobile = webOverlay ? false : true;
-        this._webOverlay = webOverlay;
+        //this._splashScreen = splashScreen;
+        this._mobile = viewportContainer ? false : true;
+        //this._webOverlay = webOverlay;
+
+        //events
+        this._onInit = new SmartJs.Event.Event(this);       //triggered when the loading screen is available
+        this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
+
     }
 
+    //events
+    Object.defineProperties(PlayerApplication.prototype, {
+        onInit: {
+            get: function () {
+                return this._onInit;
+            }
+            //enumerable: false,
+            //configurable: true,
+        },
+        onHWRatioChange: {
+            get: function () {
+                return this._onHWRatioChange;
+            }
+            //enumerable: false,
+            //configurable: true,
+        }
+    });
+
+    //methods
     PlayerApplication.prototype.merge({
         loadProject: function (projectId) {
+
+
+            //TODO:
+            //add viewport to DOM
+            //download project details
+            //trigger ratio change
+            //create, show loading screen
+            //trigger onInit to hide splash screen
+
+            //TODO: rethink splashScreen scaling: check on mobile device 
             console.log('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._mobile);
 
             //test only
-            var _self = this;
-            window.setTimeout(_self._splashScreen.hide.bind(this._splashScreen), 3000);
+            this._onHWRatioChange.dispatchEvent({ ratio: 16 / 9 });
+            this._onInit.dispatchEvent();
+
+
+            //var _self = this;
+            //window.setTimeout(_self._splashScreen.hide.bind(this._splashScreen), 3000);
             //this._splashScreen.hide();
 
             //test: set ratio
-            if (this._webOverlay)
-                this._webOverlay.setHWRatio(16/9);
+            //if (this._webOverlay)
+            //    this._webOverlay.setHWRatio(16/9);
         },
     });
 

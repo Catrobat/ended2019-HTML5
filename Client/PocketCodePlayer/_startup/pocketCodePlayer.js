@@ -1,4 +1,7 @@
-﻿'use strict';
+﻿/// <reference path="../../smartJs/sj.js" />
+/// <reference path="../../smartJs/sj-core.js" />
+/// <reference path="../../smartJs/sj-event.js" />
+'use strict';
 
 if (!PocketCode)
 	var PocketCode = {};
@@ -380,7 +383,7 @@ PocketCode.Web = {
 			setPending: function () {
 				this.hideProgress();
 				this._renderPending();
-				this._loadingTimer = setInterval(this._renderPending.bind(this), 700);
+				this._loadingTimer = setInterval(this._renderPending.bind(this), 300);
 			},
 			hidePending: function () {
 				clearInterval(this._loadingTimer);
@@ -603,10 +606,6 @@ PocketCode.Web = {
 				if (this._projectId)
 					this.launchProject();
 			},
-			_initApplication: function () {
-				this._player = new PocketCode.PlayerApplication(this._splashScreen, this._webOverlay);
-				this._player.loadProject(this._projectId);
-			},
 			launchProject: function (projectId) {
 				if (projectId)
 					this._projectId = projectId;
@@ -614,7 +613,7 @@ PocketCode.Web = {
 				if (!this._domLoaded)
 					return;
 
-				if (document.body.children.length == 1) {
+				if (document.body.children.length <= 1) {
 					this._launchMobile();
 					return;
 				}
@@ -640,6 +639,21 @@ PocketCode.Web = {
 				this._splashScreen.showBorder();
 				document.body.appendChild(this._splashScreen._dom);
 				this._loader.startLoading();
+			},
+			_initApplication: function () {
+			    //the whole framework is already loaded
+			    var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
+			    this._player = new PocketCode.PlayerApplication(vpc);//this._splashScreen, this._webOverlay);
+			    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+			    this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+			    this._player.loadProject(this._projectId);
+			},
+			_applicationInitHandler: function () {
+			    this._splashScreen.hide();
+			},
+			_applicationRatioChangetHandler: function (e) {
+			    if (this._webOverlay)
+			        this._webOverlay.setHWRatio(e.ratio);
 			},
 			_loaderOnError: function () {
 				this._splashScreen.showError();
