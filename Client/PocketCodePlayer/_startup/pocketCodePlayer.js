@@ -7,6 +7,8 @@ if (!PocketCode)
 	var PocketCode = {};
 
 PocketCode.websiteUrl = 'https://pocketcode.org/';
+PocketCode.projectUrl = 'https://pocketcode.org/details/{projectId}';
+PocketCode.mobileUrl = 'https://pocketcode.org/html5/player/{projectId}';
 PocketCode.logoUrl = 'https://pocketcode.org/images/logo/logo_text.png';
 
 PocketCode.Web = {
