@@ -380,7 +380,7 @@ PocketCode.Web = {
 			setPending: function () {
 				this.hideProgress();
 				this._renderPending();
-				this._loadingTimer = setInterval(this._renderPending.bind(this), 300);
+				this._loadingTimer = setInterval(this._renderPending.bind(this), 400);
 			},
 			hidePending: function () {
 				clearInterval(this._loadingTimer);
@@ -433,7 +433,8 @@ PocketCode.Web = {
 
 			//bind events
 			if (window.addEventListener) {
-				window.addEventListener('resize', this._onResizeHandler.bind(this), false);
+			    window.addEventListener('resize', this._onResizeHandler.bind(this), false);
+			    this._dom.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 			}
 			else {
 				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
@@ -496,10 +497,31 @@ PocketCode.Web = {
 			this.onProgress = function () { };
 			this.onError = function () { };
 
+			//if (window.addEventListener)
+			//	window.addEventListener('error', this._onGlobalError.bind(this), false);
+			//else
+			//    window.attachEvent('onerror', this._onGlobalError.bind(this));
 		};
 
+	    //methods
 		ResourceLoader.prototype = {
-			//methods
+		    _onGlobalError: function (msg, url, line, col, error) {
+		        // Note that col & error are new to the HTML 5 spec and may not be 
+		        // supported in every browser.  It worked for me in Chrome.
+		        var extra = !col ? '' : '\ncolumn: ' + col;
+		        extra += !error ? '' : '\nerror: ' + error;
+
+		        // You can view the information in an alert to see things working like this:
+		        alert("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
+
+		        // TODO: Report this error via ajax so you can keep track
+		        //       of what pages have JS issues
+
+		        var suppressErrorAlert = true;
+		        // If you return true, then error alerts (like in older versions of 
+		        // Internet Explorer) will be suppressed.
+		        return suppressErrorAlert;
+		    },
 			startLoading: function () {
 				var size = 0;
 				var files = this._files;
@@ -581,7 +603,7 @@ PocketCode.Web = {
 			_updateProgress: function (loaded, total) {
 				this.onProgress(loaded, total);
 			},
-			_onErrorHandler: function (e) {
+			_onErrorHandler: function (e) {//msg, url, line, col, error) {
 				this._errorOccured = true;
 				if (this._loadingTimer)
 					clearInterval(this._loadingTimer);
@@ -693,6 +715,7 @@ PocketCode.Web.resources = {
 		return PocketCode.Web.resourceRoot;
 	}(),//'../',	//http://localhost:26825/loadingTestScripts/',
 	files: [
+		{ url: 'smartJs/sj.css', type: 'css' },
 		{ url: 'smartJs/sj.js', type: 'js' },
 		{ url: 'smartJs/sj-core.js', type: 'js' },
 		{ url: 'smartJs/sj-event.js', type: 'js' },
@@ -702,8 +725,8 @@ PocketCode.Web.resources = {
 		{ url: 'smartJs/sj-ui.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
-		{ url: 'pocketCode/libs/soundjs_0.6/soundjs-0.6.0.js', type: 'css' },
-		{ url: 'pocketCode/libs/fabrics_1.4.0/fabric.js', type: 'css' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'css' },
+		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'css' },
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
@@ -723,7 +746,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
 
 		//TODO: insert player scripts
-		{ url: 'pocketCodePlayer/playerApplication.js', type: 'js' },
+		{ url: 'PocketCodePlayer/playerApplication.js', type: 'js' },
 	],
 };
 

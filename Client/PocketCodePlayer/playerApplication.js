@@ -55,11 +55,12 @@ PocketCode.PlayerApplication = (function () {
             //trigger onInit to hide splash screen
 
             //TODO: rethink splashScreen scaling: check on mobile device 
-            console.log('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._mobile);
+            //console.log
+            alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._mobile);
 
             //test only
             this._onHWRatioChange.dispatchEvent({ ratio: 16 / 9 });
-            this._onInit.dispatchEvent();
+            //this._onInit.dispatchEvent();
 
 
             //var _self = this;
