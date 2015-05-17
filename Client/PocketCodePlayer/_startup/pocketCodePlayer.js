@@ -434,7 +434,7 @@ PocketCode.Web = {
 			//bind events
 			if (window.addEventListener) {
 			    window.addEventListener('resize', this._onResizeHandler.bind(this), false);
-			    this._dom.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+			    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 			}
 			else {
 				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
@@ -666,7 +666,7 @@ PocketCode.Web = {
 			},
 			_launchMobile: function () {
 			    //mobile events
-			    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+			    //document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 			    window.addEventListener('orientationchange', function (e) { window.scrollTo(0, 0); }, false);
 
 			    //mobile UI

@@ -14,7 +14,8 @@ PocketCode.PlayerApplication = (function () {
         this._vp = viewportContainer || document.documentElement;
         //webOverlay is undefined if running in mobile page, no viewport defined
         //this._splashScreen = splashScreen;
-        this._mobile = viewportContainer ? false : true;
+        this._isMobile = viewportContainer ? false : true;
+        this._isIOS = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
         //this._webOverlay = webOverlay;
 
         //events
@@ -56,7 +57,7 @@ PocketCode.PlayerApplication = (function () {
 
             //TODO: rethink splashScreen scaling: check on mobile device 
             //console.log
-            alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._mobile);
+            alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._isMobile);
 
             //test only
             this._onHWRatioChange.dispatchEvent({ ratio: 16 / 9 });
