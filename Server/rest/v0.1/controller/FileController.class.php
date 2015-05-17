@@ -6,7 +6,6 @@ require_once("ProjectsController.class.php");
 class FileController extends BaseController
 {
   const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
-  const AUDIO_ROOT = "https://localhost/html5/audio/";
   const MAX_LETTER_COUNT = 100;
 
   public $text;
@@ -22,6 +21,10 @@ class FileController extends BaseController
 
   public function get()
   {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET");
+    header("Access-Control-Allow-Headers: X-Requested-With");
+
     // Variable Initialization
     $text = "";
     if (isset($_GET['text'])) {
@@ -33,7 +36,45 @@ class FileController extends BaseController
 
     // Error handling if only ../file/ is given
     $len = count($this->request->serviceSubInfo);
-    if ( $len == 0 )
+    if($len == 0)
+      return new ServicePathViolationException("No Parameter is set after 'file'");
+
+    // type of file params
+    switch($this->request->serviceSubInfo[0])
+    {
+      case "tts":
+        $this->convertTTS($text);
+        return $this->mp3;
+        break;
+      case "screenshot":
+        return $this->convertImage();
+        break;
+      default:
+        return new ServiceFileMethodNotImplementedException("File-Method not found: " . implode("/", $this->request->serviceSubInfo));
+        break;
+    }
+  }
+
+  public function post()
+  {
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: POST");
+    header("Access-Control-Allow-Headers: X-Requested-With");
+
+    // Variable Initialization
+    $text = "";
+    if(isset($_POST['text']))
+    {
+      $text = utf8_decode($_POST['text']);
+    }
+    if(isset($_POST['lang']))
+    {
+      $this->language = $_POST['lang'];
+    }
+
+    // Error handling if only ../file/ is given
+    $len = count($this->request->serviceSubInfo);
+    if($len == 0)
       return new ServicePathViolationException("No Parameter is set after 'file'");
 
     // type of file params
@@ -61,6 +102,15 @@ class FileController extends BaseController
 		if (isset($_GET['base64string'])) {
       $base64string = $_GET['base64string'];
     }
+
+    if (isset($_POST['fileName'])) {
+      $fileName = $_POST['fileName'];
+    }
+    if (isset($_POST['base64string'])) {
+      $base64string = $_POST['base64string'];
+    }
+
+    //var_dump( $base64string );
 		
 		if (empty($base64string))
 		  throw new Exception('missing request parameter: base64string');
@@ -69,11 +119,12 @@ class FileController extends BaseController
 		//return base64_decode($encodedData);
 		$base64string = 'data://' . substr($base64string, 5);	//php needs "data://" canvas toDataURL() provides "data:" only
 		//return base64_decode($base64string);
-		
+    //var_dump( $base64string );
 		//If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into plusses. If you do not do that, the decoded data is corrupted
 		$encodedData = str_replace(' ','+',$base64string);
-
-		//$decodedData = 
+    //var_dump( base64_decode($encodedData) );
+		//$decodedData =
+    return $encodedData;
 		return base64_decode($encodedData);
 
 /*		$extensions = array(

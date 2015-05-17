@@ -1,0 +1,261 @@
+
+/* body to be set to avoid overlay spacings */
+.pc-webBody {
+/*    height: 100%;
+    width: 100%;
+*/    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+.pc-webBodyMobile {
+    background-color: #1F1F1F;  /* fix to IE9 100% sizing */
+    position: relative;
+}
+/* overlay */
+.pc-webOverlay {
+    font-family: sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.pc-webOpacity {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #05222a;
+    opacity: 0.92;
+    filter: alpha(opacity = 92);
+}
+
+.pc-logo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    height: 53px;
+}
+
+    .pc-logo img {
+        height: 53px;
+    }
+
+.pc-webLink {
+    height: 83px;
+    width: 100%;
+    max-width: 324px;
+}
+
+    .pc-webLink a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin-right: 80px;
+        text-decoration: none;
+    }
+
+
+.pc-webLayout {
+    position: absolute;
+    display: table;
+    height: 100% !important;
+    width: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+
+.pc-webLayoutRow {
+    display: table-row;
+    height: 100%;
+}
+
+.pc-leftCol, .pc-rightCol, .pc-centerCol {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.pc-leftCol, .pc-rightCol {
+    width: 50%;
+    min-width: 80px;
+}
+
+.pc-centerCol {
+    vertical-align: middle;
+}
+
+.pc-webViewportBorder {
+    border: solid 2px #17a5b8;
+}
+
+.pc-playerViewport {
+    position: relative;
+    min-height: 450px;
+    min-width: 270px;
+    background-color: #fff;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    color: #FFFFFF;
+    box-sizing: border-box;
+}
+
+    .pc-playerViewport * {
+        box-sizing: border-box;
+    }
+
+.pc-webMenu {
+    width: 50px;
+    float: right;
+    margin: 10px;
+}
+
+.pc-webButton, .pc-webButton:active {
+    padding: 0;
+    margin: 6px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border: none;
+    fill: #A9DCF1;
+    outline: none;
+}
+
+    .pc-webButton:active {
+        padding: 0;
+    }
+
+    .pc-webButton:disabled {
+        color: #A5A5A5;
+        cursor: default;
+    }
+
+.pc-webButtonChecked {
+    color: #ef7716;
+    fill: #ef7716;
+    border-color: #ef7716;
+}
+
+.pc-webButton svg {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+}
+
+.pc-webButton:hover {
+    fill: #fff;
+}
+
+.pc-webButton:active {
+    fill: #17a5b8;
+}
+
+.pc-webButton:disabled {
+    fill: #A5A5A5;
+}
+
+
+/* splashScreen */
+.pc-splashScreen {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-size: 10px;
+    font-family: sans-serif;
+    background-color: #05222a;
+    box-sizing: border-box;
+}
+
+.pc-splashScreenBorder {
+    border: solid 2px #17a5b8;
+}
+
+.pc-splashDialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -4.7em;
+    margin-left: -9.7em;
+    width: 19.4em;
+    height: 9.4em;
+    overflow: hidden;
+}
+
+.pc-splashLoadingColor {
+    color: #17a5b8;
+}
+
+.f {
+    color: #EF7716;
+}
+
+.pc-splashLoadingText, .pc-splashLoadingSubText {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.8em;
+    padding-bottom: 0.2em;
+    white-space: nowrap;
+}
+
+.pc-splashLoadingText {
+    font-size: 2.6em;
+}
+
+/* loading indicator */
+.pc-li {
+    position: absolute;
+    width: 19.3em;
+}
+
+    .pc-li * {
+        box-sizing: content-box;
+    }
+
+.pc-liBaseColor {
+    background-color: #374E55;
+}
+
+.pc-liContainer {
+    height: 2.5em;
+    width: 19em;
+    margin-left: 0.15em;
+    margin-top: 0.2em;
+    position: relative;
+    overflow: hidden;
+}
+
+.pc-liFillColor {
+    background-color: #17a5b8;
+}
+
+.pc-liBar {
+    position: absolute;
+    height: 100%; /*2.7em;*/
+    top: 0.1em;
+    overflow: hidden;
+}
+
+.pc-liProgress {
+    background-color: #17a5b8;
+}
+
+.pc-liProgressStyle {
+    display: table-row;
+}
+
+    .pc-liProgressStyle > div {
+        display: table-cell;
+        height: 2.5em;
+        border: solid 0.2em #05222a;
+        width: 2.5em;
+    }

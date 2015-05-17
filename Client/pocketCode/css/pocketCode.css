@@ -1,12 +1,212 @@
-﻿body {
+﻿html, body {
+	height: 100%;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	box-sizing: border-box;
 }
 
+.pc-playerMenuVContainer, .pc-playerMenuHContainer {
+	display: table;
+	position: absolute;
+	overflow: hidden;
+}
+
+.pc-playerMenuVContainer {
+	top: 0px;
+	left: -82px;
+	width: 64px;
+	height: 100%;
+}
+
+	.pc-playerMenuVContainer .pc-alignedCell {
+		display: table-cell;
+		vertical-align: middle;
+		margin: 0 auto;
+	}
+
+.pc-playerMenuHContainer {
+	height: 98px;
+	width: 100%;
+	left: 0px;
+	bottom: -104px;
+	text-align: center;
+}
+
+.pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
+	padding: 0;
+	margin: 0;
+	margin-bottom: 7px;
+	background-color: transparent;
+	cursor: pointer;
+	position: relative;
+	width: 80px;
+	height: 67px;
+	border: none;
+	fill: #A9DCF1;
+	color: #A9DCF1;
+	border-color: #A9DCF1;
+	outline: none;
+}
+
+	.pc-menuBigButton, .pc-menuBigButton:active {
+		width: 80px;
+		height: 91px;
+	}
+
+	.pc-playerButton svg {
+		position: absolute;
+		width: 46px;
+		height: 46px;
+		padding: 0;
+		margin: 0;
+		margin-left: 17px;
+		top: 0;
+		left: 0;
+	}
+
+	.pc-menuBigButton svg {
+		width: 70px;
+		height: 70px;
+		margin-left: 5px;
+	}
+
+	.pc-playerButton span {
+		position: absolute;
+		font-size: 13px;
+		font-weight: bold;
+		bottom: 3px;
+		left: 0;
+		right: 0;
+	}
+
+	.pc-playerButton:hover {
+		color: #fff;
+		fill: #fff;
+		border-color: #fff;
+	}
+	.pc-playerButton:active {
+		padding: 0;
+		color: #17a5b8;
+		fill: #17a5b8;
+		border-color: #17a5b8;
+	}
+	.pc-playerButton:disabled {
+		color: #A5A5A5;
+		fill: #A5A5A5;
+		border-color: #A5A5A5;
+		cursor: default;
+	}
+
+.pc-playerButtonChecked {
+	color: #ef7716;
+	fill: #ef7716;
+	border-color: #ef7716;
+}
+
+/* inner player screens */
+.pc-playerPreviewScreen, .pc-playerSplashScreen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-color: #05222a;
+}
+
+	.pc-playerPreviewScreen img {
+		height: 100%;
+		background-color: #A5A5A5;
+		opacity: 0.3;
+		filter: alpha(opacity = 30);
+	}
+
+		.pc-playerPreviewScreen img .disabled {
+			background-color: #A5A5A5;
+			opacity: 0.3;
+			filter: alpha(opacity = 30);
+		}
+
+	.pc-playerPreviewScreen .pc-title {
+		position: absolute;
+		top: 0;
+		left: 0;
+		color: #a9dcf1;
+		font-size: 40px;
+		font-weight: 700;
+		overflow: hidden;
+		padding: 15px;
+	}
+
+	.pc-playerPreviewScreen .pc-loadingIndicator {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		color: #ef7716;
+		font-size: 25px;
+		font-weight: 700;
+		height: 25%;
+		width: 100%;
+	}
+
+	.pc-playerPreviewScreen .pc-startButton svg {
+		height: 50%;
+		left: 25%;
+		top: 25%;
+		width: 50%;
+	}
+
+.pc-playerSplashScreen {
+	background-color: red;
+	visibility: hidden;
+}
+
+
+.pc-cursorButton, .pc-cursorButton:active {
+	margin: 0;
+	width: 60px;
+	height: 60px;
+	border: solid 2px;
+	border-radius: 10%;
+}
+
+	.pc-cursorButton svg {
+		position: absolute;
+		width: 60%;
+		height: 60%;
+		padding: 20%;
+		margin: 0;
+		top: 0;
+		left: 0;
+	}
+
+.pc-cursorTable {
+	display: table;
+	border-collapse: separate;
+	border-spacing: 4px;
+}
+
+.pc-cursorTableRow {
+	display: table-row;
+}
+
+.pc-cursorTableCell {
+	display: table-cell;
+}
+
+
+/*		.hiddenOverflow {
+			overflow: hidden;
+		}
+
+
 .pc-playerViewport {
-    border: 0;
+	border: 0;
 }
 .pc-playerViewport canvas {
-    border: 0;
-    padding: 0;
-    margin: 0;
-    background-color: #FFFFFF;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	background-color: #FFFFFF;
 }
+*/

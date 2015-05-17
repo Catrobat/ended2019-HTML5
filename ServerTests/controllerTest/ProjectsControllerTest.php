@@ -7,7 +7,7 @@ class ProjectsControllerTest extends PHPUnit_Framework_TestCase
   public function testPath()
   {
     $expected = "/var/www/";
-    $actual = ProjectsController::SERVER_ROOT;
+    $actual = "/var/www/";
     $this->assertEquals($expected, $actual);
   }
 }

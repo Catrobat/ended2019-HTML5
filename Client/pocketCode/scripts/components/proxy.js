@@ -7,7 +7,8 @@
 
 PocketCode.merge({
 
-    _serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
+    //_serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
+    _serviceEndpoint: 'http://localhost/rest/v0.1/',    //TODO:
 
     Services: {
         PROJECT_SEARCH: 'projects',
@@ -15,7 +16,7 @@ PocketCode.merge({
         PROJECT_DETAILS: 'projects/{id}/details',
         //I18N: 'i18n/{language}',
         TTS: 'file/tts',    ///{string}',
-        SCREENSHOT: 'file/screenshot',
+        SCREENSHOT: 'file/screenshot'
         //TODO:
     },
 
@@ -58,17 +59,17 @@ PocketCode.merge({
             url: {
                 get: function () {
                     return this._url + this._service;
-                },
+                }
             },
             data: {
                 value: undefined,
-                writable: true,
+                writable: true
             },
             progressSupported: {
-                get: function () { return this._progressSupported; },
+                get: function () { return this._progressSupported; }
                 //enumerable: false,
                 //configurable: true,
-            },
+            }
         });
 
         //events
@@ -99,8 +100,8 @@ PocketCode.merge({
             responseText: {
                 get: function () {
                     return this._xhr.responseText;
-                },
-            },
+                }
+            }
         });
 
         //methods
@@ -205,7 +206,7 @@ PocketCode.merge({
                 catch (e) {
                     this._onErrorHandler(e.merge({ statusCode: 0 }));//_onError.dispatchEvent(e.merge({ statusCode: 0 }));
                 }
-            },
+            }
         });
 
         return JsonpRequest;
@@ -285,11 +286,11 @@ PocketCode.merge({
                 this._mapEventsToStrongTypedRequest(req, request);
                 req.send(request.data, method || request.method);
                 return true;
-            },
+            }
         });
 
         return Proxy;
-    })())(),
+    })())()
 
 });
 
