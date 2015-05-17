@@ -6,9 +6,8 @@
  * @namespace CV
  * @type {{}|*}
  */
-PocketCode.CV = PocketCode.CV || {};
 
-PocketCode.Ui.RenderingItem = fabric.util.createClass(fabric.Image, {
+PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
         type: 'sprite',
 
         initialize: function(element, options) {
@@ -20,13 +19,13 @@ PocketCode.Ui.RenderingItem = fabric.util.createClass(fabric.Image, {
                 id: options.id,
                 name: options.name,
 
-                perPixelTargetFind: true,
+                perPixelTargetFind: true, // only pixels inside item area trigger click
                 selectable: false,
                 hasControls: false,
                 hasBorders: false,
                 hasRotatingPoint: false,
                 originX: "center",
-                originY: "center",
+                originY: "center"
             });
 
             this.setAngle(options.angle);
@@ -36,7 +35,7 @@ PocketCode.Ui.RenderingItem = fabric.util.createClass(fabric.Image, {
         toObject: function() {
             return fabric.util.object.extend(this.callSuper('toObject'), {
                 id: this.get('id'),
-                name: this.get('name'),
+                name: this.get('name')
             });
         },
 
