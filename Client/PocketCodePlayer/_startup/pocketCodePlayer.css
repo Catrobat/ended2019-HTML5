@@ -1,9 +1,9 @@
 
 /* body to be set to avoid overlay spacings */
 .pc-webBody {
-/*    height: 100%;
+    height: 100%;
     width: 100%;
-*/    padding: 0px;
+    padding: 0px;
     margin: 0px;
     overflow: hidden;
 }
@@ -27,6 +27,7 @@
     width: 100%;
     height: 100%;
     background-color: #05222a;
+    -moz-opacity: 0.92;
     opacity: 0.92;
     filter: alpha(opacity = 92);
 }
