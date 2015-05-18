@@ -53,7 +53,6 @@ PocketCode.Web = {
 				target.addEventListener(eventName, handler, false);
 				return handler;
 			},
-
 			_removeDomListener: function (target, eventName, eventHandler) {
 				target.removeEventListener(eventName, eventHandler, false);
 			},
@@ -234,6 +233,7 @@ PocketCode.Web = {
 			this.muteButton.disabled = true;	//disabled by default: sound manager not loaded yet
 
 			this._dom = overlay;
+			this._touchStartHandler = undefined;
 
 			//bind events
 			if (window.addEventListener) {
@@ -241,7 +241,6 @@ PocketCode.Web = {
 				this.closeButton.addEventListener('click', this._hide.bind(this), false);
 				this.fullscreenButton.addEventListener('click', this._toggleFullscreenHandler.bind(this), false);
 				this.muteButton.addEventListener('click', this._toggleMuteHandler.bind(this), false);
-				this._dom.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
 			}
 			else {
 				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
@@ -252,7 +251,15 @@ PocketCode.Web = {
 		}
 
 		WebOverlay.prototype = {
-			_onResizeHandler: function (e) {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var handler = eventHandler.bind(this);
+		        target.addEventListener(eventName, handler, false);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        target.removeEventListener(eventName, eventHandler, false);
+		    },
+		    _onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
@@ -285,7 +292,8 @@ PocketCode.Web = {
 				this.viewportContainer.appendChild(splashScreen._dom);
 			},
 			show: function () {
-				var fapi = PocketCode.Web.FullscreenApi;
+			    this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+			    var fapi = PocketCode.Web.FullscreenApi;
 				if (fapi.supported && !fapi.isBrowserFullscreen())
 					this.fullscreenButton.disabled = false;
 				else
@@ -303,6 +311,7 @@ PocketCode.Web = {
 					this._splashScreen.show();  //init size
 			},
 			_hide: function () {
+			    this._removeDomListener(document, 'touchmove', this._touchStartHandler);
 				document.body.removeChild(this._dom);
 				if (this._splashScreen)
 					this._splashScreen.hide();
@@ -444,7 +453,15 @@ PocketCode.Web = {
 		}
 
 		SplashScreen.prototype = {
-			_onResizeHandler: function (e) {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var handler = eventHandler.bind(this);
+		        target.addEventListener(eventName, handler, false);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        target.removeEventListener(eventName, eventHandler, false);
+		    },
+		    _onResizeHandler: function (e) {
 				//font-size of 10px => 194px x 90px
 				var fs = Math.round(this._dom.offsetWidth * 0.6 / 19.4);
 				var fh = Math.round(window.innerHeight * 0.3 / 9.0);
@@ -453,12 +470,14 @@ PocketCode.Web = {
 				fs = (fs > 14) ? 14 : fs;
 				this._dom.style.fontSize = fs + 'px';
 			},
-			show: function () {
+		    show: function () {
+		        this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._loadingIndicator.show();
 				this._dom.style.display = '';
 				this._onResizeHandler();    //init size
 			},
-			hide: function () {
+		    hide: function () {
+		        this._removeDomListener(document, 'touchmove', this._touchStartHandler);
 				this._dom.style.display = 'none';
 				this._loadingIndicator.hide();
 			},
