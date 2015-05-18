@@ -219,9 +219,9 @@
 }
 
 .pc-popup {
-    width: 600px;   /* this value will be set in script depending on the device width - test only*/
-	max-width: 400px;
-	max-height: 600px;
+    width: 500px;   /* this value will be set in script depending on the device width - test only*/
+	/*max-width: 400px;
+	*/max-height: 600px;
 	display: table;
 	border-spacing: 10px;
 	color: #A9DCF1;
