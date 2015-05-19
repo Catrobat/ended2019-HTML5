@@ -765,8 +765,11 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		//{ url: 'pocketCode/scripts/components/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/mvc.js', type: 'js' },
 
 		//TODO: insert player scripts
+		{ url: 'PocketCodePlayer/controller/playerPageController.js', type: 'js' },
+		{ url: 'PocketCodePlayer/view/playerPageView.js', type: 'js' },
 		{ url: 'PocketCodePlayer/playerApplication.js', type: 'js' },
 	],
 };
