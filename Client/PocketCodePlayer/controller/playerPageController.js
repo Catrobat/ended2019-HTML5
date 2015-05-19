@@ -8,7 +8,8 @@ PocketCode.PlayerPageController = (function () {
         PocketCode.Mvc.CoreController.call(this, new PocketCode.PlayerPageView());
         this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this));
 
-        //TODO: loading libs? this._gameEngine = new PocketCode.GameEngine();
+        //TODO: loading libs? 
+        this._gameEngine = new PocketCode.GameEngine();
         this._statusDict = {
             //init: 'init',
             stopped: 'stopped',

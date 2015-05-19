@@ -42,6 +42,13 @@ PocketCode.merge({
                 }
                 return true;
             }(),
+            sound: function () {
+                if (!createjs.Sound.initializeDefaultPlugins()) {
+                    _result = _full = false;
+                    return false;
+                }
+                return true;
+            },
             //OTHER_TEST: function () {  //TODO: add tests im Browser compatibility is unknown
             //
             //}(),
