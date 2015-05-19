@@ -6,9 +6,10 @@ if( isset( $_GET["projectId"]) ) {
 }
 
 if( $project_id == 0 ) {
-  header( "location: /");
-}
 
+  //header( "location: /");
+}
+echo $project_id;
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
@@ -21,8 +22,8 @@ if( $project_id == 0 ) {
   <meta name="apple-touch-fullscreen" content="yes" />
   <link rel="icon" href="https://pocketcode.org/images/logo/favicon.png?0.7.0" type="image/png" />
 
-  <link href="_startup/pocketCodePlayer.css" rel="stylesheet" />
-  <script src="_startup/pocketCodePlayer.js"></script>
+  <link href="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.css" rel="stylesheet" />
+  <script src="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.js"></script>
   <script type="text/javascript">
     launchProject(<?php echo $project_id; ?>);
   </script>

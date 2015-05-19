@@ -9,5 +9,5 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
-RewriteRule ^html5/player/(.*)$ html5/Client/PocketCodePlayer/index.php?projectId=$1
+RewriteRule ^html5/player/(.*)$ html5/index.php?projectId=$1
 
