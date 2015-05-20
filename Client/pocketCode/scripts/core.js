@@ -42,7 +42,7 @@ PocketCode.merge({
                 }
                 return true;
             }(),
-            //sound: function () {
+            //sound: function () {  //TODO: check sound support
             //    if (!createjs.Sound.initializeDefaultPlugins()) {
             //        _result = true;
             //        _full = false;
