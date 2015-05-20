@@ -17,7 +17,7 @@ PocketCode.Ui = {};
 
 PocketCode.merge({
 
-    ExecutingState: {   //used for program, sprites and bricks
+    ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
         STOPPED: 0,
         RUNNING: 1,
         PAUSED: 3  //and running
@@ -42,19 +42,20 @@ PocketCode.merge({
                 }
                 return true;
             }(),
-            sound: function () {
-                if (!createjs.Sound.initializeDefaultPlugins()) {
-                    _result = _full = false;
-                    return false;
-                }
-                return true;
-            },
+            //sound: function () {
+            //    if (!createjs.Sound.initializeDefaultPlugins()) {
+            //        _result = true;
+            //        _full = false;
+            //        return false;
+            //    }
+            //    return true;
+            //}(),
             //OTHER_TEST: function () {  //TODO: add tests im Browser compatibility is unknown
             //
             //}(),
 
         };
 
-        return { result: _result, tests: _tests };
+        return { result: _result, full: _full, tests: _tests };
     },
 });

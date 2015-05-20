@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.16.0.js" />
+/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />

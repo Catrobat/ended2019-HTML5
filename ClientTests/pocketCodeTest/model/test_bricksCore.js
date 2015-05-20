@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.16.0.js" />
+/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 'use strict';
 
@@ -325,7 +325,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
-    var bc= new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    var bc = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
     b.bricks = bc;
 
     assert.equal(b._bricks, bc, "bricks setter");
@@ -340,7 +340,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
     assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "brick stop");
     assert.ok(!b._pendingOps["sim"], "delete pending ops when stop() is called");
     b.execute(l1, "newTID");
-    
+
 });
 
 QUnit.test("RootContainerBrick", function (assert) {

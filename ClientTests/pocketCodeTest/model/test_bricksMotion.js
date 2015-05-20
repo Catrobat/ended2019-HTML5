@@ -25,7 +25,7 @@ QUnit.test("PlaceAtBrick", function (assert) {
     assert.ok(b.objClassName === "PlaceAtBrick", "objClassName check");
 
     //execute
-    var handler = function(e) {
+    var handler = function (e) {
         assert.ok(true, "executed");
         assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
@@ -277,7 +277,7 @@ QUnit.test("PointToBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var spriteId = "spriteId";
     sprite.id = spriteId;
-    program.sprites.push(sprite);
+    program._sprites.push(sprite);
 
 
     var b = new PocketCode.Bricks.PointToBrick(device, sprite, { spriteId: spriteId });
@@ -333,7 +333,7 @@ QUnit.test("GlideToBrick", function (assert) {
         assert.equal(e.id, "gliding", "loop delay id");
 
         var delay = end - start;
-        assert.ok(delay > 990, "execution time check: 1s = 1000ms, real: " + delay);
+        assert.ok(delay > 980 || delay < 1020, "execution time check: 1s = 1000ms, real: " + delay);
         assert.equal(sprite.positionX, 20, "x end position check");
         assert.equal(sprite.positionY, 50, "y end position check");
 
@@ -441,7 +441,7 @@ QUnit.test("GoBackBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    program._sprites.push(sprite);
     var layers = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.GoBackBrick(device, sprite, { layers: layers });
@@ -468,7 +468,7 @@ QUnit.test("ComeToFrontBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    program._sprites.push(sprite);
 
     var b = new PocketCode.Bricks.ComeToFrontBrick(device, sprite);
 
@@ -496,7 +496,7 @@ QUnit.test("VibrationBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
     var duration = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.VibrationBrick(device, sprite, {duration: duration});
+    var b = new PocketCode.Bricks.VibrationBrick(device, sprite, { duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.VibrationBrick, "instance check");

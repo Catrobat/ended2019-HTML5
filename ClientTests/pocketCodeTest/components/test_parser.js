@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.16.0.js" />
+﻿/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
@@ -35,7 +35,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    program._sprites.push(sprite);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -102,7 +102,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
-    
+
     f.json = sin;
     assert.equal(f.calculate(), 1, "calc sin (deg)");
     assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
@@ -121,7 +121,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
     assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
     assert.equal(f.uiString, "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
-    assert.ok(f.uiString.substr(0,7), "tan(pi ", "string tan");
+    assert.ok(f.uiString.substr(0, 7), "tan(pi ", "string tan");
 
     f.json = tan2;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (deg)");
@@ -228,7 +228,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     f.json = stringPlus;    //TODO: catrobat does not allow a string cocatenation using a + operator showing an error but allowing to save this
-                            //unless this isn't changes we allow this operation on strings too
+    //unless this isn't changes we allow this operation on strings too
     assert.equal(f.calculate(), "fghfghw", "string concat using + operator");
     assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
     assert.equal(f.uiString, "'fgh' + 'fghw'", "string concat using + operator: toString");
@@ -239,7 +239,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.uiString, "'test length operation'", "string definition: toString");
 
     var s11 = f.calculate();    //store in var to enable access
-    sprite.variables = [{id: "s11", name: "variableName"}];
+    sprite.variables = [{ id: "s11", name: "variableName" }];
     sprite._variables.s11.value = s11;  //test length operation
 
     f.json = length;    //hello world
@@ -286,7 +286,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    program._sprites.push(sprite);
     //init sprite: test data
     sprite._positionX = 3;
     sprite._positionY = 4;

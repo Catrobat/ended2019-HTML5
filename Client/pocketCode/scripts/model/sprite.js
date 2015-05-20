@@ -1,3 +1,6 @@
+/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj-core.js" />
+/// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
 /// <reference path="program.js" />
 'use strict';
@@ -61,6 +64,7 @@ PocketCode.GraphicEffect = {
  *
  */
 PocketCode.Model.Sprite = (function () {
+    Sprite.extends(SmartJs.Core.Component);
     /**
      * initialization of properties
      * @param gameEngine gameEngine instance as a reference
@@ -70,7 +74,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
-        this._executionState = PocketCode.ExecutingState.STOPPED;
+        //this._executionState = PocketCode.ExecutionState.STOPPED;
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -96,7 +100,7 @@ PocketCode.Model.Sprite = (function () {
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
-        if(propObject){
+        if (propObject) {
             this.id = propObject.id;
             this.name = propObject.name;
 
@@ -121,7 +125,7 @@ PocketCode.Model.Sprite = (function () {
             if (!(propObject.sounds instanceof Array))
                 throw new Error('sounds setter expects type Array');
 
-            for ( i = 0, l = propObject.sounds.length; i < l; i++) {
+            for (i = 0, l = propObject.sounds.length; i < l; i++) {
                 this._sounds[propObject.sounds[i].id] = propObject.sounds[i];
             }
 
@@ -129,7 +133,7 @@ PocketCode.Model.Sprite = (function () {
             if (!(propObject.bricks instanceof Array))
                 throw new Error('bricks setter expects type Array');
 
-            for (i = 0, l = propObject.bricks.length; i < l; i++){
+            for (i = 0, l = propObject.bricks.length; i < l; i++) {
                 this._bricks.push(gameEngine._brickFactory.create(this, propObject.bricks[i]));
             }
         }
@@ -162,14 +166,14 @@ PocketCode.Model.Sprite = (function () {
         layer: {
             set: function (layer) {
                 //TODO: in program : for testing issues
-               // this._layer = layer;
+                // this._layer = layer;
             },
             get: function () {
                 return this._gameEngine.getSpriteLayer(this.id);
             },
         },
 
-         bricks: {
+        bricks: {
             set: function (bricks) {
                 this._bricks = bricks;
             },
@@ -229,6 +233,11 @@ PocketCode.Model.Sprite = (function () {
             //enumerable: false,
             //configurable: true,
         },
+        hasRunningScripts: {
+            get: function () {
+                return false;   //TODO: check this
+            },
+        },
     });
 
     //events
@@ -251,17 +260,17 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
-        /**
-         * calls execute() on every brick as long as method is available
-         */
-        execute: function() {
-            for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].execute) {
-                    this._bricks[i].execute();
-                }
-            }
-            this._executionState =  PocketCode.ExecutingState.RUNNING;;
-        },
+        ///**
+        // * calls execute() on every brick as long as method is available
+        // */
+        //execute: function() {
+        //    for (var i = 0, l = this._bricks.length; i < l; i++) {
+        //        if (this._bricks[i].execute) {
+        //            this._bricks[i].execute();
+        //        }
+        //    }
+        //    this._executionState =  PocketCode.ExecutionState.RUNNING;
+        //},
         /**
          * calls pause() on every brick as long as method is available
          */
@@ -270,6 +279,7 @@ PocketCode.Model.Sprite = (function () {
                 if (this._bricks[i].pause)
                     this._bricks[i].pause();
             }
+            //this._executionState = PocketCode.ExecutionState.PAUSED;
         },
         /**
          * calls resume() on every brick as long as method is available
@@ -279,6 +289,7 @@ PocketCode.Model.Sprite = (function () {
                 if (this._bricks[i].resume)
                     this._bricks[i].resume();
             }
+            //this._executionState = PocketCode.ExecutionState.RUNNING;
         },
         /**
          * calls stop() on every brick as long as method is available
@@ -288,7 +299,7 @@ PocketCode.Model.Sprite = (function () {
                 if (this._bricks[i].stop)
                     this._bricks[i].stop();
             }
-            this._executionState = PocketCode.ExecutingState.STOPPED;
+            //this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 
         /**
@@ -296,8 +307,8 @@ PocketCode.Model.Sprite = (function () {
          * @param propertyArray
          * @private
          */
-        _triggerOnChange: function(propertyArray) {
-            this._onChange.dispatchEvent({id: this.id, properties: propertyArray}, this);
+        _triggerOnChange: function (propertyArray) {
+            this._onChange.dispatchEvent({ id: this.id, properties: propertyArray }, this);
         },
 
         //motion: position
@@ -395,7 +406,7 @@ PocketCode.Model.Sprite = (function () {
             var offsetX = Math.round(Math.sin(rad) * steps);
             var offsetY = Math.round(Math.cos(rad) * steps);
             var triggerEvent;
-            this.setPosition(this._positionX + offsetX, this._positionY + offsetY,triggerEvent);
+            this.setPosition(this._positionX + offsetX, this._positionY + offsetY, triggerEvent);
             return true;
         },
 
@@ -420,10 +431,10 @@ PocketCode.Model.Sprite = (function () {
                 return false;
             var d = this._direction;
             var nd = (d + degree) % 360;
-            if (nd <= -180.0){
+            if (nd <= -180.0) {
                 nd += 360;
             }
-            if (nd > 180.0){
+            if (nd > 180.0) {
                 nd -= 360;
             }
             if (d === nd)
@@ -458,7 +469,7 @@ PocketCode.Model.Sprite = (function () {
             if (!spriteId)
                 return false;
             var pointTo = this._gameEngine.getSprite(spriteId);
-            if(pointTo== undefined)
+            if (pointTo == undefined)
                 return false;
 
             var offsetX = pointTo.positionX - this.positionX;
@@ -478,7 +489,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         goBack: function (layers) {
-            return this._gameEngine.setSpriteLayerBack(this.id,layers);
+            return this._gameEngine.setSpriteLayerBack(this.id, layers);
             //onChange event is triggered by program in this case
         },
         /**
@@ -498,9 +509,9 @@ PocketCode.Model.Sprite = (function () {
          */
         setLook: function (lookId) {
             if (this._currentLook == undefined) {
-               // throw new Error('current look is invalid');
+                // throw new Error('current look is invalid');
                 return false;
-             }
+            }
 
             if (this._currentLook.id === lookId)
                 return false;
@@ -522,7 +533,7 @@ PocketCode.Model.Sprite = (function () {
          */
         nextLook: function () {
             if (this._currentLook == undefined) {
-             //   throw new Error('current look is invalid');
+                //   throw new Error('current look is invalid');
                 return false;
             }
             var looks = this._looks;
@@ -533,7 +544,7 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
                     if ((i + 1) < count) { //1+1=2 < 2    2<2
-                        var j=i+1;
+                        var j = i + 1;
                         this._currentLook = looks[j];
                     }
                     else {
@@ -551,9 +562,9 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         setSize: function (percentage) {
-            if (percentage === undefined || isNaN(percentage) || percentage==null)
+            if (percentage === undefined || isNaN(percentage) || percentage == null)
                 throw new Error('invalid percentage ');
-            if( this._size === percentage || (this._size === 0 && percentage <= 0))
+            if (this._size === percentage || (this._size === 0 && percentage <= 0))
                 return false;
 
             this._size = percentage;
@@ -568,7 +579,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
-            if (value === undefined || isNaN(value) || value==null)
+            if (value === undefined || isNaN(value) || value == null)
                 throw new Error('invalid value');
             if (!value || (this._size === 0 && (this._size + value) <= 0))
                 return false;
@@ -617,10 +628,10 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._setTransparency(value);
-                //break;
+                    //break;
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._setBrightness(value);
-                //break;
+                    //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -646,11 +657,11 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._changeTransparency(value);
-                //break;
+                    //break;
 
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._changeBrightness(value);
-                //break;
+                    //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -798,7 +809,7 @@ PocketCode.Model.Sprite = (function () {
             var variableNames = {};
             var names = this._variableNames;
             for (var v in names)
-                if (names.hasOwnProperty(v)){
+                if (names.hasOwnProperty(v)) {
                     variableNames[v] = names[v];
                 }
 
@@ -812,6 +823,18 @@ PocketCode.Model.Sprite = (function () {
         //    else //gloable lookup
         //        return this._gameEngine.setGlobalVariable(varId, value);
         //},
+        /* override */
+        dispose: function () {
+            //make sure the game engine and loaded resources are not disposed
+            this._gameEngine = undefined;
+            this._looks = undefined;
+            this._sounds = undefined;
+            this._variables = undefined;
+            this._variableNames = undefined;
+            this._bricks = undefined;
+            //call super
+            SmartJs.Core.Component.prototype.dispose.call(this);
+        },
     });
 
     return Sprite;

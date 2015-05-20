@@ -438,6 +438,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
         //console.log('onError ');
         //assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
         //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
+        done4();
     };
 
     var req4;

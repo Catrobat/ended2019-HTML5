@@ -74,14 +74,14 @@ SmartJs.Event = {
 
                 var a = args || {};
                 //try {    //notice: params change if an event is passed as the properties are read only
-                    a.target = target || this.target;
-                    a.bubbles = bubbles || false;
+                a.target = target || this.target;
+                a.bubbles = bubbles || false;
                 //}
                 //catch (e) {
                 //    a.sjTarget = target || this.target;
                 //    a.sjBubbles = bubbles || false;
                 //}
-                
+
                 var li = this._listeners || []; //necessary due to the fact that binded events may call a disposed event
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
@@ -99,11 +99,12 @@ SmartJs.Event = {
                         item.handler(a);
                 }
             },
-            //dispose: function () {
-            //    //clear cross reference
-            //    //this.target = undefined;
-            //    SmartJs.Core.Component.prototype.dispose.call(this);
-            //},
+            dispose: function () {
+                //clear cross reference: prevent dispose of 'linked' objects
+                this.target = undefined;
+                this._listeners = undefined;
+                SmartJs.Core.Component.prototype.dispose.call(this);
+            },
         });
         return Event;
     })(),

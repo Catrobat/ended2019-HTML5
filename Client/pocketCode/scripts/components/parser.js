@@ -157,7 +157,7 @@ PocketCode.merge({
     })(),
 
 
-    FormulaParser: new ((function () {  //static class
+    _FormulaParser: (function () {  //static class
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -609,8 +609,9 @@ PocketCode.merge({
         });
 
         return FormulaParser;
-    })())(),
+    })(),
 
 });
 
+PocketCode.FormulaParser = new PocketCode._FormulaParser();
 

@@ -66,7 +66,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		done5();
 
 		var time = 1400 + 4 * 300;
-		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time = 2600 ms +/- 100ms");
+		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time (" + (new Date() - start) + "ms) == 2600 ms +/- 100ms");
 		done6();
 		//console.log("pauseCount: " + pauseCount + ", resumeCount: " + resumeCount);
 		//console.log("finished after: " + (new Date() - start));

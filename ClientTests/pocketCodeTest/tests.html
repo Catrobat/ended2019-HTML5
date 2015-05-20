@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>PocketCode Framework Unit Tests</title>
-    <link href="../qunit/qunit-1.16.0.css" rel="stylesheet" />
-    <script src="../qunit/qunit-1.16.0.js"></script>
+    <link href="../qunit/qunit-1.18.0.css" rel="stylesheet" />
+    <script src="../qunit/qunit-1.18.0.js"></script>
     <!--script src="../qunit/jquery-2.1.1.min.js"></script-->
 
-    <script src="../qunit/blanket.min.js"></script>
+    <script src="../qunit/blanket-1.1.5.min.js"></script>
 
     <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
     <!--script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.min.js"></script>-->
@@ -20,6 +20,7 @@
     <script src="../../Client/smartJs/sj-components.js"></script>
     <script src="../../Client/smartJs/sj-animation.js"></script>
     <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
 
     <script src="_resources/testDataFormula.js"></script>
     <script src="_resources/testDataProjects.js"></script>
@@ -42,6 +43,7 @@
     <script src="../../Client/pocketCode/scripts/components/parser.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/mvc.js" data-cover></script>
 </head>
 <body>
     <div id="qunit"></div>
@@ -57,13 +59,14 @@
     <script src="model/test_bricksVariable.js"></script>
     <script src="model/test_sprite.js"></script>
     <!-- components -->
-    <!-- <script src="components/test_proxy.js"></script> -->
+    <script src="components/test_proxy.js"></script>
     <script src="components/test_soundManager.js"></script>
     <script src="components/test_broadcastManager.js"></script>
     <script src="components/test_device.js"></script>
     <script src="components/test_formula.js"></script>
     <script src="components/test_parser.js"></script>
-    <script src="components/test_canvas.js"></script>
+    <!--<script src="components/test_canvas.js"></script>-->
     <script src="components/test_gameEngine.js"></script>
+    <script src="components/test_mvc.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.16.0.js" />
+/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
@@ -31,7 +31,8 @@ QUnit.test("ProgramStartBrick", function (assert) {
         handlerCalled++;
     };
 
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    program._projectLoaded = true;  //simulate a loaded project
     program.execute();
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
@@ -98,7 +99,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     };
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    program._onTabbedAction.dispatchEvent({sprite: sprite});
+    program._onTabbedAction.dispatchEvent({ sprite: sprite });
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
     //add a brick container
@@ -483,7 +484,7 @@ QUnit.test("ForeverBrick", function (assert) {
                 //window.setTimeout(function () { _self._return(id, this.loopDelay) }, _self._delay);
                 this._return(id, this.loopDelay);    //LOOP DELAY = FALSE
             },
-            start: function() {
+            start: function () {
                 this._stopped = false;
             },
             stop: function () {
@@ -498,9 +499,9 @@ QUnit.test("ForeverBrick", function (assert) {
     //loop delay = false
     var bca = [];
     var tb = new TestBrick2("device", "sprite");
-    
+
     bca.push(tb);
-    var neverCalled = function() {
+    var neverCalled = function () {
         return;
     };
     //without delay
@@ -723,7 +724,7 @@ QUnit.test("RepeatBrick", function (assert) {
 
         return TestBrick2;
     })();
-    
+
     //test empty not possible
     //loop delay = false
     var bca = [];
@@ -747,7 +748,7 @@ QUnit.test("RepeatBrick", function (assert) {
     b.bricks = new PocketCode.Bricks.BrickContainer(bca);
     var startTime = new Date();
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "n_times");
-    
+
     //with delay
     var testFinishedHandler2 = function (e) {
         //async
