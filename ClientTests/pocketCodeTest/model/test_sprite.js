@@ -1,3 +1,4 @@
+/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 /// <reference path="../../qunit/qunit-1.16.0.js" />
@@ -10,9 +11,46 @@ QUnit.module("sprite.js");
 QUnit.test("Sprite", function (assert) {
 
     var prog = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(prog, null);
+    var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
 
+    //properties
+    assert.throws(function () { var err = new PocketCode.Model.Sprite(prog); }, Error, "missing ctr arguments");
+    assert.equal(sprite.id, "newId", "id ctr setter");
+    assert.equal(sprite.name, "myName", "name ctr setter");
+
+    assert.throws(function () { sprite.looks = undefined; }, Error, "ERROR: setting looks");
+    var looks = [{ id: 1 }, { id: 2 }];
+    sprite.looks = looks;
+    assert.equal(sprite._looks, looks, "looks setter");
+    assert.equal(sprite.currentLook, looks[0], "current look getter");
+
+    assert.equal(sprite.size, 100, "size (percentage) initial");
+    assert.equal(sprite.visible, true, "visibility initial");
+    assert.equal(sprite.transparency, 0, "transparency initial");
+    assert.equal(sprite.brightness, 100, "brighness initial");
+
+    //events
+    assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
+    assert.equal(sprite.onChange, prog.onSpriteChange, "program - sprite event sharing");
+    assert.equal(sprite.onChange.target, prog, "onSpriteChange target check");
+
+    assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
+
+    var props = [{ direction: 90 }];
+    var onChangeHandler = function (e) {
+        assert.equal(e.target, evSprite, "onChange target check");
+        assert.equal(e.id, "newId", " onChange id check");
+        assert.equal(e.properties, props, "onChange event args properties check");
+    };
+    var prog2 = new PocketCode.GameEngine();
+    var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
+    evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+
+    evSprite._triggerOnChange(props);
+
+
+    sprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
     // ********************* GraphicEffects *********************
     assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf") }, Error, "invalid brightness percentage");
     assert.throws(function () { sprite.setGraphicEffect(null, 50) }, Error, "unknown graphic effect");
@@ -95,21 +133,21 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(varsMatch, "Variables set correctly.");
 
     var soundsMatch = true;
-    for (i = 0, length = jsonSprite.sounds.length; i < length; i++) {
+    for (var i = 0, length = jsonSprite.sounds.length; i < length; i++) {
         if (!testSprite._sounds[jsonSprite.sounds[i].id])
             soundsMatch = false;
     }
     assert.ok(soundsMatch, "Sounds set correctly.");
 
     var bricksMatch = true;
-    for (i = 0, length = jsonSprite.bricks.length; i < length; i++) {
-        if (testSprite.bricks[i].id !== jsonSprite.bricks[i].id)
+    for (var i = 0, length = jsonSprite.bricks.length; i < length; i++) {
+        if (testSprite._bricks[i].id !== jsonSprite.bricks[i].id)
             bricksMatch = false;
     }
     assert.ok(bricksMatch, "Bricks set correctly.");
 
     var looksMatch = true;
-    for (i = 0, length = jsonSprite.looks.length; i < length; i++) {
+    for (var i = 0, length = jsonSprite.looks.length; i < length; i++) {
         if (testSprite._looks[i].id !== jsonSprite.looks[i].id)
             looksMatch = false;
     }
@@ -344,34 +382,22 @@ QUnit.test("Sprite", function (assert) {
     //sprite.pause();
     //assert.ok(sprite._executionState == PocketCode.ExecutionState.STOPPED,"stop() call running false");
 
-    // *************************************************************
-
-    // ********************* trigger on change *********************
-    // like broadcastmgr tests line 138
-
-    var degree = 90;
-    var direction = degree;
-
-    sprite._triggerOnChange([{ direction: degree }]);
-
-    assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "trigger on change");
-
 
     // ********************* come to front/go back *********************
     var tmpprog = new PocketCode.GameEngine();
 
-    var newSprite = new PocketCode.Model.Sprite(tmpprog);
+    var newSprite = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
     newSprite.id = "test2";
     newSprite.name = "test2";
     tmpprog._sprites.push(newSprite);
     var firstLayer = newSprite.layer;
 
-    var newSprite2 = new PocketCode.Model.Sprite(tmpprog);
+    var newSprite2 = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
     newSprite2.id = "test3";
     newSprite2.name = "test3";
     tmpprog._sprites.push(newSprite2);
 
-    var tmpsprite = new PocketCode.Model.Sprite(tmpprog);
+    var tmpsprite = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
     tmpsprite.id = "test1";
     tmpsprite.name = "test1";
     tmpprog._sprites.push(tmpsprite);
@@ -399,7 +425,7 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* point to *********************
     sprite.id = "id1";
-    newSprite = new PocketCode.Model.Sprite(prog);
+    newSprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
     newSprite.id = "id2";
     prog._sprites.push(newSprite);
     var tmp = prog.getSprite("id2");

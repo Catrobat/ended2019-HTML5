@@ -100,42 +100,33 @@ PocketCode.Model.Sprite = (function () {
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
-        if (propObject) {
-            this.id = propObject.id;
-            this.name = propObject.name;
+        if (!propObject || !propObject.id || !propObject.name)
+            throw new Error('missing ctr arguments: id and/or name in sprite');
 
-            //looks
-            if (propObject.looks === undefined || typeof propObject.looks !== 'object' || !(propObject.looks instanceof Array))
-                throw new Error('invalid argument: expected looks type of array');
+        this.id = propObject.id;
+        this.name = propObject.name;
 
-            this._looks = propObject.looks;
-            this._currentLook = propObject.looks[0];
+        //looks: a sprite doesn't always have a look
+        if (propObject.looks != undefined)
+            this.looks = propObject.looks;
 
-            //variables
-            if (!(propObject.variables instanceof Array))
-                throw new Error('variable setter expects type Array');
+        //variables: a sprite may have no (local) variables
+        if (propObject.variables)
+            this.variables = propObject.variables;
 
-            for (var i = 0, l = propObject.variables.length; i < l; i++) {
-                propObject.variables[i].value = 0.0;  //init
-                this._variables[propObject.variables[i].id] = propObject.variables[i];
-                this._variableNames[propObject.variables[i].id] = { name: propObject.variables[i].name, scope: 'local' };
-            }
-
-            //sounds
+        //sounds
+        if (propObject.sounds) {
             if (!(propObject.sounds instanceof Array))
                 throw new Error('sounds setter expects type Array');
 
-            for (i = 0, l = propObject.sounds.length; i < l; i++) {
+            for (var i = 0, l = propObject.sounds.length; i < l; i++) {
                 this._sounds[propObject.sounds[i].id] = propObject.sounds[i];
             }
+        }
 
-            //bricks
-            if (!(propObject.bricks instanceof Array))
-                throw new Error('bricks setter expects type Array');
-
-            for (i = 0, l = propObject.bricks.length; i < l; i++) {
-                this._bricks.push(gameEngine._brickFactory.create(this, propObject.bricks[i]));
-            }
+        //bricks
+        if (propObject.bricks) {
+            this.bricks = propObject.bricks;
         }
     }
 
@@ -175,21 +166,27 @@ PocketCode.Model.Sprite = (function () {
 
         bricks: {
             set: function (bricks) {
-                this._bricks = bricks;
+                if (!(bricks instanceof Array))
+                    throw new Error('bricks setter expects type Array');
+
+                for (var i = 0, l = bricks.length; i < l; i++) {
+                    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
+                }
             },
-            get: function () {
-                return this._bricks;
-            },
+            //get: function () {
+            //    return this._bricks;
+            //},
         },
 
         //looks
         looks: {
             set: function (looks) {
-                if (looks === undefined || typeof looks !== 'object' || !(looks instanceof Array) || looks.length === 0)
+                if (!(looks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' || 
                     throw new Error('invalid argument: expected looks type of array');
 
                 this._looks = looks;
-                this._currentLook = looks[0];
+                if (looks.length > 0)
+                    this._currentLook = looks[0];
             }
         },
         currentLook: {
@@ -275,9 +272,10 @@ PocketCode.Model.Sprite = (function () {
          * calls pause() on every brick as long as method is available
          */
         pause: function () {
-            for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].pause)
-                    this._bricks[i].pause();
+            var bricks = this._bricks;
+            for (var i = 0, l = bricks.length; i < l; i++) {
+                if (bricks[i].pause)
+                    bricks[i].pause();
             }
             //this._executionState = PocketCode.ExecutionState.PAUSED;
         },
@@ -285,9 +283,10 @@ PocketCode.Model.Sprite = (function () {
          * calls resume() on every brick as long as method is available
          */
         resume: function () {
-            for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].resume)
-                    this._bricks[i].resume();
+            var bricks = this._bricks;
+            for (var i = 0, l = bricks.length; i < l; i++) {
+                if (bricks[i].resume)
+                    bricks[i].resume();
             }
             //this._executionState = PocketCode.ExecutionState.RUNNING;
         },
@@ -295,9 +294,10 @@ PocketCode.Model.Sprite = (function () {
          * calls stop() on every brick as long as method is available
          */
         stop: function () {
-            for (var i = 0, l = this._bricks.length; i < l; i++) {
-                if (this._bricks[i].stop)
-                    this._bricks[i].stop();
+            var bricks = this._bricks;
+            for (var i = 0, l = bricks.length; i < l; i++) {
+                if (bricks[i].stop)
+                    bricks[i].stop();
             }
             //this._executionState = PocketCode.ExecutionState.STOPPED;
         },
