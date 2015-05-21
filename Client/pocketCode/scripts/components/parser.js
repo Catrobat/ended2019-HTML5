@@ -157,7 +157,7 @@ PocketCode.merge({
     })(),
 
 
-    _FormulaParser: (function () {  //static class
+    FormulaParser: (function () {
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -613,5 +613,6 @@ PocketCode.merge({
 
 });
 
-PocketCode.FormulaParser = new PocketCode._FormulaParser();
+//static class: constructor override (keeping code coverage enabled)
+PocketCode.FormulaParser = new PocketCode.FormulaParser();
 
