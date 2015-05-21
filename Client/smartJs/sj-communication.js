@@ -257,10 +257,14 @@ SmartJs.Communication.merge({
                 if (url)
                     this._url = url;
 
+                if (!this._url)
+                    throw new Error('servicec url not specified');
+
+                if (data && typeof data !== 'object')
+                    throw new Error('invalid argument: expected: data typeof object');
+
                 try {
                     if (data) {
-                        if (typeof data !== 'object')
-                            throw new Error('invalid argument: expected: data typeof object');
 
                         if (this.method === SmartJs.RequestMethod.POST) {   //
                             if (data instanceof File && xhr.setRequestHeader) {
@@ -318,10 +322,10 @@ SmartJs.Communication.merge({
         function CorsRequest(url) {
             SmartJs.Communication.ServiceRequest.call(this, url);
 
-            if (this.supported) {
+            if (this.supported && !this._xhr) {
                 this._xhr = new XMLHttpRequest();   //default
-                if (!('withCredentials' in this._xhr) && typeof XDomainRequest !== 'undefined') //this will not be called (XDomainRequest masked in this.supported to avoid errors)
-                    this._xhr = new XDomainRequest();
+                //if (!('withCredentials' in this._xhr) && typeof XDomainRequest !== 'undefined') //this will not be called (XDomainRequest masked in this.supported to avoid errors)
+                //    this._xhr = new XDomainRequest();
             }
 
             var xhr = this._xhr;
@@ -338,41 +342,41 @@ SmartJs.Communication.merge({
                 this.progressSupported = false;
             }
 
-            if (this._xhr instanceof XMLHttpRequest) {
-                this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
-                if (xhru)
-                    this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
-            }
-            else {
-                //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
-                this._addDomListener(xhr, 'load', this._onLoadHandler);
-                this._addDomListener(xhr, 'error', this._onErrorHandler);
-                //this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
+            //if (this._xhr instanceof XMLHttpRequest) {
+            this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
+            if (xhru)
+                this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
+            //}
+            //else {
+            //    //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
+            //    this._addDomListener(xhr, 'load', this._onLoadHandler);
+            //    this._addDomListener(xhr, 'error', this._onErrorHandler);
+            //    //this._addDomListener(xhr, 'abort', this._onAbort.dispatchEvent);
 
-                if (xhru) {
-                    //this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
-                    this._addDomListener(xhru, 'load', this._onLoadHandler);
-                    this._addDomListener(xhru, 'error', this._onErrorHandler);
-                    //this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
-                }
-            }
+            //    if (xhru) {
+            //        //this._addDomListener(xhru, 'loadstart', this._onLoadStart.dispatchEvent);
+            //        this._addDomListener(xhru, 'load', this._onLoadHandler);
+            //        this._addDomListener(xhru, 'error', this._onErrorHandler);
+            //        //this._addDomListener(xhru, 'abort', this._onAbort.dispatchEvent);
+            //    }
+            //}
         }
 
         //properties
         Object.defineProperties(CorsRequest.prototype, {
-            _onLoadHandler: function (e) {
-                //this._loaded = true;              //TODO:
-                //if (this._xmle.status !== 200)
-                //this._onLoad.dispatchEvent(e);
-            },
-            _onErrorHandler: function (e) {
-                //this._error = e;                  //TODO:
-                //this._onError.dispatchEvent(e);
-            },
+            //_onLoadHandler: function (e) {
+            //    //this._loaded = true;              //TODO:
+            //    //if (this._xmle.status !== 200)
+            //    //this._onLoad.dispatchEvent(e);
+            //},
+            //_onErrorHandler: function (e) {
+            //    //this._error = e;                  //TODO:
+            //    //this._onError.dispatchEvent(e);
+            //},
             supported: {
                 get: function () {
-                    var xhr = new XMLHttpRequest();
-                    if ('withCredentials' in xhr)
+                    this._xhr = new XMLHttpRequest();
+                    if ('withCredentials' in this._xhr)
                         return true;
                     //if (typeof XDomainRequest !== undefined)  //disabled due to missing testing infrastructure
                     //    return true;
@@ -396,14 +400,17 @@ SmartJs.Communication.merge({
                 if (url)
                     this._url = url;
 
+                if (!this._url)
+                    throw new Error('servicec url not specified');
+
+                if (data && typeof data !== 'object')
+                    throw new Error('invalid argument: expected: data typeof object');
+
                 try {
-                    if (!(this._xhr instanceof XMLHttpRequest)) //IE: XDomainRequest
-                        this._onLoadStart.dispatchEvent();  //should be triggered even on error
+                    //if (!(this._xhr instanceof XMLHttpRequest)) //IE: XDomainRequest
+                    //    this._onLoadStart.dispatchEvent();  //should be triggered even on error
 
                     if (data) {
-                        if (typeof data !== 'object')
-                            throw new Error('invalid argument: expected: data typeof object');
-
                         if (this.method === SmartJs.RequestMethod.POST) {   //
                             if (data instanceof File && xhr.setRequestHeader) {
                                 this._xhr.open(this.method, this._url);

@@ -216,7 +216,9 @@ PocketCode.merge({
         //each single request has its events, the proxy only maps this events to internal strong typed requests and triggers send()
 
         //ctr
-        function Proxy() { }
+        function Proxy() {
+            this.corsEnabled = true;
+        }
 
         //methods
         Proxy.prototype.merge({
@@ -273,7 +275,7 @@ PocketCode.merge({
             },
             _sendUsingCors: function (request, method, url) {
                 var req = new SmartJs.Communication.CorsRequest(url || request.url);
-                if (!req.supported)
+                if (this.corsEnabled !== true && !req.supported)
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req, request);
