@@ -17,7 +17,7 @@ QUnit.test("Formula", function (assert) {
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     assert.throws(function () { var f = new PocketCode.Formula(undefined, sprite, json); }, Error, "");
     var f = new PocketCode.Formula(device, sprite, json);

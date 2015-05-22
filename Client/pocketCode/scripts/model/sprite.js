@@ -75,6 +75,7 @@ PocketCode.Model.Sprite = (function () {
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         //this._executionState = PocketCode.ExecutionState.STOPPED;
+
         this.id = undefined;
         this.name = "";
         this._looks = [];
@@ -155,12 +156,12 @@ PocketCode.Model.Sprite = (function () {
             },
         },
         layer: {
-            set: function (layer) {
+            //set: function (layer) {
                 //TODO: in program : for testing issues
                 // this._layer = layer;
-            },
+            //},
             get: function () {
-                return this._gameEngine.getSpriteLayer(this.id);
+                return this._gameEngine.getSpriteLayer(this);//.id);
             },
         },
 
@@ -390,7 +391,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         ifOnEdgeBounce: function () {
-            return this._gameEngine.checkSpriteOnEdgeBounce(this.id, this);    //TODO: check parameters
+            return this._gameEngine.checkSpriteOnEdgeBounce(this);//.id, this);    //TODO: check parameters: this, 
             //onChange event is triggered by program in this case
         },
         /**
@@ -489,7 +490,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         goBack: function (layers) {
-            return this._gameEngine.setSpriteLayerBack(this.id, layers);
+            return this._gameEngine.setSpriteLayerBack(this, layers);//.id, layers);
             //onChange event is triggered by program in this case
         },
         /**
@@ -497,7 +498,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         comeToFront: function () {
-            return this._gameEngine.setSpriteLayerToFront(this.id);
+            return this._gameEngine.setSpriteLayerToFront(this);//.id);
             //onChange event is triggered by program in this case
         },
 

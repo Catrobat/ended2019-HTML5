@@ -384,30 +384,24 @@ QUnit.test("Sprite", function (assert) {
 
 
     // ********************* come to front/go back *********************
-    var tmpprog = new PocketCode.GameEngine();
+    var program = new PocketCode.GameEngine();
 
-    var newSprite = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
-    newSprite.id = "test2";
-    newSprite.name = "test2";
-    tmpprog._sprites.push(newSprite);
+    var newSprite = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    program._sprites.push(newSprite);
     var firstLayer = newSprite.layer;
 
-    var newSprite2 = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
-    newSprite2.id = "test3";
-    newSprite2.name = "test3";
-    tmpprog._sprites.push(newSprite2);
+    var newSprite2 = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    program._sprites.push(newSprite2);
 
-    var tmpsprite = new PocketCode.Model.Sprite(tmpprog, { id: "newId", name: "myName" });
-    tmpsprite.id = "test1";
-    tmpsprite.name = "test1";
-    tmpprog._sprites.push(tmpsprite);
+    var tmpsprite = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    program._sprites.push(tmpsprite);
 
     newSprite.comeToFront();
-    assert.ok(newSprite.layer == tmpprog._sprites.length, "come to front 1");
+    assert.ok(newSprite.layer == program._sprites.length, "come to front 1");
     tmpsprite.comeToFront();
-    assert.ok(tmpsprite.layer == tmpprog._sprites.length, "come to front 2");
+    assert.ok(tmpsprite.layer == program._sprites.length, "come to front 2");
     newSprite2.comeToFront();
-    assert.ok(newSprite2.layer == tmpprog._sprites.length, "come to front 3");
+    assert.ok(newSprite2.layer == program._sprites.length, "come to front 3");
 
     var layerBefore = newSprite.layer;
     newSprite.goBack(2);

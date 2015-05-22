@@ -13,10 +13,10 @@ QUnit.test("GameEngine", function (assert) {
     assert.throws(function () { gameEngine.sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds.");
     assert.throws(function () { gameEngine.variables = "invalid argument" }, Error, "ERROR: passed invalid arguments to variables.");
     assert.throws(function () { gameEngine.broadcasts = "invalid argument" }, Error, "ERROR: passed invalid arguments to broadcasts.");
-    assert.throws(function () { gameEngine.setSpriteLayerBack("invalidId", 5) }, Error, "ERROR: passed invalid id to setSpriteLayerBack.");
-    assert.throws(function () { gameEngine.setSpriteLayerToFront("invalidId") }, Error, "ERROR: passed invalid id to setSpriteLayerToFront.");
+    assert.equal(gameEngine.setSpriteLayerBack("invalidId", 5), false, "ERROR: passed invalid object to setSpriteLayerBack.");
+    assert.equal(gameEngine.setSpriteLayerToFront("invalidId"), false, "ERROR: passed invalid object to setSpriteLayerToFront.");
     assert.throws(function () { gameEngine.getSprite("invalidId") }, Error, "ERROR: passed invalid id to getSprite.");
-    assert.throws(function () { gameEngine.getSpriteLayer("invalidId") }, Error, "ERROR: passed invalid id to getSpriteLayer.");
+    assert.throws(function () { gameEngine.getSpriteLayer("invalidId") }, Error, "ERROR: passed invalid object to getSpriteLayer.");
 
     var images = [{ id: "1" }, { id: "2" }, { id: "3" }];
     gameEngine.images = images;
@@ -41,7 +41,8 @@ QUnit.test("GameEngine", function (assert) {
     assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
 
     var broadcasts = [{ id: "1" }, { id: "2" }, { id: "3" }];
-    gameEngine._broadcastMgr.init = function () {
+    assert.ok(typeof gameEngine._broadcastMgr.init == "function", "broadcast mgr interface check");
+    gameEngine._broadcastMgr.init = function () {   //override to test: mock
         this.initCalled = true;
     };
     gameEngine.broadcasts = broadcasts;
@@ -55,13 +56,18 @@ QUnit.test("GameEngine", function (assert) {
     assert.throws(function () { gameEngine.execute() }, Error, "ERROR: Program not ready.");
     gameEngine.projectReady = true;
 
+    //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
+    var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
+    assert.ok(typeof spriteInterface.pause == "function" && typeof spriteInterface.resume == "function" && typeof spriteInterface.stop == "function", "mock: valid sprite interface");
+
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
         TestSprite.extends(PocketCode.Model.Sprite, false);
 
-        function TestSprite(program) {
-            PocketCode.Model.Sprite.call(this, program);
+        function TestSprite(program, args) {
+            PocketCode.Model.Sprite.call(this, program, args);
             this.status = PocketCode.ExecutionState.STOPPED;
+            //this.MOCK = true;   //flag makes debugging much easier
         }
 
         TestSprite.prototype.merge({
@@ -101,10 +107,10 @@ QUnit.test("GameEngine", function (assert) {
         this.timesStopped++;
     };
 
-    gameEngine._background = new TestSprite(gameEngine);
-    gameEngine._sprites.push(new TestSprite(gameEngine));
-    gameEngine._sprites.push(new TestSprite(gameEngine));
-    gameEngine._sprites.push(new TestSprite(gameEngine));
+    gameEngine._background = new TestSprite(gameEngine, {id: "mockId1", name: "spriteName1"});
+    gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId2", name: "spriteName2" }));
+    gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId3", name: "spriteName3" }));
+    gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId4", name: "spriteName4" }));
 
     var layers = gameEngine.layerObjectList;
     assert.equal(layers[0], gameEngine._background, "Background in correct position in layer list.");
@@ -190,11 +196,11 @@ QUnit.test("GameEngine", function (assert) {
     //assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting.");
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine.");
 
-    var sprite1 = new PocketCode.Model.Sprite(gameEngine);
+    var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "newId", name: "myName" });
     sprite1.id = "spriteId1";
-    sprite1.name = "spriteName1";
+    //sprite1.name = "spriteName1";
     gameEngine._sprites.push(sprite1);
-    assert.ok(gameEngine.getSprite("spriteId1") === sprite1, "Correct sprite returned by getSprite.");
+    assert.equal(gameEngine.getSprite("spriteId1"), sprite1, "Correct sprite returned by getSprite.");
 
     var spriteChanges = 0;
     gameEngine._onSpriteChange.addEventListener(new SmartJs.Event.EventListener(function () {
@@ -203,27 +209,28 @@ QUnit.test("GameEngine", function (assert) {
     }));
 
     var numberOfSprites = gameEngine._sprites.length;
-    var currentSpriteLayer = gameEngine.getSpriteLayer("spriteId1");
-    assert.deepEqual(gameEngine.getSpriteLayer("spriteId1"), numberOfSprites + gameEngine._backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.");
-    gameEngine.setSpriteLayerBack("spriteId1", 2);
-    assert.deepEqual(gameEngine.getSpriteLayer("spriteId1"), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack.");
+    //var currentSpriteLayer = gameEngine.getSpriteLayer("spriteId1");    //avoid testing a method by using it -> this may cause wrong positive results
+    var currentSpriteLayer = gameEngine._sprites.indexOf(sprite1);
+    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), numberOfSprites + gameEngine._backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.");
+    gameEngine.setSpriteLayerBack(sprite1, 2);
+    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack.");
 
-    assert.ok(gameEngine.setSpriteLayerBack("spriteId1", 1), "Setting Sprite layer back returns true.");
+    assert.ok(gameEngine.setSpriteLayerBack(sprite1, 1), "Setting Sprite layer back returns true.");
     assert.deepEqual(spriteChanges, 2, "Sprite Change Event triggered every time layer got set back.");
-    assert.ok(!gameEngine.setSpriteLayerBack("spriteId1", 1), "Setting Sprite layer back returns false if Sprite is already on the bottom layer");
+    assert.ok(!gameEngine.setSpriteLayerBack(sprite1, 1), "Setting Sprite layer back returns false if Sprite is already on the bottom layer");
     assert.deepEqual(spriteChanges, 2, "Sprite Change Event did not trigger when attempting to set sprite a layer back that was already in last position.");
 
     spriteChanges = 0;
 
-    assert.ok(gameEngine.setSpriteLayerToFront("spriteId1"), "Bringing Layer to front returns true if layers are changed.");
-    assert.ok(!gameEngine.setSpriteLayerToFront("spriteId1"), "Bringing Layer to front returns false if no layers are changed.");
+    assert.ok(gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns true if layers are changed.");
+    assert.ok(!gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns false if no layers are changed.");
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once.");
-    assert.deepEqual(gameEngine.getSpriteLayer("spriteId1"), gameEngine._sprites.length - 1 + gameEngine._backgroundOffset, "Brought Layer to front.");
+    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), gameEngine._sprites.length - 1 + gameEngine._backgroundOffset, "Brought Layer to front.");
 
     var spriteBeforeLast = gameEngine._sprites[1];
-    spriteBeforeLast.id = "uniqueId";
+    //spriteBeforeLast.id = "uniqueId";
     gameEngine.setSpriteLayerBack(spriteBeforeLast.id, 2);
-    assert.equal(gameEngine.getSpriteLayer(spriteBeforeLast.id), 1, "Sprite positioned at first layer if when trying to set back more layers than currently available.");
+    assert.equal(gameEngine.getSpriteLayer(spriteBeforeLast), 1, "Sprite positioned at first layer if when trying to set back more layers than currently available.");
 
     var projectWithNoSounds = project1;
     gameEngine.loadProject(projectWithNoSounds);

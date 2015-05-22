@@ -23,7 +23,7 @@ PocketCode.merge({
         PAUSED: 3  //and running
     },
 
-    isBrowserCompatible: function () {
+    isPlayerCompatible: function () {
         var _result = true;
         var _full = true;
         var _tests = {

@@ -10,7 +10,7 @@ PocketCode.GameEngine = (function () {
 
     function GameEngine() {
         this._executionState = PocketCode.ExecutionState.STOPPED;
-        this.minLoopCycleTime = 25; //ms
+        this.minLoopCycleTime = 25; //ms        //TODO:
         this.soundsLoaded = false;
         this.bricksLoaded = false;
         this.projectReady = false;
@@ -190,7 +190,7 @@ PocketCode.GameEngine = (function () {
 
             var sp = jsonProject.sprites;
             for (var i = 0, l = sp.length; i < l; i++) {
-                this._sprites.push(new PocketCode.Model.Sprite(this, sp[i]));
+                this._sprites.push(new PocketCode.Model.Sprite(this, sp[i]));   //TODO: use array.concat?
             }
 
             sp = this._sprites;
@@ -272,6 +272,8 @@ PocketCode.GameEngine = (function () {
         },
 
         stop: function () {
+            if (this._executionState === PocketCode.ExecutionState.STOPPED)
+                return;
             this._soundManager.stopAllSounds();
             if (this._background)
                 this._background.stop();
@@ -286,9 +288,9 @@ PocketCode.GameEngine = (function () {
 
         _spriteOnExecutedHandler: function (e) {
             //TODO: if soundmanager still playing return
-
-            for (var i = 0, l = this._sprites.length; i < l; i++) {
-                if (this._sprites[i].hasRunningScripts)//status !== PocketCode.ExecutionState.STOPPED)
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].hasRunningScripts)//status !== PocketCode.ExecutionState.STOPPED)
                     return;
             }
 
@@ -298,63 +300,92 @@ PocketCode.GameEngine = (function () {
 
         //Brick-Sprite Interaction
         getSprite: function (spriteId) {
-            var sprite = this._sprites.filter(function (sprite) { return sprite.id === spriteId; })[0];
-            if (!sprite)
+            //var sprite = this._sprites.filter(function (sprite) { return sprite.id === spriteId; })[0];   //a loop is faster than a filter (>55% slower) especially when searching for 1 element only
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++)
+            {
+                if (sprites[i].id === spriteId)
+                    return sprites[i];
+            }
+            //if (!sprite)
                 throw new Error('unknown sprite with id: ' + spriteId);
-            return sprite;
+            //return sprite;
         },
 
-        getSpriteLayer: function (spriteId) {
-            return this.layerObjectList.indexOf(this.getSprite(spriteId));
+        getSpriteLayer: function (sprite) {//Id) {
+            //return this.layerObjectList.indexOf(sprite);//this.getSprite(spriteId));
+            var idx = this._sprites.indexOf(sprite);
+            if (idx < 0)
+                throw new Error('sprite not found: getSpriteLayer');
+            return idx + this._backgroundOffset;
         },
 
-        setSpriteLayerBack: function (spriteId, layers) {
-            var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
+        setSpriteLayerBack: function (sprite, layers) {
+            var sprites = this._sprites;
+            var idx = sprites.indexOf(sprite);
 
-            if (layers <= 0 || currentPosition <= 0)
+            var count = sprites.remove(sprite);
+            if (count == 0)
                 return false;
 
-            var sprites = this._sprites;
-            var currentSprite = this._sprites[currentPosition];
-            sprites.remove(currentSprite);
+            idx = Math.max(idx - layers, 0);
+            sprites.insert(sprite, idx);
+            //var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
 
-            var newPosition = currentPosition - layers;
-            if (newPosition < 0)
-                newPosition = 0;
-            sprites.insert(currentSprite, newPosition);
+            //if (layers <= 0 || currentPosition <= 0)
+            //    return false;
+
+            //var sprites = this._sprites;
+            //var currentSprite = this._sprites[currentPosition];
+            //sprites.remove(currentSprite);
+
+            //var newPosition = currentPosition - layers;
+            //if (newPosition < 0)
+            //    newPosition = 0;
+            //sprites.insert(currentSprite, newPosition);
 
 
-            var ids = [];
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                ids.push(sprites[i]);
-            }
-            this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            //var ids = [];
+            //for (var i = 0, l = sprites.length; i < l; i++) {
+            //    ids.push(sprites[i]);   //TODO: you're pushing sprites here, right? not IDs?
+            //}
+            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + this._backgroundOffset } }, sprite);    //TODO: check event arguments
             return true;
         },
 
-        setSpriteLayerToFront: function (spriteId) {
-            var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
-
+        setSpriteLayerToFront: function (sprite) {//Id) {
             var sprites = this._sprites;
-
-            if (currentPosition === sprites.length - 1)
+            var count = sprites.remove(sprite);
+            if (count == 0)
                 return false;
-            var spriteToSetToFront = sprites[currentPosition];
-            sprites.splice(currentPosition, 1);
-            sprites.push(spriteToSetToFront);
+            sprites.push(sprite);
 
-            var ids = [];
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                ids.push(sprites[i]);
-            }
-            this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            //var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
+
+            //var sprites = this._sprites;
+
+            //if (currentPosition === sprites.length - 1)
+            //    return false;
+            //var spriteToSetToFront = sprites[currentPosition];
+            //sprites.splice(currentPosition, 1);
+            //sprites.push(spriteToSetToFront);
+
+            //var ids = [];
+            //for (var i = 0, l = sprites.length; i < l; i++) {
+            //    ids.push(sprites[i]);
+            //}
+            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layers: sprites.length } }, sprite);    //TODO: sprites.length - 1 + this._backgroundOffset ???
             return true;
         },
 
-        checkSpriteOnEdgeBounce: function (spriteId, sprite) {  //TODO: check parameters
+        checkSpriteOnEdgeBounce: function (sprite) {    //Id, sprite) {  //TODO: check parameters:sprite.rotationStyle???    call: sprite.bounceTo(angle, posX, posY) new method?
             //program viewport
             var h = this.height;
             var w = this.width;
+
+            var rs = sprite.rotationStyle;
 
             //TODO: implementation
             //this._triggerOnChange([{ positionX: this._positionX }, { positionY: this._positionY }, { direction: this._direction }]);
@@ -381,6 +412,7 @@ PocketCode.GameEngine = (function () {
 
         /* override */
         dispose: function () {
+            this.stop();
             //make sure the game engine and loaded resources are not disposed
             this._onProgramStart = undefined;
             this._onExecuted = undefined;

@@ -119,11 +119,11 @@ PocketCode.PlayerApplication = (function () {
 
             //check browser compatibility
             var comp = true;
-            if (!PocketCode.isBrowserCompatible)
-                comp = false;
+            //if (!PocketCode.isPlayerCompatible)
+            //    comp = false;
 
             if (comp) {
-                var bc = PocketCode.isBrowserCompatible();
+                var bc = PocketCode.isPlayerCompatible();
                 if (!bc.result)
                     comp = false;
             }
