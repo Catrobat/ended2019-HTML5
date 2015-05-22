@@ -1,13 +1,13 @@
-RewriteEngine On
-RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
-RewriteRule .* - [F]
+#RewriteEngine On
+#RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+#RewriteRule .* - [F]
 
-RewriteCond %{REQUEST_URI} !^/(html5|html5/.*)$
+#RewriteCond %{REQUEST_URI} !^/(html5|html5/.*)$
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
 
-RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
+#RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
-RewriteRule ^html5/player/(.*)$ html5/index.php?projectId=$1
+#RewriteRule ^html5/player/(.*)$ html5/index.php?projectId=$1
 
