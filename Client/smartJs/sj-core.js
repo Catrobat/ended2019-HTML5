@@ -35,6 +35,9 @@ SmartJs.Core.Component = (function () {
 
     Component.prototype.merge({
         __dispose: function (protoDispose) {
+            //delete this._super;
+            //delete this._superCtor;
+
             //protoDispose = protoDispose || false;
             if (this._disposing || this._disposed) return;     //already disposed
             this._disposing = true;
@@ -60,12 +63,15 @@ SmartJs.Core.Component = (function () {
             if (_proto.__dispose)
                 _proto.__dispose(true);
 
+            //if (!protoDispose)
+            //    this._disposed = true;
             delete this._disposing;
             //delete this;  //objects references (this) cannot be deleted or set to undefined
         },
         dispose: function () {
             this.__dispose();
-            delete this.constructor;// = undefined;
+            delete this.constructor;
+            //delete this.constructor;// = undefined;
             this._disposed = true;
         },
         _mergeProperties: function (propertyObject, object) {//, root) {
