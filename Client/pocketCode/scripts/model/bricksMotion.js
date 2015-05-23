@@ -8,299 +8,299 @@
 
 PocketCode.Bricks.merge({
 
-    PlaceAtBrick: (function () {
-        PlaceAtBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	PlaceAtBrick: (function () {
+		PlaceAtBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function PlaceAtBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function PlaceAtBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
-        }
+			this._x = new PocketCode.Formula(device, sprite, propObject.x);
+			this._y = new PocketCode.Formula(device, sprite, propObject.y);
+		}
 
-        PlaceAtBrick.prototype._execute = function () {
-            this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
-        };
+		PlaceAtBrick.prototype._execute = function () {
+			this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
+		};
 
-        return PlaceAtBrick;
-    })(),
+		return PlaceAtBrick;
+	})(),
 
 
-    SetXBrick: (function () {
-        SetXBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	SetXBrick: (function () {
+		SetXBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function SetXBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function SetXBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._x = new PocketCode.Formula(device, sprite, propObject.value);
-        }
+			this._x = new PocketCode.Formula(device, sprite, propObject.value);
+		}
 
-        SetXBrick.prototype._execute = function () {
-            this._return(this._sprite.setPositionX(this._x.calculate()));
-        };
+		SetXBrick.prototype._execute = function () {
+			this._return(this._sprite.setPositionX(this._x.calculate()));
+		};
 
-        return SetXBrick;
-    })(),
+		return SetXBrick;
+	})(),
 
 
-    SetYBrick: (function () {
-        SetYBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	SetYBrick: (function () {
+		SetYBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function SetYBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function SetYBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._y = new PocketCode.Formula(device, sprite, propObject.value);
-        }
+			this._y = new PocketCode.Formula(device, sprite, propObject.value);
+		}
 
-        SetYBrick.prototype._execute = function () {
-            this._return(this._sprite.setPositionY(this._y.calculate()));
-        };
+		SetYBrick.prototype._execute = function () {
+			this._return(this._sprite.setPositionY(this._y.calculate()));
+		};
 
-        return SetYBrick;
-    })(),
+		return SetYBrick;
+	})(),
 
 
-    ChangeXBrick: (function () {
-        ChangeXBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	ChangeXBrick: (function () {
+		ChangeXBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function ChangeXBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function ChangeXBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._x = new PocketCode.Formula(device, sprite, propObject.value);
-        }
+			this._x = new PocketCode.Formula(device, sprite, propObject.value);
+		}
 
-        ChangeXBrick.prototype._execute = function () {
-            this._return(this._sprite.changePositionX(this._x.calculate()));
-        };
+		ChangeXBrick.prototype._execute = function () {
+			this._return(this._sprite.changePositionX(this._x.calculate()));
+		};
 
-        return ChangeXBrick;
-    })(),
+		return ChangeXBrick;
+	})(),
 
 
-    ChangeYBrick: (function () {
-        ChangeYBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	ChangeYBrick: (function () {
+		ChangeYBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function ChangeYBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function ChangeYBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._y = new PocketCode.Formula(device, sprite, propObject.value);
-        }
+			this._y = new PocketCode.Formula(device, sprite, propObject.value);
+		}
 
-        ChangeYBrick.prototype._execute = function () {
-            this._return(this._sprite.changePositionY(this._y.calculate()));
-        };
+		ChangeYBrick.prototype._execute = function () {
+			this._return(this._sprite.changePositionY(this._y.calculate()));
+		};
 
-        return ChangeYBrick;
-    })(),
+		return ChangeYBrick;
+	})(),
 
 
-    IfOnEdgeBounceBrick: (function () {
-        IfOnEdgeBounceBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	IfOnEdgeBounceBrick: (function () {
+		IfOnEdgeBounceBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function IfOnEdgeBounceBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function IfOnEdgeBounceBrick(device, sprite) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-        }
+		}
 
-        IfOnEdgeBounceBrick.prototype._execute = function () {
-            this._return(this._sprite.ifOnEdgeBounce());
-        };
+		IfOnEdgeBounceBrick.prototype._execute = function () {
+			this._return(this._sprite.ifOnEdgeBounce());
+		};
 
-        return IfOnEdgeBounceBrick;
-    })(),
+		return IfOnEdgeBounceBrick;
+	})(),
 
 
-    MoveNStepsBrick: (function () {
-        MoveNStepsBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	MoveNStepsBrick: (function () {
+		MoveNStepsBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function MoveNStepsBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function MoveNStepsBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._steps = new PocketCode.Formula(device, sprite, propObject.steps);
-        }
+			this._steps = new PocketCode.Formula(device, sprite, propObject.steps);
+		}
 
-        MoveNStepsBrick.prototype._execute = function () {
-            this._return(this._sprite.move(this._steps.calculate()));
-        };
+		MoveNStepsBrick.prototype._execute = function () {
+			this._return(this._sprite.move(this._steps.calculate()));
+		};
 
-        return MoveNStepsBrick;
-    })(),
+		return MoveNStepsBrick;
+	})(),
 
 
-    TurnLeftBrick: (function () {
-        TurnLeftBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	TurnLeftBrick: (function () {
+		TurnLeftBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function TurnLeftBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function TurnLeftBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
-        }
+			this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+		}
 
-        TurnLeftBrick.prototype._execute = function () {
-            this._return(this._sprite.turnLeft(this._degrees.calculate()));
-        };
+		TurnLeftBrick.prototype._execute = function () {
+			this._return(this._sprite.turnLeft(this._degrees.calculate()));
+		};
 
-        return TurnLeftBrick;
-    })(),
+		return TurnLeftBrick;
+	})(),
 
 
-    TurnRightBrick: (function () {
-        TurnRightBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	TurnRightBrick: (function () {
+		TurnRightBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function TurnRightBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
-
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
-        }
+		function TurnRightBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+
+			this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+		}
 
-        TurnRightBrick.prototype._execute = function () {
-            this._return(this._sprite.turnRight(this._degrees.calculate()));
-        };
+		TurnRightBrick.prototype._execute = function () {
+			this._return(this._sprite.turnRight(this._degrees.calculate()));
+		};
 
-        return TurnRightBrick;
-    })(),
+		return TurnRightBrick;
+	})(),
 
 
-    PointInDirectionBrick: (function () {
-        PointInDirectionBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	PointInDirectionBrick: (function () {
+		PointInDirectionBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function PointInDirectionBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function PointInDirectionBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
-        }
+			this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+		}
 
-        PointInDirectionBrick.prototype._execute = function () {
-            this._return(this._sprite.setDirection(this._degrees.calculate()));
-        };
+		PointInDirectionBrick.prototype._execute = function () {
+			this._return(this._sprite.setDirection(this._degrees.calculate()));
+		};
 
-        return PointInDirectionBrick;
-    })(),
+		return PointInDirectionBrick;
+	})(),
 
 
-    PointToBrick: (function () {
-        PointToBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	PointToBrick: (function () {
+		PointToBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function PointToBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function PointToBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._spriteId = propObject.spriteId;
-        }
+			this._spriteId = propObject.spriteId;
+		}
 
-        PointToBrick.prototype._execute = function () {
-            this._return(this._sprite.pointTo(this._spriteId));
-        };
+		PointToBrick.prototype._execute = function () {
+			this._return(this._sprite.pointTo(this._spriteId));
+		};
 
-        return PointToBrick;
-    })(),
+		return PointToBrick;
+	})(),
 
 
-    GlideToBrick: (function () {
-        GlideToBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+	GlideToBrick: (function () {
+		GlideToBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
 
-        function GlideToBrick(device, sprite, propObject) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+		function GlideToBrick(device, sprite, propObject) {
+			PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
 
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
-            this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-        }
+			this._x = new PocketCode.Formula(device, sprite, propObject.x);
+			this._y = new PocketCode.Formula(device, sprite, propObject.y);
+			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+		}
 
-        GlideToBrick.prototype.merge({
-            _updatePositionHandler: function(e) {
-                this._sprite.setPosition(e.value.x, e.value.y);
-            },
-            _returnHandler: function (e) {
-                var callId = e.callId;
-                this._return(callId, true);
-            },
-            _execute: function (callId) {
-                var sprite = this._sprite;
-                var po = this._pendingOps[callId];
-                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
-                animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
-                po.animation = animation;
-                animation.start({ callId: callId });
-            },
-            pause: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var animation = po[o].animation;
-                    if (animation)
-                        animation.pause();
-                }
-            },
-            resume: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var animation = po[o].animation;
-                    if (animation)
-                        animation.resume();
-                }
-            },
-            stop: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var animation = po[o].animation;
-                    if (animation)
-                        animation.stop();
-                }
-                this._pendingOps = {};
-            },
-        });
+		GlideToBrick.prototype.merge({
+			_updatePositionHandler: function(e) {
+				this._sprite.setPosition(e.value.x, e.value.y);
+			},
+			_returnHandler: function (e) {
+				var callId = e.callId;
+				this._return(callId, true);
+			},
+			_execute: function (callId) {
+				var sprite = this._sprite;
+				var po = this._pendingOps[callId];
+				var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
+				animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
+				animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
+				po.animation = animation;
+				animation.start({ callId: callId });
+			},
+			pause: function () {
+				var po = this._pendingOps;
+				for (var o in po) {
+					var animation = po[o].animation;
+					if (animation)
+						animation.pause();
+				}
+			},
+			resume: function () {
+				var po = this._pendingOps;
+				for (var o in po) {
+					var animation = po[o].animation;
+					if (animation)
+						animation.resume();
+				}
+			},
+			stop: function () {
+				var po = this._pendingOps;
+				for (var o in po) {
+					var animation = po[o].animation;
+					if (animation)
+						animation.stop();
+				}
+				this._pendingOps = {};
+			},
+		});
 
-        return GlideToBrick;
-    })(),
+		return GlideToBrick;
+	})(),
 
 
-    GoBackBrick: (function () {
-        GoBackBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	GoBackBrick: (function () {
+		GoBackBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function GoBackBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function GoBackBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._layers = new PocketCode.Formula(device, sprite, propObject.layers);
-        }
+			this._layers = new PocketCode.Formula(device, sprite, propObject.layers);
+		}
 
-        GoBackBrick.prototype._execute = function () {
-            this._return(this._sprite.goBack(this._layers.calculate()));
-        };
+		GoBackBrick.prototype._execute = function () {
+			this._return(this._sprite.goBack(this._layers.calculate()));
+		};
 
-        return GoBackBrick;
-    })(),
+		return GoBackBrick;
+	})(),
 
 
-    ComeToFrontBrick: (function () {
-        ComeToFrontBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	ComeToFrontBrick: (function () {
+		ComeToFrontBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function ComeToFrontBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function ComeToFrontBrick(device, sprite) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-        }
+		}
 
-        ComeToFrontBrick.prototype._execute = function () {
-            this._return(this._sprite.comeToFront());
-        };
+		ComeToFrontBrick.prototype._execute = function () {
+			this._return(this._sprite.comeToFront());
+		};
 
-        return ComeToFrontBrick;
-    })(),
+		return ComeToFrontBrick;
+	})(),
 
-    VibrationBrick: (function () {
-        VibrationBrick.extends(PocketCode.Bricks.BaseBrick, false);
+	VibrationBrick: (function () {
+		VibrationBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
-        function VibrationBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+		function VibrationBrick(device, sprite, propObject) {
+			PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 			
 			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-        }
+		}
 
-        VibrationBrick.prototype._execute = function () {
-            this._return(this._device.vibrate(this._duration.calculate()));
-        };
+		VibrationBrick.prototype._execute = function () {
+			this._return(this._device.vibrate(this._duration.calculate()));
+		};
 
-        return VibrationBrick;
-    })(),
+		return VibrationBrick;
+	})(),
 	
 });
 

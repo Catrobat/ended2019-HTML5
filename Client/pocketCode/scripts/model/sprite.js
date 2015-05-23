@@ -317,7 +317,7 @@ PocketCode.Model.Sprite = (function () {
          * sets the position(x,y) of the sprite
          * @param {number} x
          * @param {number} y
-         * @param {triggerEvent
+         * @param {boolean} triggerEvent
          * @returns {boolean}
          */
         setPosition: function (x, y, triggerEvent) {
@@ -334,6 +334,9 @@ PocketCode.Model.Sprite = (function () {
                 this._positionY = y;
                 ops.push({ positionY: y });
             }
+            if (ops.length == 0)
+                return false;
+
             if (triggerEvent)
                 this._triggerOnChange(ops);
             return true;
@@ -406,9 +409,9 @@ PocketCode.Model.Sprite = (function () {
             var rad = this.direction * (Math.PI / 180.0);
             var offsetX = Math.round(Math.sin(rad) * steps);
             var offsetY = Math.round(Math.cos(rad) * steps);
-            var triggerEvent;
-            this.setPosition(this._positionX + offsetX, this._positionY + offsetY, triggerEvent);
-            return true;
+            //var triggerEvent;
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);//, triggerEvent);
+            //return true;
         },
 
         //motion:direction
@@ -582,13 +585,18 @@ PocketCode.Model.Sprite = (function () {
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
             if (value === undefined || isNaN(value) || value == null)
                 throw new Error('invalid value');
-            if (!value || (this._size === 0 && (this._size + value) <= 0))
+            if (!value)// || (this._size === 0 && (this._size + value) <= 0))
                 return false;
 
-            this._size += value;
-            if (this._size < 0)
-                this._size = 0;
-            this._triggerOnChange([{ size: this._size }]);
+            var size = this._size + value;
+            if (size < 0)
+                size = 0;
+
+            if (this._size == size)
+                return false;
+
+            this._size = size;
+            this._triggerOnChange([{ size: size }]);
             return true;
         },
         /**
@@ -785,6 +793,10 @@ PocketCode.Model.Sprite = (function () {
                 this._brightness = 100.0;
                 ops.push({ brightness: 100.0 });
             }
+
+            if (ops.length == 0)
+                return false;
+
             this._triggerOnChange(ops);
             return true;
         },
