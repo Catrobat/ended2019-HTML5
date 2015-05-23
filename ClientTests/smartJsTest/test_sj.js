@@ -230,7 +230,7 @@ QUnit.test("Function.prototype.extends", function (assert) {
 	C = (function () {
 		C.extends(Base, false);
 		function C() {
-			this._superCtor();//.call(this);//Ctor();
+			Base.call(this);//Ctor();
 		};
 		C.prototype.merge({
 			start: function () {
@@ -251,7 +251,7 @@ QUnit.test("Function.prototype.extends", function (assert) {
 	C = (function () {
 		C.extends(Base, false);
 		function C(x, y) {
-			this._superCtor(x, y);//.call(this);//Ctor();
+			Base.call(this, x, y);//.call(this);//Ctor();
 		};
 		C.prototype.merge({
 			start: function () {
@@ -261,7 +261,7 @@ QUnit.test("Function.prototype.extends", function (assert) {
 				this.b += 2;
 			},
 			restart: function () {
-				this._super.restart.call(this);
+			    Base.prototype.restart.call(this);
 			},
 		});
 		return C;

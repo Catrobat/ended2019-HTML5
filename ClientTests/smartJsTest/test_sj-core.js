@@ -248,7 +248,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 		Y.extends(ns.PD, false);
 
 		function Y() {
-			this._superCtor("1", 2);
+		    ns.PD.call(this, "1", 2);
 			this.prop1_ = "jkl";
 			this.prop_2 = "initialized";
 			//this.prop2 = [1, 2, 3, new Array(4, 5, "asd")];

@@ -73,12 +73,12 @@ Function.prototype.extends = function (superClass, execSuperCtor) {
         this.prototype = Object.create(superClass.prototype);
 
     this.prototype.constructor = _proto.constructor;
-    Object.defineProperties(this.prototype, {
-        _super: {
-            value: superClass.prototype,
-        },
-    });
-    this.prototype._superCtor = function () { superClass.apply(this, arguments) };
+    //Object.defineProperties(this.prototype, {
+    //    _super: {
+    //        value: superClass.prototype,
+    //    },
+    //});
+    //this.prototype._superCtor = function () { superClass.apply(this, arguments) };
 };
 Object.defineProperty(Function.prototype, 'extends', { enumerable: false });
 

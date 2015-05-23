@@ -154,13 +154,13 @@ SmartJs.Ui.Window = new((function () {  //static class
 
 SmartJs.Ui.merge({
     TextNode: (function () {
-        TextNode.extends(SmartJs.Core.Component, false);
+        TextNode.extends(SmartJs.Core.Component);//, false);
 
         function TextNode(text) {//, propObject) {
             this._text = text;
             this._dom = document.createTextNode(this._text);
 
-            SmartJs.Core.EventTarget.call(this);//, propObject);
+            //SmartJs.Core.EventTarget.call(this);//, propObject);
         }
 
         //properties
