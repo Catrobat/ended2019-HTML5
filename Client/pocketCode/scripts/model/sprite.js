@@ -272,7 +272,7 @@ PocketCode.Model.Sprite = (function () {
         /**
          * calls pause() on every brick as long as method is available
          */
-        pause: function () {
+        pauseScripts: function () {
             var bricks = this._bricks;
             for (var i = 0, l = bricks.length; i < l; i++) {
                 if (bricks[i].pause)
@@ -283,7 +283,7 @@ PocketCode.Model.Sprite = (function () {
         /**
          * calls resume() on every brick as long as method is available
          */
-        resume: function () {
+        resumeScripts: function () {
             var bricks = this._bricks;
             for (var i = 0, l = bricks.length; i < l; i++) {
                 if (bricks[i].resume)
@@ -294,7 +294,7 @@ PocketCode.Model.Sprite = (function () {
         /**
          * calls stop() on every brick as long as method is available
          */
-        stop: function () {
+        stopScripts: function () {
             var bricks = this._bricks;
             for (var i = 0, l = bricks.length; i < l; i++) {
                 if (bricks[i].stop)
@@ -469,7 +469,7 @@ PocketCode.Model.Sprite = (function () {
         pointTo: function (spriteId) {
             if (!spriteId)
                 return false;
-            var pointTo = this._gameEngine.getSprite(spriteId);
+            var pointTo = this._gameEngine.getSpriteById(spriteId);
             if (pointTo == undefined)
                 return false;
 

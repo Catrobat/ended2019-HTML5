@@ -139,7 +139,7 @@ PocketCode.GameEngine = (function () {
     GameEngine.prototype.merge({
         loadProject: function (jsonProject) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
-                this.stop();
+                this.stopProject();
 
             this.soundsLoaded = false;
             this.bricksLoaded = false;
@@ -220,7 +220,7 @@ PocketCode.GameEngine = (function () {
                 }
             }
         },
-        execute: function () {
+        runProject: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
             if (!this._projectLoaded)//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
@@ -236,50 +236,50 @@ PocketCode.GameEngine = (function () {
             this.onProgramStart.dispatchEvent();
         },
 
-        restart: function () {
-            this.stop();
-            this.execute();
+        restartProject: function () {
+            this.stopProject();
+            this.runProject();
         },
 
-        pause: function () {
+        pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING || this._executionState === PocketCode.ExecutionState.PAUSED)//(!this._running || this._paused)
                 return;
 
             this._soundManager.pauseSounds();
             if (this._background)
-                this._background.pause();
+                this._background.pauseScripts();
 
             for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].pause();
+                this._sprites[i].pauseScripts();
             }
             //this._paused = true;
             this._executionState = PocketCode.ExecutionState.PAUSED;
         },
 
-        resume: function () {
+        resumeProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)//(!this._paused)
                 return;
 
             this._soundManager.resumeSounds();
             if (this._background)
-                this._background.resume();
+                this._background.resumeScripts();
 
             for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].resume();
+                this._sprites[i].resumeScripts();
             }
             //this._paused = false;
             this._executionState = PocketCode.ExecutionState.RUNNING;
         },
 
-        stop: function () {
+        stopProject: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
             this._soundManager.stopAllSounds();
             if (this._background)
-                this._background.stop();
+                this._background.stopScripts();
 
             for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].stop();
+                this._sprites[i].stopScripts();
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
             //this._running = false;
@@ -299,7 +299,7 @@ PocketCode.GameEngine = (function () {
         },
 
         //Brick-Sprite Interaction
-        getSprite: function (spriteId) {
+        getSpriteById: function (spriteId) {
             //var sprite = this._sprites.filter(function (sprite) { return sprite.id === spriteId; })[0];   //a loop is faster than a filter (>55% slower) especially when searching for 1 element only
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++)
@@ -313,7 +313,7 @@ PocketCode.GameEngine = (function () {
         },
 
         getSpriteLayer: function (sprite) {//Id) {
-            //return this.layerObjectList.indexOf(sprite);//this.getSprite(spriteId));
+            //return this.layerObjectList.indexOf(sprite);//this.getSpriteById(spriteId));
             var idx = this._sprites.indexOf(sprite);
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
@@ -323,7 +323,8 @@ PocketCode.GameEngine = (function () {
         setSpriteLayerBack: function (sprite, layers) {
             var sprites = this._sprites;
             var idx = sprites.indexOf(sprite);
-
+            if (idx == 0)
+                return false;
             var count = sprites.remove(sprite);
             if (count == 0)
                 return false;
@@ -349,13 +350,15 @@ PocketCode.GameEngine = (function () {
             //for (var i = 0, l = sprites.length; i < l; i++) {
             //    ids.push(sprites[i]);   //TODO: you're pushing sprites here, right? not IDs?
             //}
-            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSpriteById(spriteId));    //TODO: check event arguments
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + this._backgroundOffset } }, sprite);    //TODO: check event arguments
             return true;
         },
 
         setSpriteLayerToFront: function (sprite) {//Id) {
             var sprites = this._sprites;
+            if (sprites.indexOf(sprite) === sprites.length - 1)
+                return false;
             var count = sprites.remove(sprite);
             if (count == 0)
                 return false;
@@ -375,7 +378,7 @@ PocketCode.GameEngine = (function () {
             //for (var i = 0, l = sprites.length; i < l; i++) {
             //    ids.push(sprites[i]);
             //}
-            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSprite(spriteId));    //TODO: check event arguments
+            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSpriteById(spriteId));    //TODO: check event arguments
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layers: sprites.length } }, sprite);    //TODO: sprites.length - 1 + this._backgroundOffset ???
             return true;
         },
@@ -412,7 +415,7 @@ PocketCode.GameEngine = (function () {
 
         /* override */
         dispose: function () {
-            this.stop();
+            this.stopProject();
             //make sure the game engine and loaded resources are not disposed
             this._onProgramStart = undefined;
             this._onExecuted = undefined;

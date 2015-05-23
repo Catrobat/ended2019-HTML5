@@ -15,7 +15,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.throws(function () { gameEngine.broadcasts = "invalid argument" }, Error, "ERROR: passed invalid arguments to broadcasts.");
     assert.equal(gameEngine.setSpriteLayerBack("invalidId", 5), false, "ERROR: passed invalid object to setSpriteLayerBack.");
     assert.equal(gameEngine.setSpriteLayerToFront("invalidId"), false, "ERROR: passed invalid object to setSpriteLayerToFront.");
-    assert.throws(function () { gameEngine.getSprite("invalidId") }, Error, "ERROR: passed invalid id to getSprite.");
+    assert.throws(function () { gameEngine.getSpriteById("invalidId") }, Error, "ERROR: passed invalid id to getSprite.");
     assert.throws(function () { gameEngine.getSpriteLayer("invalidId") }, Error, "ERROR: passed invalid object to getSpriteLayer.");
 
     var images = [{ id: "1" }, { id: "2" }, { id: "3" }];
@@ -51,14 +51,14 @@ QUnit.test("GameEngine", function (assert) {
 
     gameEngine.projectReady = true;
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Created gameEngine not started");
-    assert.throws(function () { gameEngine.execute() }, Error, "ERROR: Tried to start gameEngine without any sprites.");
+    assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Tried to start gameEngine without any sprites.");
     gameEngine.projectReady = false;
-    assert.throws(function () { gameEngine.execute() }, Error, "ERROR: Program not ready.");
+    assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Program not ready.");
     gameEngine.projectReady = true;
 
     //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
     var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
-    assert.ok(typeof spriteInterface.pause == "function" && typeof spriteInterface.resume == "function" && typeof spriteInterface.stop == "function", "mock: valid sprite interface");
+    assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopScripts == "function", "mock: valid sprite interface");
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
@@ -68,22 +68,22 @@ QUnit.test("GameEngine", function (assert) {
             PocketCode.Model.Sprite.call(this, program, args);
             this.status = PocketCode.ExecutionState.STOPPED;
             //this.MOCK = true;   //flag makes debugging much easier
+            this.timesStopped = 0;
+            this.timesStarted = 0;
         }
 
         TestSprite.prototype.merge({
-            timesStopped: 0,
-            timesStarted: 0,
             //execute: function () {
             //    this.status = PocketCode.ExecutionState.RUNNING;
             //    this.timesStarted++;
             //},
-            pause: function () {
+            pauseScripts: function () {
                 this.status = PocketCode.ExecutionState.PAUSED;
             },
-            resume: function () {
+            resumeScripts: function () {
                 this.status = PocketCode.ExecutionState.RUNNING;
             },
-            stop: function () {
+            stopScripts: function () {
                 this.status = PocketCode.ExecutionState.STOPPED;
                 this.timesStopped++;
             }
@@ -128,7 +128,7 @@ QUnit.test("GameEngine", function (assert) {
     }));
 
     gameEngine._projectLoaded = true;  //simulate project loaded for tests
-    gameEngine.execute();
+    gameEngine.runProject();
     assert.equal(programStartEvent, 1, "Called onProgramStart.");
 
     //var allSpritesStarted = true;
@@ -141,10 +141,10 @@ QUnit.test("GameEngine", function (assert) {
     //assert.deepEqual(gameEngine._background.status, PocketCode.ExecutionState.RUNNING, "Called backgrounds start method.");
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on start.");
 
-    gameEngine.execute();
+    gameEngine.runProject();
     assert.equal(programStartEvent, 1, "Did not attempt to start running gameEngine.");
 
-    gameEngine.pause();
+    gameEngine.pauseProject();
     var allSpritesPaused = true;
     for (var i = 0; i < gameEngine._sprites.length; i++) {
         if (gameEngine._sprites[i].status !== PocketCode.ExecutionState.PAUSED) {
@@ -156,7 +156,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.PAUSED, "Set programs execution state to PAUSED on calling pause.");
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.PAUSED, "Called soundManagers pauseSounds function.");
 
-    gameEngine.resume();
+    gameEngine.resumeProject();
     //allSpritesStarted = true;
     //for (var i = 0; i < gameEngine._sprites.length; i++) {
     //    if (gameEngine._sprites[i].status !== PocketCode.ExecutionState.RUNNING) {
@@ -168,7 +168,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Set programs execution state to RUNNING on calling resume.");
     assert.deepEqual(gameEngine._soundManager.status, PocketCode.ExecutionState.RUNNING, "Called soundManagers resumeSounds function.");
 
-    gameEngine.stop();
+    gameEngine.stopProject();
     //var allSpritesStopped = true;
     //for (var i = 0; i < gameEngine._sprites.length; i++) {
     //    if (gameEngine._sprites[i].status !== PocketCode.ExecutionState.STOPPED) {
@@ -180,10 +180,10 @@ QUnit.test("GameEngine", function (assert) {
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Set programs execution state to STOP on calling stop.");
     assert.equal(gameEngine._soundManager.status, PocketCode.ExecutionState.STOPPED, "Called soundManagers stop function.");
 
-    gameEngine.resume();
+    gameEngine.resumeProject();
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not resume stopped gameEngine.");
 
-    gameEngine.pause();
+    gameEngine.pauseProject();
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Did not attempt to pause stopped gameEngine.");
 
     var spritesStarted = gameEngine._sprites[0].timesStarted;
@@ -191,7 +191,10 @@ QUnit.test("GameEngine", function (assert) {
     var bgStarted = gameEngine._background.timesStarted;
     var bgStopped = gameEngine._background.timesStopped;
 
-    gameEngine.restart();
+    gameEngine.restartProject();
+    assert.ok(gameEngine._sprites[0].timesStopped === spritesStopped && gameEngine._background.timesStopped === bgStopped, "do not call stop on already stopped: all sprites when restarting.");
+    gameEngine.runProject();
+    gameEngine.restartProject();
     assert.ok(gameEngine._sprites[0].timesStopped === spritesStopped + 1 && gameEngine._background.timesStopped === bgStopped + 1, "Stopped all sprites when restarting.");
     //assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting.");
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine.");
@@ -200,7 +203,7 @@ QUnit.test("GameEngine", function (assert) {
     sprite1.id = "spriteId1";
     //sprite1.name = "spriteName1";
     gameEngine._sprites.push(sprite1);
-    assert.equal(gameEngine.getSprite("spriteId1"), sprite1, "Correct sprite returned by getSprite.");
+    assert.equal(gameEngine.getSpriteById("spriteId1"), sprite1, "Correct sprite returned by getSprite.");
 
     var spriteChanges = 0;
     gameEngine._onSpriteChange.addEventListener(new SmartJs.Event.EventListener(function () {
@@ -208,10 +211,10 @@ QUnit.test("GameEngine", function (assert) {
         //TODO tests for event
     }));
 
-    var numberOfSprites = gameEngine._sprites.length;
+    //var numberOfSprites = gameEngine._sprites.length;
     //var currentSpriteLayer = gameEngine.getSpriteLayer("spriteId1");    //avoid testing a method by using it -> this may cause wrong positive results
-    var currentSpriteLayer = gameEngine._sprites.indexOf(sprite1);
-    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), numberOfSprites + gameEngine._backgroundOffset - 1, "Correct Sprite Layer returned by getSpriteLayer.");
+    var currentSpriteLayer = gameEngine._sprites.indexOf(sprite1) + gameEngine._backgroundOffset;
+    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), currentSpriteLayer, "Correct Sprite Layer returned by getSpriteLayer.");
     gameEngine.setSpriteLayerBack(sprite1, 2);
     assert.deepEqual(gameEngine.getSpriteLayer(sprite1), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack.");
 
@@ -229,7 +232,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var spriteBeforeLast = gameEngine._sprites[1];
     //spriteBeforeLast.id = "uniqueId";
-    gameEngine.setSpriteLayerBack(spriteBeforeLast.id, 2);
+    gameEngine.setSpriteLayerBack(spriteBeforeLast, 2);
     assert.equal(gameEngine.getSpriteLayer(spriteBeforeLast), 1, "Sprite positioned at first layer if when trying to set back more layers than currently available.");
 
     var projectWithNoSounds = project1;

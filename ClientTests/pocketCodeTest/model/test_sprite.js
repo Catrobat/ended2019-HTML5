@@ -422,7 +422,7 @@ QUnit.test("Sprite", function (assert) {
     newSprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
     newSprite.id = "id2";
     prog._sprites.push(newSprite);
-    var tmp = prog.getSprite("id2");
+    var tmp = prog.getSpriteById("id2");
     assert.ok(tmp === newSprite, "push sprite to program");
 
     newSprite.setPosition(100, 100);
