@@ -6,7 +6,7 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
-SmartJs.Ui.Window = new((function () {  //static class
+SmartJs.Ui.Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
     //ctr
@@ -150,7 +150,9 @@ SmartJs.Ui.Window = new((function () {  //static class
     });
 
     return Window;
-})())();
+})();
+SmartJs.Ui.Window = new SmartJs.Ui.Window();    //create static class
+
 
 SmartJs.Ui.merge({
     TextNode: (function () {

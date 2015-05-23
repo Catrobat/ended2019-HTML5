@@ -52,6 +52,9 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 	assert.equal(req.url, "", "ctr without url + getter");
 	assert.ok(req instanceof SmartJs.Communication.XmlHttpRequest && req instanceof SmartJs.Communication.ServiceRequest, "instance check");
 
+	assert.throws(function () { req.send(); }, "ERROR: send without specified url");
+	assert.throws(function () { req.send("invalid data", "GET", "url"); }, "ERROR: send with invlaid data, != object");
+
 	req = new SmartJs.Communication.XmlHttpRequest("http://www.pocketcodeTest.org");    //using a non existing domain
 	assert.equal(req.url, "http://www.pocketcodeTest.org", "ctr with url + getter");
 	assert.equal(req.supported, false, "support: checks external domain");
