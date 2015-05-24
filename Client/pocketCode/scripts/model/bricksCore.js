@@ -435,17 +435,14 @@ PocketCode.Bricks.LoopBrick = (function () {
                 var executionDelay = 0;
                 if (e.loopDelay) {
                     executionDelay = this._minLoopCycleTime - (new Date() - op.startTime);  //20ms min loop cycle time
-                    //console.log("loop delay: ");
                 }
                 op.startTime = new Date();  //re-init for each loop
                 var _self = this;
                 if (executionDelay > 0) {
                     window.setTimeout(this._execute.bind(this, id), executionDelay);
-                    //console.log("delay: " + executionDelay);
                 }
                 else {
                     window.setTimeout(this._execute.bind(this, id), 3);
-                    //console.log("delay: 3");
                 }
             }
             else
@@ -510,7 +507,6 @@ PocketCode.Bricks.UnsupportedBrick = (function () {
     }
 
     UnsupportedBrick.prototype._execute = function () {
-        //console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml + ', type= ' + this._brickType);
         this._return();
     };
 

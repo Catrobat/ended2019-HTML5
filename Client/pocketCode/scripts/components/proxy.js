@@ -107,8 +107,6 @@ PocketCode.merge({
         //methods
         JsonpRequest.prototype.merge({
             _onErrorHandler: function (e) {
-                console.log("error: " + this._id);
-                //this._error = e;                  //TODO:
                 this._deleteServiceEndpoint();
                 this._onError.dispatchEvent(e);
             },
@@ -127,25 +125,22 @@ PocketCode.merge({
                 this._script = undefined;
             },
             _handleResponse: function (responseText, statusCode) {
-                //console.log('receive id: ' + this._id);
                 this._deleteServiceEndpoint();
 
                 this._xhr = { status: statusCode, responseText: responseText };
                 if (statusCode !== 200) { //this._loaded && 
-                    //console.log("error2 ");
                     var e = new Error(responseText);
                     e.statusCode = statusCode;
                     this._onError.dispatchEvent(e);
                 }
                 else
-                    //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
                     this._onLoad.dispatchEvent();
             },
             send: function (data, method, url) {
 
                 if (this._script)
                     throw new Error('this is an asynchronous request: you\'re not allowed to send it twice (simultanously). Create another instance');
-                //console.log('send id: ' + this._id);
+
                 if (method)
                     this.method = method;
 

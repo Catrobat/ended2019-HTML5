@@ -260,7 +260,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var projectWithNoSounds = project1;
     gameEngine.loadProject(projectWithNoSounds);
-    assert.ok(gameEngine.soundsLoaded, "SoundsLoaded set true if there are no sounds");
+    assert.ok(gameEngine._soundsLoaded, "SoundsLoaded set true if there are no sounds");
 
     var testProject = projectSounds;
     var loadingHandled = assert.async();
@@ -269,10 +269,10 @@ QUnit.test("GameEngine", function (assert) {
 
     gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
         if (e.progress !== 100) {
-            assert.ok(!gameEngine.soundsLoaded && !gameEngine.projectReady, "Program not ready if sounds are not loaded");
+            assert.ok(!gameEngine._soundsLoaded && !gameEngine.projectReady, "Program not ready if sounds are not loaded");
             return;
         } else {
-            assert.ok(gameEngine.soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
+            assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
             assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
         }
         loadingHandled();

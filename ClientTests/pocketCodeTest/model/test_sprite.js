@@ -1,6 +1,10 @@
 /// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
@@ -10,9 +14,17 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
+    var finalAsyncCall = assert.async();
     var prog = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
+
+    //attach listener to get latest changes
+    var lastOnChangeArgs;
+    var onChangeHandler = function (e) {
+        lastOnChangeArgs = e;
+    }
+    sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //properties
     assert.throws(function () { var err = new PocketCode.Model.Sprite(prog); }, Error, "missing ctr arguments");
@@ -60,29 +72,44 @@ QUnit.test("Sprite", function (assert) {
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -210);
     assert.equal(sprite._brightness, 0, "set brightness under 0");
 
-    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 110);
+    returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 110);
     assert.equal(sprite._transparency, 100.0, "set transparency over 100");
+    assert.ok(returnVal, "update: transparency");
+    returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 110);
+    assert.ok(!returnVal, "update: transparency: not changed");
+
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, -110);
     assert.equal(sprite._transparency, 0.0, "set transparency under 0");
 
 
-    assert.throws(function () { sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf") }, Error, "invalid brightness percentage");
-    assert.throws(function () { sprite.changeGraphicEffect(null, 50) }, Error, "unknown graphic effect");
+    assert.throws(function () { sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf") }, Error, "ERROR: invalid brightness percentage");
+    assert.throws(function () { sprite.changeGraphicEffect(null, 50) }, Error, "ERROR: unknown graphic effect");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 100);
+    assert.ok(!sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 100), "set grafic effect: no change to brightness");
+    assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS); }, Error, "ERROR: set grafic effect: missing argument brightness");
+
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 110);
     assert.equal(sprite._brightness, 200, "change brightness over 200");
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 100);
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -110);
     assert.equal(sprite._brightness, 0, "change brightness under 0");
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -110);
+    assert.ok(!returnVal, "set brightness: no update on value");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
+    assert.ok(!sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50), "set grafic effect: no change to transparency");
+    assert.throws(function () { sprite.setGraphicEffect("UNKNOWN", 50); }, Error, "ERROR: set grafic effect: unknown effect");
+    assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST); }, Error, "ERROR: set grafic effect: missing argument transparency");
+
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, 60);
     assert.equal(sprite._transparency, 100.0, "change transparency over 100");
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
-    sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, -60);
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, -60);
     assert.equal(sprite._transparency, 0.0, "change transparency under 0");
-
+    assert.ok(returnVal, "change transparency: return value");
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, -60);
+    assert.ok(!returnVal, "change transparency: return value (no change)");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
     assert.equal(sprite._transparency, 50.0, "set transparency");
@@ -95,8 +122,16 @@ QUnit.test("Sprite", function (assert) {
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 60);
     assert.equal(sprite._brightness, 110, "change brightness");
 
-    sprite.clearGraphicEffects();
+    returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.FISHEYE, 50);
+    assert.ok(!returnVal, "setting an undefined effect");
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.MOSAIC, 60);
+    assert.ok(!returnVal, "changing an undefined effect");
+
+    returnVal = sprite.clearGraphicEffects();
     assert.ok(sprite._brightness == 100 && sprite._transparency == 0, "graphic effects cleared");
+    assert.ok(returnVal, "clear graphic effect: retrun value");
+    returnVal = sprite.clearGraphicEffects();
+    assert.ok(!returnVal, "clear graphic effect: retrun value (no updates)");
 
     // *************************************************************
 
@@ -176,10 +211,15 @@ QUnit.test("Sprite", function (assert) {
     // ********************* Size *********************
     assert.throws(function () { sprite.setSize("asdf") }, Error, "invalid percentage");
 
+    sprite.setSize(0);
+    assert.ok(!sprite.setSize(-20), "size not changed: 0");
+    sprite.setSize(100);
+    assert.ok(!sprite.setSize(100), "size not changed: same size");
     sprite.setSize(-20);
     assert.equal(sprite._size, 0, "set size below 0");
     sprite.setSize(50);
     assert.equal(sprite._size, 50, "set size");
+
     sprite.changeSize(-60);
     assert.equal(sprite._size, 0, "change size below 0");
     sprite.changeSize(20);
@@ -187,28 +227,65 @@ QUnit.test("Sprite", function (assert) {
     sprite.changeSize(15);
     sprite.changeSize(20);
     assert.equal(sprite._size, 55, "double change size");
+    assert.throws(function () { sprite.changeSize(); }, Error, "ERROR: missing argument");
+    returnVal = sprite.changeSize(0);
+    assert.ok(!returnVal, "size not changed");
+
     // *************************************************************
 
     // ********************* Position *********************
-    sprite.setPosition(10, 10);
+    var returnVal;
+    returnVal = sprite.setPosition(10, 10);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 10, "set Position");
-    sprite.setPositionY(90);
+    assert.ok(returnVal, "set position: update");
+    returnVal = sprite.setPosition(10, 10);
+    assert.ok(returnVal == false, "set position: no change");
+
+    returnVal = sprite.setPositionY(90);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 90, "set PositionY");
-    sprite.setPositionX(35);
+    assert.ok(returnVal, "set positionY: update");
+    returnVal = sprite.setPositionY(90);
+    assert.ok(returnVal == false, "set positionY: no change");
+
+    returnVal = sprite.setPositionX(35);
     assert.ok(sprite._positionX == 35 && sprite._positionY == 90, "set PositionX");
-    sprite.changePositionX(50);
+    assert.ok(returnVal, "set positionX: update");
+    returnVal = sprite.setPositionX(35);
+    assert.ok(returnVal == false, "set positionX: no change");
+
+    returnVal = sprite.changePositionX(50);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90, "change PositionX");
-    sprite.changePositionY(-20);
+    assert.ok(returnVal, "change positionX: change");
+    assert.ok(sprite.changePositionX(0) == false, "change positionX: no change");
+    returnVal = sprite.changePositionY(-20);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90 - 20, "change PositionY");
+    assert.ok(returnVal, "change positionY: change");
+    assert.ok(sprite.changePositionY(0) == false, "change positionY: no change");
     // *************************************************************
+
+    //if on edge, bounce
+    assert.ok(typeof prog.checkSpriteOnEdgeBounce === "function", "sprite-brogram interface: if on edge bounce");
+    var ioeCalled = false;
+    prog.checkSpriteOnEdgeBounce = function () {    //override to check call
+        ioeCalled = true;
+    };
+    sprite.ifOnEdgeBounce();
+    assert.ok(ioeCalled, "if on edge bounce: call parent");
 
     // ********************* Move/Direction *********************
     sprite.setPosition(-10, -10);
-    sprite.move(25);
+    returnVal = sprite.move(25);
     assert.ok(sprite._positionX == 15 && sprite._positionY == -10 && sprite._direction == 90, "move steps 90°");
+    assert.ok(returnVal, "move return value: true on change");
+    assert.ok(sprite.move(0) == false, "move return value: false if position did not change");
 
-    var triggerEvent;
-    sprite.setDirection(-90, triggerEvent);
+    var triggerEvent;   //undefined = true
+    sprite.setDirection(0);
+    returnVal = sprite.setDirection(-90, triggerEvent);
+    assert.ok(returnVal, "setDirection return value");
+    returnVal = sprite.setDirection(-90, triggerEvent);
+    assert.ok(!returnVal, "setDirection return value false (no change)");
+    assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
     sprite.setPosition(-10, -10);
     sprite.move(25);
     assert.ok(sprite._positionX == -35 && sprite._positionY == -10 && sprite._direction == -90, "move steps -90°");
@@ -243,7 +320,14 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(90, triggerEvent);
     sprite.turnRight(100); //190 --> -170
     assert.ok(sprite._direction == -170, "turn right to 190°");
-    sprite.turnRight(180); //-170 --> 10
+    returnVal = sprite.turnRight(180); //-170 --> 10
+    assert.ok(returnVal, "turnRight returns true on update");
+    returnVal = sprite.turnRight(0); //-170 --> 10
+    assert.ok(!returnVal, "turnRight returns false: no update");
+    returnVal = sprite.turnRight(360);
+    assert.ok(!returnVal, "turnRight returns false: no update (360°) turn");
+    assert.ok(sprite.turnRight() == false, "turn right without parameter");
+
     assert.ok(sprite._direction == 10, "turn right to 10°");
     sprite.turnRight(-20); //-170 --> 10
     assert.ok(sprite._direction == -10, "turn right to 10°");
@@ -258,7 +342,12 @@ QUnit.test("Sprite", function (assert) {
     sprite.turnRight(350); //350 --> -10
     assert.ok(sprite._direction == -10, "turn right to -10°");
     sprite.setDirection(0, triggerEvent);
-    sprite.turnLeft(350); //350 --> 10
+    returnVal = sprite.turnLeft(350); //350 --> 10
+    assert.ok(returnVal, "turnLeft returns true on update");
+    returnVal = sprite.turnLeft(360);
+    assert.ok(!returnVal, "turnLeft returns false: no update (360°) turn");
+    assert.ok(sprite.turnLeft() == false, "turn left without parameter");
+
     assert.ok(sprite._direction == 10, "turn left to 10°");
     sprite.setDirection(0, triggerEvent);
     sprite.turnLeft(-350); //-350 --> -10
@@ -312,6 +401,10 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* looks *********************
+    sprite.looks = [];
+    returnVal = sprite.setLook("non existing");
+    assert.ok(!returnVal, "set look on nonexisting look");
+
     var look1 = new Object();
     look1.name = "look1";
     look1.id = "first";
@@ -322,19 +415,37 @@ QUnit.test("Sprite", function (assert) {
     looks[0] = look1;
     looks[1] = look2;
     sprite.looks = looks;
+    assert.equal(sprite.looks, looks, "looks getter");
     assert.ok(sprite._looks[1].name == "look2", "set looks1");
     assert.ok(sprite._currentLook == looks[0], "set looks2");
     assert.ok(sprite._currentLook.name == "look1", "set looks3");
 
-    sprite.setLook("second");
+    returnVal = sprite.setLook("first");
+    assert.ok(!returnVal, "set already active look: no change");
+
+    returnVal = sprite.setLook("second");
     assert.ok(sprite._currentLook.name == "look2", "set current look with id");
+    assert.ok(returnVal, "set look: change (return value)");
+    assert.throws(function () { sprite.setLook("non existing"); }, "ERROR: try to set undefined look");
 
-    sprite.nextLook();
+    sprite.looks = [];
+    returnVal = sprite.nextLook();
+    assert.ok(!returnVal, "next look on nonexisting look");
+
+    sprite.looks = looks;
+    returnVal = sprite.setLook("second");
+    returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look1", "next look");
-
-    sprite.nextLook();
+    assert.ok(returnVal, "first look is set after last");
+    returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
+    assert.ok(returnVal, "next look is set correctly");
 
+    looks.pop();    //only one left
+    returnVal = sprite.nextLook();
+    assert.ok(!returnVal, "next look if only one is defined");
+
+    looks[1] = look2;   //add again
     var look3 = new Object();
     look3.name = "look3";
     look3.id = "third";
@@ -358,31 +469,85 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* start/pause/resume/stop *********************
-    var brick1 = new PocketCode.Bricks.RootContainerBrick();
+    //var device = new PocketCode.Device();
+    var programAsync = new PocketCode.GameEngine();
+    var brick1 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
     brick1.id = "first";
-    var brick2 = new PocketCode.Bricks.RootContainerBrick();
-    var brick3 = new PocketCode.Bricks.RootContainerBrick();
-    var brick4 = new PocketCode.Bricks.RootContainerBrick();
-    var brick5 = new PocketCode.Bricks.RootContainerBrick();
+    var brick2 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    //adding a test brick to the internal brick container
+    var testBrick = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 1, right: null, left: null } });
+    brick2._bricks._bricks.push(testBrick);
+    var brick3 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    var brick4 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    var brick5 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;
     tmpBricks[2] = brick3;
     sprite.bricks = tmpBricks;
+    assert.equal(sprite.bricks, tmpBricks, "bricks getter");
     assert.ok(sprite._bricks.length == 3, "bricks length");
 
-    //sprite.execute();
-    //assert.ok(sprite._executionState == PocketCode.ExecutionState.RUNNING,"start() call running true");
+    assert.ok(sprite.scriptsRunning == false, "scrips not running");
+    brick2._executionState = PocketCode.ExecutionState.PAUSED;  //simulate paused
+    assert.ok(sprite.scriptsRunning, "scrips running: paused");
+    brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
+    assert.ok(sprite.scriptsRunning, "scrips running: running");
 
-    //sprite.stop();
-    //assert.ok(sprite._executionState == PocketCode.ExecutionState.STOPPED,"stop() call running false");
+    //start, pause, resume, stop + executed
+    //binding program events
+    for (var i = 0, l = tmpBricks.length; i < l; i++) {
+        tmpBricks[i].onExecuted.addEventListener(new SmartJs.Event.EventListener(programAsync._spriteOnExecutedHandler, programAsync));
+    }
 
-    //sprite.resume();
-    //assert.ok(sprite._executionState == PocketCode.ExecutionState.STOPPED,"stop() call running false");
+    var programExecAsync = assert.async();
+    var programExecutedHandler = function () {
+        assert.ok(true, "program executed: all running scripts executed");
+        programExecAsync();
 
-    //sprite.pause();
-    //assert.ok(sprite._executionState == PocketCode.ExecutionState.STOPPED,"stop() call running false");
+        //remove after dispatched to avoid multiple calls
+        for (var i = 0, l = tmpBricks.length; i < l; i++) {
+            tmpBricks[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(programAsync._spriteOnExecutedHandler, programAsync));
+        }
+    };
+    programAsync.onExecuted.addEventListener(new SmartJs.Event.EventListener(programExecutedHandler, this));
+    programAsync.onProgramStart.dispatchEvent();
+    assert.ok(sprite.scriptsRunning, "scrips running: onExecute (program)");
 
+    sprite.pauseScripts();
+    assert.ok(sprite.scriptsRunning, "scrips running: paused");
+
+    //making sure the script was really paused is quite a hack here
+    var isPaused = function () {
+        for (var p in testBrick._pendingOps) {
+            if (testBrick._pendingOps.hasOwnProperty(p)) {
+                var po = testBrick._pendingOps[p];
+                if (po.timer._paused == true)
+                    ;//paused = true;
+                else 
+                    return false;
+            }
+        }
+        return true;
+    };
+
+    assert.ok(isPaused(), "script paused correctly: deep check (timer)");
+
+    sprite.resumeScripts();
+    assert.ok(sprite.scriptsRunning, "scrips running: running");
+    assert.ok(!isPaused(), "script resumed correctly: deep check (timer)");
+
+    sprite.stopScripts();
+    assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
+    assert.ok(  function () { 
+                    for (var p in testBrick._pendingOps)
+                        if (testBrick._pendingOps.hasOwnProperty(p))
+                            return false;
+                    return true;
+                }, "script stopped correctly: deep check: no threaded items left");
+
+    //start script again to get an onExecEvent in the gameEngine
+    programAsync.onProgramStart.dispatchEvent();
 
     // ********************* come to front/go back *********************
     var program = new PocketCode.GameEngine();
@@ -429,15 +594,32 @@ QUnit.test("Sprite", function (assert) {
     newSprite.setPosition(100, 100);
     sprite.setPosition(50, 50);
 
-    sprite.pointTo("id2");
+    returnVal = sprite.pointTo();
+    assert.ok(!returnVal, "pointTo: missing argument");
+    returnVal = sprite.pointTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
+    assert.ok(returnVal, "point to: value changed");
+    returnVal = sprite.pointTo("id2");
+    assert.ok(!returnVal, "point to: value not changed");
+    //returnVal = sprite.pointTo(sprite.id);
+    //assert.ok(!returnVal, "point to: self (no change)");
+    assert.throws(function () { sprite.pointTo(sprite.id); }, "ERROR: point to: self");
 
     newSprite.setPosition(0, 0);
+    sprite.setPosition(0, 0);
+    returnVal = sprite.pointTo("id2");
+    assert.ok(!returnVal, "point to: sprite on same position: ignored");
+
     sprite.setPosition(50, 50);
 
     sprite.pointTo("id2");
     assert.ok(sprite.direction == -180 + 45, "point to left down sprite");
     // *************************************************************
 
+
+    //dispose
+    //sprite.dispose();
+    //assert.ok(sprite._disposed, "sprite disposed");
+    finalAsyncCall();
 });
 

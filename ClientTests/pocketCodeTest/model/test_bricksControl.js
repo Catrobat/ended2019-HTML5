@@ -153,7 +153,7 @@ QUnit.test("WaitBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
+    var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
@@ -161,7 +161,7 @@ QUnit.test("WaitBrick", function (assert) {
     assert.ok(b.objClassName === "WaitBrick", "objClassName check");
 
     //alert(b._duration.calculate);
-    assert.equal(b._duration.calculate(), 500, "formula created correctly");
+    assert.equal(b._duration.calculate(), 0.5, "formula created correctly");
 
     var asyncHandler1 = function (e) {
         assert.equal(e.loopDelay, false, "loop delay event arg");
@@ -208,11 +208,11 @@ QUnit.test("WaitBrick", function (assert) {
 
     var test2 = function () {
         b.execute(l1, "s1");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"400","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.4","right":null,"left":null}'));
         b.execute(l1, "s2");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"300","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.3","right":null,"left":null}'));
         b.execute(l1, "s3");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"200","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.2","right":null,"left":null}'));
         b.execute(l1, "s4");
 
         //test pause
@@ -245,11 +245,11 @@ QUnit.test("WaitBrick", function (assert) {
 
     var l2 = new SmartJs.Event.EventListener(asyncHandler3, this);
 
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"50","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.05","right":null,"left":null}'));
     b2.execute(l2, "s1");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.045","right":null,"left":null}'));
     b2.execute(l2, "s2");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"43","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.043","right":null,"left":null}'));
     b2.execute(l2, "s3");
     //b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"100","right":null,"left":null}'));
     //b2.execute(l1, "s4");

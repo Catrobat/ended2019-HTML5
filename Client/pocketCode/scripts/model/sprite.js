@@ -169,6 +169,7 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('invalid argument: expected looks type of array');
 
                 this._looks = looks;
+                this._currentLook = undefined; //make sure its deleted on re-initialize
                 if (looks.length > 0)
                     this._currentLook = looks[0];
             },
@@ -234,10 +235,16 @@ PocketCode.Model.Sprite = (function () {
             set: function (bricks) {
                 if (!(bricks instanceof Array))
                     throw new Error('bricks setter expects type Array');
-
+                //for (var i = 0, l = bricks.length; i < l; i++) {
+                //    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
+                //}
+                var brick;
                 for (var i = 0, l = bricks.length; i < l; i++) {
-                    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
+                    brick = bricks[i];
+                    if (brick.onExecuted)  //supported by all root container bricks
+                        brick.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
                 }
+                this._bricks = bricks;
             },
             get: function () {
                 return this._bricks;
@@ -328,9 +335,17 @@ PocketCode.Model.Sprite = (function () {
             }
             //this._executionState = PocketCode.ExecutionState.STOPPED;
         },
-
         /**
-         * @event
+         * @event handler
+         * @private
+         */
+        _bricksOnExecuted: function (e) {
+            if (!this.scriptsRunning) {
+                this._onExecuted.dispatchEvent();
+            }
+        },
+        /**
+         * @event helper
          * @param propertyArray
          * @private
          */
@@ -360,8 +375,8 @@ PocketCode.Model.Sprite = (function () {
                 this._positionY = y;
                 ops.push({ positionY: y });
             }
-            if (ops.length == 0)
-                return false;
+            //if (ops.length == 0)
+            //    return false;
 
             if (triggerEvent)
                 this._triggerOnChange(ops);
@@ -499,8 +514,8 @@ PocketCode.Model.Sprite = (function () {
             if (!spriteId)
                 return false;
             var pointTo = this._gameEngine.getSpriteById(spriteId);
-            if (pointTo == undefined)
-                return false;
+            //if (pointTo == undefined) //-> will throw an error in getSpriteById()
+            //    return false;
 
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
@@ -508,7 +523,11 @@ PocketCode.Model.Sprite = (function () {
             if (offsetX === 0 && offsetY === 0)
                 return false;
 
-            this.direction = Math.atan2(offsetY, offsetX) * (180.0 / Math.PI);
+            var direction = Math.atan2(offsetY, offsetX) * (180.0 / Math.PI);
+            if (this.direction == direction)
+                return false;
+
+            this.direction = direction;
             this._triggerOnChange([{ direction: this.direction }]);
             return true;
         },
@@ -611,8 +630,8 @@ PocketCode.Model.Sprite = (function () {
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
             if (value === undefined || isNaN(value) || value == null)
                 throw new Error('invalid value');
-            if (!value)// || (this._size === 0 && (this._size + value) <= 0))
-                return false;
+            //if (!value)// || (this._size === 0 && (this._size + value) <= 0))
+            //    return false;
 
             var size = this._size + value;
             if (size < 0)
@@ -658,7 +677,7 @@ PocketCode.Model.Sprite = (function () {
         setGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
                 throw new Error('invalid value ');
-                return false;
+                //return false;
             }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
@@ -687,7 +706,7 @@ PocketCode.Model.Sprite = (function () {
         changeGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
                 throw new Error('invalid value: ');
-                return false;
+                //return false;
             }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
@@ -716,8 +735,8 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _setTransparency: function (percentage) {
-            if (percentage === undefined)
-                return false;
+            //if (percentage === undefined) //->error on set grafic effect
+            //    return false;
 
             if (percentage < 0.0)
                 percentage = 0.0;
@@ -739,8 +758,8 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _changeTransparency: function (value) {
-            if (value === undefined)
-                return false;
+            //if (value === undefined)  //->error on set grafic effect
+            //    return false;
 
             value = this._transparency + value;
             if (value < 0.0)
@@ -763,8 +782,8 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _setBrightness: function (percentage) {
-            if (percentage === undefined)
-                return false;
+            //if (percentage === undefined) //->error on set grafic effect
+            //    return false;
 
             if (percentage < 0.0)
                 percentage = 0.0;
@@ -786,8 +805,8 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _changeBrightness: function (value) {
-            if (value === undefined)
-                return false;
+            //if (value === undefined)  //->error on set grafic effect
+            //    return false;
 
             value = this._brightness + value;
             if (value < 0.0)

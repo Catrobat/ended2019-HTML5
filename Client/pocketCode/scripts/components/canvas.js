@@ -15,7 +15,7 @@ PocketCode.Canvas = (function(){
 		var _self = this;
 		this._canvas.on('mouse:down', function(e) {
 			if(typeof e.target != 'undefined'){
-				console.log(e.target.id);
+				//console.log(e.target.id);
 				_self._onSpriteClicked.dispatchEvent({id: e.target.id});
 			}
 		});

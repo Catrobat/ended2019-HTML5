@@ -657,10 +657,26 @@ QUnit.test("BrickFactory", function (assert) {
 
 });
 
-QUnit.test("ProgramParser", function (assert) {
+QUnit.test("SpriteFactory", function (assert) {
 
-    var p = new PocketCode.ProgramParser();
-    assert.ok(true, "TODO:");
+    var allBricksProject = project1;    //using tests_testData.js
+    //^^ includes all types of bricks 
+
+    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
+
+    var device = new PocketCode.Device();
+    var program = new PocketCode.GameEngine(allBricksProject.id);
+    //var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var sf = new PocketCode.SpriteFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+
+    assert.ok(sf instanceof PocketCode.SpriteFactory, "instance check");
+    assert.ok(sf._brickFactory instanceof PocketCode.BrickFactory, "brick factory created");
+    assert.equal(sf._program, program, "program set correctly");
+
+    assert.equal(sf.onProgressChange, sf._brickFactory.onProgressChange, "onProgressChange event mapped");
+    assert.equal(sf.onUnsupportedBricksFound, sf._brickFactory.onUnsupportedBricksFound, "onUnsupportedBricksFound event mapped");
 
 });
 
