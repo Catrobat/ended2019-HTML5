@@ -345,36 +345,74 @@ QUnit.test("SingleContainerBrick", function (assert) {
 
 QUnit.test("RootContainerBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var b = new PocketCode.Bricks.RootContainerBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.RootContainerBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Bricks.RootContainerBrick && b instanceof PocketCode.Bricks.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "RootContainerBrick", "objClassName check");
+
+    assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
+
+    //advanced tests using brick with delay
+    var bricks = [];
+    var TestBrick2 = (function () {
+        TestBrick2.extends(PocketCode.Bricks.ThreadedBrick, false);
+
+        function TestBrick2(device, sprite) {
+            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            this.executed = 0;
+        }
+
+        TestBrick2.prototype.merge({
+            _execute: function (id) {
+                this.executed++;
+                var _self = this;
+                window.setTimeout(function () { _self._return(id, false) }, 100);
+                //this._return(id, false);    //LOOP DELAY = FALSE
+            },
+            pause: function () {
+                this.paused = true;
+            },
+            resume: function () {
+                this.paused = false;
+            },
+            stop: function () {
+                this.stopped = true;
+            },
+        });
+
+        return TestBrick2;
+    })();
+
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+
+    var bc = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    b.bricks = bc;
+
+    assert.equal(b._bricks, bc, "bricks setter");
 
     var exec = 0;
     var executedHandler = function (e) {
         exec++;
+        assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
+        done1();
     };
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
-
-    //var handler1Called = false;
-    //var handler1LoopDelay = false;
-    //var handler1CallId = undefined;
-
-    //var handler1 = function (e) {
-    //    handler1Called = true;
-    //    handler1LoopDelay = e.loopDelay;
-    //    handler1CallId = e.id;
-    //};
-    //var l1 = new SmartJs.Event.EventListener(handler1, this);
-
-    b.bricks = new PocketCode.Bricks.BrickContainer();  //empty conatiner
     b.execute();
-    //assert.ok(handler1Called && !handler1LoopDelay && handler1CallId === "rootcont", "call on empty container");
-    assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
-
-    //assert.throws(function () { b.execute(l1, "rootcont"); }, Error, "ERROR: on call execute()");
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state initial");
+    b.pause();
+    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state initial");
+    b.resume();
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state initial");
+    b.stop();
+    assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
+    b.execute();
 
 });
 

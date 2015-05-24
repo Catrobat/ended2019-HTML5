@@ -318,8 +318,20 @@ PocketCode.Bricks.RootContainerBrick = (function () {
     function RootContainerBrick(device, sprite) {
         PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
 
+        this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
     }
+
+    //properties
+    Object.defineProperties(RootContainerBrick.prototype, {
+        executionState: {
+            get: function () {
+                return this._executionState;
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+    });
 
     //events
     Object.defineProperties(RootContainerBrick.prototype, {
@@ -341,10 +353,33 @@ PocketCode.Bricks.RootContainerBrick = (function () {
          * execute method is overridden
          */
         execute: function () {
+            this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
+                this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();
             }, this), SmartJs.getNewId());
             //throw new Error('execute() cannot be called directly on root containers')
+        },
+        /**
+         * calls "pause()" on bricks
+         */
+        pause: function () {
+            PocketCode.Bricks.SingleContainerBrick.prototype.pause.call(this);
+            this._executionState = PocketCode.ExecutionState.PAUSED;
+        },
+        /**
+         * calls "resume()" on bricks
+         */
+        resume: function () {
+            this._executionState = PocketCode.ExecutionState.RUNNING;
+            PocketCode.Bricks.SingleContainerBrick.prototype.resume.call(this);
+        },
+        /**
+         * calls "stop()" on bricks and threadedBrick
+         */
+        stop: function () {
+            PocketCode.Bricks.SingleContainerBrick.prototype.stop.call(this);
+            this._executionState = PocketCode.ExecutionState.STOPPED;
         },
     });
 
