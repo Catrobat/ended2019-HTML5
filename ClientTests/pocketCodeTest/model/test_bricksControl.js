@@ -16,7 +16,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
-    program.background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
+    program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
     var b = new PocketCode.Bricks.ProgramStartBrick("device", program, "sprite");

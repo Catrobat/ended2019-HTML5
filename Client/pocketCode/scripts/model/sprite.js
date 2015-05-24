@@ -249,7 +249,7 @@ PocketCode.Model.Sprite = (function () {
                 return this._visible;
             },
         },
-        hasRunningScripts: {
+        scriptsRunning: {
             get: function () {
                 var bricks = this._bricks;
                 var es;
@@ -867,7 +867,7 @@ PocketCode.Model.Sprite = (function () {
             this._sounds = undefined;
             this.__variables = undefined;
             this._variableNames = undefined;
-            this._bricks = undefined;
+            //this._bricks = undefined;
             //call super
             SmartJs.Core.Component.prototype.dispose.call(this);
         },

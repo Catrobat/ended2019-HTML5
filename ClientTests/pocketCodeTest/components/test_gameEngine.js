@@ -1,4 +1,5 @@
 /// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 'use strict';
 
 QUnit.module("gameEngine.js");
@@ -6,11 +7,18 @@ QUnit.module("gameEngine.js");
 
 QUnit.test("GameEngine", function (assert) {
 
+    //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
+    gameEngine._executionState = PocketCode.ExecutionState.RUNNING; //should be stopped
+    gameEngine.dispose();
+    assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
+    assert.equal(gameEngine._disposed, true, "disposed completely");
+
+    gameEngine = new PocketCode.GameEngine();
     assert.ok(gameEngine instanceof PocketCode.GameEngine, "instance check");
 
-    assert.throws(function () { gameEngine.images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images.");
-    assert.throws(function () { gameEngine.sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds.");
+    assert.throws(function () { gameEngine._images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images.");
+    assert.throws(function () { gameEngine._sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds.");
     assert.throws(function () { gameEngine._variables = "invalid argument" }, Error, "ERROR: passed invalid arguments to variables.");
     assert.throws(function () { gameEngine.broadcasts = "invalid argument" }, Error, "ERROR: passed invalid arguments to broadcasts.");
     assert.equal(gameEngine.setSpriteLayerBack("invalidId", 5), false, "ERROR: passed invalid object to setSpriteLayerBack.");
@@ -19,16 +27,16 @@ QUnit.test("GameEngine", function (assert) {
     assert.throws(function () { gameEngine.getSpriteLayer("invalidId") }, Error, "ERROR: passed invalid object to getSpriteLayer.");
 
     var images = [{ id: "1" }, { id: "2" }, { id: "3" }];
-    gameEngine.images = images;
-    assert.ok(gameEngine._images["1"] === images[0] && gameEngine._images["2"] === images[1] && gameEngine._images["3"] === images[2], "images set correctly");
+    gameEngine._images = images;
+    assert.ok(gameEngine.__images["1"] === images[0] && gameEngine.__images["2"] === images[1] && gameEngine.__images["3"] === images[2], "images set correctly");
 
     gameEngine._soundManager.init = function () {
         this.soundManagerInitCalled = true;
     };
 
     var sounds = [{ id: "id1", url: "src" }, { id: "id2", url: "src" }, { id: "id3", url: "src" }];
-    gameEngine.sounds = sounds;
-    assert.ok(gameEngine._sounds["id1"] === sounds[0] && gameEngine._sounds["id2"] === sounds[1] && gameEngine._sounds["id3"] === sounds[2], "sounds set correctly");
+    gameEngine._sounds = sounds;
+    assert.ok(gameEngine.__sounds["id1"] === sounds[0] && gameEngine.__sounds["id2"] === sounds[1] && gameEngine.__sounds["id3"] === sounds[2], "sounds set correctly");
     assert.ok(gameEngine._soundManager.soundManagerInitCalled, "Called SoundManagers init Function");
 
     var variables = [{ id: "1", name: "name1" }, { id: "2", name: "name2" }, { name: "name3", id: "3" }];
@@ -112,6 +120,20 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId3", name: "spriteName3" }));
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId4", name: "spriteName4" }));
 
+    //onExecutedEvent
+    assert.ok(gameEngine.onExecuted instanceof SmartJs.Event.Event, "onExecuted accessor check");
+    var onExecutedCalled = 0;
+    var onExecutedHandler = function () {
+        onExecutedCalled++;
+    };
+    var onExecListener = new SmartJs.Event.EventListener(onExecutedHandler, this);
+    gameEngine.onExecuted.addEventListener(onExecListener);
+    //simulate onExecuted dispatch
+    gameEngine._spriteOnExecutedHandler();
+    assert.equal(onExecutedCalled, 1, "onExecuted dispatched once");
+    gameEngine.onExecuted.removeEventListener(onExecListener);
+
+    //layers
     var layers = gameEngine.layerObjectList;
     assert.equal(layers[0], gameEngine._background, "Background in correct position in layer list.");
     var spriteOrderCorrect = true;
@@ -225,6 +247,7 @@ QUnit.test("GameEngine", function (assert) {
 
     spriteChanges = 0;
 
+    assert.equal(gameEngine.setSpriteLayerToFront({ sprite: "invlaidSprite object" }), false, "layer: return fals if sprite not found");
     assert.ok(gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns true if layers are changed.");
     assert.ok(!gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns false if no layers are changed.");
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once.");
@@ -254,11 +277,11 @@ QUnit.test("GameEngine", function (assert) {
         }
         loadingHandled();
 
-        var gameEngine2 = new PocketCode.GameEngine;
+        var gameEngine2 = new PocketCode.GameEngine();
         //gameEngine2.loadProject(strProject14);
 
-
     }));
+
     assert.equal(gameEngine._background.id, testProject.background.id, "Correct Background set.");
     assert.equal(gameEngine._sprites.length, testProject.sprites.length, "No excess sprites left.");
 
@@ -271,7 +294,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var varsMatch = true;
     for (var i = 0, l = testProject.variables.length; i < l; i++) {
-        if (!gameEngine.__variables[testProject.variables[i].id] !== testProject.variables[i]) {
+        if (gameEngine.__variables[testProject.variables[i].id] !== testProject.variables[i]) {
             varsMatch = false;
         }
     }
@@ -279,7 +302,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var soundsMatch = true;
     for (var i = 0, l = testProject.sounds.length; i < l; i++) {
-        if (!gameEngine._sounds[testProject.sounds[i].id]) {
+        if (gameEngine.__sounds[testProject.sounds[i].id] !== testProject.sounds[i]) {
             soundsMatch = false;
         }
     }
@@ -287,7 +310,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var imagesMatch = true;
     for (var i = 0, l = testProject.images.length; i < l; i++) {
-        if (!gameEngine._images[testProject.images[i].id]) {
+        if (gameEngine.__images[testProject.images[i].id] !== testProject.images[i]) {
             imagesMatch = false;
         }
     }

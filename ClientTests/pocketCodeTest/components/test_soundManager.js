@@ -1,4 +1,5 @@
 /// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 'use strict';
 
 QUnit.module("soundManager.js");
@@ -22,51 +23,62 @@ QUnit.test("SoundManager", function (assert) {
         doneWithInitTests();
     }
 
+    assert.equal(soundManager.isPlaying, false, "not playing on initialized");
+    assert.ok(soundManager.onFinishedPlaying instanceof SmartJs.Event.Event && soundManager.onLoadingError instanceof SmartJs.Event.Event && soundManager.onLoadingProgress instanceof SmartJs.Event.Event, "events: accessors");
+
     var soundjsLoaded = function () {
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
         var soundManager = new PocketCode.SoundManager("projectId", []);    //reinit 
 
-        assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init.");
+        assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init");
         assert.ok(soundManager._projectId = "projectId_", "SoundManager created with the correct projectId,");
         assert.ok(soundManager instanceof PocketCode.SoundManager, "instance check");
 
-        assert.ok(createjs.Sound.isReady(), "creatjs.Sound is ready.");
-        assert.ok(createjs.Sound.getVolume() === 0.7 && soundManager.volume === 70, "Volume Resets to 70% (default) on init.");
+        assert.ok(createjs.Sound.isReady(), "creatjs.Sound is ready");
+        assert.ok(createjs.Sound.getVolume() === 0.7 && soundManager.volume === 70, "Volume Resets to 70% (default) on init");
 
         soundManager.volume = 25;
         soundManager.mute(true);
-        assert.ok(soundManager.volume.toFixed(2) == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly.");
+        assert.ok(soundManager.volume.toFixed(2) == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly");
 
         assert.ok(soundManager._muted && createjs.Sound.getMute(), "Muted set true and stays true after changing volume");
 
         soundManager.changeVolume(1);
-        assert.ok(soundManager.volume.toFixed(2) == 26.00 && createjs.Sound.getVolume().toFixed(2) == 0.26, "Volume changed and converted correctly(+).");
+        assert.ok(soundManager.volume.toFixed(2) == 26.00 && createjs.Sound.getVolume().toFixed(2) == 0.26, "Volume changed and converted correctly(+)");
 
         soundManager.changeVolume(-5);
-        assert.ok(soundManager.volume.toFixed(2) == 21.00 && createjs.Sound.getVolume().toFixed(2) == 0.21, "Volume changed and converted correctly(-).");
+        assert.ok(soundManager.volume.toFixed(2) == 21.00 && createjs.Sound.getVolume().toFixed(2) == 0.21, "Volume changed and converted correctly(-)");
 
         soundManager.volume = -1;
-        assert.ok(soundManager.volume === 0 && createjs.Sound.getVolume() === 0, "Volume shows correct behaviour with negative input values.");
+        assert.ok(soundManager.volume === 0 && createjs.Sound.getVolume() === 0, "Volume shows correct behaviour with negative input values");
 
         soundManager.volume = 110;
-        assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values.");
+        assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values");
         soundManager.mute(false);
 
         var invalidData = [{ notUrl: "a", id: "id" }];
-        assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: passed invalid arguments to Soundmanager.");
+        assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: passed invalid arguments to Soundmanager");
         invalidData = {};
-        assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: Soundmanager expects Array.");
+        assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: Soundmanager expects Array");
 
         doneWithInitTests();
 
         //playback tests
         var doneWithPlaybackTests = assert.async();
         var doneWithPlaybackComplete = assert.async();
+        var doneWithPlaybackCompleteAllSounds = assert.async();
 
         var onPlayCompleted = function () {
-            assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds.");
+            assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds");
             doneWithPlaybackComplete();
+
+            soundManager2.resumeSounds();
+        };
+
+        var onPlaybackCompleteAllSounds = function (e) {
+            assert.ok(true, "onFinishedPlaying dispatched");
+            doneWithPlaybackCompleteAllSounds();
 
             var errorEventCaught = assert.async();
             soundManager2 = new PocketCode.SoundManager("projectid", [{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
@@ -74,7 +86,6 @@ QUnit.test("SoundManager", function (assert) {
                 assert.ok(e.src = "invalid/url.mpe", "Caught onLoadingError");
                 errorEventCaught();
             }));
-
         };
 
         var onFileLoaded = function (e) {
@@ -90,32 +101,35 @@ QUnit.test("SoundManager", function (assert) {
 
             assert.equal(expectedProgressChanges.length, 0, "Progress increased according to passed size");
 
-            assert.equal(soundManager._activeSounds.length, 0, "No active sounds on init.");
+            assert.equal(soundManager._activeSounds.length, 0, "No active sounds on init");
 
             soundManager2.startSound("projectId_sound");
             var soundInstance = soundManager2._activeSounds[0];
-            assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds.");
-            assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing.");
+            assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds");
+            assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing");
 
             soundManager2.pauseSounds();
-            assert.ok(soundInstance.paused, "Sound paused.");
+            assert.ok(soundInstance.paused, "Sound paused");
 
             soundManager2.resumeSounds();
-            assert.ok(!soundInstance.paused, "Sound resumed.");
+            assert.ok(!soundInstance.paused, "Sound resumed");
 
             soundManager2.stopAllSounds();
-            assert.equal(soundManager2._activeSounds.length, 0, "All sounds removed from active sounds on stopping.");
-            assert.equal(soundInstance.playState, "playFinished", "Sound has been stopped.");
+            assert.equal(soundManager2._activeSounds.length, 0, "All sounds removed from active sounds on stopping");
+            assert.equal(soundManager2.isPlaying, false, "isPlaying: stop all sounds");
+            assert.equal(soundInstance.playState, "playFinished", "Sound has been stopped");
 
             var timesToPlaySound = 6;
             for (i = 0; i < timesToPlaySound; i++) {
                 soundManager2.startSound("projectId_sound");
             }
             soundManager2.startSound("projectId_sound2");
+            assert.equal(soundManager2.isPlaying, true, "isPlaying == true on start()");
+
             soundManager2.pauseSounds();
 
-            assert.equal(soundManager2._activeSounds[soundManager2._activeSounds.length - 1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds.");
-            assert.equal(soundManager2._activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds.");
+            assert.equal(soundManager2._activeSounds[soundManager2._activeSounds.length - 1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds");
+            assert.equal(soundManager2._activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds");
 
             var allSoundsStartedPlaying = true;
             var allSoundsPaused = true;
@@ -127,7 +141,7 @@ QUnit.test("SoundManager", function (assert) {
                     allSoundsPaused = false;
                 }
             }
-            assert.ok(allSoundsStartedPlaying, "Multiple sound instances succeed at playing.");
+            assert.ok(allSoundsStartedPlaying, "Multiple sound instances succeed at playing");
             assert.ok(allSoundsPaused, "All sounds paused on calling pause");
             doneWithPlaybackTests();
 
@@ -153,16 +167,17 @@ QUnit.test("SoundManager", function (assert) {
 
             var firstFile = filesLoaded.filter(function (file) { return file.id === "projectId_sound" });
             var secondFile = filesLoaded.filter(function (file) { return file.id === "projectId_sound2" });
-            assert.deepEqual(firstFile.length, 1, "Id of first file set correctly.");
-            assert.deepEqual(secondFile.length, 1, "Id of second file set correctly.");
-            assert.ok(firstFile[0].src === soundSrc, "Src of first file set correctly.");
-            assert.ok(secondFile[0].src === soundSrc2, "Src of second file set correctly.");
-            assert.equal(firstFile[0].data, soundManager.maxInstancesOfSameSound, "Data set correctly.");
+            assert.deepEqual(firstFile.length, 1, "Id of first file set correctly");
+            assert.deepEqual(secondFile.length, 1, "Id of second file set correctly");
+            assert.ok(firstFile[0].src === soundSrc, "Src of first file set correctly");
+            assert.ok(secondFile[0].src === soundSrc2, "Src of second file set correctly");
+            assert.equal(firstFile[0].data, soundManager.maxInstancesOfSameSound, "Data set correctly");
 
             dataSetCorrectly();
         });
         soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onFileLoaded));
-
+        soundManager2.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(onPlaybackCompleteAllSounds));
+        
     };
 
     createjs.Sound.addEventListener("event", "handler");

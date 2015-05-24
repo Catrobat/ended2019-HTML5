@@ -11,7 +11,7 @@ QUnit.module("bricksVariable.js");
 QUnit.test("SetVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
-    program.background = "background";  //to avoid error on start
+    program._background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -55,7 +55,7 @@ QUnit.test("SetVariableBrick", function (assert) {
 QUnit.test("ChangeVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
-    program.background = "background";  //to avoid error on start
+    program._background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');

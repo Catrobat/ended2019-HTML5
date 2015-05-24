@@ -31,9 +31,10 @@ PocketCode.GameEngine = (function () {
         this.resourceBaseUrl = "";
         //this._layerObjectList = [];
 
-        this._images = {};
-        this._sounds = {};
+        this.__images = {};
+        this.__sounds = {};
         this._soundManager = new PocketCode.SoundManager(this._id);
+        this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
         this.__variables = {};
         this._variableNames = {};
 
@@ -58,24 +59,34 @@ PocketCode.GameEngine = (function () {
                 return [this._background].concat(this._sprites);    //TODO ??? 
             }
         },
-        images: {
+        background: {
+            get: function () {
+                return this._background;
+            },
+        },
+        sprites: {
+            get: function() {
+                return this._sprites;
+            },
+        },
+        _images: {
             set: function (images) {
                 if (!(images instanceof Array))
                     throw new Error('setter expects type Array');
 
                 for (var i = 0, l = images.length; i < l; i++)
-                    this._images[images[i].id] = images[i];
+                    this.__images[images[i].id] = images[i];
             },
             //enumerable: false,
             //configurable: true,
         },
-        sounds: {
+        _sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
                     throw new Error('setter expects type Array');
 
                 for (var i = 0, l = sounds.length; i < l; i++)
-                    this._sounds[sounds[i].id] = sounds[i];
+                    this.__sounds[sounds[i].id] = sounds[i];
 
                 this._soundManager.init(sounds);
             },
@@ -151,8 +162,8 @@ PocketCode.GameEngine = (function () {
             this.author = jsonProject.header.author;
 
             //cleanup
-            //this._images = {};
-            //this._sounds = {};
+            //this.__images = {};
+            //this.__sounds = {};
             if (this._background)
                 this._background.dispose();// = undefined;
             this._sprites.dispose();
@@ -169,9 +180,9 @@ PocketCode.GameEngine = (function () {
             this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
             this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
 
-            this.images = jsonProject.images || [];
-            this.sounds = jsonProject.sounds || [];
-            if (jsonProject.sounds.length == 0) // && !Object.keys(this._sounds).length)//this._sounds.length === 0)
+            this._images = jsonProject.images || [];
+            this._sounds = jsonProject.sounds || [];
+            if (!jsonProject.sounds || jsonProject.sounds.length == 0) // && !Object.keys(this.__sounds).length)//this.__sounds.length === 0)
                 this.soundsLoaded = true;
 
             this._broadcasts = jsonProject.broadcasts || [];
@@ -287,10 +298,12 @@ PocketCode.GameEngine = (function () {
         },
 
         _spriteOnExecutedHandler: function (e) {
-            //TODO: if soundmanager still playing return
+            if (this._soundManager.isPlaying)
+                return;
+
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                if (sprites[i].hasRunningScripts)//status !== PocketCode.ExecutionState.STOPPED)
+                if (sprites[i].scriptsRunning)//status !== PocketCode.ExecutionState.STOPPED)
                     return;
             }
 
@@ -416,7 +429,7 @@ PocketCode.GameEngine = (function () {
         /* override */
         dispose: function () {
             this.stopProject();
-            //make sure the game engine and loaded resources are not disposed
+            //make sure the game engine and loaded resources are not disposed: background ans sprites are disposed as well
             this._onProgramStart = undefined;
             this._onExecuted = undefined;
             this._onSpriteChange = undefined;
