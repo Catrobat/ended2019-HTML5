@@ -151,7 +151,8 @@ SmartJs.Ui.Window = (function () {  //static class
 
     return Window;
 })();
-SmartJs.Ui.Window = new SmartJs.Ui.Window();    //create static class
+//static class: constructor override (keeping code coverage enabled)
+SmartJs.Ui.Window = new SmartJs.Ui.Window();
 
 
 SmartJs.Ui.merge({
