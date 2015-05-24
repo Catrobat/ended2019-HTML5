@@ -21,6 +21,8 @@ require_once("BaseController.class.php");
     {
       parent::__construct($request);
 
+      $this->local_path = str_replace("rest\\v0.1", "", getcwd());
+
       if(in_array($_SERVER['REMOTE_ADDR'], $this->whitelist)){
         // is localhost
         $this->SERVER_ROOT = $this->local_path;
