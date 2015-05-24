@@ -127,17 +127,18 @@ QUnit.test("Sprite", function (assert) {
 
     var varsMatch = true;
     for (var i = 0, length = jsonSprite.variables.length; i < length; i++) {
-        if (!testSprite._variables[jsonSprite.variables[i].id])
+        if (!testSprite.__variables[jsonSprite.variables[i].id] === jsonSprite.variables[i].id)
             varsMatch = false;
     }
     assert.ok(varsMatch, "Variables set correctly.");
 
-    var soundsMatch = true;
-    for (var i = 0, length = jsonSprite.sounds.length; i < length; i++) {
-        if (!testSprite._sounds[jsonSprite.sounds[i].id])
-            soundsMatch = false;
-    }
-    assert.ok(soundsMatch, "Sounds set correctly.");
+    //var soundsMatch = true;
+    //for (var i = 0, length = jsonSprite.sounds.length; i < length; i++) {
+    //    if (!testSprite._sounds[jsonSprite.sounds[i].id])
+    //        soundsMatch = false;
+    //}
+    //assert.ok(soundsMatch, "Sounds set correctly.");
+    assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
 
     var bricksMatch = true;
     for (var i = 0, length = jsonSprite.bricks.length; i < length; i++) {
@@ -155,19 +156,19 @@ QUnit.test("Sprite", function (assert) {
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.bricks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite) }, Error, "Error: incorrect argument for bricks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.sounds = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite) }, Error, "Error: incorrect argument for sounds.");
+    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.variables = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite) }, Error, "Error: incorrect argument for variables.");
+    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for variables.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.looks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite) }, Error, "Error: incorrect argument for looks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for looks.");
 
 
     // *************************************************************
@@ -294,12 +295,12 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* variables *********************
     var varArray = [{ id: [21], name: ["two-one"] }, { id: [24], name: ["two-four"] }];
-    sprite.variables = varArray;
-    assert.ok(sprite._variables[21].value == 0.0, "correct init");
-    assert.ok(sprite._variables[21].name == "two-one", "correct insertion of array entries");
-    assert.ok(sprite._variables[24].name == "two-four", "correct insertion of array entries");
+    sprite._variables = varArray;
+    assert.ok(sprite.__variables[21].value == 0.0, "correct init");
+    assert.ok(sprite.__variables[21].name == "two-one", "correct insertion of array entries");
+    assert.ok(sprite.__variables[24].name == "two-four", "correct insertion of array entries");
     var fakeArray = "error"
-    assert.throws(function () { sprite.variables = fakeArray }, Error, "passing non Array");
+    assert.throws(function () { sprite._variables = fakeArray }, Error, "passing non Array");
     var v = sprite.getVariable(21);
     assert.ok(v.name == "two-one", "get variable");
     assert.throws(function () { sprite.getVariable(22) }, Error, "unknown variable id");

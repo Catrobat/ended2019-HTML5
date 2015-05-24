@@ -139,7 +139,7 @@ QUnit.test("SpeakBrick", function (assert) {
 
 
     //test: using text generated at runtime (not static)
-    sprite._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    sprite.__variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
     text = join;    //using testDataFormula.js
     var b2 = new PocketCode.Bricks.SpeakBrick(device, sprite, program._soundManager, { text: text });
 

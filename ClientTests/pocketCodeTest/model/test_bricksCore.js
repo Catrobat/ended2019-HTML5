@@ -405,13 +405,16 @@ QUnit.test("RootContainerBrick", function (assert) {
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
     b.execute();
-    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state initial");
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
     b.pause();
-    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state initial");
+    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state: pause");
+    assert.ok(b._bricks._bricks[0].paused && b._bricks._bricks[1].paused && b._bricks._bricks[2].paused && b._bricks._bricks[3].paused, "super call: pause");
     b.resume();
-    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state initial");
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: resume");
+    assert.ok(!b._bricks._bricks[0].paused && !b._bricks._bricks[1].paused && !b._bricks._bricks[2].paused && !b._bricks._bricks[3].paused, "super call: resume");
     b.stop();
-    assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
+    assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state: stop");
+    assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "super call: stop");
     b.execute();
 
 });

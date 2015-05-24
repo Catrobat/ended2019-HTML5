@@ -11,7 +11,7 @@ QUnit.test("GameEngine", function (assert) {
 
     assert.throws(function () { gameEngine.images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images.");
     assert.throws(function () { gameEngine.sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds.");
-    assert.throws(function () { gameEngine.variables = "invalid argument" }, Error, "ERROR: passed invalid arguments to variables.");
+    assert.throws(function () { gameEngine._variables = "invalid argument" }, Error, "ERROR: passed invalid arguments to variables.");
     assert.throws(function () { gameEngine.broadcasts = "invalid argument" }, Error, "ERROR: passed invalid arguments to broadcasts.");
     assert.equal(gameEngine.setSpriteLayerBack("invalidId", 5), false, "ERROR: passed invalid object to setSpriteLayerBack.");
     assert.equal(gameEngine.setSpriteLayerToFront("invalidId"), false, "ERROR: passed invalid object to setSpriteLayerToFront.");
@@ -32,8 +32,8 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine._soundManager.soundManagerInitCalled, "Called SoundManagers init Function");
 
     var variables = [{ id: "1", name: "name1" }, { id: "2", name: "name2" }, { name: "name3", id: "3" }];
-    gameEngine.variables = variables;
-    assert.ok(gameEngine._variables["1"] === variables[0] && gameEngine._variables["2"] === variables[1] && gameEngine._variables["3"] === variables[2], "variables set correctly");
+    gameEngine._variables = variables;
+    assert.ok(gameEngine.__variables["1"] === variables[0] && gameEngine.__variables["2"] === variables[1] && gameEngine.__variables["3"] === variables[2], "variables set correctly");
     assert.ok(gameEngine._variableNames["1"].name === "name1" && gameEngine._variableNames["2"].name === "name2" && gameEngine._variableNames["3"].name === "name3", "varableNames set correctly");
 
     assert.deepEqual(gameEngine.getGlobalVariable("1"), variables[0], "Calling getNewVariable returned correct variable");
@@ -271,7 +271,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var varsMatch = true;
     for (var i = 0, l = testProject.variables.length; i < l; i++) {
-        if (!gameEngine._variables[testProject.variables[i].id]) {
+        if (!gameEngine.__variables[testProject.variables[i].id] !== testProject.variables[i]) {
             varsMatch = false;
         }
     }

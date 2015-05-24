@@ -84,9 +84,9 @@ SmartJs.Core.Component = (function () {
 
             for (var p in propertyObject) {
                 if (object[p] === undefined)
-                    throw new Error('property "' + p + '" not found in ' + object.objClassName);
+                    throw new Error('_mergeProperties(): property "' + p + '" not found in ' + object.objClassName);
                 if (typeof object[p] === 'function')
-                    throw new Error('setting a method not allowed: property ' + p + ' in ' + object.objClassName);
+                    throw new Error('_mergeProperties(): setting a method not allowed: property ' + p + ' in ' + object.objClassName);
                 //try {
                 if (typeof propertyObject[p] === 'object' && typeof propertyObject[p] !== 'array')
                     this._mergeProperties(propertyObject[p], object[p]);

@@ -76,21 +76,22 @@ PocketCode.Model.Sprite = (function () {
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         //this._executionState = PocketCode.ExecutionState.STOPPED;
 
-        this.id = undefined;
-        this.name = "";
+        //this.id = '';   //initialize to avoid errors when calling _mergeProperties()
+        this.name = '';
+
         this._looks = [];
         this._sounds = [];
-        this._variables = {};
+        this.__variables = {};
         this._variableNames = {};
         this._bricks = [];
 
-        //attach to bricks onExecuted event, get sure all are executed an not running
+        //attach to bricks onExecuted event, get sure all are executed and not running
         //property initialization
         //motion
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._direction = 90.0; //pointing to right: 0� means up
-        //sound
+        //sounds: currently not in use but defined: in future: change name + serialization required
         //looks
         this._currentLook = undefined;
         this._size = 100.0;
@@ -104,6 +105,7 @@ PocketCode.Model.Sprite = (function () {
         if (!propObject || !propObject.id || !propObject.name)
             throw new Error('missing ctr arguments: id and/or name in sprite');
 
+        //this._mergeProperties(propObject);
         this.id = propObject.id;
         this.name = propObject.name;
 
@@ -111,19 +113,14 @@ PocketCode.Model.Sprite = (function () {
         if (propObject.looks != undefined)
             this.looks = propObject.looks;
 
-        //variables: a sprite may have no (local) variables
-        if (propObject.variables)
-            this.variables = propObject.variables;
-
         //sounds
         if (propObject.sounds) {
-            if (!(propObject.sounds instanceof Array))
-                throw new Error('sounds setter expects type Array');
-
-            for (var i = 0, l = propObject.sounds.length; i < l; i++) {
-                this._sounds[propObject.sounds[i].id] = propObject.sounds[i];
-            }
+            this.sounds = propObject.sounds;
         }
+
+        //variables: a sprite may have no (local) variables
+        if (propObject.variables)
+            this._variables = propObject.variables;
 
         //bricks
         if (propObject.bricks) {
@@ -157,26 +154,12 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             //set: function (layer) {
-                //TODO: in program : for testing issues
-                // this._layer = layer;
+            //TODO: in program : for testing issues
+            // this._layer = layer;
             //},
             get: function () {
                 return this._gameEngine.getSpriteLayer(this);//.id);
             },
-        },
-
-        bricks: {
-            set: function (bricks) {
-                if (!(bricks instanceof Array))
-                    throw new Error('bricks setter expects type Array');
-
-                for (var i = 0, l = bricks.length; i < l; i++) {
-                    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
-                }
-            },
-            //get: function () {
-            //    return this._bricks;
-            //},
         },
 
         //looks
@@ -188,7 +171,10 @@ PocketCode.Model.Sprite = (function () {
                 this._looks = looks;
                 if (looks.length > 0)
                     this._currentLook = looks[0];
-            }
+            },
+            get: function () {
+                return this._looks;
+            },
         },
         currentLook: {
             get: function () {
@@ -198,11 +184,6 @@ PocketCode.Model.Sprite = (function () {
         size: {     //percentage
             get: function () {
                 return this._size;
-            },
-        },
-        visible: {
-            get: function () {
-                return this._visible;
             },
         },
         transparency: {
@@ -216,24 +197,69 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
+        sounds: {
+            set: function (sounds) {
+                if (!(sounds instanceof Array))
+                    throw new Error('sounds setter expects type Array');
+
+                this._sounds = sounds;
+                //var sound;
+                //for (var i = 0, l = sounds.length; i < l; i++) {
+                //    sound = sounds[i];
+                //    this._sounds[sound.id] = sound;
+                //}
+            },
+            get: function () {
+                return this._sounds;
+            },
+        },
+
         //variables
-        variables: {    //[{id: [id], name: [name]}, ... ]
+        _variables: {    //[{id: [id], name: [name]}, ... ]
             set: function (varArray) {
                 if (!(varArray instanceof Array))
                     throw new Error('variable setter expects type Array');
 
                 for (var i = 0, l = varArray.length; i < l; i++) {
                     varArray[i].value = 0.0;  //init
-                    this._variables[varArray[i].id] = varArray[i];
+                    this.__variables[varArray[i].id] = varArray[i];
                     this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };
                 }
             },
             //enumerable: false,
             //configurable: true,
         },
+
+        bricks: {
+            set: function (bricks) {
+                if (!(bricks instanceof Array))
+                    throw new Error('bricks setter expects type Array');
+
+                for (var i = 0, l = bricks.length; i < l; i++) {
+                    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
+                }
+            },
+            get: function () {
+                return this._bricks;
+            },
+        },
+
+        visible: {
+            get: function () {
+                return this._visible;
+            },
+        },
         hasRunningScripts: {
             get: function () {
-                return false;   //TODO: check this
+                var bricks = this._bricks;
+                var es;
+                for (var i = 0, l = bricks.length; i < l; i++) {
+                    es = bricks[i].executionState;
+                    if (es == PocketCode.ExecutionState.PAUSED || es == PocketCode.ExecutionState.RUNNING) {
+                        return true;
+                    }
+                }
+                return false;
             },
         },
     });
@@ -782,7 +808,7 @@ PocketCode.Model.Sprite = (function () {
          */
         clearGraphicEffects: function () {
             var ops = [];
-            if (this._transparency === 0.0 && this._brightness === 100.0)
+            if (this._transparency === 0.0 && this._brightness === 100.0)   //TODO: extend this when adding effects
                 return false;
 
             if (this._transparency != 0.0) {
@@ -793,9 +819,6 @@ PocketCode.Model.Sprite = (function () {
                 this._brightness = 100.0;
                 ops.push({ brightness: 100.0 });
             }
-
-            if (ops.length == 0)
-                return false;
 
             this._triggerOnChange(ops);
             return true;
@@ -808,11 +831,17 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         getVariable: function (varId) {
-            if (this._variables[varId])
-                return this._variables[varId];
+            if (this.__variables[varId])
+                return this.__variables[varId];
             else //global lookup
                 return this._gameEngine.getGlobalVariable(varId);
         },
+        //setVariable: function (varId, value) {
+        //    if (this.__variables[varId])
+        //        this.__variables[varId].value = value;
+        //    else //gloable lookup
+        //        return this._gameEngine.setGlobalVariable(varId, value);
+        //},
         /**
          * returns all variable names
          * @returns {{}}
@@ -830,19 +859,13 @@ PocketCode.Model.Sprite = (function () {
             variableNames.merge(this._gameEngine.getGlobalVariableNames());
             return variableNames;
         },
-        //setVariable: function (varId, value) {
-        //    if (this._variables[varId])
-        //        this._variables[varId].value = value;
-        //    else //gloable lookup
-        //        return this._gameEngine.setGlobalVariable(varId, value);
-        //},
         /* override */
         dispose: function () {
             //make sure the game engine and loaded resources are not disposed
             this._gameEngine = undefined;
             this._looks = undefined;
             this._sounds = undefined;
-            this._variables = undefined;
+            this.__variables = undefined;
             this._variableNames = undefined;
             this._bricks = undefined;
             //call super

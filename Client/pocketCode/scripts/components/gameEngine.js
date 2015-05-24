@@ -34,7 +34,7 @@ PocketCode.GameEngine = (function () {
         this._images = {};
         this._sounds = {};
         this._soundManager = new PocketCode.SoundManager(this._id);
-        this._variables = {};
+        this.__variables = {};
         this._variableNames = {};
 
         this._broadcasts = [];
@@ -82,14 +82,14 @@ PocketCode.GameEngine = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        variables: {
+        _variables: {
             set: function (variables) {
                 if (!(variables instanceof Array))
                     throw new Error('setter expects type Array');
 
                 for (var i = 0, l = variables.length; i < l; i++) {
                     //varArray[i].value = 0;  //init
-                    this._variables[variables[i].id] = variables[i];
+                    this.__variables[variables[i].id] = variables[i];
                     this._variableNames[variables[i].id] = { name: variables[i].name, scope: 'global' };
                 }
             },
@@ -157,7 +157,7 @@ PocketCode.GameEngine = (function () {
                 this._background.dispose();// = undefined;
             this._sprites.dispose();
             this._executionState = PocketCode.ExecutionState.STOPPED;
-            //this._variables = {};
+            //this.__variables = {};
             this._variableNames = {};
             //this._broadcasts = [];
             this._soundManager = new PocketCode.SoundManager(this._id);
@@ -398,8 +398,8 @@ PocketCode.GameEngine = (function () {
 
         //variables
         getGlobalVariable: function (varId) {
-            if (this._variables[varId])
-                return this._variables[varId];
+            if (this.__variables[varId])
+                return this.__variables[varId];
             else
                 throw new Error('unknown variable id: ' + varId);
         },
@@ -407,8 +407,8 @@ PocketCode.GameEngine = (function () {
             return this._variableNames;
         },
         //setGlobalVariable: function (varId, value) {
-        //    if (this._variables[varId])
-        //        return this._variables[varId].value = value;
+        //    if (this.__variables[varId])
+        //        return this.__variables[varId].value = value;
         //    else
         //        throw new Error('unknown variable id: ' + varId);
         //},
