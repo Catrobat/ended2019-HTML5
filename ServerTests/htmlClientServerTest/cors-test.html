@@ -15,7 +15,10 @@
         return;
       }
 
-      var url = 'http://localhost/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
+      var remote = "https://web-test.catrob.at";
+      var local = "http://localhost";
+
+      var url = remote + '/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
 
       if (invocation)
       {
