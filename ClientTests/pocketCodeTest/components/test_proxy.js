@@ -216,7 +216,13 @@ QUnit.test("Proxy", function (assert) {
     var done3 = assert.async();
 
     assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { PocketCode.Proxy instanceof PocketCode.Proxy }, Error, "ERROR: static class: no instanceof allowed");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
+
+    //disposing without efect on the object
+    var corsEnabled = PocketCode.Proxy.corsEnabled;
+    PocketCode.Proxy.dispose()
+    assert.ok(PocketCode.Proxy.corsEnabled != undefined && PocketCode.Proxy.corsEnabled === corsEnabled, "dispose: no effect");
 
     //var p = PocketCode.Proxy;   //this is not a constructor but a static class -> instanceof is not valid here
     //assert.ok(p instanceof PocketCode.Proxy, "instance check");

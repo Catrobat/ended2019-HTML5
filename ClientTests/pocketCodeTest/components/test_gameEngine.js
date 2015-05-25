@@ -14,6 +14,14 @@ QUnit.test("GameEngine", function (assert) {
     assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
     assert.equal(gameEngine._disposed, true, "disposed completely");
 
+    //dispose test: on finished
+    var testDispose = function () {
+        gameEngine.dispose();
+        assert.ok(gameEngine._disposed, "disposed correctly");
+        assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variables == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
+        disposedHandled();
+    };
+
     gameEngine = new PocketCode.GameEngine();
     assert.ok(gameEngine instanceof PocketCode.GameEngine, "instance check");
 
@@ -264,6 +272,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var testProject = projectSounds;
     var loadingHandled = assert.async();
+    var disposedHandled = assert.async();
 
     gameEngine.loadProject(testProject);
 
@@ -276,7 +285,7 @@ QUnit.test("GameEngine", function (assert) {
             assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
         }
         loadingHandled();
-
+        testDispose();
         var gameEngine2 = new PocketCode.GameEngine();
         //gameEngine2.loadProject(strProject14);
 
@@ -317,7 +326,9 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(imagesMatch, "Images set correctly.");
 
     //finish async tests if browser does not support sounds
-    if (!gameEngine._soundManager.supported)
+    if (!gameEngine._soundManager.supported) {
         loadingHandled();
+        testDispose();
+    }
 
 });

@@ -155,6 +155,16 @@ PocketCode.Bricks = {
                     loopDelay: loopDelay
                 });
             },
+            /* override */
+            dispose: function () {
+                if (this.stop)
+                    this.stop();
+                //make sure not all referenced objects get disposed
+                this._device = undefined;
+                this._sprite = undefined;
+                //call super
+                SmartJs.Core.Component.prototype.dispose.call(this);
+            },
         });
 
         return BaseBrick;

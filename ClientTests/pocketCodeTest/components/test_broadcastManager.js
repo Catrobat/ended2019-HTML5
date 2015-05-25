@@ -9,8 +9,8 @@ QUnit.module("broadcastManager.js");
 QUnit.test("BroadcastManager", function (assert) {
 
     var done1 = assert.async();
-    var done2 = assert.async();
-    var done3 = assert.async();
+    //var done2 = assert.async();
+    //var done3 = assert.async();
 
     var b = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
 
@@ -150,8 +150,34 @@ QUnit.test("BroadcastManager", function (assert) {
 
     b.publish("s12", new SmartJs.Event.EventListener(asyncHandler, this), "thread_id");
 
+});
 
+
+QUnit.test("BroadcastManager: multiple hierachies", function (assert) {
+
+    var done1 = assert.async();
     //BROADCAST WAIT COMPLEX: 2 hierachies
+
+    var TestBrick2 = (function () {
+        TestBrick2.extends(PocketCode.Bricks.BroadcastReceiveBrick, false);
+
+        function TestBrick2(device, sprite, broadcastMgr, broadcastMsgId) {
+            PocketCode.Bricks.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            this.executed = 0;
+            this.delay = 100;
+            this.loopDelay = false;
+        }
+
+        TestBrick2.prototype.merge({
+            _execute: function (id) {
+                this.executed++;
+                var _self = this;
+                window.setTimeout(function () { _self._return(id, _self.loopDelay) }, this.delay);
+            },
+        });
+
+        return TestBrick2;
+    })();
 
     var b2 = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }, { id: "s13", name: "test2" }]);
     var brick01 = new TestBrick2("device", "sprite", b2, { receiveMsgId: "s13" });
@@ -201,82 +227,108 @@ QUnit.test("BroadcastManager", function (assert) {
         assert.equal(e.loopDelay, true, "broadcast wait: complex: loopDelay");
         assert.equal(e.id, "thread_id2", "broadcast wait: complex: threadId");
 
-        done2();
+        done1();
     };
 
     var startTime1 = new Date();
     b2.publish("s12", new SmartJs.Event.EventListener(asyncHandler2, this), "thread_id2");
 
-
-    //BROADCAST WAIT COMPLEX: multiple self calls
-    //TODO: looks like a container is needed here- built this test case using original BroadcastReceive Bricks including a custom wait brick
-    done3();
-    //var b3 = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }, { id: "s13", name: "test2" }]);
-    //var brick02 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s13" });
-    //var brick12 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s12" });
-    //brick12.delay = 50;
-    //var brick22 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s12" });
-
-    //brick22.loopDelay = true;
-
-    //var TestBrick4 = (function () {
-    //    TestBrick4.extends(PocketCode.Bricks.BroadcastReceiveBrick, false);
-
-    //    function TestBrick4(device, sprite, broadcastMgr, broadcastMsgId) {
-    //        PocketCode.Bricks.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
-    //        this.executed = 0;
-    //        this.delay = 70;
-    //        this.loopDelay = false;
-    //    }
-
-    //    TestBrick4.prototype.merge({
-    //        _execHandler: function (e) {
-    //            //var _self = this;
-    //            console.log("step:" + this.executed + ", delay: " + (new Date - this.startTime2));
-    //            window.setTimeout(this._return.bind(this, e.id, e.loopDelay), this.delay);
-    //        },
-    //        execute:function(id) {
-    //            console.log("execute:" + this.executed + ", delay: " + (new Date - this.startTime2));
-    //            PocketCode.Bricks.BroadcastReceiveBrick.prototype.execute.call(this, id);
-    //        },
-    //        _execute: function (id) {
-    //            this.executed++;
-    //            //console.log("step:" + this.executed + ", delay: " + (new Date - this.startTime2));
-    //            if (this.executed == 4) {
-    //                //var _self = this;
-    //                window.setTimeout(this._return.bind(this, id, false), this.delay);
-    //                return;
-    //            }
-
-    //            //var _self = this;
-
-    //            b3.publish("s12", new SmartJs.Event.EventListener(this._execHandler, this), id);
-    //        },
-    //    });
-
-    //    return TestBrick4;
-    //})();
-
-    //var brick32 = new TestBrick4("device", "sprite", b3, { receiveMsgId: "s12" });
-
-    ////we are waiting for 300 + 100ms -> 400ms: brick02-brick32 get executed
-    //var startTime2;// = new Date();
-    //var asyncHandler3 = function (e) {
-    //    var time2 = new Date();
-    //    console.log(time2 - startTime2);
-    //    assert.ok(time2 - startTime2 >= 570, "broadcast wait: self call: waiting for last brick to be executed");
-    //    assert.ok(brick02.executed == 0 && brick12.executed == 4 && brick22.executed == 4 && brick32.executed == 4, "broadcast wait: self call: all bricks executed");
-
-    //    assert.equal(e.loopDelay, true, "broadcast wait: self call: loopDelay");
-    //    assert.equal(e.id, "thread_id3", "broadcast wait: self call: threadId");
-
-    //    done3();
-    //};
-
-    //var startTime2 = new Date();
-    //brick32.startTime2 = startTime2;
-    //b3.publish("s12", new SmartJs.Event.EventListener(asyncHandler3, this), "thread_id3");
-
-
 });
+
+
+//QUnit.test("BroadcastManager: recursive calls", function (assert) {
+
+//    var done1 = assert.async();
+//    //BROADCAST WAIT COMPLEX: multiple self calls
+
+//    var TestBrick2 = (function () {
+//        TestBrick2.extends(PocketCode.Bricks.BroadcastReceiveBrick, false);
+
+//        function TestBrick2(device, sprite, broadcastMgr, broadcastMsgId) {
+//            PocketCode.Bricks.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+//            this.executed = 0;
+//            this.delay = 100;
+//            this.loopDelay = false;
+//        }
+
+//        TestBrick2.prototype.merge({
+//            _execute: function (id) {
+//                this.executed++;
+//                var _self = this;
+//                window.setTimeout(function () { _self._return(id, _self.loopDelay) }, this.delay);
+//            },
+//        });
+
+//        return TestBrick2;
+//    })();
+
+//    //TODO: looks like a container is needed here- built this test case using original BroadcastReceive Bricks including a custom wait brick
+//    //done3();
+//    var b3 = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }, { id: "s13", name: "test2" }]);
+//    var brick02 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s13" });
+//    var brick12 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s12" });
+//    brick12.delay = 50;
+//    var brick22 = new TestBrick2("device", "sprite", b3, { receiveMsgId: "s12" });
+
+//    brick22.loopDelay = true;
+
+//    var TestBrick4 = (function () {
+//        TestBrick4.extends(PocketCode.Bricks.BroadcastReceiveBrick, false);
+
+//        function TestBrick4(device, sprite, broadcastMgr, broadcastMsgId) {
+//            PocketCode.Bricks.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+//            this.executed = 0;
+//            this.delay = 70;
+//            this.loopDelay = false;
+//        }
+
+//        TestBrick4.prototype.merge({
+//            _execHandler: function (e) {
+//                //var _self = this;
+//                console.log("step:" + this.executed + ", delay: " + (new Date - this.startTime2));
+//                window.setTimeout(this._return.bind(this, e.id, e.loopDelay), this.delay);
+//            },
+//            execute: function (id) {
+//                console.log("execute:" + this.executed + ", delay: " + (new Date - this.startTime2));
+//                PocketCode.Bricks.BroadcastReceiveBrick.prototype.execute.call(this, id);
+//            },
+//            _execute: function (id) {
+//                this.executed++;
+//                //console.log("step:" + this.executed + ", delay: " + (new Date - this.startTime2));
+//                if (this.executed == 4) {
+//                    //var _self = this;
+//                    window.setTimeout(this._return.bind(this, id, false), this.delay);
+//                    return;
+//                }
+
+//                //var _self = this;
+
+//                b3.publish("s12", new SmartJs.Event.EventListener(this._execHandler, this), id);
+//            },
+//        });
+
+//        return TestBrick4;
+//    })();
+
+//    var brick32 = new TestBrick4("device", "sprite", b3, { receiveMsgId: "s12" });
+
+//    //we are waiting for 300 + 100ms -> 400ms: brick02-brick32 get executed
+//    var startTime2;// = new Date();
+//    var asyncHandler3 = function (e) {
+//        var time2 = new Date();
+//        var delay = time2 - startTime2;
+//        assert.ok(delay >= 570, "broadcast wait: self call: waiting for last brick to be executed: expected > 570ms, real: " + delay + "ms");
+//        assert.ok(brick02.executed == 0 && brick12.executed == 4 && brick22.executed == 4 && brick32.executed == 4, "broadcast wait: self call: all bricks executed");
+
+//        assert.equal(e.loopDelay, true, "broadcast wait: self call: loopDelay");
+//        assert.equal(e.id, "thread_id3", "broadcast wait: self call: threadId");
+
+//        done1();
+//    };
+
+//    var startTime2 = new Date();
+//    brick32.startTime2 = startTime2;
+//    b3.publish("s12", new SmartJs.Event.EventListener(asyncHandler3, this), "thread_id3");
+
+//});
 

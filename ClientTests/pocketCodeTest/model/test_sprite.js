@@ -14,10 +14,23 @@ QUnit.module("sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
+    var programExecAsync = assert.async();
+    var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
+    var asyncCalls = 0; //check all async calls where executed before running dispose
+
     var prog = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
     assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
+
+    //dispose: this is called after the last async test to avoid errors 
+    var disposeTest = function () {
+        if (asyncCalls < 2)
+            return;
+        sprite.dispose();
+        assert.ok(sprite._disposed, "sprite disposed");
+        finalAsyncCall();
+    };
 
     //attach listener to get latest changes
     var lastOnChangeArgs;
@@ -522,15 +535,16 @@ QUnit.test("Sprite", function (assert) {
         tmpBricks[i].onExecuted.addEventListener(new SmartJs.Event.EventListener(programAsync._spriteOnExecutedHandler, programAsync));
     }
 
-    var programExecAsync = assert.async();
     var programExecutedHandler = function () {
         assert.ok(true, "program executed: all running scripts executed");
-        programExecAsync();
 
         //remove after dispatched to avoid multiple calls
         for (var i = 0, l = tmpBricks.length; i < l; i++) {
             tmpBricks[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(programAsync._spriteOnExecutedHandler, programAsync));
         }
+        programExecAsync();
+        asyncCalls++;
+        disposeTest();  //make sure this is called last
     };
     programAsync.onExecuted.addEventListener(new SmartJs.Event.EventListener(programExecutedHandler, this));
     programAsync.onProgramStart.dispatchEvent();
@@ -639,10 +653,9 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.direction == -180 + 45, "point to left down sprite");
     // *************************************************************
 
+    testsExecAsync();
+    asyncCalls++;
+    disposeTest();
 
-    //dispose
-    //sprite.dispose();
-    //assert.ok(sprite._disposed, "sprite disposed");
-    finalAsyncCall();
 });
 

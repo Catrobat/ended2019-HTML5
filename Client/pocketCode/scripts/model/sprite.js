@@ -884,13 +884,14 @@ PocketCode.Model.Sprite = (function () {
         },
         /* override */
         dispose: function () {
-            //make sure the game engine and loaded resources are not disposed
+            this.stopScripts();
+            //make sure the game engine is not disposed
             this._gameEngine = undefined;
-            this._looks = undefined;
-            this._sounds = undefined;
-            this.__variables = undefined;
-            this._variableNames = undefined;
-            //this._bricks = undefined;
+            //this._looks = undefined;  //loaded resources are not effecting the game engine
+            //this._sounds = undefined;
+            //this.__variables = undefined;
+            //this._variableNames = undefined;
+            //this._bricks = undefined; //we have to dispose bricks to make sure they remove their handlers (broadcast, gameEngine , ..)
             //call super
             SmartJs.Core.Component.prototype.dispose.call(this);
         },
