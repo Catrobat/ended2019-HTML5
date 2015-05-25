@@ -10,7 +10,16 @@ QUnit.module("sj-ui.js");
 
 QUnit.test("SmartJs.Ui.Window", function (assert) {
 
+    assert.throws(function () { var window = new SmartJs.Ui.Window(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { SmartJs.Ui.Window instanceof SmartJs.Ui.Window }, Error, "ERROR: static class: no instanceof allowed");
+
     var win = SmartJs.Ui.Window;
+
+    //disposing without efect on the object
+    var visible = win._visible;
+    win.dispose()
+    assert.ok(win._visible != undefined && win._visible === visible, "dispose: no effect");
+
     assert.ok(win instanceof SmartJs.Core.EventTarget, "instance + inheritance check"); //win instanceof SmartJs.Ui.Window && 
     assert.ok(win.objClassName === "Window", "objClassName check");
 

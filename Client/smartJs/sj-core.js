@@ -48,7 +48,7 @@ SmartJs.Core.Component = (function () {
                 if (protoDispose && typeof this[prop] === 'function')
                     continue;
 
-                if (this[prop] && this[prop].dispose && typeof this[prop].dispose === 'function') {
+                if (this[prop] && this[prop].dispose && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) {
                     this[prop].dispose();
                 }
 

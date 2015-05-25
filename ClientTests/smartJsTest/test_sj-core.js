@@ -257,9 +257,11 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 	})();
 
 	var test = new ns.Y();
+	var test2 = new ns.Y();
 	assert.ok(test.val1 === "1" && test.val2 === 2 && test.val3 === undefined, "ctr with arguments using superCtor");
 	test.dispose();
 	assert.ok(test.val1 === undefined && test.val2 === undefined && test.val3 === undefined && test.prop === undefined && test.prop_2 === "asd", "properties cleared correctly during dispose");
+	assert.ok(test2.val1 === "1" && test2.val2 === 2 && test2.val3 === undefined, "dispose: not effecting existing other objects");
 
 	var test = new ns.Y();
 	assert.ok(test.val1 === "1" && test.val2 === 2 && test.val3 === undefined && test.prop_2 === "initialized", "recreated: ctr with arguments using superCtor");
