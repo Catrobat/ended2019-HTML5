@@ -22,7 +22,7 @@ QUnit.test("Sprite", function (assert) {
     //attach listener to get latest changes
     var lastOnChangeArgs;
     var onChangeHandler = function (e) {
-        lastOnChangeArgs = e;
+        lastOnChangeArgs = e.properties;
     }
     sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
@@ -53,7 +53,7 @@ QUnit.test("Sprite", function (assert) {
     var onChangeHandler = function (e) {
         assert.equal(e.target, evSprite, "onChange target check");
         assert.equal(e.id, "newId", " onChange id check");
-        assert.equal(e.properties, props, "onChange event args properties check");
+        assert.deepEqual(e.properties, props[0], "onChange event args properties check");
     };
     var prog2 = new PocketCode.GameEngine();
     var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
@@ -63,6 +63,8 @@ QUnit.test("Sprite", function (assert) {
 
 
     sprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
+    var returnVal;
+
     // ********************* GraphicEffects *********************
     assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf") }, Error, "invalid brightness percentage");
     assert.throws(function () { sprite.setGraphicEffect(null, 50) }, Error, "unknown graphic effect");
@@ -136,10 +138,13 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* show/hide *********************
-    sprite.show();
+    returnVal = sprite.show();
     assert.ok(sprite._visible, "show sprite");
-    sprite.hide();
+    assert.ok(!returnVal, "call show() on visisble sprite: return value");
+    returnVal = sprite.hide();
     assert.ok(!sprite._visible, "show sprite");
+    assert.ok(returnVal, "call hide() on invisisble sprite: return value");
+    assert.ok(lastOnChangeArgs.visible !== undefined, "visibility event args");
     sprite.hide();
     sprite.show();
     assert.ok(sprite._visible, "show sprite");
@@ -217,49 +222,60 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(!sprite.setSize(100), "size not changed: same size");
     sprite.setSize(-20);
     assert.equal(sprite._size, 0, "set size below 0");
-    sprite.setSize(50);
+    returnVal = sprite.setSize(50);
     assert.equal(sprite._size, 50, "set size");
+    assert.ok(returnVal, "set size return val");
+    assert.ok(lastOnChangeArgs.size !== undefined, "set size event args");
 
-    sprite.changeSize(-60);
+    returnVal = sprite.changeSize(-60);
     assert.equal(sprite._size, 0, "change size below 0");
+    assert.ok(returnVal, "change size: changed");
+    assert.ok(lastOnChangeArgs.size !== undefined, "change size event args");
+
     sprite.changeSize(20);
     assert.equal(sprite._size, 20, "change size upwards");
     sprite.changeSize(15);
     sprite.changeSize(20);
     assert.equal(sprite._size, 55, "double change size");
     assert.throws(function () { sprite.changeSize(); }, Error, "ERROR: missing argument");
+    lastOnChangeArgs = undefined;
     returnVal = sprite.changeSize(0);
-    assert.ok(!returnVal, "size not changed");
+    assert.ok(!returnVal, "change size: not changed");
+    assert.ok(lastOnChangeArgs == undefined, "change size: no event dispatched");
 
     // *************************************************************
 
     // ********************* Position *********************
-    var returnVal;
     returnVal = sprite.setPosition(10, 10);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 10, "set Position");
     assert.ok(returnVal, "set position: update");
+    assert.ok(lastOnChangeArgs.positionX !== undefined || lastOnChangeArgs.positionY !== undefined, "set position event args");
     returnVal = sprite.setPosition(10, 10);
     assert.ok(returnVal == false, "set position: no change");
 
     returnVal = sprite.setPositionY(90);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 90, "set PositionY");
     assert.ok(returnVal, "set positionY: update");
+    assert.ok(lastOnChangeArgs.positionY !== undefined, "set positionY event args");
     returnVal = sprite.setPositionY(90);
     assert.ok(returnVal == false, "set positionY: no change");
 
     returnVal = sprite.setPositionX(35);
     assert.ok(sprite._positionX == 35 && sprite._positionY == 90, "set PositionX");
     assert.ok(returnVal, "set positionX: update");
+    assert.ok(lastOnChangeArgs.positionX !== undefined, "set positionX event args");
     returnVal = sprite.setPositionX(35);
     assert.ok(returnVal == false, "set positionX: no change");
 
     returnVal = sprite.changePositionX(50);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90, "change PositionX");
     assert.ok(returnVal, "change positionX: change");
+    assert.ok(lastOnChangeArgs.positionX !== undefined, "chagne positionX event args");
     assert.ok(sprite.changePositionX(0) == false, "change positionX: no change");
     returnVal = sprite.changePositionY(-20);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90 - 20, "change PositionY");
     assert.ok(returnVal, "change positionY: change");
+    assert.ok(lastOnChangeArgs.positionY !== undefined, "change positionY event args");
     assert.ok(sprite.changePositionY(0) == false, "change positionY: no change");
     // *************************************************************
 
@@ -277,12 +293,14 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.move(25);
     assert.ok(sprite._positionX == 15 && sprite._positionY == -10 && sprite._direction == 90, "move steps 90°");
     assert.ok(returnVal, "move return value: true on change");
+    assert.ok(lastOnChangeArgs.positionX !== undefined || lastOnChangeArgs.positionY !== undefined, "move event args");
     assert.ok(sprite.move(0) == false, "move return value: false if position did not change");
 
     var triggerEvent;   //undefined = true
     sprite.setDirection(0);
     returnVal = sprite.setDirection(-90, triggerEvent);
     assert.ok(returnVal, "setDirection return value");
+    assert.ok(lastOnChangeArgs.direction !== undefined, "set direction event args");
     returnVal = sprite.setDirection(-90, triggerEvent);
     assert.ok(!returnVal, "setDirection return value false (no change)");
     assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
@@ -322,6 +340,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._direction == -170, "turn right to 190°");
     returnVal = sprite.turnRight(180); //-170 --> 10
     assert.ok(returnVal, "turnRight returns true on update");
+    assert.ok(lastOnChangeArgs.direction !== undefined, "turn right event args");
     returnVal = sprite.turnRight(0); //-170 --> 10
     assert.ok(!returnVal, "turnRight returns false: no update");
     returnVal = sprite.turnRight(360);
@@ -375,6 +394,7 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(-90, triggerEvent);
     sprite.turnLeft(450); //350 --> 10
     assert.ok(sprite._direction == 180, "turn left to 180°");
+    assert.ok(lastOnChangeArgs.direction !== undefined, "turn left event args");
     sprite.setDirection(-90, triggerEvent);
     sprite.turnLeft(-450); //-350 --> -10
     assert.ok(sprite._direction == 0, "turn left to 0°");
@@ -426,6 +446,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setLook("second");
     assert.ok(sprite._currentLook.name == "look2", "set current look with id");
     assert.ok(returnVal, "set look: change (return value)");
+    assert.ok(lastOnChangeArgs.look !== undefined, "set look event args");
     assert.throws(function () { sprite.setLook("non existing"); }, "ERROR: try to set undefined look");
 
     sprite.looks = [];
@@ -437,6 +458,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look1", "next look");
     assert.ok(returnVal, "first look is set after last");
+    assert.ok(lastOnChangeArgs.look !== undefined, "next look event args");
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
     assert.ok(returnVal, "next look is set correctly");
@@ -599,6 +621,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.pointTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
     assert.ok(returnVal, "point to: value changed");
+    assert.ok(lastOnChangeArgs.direction !== undefined, "pointTo event args");
     returnVal = sprite.pointTo("id2");
     assert.ok(!returnVal, "point to: value not changed");
     //returnVal = sprite.pointTo(sprite.id);

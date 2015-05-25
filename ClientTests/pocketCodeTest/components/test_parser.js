@@ -678,6 +678,7 @@ QUnit.test("SpriteFactory", function (assert) {
     assert.equal(sf.onProgressChange, sf._brickFactory.onProgressChange, "onProgressChange event mapped");
     assert.equal(sf.onUnsupportedBricksFound, sf._brickFactory.onUnsupportedBricksFound, "onUnsupportedBricksFound event mapped");
 
+    assert.throws(function () { sf.create([]); }, Error, "ERROR: invalid argument");
 });
 
 

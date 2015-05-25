@@ -350,7 +350,11 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _triggerOnChange: function (propertyArray) {
-            this._onChange.dispatchEvent({ id: this.id, properties: propertyArray }, this);
+            var properties = {};
+            for (var i = 0, l = propertyArray.length; i < l; i++) {
+                properties.merge(propertyArray[i]);
+            }
+            this._onChange.dispatchEvent({ id: this.id, properties: properties }, this);
         },
 
         //motion: position

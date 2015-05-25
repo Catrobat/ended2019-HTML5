@@ -45,9 +45,7 @@ PocketCode.merge({
             for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
                 bricks.push(this._brickFactory.create(sprite, jsonSprite.bricks[i]));
             }
-
             sprite.bricks = bricks;
-
             return sprite;
         };
 

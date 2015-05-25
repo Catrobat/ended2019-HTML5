@@ -394,7 +394,7 @@ PocketCode.GameEngine = (function () {
             //    ids.push(sprites[i]);
             //}
             //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSpriteById(spriteId));    //TODO: check event arguments
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layers: sprites.length } }, sprite);    //TODO: sprites.length - 1 + this._backgroundOffset ???
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //TODO: sprites.length - 1 + this._backgroundOffset ???
             return true;
         },
 
