@@ -143,10 +143,10 @@ SmartJs.Ui.Window = (function () {  //static class
 
             this._onVisibilityChange.dispatchEvent(e.merge({ visible: this._visible }));
         },
-        //dispose: function () {
-        //	this._removeDomListener(window, this._resizeEventName, this._resizeHandlerReference);
-        //	this._removeDomListener(document, this._visibilityChangeEventName, this._visibilityHandlerReference);
-        //},
+        dispose: function () {
+            //override as a static class cannot be disposed
+        },
+
     });
 
     return Window;

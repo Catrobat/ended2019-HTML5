@@ -615,7 +615,9 @@ PocketCode.merge({
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);
                 }
             },
-
+            dispose: function () {
+                //override as a static class cannot be disposed
+            },
         });
 
         return FormulaParser;

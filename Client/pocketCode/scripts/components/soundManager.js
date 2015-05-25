@@ -186,7 +186,9 @@ PocketCode.SoundManager = (function () {
         mute: function (value){
             this._muted = value;
             createjs.Sound.setMute(value);
-        }
+        },
+        dispose: function () {
+        },
     });
 
     return SoundManager;

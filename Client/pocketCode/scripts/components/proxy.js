@@ -283,7 +283,10 @@ PocketCode.merge({
                 this._mapEventsToStrongTypedRequest(req, request);
                 req.send(request.data, method || request.method);
                 return true;
-            }
+            },
+            dispose: function () {
+                //override as a static class cannot be disposed
+            },
         });
 
         return Proxy;
