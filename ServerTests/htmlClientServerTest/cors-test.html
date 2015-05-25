@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -50,17 +50,19 @@
           if (invocation.status == 200)
           {
             console.log('status 200: OK');
-            document.getElementById("textDiv").innerHTML = invocation.response;
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           else if(invocation.status == 404)
           {
             console.log("status 404: page not found...!");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           else
           {
             console.log("status " + invocation.status + ": error, maybe project does not exist?");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           break;
