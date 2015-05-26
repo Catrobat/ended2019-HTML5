@@ -118,6 +118,8 @@ QUnit.test("SoundManager", function (assert) {
             soundManager2.init([{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
         };
 
+        var progress = 0;
+
         var onFileLoaded = function (e) {
             var progressIncrease = e.progress - progress;
             progress += e.progress;
@@ -186,7 +188,7 @@ QUnit.test("SoundManager", function (assert) {
         var soundSrc = "_resources/sound/sound.mp3";
         var soundSrc2 = "_resources/sound/sound2.mp3";
 
-        var progress = 0;
+        progress = 0;
         var expectedProgressChanges = [60, 40];
 
         var sounds = [{ url: soundSrc, id: "sound", size: 3 }, { url: soundSrc2, id: "sound2", size: 2 }];

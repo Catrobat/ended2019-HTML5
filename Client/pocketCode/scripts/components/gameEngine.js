@@ -33,8 +33,12 @@ PocketCode.GameEngine = (function () {
 
         this.__images = {};
         this.__sounds = {};
+
         this._soundManager = new PocketCode.SoundManager(this._id);
+        this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
+        this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
+
         this.__variables = {};
         this._variableNames = {};
 
@@ -43,7 +47,7 @@ PocketCode.GameEngine = (function () {
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
-        this._onExecuted = new SmartJs.Event.Event(this);
+        this._onProgramExecuted = new SmartJs.Event.Event(this);
         this._onSpriteChange = new SmartJs.Event.Event(this);
         this._onTabbedAction = new SmartJs.Event.Event(this);
     }
@@ -128,8 +132,8 @@ PocketCode.GameEngine = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        onExecuted: {
-            get: function () { return this._onExecuted; },
+        onProgramExecuted: {
+            get: function () { return this._onProgramExecuted; },
             //enumerable: false,
             //configurable: true,
         },
@@ -148,7 +152,7 @@ PocketCode.GameEngine = (function () {
     //methods
     GameEngine.prototype.merge({
         loadProject: function (jsonProject) {
-            if (this._executionState === PocketCode.ExecutionState.RUNNING)
+            if (this._executionState === PocketCode.ExecutionState.RUNNING || this._executionState === PocketCode.ExecutionState.PAUSED)
                 this.stopProject();
 
             this._soundsLoaded = false;
@@ -166,18 +170,19 @@ PocketCode.GameEngine = (function () {
             if (this._background)
                 this._background.dispose();// = undefined;
             this._sprites.dispose();
-            this._executionState = PocketCode.ExecutionState.STOPPED;
+            //this._executionState = PocketCode.ExecutionState.STOPPED;
             //this.__variables = {};
             this._variableNames = {};
             //this._broadcasts = [];
-            this._soundManager = new PocketCode.SoundManager(this._id);
+            //this._soundManager = new PocketCode.SoundManager(this._id);
             if (!this._soundManager.supported) {
                 //todo handle unsupported mp3 playback
                 this._soundsLoaded = true;
             }
 
-            this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
-            this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
+            //this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
+            //this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
+            //this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
 
             this._images = jsonProject.images || [];
             this._sounds = jsonProject.sounds || [];
@@ -310,7 +315,7 @@ PocketCode.GameEngine = (function () {
             }
 
             this._executionState === PocketCode.ExecutionState.STOPPED;
-            this._onExecuted.dispatchEvent();
+            this._onProgramExecuted.dispatchEvent();
         },
 
         //Brick-Sprite Interaction
@@ -432,10 +437,10 @@ PocketCode.GameEngine = (function () {
         dispose: function () {
             this.stopProject();
             //make sure the game engine and loaded resources are not disposed: background ans sprites are disposed as well
-            this._onProgramStart = undefined;
-            this._onExecuted = undefined;
-            this._onSpriteChange = undefined;
-            this._onTabbedAction = undefined;
+            //this._onProgramStart = undefined;
+            //this._onExecuted = undefined;
+            //this._onSpriteChange = undefined;
+            //this._onTabbedAction = undefined;
             //call super
             SmartJs.Core.Component.prototype.dispose.call(this);
         },

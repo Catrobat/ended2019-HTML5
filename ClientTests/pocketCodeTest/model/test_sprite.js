@@ -546,7 +546,7 @@ QUnit.test("Sprite", function (assert) {
         asyncCalls++;
         disposeTest();  //make sure this is called last
     };
-    programAsync.onExecuted.addEventListener(new SmartJs.Event.EventListener(programExecutedHandler, this));
+    programAsync.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(programExecutedHandler, this));
     programAsync.onProgramStart.dispatchEvent();
     assert.ok(sprite.scriptsRunning, "scrips running: onExecute (program)");
 
