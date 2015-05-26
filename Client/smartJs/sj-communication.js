@@ -17,7 +17,7 @@ SmartJs.Communication = {
 
         function ServiceRequest(url) {
             this._url = url || '';
-            this._xhr = undefined;
+            //this._xhr = undefined;
 
             //events
             this._onLoadStart = new SmartJs.Event.Event(this);
@@ -145,12 +145,12 @@ SmartJs.Communication = {
             dispose: function () {
                 if (this._xhr)
                     this._xhr.abort();
-                this._onLoadStart = undefined;
-                this._onLoad = undefined;
-                this._onError = undefined;
-                this._onAbort = undefined;
-                this._onProgressChange = undefined;
-                this._onProgressSupportedChange = undefined;
+                //this._onLoadStart = undefined;
+                //this._onLoad = undefined;
+                //this._onError = undefined;
+                //this._onAbort = undefined;
+                //this._onProgressChange = undefined;
+                //this._onProgressSupportedChange = undefined;
                 SmartJs.Core.EventTarget.prototype.dispose.call(this);
             },
         });
@@ -250,7 +250,10 @@ SmartJs.Communication.merge({
 
         //methods
         XmlHttpRequest.prototype.merge({
-            send: function (data, method, url) {
+            send: function (method, url) {
+                this.sendData(undefined, method, url);
+            },
+            sendData: function (data, method, url) {
                 if (method)
                     this.method = method;
 
@@ -269,14 +272,13 @@ SmartJs.Communication.merge({
                         if (this.method === SmartJs.RequestMethod.POST) {   //
                             if (data instanceof File && xhr.setRequestHeader) {
                                 this._xhr.open(this.method, this._url);
-                                this._xhr.setRequestHeader('Content-type', data.type);
-                                this._xhr.setRequestHeader('X_FILE_NAME', data.name);
+                                //this._xhr.setRequestHeader('Content-type', data.type);
+                                //this._xhr.setRequestHeader('X_FILE_NAME', data.name);
                                 this._xhr.send(data);
                             }
                             else {
                                 this._xhr.open(this.method, this._url);
-                                this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                                //this._xhr.send("fname=Henry&lname=Ford");
+                                //this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                                 var form = "";
                                 for (var prop in data)
                                     form += prop + '=' + data[prop] + '&';
@@ -322,21 +324,24 @@ SmartJs.Communication.merge({
         function CorsRequest(url) {
             SmartJs.Communication.ServiceRequest.call(this, url);
 
-            if (this.supported && !this._xhr) {
+            if (!this.supported)
+                return;
+
+            if (!this._xhr) {
                 this._xhr = new XMLHttpRequest();   //default
                 //if (!('withCredentials' in this._xhr) && typeof XDomainRequest !== 'undefined') //this will not be called (XDomainRequest masked in this.supported to avoid errors)
                 //    this._xhr = new XDomainRequest();
             }
 
             var xhr = this._xhr;
-            if (xhr.upload)
-                var xhru = xhr.upload;
+            //if (xhr.upload)
+            //    var xhru = xhr.upload;
 
             try {
                 this.progressSupported = ('onprogress' in xhr);
                 this._addDomListener(xhr, 'progress', this._onProgressHandler);
-                if (xhru)
-                    this._addDomListener(xhru, 'progress', this._onProgressHandler);
+                //if (xhru)
+                //    this._addDomListener(xhru, 'progress', this._onProgressHandler);
             }
             catch (e) {
                 this.progressSupported = false;
@@ -344,8 +349,8 @@ SmartJs.Communication.merge({
 
             //if (this._xhr instanceof XMLHttpRequest) {
             this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
-            if (xhru)
-                this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
+            //if (xhru)
+            //    this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
             //}
             //else {
             //    //this._addDomListener(xhr, 'loadstart', this._onLoadStart.dispatchEvent);
@@ -393,7 +398,10 @@ SmartJs.Communication.merge({
 
         //methods
         CorsRequest.prototype.merge({
-            send: function (data, method, url) {
+            send: function (method, url) {
+                this.sendData(undefined, method, url);
+            },
+            sendData: function (data, method, url) {
                 if (method)
                     this.method = method;
 
@@ -401,7 +409,7 @@ SmartJs.Communication.merge({
                     this._url = url;
 
                 if (!this._url)
-                    throw new Error('servicec url not specified');
+                    throw new Error('service url not specified');
 
                 if (data && typeof data !== 'object')
                     throw new Error('invalid argument: expected: data typeof object');
@@ -414,14 +422,13 @@ SmartJs.Communication.merge({
                         if (this.method === SmartJs.RequestMethod.POST) {   //
                             if (data instanceof File && xhr.setRequestHeader) {
                                 this._xhr.open(this.method, this._url);
-                                this._xhr.setRequestHeader('Content-type', data.type);
-                                this._xhr.setRequestHeader('X_FILE_NAME', data.name);
+                                //this._xhr.setRequestHeader('Content-type', data.type);
+                                //this._xhr.setRequestHeader('X_FILE_NAME', data.name);
                                 this._xhr.send(data);
                             }
                             else {
                                 this._xhr.open(this.method, this._url);
-                                this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                                //this._xhr.send("fname=Henry&lname=Ford");
+                                //this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                                 var form = "";
                                 for (var prop in data)
                                     form += prop + '=' + data[prop] + '&';
@@ -443,6 +450,7 @@ SmartJs.Communication.merge({
                     }
                     else {
                         this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
+                        //this._xhr.setRequestHeader("Referer", window.location);
                         this._xhr.send();
                     }
                 }

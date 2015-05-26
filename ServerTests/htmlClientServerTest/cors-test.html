@@ -22,7 +22,7 @@
 
       if (invocation)
       {
-        invocation.open('GET', url, true);
+          invocation.open('GET', url);//, true);
         invocation.onreadystatechange = handler;
         invocation.send();
       }

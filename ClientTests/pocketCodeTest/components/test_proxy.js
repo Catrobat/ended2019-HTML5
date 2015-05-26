@@ -41,6 +41,7 @@ QUnit.test("JsonpRequest", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
+    //var done4 = assert.async();
 
     var req = new PocketCode.JsonpRequest("new_url");
     assert.ok(req instanceof PocketCode.JsonpRequest && req instanceof SmartJs.Communication.ServiceRequest, "instance create correctly");
@@ -54,19 +55,24 @@ QUnit.test("JsonpRequest", function (assert) {
 
     var onLoadStartHandler = function (e) {
         onLoadStart++;
-        assert.equal(e.target, req, "onLoadStart target check");
+        assert.equal(e.target, req, "onLoadStart target check: request 1");
         //console.log('onLoadStart ');
     };
     var onLoadStartHandler2 = function (e) {
         onLoadStart++;
-        assert.equal(e.target, req2, "onLoadStart target check");
+        assert.equal(e.target, req2, "onLoadStart target check: request 2");
         //console.log('onLoadStart ');
     };
     var onLoadStartHandler3 = function (e) {
         onLoadStart++;
-        assert.equal(e.target, req3, "onLoadStart target check");
+        assert.equal(e.target, req3, "onLoadStart target check: request 3");
         //console.log('onLoadStart ');
     };
+    //var onLoadStartHandler4 = function (e) {
+    //    onLoadStart++;
+    //    assert.equal(e.target, req4, "onLoadStart target check: request 4");
+    //    //console.log('onLoadStart ');
+    //};
     var onLoadHandler = function (e) {
         onLoad++;
         assert.equal(e.target, req, "onLoad target check");
@@ -138,7 +144,7 @@ QUnit.test("JsonpRequest", function (assert) {
         onError++;
         assert.equal(e.target, req2, "onError target check");
         //console.log('onError ');
-        assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "jsonp request: fail (server error)");
+        assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "jsonp request: fail (server error: not found)");
         //^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
         done2();
 
@@ -190,7 +196,7 @@ QUnit.test("JsonpRequest", function (assert) {
         onProgressChange = 0;
         onError = 0;
 
-        req3 = new SmartJs.Communication.CorsRequest("https://pocketcode.org/images/logo/logo_text.png");//"/ClientTests/pocketCodeTest/_resources/notExisting.json");
+        req3 = new PocketCode.JsonpRequest("https://pocketcode.org/images/logo/logo_text.png");//"/ClientTests/pocketCodeTest/_resources/notExisting.json");
 
         req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
         req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
@@ -199,8 +205,43 @@ QUnit.test("JsonpRequest", function (assert) {
         req3.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler3, this));
         req3.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler3, this));
 
-        req3.send({ prop1: "string", prop2: 3 }, "GET", "</script>");
+        req3.sendData({ prop1: "string", prop2: 3 }, "GET", "</script>");
     };
+
+    //response: server error
+    //var req4;
+
+    //var onErrorHandler4 = function (e) {
+    //    onError++;
+    //    assert.equal(e.target, req4, "onError target check (server error)");
+    //    //console.log('onError ');
+    //    assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "jsonp request: fail (server error internal)");
+    //    //^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
+    //    done4();
+    //};
+    //var onLoadHandler4 = function (e) {
+    //    //onLoad++;
+    //    assert.ok(false, "onLoad for request 4 (valid but server error) should not be called");
+    //    //console.log('onLoad ');
+    //};
+
+    //var runTest4 = function () {
+    //    onLoadStart = 0;
+    //    onLoad = 0;
+    //    onProgressChange = 0;
+    //    onError = 0;
+
+    //    req4 = new PocketCode.JsonpRequest("https://web-test.catrob.at/rest/v0.1/projects/8744/details");
+
+    //    req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler4, this));
+    //    req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
+    //    req4.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler4, this));
+    //    //req4.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
+    //    //req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
+    //    //req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
+
+    //    req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/rest/v0.1/projects/817");
+    //};
 
 
     //start async tests
@@ -245,7 +286,7 @@ QUnit.test("Proxy", function (assert) {
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success (make sure you call the test on a server or localhost and not from local file system)");
         assert.ok(e.responseText.length > 0, "response text received");
-        assert.ok(typeof e.json  === 'object', "response text parsed to json");
+        assert.ok(typeof e.json === 'object', "response text parsed to json");
         done1();
 
         runTest2();
@@ -274,7 +315,7 @@ QUnit.test("Proxy", function (assert) {
 
     var req = new PocketCode.ServiceRequest("ClientTests/pocketCodeTest/_resources/testDataProjectJson.js", SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
     req._url = "/"; //overwrite default URL to request local server
-    //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
+    //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_SEARCH, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
     req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -301,9 +342,8 @@ QUnit.test("Proxy", function (assert) {
         //TODO:
 
         done3();
-        
-    };
 
+    };
 
 
     //start tests

@@ -7,8 +7,8 @@
 
 PocketCode.merge({
 
-    //_serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
-    _serviceEndpoint: 'http://localhost/rest/v0.1/',    //TODO:
+    _serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
+    //_serviceEndpoint: 'http://localhost/rest/v0.1/',    //TODO:
 
     Services: {
         PROJECT_SEARCH: 'projects',
@@ -108,7 +108,7 @@ PocketCode.merge({
         JsonpRequest.prototype.merge({
             _onErrorHandler: function (e) {
                 this._deleteServiceEndpoint();
-                this._onError.dispatchEvent(e);
+                this._onError.dispatchEvent({}.merge(e));
             },
             _createServiceEndpoint: function () {
                 PocketCode._jsonpClientEndpoint[this._id] = this._handleResponse.bind(this);//, responseText, statusCode);//new Function('responseText', 'statusCode', '');
@@ -124,6 +124,7 @@ PocketCode.merge({
                 head.removeChild(this._script);
                 this._script = undefined;
             },
+            //this method is bound using .bind(this) to keep the requests scope: it's not covered by code coverage!
             _handleResponse: function (responseText, statusCode) {
                 this._deleteServiceEndpoint();
 
@@ -136,7 +137,10 @@ PocketCode.merge({
                 else
                     this._onLoad.dispatchEvent();
             },
-            send: function (data, method, url) {
+            send: function (method, url) {
+                this.sendData(undefined, method, url);
+            },
+            sendData: function (data, method, url) {
 
                 if (this._script)
                     throw new Error('this is an asynchronous request: you\'re not allowed to send it twice (simultanously). Create another instance');
@@ -265,7 +269,7 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
             },
             _sendUsingCors: function (request, method, url) {
@@ -274,14 +278,14 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
             },
             _sendUsingJsonp: function (request, method, url) {
                 var req = new PocketCode.JsonpRequest(url || request.url);
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
             },
             dispose: function () {
