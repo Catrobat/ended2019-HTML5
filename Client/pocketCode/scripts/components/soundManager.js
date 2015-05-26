@@ -94,6 +94,8 @@ PocketCode.SoundManager = (function () {
         init: function (sounds) {
             if (!(sounds instanceof Array))
                 throw new Error('sounds expects type Array');
+            if (!this.supported)
+                return false;
 
             var soundsFormatted = [];
             var sizeOfAllSounds = 0;
@@ -122,20 +124,28 @@ PocketCode.SoundManager = (function () {
         },
 
         loadSoundFile: function (id, url) {
-            //added to cache static tts sound files- detected by parser
-            if (!id || !url) {
-                throw new Error('loadSoundFile: missing id or url');
-            }
-            createjs.Sound.registerSound(url, this._projectId + id);
+            if (!this.supported)
+                return false;
+
+            ////added to cache static tts sound files- detected by parser
+            //if (!id || !url) {
+            //    throw new Error('loadSoundFile: missing id or url');
+            //}
+            //createjs.Sound.registerSound(url, this._projectId + id);
         },
 
         startSound: function (id) {
+            if (!this.supported)
+                return false;
+
             var soundInstance = createjs.Sound.createInstance(id);
             soundInstance.addEventListener('succeeded', createjs.proxy(function (e, soundInstance) {
                 this._activeSounds.push(soundInstance);
+                //console.log('instance succeeded');
             }, this, soundInstance));
 
             soundInstance.addEventListener('complete', createjs.proxy(function (e, soundInstance) {
+                //console.log('instance completed');
                 var active = this._activeSounds;
                 active.remove(soundInstance);
                 if (active.length == 0)
@@ -146,6 +156,9 @@ PocketCode.SoundManager = (function () {
         },
 
         startSoundFromUrl: function (url) { //TODO: take care of mobile devices that need an event to load/play audio files?
+            if (!this.supported)
+                return false;
+
             //var id = SmartJs.getNewId();
             //this.loadSoundFile(id, url);
 
@@ -175,15 +188,21 @@ PocketCode.SoundManager = (function () {
         },
 
         stopAllSounds: function () {
+            if (!this.supported)
+                return false;
+
             createjs.Sound.stop();
             this._activeSounds = [];
+            return true;
         },
 
         changeVolume: function (byValue) {
             createjs.Sound.setVolume(createjs.Sound.getVolume() + byValue / 100.0);
         },
 
-        mute: function (value){
+        mute: function (value) {
+            if (typeof value !== 'boolean')
+                throw new Error('invalid argument: mute() expects argument type: boolean');
             this._muted = value;
             createjs.Sound.setMute(value);
         },
