@@ -95,7 +95,8 @@ QUnit.test("SoundManager", function (assert) {
         //playback tests
 
         var onPlayCompleted = function () {
-            assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds");
+            assert.equal(soundManager2._activeSounds.length, 6, "Completed sound removed from active sounds: this is an issue of soundjs-NEXT (IE): opened as issue at github (WW)");
+            //FIX: please have a look at my comment on ln ~178
             doneWithPlaybackComplete();
             //console.log('doneWithPlaybackComplete');
 
@@ -175,7 +176,9 @@ QUnit.test("SoundManager", function (assert) {
             doneWithPlaybackTests();
             //console.log('doneWithPlaybackTests');
 
-            var soundInstance2 = soundManager2._activeSounds[soundManager2._activeSounds.length-1];//[0];
+            var soundInstance2 = soundManager2._activeSounds[0];
+            //FIX: var soundInstance2 = soundManager2._activeSounds[soundManager2._activeSounds.length-1];//[0];
+            //seams to be an issue of soundJs in IE: alle equal instances are fire the "complete" event in soundJs-NEXT (update due to IE error on not recognising loading errors)
             soundInstance2.on("complete", onPlayCompleted);
             soundInstance2.paused = false;
         };
