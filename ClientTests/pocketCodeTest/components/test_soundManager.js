@@ -61,7 +61,7 @@ QUnit.test("SoundManager", function (assert) {
             error = true;
         }
         assert.ok(!error, "not supported: no error is throws when accessing public properties and methods")
-
+        assert.ok(false, "WARNING (no error): not all tests were executed due to browser incompatibility")
         doneWithTests();
         return;
     }

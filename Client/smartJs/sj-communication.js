@@ -173,7 +173,8 @@ SmartJs.Communication.merge({
             try {
                 this.progressSupported = ('onprogress' in xhr);
                 this._addDomListener(xhr, 'progress', this._onProgressHandler);
-                this._addDomListener(xhru, 'progress', this._onProgressHandler);
+                if (xhru)
+                    this._addDomListener(xhru, 'progress', this._onProgressHandler);
             }
             catch (e) {
                 this.progressSupported = false;
@@ -189,20 +190,25 @@ SmartJs.Communication.merge({
             //this._addDomListener(xhru, 'load', this._onLoadHandler);
             //this._addDomListener(xhru, 'error', this._onErrorHandler);
             //this._addDomListener(xhru, 'abort', this._onAbortHandler);
-            this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
+            if (xhru)
+                this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
         }
 
         //properties
         Object.defineProperties(XmlHttpRequest.prototype, {
             supported: {
                 get: function () {
-                    if (typeof XmlHttpRequest === 'undefined')
+                    if (!window.XMLHttpRequest)
                         return false;
 
                     //check: same origin policy
                     var loc = window.location, a = document.createElement('a');
                     a.href = this._url;
-                    if (a.hostname !== loc.hostname || a.port !== loc.port || a.protocol !== loc.protocol)  //TODO: check sub domains
+                    var port = loc.protocol == 'https:' ? '443' : loc.port;
+                    var aPort = a.port; //safari fix
+                    if (aPort == '0')
+                        aPort = '';    
+                    if (a.hostname != loc.hostname || (aPort != loc.port && aPort != port) || a.protocol != loc.protocol)  //TODO: check sub domains
                         return false;
 
                     return true;
@@ -304,6 +310,7 @@ SmartJs.Communication.merge({
                     }
                 }
                 catch (e) {
+                    this._onLoadStart.dispatchEvent();
                     e.statusCode = 0;
                     this._onError.dispatchEvent(e);//{ statusCode: 0 });//.merge(e));
                 }

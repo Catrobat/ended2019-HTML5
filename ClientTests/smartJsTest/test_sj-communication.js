@@ -63,7 +63,20 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 	req.dispose();
 	assert.equal(req._disposed, true, "disposed");
 
+	req = new SmartJs.Communication.XmlHttpRequest();
+	assert.throws(function () { req.send(); }, Error, "ERROR: service url not specified");
+	assert.throws(function () { req.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
+
 	req = new SmartJs.Communication.XmlHttpRequest(window.location);
+	if (!req.supported) {
+		assert.ok(false, "WARNING (no error): not all tests were executed due to browser incompatibility")
+		done1();
+		done2();
+		done3();
+		return;
+	}
+
+	//continue if supported
 	assert.equal(req.supported, true, "support: same domain");
 
 	//request
@@ -77,7 +90,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 	var onLoadStartHandler = function (e) {
 		onLoadStart++;
 		//validate request url
-		assert.equal(req._url, "/ClientTests/pocketCodeTest/_resources/testDataProjects.js?a=eins&b=2", "valid  request url params: GET");
+		assert.equal(req._url, "_resources/testDataProjects.js?a=eins&b=2", "valid  request url params: GET");
 		assert.equal(e.target, req, "onLoadStart target check");
 		//console.log('onLoadStart ');
 	};
@@ -95,7 +108,11 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		onLoad++;
 		assert.equal(e.target, req, "onLoad target check");
 		//console.log('onLoad ');
-		assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success (make sure you call the test on a server or localhost and not from local file system)");
+		//alert(onLoadStart + ", " + onProgressChange + ", " + onLoad + ", " + onError);
+		if (e.target.progressSupported)
+			assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success: make sure you run the test on a server (including localhost) and not from local file system");
+		else
+			assert.ok(onLoadStart === 1 && onProgressChange == 0 && onLoad === 1 && onError === 0, "ajax request: success: make sure you run the test on a server (including localhost) and not from local file system");
 		assert.ok(e.target.responseText.length > 0, "response text received");
 		done1();
 
@@ -141,7 +158,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		//console.log('onProgressSupportedChange ' + e.progressSupport);
 	};
 
-	req = new SmartJs.Communication.XmlHttpRequest("/ClientTests/pocketCodeTest/_resources/testDataProjects.js");
+	req = new SmartJs.Communication.XmlHttpRequest("_resources/testDataProjects.js");
 
 	req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
 	req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -162,6 +179,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		onError++;
 		assert.equal(e.target, req2, "onError target check");
 		//console.log('onError ');
+		//alert(onLoadStart + ", " + onLoad + ", " + onError);
 		assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "ajax request: fail (same origin policy)");
 		//^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
 		done2();
@@ -175,8 +193,9 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		onLoadStart = 0;
 		onLoad = 0;
 		onProgressChange = 0;
+		//onError = 0;
 
-		req2 = new SmartJs.Communication.XmlHttpRequest("http://www.w3schools.com/ajax/demo_get.asp");
+		req2 = new SmartJs.Communication.XmlHttpRequest("https://www.w3schools.com/ajax/demo_get.asp");
 
 		req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
 		req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
@@ -213,7 +232,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		onProgressChange = 0;
 		onError = 0;
 
-		req3 = new SmartJs.Communication.XmlHttpRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
+		req3 = new SmartJs.Communication.XmlHttpRequest("_resources/notExisting.json");
 
 		req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
 		req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
@@ -225,12 +244,13 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		req3.send();
 	};
 
-	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "/ClientTests/pocketCodeTest/_resources/testDataProjects.js"); //start async requests 
+	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "_resources/testDataProjects.js"); //start async requests 
+	//req.send(SmartJs.RequestMethod.GET, "_resources/testDataProjects.js"); //start async requests 
 
-	var req5 = new SmartJs.Communication.CorsRequest();
-	assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
-	req5._url = "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST";
-	assert.throws(function () { req5.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
+	//var req5 = new SmartJs.Communication.CorsRequest();
+	//assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
+	//req5._url = "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST";
+	//assert.throws(function () { req5.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
 
 });
 
@@ -249,12 +269,27 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	req = new SmartJs.Communication.CorsRequest("myUrl");
 	assert.equal(req.url, "myUrl", "ctr with url + getter");
 
-	assert.equal(req.supported, true, "checks for true- this test may fail in older browsers");
-
 	req.dispose();
 	assert.equal(req._disposed, true, "disposed");
 
-	//request
+	req = new SmartJs.Communication.CorsRequest();
+	assert.throws(function () { req.send(); }, Error, "ERROR: service url not specified");
+	req._url = "ERROR: service url not specified";
+	assert.throws(function () { req.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
+
+	if (!req.supported) {
+		assert.ok(false, "WARNING (no error): not all tests were executed due to browser incompatibility")
+		done1();
+		done2();
+		done3();
+		done4();
+		return;
+	}
+
+
+	//if supported: request
+	assert.equal(req.supported, true, "support: checks for true");
+
 	var onLoadStart = 0,
 		onLoad = 0,
 		onError = 0,
@@ -265,7 +300,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	var onLoadStartHandler = function (e) {
 		onLoadStart++;
 		//validate request url
-		assert.equal(req._url, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST&a=eins&b=2", "valid  request url params: GET");
+		assert.equal(req._url, "https://web-test.catrob.at/rest/v0.1/projects/874/details?a=eins&b=2", "valid  request url params: GET");
 		assert.equal(e.target, req, "onLoadStart target check");
 		//console.log('onLoadStart ');
 	};
@@ -296,7 +331,8 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		runTest2();
 	};
 	var onErrorHandler = function (e) {
-		onError++;
+	    onError++;
+	    //alert(JSON.stringify(e));
 		assert.equal(e.target, req, "onError target check");
 		//console.log('onError ');
 	};
@@ -345,7 +381,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		//console.log('onProgressSupportedChange ' + e.progressSupport);
 	};
 
-	req = new SmartJs.Communication.CorsRequest("http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST");  //public service
+	req = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/rest/v0.1/projects/874/details");  //public service
 
 	req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
 	req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -379,7 +415,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		onLoad = 0;
 		onProgressChange = 0;
 
-		req2 = new SmartJs.Communication.CorsRequest("http://www.w3schools.com/ajax/demo_get.asp");
+		req2 = new SmartJs.Communication.CorsRequest("https://www.w3schools.com/ajax/demo_get.asp");
 
 		req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
 		req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
@@ -418,7 +454,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		onProgressChange = 0;
 		onError = 0;
 
-		req3 = new SmartJs.Communication.CorsRequest("/ClientTests/pocketCodeTest/_resources/notExisting.json");
+		req3 = new SmartJs.Communication.CorsRequest("_resources/notExisting.json");
 
 		req3.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler3, this));
 		req3.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
@@ -473,19 +509,14 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 
 
 	//start async
-	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST"); //start async requests 
+	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "https://web-test.catrob.at/rest/v0.1/projects/874/details"); //start async requests 
 
-	var req5 = new SmartJs.Communication.CorsRequest();
-	assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
-	req5._url = "http://server.cors-api.appspot.com/server?id=5180691&enable=true&status=200&credentials=false&methods=GET%2C%20POST";
-	assert.throws(function () { req5.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
+	//var req5 = new SmartJs.Communication.CorsRequest();
+	//assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
+	//req5._url = "ERROR: service url not specified";
+	//assert.throws(function () { req5.sendData("eins", SmartJs.RequestMethod.POST); }, Error, "ERROR: invalid post data");
 });
 
-//QUnit.test("SmartJs.Communication: Jsonp", function (assert) {
-
-//    assert.ok(true, "TODO: ");
-
-//});
 
 //QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
 
