@@ -28,7 +28,7 @@
 	  
 	  //add jsonp call init string if required: begin
 	  if (isset($this->request->jsonpCallbackFunction))
-	    echo $this->request->jsonpCallbackFunction."('";
+	    echo $this->request->jsonpCallbackFunction."(";
 	  //handle individual request
       try {
 	    $this->writeResponseString($outputObject);
@@ -42,7 +42,7 @@
       //a jsonp request will always return a status code 200 (=default) in the HTML header to avoid onLoad error in <script> tag
       //instead: the status code is passed as a 2nd argument to the callback function
       if (isset($this->request->jsonpCallbackFunction)) {
-	    echo "', " . $responseStatusCode . ");";
+	    echo ", " . $responseStatusCode . ");";
       }
       else  //default request: write to header
         http_response_code($responseStatusCode);
