@@ -111,7 +111,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     f.json = sin;
-    assert.equal(f.calculate(), 1, "calc sin (deg)");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 1, "calc sin (deg)");
     assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
     assert.equal(f.uiString, "sin(90)", "string sin");
 

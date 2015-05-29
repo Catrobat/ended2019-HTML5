@@ -133,9 +133,14 @@ SmartJs.Communication = {
                 //else {
                 if (this._xhr.status !== 200) { //this._loaded && 
                     //console.log("error2 ");
-                    var e = new Error(this._xhr.responseText);
-                    e.statusCode = this._xhr.status;
-                    this._onError.dispatchEvent(e);//{}.merge(e));
+                    var err = new Error();//this._xhr.responseText);
+                    err.responseText = this._xhr.responseText;
+                    try {
+                        err.responseJson = JSON.parse(this._xhr.responseText);
+                    }
+                    catch (e) { }
+                    err.statusCode = this._xhr.status;
+                    this._onError.dispatchEvent(err);//{}.merge(e));
                 }
                 else
                     //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
@@ -356,6 +361,7 @@ SmartJs.Communication.merge({
 
             //if (this._xhr instanceof XMLHttpRequest) {
             this._addDomListener(xhr, 'readystatechange', this._onReadyStateChangeHandler); //loadend not supported by safari
+            //xhr.onreadystatechange = function (e) { console.log('readystatechange event fired'); };//, false);
             //if (xhru)
             //    this._addDomListener(xhru, 'readystatechange', this._onReadyStateChangeHandler);
             //}
@@ -387,7 +393,9 @@ SmartJs.Communication.merge({
             //},
             supported: {
                 get: function () {
-                    this._xhr = new XMLHttpRequest();
+                    if (!this._xhr)
+                        this._xhr = new XMLHttpRequest();
+
                     if ('withCredentials' in this._xhr)
                         return true;
                     //if (typeof XDomainRequest !== undefined)  //disabled due to missing testing infrastructure

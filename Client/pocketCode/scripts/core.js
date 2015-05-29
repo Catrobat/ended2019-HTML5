@@ -42,6 +42,14 @@ PocketCode.merge({
                 }
                 return true;
             }(),
+            json: function () {
+                if (JSON && typeof JSON.parse === 'function')
+                    return true;
+                else {
+                    _result = _full = false;
+                    return false;
+                }
+            }(),
             //sound: function () {  //TODO: check sound support
             //    if (!createjs.Sound.initializeDefaultPlugins()) {
             //        _result = true;

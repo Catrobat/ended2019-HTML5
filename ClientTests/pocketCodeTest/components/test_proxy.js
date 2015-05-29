@@ -11,6 +11,7 @@ QUnit.module("proxy.js");
 
 QUnit.test("ServiceRequest", function (assert) {
 
+    assert.throws(function () { var sr = new PocketCode.ServiceRequest("PROJECT", SmartJs.RequestMethod.GET, {}); }, Error, "ERROR: invalid (unknown) service endpoint");
     assert.throws(function () { var sr = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, {}); }, Error, "ERROR: missing argument");
 
     var sr = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "newId", prop1: "prop_1", prop2: "prop_2" });
@@ -29,9 +30,9 @@ QUnit.test("ServiceRequest", function (assert) {
     assert.ok(sr.onLoadStart instanceof SmartJs.Event.Event && sr.onLoad instanceof SmartJs.Event.Event && sr.onError instanceof SmartJs.Event.Event &&
         sr.onProgressChange instanceof SmartJs.Event.Event && sr.onProgressSupportedChange instanceof SmartJs.Event.Event, "events: accessors");
 
-    var url = PocketCode.Services.PROJECT + "?pr1={prop1}";
+    var url = PocketCode.Services.PROJECT;// + "?pr1={prop1}";
     sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: "newId", prop1: "prop_1", prop2: "prop_2" });
-    assert.equal(sr.url, PocketCode._serviceEndpoint + "projects/newId?pr1=prop_1&prop2=prop_2", "url created correctly: complex");
+    assert.equal(sr.url, PocketCode._serviceEndpoint + "projects/newId?prop1=prop_1&prop2=prop_2", "url created correctly: complex");
 
 });
 
@@ -79,6 +80,8 @@ QUnit.test("JsonpRequest", function (assert) {
         //console.log('onLoad ');
         assert.ok(onLoadStart === 1 && onProgressChange === 0 && onProgressSupportedChange === 1 && onLoad === 1 && onError === 0, "jsonp request: success");
         assert.ok(e.target.responseText.length > 0, "response text received");
+        var parsed = JSON.parse(e.target.responseText); //this will throw an error if the string is not parsable
+        //assert.ok(e.target.statusCode == 200, "status code = ok");
         assert.ok(e.target._script === undefined, "script tag revomed from DOM");
         done1();
 
@@ -255,15 +258,16 @@ QUnit.test("Proxy", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
+    var done4 = assert.async();
 
     assert.throws(function () { var propy = new PocketCode.Proxy(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.Proxy instanceof PocketCode.Proxy }, Error, "ERROR: static class: no instanceof allowed");
     assert.throws(function () { PocketCode.Proxy.send({}); }, Error, "ERROR: sending request not typeof PocketCode.ServiceRequest");
 
     //disposing without efect on the object
-    var corsEnabled = PocketCode.Proxy.corsEnabled;
-    PocketCode.Proxy.dispose()
-    assert.ok(PocketCode.Proxy.corsEnabled != undefined && PocketCode.Proxy.corsEnabled === corsEnabled, "dispose: no effect");
+    //var corsEnabled = PocketCode.Proxy.corsEnabled;
+    //PocketCode.Proxy.dispose()
+    //assert.ok(PocketCode.Proxy.corsEnabled != undefined && PocketCode.Proxy.corsEnabled === corsEnabled, "dispose: no effect");
 
     //var p = PocketCode.Proxy;   //this is not a constructor but a static class -> instanceof is not valid here
     //assert.ok(p instanceof PocketCode.Proxy, "instance check");
@@ -284,9 +288,12 @@ QUnit.test("Proxy", function (assert) {
         onLoad++;
         assert.equal(e.target, req, "onLoad target check");
         //console.log('onLoad ');
-        assert.ok(onLoadStart === 1 && onProgressChange > 0 && onLoad === 1 && onError === 0, "ajax request: success (make sure you call the test on a server or localhost and not from local file system)");
+        assert.ok(onLoadStart === 1 && onProgressChange >= 0 && onLoad === 1 && onError === 0, "proxy request: success");
+        //^^ progress >= 0 required by chrome
         assert.ok(e.responseText.length > 0, "response text received");
-        assert.ok(typeof e.json === 'object', "response text parsed to json");
+        assert.equal(e.responseText, e.target.responseText, "event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "event response json equal target");
         done1();
 
         runTest2();
@@ -295,6 +302,13 @@ QUnit.test("Proxy", function (assert) {
         onError++;
         assert.equal(e.target, req, "onError target check");
         //console.log('onError ');
+        assert.ok(e.responseText.length > 0, "error: response text received");
+        assert.equal(e.responseText, e.target.responseText, "error: event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "error: response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "error: event response json equal target");
+        assert.ok(e.statusCode != 200, "error: status code");
+        done2();
+        runTest3();
     };
     //var onAbortHandler = function (e) {
     //    onAbort++;
@@ -313,8 +327,9 @@ QUnit.test("Proxy", function (assert) {
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.ServiceRequest("ClientTests/pocketCodeTest/_resources/testDataProjectJson.js", SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
-    req._url = "/"; //overwrite default URL to request local server
+    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "874", prop1: "prop_1", prop2: "prop_2" });
+    //req._url = ""; //overwrite default URL to request local server
+    //^^ the proxy works cross-origin and will select a service to get a response from our server
     //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_SEARCH, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
@@ -325,23 +340,72 @@ QUnit.test("Proxy", function (assert) {
     req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
 
 
-    //test2: cors
+    //test2: cors: error
     var runTest2 = function () {
 
-        //TODO:
+        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "0"});
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler, this));
+        PocketCode.Proxy.send(req);
 
-        done2();
-        runTest3();
+        //done2();
+        //runTest3();
     };
 
     //test3: jsonp
-    var runTest3 = function () {
-
-        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
-
-        //TODO:
+    var onLoadHandler3 = function (e) {
+        onLoad++;
+        assert.equal(e.target, req, "jsonp: onLoad target check");
+        //console.log('onLoad ');
+        assert.ok(onLoadStart === 1 && onProgressChange >= 0 && onLoad === 1 && onError === 0, "jsonp: proxy request: success");
+        //^^ progress >= 0 required by chrome
+        assert.ok(e.responseText.length > 0, "jsonp: response text received");
+        assert.equal(e.responseText, e.target.responseText, "jsonp: event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "jsonp: response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "jsonp: event response json equal target");
 
         done3();
+        runTest4();
+    };
+    var onErrorHandler3 = function (e) {
+        onError++;
+        assert.equal(e.target, req, "jsonp: onError target check");
+        //console.log('onError ');
+        assert.ok(e.responseText.length > 0, "jsonp: error: response text received");
+        assert.equal(e.responseText, e.target.responseText, "jsonp: error: event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "jsonp: error: response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "jsonp: error: event response json equal target");
+        assert.ok(e.statusCode != 200, "jsonp: error: status code");
+
+        done4();
+    };
+
+    var runTest3 = function () {
+
+        onLoadStart = 0;
+        onProgressChange = 0;
+        onLoad = 0;
+        onError = 0;
+
+        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
+        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "874", prop1: "prop_1", prop2: "prop_2" });
+        req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
+        req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler, this));
+        //req.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
+        req.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
+        req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
+        PocketCode.Proxy.send(req);
+
+    };
+
+    //test4: jsonp error
+
+    var runTest4 = function () {
+
+        PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
+        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "0" });
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
+        PocketCode.Proxy.send(req);
 
     };
 
