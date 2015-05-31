@@ -226,24 +226,34 @@
 	border-spacing: 10px;
 	color: #A9DCF1;
 	background-color: #05222a;
+    text-align: center;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 .pc-popupErrorBorder {
     border-color: #A31515;
+}
+.pc-popupWarningBorder {
+	border-color: #EF7716;
 }
 .pc-popupHeader, .pc-popupBody, .pc-popupFooter {
 	display: table-cell;
 }
 .pc-popupHeader {
-    /* TODO: fontsize color */
+    border-bottom: 1px solid #A9DCF1;
+
+    padding-bottom: 7px;
+    font-size: larger;
+
 }
 .pc-popupbody {
+
     /* TODO: fontsize color */
 }
 
 .pc-popupFooter {
-	text-align: right;
+    border-top: 1px solid #A9DCF1;
 	white-space: nowrap;
-	padding-top: 4px;
+	padding-top: 10px;
 }
 .pc-popupFooter button {
 	margin-left: 4px;
