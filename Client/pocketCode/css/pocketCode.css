@@ -219,16 +219,23 @@
 }
 
 .pc-popup {
-    width: 500px;   /* this value will be set in script depending on the device width - test only*/
+    width: 20em;   /* this value will be set in script depending on the device width - test only*/
+    height: 25em;
+
 	/*max-width: 400px;
-	*/max-height: 600px;
+	*/max-height: 30em;
 	display: table;
-	border-spacing: 10px;
-	color: #A9DCF1;
+    color: #31BAEC;
 	background-color: #05222a;
     text-align: center;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-family: Tahoma, Geneva, sans-serif;
+    box-shadow: 5px 5px 5px #000000;
 }
+
+.pc-popupDefaultBorder {
+
+}
+
 .pc-popupErrorBorder {
     border-color: #A31515;
 }
@@ -236,30 +243,34 @@
 	border-color: #EF7716;
 }
 .pc-popupHeader, .pc-popupBody, .pc-popupFooter {
-	display: table-cell;
+	/*display: table-cell;*/
+    padding: 10px;
 }
 .pc-popupHeader {
-    border-bottom: 1px solid #A9DCF1;
-
-    padding-bottom: 7px;
+    border-bottom: 2px solid #31BAEC;
+    padding: 20px;
     font-size: larger;
 
 }
-.pc-popupbody {
-
+.pc-popupBody {
+	color: #F2F2F2;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 20em;
     /* TODO: fontsize color */
 }
 
 .pc-popupFooter {
-    border-top: 1px solid #A9DCF1;
+    border-top: 1px solid #404040;
 	white-space: nowrap;
-	padding-top: 10px;
+	padding: 15px;
+	color: #F2F2F2;
 }
 .pc-popupFooter button {
 	margin-left: 4px;
     padding: 2px 4px 2px 4px;
     min-width: 65px;
-    border: solid 2px green;    /* TODO */
+    border: solid 0px;    /* TODO */
     border-radius: 2px;
     font-weight: bold;
     background-color: transparent;
