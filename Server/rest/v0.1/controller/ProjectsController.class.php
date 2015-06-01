@@ -40,46 +40,36 @@ class ProjectsController extends BaseController
 
   public function get()
   {
-
-    //try {
     $len = count($this->request->serviceSubInfo);
+    $servicePathViolation = ": " . implode("/", $this->request->serviceSubInfo);
 
     if($len > 2)
     {
-      return new ServicePathViolationException($this->request->serviceName . ": " . implode("/",
-                                                                                            $this->request->serviceSubInfo));
+      return new ServicePathViolationException($this->request->serviceName . $servicePathViolation);
+    }
+
+    if($len == 2 && strtoupper($this->request->serviceSubInfo[1]) === "DETAILS")
+    {
+      return $this->getProjectDetails($this->request->serviceSubInfo[0]);
     }
 
     else
     {
-      if($len == 2 && strtoupper($this->request->serviceSubInfo[1]) === "DETAILS")
+      if($len == 1)
       {
-        return $this->getProjectDetails($this->request->serviceSubInfo[0]);
+        return $this->getProject($this->request->serviceSubInfo[0]);
       }
 
       else
       {
-        if($len == 1)
+        if($len == 0)
         {
-          return $this->getProject($this->request->serviceSubInfo[0]);
-        }
-
-        else
-        {
-          if($len == 0)
-          {
-            return $this->getProjectList();
-          }
+          return $this->getProjectList();
         }
       }
     }
 
-    return new ServicePathViolationException($this->request->serviceName . ": " . implode("/",
-                                                                                          $this->request->serviceSubInfo));
-    //}
-    //catch (Exception $e) {
-    //  return new Exception($e->getMessage(), $e->getCode(), $e);
-    //}
+    return new ServicePathViolationException($this->request->serviceName . $servicePathViolation);
   }
 
 
@@ -119,20 +109,13 @@ class ProjectsController extends BaseController
 
   private function getProject($projectId)
   {
-
     //$projectFilePath = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'] . "/catroid/resources/projects/") . $projectId . ".catrobat";
-    $projectFilePath
-      = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/resources/projects/") . $projectId
-        . ".catrobat";
+    $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/resources/projects/");
+    $projectFilePath = $projectsRoot . $projectId . ".catrobat";
 
     //load zip
-    $cacheDir = str_replace("/", DIRECTORY_SEPARATOR,
-                            $this->SERVER_ROOT() . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId
-                            . "/");
-    //$cacheDir = str_replace("/", DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'] . "/html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/");
-
-    //if ($_SERVER["SERVER_NAME"] === $projectHost) {
-    //load from local dir
+    $cacheRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "html5/projects/");
+    $cacheDir = $cacheRoot . $this->request->serviceVersion . "/" . $projectId . "/";
 
     //check if project exists
     if(!file_exists($projectFilePath))
@@ -153,30 +136,6 @@ class ProjectsController extends BaseController
     {
       file_get_contents("https://pocketcode.org/details/" . $projectId, 0, null, 0, 1); //try to read 1 byte only
     }
-
-    //}
-    /*else {
-      //load from server:
-      if (false === file_get_contents($projectProtocol . $projectHost . $projectUrl, 0, null, 0, 1)) //try to read 1 byte only
-        throw new ProjectNotFoundException($projectId);
-
-      //create cache project dir
-      //$cacheDir = getcwd() . DIRECTORY_SEPARATOR . "projectCache" . DIRECTORY_SEPARATOR;
-      if (!is_dir($cacheDir . $projectId)) {
-        mkdir($cacheDir . $projectId, 0777, true);
-      }
-
-      $newFile = $cacheDir . $projectId . DIRECTORY_SEPARATOR . $projectId . ".catrobat";
-
-      if (copy($projectProtocol . $projectHost . $projectUrl, $newFile)) {
-        //success
-        $projectFilePath = $newFile;
-      }
-      else {
-        throw new ProjectNotFoundException($projectId);
-      }
-
-    }*/
 
     //create cache directory if not already created
     if(!is_dir($cacheDir))
@@ -293,12 +252,14 @@ class ProjectsController extends BaseController
       $parser = null;
       if($fileVersion >= 0.6 && $fileVersion < 0.93)
       {
+        //print_r($xml);
         $parser = new ProjectFileParser($projectId, $resourceRoot, $cacheDir, $xml);
       }
       else
       {
         if($fileVersion === 0.93)
         {
+          echo "version 0.93...!\n";
           $parser = new ProjectFileParser_v0_93($projectId, $resourceRoot, $cacheDir, $xml);
         }
         else

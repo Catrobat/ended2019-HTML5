@@ -2,7 +2,6 @@
 
 class ProjectFileParser
 {
-
   protected $projectId = null;
   protected $resourceBaseUrl = "";
   protected $cacheDir = "";
@@ -49,7 +48,6 @@ class ProjectFileParser
 
   protected function includeGlobalVariables()
   {
-
     $vars = $this->simpleXml->variables;
     array_push($this->cpp, $vars);
     array_push($this->cpp, $vars->programVariableList);
@@ -63,12 +61,10 @@ class ProjectFileParser
 
     array_pop($this->cpp);
     array_pop($this->cpp);
-
   }
 
   public function getProject()
   {
-
     try
     {
       $project = new ProjectDto(intval($this->projectId), $this->resourceBaseUrl);
@@ -76,11 +72,9 @@ class ProjectFileParser
       //header
       $project->header = $this->parseHeader();
 
-
       //global variables
       $this->includeGlobalVariables();
       $project->variables = $this->variables;
-
 
       //sprites
       array_push($this->cpp, $this->simpleXml->objectList);

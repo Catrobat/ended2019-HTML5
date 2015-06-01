@@ -2,18 +2,16 @@
 
 abstract class BaseView
 {
-  const GZIP_SUPPORTED = true;  //this const is used for debugging if there is a configuration error
+  const GZIP_SUPPORTED = false;  //this const is used for debugging if there is a configuration error
   private $request;
 
   public function __construct($request)
   {
     $this->request = $request;
-
   }
 
   public function render($outputObject)
   {
-
     $responseStatusCode = $this->getResponseStatusCode($outputObject);
 
     ob_start();  //nested buffers to calculate content length
@@ -76,7 +74,6 @@ abstract class BaseView
 
   private function writeResponseHeader()
   {
-
     //insert headers to enable CORS
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Methods: GET, POST");
@@ -103,12 +100,10 @@ abstract class BaseView
     $length = ob_get_length();
     //set response header
     header("Content-Length: " . $length);
-
   }
 
   private function getResponseStatusCode($outputObject)
   {
-
     //set return status code
     $statusCode = 200;
 
@@ -134,7 +129,6 @@ abstract class BaseView
         default:    //FileParserException, UnhandledException
           //INTERNAL server ERROR
           $statusCode = 500;
-
       }
     }
 
