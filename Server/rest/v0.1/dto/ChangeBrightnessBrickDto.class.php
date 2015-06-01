@@ -10,5 +10,3 @@ class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto {
   }
 
 }
-
-?>

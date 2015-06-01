@@ -12,5 +12,3 @@ class ChangeXBrickDto extends BaseBrickDto {
   }
 
 }
-
-?>

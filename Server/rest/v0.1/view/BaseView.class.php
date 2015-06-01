@@ -12,7 +12,7 @@
 
     public function render($outputObject) {
 	
-      $responseStatusCode = $this->getResponseSatusCode($outputObject);
+      $responseStatusCode = $this->getResponseStatusCode($outputObject);
       
 	  ob_start();	//nested buffers to calculate content length
 	  
@@ -49,7 +49,8 @@
 	
 	  //write nested buffer to calculate length + set headers
 	  ob_end_flush();
-	  $this->writeResponseHeader($outputObject);
+	  //$this->writeResponseHeader($outputObject)
+	  $this->writeResponseHeader();
 
 	  //write response
 	  ob_end_flush();
@@ -57,7 +58,7 @@
     
 	abstract function writeResponseString($outputObject);
 	
-	private function writeResponseHeader($outputObject) {
+	private function writeResponseHeader() {
 
     //insert headers to enable CORS
 	  header("Access-Control-Allow-Origin: *");
@@ -81,7 +82,7 @@
 	  
 	}
 	
-    private function getResponseSatusCode($outputObject) {
+    private function getResponseStatusCode($outputObject) {
         
 	  //set return status code
       $statusCode = 200;
@@ -114,5 +115,3 @@
     }
     
   }
-
-?>

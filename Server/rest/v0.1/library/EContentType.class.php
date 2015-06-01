@@ -5,5 +5,3 @@
     const XML = "application/xml";
     //const JS = "application/javascript";
   }
-
-?>

@@ -13,5 +13,3 @@ class RepeatBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

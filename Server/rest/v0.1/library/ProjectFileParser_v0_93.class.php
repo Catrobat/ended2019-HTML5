@@ -52,7 +52,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					case "ForeverBrick":      //"loopEndlessBrick"
 						//$loopEndBrick = $script->loopEndBrick;
 						$brick = new ForeverBrickDto();
-						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using eqaul or operator (===) is not available in simleXML
+						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using equal or operator (===) is not available in simpleXML
 						$idx++;
 						
 						//search for associated end brick
@@ -106,7 +106,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 									array_push($bricks, $brick);
 									$this->bricksCount -= 1;
 									//$idx++;
-									break;;
+									break;
 								}
 								else {
 									$nestedCounter--;
@@ -398,7 +398,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 				if (property_exists($script, "pointedObject")) {
 						$pointedTo = $this->getObject($script->pointedObject, $this->cpp);  //type of Sprite = <object />
 						$name = $this->getName($pointedTo);
-						//detect id by object name (unique): all spritees are already pre-parsed with id and name
+						//detect id by object name (unique): all sprites are already pre-parsed with id and name
 						foreach($this->sprites as $s) {
 							if ($s->name === $name) {
 								$spriteId = $s->id;
@@ -484,7 +484,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
 					array_push($this->cpp, $fl);
 					/*$text = (string)$script->formulaList->formula->value;
 					$fileName = md5($text).".mp3";
-					//speak mp3 preloading
+					//speak mp3 pre-loading
 					$res = $this->findResourceInArray("tts/" . $fileName, $this->sounds); //= false, if not found
 					if($res === false) {
 						$id = $this->getNewId();
@@ -619,5 +619,3 @@ class ProjectFileParser_v0_93 extends ProjectFileParser {
   }
     
 }
-
-?>

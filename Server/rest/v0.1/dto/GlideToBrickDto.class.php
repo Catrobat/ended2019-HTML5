@@ -16,5 +16,3 @@ class GlideToBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

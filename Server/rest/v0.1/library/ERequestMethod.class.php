@@ -7,5 +7,3 @@
     const POST = "POST";
     const DELETE = "DELETE";
   }
-
-?>

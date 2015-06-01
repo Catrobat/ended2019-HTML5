@@ -8,5 +8,3 @@ class ClearGraphicEffectBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

@@ -134,11 +134,11 @@ require_once("BaseController.class.php");
           mkdir($cacheDir . $projectId, 0777, true);
         }
         
-        $newfile = $cacheDir . $projectId . DIRECTORY_SEPARATOR . $projectId . ".catrobat";
+        $newFile = $cacheDir . $projectId . DIRECTORY_SEPARATOR . $projectId . ".catrobat";
 
-        if (copy($projectProtocol . $projectHost . $projectUrl, $newfile)) {
+        if (copy($projectProtocol . $projectHost . $projectUrl, $newFile)) {
           //success
-          $projectFilePath = $newfile;
+          $projectFilePath = $newFile;
         }
         else {
           throw new ProjectNotFoundException($projectId);
@@ -203,7 +203,7 @@ require_once("BaseController.class.php");
           throw new Exception("error extracting project (zip) file: " . $e);
         }
         
-        //convert + save precreated project
+        //convert + save pre-created project
         if (!is_file($cacheDir . "code.xml"))
           throw new Exception("code file not found: " . $cacheDir . "code.xml");
           
@@ -252,7 +252,7 @@ require_once("BaseController.class.php");
           fclose($fp);
         //}
       }
-      else {    //load precreated project
+      else {    //load pre-created project
         //load from cache
         $filePath = $cacheDir . "code.cache";           //TODO: if ($this->request->dataUrls) -> load cached? mp3 and media formats?
         if (file_exists($filePath)){
@@ -294,10 +294,8 @@ require_once("BaseController.class.php");
       $offset = 0;
       $limit = 20;
       $mask = "recent";   //TODO: define and set default: downloads, views, age
-      $order = "ASC";
-      $total = 0;
       
-      //process request paramters
+      //process request parameters
       if (isset($this->request->requestParameters["offset"]))
         $offset = $this->request->requestParameters["offset"];
       
@@ -418,5 +416,3 @@ require_once("BaseController.class.php");
     }
 
   }
-
-?>

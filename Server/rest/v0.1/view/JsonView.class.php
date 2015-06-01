@@ -12,5 +12,3 @@
       echo json_encode($outputObject);
 	}
   }
-
-?>

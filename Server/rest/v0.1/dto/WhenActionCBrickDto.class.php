@@ -12,5 +12,3 @@ class WhenActionCBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

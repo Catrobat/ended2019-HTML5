@@ -8,5 +8,3 @@ class ComeToFrontBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

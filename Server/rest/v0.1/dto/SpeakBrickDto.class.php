@@ -11,5 +11,3 @@ class SpeakBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

@@ -10,5 +10,3 @@ class SetBrightnessBrickDto extends SetGraphicEffectBrickDto {
   }
 
 }
-
-?>

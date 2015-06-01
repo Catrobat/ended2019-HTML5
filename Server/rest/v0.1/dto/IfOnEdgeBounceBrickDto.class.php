@@ -8,5 +8,3 @@ class IfOnEdgeBounceBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

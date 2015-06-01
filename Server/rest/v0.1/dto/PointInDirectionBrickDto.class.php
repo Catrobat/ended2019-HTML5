@@ -12,5 +12,3 @@ class PointInDirectionBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

@@ -10,5 +10,3 @@ class ForeverCBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

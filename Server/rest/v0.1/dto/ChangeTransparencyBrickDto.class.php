@@ -11,5 +11,3 @@ class ChangeTransparencyBrickDto extends ChangeGraphicEffectBrickDto {
   }
 
 }
-
-?>

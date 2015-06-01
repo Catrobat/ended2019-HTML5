@@ -11,5 +11,3 @@ class WaitBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

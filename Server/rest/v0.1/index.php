@@ -4,26 +4,31 @@
   spl_autoload_register(function ($className) {
     $className = ucfirst($className);
     if (preg_match('/[a-zA-Z]+Controller$/', $className)) {
-        include __DIR__ . '/controller/' . $className . '.class.php';
+      /** @noinspection PhpIncludeInspection */
+      include __DIR__ . '/controller/' . $className . '.class.php';
         return true;
     } elseif (preg_match('/[a-zA-Z]+Model$/', $className)) {
-        include __DIR__ . '/model/' . $className . '.class.php';
+      /** @noinspection PhpIncludeInspection */
+      include __DIR__ . '/model/' . $className . '.class.php';
         return true;
     } elseif (preg_match('/[a-zA-Z]+View$/', $className)) {
-        include __DIR__ . '/view/' . $className . '.class.php';
+      /** @noinspection PhpIncludeInspection */
+      include __DIR__ . '/view/' . $className . '.class.php';
         return true;
     } elseif (preg_match('/[a-zA-Z]+Dto$/', $className)) {
+      /** @noinspection PhpIncludeInspection */
         include __DIR__ . '/dto/' . $className . '.class.php';
         return true;
     } else {
+      /** @noinspection PhpIncludeInspection */
         include __DIR__ . '/library/' . $className . '.class.php';
         return true;
     }
-    return false;
   });
 
   //convert warning into error- getting a stack trace to fix the warning too
-  set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
+  //set_error_handler(function($errno, $errstr, $errfile, $errline, array $errcontext) {
+  set_error_handler(function($errno, $errstr, $errfile, $errline) {
     // error was suppressed with the @-operator
     if (0 === error_reporting()) {
         return false;
@@ -63,7 +68,7 @@
     $view = new $view_name($request);
     
     //handle exceptions
-    if (is_a($result, "Exception")) {   //an exception is not convertable to JSON using json_encode() & this should not be handled in the view
+    if (is_a($result, "Exception")) {   //an exception is not convertible to JSON using json_encode() & this should not be handled in the view
       switch (get_class($result)) {
         case "ServiceNotImplementedException":
           $result = new ExceptionDto("ServiceNotImplementedException", $result->getMessage(), $result->getCode(), $result->getFile(), $result->getLine());
@@ -97,4 +102,3 @@
     $view->render($result);
   }
 
-?> 

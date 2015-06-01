@@ -6,5 +6,3 @@ class LedOnBrickDto extends BaseBrickDto {
         parent::__construct("LedOn");
     }
 }
-
-?>

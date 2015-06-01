@@ -20,7 +20,7 @@ class ProjectFileParser {
     return "s" . $this->id++;
   }
   
-  //text to speeech provider
+  //text to speech provider
   protected $tts = null;
   
   //current parser path: this is an array monitoring the current parser position
@@ -39,7 +39,7 @@ class ProjectFileParser {
     $this->tts = new TextToSpeechProvider($projectId);
 
     $this->simpleXml = $simpleXml;
-    array_push($this->cpp, $simpleXml); //[0]: rrot path 
+    array_push($this->cpp, $simpleXml); //[0]: root path
   }
 
 
@@ -77,7 +77,7 @@ class ProjectFileParser {
       //sprites
       array_push($this->cpp, $this->simpleXml->objectList);
       
-      //init all objects including new id and name to achive referencing objects during parsing:
+      //init all objects including new id and name to archive referencing objects during parsing:
       $bg = true;   //1st entry = background
       foreach($this->simpleXml->objectList->children() as $sprite) {
         $sprite = $this->getObject($sprite, $this->cpp);    //take care: this can be a referenced object as well
@@ -113,7 +113,7 @@ class ProjectFileParser {
           }
 
           $id = $this->sprites[$idx]->id;
-          //override existing object with completly parsed sprite
+          //override existing object with completely parsed sprite
           $this->sprites[$idx] = $this->parseSprite($sprite, $id);  
         }
       }
@@ -343,7 +343,7 @@ class ProjectFileParser {
 					case "ForeverBrick":      //"loopEndlessBrick"
 						//$loopEndBrick = $script->loopEndBrick;
 						$brick = new ForeverBrickDto();
-						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using eqaul or operator (===) is not available in simleXML
+						$nestedCounter = 0;   //use a counter ob nested elements with same name as comparison of objects using equal or operator (===) is not available in simpleXML
 						$idx++;
 						
 						//search for associated end brick
@@ -395,7 +395,7 @@ class ProjectFileParser {
 									array_push($bricks, $brick);
 									$this->bricksCount -= 1;
 									//$idx++;
-									break;;
+									break;
 								}
 								else {
 									$nestedCounter--;
@@ -710,7 +710,7 @@ class ProjectFileParser {
 					$f = new FormulaDto("STRING", $text); //to make this brick compatible with v0.93
 						 
 					/*$fileName = md5($text).".mp3";
-					//speak mp3 preloading
+					//speak mp3 pre-loading
 					$res = $this->findResourceInArray("tts/" . $fileName, $this->sounds); //= false, if not found
 					if($res === false) {
 						$id = $this->getNewId();
@@ -843,5 +843,3 @@ class ProjectFileParser {
   }
   
 }
-
-?>

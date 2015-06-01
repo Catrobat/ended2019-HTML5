@@ -2,5 +2,3 @@
 
 class FileParserException extends Exception
 {}
-
-?>

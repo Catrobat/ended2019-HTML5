@@ -3,6 +3,7 @@
 require_once("BaseController.class.php");
 require_once("ProjectsController.class.php");
 
+/** @noinspection PhpInconsistentReturnPointsInspection */
 class FileController extends BaseController
 {
   const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
@@ -16,7 +17,7 @@ class FileController extends BaseController
   {
     parent::__construct($request); // call parent constructor to set request method
     $this->language = "en"; //default lang
-    $request->responseType = "application/file"; // Overide default responsetype => to get FileView
+    $request->responseType = "application/file"; // Override default responseType => to get FileView
   }
 
   public function get()
@@ -94,18 +95,11 @@ class FileController extends BaseController
   }
 
 	private function convertImage() {
-		$fileName = "screenshot";
 		$base64string = "";
-		if (isset($_GET['fileName'])) {
-      $fileName = $_GET['fileName'];
-    }
 		if (isset($_GET['base64string'])) {
       $base64string = $_GET['base64string'];
     }
 
-    if (isset($_POST['fileName'])) {
-      $fileName = $_POST['fileName'];
-    }
     if (isset($_POST['base64string'])) {
       $base64string = $_POST['base64string'];
     }
@@ -120,12 +114,12 @@ class FileController extends BaseController
 		$base64string = 'data://' . substr($base64string, 5);	//php needs "data://" canvas toDataURL() provides "data:" only
 		//return base64_decode($base64string);
     //var_dump( $base64string );
-		//If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into plusses. If you do not do that, the decoded data is corrupted
+		//If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into pluses. If you do not do that, the decoded data is corrupted
 		$encodedData = str_replace(' ','+',$base64string);
     //var_dump( base64_decode($encodedData) );
 		//$decodedData =
     return $encodedData;
-		return base64_decode($encodedData);
+		//return base64_decode($encodedData);
 
 /*		$extensions = array(
 			IMAGETYPE_GIF => "gif",
@@ -178,6 +172,7 @@ echo $mime_type;
     if(empty($this->text))
       return "";
     $this->mp3 = file_get_contents($this->getParsedUrl());
+    return null;
   }
 
   // Cut words, that text is under 100 letter
@@ -195,7 +190,3 @@ echo $mime_type;
     return implode(array_slice($parts, 0, $last_part));
   }
 }
-
-
-
-?>

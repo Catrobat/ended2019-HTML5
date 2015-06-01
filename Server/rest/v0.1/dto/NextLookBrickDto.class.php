@@ -8,5 +8,3 @@ class NextLookBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

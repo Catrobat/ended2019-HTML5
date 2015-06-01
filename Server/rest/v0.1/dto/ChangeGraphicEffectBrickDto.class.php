@@ -15,5 +15,3 @@ class ChangeGraphicEffectBrickDto extends BaseBrickDto {
   }
 
 }
-
-?>

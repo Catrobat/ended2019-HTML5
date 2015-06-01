@@ -1,16 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Michael Pittner
- * Date: 04.05.2015
- * Time: 18:03
- */
 
 class FileView {
 
   public function render($outputObject)
   {
-    //var_dump( "aaaa" );
     if( $outputObject instanceof ExceptionDto )
     {
       // Error handling - show exception

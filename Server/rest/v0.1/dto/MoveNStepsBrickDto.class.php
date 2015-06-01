@@ -12,5 +12,3 @@ class MoveNStepsBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

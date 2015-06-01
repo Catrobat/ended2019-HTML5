@@ -8,5 +8,3 @@ class ShowBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>
