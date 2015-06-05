@@ -377,10 +377,6 @@ class ProjectsController extends BaseController
 
     switch($mask)
     {
-      //case "recent":
-      //  $url .= "recent.json";
-      //  break;
-
       case "downloads":
         $url .= "mostDownloaded.json";
         break;
