@@ -67,11 +67,15 @@ QUnit.test("TestRequestAllProjects", function(assert) {
   var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET);
   assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successfull");
 
+  var ids = [];
+
   var onLoadSingleProjectHandler = function(e, id)
   {
     var receivedProject = e.responseJson;
-    assert.ok(receivedProject instanceof Object, 'project [' + id + ']: received object is valid');
-    assert.equal(receivedProject.id, id, 'correct project (id) received');
+    assert.ok(receivedProject instanceof Object, 'project [' + receivedProject.id + ']: received object is valid');
+    assert.ok(ids.indexOf(receivedProject.id) != -1, 'received project (id) was requested');
+    ids.splice(receivedProject.id);
+    assert.notOk(ids.indexOf(receivedProject.id) == -1, 'received project (id) handeled... finish!')
   };
 
   var onLoadAllProjectsHandler = function(e)
@@ -97,6 +101,7 @@ QUnit.test("TestRequestAllProjects", function(assert) {
       var project = projects[i];
       var urlSingleProject = PocketCode.Services.PROJECT;
       var params = { id : project['id'] };
+      ids.push(parseInt(project['id']));
       var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
       srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
       console.log('requesting project [' + project['id'] + ']: ' + project['title']);
