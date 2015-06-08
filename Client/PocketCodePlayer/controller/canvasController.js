@@ -38,6 +38,7 @@ PocketCode.CanvasController = (function () {
         }
 
         this._view.fabricCanvas.renderAll();
+
     }
 
 
@@ -49,7 +50,15 @@ PocketCode.CanvasController = (function () {
             }
             //enumerable: false,
             //configurable: true,
+        },
+        sprites :
+        {
+            set: function(sprites) {
+                // TODO invalid arg exception if no array (instanceof)
+                // clear all sprites , then create
+            }
         }
+
     });
 
     // events
@@ -76,6 +85,11 @@ PocketCode.CanvasController = (function () {
                 return this._onResize;
             }
         },
+        onSpriteClicked: {
+            get: function() {
+                return this._view.onSpriteClicked;
+            }
+        }
         //enumerable: false,
         //configurable: true,
     });
@@ -84,7 +98,7 @@ PocketCode.CanvasController = (function () {
     CanvasController.prototype.merge({
 
         downloadCanvas: function(scale) {
-            this._view.fabricCanvas.toDataURL({multiplier:scale});
+            return this._view.fabricCanvas.toDataURL({multiplier:scale});
         }
 
 

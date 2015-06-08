@@ -14,6 +14,7 @@ PocketCode.Ui.PlayerViewport = (function () {
         SmartJs.Ui.Control.call(this, 'div', props);
 
         this._canvas = document.createElement('canvas');
+        this._canvas.className = 'pc-canvas';
         var cheight = 460;
         var cwidth = 320;
         var cvprops = {width: cwidth, height: cheight,containerClass:'canvas-container', selection: false, skipTargetFind: false,perPixelTargetFind: true, renderOnAddRemove: false, stateful: false};
@@ -41,13 +42,16 @@ PocketCode.Ui.PlayerViewport = (function () {
         //this._scalingFactor = 1;  //set when added to DOM (onResize)
 
         //this._canvas.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
-        window.addEventListener('resize', this.render.bind(this));
-        this._fabricCanvas.on('mouse:up', function(e) {
+        var _self = this;
+
+        window.addEventListener('resize', this._updateScaling.bind(this)); // remove bind
+        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
+        this._fabricCanvas.on('mouse:down', function(e) {
             if(typeof e.target != 'undefined'){
-                console.log(e.target);
-                //_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+                _self.onSpriteClicked.dispatchEvent({id: e.target.id});
             }
         });
+        this._onSpriteClicked = new SmartJs.Event.Event(this);
         this._fabricCanvas.on('after:render', this._drawAxes.bind(this));
         this._updateScaling();
 
@@ -109,25 +113,34 @@ PocketCode.Ui.PlayerViewport = (function () {
     Object.defineProperties(PlayerViewport.prototype, {
         onResize: {
             get: function () {
-                console.log('onres');
                 return this._onResize;
             }
         },
             //enumerable: false,
             //configurable: true,
+        onSpriteClicked: {
+            get: function () {
+                return this._onSpriteClicked;
+            }
+        },
         });
 
     //methods
     PlayerViewport.prototype.merge({
+        _onResizeHandler: function() {
+            console.log('onresizehandler');
+            // TODO set height, width of canvas
+            // TODO rerender canvas
+        },
+
         _updateScaling: function () {
-            //this._updateScalingFactor();
             this._scalingFactor = Math.min(this.height / this._originalHight, this.width / this._originalWidth);
 
             //update ui layout
-            //this._canvasHeight = Math.floor(this._originalHeight * this._scalingFactor);
-            //this._canvasWidth = Math.floor(this._originalWidth * this._scalingFactor);
-            this.width = window.innerWidth;
-            this.height = window.innerHeight;
+            this._canvasHeight = Math.floor(this._originalHeight * this._scalingFactor);
+            this._canvasWidth = Math.floor(this._originalWidth * this._scalingFactor);
+            //this.width = window.innerWidth;
+            //this.height = window.innerHeight;
             //this.style.margin = 0;
             this._canvasWidth = this._fabricCanvas.width;
             this._canvasHeight = this._fabricCanvas.height;
@@ -136,19 +149,16 @@ PocketCode.Ui.PlayerViewport = (function () {
 
             var style = this._fabricCanvas.wrapperEl.style;
             style.position = 'absolute';
-            style.top = '50%';
-            style.left = '50%';
+            //style.top = '50%';
+            //style.left = '50%';
             style.height = this._canvasHeight + 'px';
             style.width = this._canvasWidth + 'px';
-            style.marginTop = -Math.floor((this._canvasHeight) / 2) + 'px';
-            style.marginLeft = -Math.floor((this._canvasWidth) / 2) + 'px';
+            //style.marginTop = -Math.floor((this._canvasHeight) / 2) + 'px';
+            //style.marginLeft = -Math.floor((this._canvasWidth) / 2) + 'px';
 
             console.log("update");
             this.render();
         },
-        //_updateScalingFactor: function () {
-        //    this._scalingFactor = Math.min(this.height / this._originalHight, this.width / this._originalWidth);
-        //},
         toDataUrl: function () {
             return this._canvas.toDataURL('image/png');
             //TODO: create a new canvas with original size and scaling=1 to get a screenshot in the original size

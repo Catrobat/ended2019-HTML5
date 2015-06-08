@@ -199,20 +199,23 @@
 			overflow: hidden;
 		}
 
-
+*/
 .pc-playerViewport {
 	border: 0;
+	width: 100%;
+	height: 100%;
+	position: relative;
 }
-.pc-playerViewport canvas {
+.pc-canvas {
 	border: 0;
 	padding: 0;
 	margin: 0;
-	background-color: #FFFFFF;
+	/*background-color: #FFFFFF;*/
 }
-*/
 
 
-/* opup test */
+
+/* popup test */
 .pc-col50 {
 	display: table-cell;
 	width: 50%;
