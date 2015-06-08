@@ -2,5 +2,3 @@
 
 class ServiceNotImplementedException extends BadMethodCallException
 {}
-
-?>

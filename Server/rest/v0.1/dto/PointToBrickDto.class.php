@@ -11,5 +11,3 @@ class PointToBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

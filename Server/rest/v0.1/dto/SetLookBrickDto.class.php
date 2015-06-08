@@ -12,5 +12,3 @@ class SetLookBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

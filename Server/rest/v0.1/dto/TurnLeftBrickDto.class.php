@@ -12,5 +12,3 @@ class TurnLeftBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

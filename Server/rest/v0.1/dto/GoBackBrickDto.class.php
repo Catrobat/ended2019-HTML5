@@ -12,5 +12,3 @@ class GoBackBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

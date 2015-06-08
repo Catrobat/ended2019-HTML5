@@ -12,5 +12,3 @@ class ChangeVolumeBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

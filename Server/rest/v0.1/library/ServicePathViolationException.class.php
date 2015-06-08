@@ -2,5 +2,3 @@
 
 class ServicePathViolationException extends BadMethodCallException
 {}
-
-?>

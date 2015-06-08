@@ -10,5 +10,3 @@ abstract class BaseBrickDto {
   }
     
 }
-
-?>

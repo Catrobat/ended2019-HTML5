@@ -9,5 +9,3 @@
     const BRIGHTNESS = "brightness";
     const GHOST = "ghost";
   }
-
-?>

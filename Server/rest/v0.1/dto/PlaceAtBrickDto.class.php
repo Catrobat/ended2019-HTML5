@@ -14,5 +14,3 @@ class PlaceAtBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

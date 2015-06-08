@@ -165,6 +165,31 @@ function play() {
 
 }
 
+function changePopupBorder(style) {
+
+    var popupElement = document.getElementById("pc-popup");
+    var popupHeader  = document.getElementById("pc-popupHeader");
+
+    if (style == "error") {
+        popupElement.style.border = "solid 2px";
+        popupElement.style.borderColor = "#A31515";
+        popupHeader.style.color = "#A31515";
+        popupHeader.style.borderBottom = "2px solid #A31515";
+    }
+    if (style == "warning") {
+        popupElement.style.border = "solid 2px";
+        popupElement.style.borderColor = "#EF7716";
+        popupHeader.style.color = "#EF7716";
+        popupHeader.style.borderBottom = "2px solid #EF7716";
+    }
+    if (style == "default") {
+        popupElement.style.border = "solid 0px";
+        popupHeader.style.color = "#31BAEC";
+        popupHeader.style.borderBottom = "2px solid #31BAEC";
+    }
+
+}
+
 function launchProject(projectId) {
 
 	//if (PocketCode.Web.isTablet || PocketCode.Web.isMobile) {

@@ -14,5 +14,3 @@ class IfThenElseCBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

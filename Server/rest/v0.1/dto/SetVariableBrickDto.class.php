@@ -13,5 +13,3 @@ class SetVariableBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

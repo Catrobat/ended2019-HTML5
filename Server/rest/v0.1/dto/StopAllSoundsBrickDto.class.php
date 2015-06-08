@@ -8,5 +8,3 @@ class StopAllSoundsBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

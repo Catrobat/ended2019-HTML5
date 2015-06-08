@@ -10,5 +10,3 @@ class ProgramStartBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

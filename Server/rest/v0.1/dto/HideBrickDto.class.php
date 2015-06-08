@@ -8,5 +8,3 @@ class HideBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

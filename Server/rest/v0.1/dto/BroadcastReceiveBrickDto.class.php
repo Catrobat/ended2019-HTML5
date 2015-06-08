@@ -13,5 +13,3 @@ class BroadcastReceiveBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

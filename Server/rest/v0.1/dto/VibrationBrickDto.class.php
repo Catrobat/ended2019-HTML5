@@ -10,5 +10,3 @@ class VibrationBrickDto extends BaseBrickDto {
         $this->duration = $duration;
     }
 }
-
-?>

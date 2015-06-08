@@ -12,5 +12,3 @@ class PlaySoundBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

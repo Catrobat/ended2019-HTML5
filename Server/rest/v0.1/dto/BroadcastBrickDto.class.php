@@ -12,5 +12,3 @@ class BroadcastBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>

@@ -12,5 +12,3 @@ class SetSizeToBrickDto extends BaseBrickDto {
   }
   
 }
-
-?>
