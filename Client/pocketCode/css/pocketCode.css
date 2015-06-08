@@ -210,3 +210,59 @@
 	background-color: #FFFFFF;
 }
 */
+
+
+/* opup test */
+.pc-col50 {
+	display: table-cell;
+	width: 50%;
+}
+
+.pc-popup {
+    width: 500px;   /* this value will be set in script depending on the device width - test only*/
+	/*max-width: 400px;
+	*/max-height: 600px;
+	display: table;
+	border-spacing: 10px;
+	color: #A9DCF1;
+	background-color: #05222a;
+    text-align: center;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+.pc-popupErrorBorder {
+    border-color: #A31515;
+}
+.pc-popupWarningBorder {
+	border-color: #EF7716;
+}
+.pc-popupHeader, .pc-popupBody, .pc-popupFooter {
+	display: table-cell;
+}
+.pc-popupHeader {
+    border-bottom: 1px solid #A9DCF1;
+
+    padding-bottom: 7px;
+    font-size: larger;
+
+}
+.pc-popupbody {
+
+    /* TODO: fontsize color */
+}
+
+.pc-popupFooter {
+    border-top: 1px solid #A9DCF1;
+	white-space: nowrap;
+	padding-top: 10px;
+}
+.pc-popupFooter button {
+	margin-left: 4px;
+    padding: 2px 4px 2px 4px;
+    min-width: 65px;
+    border: solid 2px green;    /* TODO */
+    border-radius: 2px;
+    font-weight: bold;
+    background-color: transparent;
+    color: inherit;
+}
+/* TODO button hover/active/disabled states and colors */

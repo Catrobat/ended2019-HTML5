@@ -102,7 +102,7 @@ PocketCode.Bricks.merge({
             },
             _execute: function (callId) {
                 var po = this._pendingOps[callId];
-                po.timer = new SmartJs.Components.Timer(this._duration.calculate(), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                po.timer = new SmartJs.Components.Timer(this._duration.calculate() * 1000, new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
             },
             pause: function () {
                 var po = this._pendingOps;

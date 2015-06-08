@@ -3,9 +3,10 @@
 QUnit.module("core.js");
 
 
-QUnit.test("[missing]", function (assert) {
+QUnit.test("core framework", function (assert) {
 
-    assert.ok(true, "TODO:");
+    var compatible = PocketCode.isPlayerCompatible();
+    assert.ok(compatible.result, "browser compatibility check");
 
 });
 

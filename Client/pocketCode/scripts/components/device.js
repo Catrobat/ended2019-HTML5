@@ -19,16 +19,16 @@ PocketCode.Device = (function () {
         this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
 
         //init state variables: http://www.html5rocks.com/en/tutorials/device/orientation/
-        this._compass = 0;
-        this._alpha = 0;
-        this._beta = 0;
-        this._gamma = 0;
+        this._compass = null;
+        this._alpha = null;
+        this._beta = null;
+        this._gamma = null;
 
-        this._x = 0;
-        this._y = 0;
-        this._z = 0;
+        this._x = null;
+        this._y = null;
+        this._z = null;
 
-        this._rotationRate = 0;
+        this._rotationRate = null;
 
         //sensor support
         this._sensorSupport = {
@@ -51,16 +51,22 @@ PocketCode.Device = (function () {
         };
 
         //bind events
-        if (window.DeviceOrientationEvent) {    //TODO: (Armend) this should not be executed on desktop -> it is on e.g. Firefox
+        if (window.DeviceOrientationEvent) {
             this._addDomListener(window, 'deviceorientation', this._deviceorientationChangeHandler);
-            this._sensorSupport.COMPASS_DIRECTION = true;
-            //TODO: (Armend) set supported sensons to true (like compass above)
+            if (this._gamma != null || this._alpha != null || this._beta != null) { //checks if there is sensor data if not sensors are not supported
+                this._sensorSupport.COMPASS_DIRECTION = true;
+                this._sensorSupport.X_INCLINATION = true;
+                this._sensorSupport.Y_INCLINATION = true;
+            }
         }
-        if (window.DeviceMotionEvent) {    //TODO: (Armend) this should not be executed on desktop -> it is on e.g. Firefox
+        if (window.DeviceMotionEvent) {
             this._addDomListener(window, 'devicemotion', this._devicemotionChangeHandler);
-            //TODO: (Armend) set supported sensons
+            if (this._rotationRate != null){    //checks if there is sensor data to properly set sensors if no data sensors are not supported
+                this._sensorSupport.X_ACCELERATION = true;
+                this._sensorSupport.Y_ACCELERATION = true;
+                this._sensorSupport.Z_ACCELERATION = true;
+            }
         }
-
     }
 
     //properties

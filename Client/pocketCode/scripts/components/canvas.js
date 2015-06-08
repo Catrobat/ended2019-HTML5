@@ -15,7 +15,7 @@ PocketCode.Canvas = (function(){
 		var _self = this;
 		this._canvas.on('mouse:down', function(e) {
 			if(typeof e.target != 'undefined'){
-				console.log(e.target.id);
+				//console.log(e.target.id);
 				_self._onSpriteClicked.dispatchEvent({id: e.target.id});
 			}
 		});
@@ -179,7 +179,7 @@ PocketCode.Canvas = (function(){
 		setZoomfactor: function(zoomfactor){
 			this._zoomfactor = zoomfactor;
 		},
-		
+
 		/**
 		 * draws axes on the canvas
 		 */
@@ -187,14 +187,14 @@ PocketCode.Canvas = (function(){
 		_drawAxes: function(){
 			this._canvas.getContext('2d').moveTo(this._canvas.getWidth()/2, 0);
 			this._canvas.getContext('2d').lineTo(this._canvas.getWidth()/2, this._canvas.getHeight());
-			
+
 			this._canvas.getContext('2d').moveTo(0, this._canvas.getHeight()/2);
 			this._canvas.getContext('2d').lineTo(this._canvas.getWidth(), this._canvas.getHeight()/2);
-			
+
 			this._canvas.getContext('2d').strokeStyle = "#ff0000";
 			this._canvas.getContext('2d').lineWidth = 5;
-			
-			
+
+
 			this._canvas.getContext('2d').font="15px Arial";
 			this._canvas.getContext('2d').fillStyle= "#ff0000";
 			//center
@@ -205,10 +205,10 @@ PocketCode.Canvas = (function(){
 			//height
 			this._canvas.getContext('2d').fillText("-" + this._canvas.getHeight()/2,this._canvas.getWidth()/2 +10, 15);
 			this._canvas.getContext('2d').fillText(this._canvas.getHeight()/2,this._canvas.getWidth()/2 + 10 ,this._canvas.getHeight() -5);
-			
+
 			this._canvas.getContext('2d').stroke();
 		}
-		
+
 	});
 	
 	return Canvas;

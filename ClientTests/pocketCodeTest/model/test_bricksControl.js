@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.16.0.js" />
+/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
@@ -16,7 +16,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
-    program.background = new PocketCode.Model.Sprite(program);  //to avoid error on start
+    program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
     var b = new PocketCode.Bricks.ProgramStartBrick("device", program, "sprite");
@@ -31,8 +31,9 @@ QUnit.test("ProgramStartBrick", function (assert) {
         handlerCalled++;
     };
 
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    program.execute();
+    program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    program._projectLoaded = true;  //simulate a loaded project
+    program.runProject();
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
     //add a brick container
@@ -72,9 +73,9 @@ QUnit.test("ProgramStartBrick", function (assert) {
     };
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
     //stop so that program can be started again
-    program.stop();
+    program.stopProject();
 
-    program.execute();
+    program.runProject();
 
 });
 
@@ -84,7 +85,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Bricks.WhenActionBrick("device", program, sprite, { action: "action" });
 
     assert.ok(b._device === "device" && b._sprite === sprite && b._action === "action", "brick created and properties set correctly");
@@ -98,7 +99,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     };
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    program._onTabbedAction.dispatchEvent({sprite: sprite});
+    program._onTabbedAction.dispatchEvent({ sprite: sprite });
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
     //add a brick container
@@ -151,8 +152,8 @@ QUnit.test("WaitBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
-    var duration = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
     var b = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
@@ -160,7 +161,7 @@ QUnit.test("WaitBrick", function (assert) {
     assert.ok(b.objClassName === "WaitBrick", "objClassName check");
 
     //alert(b._duration.calculate);
-    assert.equal(b._duration.calculate(), 500, "formula created correctly");
+    assert.equal(b._duration.calculate(), 0.5, "formula created correctly");
 
     var asyncHandler1 = function (e) {
         assert.equal(e.loopDelay, false, "loop delay event arg");
@@ -207,11 +208,11 @@ QUnit.test("WaitBrick", function (assert) {
 
     var test2 = function () {
         b.execute(l1, "s1");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"400","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.4","right":null,"left":null}'));
         b.execute(l1, "s2");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"300","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.3","right":null,"left":null}'));
         b.execute(l1, "s3");
-        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"200","right":null,"left":null}'));
+        b._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.2","right":null,"left":null}'));
         b.execute(l1, "s4");
 
         //test pause
@@ -244,11 +245,11 @@ QUnit.test("WaitBrick", function (assert) {
 
     var l2 = new SmartJs.Event.EventListener(asyncHandler3, this);
 
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"50","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.05","right":null,"left":null}'));
     b2.execute(l2, "s1");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.045","right":null,"left":null}'));
     b2.execute(l2, "s2");
-    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"43","right":null,"left":null}'));
+    b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"0.043","right":null,"left":null}'));
     b2.execute(l2, "s3");
     //b2._duration = new PocketCode.Formula(device, sprite, JSON.parse('{"type":"NUMBER","value":"100","right":null,"left":null}'));
     //b2.execute(l1, "s4");
@@ -483,7 +484,7 @@ QUnit.test("ForeverBrick", function (assert) {
                 //window.setTimeout(function () { _self._return(id, this.loopDelay) }, _self._delay);
                 this._return(id, this.loopDelay);    //LOOP DELAY = FALSE
             },
-            start: function() {
+            start: function () {
                 this._stopped = false;
             },
             stop: function () {
@@ -498,9 +499,9 @@ QUnit.test("ForeverBrick", function (assert) {
     //loop delay = false
     var bca = [];
     var tb = new TestBrick2("device", "sprite");
-    
+
     bca.push(tb);
-    var neverCalled = function() {
+    var neverCalled = function () {
         return;
     };
     //without delay
@@ -555,7 +556,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     var b = new PocketCode.Bricks.IfThenElseBrick("device", sprite, { condition: cond });
@@ -594,7 +595,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     handler1CallId = undefined;
     cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     b._condition = new PocketCode.Formula("device", sprite, cond);
     //check the condition is valid: only for this test case
@@ -683,7 +684,7 @@ QUnit.test("RepeatBrick", function (assert) {
 
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
@@ -723,7 +724,7 @@ QUnit.test("RepeatBrick", function (assert) {
 
         return TestBrick2;
     })();
-    
+
     //test empty not possible
     //loop delay = false
     var bca = [];
@@ -747,7 +748,7 @@ QUnit.test("RepeatBrick", function (assert) {
     b.bricks = new PocketCode.Bricks.BrickContainer(bca);
     var startTime = new Date();
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "n_times");
-    
+
     //with delay
     var testFinishedHandler2 = function (e) {
         //async

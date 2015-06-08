@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="de" class="">
 <head>
-<head>
     <meta charset="utf-8">
     <title>PocketCode Canvas Test</title>
     <link href="../../ClientTests/qunit/qunit-1.16.0.css" rel="stylesheet" />
     <script src="../../ClientTests/qunit/qunit-1.16.0.js"></script>
     <!--script src="../qunit/jquery-2.1.1.min.js"></script-->
 
-    <script src="../../ClientTests/qunit/blanket.min.js"></script>
-
-    <script src="../../Client/pocketCode/libs/soundjs_0.6/soundjs-0.6.0.js"></script>
-    <script src="../../Client/pocketCode/libs/fabrics_1.4.0/fabric.js" ></script>
+    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
+    <script src="../../Client/pocketCode/libs/fabric/fabric-1.4.0.js" ></script>
     <!--script src="../../Client/pocketCode/libs/soundjs_0.6/soundjs-0.6.0..min.js"></script>-->
 
     <script src="../../Client/smartJs/sj.js"></script>
@@ -46,15 +43,15 @@
 	
 	<title>Canvas Drawer</title>
 	<body>
+        <div>
+            <button onClick="updateSprite()"> Update </button>
+            <button onClick="createDataURL()"> Screenshot PNG</button>
+        </div>
 
-        <button onClick="updateSprite()"> Update </button>
-        <button onClick="createDataURL()"> Screenshot PNG</button>
-	<!-- 	 <div id="qunit"></div>
-    <div id="qunit-fixture"></div> -->
-
-        <script src="../../ClientTests/pocketCodeTest/components/test_canvas.js"></script>
-		<canvas id="pcCanvas" width="400" height="600"></canvas>
-
+        <div id="canv">
+            <script src="../../ClientTests/pocketCodeTest/components/test_canvas.js"></script>
+		    <canvas id="pcCanvas" width="400" height="600"></canvas>
+        </div>
 	</body>
 </html>
 

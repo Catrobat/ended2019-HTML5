@@ -159,7 +159,123 @@ QUnit.test("Function.prototype.extends", function (assert) {
 	})();
 	c = new C();
 	assert.ok(c instanceof A && c instanceof BX && c instanceof C, "instanceof (inheritance): without base constructor call in Object.extends()");
-	assert.deepEqual(c.z, { a: 1, b: 2 }, "inheritance without base constructor call in Object.extends()")
+	assert.deepEqual(c.z, { a: 1, b: 2 }, "inheritance without base constructor call in Object.extends()");
+
+	//inheritance with override methods are called from inherited methids
+	var Base = (function () {
+		function Base(x, y) {
+			this.x = x;
+			this.y = y;
+
+			this.a = 0;
+			this.b = 0;
+		};
+		Base.prototype = {
+			start: function () {
+				this.a++;
+			},
+			stop: function () {
+				this.b++;
+			},
+			restart: function () {
+				this.stop();
+				this.start();
+			}
+		};
+		return Base;
+	})();
+
+	C = (function () {
+		C.extends(Base);
+		function C() {
+		};
+		C.prototype.merge({
+			start: function () {
+				this.a += 2;
+			},
+			stop: function () {
+				this.b += 2;
+			},
+		});
+		return C;
+	})();
+
+	var c = new C();
+	c.restart();
+	assert.equal(c.a, 2, "inheritance with override methods are called from inherited methods");
+
+	//using inheritance without ctor call
+	C = (function () {
+		C.extends(Base, false);
+		function C() {
+			Base.call(this);
+		};
+		C.prototype.merge({
+			start: function () {
+				this.a += 2;
+			},
+			stop: function () {
+				this.b += 2;
+			},
+		});
+		return C;
+	})();
+
+	var c = new C();
+	c.restart();
+	c.restart();
+	assert.equal(c.a, 4, "inheritance with override methods are called from inherited methods: 'manual' ctor call");
+
+	//testing superCtor and super->method/prop
+	C = (function () {
+		C.extends(Base, false);
+		function C() {
+			Base.call(this);//Ctor();
+		};
+		C.prototype.merge({
+			start: function () {
+				this.a += 2;
+			},
+			stop: function () {
+				this.b += 2;
+			},
+		});
+		return C;
+	})();
+
+	var c = new C();
+	c.restart();
+	assert.equal(c.a, 2, "inheritance with override methods are called from inherited methods: 'manual' ctor call: this._superCtor property");
+
+	//super method call
+	C = (function () {
+		C.extends(Base, false);
+		function C(x, y) {
+			Base.call(this, x, y);//.call(this);//Ctor();
+		};
+		C.prototype.merge({
+			start: function () {
+				this.a += 2;
+			},
+			stop: function () {
+				this.b += 2;
+			},
+			restart: function () {
+			    Base.prototype.restart.call(this);
+			},
+		});
+		return C;
+	})();
+
+	c = new C("test");
+	assert.equal(c.x, "test", "constructor using 1 argument");
+
+	c = new C("test", 2, 3);
+	assert.ok(c.x == "test" && c.y == 2, "constructor using several arguments");
+
+	c.restart();
+	assert.ok(c.a == 2 && c.b == 2, "test calling super method");
+
 });
 
 
@@ -262,8 +378,8 @@ QUnit.test("Function.prototype.extends (including namespaces)", function (assert
 				//enumerable: false,
 				//configurable: true,
 				set: function (value) {
-				    var temp = value;
-				    return false;
+					var temp = value;
+					return false;
 				},
 			},
 		});

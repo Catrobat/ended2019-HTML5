@@ -87,7 +87,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 	a.dispose();
 	assert.equal(a._id, undefined, "object disposed: id = undefined");
 	assert.equal(a._disposed, true, "object disposed: _disposed = true");
-
+	assert.equal(a.objClassName, "Component", "className after dispose");
 	c = new ns.Y();
 	c.dispose();
 	assert.equal(c._disposed, true, "object disposed (inheritance): _disposed = true");
@@ -95,6 +95,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 
 	//prototype ok after calling dispose: added after refactoring dispose using Object.getPrototypeOf
 	c = new ns.Y();
+	assert.ok(c._disposed !== true, "new object not disposed");
 	assert.ok(c.prop1 === "asd" && c.prop1_ === "jkl", "object disposed: prototype intact after dispose (due to prototypes property dispose)");
 	assert.deepEqual(c.prop2, [1, 2, 3, new Array(4, 5, "asd")], "object disposed: prototype intact after dispose (2)");
 
@@ -212,6 +213,58 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 
 	b = new ns.X({ prop1: 4, prop2: 5, prop3: 6 });
 	assert.ok(b.prop1 == 4 && b.prop2 == 5 && b.prop3 == 6, "merging including inherited properties");
+
+	//dispose
+	ns.PD = (function () {
+		Pd.extends(ns.X);
+
+		function Pd(val1, val2, val3) {
+			ns.X.call(this);
+			this.prop1_ = "jkl";
+			//this.prop2 = [1, 2, 3, new Array(4, 5, "asd")];
+			this.val1 = val1;
+			this.val2 = val2;
+			this.val3 = val3;
+		}
+
+		Object.defineProperties(Pd.prototype, {
+			prop: {
+				get: function () {
+					return this.prop1_;
+				},
+				//enumerable: false,
+				//configurable: true,
+			},
+			prop_2: {
+				value: "asd",
+				writable: true,
+			},
+		});
+
+		return Pd;
+	})();
+
+	ns.Y = (function () {
+		Y.extends(ns.PD, false);
+
+		function Y() {
+		    ns.PD.call(this, "1", 2);
+			this.prop1_ = "jkl";
+			this.prop_2 = "initialized";
+			//this.prop2 = [1, 2, 3, new Array(4, 5, "asd")];
+		}
+		return Y;
+	})();
+
+	var test = new ns.Y();
+	var test2 = new ns.Y();
+	assert.ok(test.val1 === "1" && test.val2 === 2 && test.val3 === undefined, "ctr with arguments using superCtor");
+	test.dispose();
+	assert.ok(test.val1 === undefined && test.val2 === undefined && test.val3 === undefined && test.prop === undefined && test.prop_2 === "asd", "properties cleared correctly during dispose");
+	assert.ok(test2.val1 === "1" && test2.val2 === 2 && test2.val3 === undefined, "dispose: not effecting existing other objects");
+
+	var test = new ns.Y();
+	assert.ok(test.val1 === "1" && test.val2 === 2 && test.val3 === undefined && test.prop_2 === "initialized", "recreated: ctr with arguments using superCtor");
 
 });
 

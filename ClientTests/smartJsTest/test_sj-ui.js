@@ -10,9 +10,36 @@ QUnit.module("sj-ui.js");
 
 QUnit.test("SmartJs.Ui.Window", function (assert) {
 
-    var vp = SmartJs.Ui.Window;
-    assert.ok(true, "TODO");
+    assert.throws(function () { var window = new SmartJs.Ui.Window(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { SmartJs.Ui.Window instanceof SmartJs.Ui.Window }, Error, "ERROR: static class: no instanceof allowed");
 
+    var win = SmartJs.Ui.Window;
+
+    //disposing without efect on the object
+    var visible = win._visible;
+    win.dispose()
+    assert.ok(win._visible != undefined && win._visible === visible, "dispose: no effect");
+
+    assert.ok(win instanceof SmartJs.Core.EventTarget, "instance + inheritance check"); //win instanceof SmartJs.Ui.Window && 
+    assert.ok(win.objClassName === "Window", "objClassName check");
+
+    assert.ok(win.onResize instanceof SmartJs.Event.Event, "onResize event accessor");
+    assert.ok(win.onVisibilityChange instanceof SmartJs.Event.Event, "onVisibilityChange event accessor");
+
+    win.title = "new window title";
+    assert.equal(win.title, "new window title", "title getter/setter");
+
+    var handlerCalled = 0;
+    var visHandler = function (e) {
+        handlerCalled = 1;
+    };
+    win.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(visHandler, this));
+    win._visibilityChangeHandler({});   //simulate event
+    assert.equal(handlerCalled, 1, "visibility change dispatched");
+    assert.equal(win.visible, true, "check visibility accessor");
+
+    assert.ok(win.height > 0, "height accessor");
+    assert.ok(win.width > 0, "width accessor");
 });
 
 

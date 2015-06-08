@@ -35,6 +35,9 @@ SmartJs.Core.Component = (function () {
 
     Component.prototype.merge({
         __dispose: function (protoDispose) {
+            //delete this._super;
+            //delete this._superCtor;
+
             //protoDispose = protoDispose || false;
             if (this._disposing || this._disposed) return;     //already disposed
             this._disposing = true;
@@ -45,7 +48,7 @@ SmartJs.Core.Component = (function () {
                 if (protoDispose && typeof this[prop] === 'function')
                     continue;
 
-                if (this[prop] && this[prop].dispose && typeof this[prop].dispose === 'function') {
+                if (this[prop] && this[prop].dispose && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) {
                     this[prop].dispose();
                 }
 
@@ -60,12 +63,15 @@ SmartJs.Core.Component = (function () {
             if (_proto.__dispose)
                 _proto.__dispose(true);
 
+            //if (!protoDispose)
+            //    this._disposed = true;
             delete this._disposing;
             //delete this;  //objects references (this) cannot be deleted or set to undefined
         },
         dispose: function () {
             this.__dispose();
-            delete this.constructor;// = undefined;
+            delete this.constructor;
+            //delete this.constructor;// = undefined;
             this._disposed = true;
         },
         _mergeProperties: function (propertyObject, object) {//, root) {
@@ -78,9 +84,9 @@ SmartJs.Core.Component = (function () {
 
             for (var p in propertyObject) {
                 if (object[p] === undefined)
-                    throw new Error('property "' + p + '" not found in ' + object.objClassName);
+                    throw new Error('_mergeProperties(): property "' + p + '" not found in ' + object.objClassName);
                 if (typeof object[p] === 'function')
-                    throw new Error('setting a method not allowed: property ' + p + ' in ' + object.objClassName);
+                    throw new Error('_mergeProperties(): setting a method not allowed: property ' + p + ' in ' + object.objClassName);
                 //try {
                 if (typeof propertyObject[p] === 'object' && typeof propertyObject[p] !== 'array')
                     this._mergeProperties(propertyObject[p], object[p]);
@@ -122,12 +128,12 @@ SmartJs.Core.EventTarget = (function () {
 
     EventTarget.prototype.merge({
         _addDomListener: function (target, eventName, eventHandler) {
-            //var _self = this;
-            //var handler = function (e) {
-            //    e.stopPropagation();
-            //    return eventHandler.call(_self, e);
-            //};
-            var handler = eventHandler.bind(this);
+            var _self = this;
+            var handler = function (e) {
+                e.stopPropagation();
+                return eventHandler.call(_self, e);
+            };
+            //var handler = eventHandler.bind(this);
             target.addEventListener(eventName, handler, false);
             return handler;
         },

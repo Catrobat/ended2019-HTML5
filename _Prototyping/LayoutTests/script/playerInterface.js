@@ -68,8 +68,6 @@ PocketCode.Web = {
 	},//(),
 	
 	onResizeHandler: function() {
-		//var h = 
-		//console.log('event listener - resize');
 		var style = PocketCode.Web.ViewportContainer.style;
 		var webLayout = document.getElementById('pcWebLayout');
 		var aw = window.innerWidth - 2 * PocketCode.Web.hPixelOffset;	//available width/height	//webLayout.clientWidth

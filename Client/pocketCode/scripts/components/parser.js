@@ -6,41 +6,50 @@
 /// <reference path="../model/bricksMotion.js" />
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksVariables.js" />
+/// <reference path="../model/sprite.js" />
 'use strict';
 
 PocketCode.merge({
 
-    ProgramParser: (function () {
-        function ProgramParser() {
-            this._bricksCount = 0;	//TODO:
-            this._brickFactory = null;//new PocketCode.BrickFactory()
+    SpriteFactory: (function () {
+        function SpriteFactory(device, program, broadcastMgr, soundMgr, totalCount) {
+            //this._bricksCount = bricksCount || 0;
+            this._program = program;
+            this._brickFactory = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, totalCount);
 
-            this._onProgressChange = new SmartJs.Event.Event(this);
+            //we use the brickFactory events here
+            this._onProgressChange = this._brickFactory.onProgressChange;
+            this._onUnsupportedBricksFound = this._brickFactory.onUnsupportedBricksFound;
         }
 
         //events
-        Object.defineProperties(ProgramParser.prototype, {
+        Object.defineProperties(SpriteFactory.prototype, {
             onProgressChange: {
                 get: function () { return this._onProgressChange; },
                 //enumerable: false,
                 //configurable: true,
             },
+            onUnsupportedBricksFound: {
+                get: function () { return this._onUnsupportedBricksFound; },
+                //enumerable: false,
+                //configurable: true,
+            },
         });
 
-        ProgramParser.prototype.parse = function (jsonProgram) {    //, bricksCount) {
-            //this._bricksCount = bricksCount || this._bricksCount;
-
-            if (!this._brickFactory)
-                this._brickFactory = new PocketCode.BrickFactory(this._device, this, this._broadcastMgr, this._bricksCount);
-            else
-                this._brickFactory.bricksCount = this._bricksCount;
-
-            //TODO:
-            //_brickFactory.parseJson(currentSprite, json);
-            return null;
+        SpriteFactory.prototype.create = function (jsonSprite) {
+            if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)
+                throw new Error('invalid argument: expected type: object')
+            
+            var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
+            var bricks = [];
+            for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
+                bricks.push(this._brickFactory.create(sprite, jsonSprite.bricks[i]));
+            }
+            sprite.bricks = bricks;
+            return sprite;
         };
 
-        return ProgramParser;
+        return SpriteFactory;
     })(),
 
 
@@ -157,7 +166,7 @@ PocketCode.merge({
     })(),
 
 
-    FormulaParser: new ((function () {  //static class
+    FormulaParser: (function () {
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -173,7 +182,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                //console.log(formulaString);
+
                 //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
@@ -353,7 +362,6 @@ PocketCode.merge({
                         var stmt = '(' + lString + ' <= ' + rString + ') ? ';
                         stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + rString + '+ 1 -' + lString + ') + ' + lString + ')) : (Math.random() * (' + rString + '-' + lString + ') + ' + lString + ')) : ';
                         stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + lString + '+ 1 -' + rString + ') + ' + rString + ')) : (Math.random() * (' + lString + '-' + rString + ') + ' + rString + '))';
-                        //console.log(stmt);
                         //var test = ((1.0) <= (1.01)) ? (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.01) - (1.0)) + (1.0))) : (Math.random() * ((1.01) - (1.0)) + (1.0))) : (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.0) - (1.01)) + (1.01))) : (Math.random() * ((1.0) - (1.01)) + (1.01)));
 
                         return stmt;
@@ -605,12 +613,16 @@ PocketCode.merge({
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);
                 }
             },
-
+            dispose: function () {
+                //override as a static class cannot be disposed
+            },
         });
 
         return FormulaParser;
-    })())(),
+    })(),
 
 });
 
+//static class: constructor override (keeping code coverage enabled)
+PocketCode.FormulaParser = new PocketCode.FormulaParser();
 

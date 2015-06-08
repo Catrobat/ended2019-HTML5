@@ -7,8 +7,8 @@
 
 PocketCode.merge({
 
-    //_serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
-    _serviceEndpoint: 'http://localhost/rest/v0.1/',    //TODO:
+    _serviceEndpoint: 'https://web-test.catrob.at/rest/v0.1/',    //TODO:
+    //_serviceEndpoint: 'http://localhost/rest/v0.1/',    //TODO:
 
     Services: {
         PROJECT_SEARCH: 'projects',
@@ -28,6 +28,18 @@ PocketCode.merge({
         //ctr
         function ServiceRequest(service, method, properties) {
             SmartJs.Communication.ServiceRequest.call(this, PocketCode._serviceEndpoint);
+
+            this._responseText = '';
+            this._responseJson = {};
+
+            var validService = false;
+            for (var p in PocketCode.Services)
+                if (PocketCode.Services[p] === service) {
+                    validService = true;
+                    break;
+                }
+            if (!validService)
+                throw new Error('unknown service: not part of PocketCode.Services');
 
             this._service = service.replace(/{([^}]*)}/g, function (prop) {
                 var key = prop.substr(1, prop.length - 2);
@@ -52,6 +64,10 @@ PocketCode.merge({
 
             this._progressSupported = true;     //default for our services
             this.method = method;
+
+            //bind to events
+            this._onError.addEventListener(new SmartJs.Event.EventListener(this._storeResponseData, this));
+            this._onLoad.addEventListener(new SmartJs.Event.EventListener(this._storeResponseData, this));
         }
 
         //properties
@@ -69,7 +85,17 @@ PocketCode.merge({
                 get: function () { return this._progressSupported; }
                 //enumerable: false,
                 //configurable: true,
-            }
+            },
+            responseText: {
+                get: function () { return this._responseText; }
+                //enumerable: false,
+                //configurable: true,
+            },
+            responseJson: {
+                get: function () { return this._responseJson; }
+                //enumerable: false,
+                //configurable: true,
+            },
         });
 
         //events
@@ -80,6 +106,16 @@ PocketCode.merge({
         //        //configurable: true,
         //    },
         //});
+
+        //methods
+        ServiceRequest.prototype.merge({
+            _storeResponseData: function (e) {
+                if (e.responseText)
+                    this._responseText = e.responseText;
+                if (e.responseJson)
+                    this._responseJson = e.responseJson;
+            },
+        });
 
         return ServiceRequest;
     })(),
@@ -107,10 +143,8 @@ PocketCode.merge({
         //methods
         JsonpRequest.prototype.merge({
             _onErrorHandler: function (e) {
-                console.log("error: " + this._id);
-                //this._error = e;                  //TODO:
                 this._deleteServiceEndpoint();
-                this._onError.dispatchEvent(e);
+                this._onError.dispatchEvent({}.merge(e));
             },
             _createServiceEndpoint: function () {
                 PocketCode._jsonpClientEndpoint[this._id] = this._handleResponse.bind(this);//, responseText, statusCode);//new Function('responseText', 'statusCode', '');
@@ -126,26 +160,29 @@ PocketCode.merge({
                 head.removeChild(this._script);
                 this._script = undefined;
             },
+            //this method is bound using .bind(this) to keep the requests scope: it's not covered by code coverage!
             _handleResponse: function (responseText, statusCode) {
-                //console.log('receive id: ' + this._id);
                 this._deleteServiceEndpoint();
 
-                this._xhr = { status: statusCode, responseText: responseText };
+                this._xhr = { status: statusCode, responseText: JSON.stringify(responseText) };
                 if (statusCode !== 200) { //this._loaded && 
-                    //console.log("error2 ");
-                    var e = new Error(responseText);
+                    var e = new Error();
+                    e.responseText = JSON.stringify(responseText);
+                    e.responseJson = JSON.parse(e.responseText);
                     e.statusCode = statusCode;
                     this._onError.dispatchEvent(e);
                 }
                 else
-                    //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
                     this._onLoad.dispatchEvent();
             },
-            send: function (data, method, url) {
+            send: function (method, url) {
+                this.sendData(undefined, method, url);
+            },
+            sendData: function (data, method, url) {
 
                 if (this._script)
                     throw new Error('this is an asynchronous request: you\'re not allowed to send it twice (simultanously). Create another instance');
-                //console.log('send id: ' + this._id);
+
                 if (method)
                     this.method = method;
 
@@ -212,15 +249,17 @@ PocketCode.merge({
         return JsonpRequest;
     })(),
 
-    Proxy: new ((function () {	//static
+    Proxy: (function () {
         //each single request has its events, the proxy only maps this events to internal strong typed requests and triggers send()
 
         //ctr
-        function Proxy() { }
+        function Proxy() {
+        }
 
         //methods
         Proxy.prototype.merge({
             send: function (request) {
+                //alert('send');
                 if (!(request instanceof PocketCode.ServiceRequest))
                     throw new Error('invalid argument, expected: request type of PocketCode.ServiceRequest');
 
@@ -233,34 +272,46 @@ PocketCode.merge({
                     url += 'method=' + request.method;
                 }
 
-                if (this._sendUsingXmlHttp(request, method, url));
-                else if (this._sendUsingCors(request, method, url));
-                else (this._sendUsingJsonp(request, method, url));
+                if (this._sendUsingXmlHttp(request, method, url))
+                    return true;
+                else if (this._sendUsingCors(request, method, url))
+                    return true;
+                else
+                    return this._sendUsingJsonp(request, method, url);
             },
-            _mapEventsToStrongTypedRequest: function (reg, requestObject) {
-                //we inject the requests events to the 'read' request (xmlHttp, cors, jsonp) object: as there is no public interface we override the private objects
-                reg._onLoadStart = requestObject._onLoadStart;
-                reg.onLoadTarget = requestObject;   //store request object in strong Tped request to trigger the original event onLoad
-                reg.onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
-                reg._onError = requestObject._onError;
-                //reg._onAbort = requestObject._onAbort;
-                reg._onProgressChange = requestObject._onProgressChange;
+            _mapEventsToStrongTypedRequest: function (req, requestObject) {
+                //we inject the requests events to the 'real' request (xmlHttp, cors, jsonp) object: as there is no public interface we override the private objects
+                req._onLoadStart = requestObject._onLoadStart;
+                req.onLoadTarget = requestObject;   //store request object in strong typed request to trigger the original event onLoad
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadHandler, this));
+                req._onError = requestObject._onError;
+                //req._onAbort = requestObject._onAbort;
+                req._onProgressChange = requestObject._onProgressChange;
+                req._onProgressSupportedChange = requestObject._onProgressSupportedChange;
             },
             _onLoadHandler: function (e) {
                 //check for serverside error -> dispach onerror or onload
+                var textResult = '', jsonResult = {}, exc = {};
                 try {
-                    var result = JSON.parse(e.target.responseText);
+                    //console.log(e.target.responseText);
+                    //result = e.target.responseText;
+                    //result = result.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t").replace(/\f/g, "\\f");    //escape the string
+                    textResult = e.target.responseText;
+                    jsonResult = JSON.parse(textResult);
                 }
-                catch (e) {
-                    result = { type: 'InvalidJsonFormatException' };
+                catch (ex) {
+                    //throw(ex);
+                    exc = ex;
+                    jsonResult.type = 'InvalidJsonFormatException';
                 }
-                if (result.type && result.type.indexOf('Exception') !== -1) {  //TODO: check status code?
+                if (jsonResult.type && jsonResult.type.indexOf('Exception') !== -1) {
                     var err = new Error();
-                    err.merge(e);
-                    err.json = result || {};
+                    err.merge(exc);
+                    err.json = jsonResult || {};
                     e.target._onError.dispatchEvent(err);
+                    return;
                 }
-                e.target.onLoadTarget.onLoad.dispatchEvent({ responseText: e.target.responseText, json: result }); //get original target and trigger on this target
+                e.target.onLoadTarget.onLoad.dispatchEvent({ responseText: textResult, responseJson: jsonResult }); //get original target and trigger on this target
             },
             _sendUsingXmlHttp: function (request, method, url) {
                 var req = new SmartJs.Communication.XmlHttpRequest(url || request.url);
@@ -268,7 +319,7 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
             },
             _sendUsingCors: function (request, method, url) {
@@ -277,21 +328,25 @@ PocketCode.merge({
                     return false;
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
             },
             _sendUsingJsonp: function (request, method, url) {
                 var req = new PocketCode.JsonpRequest(url || request.url);
 
                 this._mapEventsToStrongTypedRequest(req, request);
-                req.send(request.data, method || request.method);
+                req.sendData(request.data, method || request.method);
                 return true;
-            }
+            },
+            dispose: function () {
+                //override as a static class cannot be disposed
+            },
         });
 
         return Proxy;
-    })())()
+    })()
 
 });
 
-
+//static class: constructor override (keeping code coverage enabled)
+PocketCode.Proxy = new PocketCode.Proxy();

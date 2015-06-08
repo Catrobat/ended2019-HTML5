@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -15,11 +15,14 @@
         return;
       }
 
-      var url = 'http://localhost/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
+      var remote = "https://web-test.catrob.at";
+      var local = "http://localhost";
+
+      var url = remote + '/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
 
       if (invocation)
       {
-        invocation.open('GET', url, true);
+          invocation.open('GET', url);//, true);
         invocation.onreadystatechange = handler;
         invocation.send();
       }
@@ -47,17 +50,19 @@
           if (invocation.status == 200)
           {
             console.log('status 200: OK');
-            document.getElementById("textDiv").innerHTML = invocation.response;
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           else if(invocation.status == 404)
           {
             console.log("status 404: page not found...!");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           else
           {
             console.log("status " + invocation.status + ": error, maybe project does not exist?");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
             console.log('---------------------------');
           }
           break;

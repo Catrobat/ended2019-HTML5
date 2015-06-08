@@ -11,7 +11,24 @@ QUnit.module("sj-components.js");
 QUnit.test("SmartJs.Components.Application", function (assert) {
 
 	var app = new SmartJs.Components.Application();
-	assert.ok(true, "TODO");
+	assert.ok(app instanceof SmartJs.Components.Application && app instanceof SmartJs.Core.EventTarget, "instance + inheritance check");
+	assert.ok(app.objClassName === "Application", "objClassName check");
+
+	assert.ok(app.onConnectionStatusChange instanceof SmartJs.Event.Event, "onConnectionStatusChange event");
+
+	var lastEvent;
+	var onConnectionStatusChangeHandler = function (e) {
+		lastEvent = e;
+	};
+	app.onConnectionStatusChange.addEventListener(new SmartJs.Event.EventListener(onConnectionStatusChangeHandler, this));
+	//simulate events
+	app._offlineHandler();
+	assert.equal(app._online, false, "check offline");
+	assert.equal(lastEvent.online, false, "check event arguments");
+
+	app._onlineHandler();
+	assert.equal(app._online, true, "check online");
+	assert.equal(lastEvent.online, true, "check event argument: online");
 
 });
 
@@ -66,7 +83,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		done5();
 
 		var time = 1400 + 4 * 300;
-		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time = 2600 ms +/- 100ms");
+		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time (" + (new Date() - start) + "ms) == 2600 ms +/- 100ms");
 		done6();
 		//console.log("pauseCount: " + pauseCount + ", resumeCount: " + resumeCount);
 		//console.log("finished after: " + (new Date() - start));
@@ -145,7 +162,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	p10.onExpire.addEventListener(new SmartJs.Event.EventListener(testHandler10, this));
 
 	var restart = function () {
-	    assert.ok(remainingRunning <= 19, remainingRunning + " <= 12, test paused timer remaining time");
+		assert.ok(remainingRunning <= 19, remainingRunning + " <= 12, test paused timer remaining time");
 		window.setTimeout(function () { p10.resume(); }, 10);
 	};
 

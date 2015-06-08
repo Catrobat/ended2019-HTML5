@@ -155,6 +155,16 @@ PocketCode.Bricks = {
                     loopDelay: loopDelay
                 });
             },
+            /* override */
+            dispose: function () {
+                if (this.stop)
+                    this.stop();
+                //make sure not all referenced objects get disposed
+                this._device = undefined;
+                this._sprite = undefined;
+                //call super
+                SmartJs.Core.Component.prototype.dispose.call(this);
+            },
         });
 
         return BaseBrick;
@@ -318,8 +328,20 @@ PocketCode.Bricks.RootContainerBrick = (function () {
     function RootContainerBrick(device, sprite) {
         PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
 
+        this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
     }
+
+    //properties
+    Object.defineProperties(RootContainerBrick.prototype, {
+        executionState: {
+            get: function () {
+                return this._executionState;
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+    });
 
     //events
     Object.defineProperties(RootContainerBrick.prototype, {
@@ -341,10 +363,33 @@ PocketCode.Bricks.RootContainerBrick = (function () {
          * execute method is overridden
          */
         execute: function () {
+            this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
+                this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();
             }, this), SmartJs.getNewId());
             //throw new Error('execute() cannot be called directly on root containers')
+        },
+        /**
+         * calls "pause()" on bricks
+         */
+        pause: function () {
+            PocketCode.Bricks.SingleContainerBrick.prototype.pause.call(this);
+            this._executionState = PocketCode.ExecutionState.PAUSED;
+        },
+        /**
+         * calls "resume()" on bricks
+         */
+        resume: function () {
+            this._executionState = PocketCode.ExecutionState.RUNNING;
+            PocketCode.Bricks.SingleContainerBrick.prototype.resume.call(this);
+        },
+        /**
+         * calls "stop()" on bricks and threadedBrick
+         */
+        stop: function () {
+            PocketCode.Bricks.SingleContainerBrick.prototype.stop.call(this);
+            this._executionState = PocketCode.ExecutionState.STOPPED;
         },
     });
 
@@ -400,17 +445,14 @@ PocketCode.Bricks.LoopBrick = (function () {
                 var executionDelay = 0;
                 if (e.loopDelay) {
                     executionDelay = this._minLoopCycleTime - (new Date() - op.startTime);  //20ms min loop cycle time
-                    //console.log("loop delay: ");
                 }
                 op.startTime = new Date();  //re-init for each loop
                 var _self = this;
                 if (executionDelay > 0) {
                     window.setTimeout(this._execute.bind(this, id), executionDelay);
-                    //console.log("delay: " + executionDelay);
                 }
                 else {
                     window.setTimeout(this._execute.bind(this, id), 3);
-                    //console.log("delay: 3");
                 }
             }
             else
@@ -475,7 +517,6 @@ PocketCode.Bricks.UnsupportedBrick = (function () {
     }
 
     UnsupportedBrick.prototype._execute = function () {
-        //console.log('call to unsupported brick: sprite= ' + this._sprite.name + ', xml= ' + this._xml + ', type= ' + this._brickType);
         this._return();
     };
 

@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.16.0.js" />
+﻿/// <reference path="../../qunit/qunit-1.18.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
@@ -26,6 +26,13 @@ QUnit.module("parser.js");
 QUnit.test("FormulaParser: operators", function (assert) {
 
     assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+    assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
+
+    //disposing without efect on the object
+    var isStatic = PocketCode.FormulaParser._isStatic;
+    PocketCode.FormulaParser.dispose()
+    assert.ok(PocketCode.FormulaParser._isStatic != undefined && PocketCode.FormulaParser._isStatic === isStatic, "dispose: no effect");
 
     assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
     assert.equal((PocketCode.FormulaParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
@@ -34,8 +41,8 @@ QUnit.test("FormulaParser: operators", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    program._sprites.push(sprite);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -99,12 +106,12 @@ QUnit.test("FormulaParser: functions", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
-    
+
     f.json = sin;
-    assert.equal(f.calculate(), 1, "calc sin (deg)");
+    assert.equal(Math.round(f.calculate() * 100) / 100, 1, "calc sin (deg)");
     assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
     assert.equal(f.uiString, "sin(90)", "string sin");
 
@@ -121,7 +128,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
     assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
     assert.equal(f.uiString, "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
-    assert.ok(f.uiString.substr(0,7), "tan(pi ", "string tan");
+    assert.ok(f.uiString.substr(0, 7), "tan(pi ", "string tan");
 
     f.json = tan2;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (deg)");
@@ -223,12 +230,12 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     f.json = stringPlus;    //TODO: catrobat does not allow a string cocatenation using a + operator showing an error but allowing to save this
-                            //unless this isn't changes we allow this operation on strings too
+    //unless this isn't changes we allow this operation on strings too
     assert.equal(f.calculate(), "fghfghw", "string concat using + operator");
     assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
     assert.equal(f.uiString, "'fgh' + 'fghw'", "string concat using + operator: toString");
@@ -239,8 +246,8 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.uiString, "'test length operation'", "string definition: toString");
 
     var s11 = f.calculate();    //store in var to enable access
-    sprite.variables = [{id: "s11", name: "variableName"}];
-    sprite._variables.s11.value = s11;  //test length operation
+    sprite._variables = [{ id: "s11", name: "variableName" }];
+    sprite.__variables.s11.value = s11;  //test length operation
 
     f.json = length;    //hello world
     assert.equal(f.calculate(), 11, "string length");
@@ -285,8 +292,8 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
-    program.sprites.push(sprite);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    program._sprites.push(sprite);
     //init sprite: test data
     sprite._positionX = 3;
     sprite._positionY = 4;
@@ -346,7 +353,7 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -418,7 +425,7 @@ QUnit.test("FormulaParser: logic", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -490,7 +497,7 @@ QUnit.test("BrickFactory", function (assert) {
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
@@ -570,7 +577,7 @@ QUnit.test("BrickFactory", function (assert) {
     //adding unsupported brick
     //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
     //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
-    sprite = new PocketCode.Model.Sprite(program);
+    sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     allBricksProject.background.bricks.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
     allBricksProject.background.bricks.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
@@ -581,7 +588,7 @@ QUnit.test("BrickFactory", function (assert) {
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
-    var sprite = new PocketCode.Model.Sprite(program);
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
@@ -657,11 +664,28 @@ QUnit.test("BrickFactory", function (assert) {
 
 });
 
-QUnit.test("ProgramParser", function (assert) {
+QUnit.test("SpriteFactory", function (assert) {
 
-    var p = new PocketCode.ProgramParser();
-    assert.ok(true, "TODO:");
+    var allBricksProject = project1;    //using tests_testData.js
+    //^^ includes all types of bricks 
 
+    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
+
+    var device = new PocketCode.Device();
+    var program = new PocketCode.GameEngine(allBricksProject.id);
+    //var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var sf = new PocketCode.SpriteFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+
+    assert.ok(sf instanceof PocketCode.SpriteFactory, "instance check");
+    assert.ok(sf._brickFactory instanceof PocketCode.BrickFactory, "brick factory created");
+    assert.equal(sf._program, program, "program set correctly");
+
+    assert.equal(sf.onProgressChange, sf._brickFactory.onProgressChange, "onProgressChange event mapped");
+    assert.equal(sf.onUnsupportedBricksFound, sf._brickFactory.onUnsupportedBricksFound, "onUnsupportedBricksFound event mapped");
+
+    assert.throws(function () { sf.create([]); }, Error, "ERROR: invalid argument");
 });
 
 

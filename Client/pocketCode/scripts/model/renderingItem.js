@@ -18,7 +18,6 @@ PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
             this.set({
                 id: options.id,
                 name: options.name,
-
                 perPixelTargetFind: true, // only pixels inside item area trigger click
                 selectable: false,
                 hasControls: false,
@@ -84,7 +83,6 @@ PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
             _this._element = replacement;
             _this._filteredEl = replacement;
             replacement.src = canvasEl.toDataURL('image/png');
-
         }
 
     });

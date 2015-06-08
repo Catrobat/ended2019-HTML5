@@ -7,9 +7,9 @@ if (!PocketCode)
 	var PocketCode = {};
 
 PocketCode.websiteUrl = 'https://pocketcode.org/';
-PocketCode.projectUrl = 'https://pocketcode.org/details/{projectId}';
-PocketCode.mobileUrl = 'https://pocketcode.org/html5/player/{projectId}';
-PocketCode.logoUrl = 'https://pocketcode.org/images/logo/logo_text.png';
+PocketCode.projectUrl = PocketCode.websiteUrl + 'details/{projectId}';
+PocketCode.mobileUrl = PocketCode.websiteUrl + 'html5/player/{projectId}';
+PocketCode.logoUrl = PocketCode.websiteUrl + 'images/logo/logo_text.png';
 
 PocketCode.Web = {
 
@@ -53,7 +53,6 @@ PocketCode.Web = {
 				target.addEventListener(eventName, handler, false);
 				return handler;
 			},
-
 			_removeDomListener: function (target, eventName, eventHandler) {
 				target.removeEventListener(eventName, eventHandler, false);
 			},
@@ -234,6 +233,7 @@ PocketCode.Web = {
 			this.muteButton.disabled = true;	//disabled by default: sound manager not loaded yet
 
 			this._dom = overlay;
+			this._touchStartHandler = undefined;
 
 			//bind events
 			if (window.addEventListener) {
@@ -251,7 +251,15 @@ PocketCode.Web = {
 		}
 
 		WebOverlay.prototype = {
-			_onResizeHandler: function (e) {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var handler = eventHandler.bind(this);
+		        target.addEventListener(eventName, handler, false);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        target.removeEventListener(eventName, eventHandler, false);
+		    },
+		    _onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
@@ -284,7 +292,8 @@ PocketCode.Web = {
 				this.viewportContainer.appendChild(splashScreen._dom);
 			},
 			show: function () {
-				var fapi = PocketCode.Web.FullscreenApi;
+			    this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+			    var fapi = PocketCode.Web.FullscreenApi;
 				if (fapi.supported && !fapi.isBrowserFullscreen())
 					this.fullscreenButton.disabled = false;
 				else
@@ -299,9 +308,10 @@ PocketCode.Web = {
 				document.body.appendChild(this._dom);
 
 				if (this._splashScreen)
-				    this._splashScreen.show();  //init size
+					this._splashScreen.show();  //init size
 			},
 			_hide: function () {
+			    this._removeDomListener(document, 'touchmove', this._touchStartHandler);
 				document.body.removeChild(this._dom);
 				if (this._splashScreen)
 					this._splashScreen.hide();
@@ -435,8 +445,7 @@ PocketCode.Web = {
 
 			//bind events
 			if (window.addEventListener) {
-			    window.addEventListener('resize', this._onResizeHandler.bind(this), false);
-			    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+				window.addEventListener('resize', this._onResizeHandler.bind(this), false);
 			}
 			else {
 				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
@@ -444,21 +453,31 @@ PocketCode.Web = {
 		}
 
 		SplashScreen.prototype = {
-			_onResizeHandler: function (e) {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var handler = eventHandler.bind(this);
+		        target.addEventListener(eventName, handler, false);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        target.removeEventListener(eventName, eventHandler, false);
+		    },
+		    _onResizeHandler: function (e) {
 				//font-size of 10px => 194px x 90px
-			    var fs = Math.round(this._dom.offsetWidth * 0.6 / 19.4);
-			    var fh = Math.round(window.innerHeight * 0.3 / 9.0);
-			    fs = (fs < fh) ? fs : fh;
+				var fs = Math.round(this._dom.offsetWidth * 0.6 / 19.4);
+				var fh = Math.round(window.innerHeight * 0.3 / 9.0);
+				fs = (fs < fh) ? fs : fh;
 				fs = (fs < 10) ? 10 : fs;
 				fs = (fs > 14) ? 14 : fs;
 				this._dom.style.fontSize = fs + 'px';
 			},
-			show: function () {
+		    show: function () {
+		        this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._loadingIndicator.show();
 				this._dom.style.display = '';
 				this._onResizeHandler();    //init size
 			},
-			hide: function () {
+		    hide: function () {
+		        this._removeDomListener(document, 'touchmove', this._touchStartHandler);
 				this._dom.style.display = 'none';
 				this._loadingIndicator.hide();
 			},
@@ -505,25 +524,25 @@ PocketCode.Web = {
 			//    window.attachEvent('onerror', this._onGlobalError.bind(this));
 		};
 
-	    //methods
+		//methods
 		ResourceLoader.prototype = {
-		    _onGlobalError: function (msg, url, line, col, error) {
-		        // Note that col & error are new to the HTML 5 spec and may not be 
-		        // supported in every browser.  It worked for me in Chrome.
-		        var extra = !col ? '' : '\ncolumn: ' + col;
-		        extra += !error ? '' : '\nerror: ' + error;
+			_onGlobalError: function (msg, url, line, col, error) {
+				// Note that col & error are new to the HTML 5 spec and may not be 
+				// supported in every browser.  It worked for me in Chrome.
+				var extra = !col ? '' : '\ncolumn: ' + col;
+				extra += !error ? '' : '\nerror: ' + error;
 
-		        // You can view the information in an alert to see things working like this:
-		        alert("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
+				// You can view the information in an alert to see things working like this:
+				alert("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
 
-		        // TODO: Report this error via ajax so you can keep track
-		        //       of what pages have JS issues
+				// TODO: Report this error via ajax so you can keep track
+				//       of what pages have JS issues
 
-		        var suppressErrorAlert = true;
-		        // If you return true, then error alerts (like in older versions of 
-		        // Internet Explorer) will be suppressed.
-		        return suppressErrorAlert;
-		    },
+				var suppressErrorAlert = true;
+				// If you return true, then error alerts (like in older versions of 
+				// Internet Explorer) will be suppressed.
+				return suppressErrorAlert;
+			},
 			startLoading: function () {
 				var size = 0;
 				var files = this._files;
@@ -667,11 +686,11 @@ PocketCode.Web = {
 				this._loader.startLoading();
 			},
 			_launchMobile: function () {
-			    //mobile events
-			    //document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-			    window.addEventListener('orientationchange', function (e) { window.scrollTo(0, 0); }, false);
+				//mobile events
+				//document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+				window.addEventListener('orientationchange', function (e) { window.scrollTo(0, 0); }, false);
 
-			    //mobile UI
+				//mobile UI
 				this._splashScreen.showBorder();
 				document.body.appendChild(this._splashScreen._dom);
 				this._splashScreen.show();  //init size
@@ -727,8 +746,8 @@ PocketCode.Web.resources = {
 		{ url: 'smartJs/sj-ui.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
-		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'css' },
-		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'css' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'js' },
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
@@ -746,8 +765,11 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		//{ url: 'pocketCode/scripts/components/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/mvc.js', type: 'js' },
 
 		//TODO: insert player scripts
+		{ url: 'PocketCodePlayer/controller/playerPageController.js', type: 'js' },
+		{ url: 'PocketCodePlayer/view/playerPageView.js', type: 'js' },
 		{ url: 'PocketCodePlayer/playerApplication.js', type: 'js' },
 	],
 };

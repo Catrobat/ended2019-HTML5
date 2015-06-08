@@ -18,6 +18,7 @@ SmartJs.Components = {
             this._online = navigator.onLine;
             this._addDomListener(window, 'offline', this._offlineHandler);
             this._addDomListener(window, 'online', this._onlineHandler);
+            this._addDomListener(window, 'error', this._errorHandler);
         }
 
         Object.defineProperties(Application.prototype, {
@@ -38,6 +39,9 @@ SmartJs.Components = {
                 if (this._online) return;
                 this._online = true;
                 this._onConnectionStatusChange.dispatchEvent({ online: true });
+            },
+            _errorHandler: function (error, filePath, line) {
+                console.log('SmartJs.Components.Application: global error: ' + error + ', ' + filePath + ', ' + lin);
             },
         });
 

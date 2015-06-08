@@ -9,26 +9,48 @@ PocketCode.Ui.PlayerViewport = (function () {
     PlayerViewport.extends(SmartJs.Ui.Control, false);
 
     //ctr
-    function PlayerViewport(originalHight, originalWidth) {
-        SmartJs.Ui.Control.call(this, 'div', propObject);
+    function PlayerViewport(originalWidth, originalHeight) {
+        var props = {width:originalWidth, height:originalHeight};
+        SmartJs.Ui.Control.call(this, 'div', props);
+
         this._canvas = document.createElement('canvas');
-        this._dom.appendChild(this._canvas);
+        var cheight = 450;
+        var cwidth = 300;
+        var cvprops = {width: cwidth, height: cheight,containerClass:'canvas-container', selection: false, skipTargetFind: false,perPixelTargetFind: true, renderOnAddRemove: false, stateful: false};
+
+        this._fabricCanvas = new fabric.Canvas(this._canvas,  cvprops);
+
+        // draw frame
+        this._fabricCanvas.add(new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 }));
+
+        this._fabricCanvas.selection = false;
+        this._dom.appendChild(this._fabricCanvas.wrapperEl);
+        //this._dom.appendChild(this._canvas);
 
         this.className = 'pc-playerViewport';
 
-        if (!originalHight || !originalWidth)
+        if (!originalHeight || !originalWidth)
             throw new Error('invalid argument: missing hight and/or width property of original app screen');
 
-        this._originalHight = originalHight;
+        this._originalHight = originalHeight;
         this._originalWidth = originalWidth;
-        this._renderingObjects = [];
 
-        this._context = this._canvas.getContext('2d');
+        this._context = this._fabricCanvas.getContext('2d');
         this._axesVisible = false;
 
         //this._scalingFactor = 1;  //set when added to DOM (onResize)
 
-        this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
+        //this._canvas.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
+        window.addEventListener('resize', this.render.bind(this));
+        this._fabricCanvas.on('mouse:up', function(e) {
+            if(typeof e.target != 'undefined'){
+                console.log(e.target);
+                //_self._onSpriteClicked.dispatchEvent({id: e.target.id});
+            }
+        });
+        this._fabricCanvas.on('after:render', this._drawAxes.bind(this));
+        this._updateScaling();
+
     }
 
     //properties
@@ -74,7 +96,26 @@ PocketCode.Ui.PlayerViewport = (function () {
             //enumerable: false,
             //configurable: true,
         },
+        fabricCanvas: {
+            get: function (value) {
+                return this._fabricCanvas;
+            }
+            //enumerable: false,
+            //configurable: true,
+        }
     });
+
+    // events
+    Object.defineProperties(PlayerViewport.prototype, {
+        onResize: {
+            get: function () {
+                console.log('onres');
+                return this._onResize;
+            }
+        },
+            //enumerable: false,
+            //configurable: true,
+        });
 
     //methods
     PlayerViewport.prototype.merge({
@@ -83,15 +124,26 @@ PocketCode.Ui.PlayerViewport = (function () {
             this._scalingFactor = Math.min(this.height / this._originalHight, this.width / this._originalWidth);
 
             //update ui layout
-            this._canvasHeight = Math.floor(this._originalHeight * this._scalingFactor);
-            this._canvasWidth = Math.floor(this._originalWidth * this._scalingFactor);
+            //this._canvasHeight = Math.floor(this._originalHeight * this._scalingFactor);
+            //this._canvasWidth = Math.floor(this._originalWidth * this._scalingFactor);
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            //this.style.margin = 0;
+            this._canvasWidth = this._fabricCanvas.width;
+            this._canvasHeight = this._fabricCanvas.height;
 
-            var style = this._canvas.style;
+
+
+            var style = this._fabricCanvas.wrapperEl.style;
+            style.position = 'absolute';
+            style.top = '50%';
+            style.left = '50%';
             style.height = this._canvasHeight + 'px';
             style.width = this._canvasWidth + 'px';
-            style.marginTop = Math.floor((this.height - this._canvasHeight) / 2) + 'px';
-            style.marginLeft = Math.floor((this.width - this._canvasWidth) / 2) + 'px';
+            style.marginTop = -Math.floor((this._canvasHeight) / 2) + 'px';
+            style.marginLeft = -Math.floor((this._canvasWidth) / 2) + 'px';
 
+            console.log("update");
             this.render();
         },
         //_updateScalingFactor: function () {
@@ -109,7 +161,7 @@ PocketCode.Ui.PlayerViewport = (function () {
             if (this._axesVisible)
                 return;
             this._axesVisible = true;
-            this.render();
+            this._drawAxes();
         },
         hideAxes: function () {
             if (!this._axesVisible)
@@ -118,40 +170,47 @@ PocketCode.Ui.PlayerViewport = (function () {
             this.render();
         },
         _drawAxes: function () {
-            var cxt = this._context;
-            cxt.strokeStyle = '#FF0000';
-            cxt.lineWidth = 2 / this._scalingFactor;    //Math.max(2 / this._scalingFactor, 2);
-            cxt.font = (10 / this._scalingFactor) + 'px Arial';    //, sans-serif';
-            cxt.fillStyle = '#FF0000';
+            var ctx = this._context;
+            var width = this._fabricCanvas.getWidth();
+            var height = this._fabricCanvas.getHeight();
+            //ctx.stroke();
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(width/2, 0);
+            ctx.lineTo(width/2, height);
 
-            var y2 = this._canvasHeight / 2;
-            var x2 = this._canvasWidth / 2;
-            var label_y2 = this._originalWidth / 2;
-            var label_x2 = this._originalHeight / 2;
+            ctx.moveTo(0, height/2);
+            ctx.lineTo(width, height/2);
 
-            //axis lines
-            cxt.moveTo(x2, 0);
-            cxt.lineTo(x2, this._canvasHeight);
-            cxt.moveTo(0, y2);
-            cxt.lineTo(this._canvasWidth, y2);
+            ctx.strokeStyle = "#330033";
+            ctx.lineWidth = 2;
 
-            //axes text
-            cxt.fillText('0', x2 + 10, y2 + 15);
-            cxt.fillText('-' + label_x2, 5, y2 + 15);
-            cxt.fillText(label_x2, this._canvasWidth - 25, y2 + 15);
-            cxt.fillText('-' + label_y2, x2 + 10, 15);
-            cxt.fillText(label_y2, x2 + 10, this._canvasHeight - 5);
 
-            cxt.stroke();
+            ctx.font="15px Arial";
+            ctx.fillStyle= "#ff0033";
+            //center
+            ctx.fillText("0",width/2 + 10,height/2 +15);
+            //width
+            ctx.fillText("-" + width/2, 5 ,height/2 +15);
+            ctx.fillText(width/2,width - 25,height/2 +15);
+            //height
+            ctx.fillText("-" + height/2,width/2 +10, 15);
+            ctx.fillText(height/2,width/2 + 10 , height -5);
+
+            ctx.stroke();
+            ctx.restore();
+            //console.log('draw axes');
         },
         render: function () {
             //TODO: rendering
-
-            if (this._axesVisible)
+            this._fabricCanvas.renderAll();
+            //console.log('render');
+            if (this.showAxes())
                 this._drawAxes();
         },
     });
 
     return PlayerViewport;
 })();
+
 

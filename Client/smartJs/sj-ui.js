@@ -6,7 +6,7 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
-SmartJs.Ui.Window = new((function () {  //static class
+SmartJs.Ui.Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
     //ctr
@@ -143,24 +143,27 @@ SmartJs.Ui.Window = new((function () {  //static class
 
             this._onVisibilityChange.dispatchEvent(e.merge({ visible: this._visible }));
         },
-        //dispose: function () {
-        //	this._removeDomListener(window, this._resizeEventName, this._resizeHandlerReference);
-        //	this._removeDomListener(document, this._visibilityChangeEventName, this._visibilityHandlerReference);
-        //},
+        dispose: function () {
+            //override as a static class cannot be disposed
+        },
+
     });
 
     return Window;
-})())();
+})();
+//static class: constructor override (keeping code coverage enabled)
+SmartJs.Ui.Window = new SmartJs.Ui.Window();
+
 
 SmartJs.Ui.merge({
     TextNode: (function () {
-        TextNode.extends(SmartJs.Core.Component, false);
+        TextNode.extends(SmartJs.Core.Component);//, false);
 
         function TextNode(text) {//, propObject) {
             this._text = text;
             this._dom = document.createTextNode(this._text);
 
-            SmartJs.Core.EventTarget.call(this);//, propObject);
+            //SmartJs.Core.EventTarget.call(this);//, propObject);
         }
 
         //properties
