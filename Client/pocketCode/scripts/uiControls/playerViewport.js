@@ -14,8 +14,8 @@ PocketCode.Ui.PlayerViewport = (function () {
         SmartJs.Ui.Control.call(this, 'div', props);
 
         this._canvas = document.createElement('canvas');
-        var cheight = 450;
-        var cwidth = 300;
+        var cheight = 460;
+        var cwidth = 320;
         var cvprops = {width: cwidth, height: cheight,containerClass:'canvas-container', selection: false, skipTargetFind: false,perPixelTargetFind: true, renderOnAddRemove: false, stateful: false};
 
         this._fabricCanvas = new fabric.Canvas(this._canvas,  cvprops);
@@ -173,8 +173,10 @@ PocketCode.Ui.PlayerViewport = (function () {
             var ctx = this._context;
             var width = this._fabricCanvas.getWidth();
             var height = this._fabricCanvas.getHeight();
+            var color = 'red';
             //ctx.stroke();
             ctx.save();
+
             ctx.beginPath();
             ctx.moveTo(width/2, 0);
             ctx.lineTo(width/2, height);
@@ -182,12 +184,11 @@ PocketCode.Ui.PlayerViewport = (function () {
             ctx.moveTo(0, height/2);
             ctx.lineTo(width, height/2);
 
-            ctx.strokeStyle = "#330033";
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
 
-
-            ctx.font="15px Arial";
-            ctx.fillStyle= "#ff0033";
+            ctx.font="13px Arial";
+            ctx.fillStyle= color;
             //center
             ctx.fillText("0",width/2 + 10,height/2 +15);
             //width
@@ -203,6 +204,7 @@ PocketCode.Ui.PlayerViewport = (function () {
         },
         render: function () {
             //TODO: rendering
+
             this._fabricCanvas.renderAll();
             //console.log('render');
             if (this.showAxes())

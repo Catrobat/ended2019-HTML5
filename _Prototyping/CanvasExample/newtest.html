@@ -27,13 +27,14 @@
     <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
 
     <!-- components -->
+    <script src="../../Client/pocketCode/scripts/components/mvc.js"></script>
     <script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
-    <script src="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.js"></script>
+    <script src="../../Client/PocketCodePlayer/controller/canvasController.js"></script>
     <script src="../../Client/pocketCode/scripts/uiControls/playerViewport.js"></script>
 
 
@@ -41,13 +42,61 @@
 <body>
 </body>
 <script type="text/javascript">
-    var p = new PocketCode.Ui.PlayerViewport(window.innerWidth,window.innerHeight);
-    //console.log(document);
-    document.body.appendChild(p._dom);
-    p.render();
-    //console.log(p._fabricCanvas.toDataURL({multiplier:2}));
-    //console.log(p._fabricCanvas.toDataURL());
-    //console.log('after');
-    //console.log(document);
+
+    function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
+        var sprite = new PocketCode.Model.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
+
+        sprite.id = id;
+        sprite.name = name;
+        //sprite.layer = layer;
+        sprite.setPositionX(x);
+        sprite.setPositionY(y);
+        sprite.setSize(scale);
+        sprite.looks = imgElement;
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, transp);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, bright);
+        sprite.setDirection(angle);
+        if (visible)
+            sprite.show();
+        else
+            sprite.hide();
+
+        return sprite;
+
+    }
+
+    //create 5 sprites
+    var sprites = [];
+    var onLoad = function () {
+        for (var i = 0; i < 5; i++) {
+            sprites.push(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
+        }
+
+    };
+
+    var onLoad2 = function() {
+        sprites.push(populateSprites(6, 'minion', 6, 50 * 6, 50 * 6, 20, looks2, true, 6 * 60, 0, 90));
+        // var ge = new PocketCode.GameEngine();
+        var c = new PocketCode.CanvasController(sprites);
+        //console.log(document);
+        document.body.appendChild(c._view._dom);
+        //console.log(p._fabricCanvas.toDataURL({multiplier:2}));
+        //console.log(p._fabricCanvas.toDataURL());
+        //console.log('after');
+        //console.log(document);
+    };
+
+    var currentLook = new Image();
+    currentLook.addEventListener("load", onLoad);  //added handler to run tests when image completed loading
+    currentLook.src = "_resources/tree-transparent.png";
+    var looks = [];
+    looks[0] = currentLook;
+
+    var currentLook2 = new Image();
+    currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
+    currentLook2.src = "_resources/minion.jpg";
+    var looks2 = [];
+    looks2[0] = currentLook2;
+
 </script>
 </html>
