@@ -10,19 +10,20 @@ PocketCode.Ui.PlayerViewport = (function () {
 
     //ctr
     function PlayerViewport(originalWidth, originalHeight) {
-        var props = {width:originalWidth, height:originalHeight};
-        SmartJs.Ui.Control.call(this, 'div', props);
+        //var props = {width:originalWidth, height:originalHeight};
+        SmartJs.Ui.Control.call(this, 'div', null);
 
         this._canvas = document.createElement('canvas');
         this._canvas.className = 'pc-canvas';
-        var cheight = 460;
-        var cwidth = 320;
+        var cheight = 920.0;
+        var cwidth = 640.0;
         var cvprops = {width: cwidth, height: cheight,containerClass:'canvas-container', selection: false, skipTargetFind: false,perPixelTargetFind: true, renderOnAddRemove: false, stateful: false};
 
         this._fabricCanvas = new fabric.Canvas(this._canvas,  cvprops);
 
         // draw frame
-        this._fabricCanvas.add(new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 }));
+        this._framerect = new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 });
+        this._fabricCanvas.add(this._framerect);
 
         this._fabricCanvas.selection = false;
         this._dom.appendChild(this._fabricCanvas.wrapperEl);
@@ -33,8 +34,10 @@ PocketCode.Ui.PlayerViewport = (function () {
         if (!originalHeight || !originalWidth)
             throw new Error('invalid argument: missing hight and/or width property of original app screen');
 
-        this._originalHight = originalHeight;
-        this._originalWidth = originalWidth;
+        this._originalHeight = cheight;
+        this._originalWidth = cwidth;
+
+        this._ratio = cheight / cwidth;
 
         this._context = this._fabricCanvas.getContext('2d');
         this._axesVisible = false;
@@ -86,7 +89,7 @@ PocketCode.Ui.PlayerViewport = (function () {
             set: function (value) {
                 if (this._originalWidth === value)
                     return;
-                return this._originalWidth = value;
+                this._originalWidth = value;
                 this._updateScaling();//Factor();
             },
             //enumerable: false,
@@ -97,6 +100,9 @@ PocketCode.Ui.PlayerViewport = (function () {
                 this._renderingObjects = value;
                 this.render();
             },
+            get: function () {
+                return this._renderingObjects;
+            }
             //enumerable: false,
             //configurable: true,
         },
@@ -134,28 +140,38 @@ PocketCode.Ui.PlayerViewport = (function () {
         },
 
         _updateScaling: function () {
-            this._scalingFactor = Math.min(this.height / this._originalHight, this.width / this._originalWidth);
+            var height = this.height || window.innerHeight;
+            var width = this.width || window.innerWidth;
 
+            this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
+            var factor = this._scalingFactor;
+            console.log('sfact: '+this._scalingFactor);
             //update ui layout
-            this._canvasHeight = Math.floor(this._originalHeight * this._scalingFactor);
-            this._canvasWidth = Math.floor(this._originalWidth * this._scalingFactor);
-            //this.width = window.innerWidth;
-            //this.height = window.innerHeight;
-            //this.style.margin = 0;
-            this._canvasWidth = this._fabricCanvas.width;
-            this._canvasHeight = this._fabricCanvas.height;
+            this._fabricCanvas.setHeight( Math.floor(this._originalHeight * this._scalingFactor) );
+            this._fabricCanvas.setWidth( Math.floor(this._originalWidth * this._scalingFactor) );
+            this._fabricCanvas.calcOffset();
+            this._fabricCanvas.forEachObject(function(obj) {
+                if (obj.id != undefined) {
+                    obj.scaleX = factor;
+                    obj.scaleY = factor;
+                    obj.left = obj.oX * factor;
+                    obj.top = obj.oY * factor;
+                    obj.setCoords();
+                }
+            });
 
-
+            this._canvas.width = this._fabricCanvas.width;
+            this._canvas.height =  this._fabricCanvas.height;
 
             var style = this._fabricCanvas.wrapperEl.style;
             style.position = 'absolute';
-            //style.top = '50%';
-            //style.left = '50%';
-            style.height = this._canvasHeight + 'px';
-            style.width = this._canvasWidth + 'px';
-            //style.marginTop = -Math.floor((this._canvasHeight) / 2) + 'px';
-            //style.marginLeft = -Math.floor((this._canvasWidth) / 2) + 'px';
+            //style.height = this._fabricCanvas.height + 'px';
+            //style.width = this._fabricCanvas.width + 'px';
+            style.marginTop = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
+            style.marginLeft = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
+            this._framerect.width = this._fabricCanvas.width - 1;
+            this._framerect.height = this._fabricCanvas.height -1;
             console.log("update");
             this.render();
         },
@@ -196,17 +212,17 @@ PocketCode.Ui.PlayerViewport = (function () {
 
             ctx.strokeStyle = color;
             ctx.lineWidth = 1;
-
+            // TODO Scaling inaccurate when canvas made too small
             ctx.font="13px Arial";
             ctx.fillStyle= color;
             //center
             ctx.fillText("0",width/2 + 10,height/2 +15);
             //width
-            ctx.fillText("-" + width/2, 5 ,height/2 +15);
-            ctx.fillText(width/2,width - 25,height/2 +15);
+            ctx.fillText("-" + Math.ceil(width/2/this._scalingFactor), 5 ,height/2 +15);
+            ctx.fillText(Math.ceil(width/2/this._scalingFactor),width - 25,height/2 +15);
             //height
-            ctx.fillText("-" + height/2,width/2 +10, 15);
-            ctx.fillText(height/2,width/2 + 10 , height -5);
+            ctx.fillText("-" + Math.ceil(height/2/this._scalingFactor),width/2 +10, 15);
+            ctx.fillText(Math.ceil(height/2/this._scalingFactor),width/2 + 10 , height -5);
 
             ctx.stroke();
             ctx.restore();
