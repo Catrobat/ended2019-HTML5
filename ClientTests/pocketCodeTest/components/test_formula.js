@@ -11,7 +11,7 @@ QUnit.module("formula.js");
 
 QUnit.test("Formula", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');

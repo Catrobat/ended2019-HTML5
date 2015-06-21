@@ -491,7 +491,7 @@ QUnit.test("VibrationBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var duration = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');

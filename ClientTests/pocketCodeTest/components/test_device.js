@@ -8,7 +8,7 @@ QUnit.module("device.js");
 
 QUnit.test("[missing]", function (assert) {
 
-    var sm = new PocketCode.SoundManager("newId");
+    var sm = new PocketCode.SoundManager();
     var dev = new PocketCode.Device(sm);
 
     assert.ok(dev instanceof PocketCode.Device, "instance check");

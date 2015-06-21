@@ -37,7 +37,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
     assert.equal((PocketCode.FormulaParser.parseJson(null)).calculate(), undefined, "return 'undefined' for null values (json)");
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -102,7 +102,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
 QUnit.test("FormulaParser: functions", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -226,7 +226,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
 
 QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -288,7 +288,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
 QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -349,7 +349,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
 QUnit.test("FormulaParser: sensors", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -421,7 +421,7 @@ QUnit.test("FormulaParser: sensors", function (assert) {
 
 QUnit.test("FormulaParser: logic", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager("0815", []);
+    var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
@@ -493,7 +493,7 @@ QUnit.test("BrickFactory", function (assert) {
     //^^ includes all types of bricks 
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
+    var soundMgr = new PocketCode.SoundManager([]);
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
@@ -584,7 +584,7 @@ QUnit.test("BrickFactory", function (assert) {
     allBricksProject.header.bricksCount += 2;
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
+    var soundMgr = new PocketCode.SoundManager([]);
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
@@ -670,7 +670,7 @@ QUnit.test("SpriteFactory", function (assert) {
     //^^ includes all types of bricks 
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager(allBricksProject.id, []);
+    var soundMgr = new PocketCode.SoundManager([]);
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
