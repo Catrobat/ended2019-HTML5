@@ -65,9 +65,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine._broadcastMgr.initCalled, "Called BroadcastManagers init function");
     assert.equal(gameEngine._broadcasts, broadcasts, "broadcasts set correctly");
 
-    gameEngine.projectReady = true;
     assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Created gameEngine not started");
-    assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Tried to start gameEngine without any sprites");
     gameEngine.projectReady = false;
     assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Program not ready");
     gameEngine.projectReady = true;
@@ -157,7 +155,7 @@ QUnit.test("GameEngine", function (assert) {
         programStartEvent++;
     }));
 
-    gameEngine._projectLoaded = true;  //simulate project loaded for tests
+    gameEngine.projectReady = true;  //simulate project loaded for tests
     gameEngine.runProject();
     assert.equal(programStartEvent, 1, "Called onProgramStart");
 

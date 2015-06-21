@@ -241,8 +241,9 @@ PocketCode.GameEngine = (function () {
         runProject: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
-            if (!this._projectLoaded)//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
+            if (!this.projectReady){
                 throw new Error('no project loaded');
+            }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
             //this._background.execute();
 

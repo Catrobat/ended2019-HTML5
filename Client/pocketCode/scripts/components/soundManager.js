@@ -19,9 +19,6 @@ PocketCode.SoundManager = (function () {
         this.maxInstancesOfSameSound = 20;
         this._muted = false;
 
-        createjs.Sound.removeAllSounds();
-        createjs.Sound.removeAllEventListeners();
-
         this._activeSounds = [];
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
@@ -95,6 +92,9 @@ PocketCode.SoundManager = (function () {
                 throw new Error('sounds expects type Array');
             if (!this.supported)
                 return false;
+
+            createjs.Sound.removeAllSounds();
+            createjs.Sound.removeAllEventListeners();
 
             var soundsFormatted = [];
             var sizeOfAllSounds = 0;
