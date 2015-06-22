@@ -10,7 +10,7 @@ QUnit.test("SoundManager", function (assert) {
     //init and volume tests
     var doneWithTests = assert.async();
 
-    var soundManager = new PocketCode.SoundManager("projectId", []);
+    var soundManager = new PocketCode.SoundManager([]);
 
     assert.ok(soundManager instanceof PocketCode.SoundManager, "instance check");
     assert.ok(soundManager._projectId = "projectId_", "SoundManager created with the correct projectId,");
@@ -43,7 +43,7 @@ QUnit.test("SoundManager", function (assert) {
     assert.equal(soundManager.isPlaying, false, "not playing on initialized");
 
     var invalidData = {};
-    assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: Soundmanager expects Array: ctor & init()");
+    assert.throws(function () { new PocketCode.SoundManager(invalidData) }, Error, "ERROR: Soundmanager expects Array: ctor & init()");
 
     if (!soundManager.supported) {  //if not supported
         assert.ok(soundManager.init([]) == false, "not supported: returns false on call: init()");
@@ -77,7 +77,7 @@ QUnit.test("SoundManager", function (assert) {
     var soundjsLoaded = function () {   //triggered on init (last lines in file)
 
         var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
-        var soundManager = new PocketCode.SoundManager("projectId", []);    //reinit 
+        var soundManager = new PocketCode.SoundManager([]);    //reinit
         assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init");
 
         assert.ok(createjs.Sound.isReady(), "creatjs.Sound is ready");
@@ -90,7 +90,7 @@ QUnit.test("SoundManager", function (assert) {
         assert.ok(soundManager._muted && createjs.Sound.getMute(), "Muted set true and stays true after changing volume");
 
         invalidData = [{ notUrl: "a", id: "id" }];
-        assert.throws(function () { new PocketCode.SoundManager("id", invalidData) }, Error, "ERROR: passed invalid arguments to Soundmanager");
+        assert.throws(function () { new PocketCode.SoundManager(invalidData) }, Error, "ERROR: passed invalid arguments to Soundmanager");
 
         //playback tests
 
@@ -108,7 +108,7 @@ QUnit.test("SoundManager", function (assert) {
             doneWithPlaybackCompleteAllSounds();
             //console.log('doneWithPlaybackCompleteAllSounds');
 
-            soundManager2 = new PocketCode.SoundManager("projectid");//, [{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
+            soundManager2 = new PocketCode.SoundManager();//, [{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
             soundManager2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 assert.ok(e.src = "invalid/url.mpe", "Caught onLoadingError");
                 errorEventCaught();
@@ -135,7 +135,7 @@ QUnit.test("SoundManager", function (assert) {
 
             assert.equal(soundManager._activeSounds.length, 0, "No active sounds on init");
 
-            soundManager2.startSound("projectId_sound");
+            soundManager2.startSound("sound");
             var soundInstance = soundManager2._activeSounds[0];
             assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds");
             assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing");
@@ -153,9 +153,9 @@ QUnit.test("SoundManager", function (assert) {
 
             var timesToPlaySound = 6;
             for (i = 0; i < timesToPlaySound; i++) {
-                soundManager2.startSound("projectId_sound");
+                soundManager2.startSound("sound");
             }
-            soundManager2.startSound("projectId_sound2");
+            soundManager2.startSound("sound2");
             assert.equal(soundManager2.isPlaying, true, "isPlaying == true on start()");
 
             soundManager2.pauseSounds();
@@ -192,7 +192,7 @@ QUnit.test("SoundManager", function (assert) {
         var expectedProgressChanges = [60, 40];
 
         var sounds = [{ url: soundSrc, id: "sound", size: 3 }, { url: soundSrc2, id: "sound2", size: 2 }];
-        var soundManager2 = new PocketCode.SoundManager("projectId", sounds);
+        var soundManager2 = new PocketCode.SoundManager(sounds);
 
         var filesLoaded = [];
         createjs.Sound.on("fileload", function (e) {
@@ -200,8 +200,8 @@ QUnit.test("SoundManager", function (assert) {
             if (filesLoaded.length !== 2)
                 return;
 
-            var firstFile = filesLoaded.filter(function (file) { return file.id === "projectId_sound" });
-            var secondFile = filesLoaded.filter(function (file) { return file.id === "projectId_sound2" });
+            var firstFile = filesLoaded.filter(function (file) { return file.id === "sound" });
+            var secondFile = filesLoaded.filter(function (file) { return file.id === "sound2" });
             assert.deepEqual(firstFile.length, 1, "Id of first file set correctly");
             assert.deepEqual(secondFile.length, 1, "Id of second file set correctly");
             assert.ok(firstFile[0].src === soundSrc, "Src of first file set correctly");

@@ -14,8 +14,8 @@ PocketCode.CanvasController = (function () {
             var ritem = new PocketCode.RenderingItem(sprite._currentLook,{
                 name: sprite.name,
                 id: sprite.id,
-                top: sprite._positionX,
-                left: sprite._positionY,
+                top: sprite._positionY,
+                left: sprite._positionX,
                 visible: true, //sprite._visible,
                 angle: sprite._direction,
                 opacity: sprite._transparency,
@@ -31,13 +31,13 @@ PocketCode.CanvasController = (function () {
             this._view.fabricCanvas.add(this._renderingItems[i]);
         }
 
-        for (var i = 1; i < 300; i++)
+        /*for (var i = 1; i < 300; i++)
         {
             var color = '#'+Math.floor(Math.random()*16777215).toString(16);
             this._renderingItems.push(new fabric.Circle({stroke:'',opacity:0.5, selectable:false, radius: Math.random()*15, fill: color, top: Math.random()*450, left: Math.random()*300 }));
-        }
-
-        this._view.fabricCanvas.renderAll();
+        }*/
+        this._view.renderingObjects = this._renderingItems;
+        this._view.render();
 
     }
 

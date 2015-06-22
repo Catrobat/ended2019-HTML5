@@ -67,18 +67,23 @@
 
     //create 5 sprites
     var sprites = [];
+    var looks2 = [];
+
     var onLoad = function () {
         for (var i = 0; i < 5; i++) {
             sprites.push(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
         }
-
+        var currentLook2 = new Image();
+        currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
+        currentLook2.src = "_resources/minion.jpg";
+        looks2[0] = currentLook2;
     };
     var _testhandler = function(e) {
         console.log(e.id);
     } ;
 
     var onLoad2 = function() {
-        sprites.push(populateSprites(6, 'minion', 6, 50 * 6, 50 * 6, 20, looks2, true, 6 * 60, 0, 90));
+        sprites.push(populateSprites(6, 'minion', 6, 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
         // var ge = new PocketCode.GameEngine();
         var c = new PocketCode.CanvasController(sprites);
         c.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(_testhandler, this));
@@ -96,11 +101,6 @@
     var looks = [];
     looks[0] = currentLook;
 
-    var currentLook2 = new Image();
-    currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
-    currentLook2.src = "_resources/minion.jpg";
-    var looks2 = [];
-    looks2[0] = currentLook2;
 
 </script>
 </html>

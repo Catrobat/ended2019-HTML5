@@ -34,7 +34,7 @@ PocketCode.GameEngine = (function () {
         this.__images = {};
         this.__sounds = {};
 
-        this._soundManager = new PocketCode.SoundManager(this._id);
+        this._soundManager = new PocketCode.SoundManager();
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
@@ -241,8 +241,9 @@ PocketCode.GameEngine = (function () {
         runProject: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
-            if (!this._projectLoaded)//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
+            if (!this.projectReady){
                 throw new Error('no project loaded');
+            }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
             //this._background.execute();
 

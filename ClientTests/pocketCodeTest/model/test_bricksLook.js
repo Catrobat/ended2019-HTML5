@@ -294,7 +294,7 @@ QUnit.test("LedOnBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
@@ -319,7 +319,7 @@ QUnit.test("LedOffBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager("ID"));
+    var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
