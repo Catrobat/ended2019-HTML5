@@ -16,7 +16,7 @@ PocketCode.Ui.popupWindow = ( function () {
     PopupWindow.extends( SmartJs.Ui.Control, false );
 
     //cntr
-    function PopupWindow( dialogType ) {
+    function PopupWindow( dialogType, headerText, bodyText, footerText ) {
 
         if (dialogType !== PocketCode.DialogType.DEFAULT &&
             dialogType !== PocketCode.DialogType.WARNING &&
@@ -24,6 +24,13 @@ PocketCode.Ui.popupWindow = ( function () {
             throw new Error( 'Undefined type of popup window' );
         this._dialogType = dialogType;
         //this._dialogType = PocketCode.DialogType.DEFAULT;
+
+        if ( headerText === '' )
+            throw new Error( 'Empty PopUp Header Text' );
+        if ( bodyText === '' )
+            throw new Error( 'Empty PopUp Body Text' );
+        if ( footerText === '' )
+            throw new Error( 'Empty PopUp Footer Text' );
 
 
         var popUpContainer = document.createElement( 'div' );
@@ -42,14 +49,14 @@ PocketCode.Ui.popupWindow = ( function () {
                 break;
         }
 
-        //now add header, body and footer:
+        //add header, body and footer:
 
         // ---- HEADER ----
         var popUpHeaderRow = document.createElement( 'div' );
         popUpHeaderRow.className = 'pc-webLayoutRow';
         var popUpHeader = document.createElement( 'div' );
         popUpHeader.className = 'pc-popupHeader';
-        popUpHeader.innerHTML = 'HEADER TEXT';
+        popUpHeader.innerHTML = headerText;
         popUpHeaderRow.appendChild( popUpHeader );
         // ---- ------ ----
 
@@ -58,8 +65,7 @@ PocketCode.Ui.popupWindow = ( function () {
         popUpBodyRow.className = 'pc-webLayoutRow';
         var popUpBody = document.createElement( 'div' );
         popUpBody.className = 'pc-popupBody';
-
-        popUpBody.innerHTML = 'BODY TEXT';
+        popUpBody.innerHTML = bodyText;
         popUpBodyRow.appendChild( popUpBody );
         // ---- ---- ----
 
@@ -68,8 +74,7 @@ PocketCode.Ui.popupWindow = ( function () {
         popUpFooterRow.className = 'pc-webLayoutRow';
         var popUpFooter = document.createElement( 'div' );
         popUpFooter.className = 'pc-popupFooter';
-
-        popUpFooter.innerHTML = 'FOOTER TEXT';
+        popUpFooter.innerHTML = footerText;
         popUpFooterRow.appendChild( popUpFooter );
         // ---- ------ ----
 
