@@ -40,9 +40,16 @@
 
 </head>
 <body>
+<div style="background-color:#00aaaa">
+    <input value="Fill" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.init(sprites)>
+    <input value="Clear" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.clearCanvas()>
+    <input value="Toggle Axes" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.toggleAxes();>
+    <input value="Download" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(1))>
+    <input value="Download x2" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(2))>
+</div>
 </body>
 <script type="text/javascript">
-
+    var c;
     function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
         var sprite = new PocketCode.Model.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
 
@@ -80,12 +87,14 @@
     };
     var _testhandler = function(e) {
         console.log(e.id);
+        window.alert('Clicked ' + e.id);
     } ;
 
     var onLoad2 = function() {
         sprites.push(populateSprites(6, 'minion', 6, 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
         // var ge = new PocketCode.GameEngine();
-        var c = new PocketCode.CanvasController(sprites);
+        c = new PocketCode.CanvasController();
+        //c.init(sprites);
         c.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(_testhandler, this));
         //console.log(document);
         document.body.appendChild(c._view._dom);

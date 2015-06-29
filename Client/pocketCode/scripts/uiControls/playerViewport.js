@@ -22,10 +22,10 @@ PocketCode.Ui.PlayerViewport = (function () {
         this._fabricCanvas = new fabric.Canvas(this._canvas,  cvprops);
 
         // draw frame
-        this._framerect = new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 });
-        this._fabricCanvas.add(this._framerect);
+        //this._framerect = new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 });
+        //this._fabricCanvas.add(this._framerect);
 
-        this._fabricCanvas.selection = false;
+        //this._fabricCanvas.selection = false;
         this._dom.appendChild(this._fabricCanvas.wrapperEl);
         //this._dom.appendChild(this._canvas);
 
@@ -41,6 +41,7 @@ PocketCode.Ui.PlayerViewport = (function () {
 
         this._context = this._fabricCanvas.getContext('2d');
         this._axesVisible = false;
+        this._showGrid = false;
 
         //this._scalingFactor = 1;  //set when added to DOM (onResize)
 
@@ -170,8 +171,8 @@ PocketCode.Ui.PlayerViewport = (function () {
             style.marginTop = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             style.marginLeft = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
-            this._framerect.width = this._fabricCanvas.width - 1;
-            this._framerect.height = this._fabricCanvas.height -1;
+            //this._framerect.width = this._fabricCanvas.width - 1;
+            //this._framerect.height = this._fabricCanvas.height -1;
             console.log("update");
             this.render();
         },
@@ -187,45 +188,51 @@ PocketCode.Ui.PlayerViewport = (function () {
             if (this._axesVisible)
                 return;
             this._axesVisible = true;
+            this._showGrid = true;
             this._drawAxes();
         },
         hideAxes: function () {
             if (!this._axesVisible)
                 return;
             this._axesVisible = false;
+            this._showGrid = false;
             this.render();
         },
         _drawAxes: function () {
-            var ctx = this._context;
-            var width = this._fabricCanvas.getWidth();
-            var height = this._fabricCanvas.getHeight();
-            var color = 'red';
-            //ctx.stroke();
-            ctx.save();
+            if (this._showGrid)
+            {
+                var ctx = this._context;
+                var width = this._fabricCanvas.getWidth();
+                var height = this._fabricCanvas.getHeight();
+                var color = 'red';
+                //ctx.stroke();
+                ctx.save();
 
-            ctx.beginPath();
-            ctx.moveTo(width/2, 0);
-            ctx.lineTo(width/2, height);
+                ctx.beginPath();
+                ctx.moveTo(width/2, 0);
+                ctx.lineTo(width/2, height);
 
-            ctx.moveTo(0, height/2);
-            ctx.lineTo(width, height/2);
+                ctx.moveTo(0, height/2);
+                ctx.lineTo(width, height/2);
 
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            // TODO Scaling inaccurate when canvas made too small
-            ctx.font="13px Arial";
-            ctx.fillStyle= color;
-            //center
-            ctx.fillText("0",width/2 + 10,height/2 +15);
-            //width
-            ctx.fillText("-" + Math.ceil(width/2/this._scalingFactor), 5 ,height/2 +15);
-            ctx.fillText(Math.ceil(width/2/this._scalingFactor),width - 25,height/2 +15);
-            //height
-            ctx.fillText("-" + Math.ceil(height/2/this._scalingFactor),width/2 +10, 15);
-            ctx.fillText(Math.ceil(height/2/this._scalingFactor),width/2 + 10 , height -5);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                // TODO Scaling inaccurate at some canvas sizes
+                ctx.font="13px Arial";
+                ctx.fillStyle= color;
+                //center
+                ctx.fillText("0",width/2 + 10,height/2 +15);
+                //width
+                ctx.fillText("-" + Math.ceil(width/2.0/this._scalingFactor), 5 ,height/2 +15);
+                ctx.fillText(Math.ceil(width/2/this._scalingFactor),width - 25,height/2 +15);
+                //height
+                ctx.fillText("-" + Math.ceil(height/2.0/this._scalingFactor),width/2 +10, 15);
+                ctx.fillText(Math.ceil(height/2/this._scalingFactor),width/2 + 10 , height -5);
 
-            ctx.stroke();
-            ctx.restore();
+                ctx.stroke();
+                ctx.restore();
+
+            }
             //console.log('draw axes');
         },
         render: function () {
@@ -233,9 +240,11 @@ PocketCode.Ui.PlayerViewport = (function () {
 
             this._fabricCanvas.renderAll();
             //console.log('render');
-            if (this.showAxes())
-                this._drawAxes();
         },
+
+        clear: function () {
+            this._fabricCanvas.clear();
+        }
     });
 
     return PlayerViewport;
