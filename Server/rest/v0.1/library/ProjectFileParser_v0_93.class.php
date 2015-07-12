@@ -30,7 +30,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
     foreach($vars->programVariableList->children() as $userVar)
     {
-      /*Test$userVar = $vars->programVariableList->children()[0];*/
       $userVar = $this->getObject($userVar, $this->cpp);
       array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
     }
@@ -59,11 +58,11 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         switch($this->getBrickName($script))
         {
 
-          case "ForeverBrick":      //"loopEndlessBrick"
-            //$loopEndBrick = $script->loopEndBrick;
+          case "ForeverBrick":
             $brick = new ForeverBrickDto();
-            $nestedCounter
-              = 0;   //use a counter ob nested elements with same name as comparison of objects using equal or operator (===) is not available in simpleXML
+            //use a counter ob nested elements with same name as comparison of objects using equal
+            // or operator (===) is not available in simpleXML
+            $nestedCounter = 0;
             $idx++;
 
             //search for associated end brick
@@ -80,29 +79,31 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
               {
                 if($nestedCounter === 0)
                 {
-                  $brick->bricks = $this->parseInnerBricks($innerBricks);  //parse recursive
+                  //parse recursive
+                  $brick->bricks = $this->parseInnerBricks($innerBricks);
                   array_push($bricks, $brick);
                   $this->bricksCount -= 1;
-                  //$idx++;
                   break;
                 }
                 else
                 {
                   $nestedCounter--;
-                  array_push($innerBricks, $brickList[$idx]);  //add inner loop as sub brick
+                  //add inner loop as sub brick
+                  array_push($innerBricks, $brickList[$idx]);
                 }
               }
               else
               {
+                //add sub bricks
                 array_push($innerBricks, $brickList[$idx]);
-              }  //add sub bricks
+              }
 
               $idx++;
             }
 
             break;
 
-          case "RepeatBrick":       //"loopEndBrick"
+          case "RepeatBrick":
             $ttr = $script->formulaList;
             array_push($this->cpp, $ttr);
             $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
@@ -110,6 +111,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
             $nestedCounter = 0;
             $idx++;
+
             //search for associated end brick
             $innerBricks = [];
             while($idx < $length)
@@ -124,36 +126,39 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
               {
                 if($nestedCounter === 0)
                 {
-                  $brick->bricks = $this->parseInnerBricks($innerBricks);  //parse recursive
+                  //parse recursive
+                  $brick->bricks = $this->parseInnerBricks($innerBricks);
                   array_push($bricks, $brick);
                   $this->bricksCount -= 1;
-                  //$idx++;
                   break;
                 }
                 else
                 {
                   $nestedCounter--;
-                  array_push($innerBricks, $brickList[$idx]);  //add inner loop as sub brick
+                  //add inner loop as sub brick
+                  array_push($innerBricks, $brickList[$idx]);
                 }
               }
               else
               {
+                //add sub bricks
                 array_push($innerBricks, $brickList[$idx]);
-              }  //add sub bricks
+              }
 
               $idx++;
             }
 
             break;
 
-          case "IfLogicBeginBrick": //"ifLogicElseBrick", "ifLogicEndBrick"
+          case "IfLogicBeginBrick":
             $condition = $script->formulaList;
             array_push($this->cpp, $condition);
             $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula));
             array_pop($this->cpp);
 
             $nestedCounter = 0;
-            $idx++;   //skip begin brick
+            //skip begin brick
+            $idx++;
 
             //search for associated end brick
             $innerIfBricks = [];
@@ -172,15 +177,17 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
               {
                 $inElse = true;
                 $idx++;
-                continue; //skip parsing else brick
+                continue;
               }
 
               if($name === "IfLogicEndBrick")
               {
                 if($nestedCounter === 0)
                 {
-                  $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);  //parse recursive
-                  $brick->elseBricks = $this->parseInnerBricks($innerElseBricks);  //parse recursive
+                  //parse recursive
+                  $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
+                  //parse recursive
+                  $brick->elseBricks = $this->parseInnerBricks($innerElseBricks);
                   array_push($bricks, $brick);
                   $this->bricksCount -= 2;
                   break;
@@ -190,8 +197,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                   $nestedCounter--;
                   if($inElse === false)
                   {
+                    //add inner loop as sub brick
                     array_push($innerIfBricks, $brickList[$idx]);
-                  }  //add inner loop as sub brick
+                  }
                   else
                   {
                     array_push($innerElseBricks, $brickList[$idx]);
@@ -202,8 +210,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
               {
                 if($inElse === false)
                 {
+                  //add inner loop as sub brick
                   array_push($innerIfBricks, $brickList[$idx]);
-                }  //add inner loop as sub brick
+                }
                 else
                 {
                   array_push($innerElseBricks, $brickList[$idx]);
@@ -258,7 +267,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
         case "BroadcastScript":
           $msg = (string)$script->receivedMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts); //= false, if not found
+          $res = $this->findVariableInArray($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -281,7 +290,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
           break;
 
         case "WhenScript":
-          //$action = $script->action;
           $brick = new WhenActionBrickDto((string)$script->action);
           $brickList = $script->brickList;
           array_push($this->cpp, $brickList);
@@ -303,7 +311,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
         case "BroadcastBrick":
           $msg = (string)$script->broadcastMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts); //= false, if not found
+          $res = $this->findVariableInArray($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -319,7 +327,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
         case "BroadcastWaitBrick":
           $msg = (string)$script->broadcastMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts); //= false, if not found
+          $res = $this->findVariableInArray($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -336,21 +344,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         case "NoteBrick":
           $brick = new NoteBrickDto((string)$script->note);
           break;
-
-        /*looping is handled in: $this->parseInnerBricks due to restructuring the code structure
-        //more than one brick is handled at a time
-        case "foreverBrick":      //"loopEndlessBrick"
-          $brick = null;
-          break;
-
-        case "ifLogicBeginBrick": //"ifLogicElseBrick", "ifLogicEndBrick"
-          $brick = null;
-          break;
-
-        case "repeatBrick":       //"loopEndBrick"
-          $brick = null;
-          break;
-        */
 
 
         /*motion bricks*/
@@ -457,8 +450,10 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         case "PointToBrick":
           if(property_exists($script, "pointedObject"))
           {
-            $pointedTo = $this->getObject($script->pointedObject, $this->cpp);  //type of Sprite = <object />
+            //type of Sprite = <object />
+            $pointedTo = $this->getObject($script->pointedObject, $this->cpp);
             $name = $this->getName($pointedTo);
+
             //detect id by object name (unique): all sprites are already pre-parsed with id and name
             foreach($this->sprites as $s)
             {
@@ -530,7 +525,8 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         case "PlaySoundBrick":
           $id = null;
           if(property_exists($script, "sound"))
-          {   //play sound brick is initial set to "New.." and has no child tags per default
+          {
+            //play sound brick is initial set to "New.." and has no child tags per default
             $sound = $this->getObject($script->sound, $this->cpp);
 
             $res = $this->findResourceInArray("sounds/" . (string)$sound->fileName, $this->sounds);
@@ -562,18 +558,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         case "SpeakBrick":
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          /*$text = (string)$script->formulaList->formula->value;
-          $fileName = md5($text).".mp3";
-          //speak mp3 pre-loading
-          $res = $this->findResourceInArray("tts/" . $fileName, $this->sounds); //= false, if not found
-          if($res === false) {
-            $id = $this->getNewId();
-            array_push($this->sounds, new ResourceDto($id, "tts/" . $fileName));
-          }
-          else
-            $id = $res->id;
-
-          $this->tts->loadSoundFile($text);*/
           $brick = new SpeakBrickDto($this->parseFormula($fl->formula));
           array_pop($this->cpp);
           break;
@@ -581,10 +565,11 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
         /*look bricks*/
         case "SetLookBrick":
-          $look = $this->getObject($script->look, $this->cpp); //look from bricks look list
-          $res = $this->findResourceInArray("images/" . (string)$look->fileName, $this->images); //= false, if not found
+          $look = $this->getObject($script->look, $this->cpp);
+          $res = $this->findResourceInArray("images/" . (string)$look->fileName, $this->images);
 
-          $id = $res->id;   //the image has already been included in the resources
+          //the image has already been included in the resources
+          $id = $res->id;
           $brick = new SetLookBrickDto($id);
           break;
 
@@ -662,7 +647,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
 
         /*variable bricks*/
         case "SetVariableBrick":
-          $var = $this->getObject($script->userVariable, $this->cpp); //variable definition
+          $var = $this->getObject($script->userVariable, $this->cpp);
           $id = $this->getVariableId((string)$var);
 
           $fl = $script->formulaList;
@@ -672,7 +657,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
           break;
 
         case "ChangeVariableBrick":
-          $var = $this->getObject($script->userVariable, $this->cpp); //variable definition
+          $var = $this->getObject($script->userVariable, $this->cpp);
           $id = $this->getVariableId((string)$var);
 
           $fl = $script->formulaList;
@@ -681,7 +666,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
           array_pop($this->cpp);
           break;
 
-        /*default: return xml to verify which brick implementation is missing without generating a parser error*/
+        // default: return xml to verify which brick implementation is missing without generating a parser error
         default:
           $brick = new UnsupportedBrickDto($script->asXML(), (string)$script["type"]);
       }
