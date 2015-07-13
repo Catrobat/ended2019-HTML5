@@ -1,5 +1,10 @@
 <?php
 
+require_once("TextToSpeechProvider.class.php");
+require_once("Server/rest/v0.1/dto/ProjectDto.class.php");
+require_once("Server/rest/v0.1/dto/ProjectDeviceDto.class.php");
+require_once("Server/rest/v0.1/dto/ProjectHeaderDto.class.php");
+
 class ProjectFileParser
 {
   protected $projectId = null;

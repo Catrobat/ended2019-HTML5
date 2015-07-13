@@ -1,5 +1,7 @@
 <?php
 
+require_once("Server/rest/v0.1/library/ProjectFileParser_v0_93.class.php");
+
 class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 {
   protected $lists = [];

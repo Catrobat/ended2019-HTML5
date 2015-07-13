@@ -312,6 +312,13 @@ class ProjectsController extends BaseController
       }
     }
 
+    //save json
+    $project_json = json_encode($project);
+    $filePath = $cacheDir . "code.json";
+    $fp = fopen($filePath, "w");
+    fwrite($fp, $project_json);
+    fclose($fp);
+
     return $project;
   }
 
