@@ -158,11 +158,14 @@ PocketCode.SoundManager = (function () {
             if (!this.supported)
                 return false;
 
-            //var id = SmartJs.getNewId();
-            //this.loadSoundFile(id, url);
+            var id = SmartJs.getNewId();
+            createjs.Sound.registerSound({mp3: url}, id, this.maxInstancesOfSameSound,'');
+            createjs.Sound.on("fileload", function loadHandler(event) {
+                if(event.id === id)
+                    this.startSound(id);
+            }, this);
 
-            //createjs.Sound.play()
-
+            return id;
         },
 
         pauseSounds: function () {

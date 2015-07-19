@@ -88,6 +88,7 @@ QUnit.test("SoundManager", function (assert) {
         assert.ok(soundManager.volume.toFixed(2) == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly");
 
         assert.ok(soundManager._muted && createjs.Sound.getMute(), "Muted set true and stays true after changing volume");
+        soundManager.mute(false);
 
         invalidData = [{ notUrl: "a", id: "id" }];
         assert.throws(function () { new PocketCode.SoundManager(invalidData) }, Error, "ERROR: passed invalid arguments to Soundmanager");
@@ -109,13 +110,43 @@ QUnit.test("SoundManager", function (assert) {
             //console.log('doneWithPlaybackCompleteAllSounds');
 
             soundManager2 = new PocketCode.SoundManager();//, [{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
-            soundManager2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            var onLoadingErrorListener = new SmartJs.Event.EventListener(function (e) {
                 assert.ok(e.src = "invalid/url.mpe", "Caught onLoadingError");
                 errorEventCaught();
-                doneWithTests();    //end of tests
+                soundManager2._onLoadingError.removeEventListener(this);
                 //console.log('errorEventCaught');
-            }));
+            });
+
+            soundManager2.onLoadingError.addEventListener(onLoadingErrorListener);
             soundManager2.init([{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
+
+            //star sounds from url test
+            var startSoundFromUrlTestDone = false;
+            soundManager2.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(function(){
+                startSoundFromUrlTestDone = true;
+                assert.ok(true, "Play sound from URL.");
+                doneWithTests();    //end of tests
+            }));
+
+            var id;
+            createjs.Sound.on("fileload", function(e){
+                assert.deepEqual(e.id, id, "loaded file with correct id");
+            });
+
+            setTimeout(function() {
+                if(!startSoundFromUrlTestDone) {
+                    //test timed out and failed
+                    assert.ok(false, "Play sound from URL (timeout).");
+                    doneWithTests();
+                }
+            },8000);
+
+            //get url of sound
+            var linkToSound = document.createElement("a");
+            linkToSound.href = "_resources/sound/sound.mp3";
+            var soundUrl = linkToSound.protocol+"//"+linkToSound.host+linkToSound.pathname+linkToSound.search+linkToSound.hash;
+            //play from url
+            id = soundManager2.startSoundFromUrl(soundUrl);
         };
 
         var progress = 0;
@@ -213,7 +244,7 @@ QUnit.test("SoundManager", function (assert) {
         });
         soundManager2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onFileLoaded));
         soundManager2.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(onPlaybackCompleteAllSounds));
-        
+
     };
 
     //createjs.Sound.addEventListener("event", "handler");
