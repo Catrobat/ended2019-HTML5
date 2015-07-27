@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Web Speech Synthesis Demo</title>
+    
+    
+    
+    
+        <link rel="stylesheet" href="css/style.css">
+
+    
+    
+    
+  </head>
+
+  <body>
+
+    <div id="page-wrapper">
+  <h1>Web Speech Synthesis Demo</h1>
+  
+  <p id="msg"></p>
+
+  <input type="text" name="speech-msg" id="speech-msg" value="Your browser supports speech synthesis2" x-webkit-speech />
+
+	<div class="option">
+		<label for="voice">Voice</label>
+		<select name="voice" id="voice"></select>
+	</div>
+	<div class="option">
+		<label for="volume">Volume</label>
+		<input type="range" min="0" max="1" step="0.1" name="volume" id="volume" value="1">
+	</div>
+	<div class="option">
+		<label for="rate">Rate</label>
+		<input type="range" min="0.1" max="10" step="0.1" name="rate" id="rate" value="1">
+	</div>
+	<div class="option">
+		<label for="pitch">Pitch</label>
+		<input type="range" min="0" max="2" step="0.1" name="pitch" id="pitch" value="1">
+	</div>
+
+	<button id="speak">Speak</button>
+	<button id="speak2">Speak2</button>
+
+</div>
+    
+        <script src="js/index.js"></script>
+
+    
+    
+    
+  </body>
+</html>
