@@ -1,6 +1,6 @@
 <?php
 
-class InsertItemIntoUserListBrickDto extends BaseBrickDto
+class InsertAtListBrickDto extends BaseBrickDto
 {
   public $referenceId;
   public $index;
@@ -8,7 +8,7 @@ class InsertItemIntoUserListBrickDto extends BaseBrickDto
 
   public function __construct($referenceId, $index, $value)
   {
-    parent::__construct("InsertItemIntoUserList");
+    parent::__construct("InsertAtList");
 
     $this->referenceId = $referenceId;
     $this->index = $index;

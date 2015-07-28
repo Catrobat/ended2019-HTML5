@@ -734,7 +734,7 @@ class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          $brick = new AddItemToUserListBrickDto($id, $this->parseFormula($fl->formula));
+          $brick = new AppendToListBrickDto($id, $this->parseFormula($fl->formula));
           array_pop($this->cpp);
           break;
 
@@ -744,7 +744,7 @@ class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          $brick = new DeleteItemOfUserListBrickDto($id, $this->parseFormula($fl->formula));
+          $brick = new DeleteAtListDto($id, $this->parseFormula($fl->formula));
           array_pop($this->cpp);
           break;
 
@@ -754,7 +754,7 @@ class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          $brick = new InsertItemIntoUserListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
+          $brick = new InsertAtListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
           array_pop($this->cpp);
           break;
 
@@ -764,7 +764,8 @@ class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          $brick = new ReplaceItemInUserListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
+          $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]),
+                                                     $this->parseFormula($fl->formula[0]));
           array_pop($this->cpp);
           break;
 
