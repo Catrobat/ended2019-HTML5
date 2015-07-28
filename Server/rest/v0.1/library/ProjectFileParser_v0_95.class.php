@@ -744,7 +744,7 @@ class ProjectFileParser_v0_95 extends ProjectFileParser_v0_93
 
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
-          $brick = new DeleteAtListDto($id, $this->parseFormula($fl->formula));
+          $brick = new DeleteAtListBrickDto($id, $this->parseFormula($fl->formula));
           array_pop($this->cpp);
           break;
 
