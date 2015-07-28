@@ -5,7 +5,6 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 /// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
-/// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
 QUnit.module("sprite.js");
