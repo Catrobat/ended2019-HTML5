@@ -1,6 +1,6 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/program.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksVariable.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 'use strict';
@@ -12,12 +12,12 @@ QUnit.test("SetVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var b = new PocketCode.Bricks.SetVariableBrick("device", sprite, { referenceId: "var1", value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId === "var1" && b._value instanceof PocketCode.Formula , "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Sprite && b._varId === "var1" && b._value instanceof PocketCode.Formula , "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.SetVariableBrick, "instance check");
     assert.ok(b.objClassName === "SetVariableBrick", "objClassName check");
 
@@ -56,12 +56,12 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var b = new PocketCode.Bricks.ChangeVariableBrick("device", sprite, { referenceId: "var1", value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId === "var1" && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Sprite && b._varId === "var1" && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ChangeVariableBrick, "instance check");
     assert.ok(b.objClassName === "ChangeVariableBrick", "objClassName check");
 

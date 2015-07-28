@@ -6,7 +6,7 @@
 /// <reference path="../model/bricksMotion.js" />
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksVariables.js" />
-/// <reference path="../model/sprite.js" />
+/// <reference path="../component/sprite.js" />
 'use strict';
 
 PocketCode.merge({
@@ -40,7 +40,7 @@ PocketCode.merge({
             if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)
                 throw new Error('invalid argument: expected type: object')
             
-            var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
+            var sprite = new PocketCode.Sprite(this._program, jsonSprite);
             var bricks = [];
             for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
                 bricks.push(this._brickFactory.create(sprite, jsonSprite.bricks[i]));
@@ -136,7 +136,7 @@ PocketCode.merge({
 
                 //add event listener
                 //if (brick instanceof PocketCode.Bricks.RootContainerBrick) {
-                //	//TODO: this has to be handled bei the bricks theirself: check if there is a testcast for adding an event handler
+                //	//TODO: this has to be handled by the brick itself: check if there is a testcast for adding an event handler
                 //}
 
                 if (this._total === this._parsed && this._unsupportedBricks.length > 0)
@@ -221,6 +221,9 @@ PocketCode.merge({
 
                         this._isStatic = false;
                         return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
+
+                    case 'USER_LIST':
+                        return '';  //TODO:
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
@@ -469,6 +472,16 @@ PocketCode.merge({
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
                         //break;
+
+                        //list functions
+                    case 'NUMBER_OF_ITEMS':
+                        //TODO: 
+
+                    case 'LIST_ITEM':
+                        //TODO: 
+
+                    case 'CONTAINS':
+                        //TODO:
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);

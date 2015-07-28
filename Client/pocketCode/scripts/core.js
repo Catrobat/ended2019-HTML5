@@ -9,6 +9,12 @@ if (!PocketCode)
     var PocketCode = {};
 
 /**
+ * @namespace Model
+ * @type {{}|*}
+ */
+PocketCode.Model = {};  //PocketCode.Model || {};
+
+/**
  * PocketCode User Interface Namespace
  * @namespace PocketCode.Ui
  */

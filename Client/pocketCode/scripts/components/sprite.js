@@ -2,19 +2,14 @@
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="program.js" />
+/// <reference path="userVariableHost.js" />
+/// <reference path="gameEngine.js" />
 'use strict';
 
 /**
  * @fileOverview Sprite: This file contains every relevant functionality of a sprite
  * @author catrobat HTML5 team
  */
-
-/**
- * @namespace Model
- * @type {{}|*}
- */
-PocketCode.Model = PocketCode.Model || {};
 
 /**
  * RotationStyles
@@ -63,15 +58,15 @@ PocketCode.GraphicEffect = {
  *
  *
  */
-PocketCode.Model.Sprite = (function () {
-    Sprite.extends(SmartJs.Core.Component);
+PocketCode.Sprite = (function () {
+    Sprite.extends(PocketCode.UserVariableHost);
+
     /**
      * initialization of properties
      * @param gameEngine gameEngine instance as a reference
      * @param propObject object which can contains properties
      */
     function Sprite(gameEngine, propObject) {
-
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         //this._executionState = PocketCode.ExecutionState.STOPPED;

@@ -3,10 +3,11 @@
 /// <reference path="../core.js" />
 /// <reference path="../components/broadcastManager.js" />
 /// <reference path="../components/soundManager.js" />
+/// <reference path="userVariableHost.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {
-    GameEngine.extends(SmartJs.Core.Component);
+    GameEngine.extends(PocketCode.UserVariableHost);
 
     function GameEngine() {
         this._executionState = PocketCode.ExecutionState.STOPPED;
@@ -201,7 +202,7 @@ PocketCode.GameEngine = (function () {
             this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
 
-            this._background = this._spriteFactory.create(jsonProject.background);//new PocketCode.Model.Sprite(this, jsonProject.background);
+            this._background = this._spriteFactory.create(jsonProject.background);//new PocketCode.Sprite(this, jsonProject.background);
 
             var sp = jsonProject.sprites;
             var sprite;
