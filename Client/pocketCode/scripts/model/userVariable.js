@@ -17,25 +17,46 @@ PocketCode.Model.merge({
 
     UserVariableCollection: (function () {
 
-        function UserVariableCollection(type, scope, varArray, globalLookup) {
+        function UserVariableCollection(type, scope) {
+            if (!type || (type !== PocketCode.UserVariableType.SIMPLE && type !== PocketCode.UserVariableType.LIST))
+                throw new Error('invalid argument: type');
+            this._type = type;
+
+            if (!scope || (scope !== PocketCode.UserVariableScope.LOCAL && scope !== PocketCode.UserVariableScope.GLOBAL))
+                throw new Error('invalid argument: scope');
+            this._scope = scope;
+
             this._variables = {};
-            this._variableNames = {};
-
-            if (!(varArray instanceof Array))
-                throw new Error('variable setter expects type Array');
-
-
-
-            if (globalLookup)
-                this.globalLookup = globalLookup;
-
         }
 
         UserVariableCollection.prototype = {
-            getVariableById: function (id) {
+            initVariableList: function (variables) {
+                if (!(variables instanceof Array))
+                    throw new Error('setter expects type Array');
 
+                this._variables = {};   //empty
+                for (var i = 0, l = variables.length; i < l; i++) {
+                    var variable = variables[i];
+
+                    switch (this._type) {
+                        case PocketCode.UserVariableType.SIMPLE:
+                            var tmp = new PocketCode.Model.UserVariableSimple(this._scope, variable.id, variable.name);
+                            break;
+
+                        case PocketCode.UserVariableType.LIST:
+                            var tmp = new PocketCode.Model.UserVariableList(this._scope, variable.id, variable.name);
+                            break;
+
+                    }
+                    this._variables[variable.id] = tmp;
+                }
             },
-            getNames: function () { },  //TODO: property? how is it used?
+            getVariableById: function (id) {
+                return this._variables[id];
+            },
+            getVariables: function () {
+                return this._variables;
+            },
         };
 
         return UserVariableCollection;

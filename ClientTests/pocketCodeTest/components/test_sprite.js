@@ -179,7 +179,7 @@ QUnit.test("Sprite", function (assert) {
 
     var varsMatch = true;
     for (var i = 0, length = jsonSprite.variables.length; i < length; i++) {
-        if (!testSprite.__variables[jsonSprite.variables[i].id] === jsonSprite.variables[i].id)
+        if (!testSprite.__variablesSimple._variables[jsonSprite.variables[i].id] === jsonSprite.variables[i].id)
             varsMatch = false;
     }
     assert.ok(varsMatch, "Variables set correctly.");
@@ -417,17 +417,17 @@ QUnit.test("Sprite", function (assert) {
     // ********************* variables *********************
     var varArray = [{ id: [21], name: ["two-one"] }, { id: [24], name: ["two-four"] }];
     sprite._variables = varArray;
-    assert.ok(sprite.__variables[21].value == 0.0, "correct init");
-    assert.ok(sprite.__variables[21].name == "two-one", "correct insertion of array entries");
-    assert.ok(sprite.__variables[24].name == "two-four", "correct insertion of array entries");
+    assert.ok(sprite.__variablesSimple._variables[21].value == 0.0, "correct init");
+    assert.ok(sprite.__variablesSimple._variables[21].name == "two-one", "correct insertion of array entries");
+    assert.ok(sprite.__variablesSimple._variables[24].name == "two-four", "correct insertion of array entries");
     var fakeArray = "error"
     assert.throws(function () { sprite._variables = fakeArray }, Error, "passing non Array");
     var v = sprite.getVariable(21);
     assert.ok(v.name == "two-one", "get variable");
     assert.throws(function () { sprite.getVariable(22) }, Error, "unknown variable id");
 
-    var varNames = sprite.getVariableNames();
-    assert.ok(varNames[21].name == "two-one", "get variableNames");
+    var varNames = sprite.getAllVariables();
+    assert.ok(varNames.local[21].name == "two-one", "get variableNames");
 
 
     // *************************************************************

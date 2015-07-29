@@ -18,7 +18,7 @@ QUnit.test("GameEngine", function (assert) {
     var testDispose = function () {
         gameEngine.dispose();
         assert.ok(gameEngine._disposed, "disposed correctly");
-        assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variables == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
+        assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variablesSimple == undefined && gameEngine.__variablesList == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
         disposedHandled();
     };
 
@@ -49,12 +49,14 @@ QUnit.test("GameEngine", function (assert) {
 
     var variables = [{ id: "1", name: "name1" }, { id: "2", name: "name2" }, { name: "name3", id: "3" }];
     gameEngine._variables = variables;
-    assert.ok(gameEngine.__variables["1"] === variables[0] && gameEngine.__variables["2"] === variables[1] && gameEngine.__variables["3"] === variables[2], "variables set correctly");
-    assert.ok(gameEngine._variableNames["1"].name === "name1" && gameEngine._variableNames["2"].name === "name2" && gameEngine._variableNames["3"].name === "name3", "varableNames set correctly");
+    assert.ok(gameEngine.__variablesSimple._variables["1"].id === variables[0].id && gameEngine.__variablesSimple._variables["2"].id === variables[1].id && gameEngine.__variablesSimple._variables["3"].id === variables[2].id, "variables set correctly");
+    var names = gameEngine.getAllVariables();
+    names = names.global;
+    assert.ok(names["1"].name === "name1" && names["2"].name === "name2" && names["3"].name === "name3", "varableNames set correctly");
 
-    assert.deepEqual(gameEngine.getGlobalVariable("1"), variables[0], "Calling getNewVariable returned correct variable");
-    assert.deepEqual(gameEngine.getGlobalVariableNames(), gameEngine._variableNames, "getGlobalVariableNames returns gameEngine._variableNames");
-    assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
+    //assert.ok(gameEngine.getVariable("1").name === "name1", "Calling getNewVariable returned correct variable");
+    //assert.deepEqual(gameEngine.getAllVariables(), gameEngine._variableNames, "getGlobalVariableNames returns gameEngine._variableNames");
+    //assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
 
     var broadcasts = [{ id: "1" }, { id: "2" }, { id: "3" }];
     assert.ok(typeof gameEngine._broadcastMgr.init == "function", "broadcast mgr interface check");
@@ -291,6 +293,7 @@ QUnit.test("GameEngine", function (assert) {
             assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
 
             loadingHandled();
+        //window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
             testDispose();
         //}
 
@@ -313,7 +316,7 @@ QUnit.test("GameEngine", function (assert) {
 
     var varsMatch = true;
     for (var i = 0, l = testProject.variables.length; i < l; i++) {
-        if (gameEngine.__variables[testProject.variables[i].id] !== testProject.variables[i]) {
+        if (gameEngine.__variablesSimple._variables[testProject.variables[i].id] !== testProject.variables[i]) {
             varsMatch = false;
         }
     }
@@ -339,6 +342,7 @@ QUnit.test("GameEngine", function (assert) {
     //finish async tests if browser does not support sounds
     if (!gameEngine._soundManager.supported) {
         loadingHandled();
+        //window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
         testDispose();
     }
 

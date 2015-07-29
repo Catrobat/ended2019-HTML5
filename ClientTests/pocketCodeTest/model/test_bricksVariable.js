@@ -30,23 +30,23 @@ QUnit.test("SetVariableBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(sprite.__variables.var1.value, 1.0, "variable set correctly (local)");
+        assert.equal(sprite.__variablesSimple._variables.var1.value, 1.0, "variable set correctly (local)");
     };
     //var not found
     assert.throws(function () { b.execute(new SmartJs.Event.EventListener(executedHandler, this), "setVar"); }, Error, "ERROR: unknown variable");
 
-    sprite.__variables.var1 = { id: "var1", value: 0 };
+    sprite.__variablesSimple._variables.var1 = { id: "var1", value: 0 };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "setVar");
 
     //global
-    sprite.__variables = {};
-    program.__variables.var1 = { id: "var1", value: 0 };
+    sprite.__variablesSimple._variables = {};
+    program.__variablesSimple._variables.var1 = { id: "var1", value: 0 };
     var executedHandler2 = function (e) {
         assert.equal(e.id, "setGlobalVar", "return id check");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(program.__variables.var1.value, 1.0, "variable set correctly (global)");
+        assert.equal(program.__variablesSimple._variables.var1.value, 1.0, "variable set correctly (global)");
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "setGlobalVar");
 
@@ -74,23 +74,23 @@ QUnit.test("ChangeVariableBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(sprite.__variables.var1.value, 2.0, "variable set correctly (local)");
+        assert.equal(sprite.__variablesSimple._variables.var1.value, 2.0, "variable set correctly (local)");
     };
     //var not found
     assert.throws(function () { b.execute(new SmartJs.Event.EventListener(executedHandler, this), "changeVar"); }, Error, "ERROR: unknown variable");
 
-    sprite.__variables.var1 = { id: "var1", value: 1 };
+    sprite.__variablesSimple._variables.var1 = { id: "var1", value: 1 };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "changeVar");
 
     //global
-    sprite.__variables = {};
-    program.__variables.var1 = { id: "var1", value: 1 };
+    sprite.__variablesSimple._variables = {};
+    program.__variablesSimple._variables.var1 = { id: "var1", value: 1 };
     var executedHandler2 = function (e) {
         assert.equal(e.id, "changeGlobalVar", "return id check");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(program.__variables.var1.value, 2.0, "variable set correctly (global)");
+        assert.equal(program.__variablesSimple._variables.var1.value, 2.0, "variable set correctly (global)");
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });

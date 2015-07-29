@@ -216,8 +216,10 @@ PocketCode.merge({
                         return this._parseJsonSensor(jsonFormula, uiString);
 
                     case 'USER_VARIABLE':
-                        if (uiString)
-                            return '"' + this._variableNames[jsonFormula.value].name + '"';
+                        if (uiString) {
+                            var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.gloabl[jsonFormula.value];
+                            return '"' + variable.name + '"';
+                        }
 
                         this._isStatic = false;
                         return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';

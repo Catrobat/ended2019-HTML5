@@ -247,7 +247,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     var s11 = f.calculate();    //store in var to enable access
     sprite._variables = [{ id: "s11", name: "variableName" }];
-    sprite.__variables.s11.value = s11;  //test length operation
+    sprite.__variablesSimple._variables.s11.value = s11;  //test length operation
 
     f.json = length;    //hello world
     assert.equal(f.calculate(), 11, "string length");

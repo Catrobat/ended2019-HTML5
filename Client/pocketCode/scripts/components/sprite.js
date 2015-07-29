@@ -43,8 +43,6 @@ PocketCode.GraphicEffect = {
  * @property {Array} _looks list of looks
  * @property {Array} _sounds list of sounds
  * @property {number} _onChange maps events to gameEngine.onSpriteChange
- * @property {Array} _variables set of variables
- * @property {Array} _variableNames set of varialbe names
  * @property {Array} _bricks list of bricks
  * @property {number} _positionX horizontal position
  * @property {number} _positionY vertical position
@@ -59,7 +57,7 @@ PocketCode.GraphicEffect = {
  *
  */
 PocketCode.Sprite = (function () {
-    Sprite.extends(PocketCode.UserVariableHost);
+    Sprite.extends(PocketCode.UserVariableHost, false);
 
     /**
      * initialization of properties
@@ -67,6 +65,8 @@ PocketCode.Sprite = (function () {
      * @param propObject object which can contains properties
      */
     function Sprite(gameEngine, propObject) {
+        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
+
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         //this._executionState = PocketCode.ExecutionState.STOPPED;
@@ -76,8 +76,6 @@ PocketCode.Sprite = (function () {
 
         this._looks = [];
         this._sounds = [];
-        this.__variables = {};
-        this._variableNames = {};
         this._bricks = [];
 
         //attach to bricks onExecuted event, get sure all are executed and not running
@@ -114,8 +112,8 @@ PocketCode.Sprite = (function () {
         }
 
         //variables: a sprite may have no (local) variables
-        if (propObject.variables)
-            this._variables = propObject.variables;
+        this._variables = propObject.variables || [];
+        this._lists = propObject.lists || [];
 
         //bricks
         if (propObject.bricks) {
@@ -208,22 +206,6 @@ PocketCode.Sprite = (function () {
             get: function () {
                 return this._sounds;
             },
-        },
-
-        //variables
-        _variables: {    //[{id: [id], name: [name]}, ... ]
-            set: function (varArray) {
-                if (!(varArray instanceof Array))
-                    throw new Error('variable setter expects type Array');
-
-                for (var i = 0, l = varArray.length; i < l; i++) {
-                    varArray[i].value = 0.0;  //init
-                    this.__variables[varArray[i].id] = varArray[i];
-                    this._variableNames[varArray[i].id] = { name: varArray[i].name, scope: 'local' };
-                }
-            },
-            //enumerable: false,
-            //configurable: true,
         },
 
         bricks: {
@@ -676,15 +658,12 @@ PocketCode.Sprite = (function () {
         setGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value)) {
                 throw new Error('invalid value ');
-                //return false;
             }
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._setTransparency(value);
-                    //break;
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._setBrightness(value);
-                    //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -842,53 +821,13 @@ PocketCode.Sprite = (function () {
             return true;
         },
 
-        //variables
-        /**
-         * returns the global variable with the given id
-         * @param varId
-         * @returns {*}
-         */
-        getVariable: function (varId) {
-            if (this.__variables[varId])
-                return this.__variables[varId];
-            else //global lookup
-                return this._gameEngine.getGlobalVariable(varId);
-        },
-        //setVariable: function (varId, value) {
-        //    if (this.__variables[varId])
-        //        this.__variables[varId].value = value;
-        //    else //gloable lookup
-        //        return this._gameEngine.setGlobalVariable(varId, value);
-        //},
-        /**
-         * returns all variable names
-         * @returns {{}}
-         */
-        getVariableNames: function () {
-            //clone
-            var variableNames = {};
-            var names = this._variableNames;
-            for (var v in names)
-                if (names.hasOwnProperty(v)) {
-                    variableNames[v] = names[v];
-                }
-
-            //include global variables
-            variableNames.merge(this._gameEngine.getGlobalVariableNames());
-            return variableNames;
-        },
         /* override */
         dispose: function () {
             this.stopScripts();
             //make sure the game engine is not disposed
             this._gameEngine = undefined;
-            //this._looks = undefined;  //loaded resources are not effecting the game engine
-            //this._sounds = undefined;
-            //this.__variables = undefined;
-            //this._variableNames = undefined;
-            //this._bricks = undefined; //we have to dispose bricks to make sure they remove their handlers (broadcast, gameEngine , ..)
             //call super
-            SmartJs.Core.Component.prototype.dispose.call(this);
+            PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
     });
 

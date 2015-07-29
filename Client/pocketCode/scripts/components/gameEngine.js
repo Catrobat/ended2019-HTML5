@@ -1,15 +1,18 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
+/// <reference path="../model/userVariable.js" />
 /// <reference path="../components/broadcastManager.js" />
 /// <reference path="../components/soundManager.js" />
 /// <reference path="userVariableHost.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {
-    GameEngine.extends(PocketCode.UserVariableHost);
+    GameEngine.extends(PocketCode.UserVariableHost, false);
 
     function GameEngine() {
+        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
+
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._minLoopCycleTime = 25; //ms        //TODO:
         this._soundsLoaded = false;
@@ -30,7 +33,6 @@ PocketCode.GameEngine = (function () {
         this._sprites = [];
 
         this.resourceBaseUrl = "";
-        //this._layerObjectList = [];
 
         this.__images = {};
         this.__sounds = {};
@@ -39,9 +41,6 @@ PocketCode.GameEngine = (function () {
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingProgressHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
-
-        this.__variables = {};
-        this._variableNames = {};
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -57,10 +56,7 @@ PocketCode.GameEngine = (function () {
     Object.defineProperties(GameEngine.prototype, {
         layerObjectList: {
             get: function () {
-                //this._layerObjectList = this._sprites.slice();
-                //this._layerObjectList.unshift(this._background);
-                //return this._layerObjectList;
-                return [this._background].concat(this._sprites);    //TODO ??? 
+                return [this._background].concat(this._sprites);
             }
         },
         background: {
@@ -93,20 +89,6 @@ PocketCode.GameEngine = (function () {
                     this.__sounds[sounds[i].id] = sounds[i];
 
                 this._soundManager.init(sounds);
-            },
-            //enumerable: false,
-            //configurable: true,
-        },
-        _variables: {
-            set: function (variables) {
-                if (!(variables instanceof Array))
-                    throw new Error('setter expects type Array');
-
-                for (var i = 0, l = variables.length; i < l; i++) {
-                    //varArray[i].value = 0;  //init
-                    this.__variables[variables[i].id] = variables[i];
-                    this._variableNames[variables[i].id] = { name: variables[i].name, scope: 'global' };
-                }
             },
             //enumerable: false,
             //configurable: true,
@@ -173,7 +155,7 @@ PocketCode.GameEngine = (function () {
             this._sprites.dispose();
             //this._executionState = PocketCode.ExecutionState.STOPPED;
             //this.__variables = {};
-            this._variableNames = {};
+            //this._variableNames = {};
             //this._broadcasts = [];
             //this._soundManager = new PocketCode.SoundManager(this._id);
             if (!this._soundManager.supported) {
@@ -192,7 +174,9 @@ PocketCode.GameEngine = (function () {
 
             this._broadcasts = jsonProject.broadcasts || [];
             this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
-            this._variables = jsonProject.variables || {};
+
+            this._variables = jsonProject.variables || [];
+            this._lists = jsonProject.lists || [];
 
             var device = new PocketCode.Device(this._soundManager);
             var bricksCount = jsonProject.header.bricksCount;
@@ -246,12 +230,6 @@ PocketCode.GameEngine = (function () {
                 throw new Error('no project loaded');
             }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
-            //this._background.execute();
-
-            //for (var i = 0, l = this._sprites.length; i < l; i++) {
-            //    this._sprites[i].execute();
-            //}
-
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this.onProgramStart.dispatchEvent();
         },
@@ -272,7 +250,6 @@ PocketCode.GameEngine = (function () {
             for (var i = 0, l = this._sprites.length; i < l; i++) {
                 this._sprites[i].pauseScripts();
             }
-            //this._paused = true;
             this._executionState = PocketCode.ExecutionState.PAUSED;
         },
 
@@ -287,7 +264,6 @@ PocketCode.GameEngine = (function () {
             for (var i = 0, l = this._sprites.length; i < l; i++) {
                 this._sprites[i].resumeScripts();
             }
-            //this._paused = false;
             this._executionState = PocketCode.ExecutionState.RUNNING;
         },
 
@@ -302,8 +278,6 @@ PocketCode.GameEngine = (function () {
                 this._sprites[i].stopScripts();
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
-            //this._running = false;
-            //this._paused = false;
         },
 
         _spriteOnExecutedHandler: function (e) {
@@ -329,12 +303,11 @@ PocketCode.GameEngine = (function () {
                 if (sprites[i].id === spriteId)
                     return sprites[i];
             }
-            //if (!sprite)
-                throw new Error('unknown sprite with id: ' + spriteId);
-            //return sprite;
+
+            throw new Error('unknown sprite with id: ' + spriteId);
         },
 
-        getSpriteLayer: function (sprite) {//Id) {
+        getSpriteLayer: function (sprite) {
             //return this.layerObjectList.indexOf(sprite);//this.getSpriteById(spriteId));
             var idx = this._sprites.indexOf(sprite);
             if (idx < 0)
@@ -353,31 +326,12 @@ PocketCode.GameEngine = (function () {
 
             idx = Math.max(idx - layers, 0);
             sprites.insert(sprite, idx);
-            //var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
 
-            //if (layers <= 0 || currentPosition <= 0)
-            //    return false;
-
-            //var sprites = this._sprites;
-            //var currentSprite = this._sprites[currentPosition];
-            //sprites.remove(currentSprite);
-
-            //var newPosition = currentPosition - layers;
-            //if (newPosition < 0)
-            //    newPosition = 0;
-            //sprites.insert(currentSprite, newPosition);
-
-
-            //var ids = [];
-            //for (var i = 0, l = sprites.length; i < l; i++) {
-            //    ids.push(sprites[i]);   //TODO: you're pushing sprites here, right? not IDs?
-            //}
-            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layer: ids } }, this.getSpriteById(spriteId));    //TODO: check event arguments
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + this._backgroundOffset } }, sprite);    //TODO: check event arguments
             return true;
         },
 
-        setSpriteLayerToFront: function (sprite) {//Id) {
+        setSpriteLayerToFront: function (sprite) {
             var sprites = this._sprites;
             if (sprites.indexOf(sprite) === sprites.length - 1)
                 return false;
@@ -386,21 +340,6 @@ PocketCode.GameEngine = (function () {
                 return false;
             sprites.push(sprite);
 
-            //var currentPosition = this.getSpriteLayer(spriteId) - this._backgroundOffset;
-
-            //var sprites = this._sprites;
-
-            //if (currentPosition === sprites.length - 1)
-            //    return false;
-            //var spriteToSetToFront = sprites[currentPosition];
-            //sprites.splice(currentPosition, 1);
-            //sprites.push(spriteToSetToFront);
-
-            //var ids = [];
-            //for (var i = 0, l = sprites.length; i < l; i++) {
-            //    ids.push(sprites[i]);
-            //}
-            //this._onSpriteChange.dispatchEvent({ id: spriteId, properties: { layers: ids } }, this.getSpriteById(spriteId));    //TODO: check event arguments
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //TODO: sprites.length - 1 + this._backgroundOffset ???
             return true;
         },
@@ -418,33 +357,11 @@ PocketCode.GameEngine = (function () {
             return false;
         },
 
-        //variables
-        getGlobalVariable: function (varId) {
-            if (this.__variables[varId])
-                return this.__variables[varId];
-            else
-                throw new Error('unknown variable id: ' + varId);
-        },
-        getGlobalVariableNames: function () {
-            return this._variableNames;
-        },
-        //setGlobalVariable: function (varId, value) {
-        //    if (this.__variables[varId])
-        //        return this.__variables[varId].value = value;
-        //    else
-        //        throw new Error('unknown variable id: ' + varId);
-        //},
-
         /* override */
         dispose: function () {
             this.stopProject();
-            //make sure the game engine and loaded resources are not disposed: background ans sprites are disposed as well
-            //this._onProgramStart = undefined;
-            //this._onExecuted = undefined;
-            //this._onSpriteChange = undefined;
-            //this._onTabbedAction = undefined;
             //call super
-            SmartJs.Core.Component.prototype.dispose.call(this);
+            PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
     });
 

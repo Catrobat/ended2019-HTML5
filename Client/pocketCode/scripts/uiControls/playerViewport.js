@@ -11,7 +11,7 @@ PocketCode.Ui.PlayerViewport = (function () {
     //ctr
     function PlayerViewport(originalWidth, originalHeight) {
         //var props = {width:originalWidth, height:originalHeight};
-        SmartJs.Ui.Control.call(this, 'div', null);
+        SmartJs.Ui.Control.call(this, 'div');
 
         this._canvas = document.createElement('canvas');
         this._canvas.className = 'pc-canvas';
