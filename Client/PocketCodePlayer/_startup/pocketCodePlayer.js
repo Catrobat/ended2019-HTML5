@@ -9,7 +9,7 @@ if (!PocketCode)
 PocketCode.websiteUrl = 'https://pocketcode.org/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'details/{projectId}';
 PocketCode.mobileUrl = PocketCode.websiteUrl + 'html5/player/{projectId}';
-PocketCode.logoUrl = PocketCode.websiteUrl + 'images/logo/logo_text.png';
+PocketCode.logoUrl = 'images/logo_text.png';
 
 PocketCode.Web = {
 
@@ -736,7 +736,7 @@ PocketCode.Web.resources = {
 		return PocketCode.Web.resourceRoot;
 	}(),//'../',	//http://localhost:26825/loadingTestScripts/',
 	files: [
-		{ url: 'smartJs/sj.css', type: 'css' },
+		//{ url: 'smartJs/sj.css', type: 'css' },
 		{ url: 'smartJs/sj.js', type: 'js' },
 		{ url: 'smartJs/sj-core.js', type: 'js' },
 		{ url: 'smartJs/sj-event.js', type: 'js' },
@@ -755,7 +755,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksVariable.js', type: 'js' },
-		{ url: 'pocketCode/scripts/component/sprite.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
@@ -764,6 +764,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		//{ url: 'pocketCode/scripts/components/canvas.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/userVariableHost.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/sprite.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/mvc.js', type: 'js' },
 

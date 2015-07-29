@@ -113,7 +113,7 @@ PocketCode.PlayerApplication = (function () {
             //console.log('navigation from ' + from + ' to: ' + to + ', viewstate: ' + JSON.stringify(toViewState));
             if (from)
                 from.hide();
-            to.show()
+            to.showView();
         },
         loadProject: function (projectId) {
 
