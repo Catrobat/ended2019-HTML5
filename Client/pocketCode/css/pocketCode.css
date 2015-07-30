@@ -104,30 +104,36 @@
 	border-color: #ef7716;
 }
 
+
 /* inner player screens */
-.pc-playerPreviewScreen, .pc-playerSplashScreen {
+.pc-playerStartScreen { /*, .pc-playerSplashScreen {*/
+	font-size: 10px;
 	position: absolute;
 	top: 0;
 	left: 0;
 	height: 100%;
 	width: 100%;
 	background-color: #05222a;
+	overflow: hidden;
 }
 
-	.pc-playerPreviewScreen img {
+	.pc-playerStartScreen img {
 		height: 100%;
+		width: 100%;
+		padding: 0px;
+		margin: 0px;
 		background-color: #A5A5A5;
 		opacity: 0.3;
 		filter: alpha(opacity = 30);
 	}
 
-		.pc-playerPreviewScreen img .disabled {
+		.pc-playerStartScreen img .disabled {
 			background-color: #A5A5A5;
 			opacity: 0.3;
 			filter: alpha(opacity = 30);
 		}
 
-	.pc-playerPreviewScreen .pc-title {
+	.pc-playerStartScreen .pc-title {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -138,7 +144,7 @@
 		padding: 15px;
 	}
 
-	.pc-playerPreviewScreen .pc-loadingIndicator {
+	.pc-playerStartScreen .pc-loadingIndicatorLayout {
 		position: absolute;
 		bottom: 0;
 		left: 0;
@@ -147,21 +153,67 @@
 		font-weight: 700;
 		height: 25%;
 		width: 100%;
+		text-align: center;
+		white-space: nowrap;
 	}
 
-	.pc-playerPreviewScreen .pc-startButton svg {
-		height: 50%;
-		left: 25%;
-		top: 25%;
-		width: 50%;
+	.pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
+		 display: table; 
+		 margin: 0 auto;
 	}
 
+	.pc-playerStartScreen .pc-liProgress {
+		background-color: #ef7716;
+	}
+
+.pc-playerStartScreen button, .pc-playerStartScreen button:active {
+	background: none;
+	border: medium none;
+	color: #a9dcf1;
+	cursor: pointer;
+	fill: #a9dcf1;
+	height: 100%;
+	margin: 0;
+	outline: medium none;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+}
+
+	.pc-playerStartScreen button svg {
+		height: 44%;
+		left: 28%;
+		top: 28%;
+		width: 44%;
+		margin: 0;
+		padding: 0;
+		position: absolute;
+	}
+
+	.pc-playerStartScreen button:hover {
+		fill: #ffffff;
+	}
+	.pc-playerStartScreen button:active {
+		fill: #17a5b8;
+		margin: 0;
+		padding: 0;
+	}
+	.pc-playerStartScreen button:disabled {
+		fill: #A5A5A5;
+		cursor: default;
+	}
+
+
+/* splash screen 
 .pc-playerSplashScreen {
 	background-color: red;
 	visibility: hidden;
 }
+*/
 
-
+/* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
 	margin: 0;
 	width: 60px;
@@ -215,6 +267,7 @@
 
 
 
+
 /* popup test */
 .pc-col50 {
 	display: table-cell;
@@ -222,17 +275,17 @@
 }
 
 .pc-popup {
-    width: 20em;   /* this value will be set in script depending on the device width - test only*/
-    height: 25em;
+	width: 20em;   /* this value will be set in script depending on the device width - test only*/
+	height: 25em;
 
 	/*max-width: 400px;
 	*/max-height: 30em;
 	display: table;
-    color: #31BAEC;
+	color: #31BAEC;
 	background-color: #05222a;
-    text-align: center;
-    font-family: Tahoma, Geneva, sans-serif;
-    box-shadow: 5px 5px 5px #000000;
+	text-align: center;
+	font-family: Tahoma, Geneva, sans-serif;
+	box-shadow: 5px 5px 5px #000000;
 }
 
 .pc-popupDefaultBorder {
@@ -240,43 +293,43 @@
 }
 
 .pc-popupErrorBorder {
-    border-color: #A31515;
+	border-color: #A31515;
 }
 .pc-popupWarningBorder {
 	border-color: #EF7716;
 }
 .pc-popupHeader, .pc-popupBody, .pc-popupFooter {
 	/*display: table-cell;*/
-    padding: 10px;
+	padding: 10px;
 }
 .pc-popupHeader {
-    border-bottom: 2px solid #31BAEC;
-    padding: 20px;
-    font-size: larger;
+	border-bottom: 2px solid #31BAEC;
+	padding: 20px;
+	font-size: larger;
 
 }
 .pc-popupBody {
 	color: #F2F2F2;
-    overflow-x: hidden;
-    overflow-y: auto;
-    max-height: 20em;
-    /* TODO: fontsize color */
+	overflow-x: hidden;
+	overflow-y: auto;
+	max-height: 20em;
+	/* TODO: fontsize color */
 }
 
 .pc-popupFooter {
-    border-top: 1px solid #404040;
+	border-top: 1px solid #404040;
 	white-space: nowrap;
 	padding: 15px;
 	color: #F2F2F2;
 }
 .pc-popupFooter button {
 	margin-left: 4px;
-    padding: 2px 4px 2px 4px;
-    min-width: 65px;
-    border: solid 0px;    /* TODO */
-    border-radius: 2px;
-    font-weight: bold;
-    background-color: transparent;
-    color: inherit;
+	padding: 2px 4px 2px 4px;
+	min-width: 65px;
+	border: solid 0px;    /* TODO */
+	border-radius: 2px;
+	font-weight: bold;
+	background-color: transparent;
+	color: inherit;
 }
 /* TODO button hover/active/disabled states and colors */

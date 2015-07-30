@@ -21,6 +21,11 @@
     left: 0;
     overflow: hidden;
 }
+    .pc-webOverlay * {
+        background: none;
+        border: 0;
+        border-radius: 0;
+    }
 
 .pc-webOpacity {
     position: absolute;
@@ -118,7 +123,7 @@
     padding: 0;
     margin: 6px;
     margin-bottom: 10px;
-    background-color: transparent;
+    border-radius: 0;
     cursor: pointer;
     position: relative;
     width: 38px;
