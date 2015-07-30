@@ -300,7 +300,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	var onLoadStartHandler = function (e) {
 		onLoadStart++;
 		//validate request url
-		assert.equal(req._url, "https://web-test.catrob.at/rest/v0.1/projects/874/details?a=eins&b=2", "valid  request url params: GET");
+		assert.equal(req._url, "https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details?a=eins&b=2", "valid  request url params: GET");
 		assert.equal(e.target, req, "onLoadStart target check");
 		//console.log('onLoadStart ');
 	};
@@ -381,7 +381,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		//console.log('onProgressSupportedChange ' + e.progressSupport);
 	};
 
-	req = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/rest/v0.1/projects/874/details");  //public service
+	req = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details");  //public service
 
 	req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
 	req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -472,7 +472,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		onLoad++;
 		assert.equal(e.target, req4, "onLoad target check");
 		//console.log('onLoad ');
-		assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "cors request: consuming our service (https://web-test.catrob.at)");
+		assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "cors request: consuming our service (https://web-test.catrob.at/)");
 		var res = JSON.parse(e.target.responseText);
 		assert.equal(res.id, 825, "response check");
 		//^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -494,7 +494,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		onProgressChange = 0;
 		onError = 0;
 
-		req4 = new SmartJs.Communication.CorsRequest();//"https://web-test.catrob.at/rest/v0.1/projects/825");
+		req4 = new SmartJs.Communication.CorsRequest();//"https://web-test.catrob.at/pocketcode/rest/v0.1/projects/825");
 
 		req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler4, this));
 		req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
@@ -503,13 +503,13 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler4, this));
 		req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler4, this));
 
-		req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/rest/v0.1/projects/825");
+		req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/pocketcode/rest/v0.1/projects/825");
 	};
 
 
 
 	//start async
-	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "https://web-test.catrob.at/rest/v0.1/projects/874/details"); //start async requests 
+	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details"); //start async requests 
 
 	//var req5 = new SmartJs.Communication.CorsRequest();
 	//assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
