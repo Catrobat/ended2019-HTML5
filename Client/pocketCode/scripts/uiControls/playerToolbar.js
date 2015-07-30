@@ -16,9 +16,9 @@ PocketCode.Ui.merge({
     showOnGesture: indicates if the menu is bound to a page event to show it based on gesture events = for IOS devices (no back button)
     */
     PlayerToolbarSettings: {
-        DESKTOP: { orientation: 'h', position: 'lo', hideable: false, hideOnStart: false, showOnGesture: false },
-        MOBILE: { orientation: 'v', position: 'bi', hideable: true, hideOnStart: false, showOnGesture: false },
-        MOBILE_IOS: { orientation: 'v', position: 'bi', hideable: true, hideOnStart: true, showOnGesture: true },
+        DESKTOP: { orientation: 'h', position: 'lo', hideable: false, animatedShowHide: false, hideOnStart: false, showOnGesture: false },
+        MOBILE: { orientation: 'v', position: 'bi', hideable: true, animatedShowHide: true, hideOnStart: false, showOnGesture: false },
+        MOBILE_IOS: { orientation: 'v', position: 'bi', hideable: true, animatedShowHide: true, hideOnStart: true, showOnGesture: true },
     },
 
     PlayerEventArguments: {
@@ -53,7 +53,7 @@ PocketCode.Ui.merge({
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
             //events
-            this._onButtonCLicked = new SmartJs.Event.Event(this);
+            this._onButtonClicked = new SmartJs.Event.Event(this);
         }
 
         //properties
@@ -77,7 +77,17 @@ PocketCode.Ui.merge({
 
         //methods
         PlayerToolbar.prototype.merge({
-            _createMenuBackground: function(container) {
+            hide: function() {
+                this.hideBrowseProjectsButton();
+                SmartJs.Ui.Control.prototype.hide.call(this);
+            },
+            showBrowseProjectsButton: function () {
+                //shows a button "browse other projects" to be called on project onExecuted event
+            },
+            hideBrowseProjectsButton: function() {
+
+            },
+            _createMenuBackground: function (container) {
                 return container;   //TODO: 
                 //returns inner container where the buttons have to be placed in
             },
