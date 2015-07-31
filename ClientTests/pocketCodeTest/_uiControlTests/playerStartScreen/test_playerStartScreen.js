@@ -13,11 +13,26 @@ window.onload = function () {
     //do something
     control.setProgress(65);
 
+    //add resize events
+    var onResizeHandler = function (e) {
+        control.onResize.dispatchEvent();
+    };
+    window.addEventListener('resize', onResizeHandler, false);
+
+    //call resize once (on append) to make sure all size-properties are set correctly
+    control.onResize.dispatchEvent();
+
     var onStartEventFired = function () {
         outputContainer.innerHTML += ', start clicked';
     };
 
     control.onStartClicked.addEventListener(new SmartJs.Event.EventListener(onStartEventFired, this));
     control.startEnabled = true;
+    //control.startEnabled = false;
 
+    control.hideProgress();
+    control.showProgress();
+
+    control.title += ' (changed)';
+    //control.progressText = 'a very long text to check layout issues';
 };

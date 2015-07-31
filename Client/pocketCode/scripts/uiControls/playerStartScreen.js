@@ -41,9 +41,9 @@ PocketCode.Ui.merge({
         //properties
         Object.defineProperties(PlayerStartScreen.prototype, {
             title: {
-                //get: function () {
-
-                //},
+                get: function () {
+                    return this._titleTextNode.text;
+                },
                 set: function (value) {
                     if (typeof value !== 'string')
                         throw new error('invalid argument: title: expected type = string');
@@ -69,6 +69,10 @@ PocketCode.Ui.merge({
             startEnabled: {
                 set: function (value) {
                     this._startButton.disabled = !value;
+                    if (value)
+                        this._previewImage.className = '';
+                    else
+                        this._previewImage.className = 'disabled';
                 },
             },
             //executionState: {
@@ -99,7 +103,7 @@ PocketCode.Ui.merge({
                 var fh = Math.round(window.innerHeight * 0.3 / 9.0);
                 fs = (fs < fh) ? fs : fh;
                 fs = (fs < 10) ? 10 : fs;
-                fs = (fs > 14) ? 14 : fs;
+                fs = (fs > 16) ? 16 : fs;
                 this._dom.style.fontSize = fs + 'px';
             },
             _createLayout: function () {
@@ -119,7 +123,9 @@ PocketCode.Ui.merge({
                 tmp.className = 'pc-loadingIndicator';
                 liLayout.appendChild(tmp);
 
-                tmp.appendChild(this._progressTextNode._dom);
+                var span = document.createElement('span');
+                span.appendChild(this._progressTextNode._dom);
+                tmp.appendChild(span);
                 tmp.appendChild(this._progressBar._dom);
 
                 this._startButton.innerHTML =   '<svg preserveAspectRatio="xMidYMid meet" viewBox="0,0,64,64">' +
@@ -129,9 +135,11 @@ PocketCode.Ui.merge({
                 this._dom.appendChild(this._startButton);
             },
             showProgress: function () {
+                this._progressTextNode.show();
                 this._progressBar.show();
             },
             hideProgress: function () {
+                this._progressTextNode.hide();
                 this._progressBar.hide();
             },
             setProgress: function (value) {

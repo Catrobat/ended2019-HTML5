@@ -115,19 +115,20 @@
 	width: 100%;
 	background-color: #05222a;
 	overflow: hidden;
+	box-sizing: border-box;
 }
 
 	.pc-playerStartScreen img {
-		height: 100%;
+		height: 78%;
 		width: 100%;
 		padding: 0px;
 		margin: 0px;
 		background-color: #A5A5A5;
-		opacity: 0.3;
-		filter: alpha(opacity = 30);
+		opacity: 0.6;
+		filter: alpha(opacity = 60);
 	}
 
-		.pc-playerStartScreen img .disabled {
+		.pc-playerStartScreen .disabled {
 			background-color: #A5A5A5;
 			opacity: 0.3;
 			filter: alpha(opacity = 30);
@@ -138,7 +139,7 @@
 		top: 0;
 		left: 0;
 		color: #a9dcf1;
-		font-size: 40px;
+		font-size: 4em;
 		font-weight: 700;
 		overflow: hidden;
 		padding: 15px;
@@ -148,22 +149,38 @@
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		color: #ef7716;
-		font-size: 25px;
-		font-weight: 700;
-		height: 25%;
+		color: /*#17a5b8;*/ #ef7716;
+		height: 20%;
 		width: 100%;
 		text-align: center;
-		white-space: nowrap;
+		/*background-color: #144d5f;*/
 	}
 
-	.pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
-		 display: table; 
-		 margin: 0 auto;
-	}
+		.pc-playerStartScreen .pc-loadingIndicatorLayout span {
+			font-size: 2em;
+			font-weight: 700;
+		}
 
+		.pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
+			 display: table; 
+			 margin: 0 auto;
+			 width: 19em;
+		}
+	
+	.pc-playerStartScreen .pc-liContainer {
+		margin-top: 0.5em;
+	}
 	.pc-playerStartScreen .pc-liProgress {
 		background-color: #ef7716;
+	}
+	.pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
+		top: 0;
+		left: 0;
+	}
+
+	.pc-playerStartScreen .pc-liProgressStyle > div {
+		display: table-cell;
+		width: 2.5em;
 	}
 
 .pc-playerStartScreen button, .pc-playerStartScreen button:active {
@@ -206,13 +223,6 @@
 	}
 
 
-/* splash screen 
-.pc-playerSplashScreen {
-	background-color: red;
-	visibility: hidden;
-}
-*/
-
 /* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
 	margin: 0;
@@ -246,12 +256,6 @@
 	display: table-cell;
 }
 
-
-/*		.hiddenOverflow {
-			overflow: hidden;
-		}
-
-*/
 
 /* overlay */
 .pc-overlay {

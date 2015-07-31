@@ -160,7 +160,7 @@ SmartJs.Ui.merge({
         TextNode.extends(SmartJs.Core.Component);//, false);
 
         function TextNode(text) {//, propObject) {
-            this._text = text;
+            this._text = text || '';
             this._dom = document.createTextNode(this._text);
 
             //SmartJs.Core.EventTarget.call(this);//, propObject);
@@ -183,6 +183,12 @@ SmartJs.Ui.merge({
 
         //methods
         TextNode.prototype.merge({
+            hide: function() {
+                this._dom.textContent = '';
+            },
+            show: function () {
+                this._dom.textContent = this._text;
+            },
             verifyResize: function () { //interface suport only
             },
             dispose: function () {
