@@ -14,12 +14,6 @@ if (!PocketCode)
  */
 PocketCode.Model = {};  //PocketCode.Model || {};
 
-/**
- * PocketCode User Interface Namespace
- * @namespace PocketCode.Ui
- */
-PocketCode.Ui = {};
-
 
 PocketCode.merge({
 
