@@ -31,7 +31,7 @@ PocketCode.Ui.merge({
     },
 
     PlayerToolbar: (function () {
-        PlayerToolbar.extends(SmartJs.Ui.Control, false);
+        PlayerToolbar.extends(PocketCode.Ui.I18nControl, false);
 
         function PlayerToolbar(settings) {
             var div = document.createElement('div');
@@ -48,7 +48,7 @@ PocketCode.Ui.merge({
                 throw new Error('Unsupported setting: position');
 
             //base ctr is called after creating the menus base container
-            SmartJs.Ui.Control.call(this, div);
+            PocketCode.Ui.I18nControl.call(this, div);
 
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));

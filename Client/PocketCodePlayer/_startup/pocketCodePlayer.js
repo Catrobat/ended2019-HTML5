@@ -749,6 +749,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'js' },
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },

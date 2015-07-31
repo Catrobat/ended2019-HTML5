@@ -3,6 +3,7 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../core.js" />
+/// <reference path="../ui.js" />
 'use strict';
 
 
@@ -17,11 +18,11 @@ PocketCode.DialogType = {
 };
 
 PocketCode.Ui.Dialog = (function () {
-    Dialog.extends(SmartJs.Ui.Control, false);
+    Dialog.extends(PocketCode.Ui.I18nControl, false);
 
     //cntr
     function Dialog(type, caption) {//, headerText, bodyText, footerText) {
-        SmartJs.Ui.Control.call(this, 'div');
+        PocketCode.Ui.I18nControl.call(this, 'div');
 
         this._createLayout();
 

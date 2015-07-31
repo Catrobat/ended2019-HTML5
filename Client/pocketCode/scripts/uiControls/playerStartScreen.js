@@ -5,15 +5,16 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../PocketCodePlayer/_startup/pocketCodePlayer.js" />
 /// <reference path="../core.js" />
+/// <reference path="../ui.js" />
 'use strict';
 
 PocketCode.Ui.merge({
 
     PlayerStartScreen: (function () {
-        PlayerStartScreen.extends(SmartJs.Ui.Control, false);
+        PlayerStartScreen.extends(PocketCode.Ui.I18nControl, false);
 
         function PlayerStartScreen(title, base64peviewImage) {
-            SmartJs.Ui.Control.call(this, 'div');
+            PocketCode.Ui.I18nControl.call(this, 'div');
 
             this._dom.className = 'pc-playerStartScreen';
             this._titleTextNode = new SmartJs.Ui.TextNode('');
