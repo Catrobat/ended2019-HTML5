@@ -36,6 +36,10 @@ window.onload = function () {
 
     control = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PAUSE, 'pause', true);
     layoutContainer.appendChild(control._dom);
+    control.hide();
+    outputContainer.innerHTML += '<br />svg button: hidden: ' + control.hidden;
+    control.show();
+    outputContainer.innerHTML += '<br />svg button: hidden: ' + control.hidden;
 
     control = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.RESTART, 'restart');
     layoutContainer.appendChild(control._dom);

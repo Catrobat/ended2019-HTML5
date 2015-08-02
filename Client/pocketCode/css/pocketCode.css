@@ -214,6 +214,10 @@
 		left: -0.3em;
 	}
 
+.pc-playerMenuH .pc-alignedCell {
+	margin-left: -0.2em;
+}
+
 .pc-playerMenuV .pc-playerMenuOverlay {
 	height: 100%;
 	width: 9.4em;
@@ -310,7 +314,7 @@
 	.pc-menuBigButton svg {
 		width: 6.4em;
 		height: 6.4em;
-		margin-left: 1.25em;
+		margin-left: 1.4em;
 	}
 
 	.pc-playerButton span {
