@@ -14,45 +14,56 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     function PlayerSvgButton(icon, text) {
         PocketCode.Ui.I18nControl.call(this, 'button');
 
-        this._createLayout();
+        this._dom.className = 'pc-playerButton';
+        if (!icon)
+            throw new Error('invalid argument: icon');
+        //this._icon = icon;
+        this._textNode = new SmartJs.Ui.TextNode(text);
+        var span = document.createElement('span');
+        span.appendChild(this._textNode);
+        this._dom.appedChild(icon);
+        this._dom.appedChild(span);
+        //this._createLayout();
 
         //events
-        this._onButtonClicked = new SmartJs.Event.Event(this);
+        this._onClick = new SmartJs.Event.Event(this);
+        this._addDomListener(this, 'click', this._clickHandler)
     }
 
     //properties
     Object.defineProperties(PlayerSvgButton.prototype, {
-        icon: {
-            get: function () {
+        //icon: {
+        //    get: function () {
+        //        return this._icon;
+        //    },
+        //    set: function (value) {
+        //        this._icon = value;
 
-            },
-            set: function (value) {
-
-            },
-        },
+        //    },
+        //},
         text: {
             get: function () {
-
+                return this._textNode.text;
             },
             set: function (value) {
-
+                this._textNode.text = value;
             },
         },
     });
 
     //events
     Object.defineProperties(PlayerSvgButton.prototype, {
-        onButtonClicked: {
+        onClick: {
             get: function () {
-                return this._onButtonClicked;
+                return this._onClick;
             },
         },
     });
 
     //methods
     PlayerSvgButton.prototype.merge({
-        _createLayout: function () {
-
+        _clickHandler: function (e) {
+            this._onClick.dispatchEvent(e);
         },
     });
 

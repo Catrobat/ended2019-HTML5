@@ -6,104 +6,6 @@
 	box-sizing: border-box;
 }
 
-.pc-playerMenuVContainer, .pc-playerMenuHContainer {
-	display: table;
-	position: absolute;
-	overflow: hidden;
-}
-
-.pc-playerMenuVContainer {
-	top: 0px;
-	left: -82px;
-	width: 64px;
-	height: 100%;
-}
-
-	.pc-playerMenuVContainer .pc-alignedCell {
-		display: table-cell;
-		vertical-align: middle;
-		margin: 0 auto;
-	}
-
-.pc-playerMenuHContainer {
-	height: 98px;
-	width: 100%;
-	left: 0px;
-	bottom: -104px;
-	text-align: center;
-}
-
-.pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
-	padding: 0;
-	margin: 0;
-	margin-bottom: 7px;
-	background-color: transparent;
-	cursor: pointer;
-	position: relative;
-	width: 80px;
-	height: 67px;
-	border: none;
-	fill: #A9DCF1;
-	color: #A9DCF1;
-	border-color: #A9DCF1;
-	outline: none;
-}
-
-	.pc-menuBigButton, .pc-menuBigButton:active {
-		width: 80px;
-		height: 91px;
-	}
-
-	.pc-playerButton svg {
-		position: absolute;
-		width: 46px;
-		height: 46px;
-		padding: 0;
-		margin: 0;
-		margin-left: 17px;
-		top: 0;
-		left: 0;
-	}
-
-	.pc-menuBigButton svg {
-		width: 70px;
-		height: 70px;
-		margin-left: 5px;
-	}
-
-	.pc-playerButton span {
-		position: absolute;
-		font-size: 13px;
-		font-weight: bold;
-		bottom: 3px;
-		left: 0;
-		right: 0;
-	}
-
-	.pc-playerButton:hover {
-		color: #fff;
-		fill: #fff;
-		border-color: #fff;
-	}
-	.pc-playerButton:active {
-		padding: 0;
-		color: #17a5b8;
-		fill: #17a5b8;
-		border-color: #17a5b8;
-	}
-	.pc-playerButton:disabled {
-		color: #A5A5A5;
-		fill: #A5A5A5;
-		border-color: #A5A5A5;
-		cursor: default;
-	}
-
-.pc-playerButtonChecked {
-	color: #ef7716;
-	fill: #ef7716;
-	border-color: #ef7716;
-}
-
 
 /* inner player screens */
 .pc-playerStartScreen { /*, .pc-playerSplashScreen {*/
@@ -119,9 +21,8 @@
 }
 
 	.pc-playerStartScreen img {
-		height: 78%;
+		height: 100%;
 		width: 100%;
-		padding: 0px;
 		margin: 0px;
 		background-color: #A5A5A5;
 		opacity: 0.6;
@@ -149,11 +50,12 @@
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		color: /*#17a5b8;*/ #ef7716;
-		height: 20%;
+		padding-top: 1em;
+		color: #ef7716;
+		height: 8em;
 		width: 100%;
 		text-align: center;
-		/*background-color: #144d5f;*/
+		background-color: #05222a;
 	}
 
 		.pc-playerStartScreen .pc-loadingIndicatorLayout span {
@@ -270,15 +172,184 @@
 
 
 /* player toolbar */
-.pc-playerToolbarBackground {
-	/*position: absolute;
+.pc-playerMenuH, .pc-playerMenuV {
+	font-size: 12px;
+	height: 100%;
 	width: 100%;
-	height: 100%;*/
+	position: relative;
+}
+
+
+.pc-playerMenuOverlay, .pc-playerMenuPlayOverlay {
+	position: absolute;
+	overflow: hidden;
+}
+.pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
 	background-color: #00475E;
 	-moz-opacity: 0.8;
 	opacity: 0.8;
 	filter: alpha(opacity = 80);
 }
+
+.pc-playerMenuPlayOverlay div {
+	height: 9.6em;
+	width: 9.6em;
+	border-radius: 4.8em;
+}
+
+.pc-playerMenuH .pc-playerMenuOverlay {
+	height: 9.4em;
+	width: 100%;
+	bottom: 0;
+}
+.pc-playerMenuH .pc-playerMenuPlayOverlay {
+	height: 3em;
+	width: 9.2em;
+	bottom: 9.4em;
+	left: 50%;
+	margin-left: -4.6em;
+}
+
+	.pc-playerMenuH .pc-playerMenuPlayOverlay div {
+		position: absolute;
+		left: -0.3em;
+	}
+
+.pc-playerMenuV .pc-playerMenuOverlay {
+	height: 100%;
+	width: 9.4em;
+	left: 0;
+}
+.pc-playerMenuV .pc-playerMenuPlayOverlay {
+	height: 9.2em;
+	width: 3em;
+	left: 9.4em;
+	top: 50%;
+	margin-top: -4.6em;
+}
+	.pc-playerMenuV .pc-playerMenuPlayOverlay div {
+		position: absolute;
+		top: -0.3em;
+		right: 0;
+	}
+
+/* toolbar & buttons */
+.pc-playerMenuContainer {
+	display: table;
+	position: absolute;
+	overflow: hidden;
+	font-family: Arial, sans-serif;
+}
+
+.pc-playerMenuContainer button {
+	font-style: inherit;
+	font-size: inherit;
+}
+
+.pc-playerMenuV .pc-playerMenuContainer {
+	top: 0px;
+	/*left: -9em;*/
+	left: 1.35em;
+	width: 9.3em;
+	height: 100%;
+}
+.pc-playerMenuV .pc-playerMenuOutside {
+	left: -7.1em;
+}
+
+	.pc-playerMenuV .pc-alignedCell {
+		display: table-cell;
+		vertical-align: middle;
+		margin: 0 auto;
+	}
+
+.pc-playerMenuH .pc-playerMenuContainer {
+	height: 11.7em;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	text-align: center;
+}
+
+/* svg buttons */
+.pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
+	padding: 0;
+	margin: 0;
+	/*margin-bottom: 7px;*/
+	background-color: transparent;
+	cursor: pointer;
+	position: relative;
+	width: 6.7em;
+	height: 8.5em;
+	border: none;
+	fill: #A9DCF1;
+	color: #A9DCF1;
+	border-color: #A9DCF1;
+	outline: none;
+	vertical-align: bottom;
+}
+.pc-playerMenuV .pc-menuBigButton {
+	margin-left: -1.1em;
+	margin-top: 0.5em;
+}
+	.pc-menuBigButton, .pc-menuBigButton:active {
+		width: 9.1em;
+		height: 10.8em;
+	}
+
+	.pc-playerButton svg {
+		position: absolute;
+		width: 3.2em;
+		height: 3.2em;
+		padding: 0;
+		margin: 0;
+		margin-left: 1.75em;
+		left: 0;
+		bottom: 3.4em;
+	}
+
+	.pc-menuBigButton svg {
+		width: 6.4em;
+		height: 6.4em;
+		margin-left: 1.25em;
+	}
+
+	.pc-playerButton span {
+		position: absolute;
+		font-size: 1.1em;
+		font-weight: 600;
+		bottom: 0.6em;
+		left: 0;
+		right: 0;
+	}
+
+	.pc-playerButton:hover {
+		color: #fff;
+		fill: #fff;
+		border-color: #fff;
+	}
+	.pc-playerButton:active {
+		padding: 0;
+		color: #17a5b8;
+		fill: #17a5b8;
+		border-color: #17a5b8;
+	}
+	.pc-playerButton:disabled {
+		color: #A5A5A5;
+		fill: #A5A5A5;
+		border-color: #A5A5A5;
+		cursor: default;
+	}
+
+.pc-playerButtonChecked {
+	color: #ef7716;
+	fill: #ef7716;
+	border-color: #ef7716;
+}
+
+
+
+
 /*
 	toolbar height: 192 (= 96px.. scaling factor 2)
 	circle middle: 

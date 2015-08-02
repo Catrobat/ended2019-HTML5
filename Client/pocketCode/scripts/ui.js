@@ -13,7 +13,10 @@ PocketCode.Ui = {
 				'<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z"/>' +
 				'<polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934"/>' +
 				'</svg>',
-		PAUSE: '',
+		PAUSE:  '<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">' +
+				'<path d="M32,1C14.88,1,1,14.88,1,31.999c0,17.122,13.88,31,31,31c17.121,0,31-13.879,31-31C63,14.88,49.121,1,32,1zM32,56.979c-13.796,0-24.98-11.185-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98c13.794,0,24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z" />' +
+				'<path id="pause-3-icon" d="M29.95,45.617h-7.932V18.384h7.932V45.617z M42.949,45.617h-7.934V18.384h7.934V45.617z" />' +
+				'</svg>',
 		RESTART:    '<svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64">' +
 					'<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z" class="pc-svgPlayerIcon"/>' +
 					'<path d="M42.275,22.056l-3.266,3.267c-1.772-1.773-4.222-2.87-6.927-2.87c-5.41,0-9.796,4.389-9.796,9.8c0,0.001,0-0.002,0,0h3.806l-6.079,6.075l-6.072-6.075h3.726c0-0.001,0,0,0,0c0-7.961,6.454-14.417,14.415-14.417C36.063,17.835,39.666,19.448,42.275,22.056z"/>' +
@@ -38,28 +41,28 @@ PocketCode.Ui = {
 	},
 
 	I18nControl: (function () {
-	    I18nControl.extends(SmartJs.Ui.Control, false);
+		I18nControl.extends(SmartJs.Ui.Control, false);
 
-	    //cntr
-	    function I18nControl(element, propObject) {
-	        SmartJs.Ui.Control.call(this, element, propObject);
+		//cntr
+		function I18nControl(element, propObject) {
+			SmartJs.Ui.Control.call(this, element, propObject);
 
-	    }
+		}
 
-	    //properties
-	    Object.defineProperties(I18nControl.prototype, {
+		//properties
+		Object.defineProperties(I18nControl.prototype, {
 
-	    });
+		});
 
-	    //events
-	    Object.defineProperties(I18nControl.prototype, {
-	    });
+		//events
+		Object.defineProperties(I18nControl.prototype, {
+		});
 
-	    //methods
-	    I18nControl.prototype.merge({
-	    });
+		//methods
+		I18nControl.prototype.merge({
+		});
 
-	    return I18nControl;
+		return I18nControl;
 	})(),
 
 };
