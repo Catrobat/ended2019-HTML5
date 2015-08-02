@@ -266,11 +266,22 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.setSpriteLayerBack(spriteBeforeLast, 2);
     assert.equal(gameEngine.getSpriteLayer(spriteBeforeLast), 1, "Sprite positioned at first layer if when trying to set back more layers than currently available");
 
-    var projectWithNoSounds = project1;
-    gameEngine.loadProject(projectWithNoSounds);
-    assert.ok(gameEngine._soundsLoaded, "SoundsLoaded set true if there are no sounds");
 
-    var testProject = projectSounds;
+    //var testProject = strProject11; //has no sounds
+    //var testProject = strProject719;
+
+    //add resource path to url
+    var testProject = JSON.parse(JSON.stringify( strProject719));
+    for(i = 0, l = testProject.sounds.length; i< l; i++){
+        testProject.sounds[i].url = "_resources/"+testProject.sounds[i].url;
+    }
+
+    for(i = 0, l = testProject.images.length; i< l; i++){
+        testProject.images[i].url = "_resources/"+testProject.images[i].url;
+    }
+
+
+
     var loadingHandled = assert.async();
     var disposedHandled = assert.async();
 
@@ -278,28 +289,29 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._soundManager = new PocketCode.SoundManager();
     //internal bindings have to be reattached to garantee loading flags are set
     gameEngine._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingErrorHandler, gameEngine));
-    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingProgressHandler, gameEngine));
+    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._assetProgressChangeHandler, gameEngine));
     gameEngine._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(gameEngine._spriteOnExecutedHandler, gameEngine));
     //check if project has finished executing
 
-    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
-        //console.log('progress: ' + e.progress);
+    // todo finsish on loading error and/or timeout
+    var calledNotReadyTestOnce = false;
+    gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
         if (e.progress !== 100) {
-            assert.ok(!gameEngine._soundsLoaded && !gameEngine.projectReady, "Program not ready if sounds are not loaded");
+            if(!calledNotReadyTestOnce){
+                assert.ok(!gameEngine.projectReady, "Program not ready if loading not done");
+                calledNotReadyTestOnce = true;
+            }
             return;
         }
-        //else {
-            assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
-            assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
-
-            loadingHandled();
-        //window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
-            testDispose();
-        //}
+       // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
+        assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
+        loadingHandled();
+        testDispose();
 
         //var gameEngine2 = new PocketCode.GameEngine();
         //gameEngine2.loadProject(strProject14);
     }));
+
 
     //make sure the testProject contains loadable sounds
     gameEngine.loadProject(testProject);

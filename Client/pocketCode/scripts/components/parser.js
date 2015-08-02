@@ -38,7 +38,7 @@ PocketCode.merge({
 
         SpriteFactory.prototype.create = function (jsonSprite) {
             if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)
-                throw new Error('invalid argument: expected type: object')
+                throw new Error('invalid argument: expected type: object');
             
             var sprite = new PocketCode.Sprite(this._program, jsonSprite);
             var bricks = [];
