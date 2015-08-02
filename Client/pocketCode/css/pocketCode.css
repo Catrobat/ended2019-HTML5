@@ -367,7 +367,6 @@
 
 /* dialog */
 .pc-dialog {
-	display: table;
 	width: 310px;
 	border-radius: 2px;
 	border-top: 1px solid #3F3F3F;
@@ -376,7 +375,7 @@
 	overflow: hidden;
 	font-family: Arial, sans-serif;
 	font-size: 15px;
-	color: #CCC;
+	color: #D3D3D3;
 	-webkit-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
 	-moz-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
 	box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
@@ -406,13 +405,16 @@
 
 .pc-dialogBody {
 	text-align: center;
+	font-weight: 500;
 	overflow-x: hidden;
 	overflow-y: auto;
-	padding: 18px 15px;
+	padding: 17px 14px;
+	border: solid 1px #282828;
 }
 
 .pc-dialogFooter {
-	border-top: 1px solid #484848;
+	border: solid 1px #282828;
+	border-top: solid 1px #484848;
 	height: 47px;
 	float: none;
 }
@@ -423,8 +425,13 @@
 	font-weight: bold;
 	cursor: pointer;
 	padding: 0;
+	margin: 0;
 }
 	.pc-dialogFooter button:hover {
 		text-decoration: underline;
+	}
+	.pc-dialogFooter button:active {
+		text-decoration: underline;
+		background-color: #2F7D99;
 	}
 
