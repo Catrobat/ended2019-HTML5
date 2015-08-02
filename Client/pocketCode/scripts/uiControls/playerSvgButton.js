@@ -11,10 +11,13 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.I18nControl, false);
 
     //cntr
-    function PlayerSvgButton(icon, text) {
+    function PlayerSvgButton(icon, text, big) {
         PocketCode.Ui.I18nControl.call(this, 'button');
 
-        this._dom.className = 'pc-playerButton';
+        this.className = 'pc-playerButton';
+        if (big)
+            this.addClassName('pc-menuBigButton');
+
         if (!icon)
             throw new Error('invalid argument: icon');
         //this._icon = icon;
@@ -47,6 +50,31 @@ PocketCode.Ui.PlayerSvgButton = (function () {
             },
             set: function (value) {
                 this._textNode.text = value;
+            },
+        },
+        disabled: {
+            get: function () {
+                return this._dom.disabled;
+            },
+            set: function (value) {
+                this._dom.disabled = value;
+            },
+        },
+        checked: {
+            get: function() {
+                var domClasses = this._dom.className.split(/\s+/);
+                var lookupClass = 'pc-playerButtonChecked';
+                for (var i = 0, l = domClasses.length; i < l; i++)
+                    if (domClasses[i] === lookupClass)
+                        return true;
+
+                return false;
+            },
+            set: function (value) {
+                if (value)
+                    this._dom.addClassName('pc-playerButtonChecked');
+                else
+                    this._dom.removeClassName('pc-playerButtonChecked');
             },
         },
     });

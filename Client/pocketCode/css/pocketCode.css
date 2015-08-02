@@ -8,7 +8,7 @@
 
 
 /* inner player screens */
-.pc-playerStartScreen { /*, .pc-playerSplashScreen {*/
+.pc-playerStartScreen { 
 	font-size: 10px;
 	position: absolute;
 	top: 0;
@@ -173,12 +173,11 @@
 
 /* player toolbar */
 .pc-playerMenuH, .pc-playerMenuV {
-	font-size: 12px;
+	font-size: 10px;
 	height: 100%;
 	width: 100%;
 	position: relative;
 }
-
 
 .pc-playerMenuOverlay, .pc-playerMenuPlayOverlay {
 	position: absolute;
@@ -233,7 +232,8 @@
 		right: 0;
 	}
 
-/* toolbar & buttons */
+
+/* menu toolbar & buttons */
 .pc-playerMenuContainer {
 	display: table;
 	position: absolute;
@@ -248,7 +248,6 @@
 
 .pc-playerMenuV .pc-playerMenuContainer {
 	top: 0px;
-	/*left: -9em;*/
 	left: 1.35em;
 	width: 9.3em;
 	height: 100%;
@@ -261,6 +260,7 @@
 		display: table-cell;
 		vertical-align: middle;
 		margin: 0 auto;
+		padding-top: 1.7em;
 	}
 
 .pc-playerMenuH .pc-playerMenuContainer {
@@ -275,7 +275,6 @@
 .pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
 	padding: 0;
 	margin: 0;
-	/*margin-bottom: 7px;*/
 	background-color: transparent;
 	cursor: pointer;
 	position: relative;
@@ -290,7 +289,7 @@
 }
 .pc-playerMenuV .pc-menuBigButton {
 	margin-left: -1.1em;
-	margin-top: 0.5em;
+	margin-top: 0.7em;
 }
 	.pc-menuBigButton, .pc-menuBigButton:active {
 		width: 9.1em;
@@ -348,19 +347,6 @@
 }
 
 
-
-
-/*
-	toolbar height: 192 (= 96px.. scaling factor 2)
-	circle middle: 
-	  height: 68
-	  width: 182
-	  radius 96
-
-	small icon height/width: 62
-	big icon height/width: 126
-*/
-
 /* viewport */
 .pc-playerViewport {
 	border: 0;
@@ -369,12 +355,13 @@
 	position: relative;
 }
 
+
 /* canvas */
 .pc-canvas {
 	border: 0;
 	padding: 0;
 	margin: 0;
-	background-color: #FFFFFF;
+	background-color: #FFF;
 }
 
 
@@ -444,4 +431,3 @@
 	background-color: transparent;
 	color: inherit;
 }
-/* TODO button hover/active/disabled states and colors */
