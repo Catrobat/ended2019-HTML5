@@ -125,7 +125,7 @@ PocketCode.Web = {
 						_self.lastExitDate = new Date();
 
 					_self.onFullscreenChange.call(_self, fs());
-				}, 20);
+				}, 10);
 			},
 			_keyHandler: function (e) {
 				e = e || window.event;

@@ -365,69 +365,66 @@
 }
 
 
-
-
-/* popup test */
-.pc-col50 {
-	display: table-cell;
-	width: 50%;
-}
-
-.pc-popup {
-	width: 20em;   /* this value will be set in script depending on the device width - test only*/
-	height: 25em;
-
-	/*max-width: 400px;
-	*/max-height: 30em;
+/* dialog */
+.pc-dialog {
 	display: table;
-	color: #31BAEC;
-	background-color: #05222a;
+	width: 310px;
+	border-radius: 2px;
+	border-top: 1px solid #3F3F3F;
+	background-color: #282828;
+	position: relative;
+	overflow: hidden;
+	font-family: Arial, sans-serif;
+	font-size: 15px;
+	color: #CCC;
+	-webkit-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+	-moz-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+	box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+}
+
+.pc-dialog div {
+	position: relative;
+	width: 100%;
+	float: left;
+	box-sizing: border-box;
+}
+.pc-dialogHeader {
+	border-bottom: solid 2px #33B5E5;
+	color: #33B5E5;
+	font-size: 21px;
+	font-weight: 500;
+	padding: 19px 15px;
+}
+.pc-dialogWarning {
+	border-bottom-color: #EF7716;
+	color: #EF7716;
+}
+.pc-dialogError {
+	border-bottom-color: #A31515;
+	color: #A31515;
+}
+
+.pc-dialogBody {
 	text-align: center;
-	font-family: Tahoma, Geneva, sans-serif;
-	box-shadow: 5px 5px 5px #000000;
-}
-
-.pc-popupDefaultBorder {
-
-}
-
-.pc-popupErrorBorder {
-	border-color: #A31515;
-}
-.pc-popupWarningBorder {
-	border-color: #EF7716;
-}
-.pc-popupHeader, .pc-popupBody, .pc-popupFooter {
-	/*display: table-cell;*/
-	padding: 10px;
-}
-.pc-popupHeader {
-	border-bottom: 2px solid #31BAEC;
-	padding: 20px;
-	font-size: larger;
-
-}
-.pc-popupBody {
-	color: #F2F2F2;
 	overflow-x: hidden;
 	overflow-y: auto;
-	max-height: 20em;
-	/* TODO: fontsize color */
+	padding: 18px 15px;
 }
 
-.pc-popupFooter {
-	border-top: 1px solid #404040;
-	white-space: nowrap;
-	padding: 15px;
-	color: #F2F2F2;
+.pc-dialogFooter {
+	border-top: 1px solid #484848;
+	height: 47px;
+	float: none;
 }
-.pc-popupFooter button {
-	margin-left: 4px;
-	padding: 2px 4px 2px 4px;
-	min-width: 65px;
-	border: solid 0px;    /* TODO */
-	border-radius: 2px;
-	font-weight: bold;
-	background-color: transparent;
+
+.pc-dialogFooter button {
+	height: 100%;
 	color: inherit;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 0;
 }
+	.pc-dialogFooter button:hover {
+		text-decoration: underline;
+	}
+
