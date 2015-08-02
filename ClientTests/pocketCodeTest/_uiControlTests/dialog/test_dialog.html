@@ -1,9 +1,56 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ui tests: playerStartScreen control</title>
+    <link href="../../../../Client/PocketCodePlayer/_startup/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../../../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
+
+    <style type="text/css">
+        /* defining some style for the test page layout onnly */
+        html, body {
+            background-color: #CCC;
+        }
+
+        table {
+            height: 100%;
+            width: 100%;
+        }
+
+        #layoutContainer {
+            position: relative;
+            width: 100%;
+            height: 600px;
+        }
+
+        #outputContainer {
+            overflow: scroll;
+            height: 200px;
+        }
+    </style>
+
+    <script src="../../../../Client/smartJs/sj.js"></script>
+    <script src="../../../../Client/smartJs/sj-core.js"></script>
+    <script src="../../../../Client/smartJs/sj-components.js"></script>
+    <script src="../../../../Client/smartJs/sj-event.js"></script>
+    <script src="../../../../Client/smartJs/sj-ui.js"></script>
+
+    <script src="../../../../Client/PocketCodePlayer/_startup/pocketCodePlayer.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/ui.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/uiControls/button.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/uiControls/dialog.js"></script>
+    <script src="test_dialog.js"></script>
 </head>
 <body>
-
+    <table>
+        <tr>
+            <td width="30%"><div id="settingsContainer"></div></td>
+            <td width="70%" rowspan="2"><div id="layoutContainer"></div></td>
+        </tr>
+        <tr>
+            <td><div id="outputContainer"></div></td>
+        </tr>
+    </table>
 </body>
 </html>

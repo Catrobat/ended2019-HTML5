@@ -705,9 +705,9 @@ SmartJs.Ui.merge({
     })(),
 
     ContainerControl: (function () {
-        UiContainerControl.extends(SmartJs.Ui.Control, false);
+        ContainerControl.extends(SmartJs.Ui.Control, false);
 
-        function UiContainerControl(propObject) {
+        function ContainerControl(propObject) {
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
             //this._containerDom = this._dom;
@@ -728,7 +728,7 @@ SmartJs.Ui.merge({
             this.onResize.addEventListener(new SmartJs.Event.EventListener(_onResizeHandler));
         }
 
-        Object.defineProperties(UiContainerControl.prototype, {
+        Object.defineProperties(ContainerControl.prototype, {
             containerInnerHeight: {
                 value: function () {
                     return this._innerHeight;//_containerDom.clientHeight;
@@ -745,7 +745,7 @@ SmartJs.Ui.merge({
             },
         });
 
-        UiContainerControl.prototype.merge({
+        ContainerControl.prototype.merge({
             //adding and removing uiControls supported on container controls: make public
             appendChild: function (uiControl) {
                 return this._appendChild(uiControl);//, this._containerChilds, this._containerDom);
@@ -764,7 +764,7 @@ SmartJs.Ui.merge({
             //},
         });
 
-        return UiContainerControl;
+        return ContainerControl;
     })(),
 });
 

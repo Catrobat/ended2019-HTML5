@@ -21,8 +21,20 @@ PocketCode.Ui.Dialog = (function () {
     Dialog.extends(PocketCode.Ui.I18nControl, false);
 
     //cntr
-    function Dialog(type, caption) {//, headerText, bodyText, footerText) {
-        PocketCode.Ui.I18nControl.call(this, 'div');
+    function Dialog(type, caption) {
+        PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-webOverlay' });
+
+        //settings
+        this._minHeight = 200;
+        this._marginTopBottom = 15;
+
+        //private controls
+        this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogHeader' });
+        this._captionTextNode = new SmartJs.Ui.TextNode();
+        this._header.appendChild(this._captionTextNode);
+
+        this._body = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogBody' });
+        this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter dialogFooterSingleButton' });
 
         this._createLayout();
 
@@ -32,19 +44,8 @@ PocketCode.Ui.Dialog = (function () {
         if (caption) {
             this.caption = caption;
         }
-        //if (!type)
-        //    type = PocketCode.DialogType.DEFAULT;
-        //this.type = type;
 
-        //if (headerText === '')
-        //    throw new Error('Empty dialog Header Text');
-        //if (bodyText === '')
-        //    throw new Error('Empty dialog Body Text');
-        //if (footerText === '')
-        //    throw new Error('Empty dialog Footer Text');
-
-        //events
-        this._onButtonClicked = new SmartJs.Event.Event(this);
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
     }
 
     //properties
@@ -56,13 +57,13 @@ PocketCode.Ui.Dialog = (function () {
             set: function (value) {
                 switch (value) {
                     case PocketCode.DialogType.DEFAULT:
-                        this._dom.className = 'pc-dialog pc-dialogDefaultBorder';
+                        this._header.className = 'pc-dialogHeader';
                         break;
                     case PocketCode.DialogType.WARNING:
-                        this._dom.className = 'pc-dialog pc-dialogWarningBorder';
+                        this._header.className = 'pc-dialogHeader pc-dialogWarning';
                         break;
                     case PocketCode.DialogType.ERROR:
-                        this._dom.className = 'pc-dialog pc-dialogErrorBorder';
+                        this._header.className = 'pc-dialogHeader pc-dialogError';
                         break;
                     default:
                         throw new Error('invalid argument: dialog type');
@@ -82,72 +83,65 @@ PocketCode.Ui.Dialog = (function () {
         },
         bodyInnerHTML: {
             get: function () {
-                return this._bodyContainer.innerHTML;
+                return this._body._dom.innerHTML;
             },
             set: function (value) {
-                this._bodyContainer.innerHTML = value;
+                this._body._dom.innerHTML += value;
+                this._resizeHandler();  //validate layout 
             },
         },
-        footerInnerHTML: {
-            get: function () {
-                return this._footerContainer.innerHTML;
-            },
-            set: function (value) {
-                this._footerContainer.innerHTML = value;
-            },
-        },
-    });
-
-    //events
-    Object.defineProperties(Dialog.prototype, {
-        onButtonClicked: {
-            get: function () {
-                return this._onButtonClicked;
-            },
-        }
     });
 
     //methods
     Dialog.prototype.merge({
-        _createLayout: function() {
-            //add header, body and footer:
+        _createLayout: function () {
+            var background = document.createElement('div');
+            background.className = 'pc-overlay';
+            this._dom.appendChild(background);
 
-            // ---- HEADER ----
-            var dialogHeaderRow = document.createElement('div');
-            dialogHeaderRow.className = 'pc-webLayoutRow';
-            var dialogHeader = document.createElement('div');
-            dialogHeader.className = 'pc-dialogHeader';
-            this._captionTextNode = new SmartJs.Ui.TextNode('');
-            if (caption)
-                this.caption = caption;
+            var layout = document.createElement('div');
+            layout.className = 'pc-webLayout';
+            this._dom.appendChild(layout);
 
-            //dialogHeader.innerHTML = headerText;
-            dialogHeaderRow.appendChild(dialogHeader);
-            // ---- ------ ----
+            var layoutRow = document.createElement('div');
+            layoutRow.className = 'pc-webLayoutRow';
+            layout.appendChild(layoutRow);
 
-            // ---- BODY ----
-            var dialogBodyRow = document.createElement('div');
-            dialogBodyRow.className = 'pc-webLayoutRow';
-            this._bodyContainer = document.createElement('div');
-            this._bodyContainer.className = 'pc-dialogBody';
-            //this._bodyContainer.innerHTML = bodyText;
-            dialogBodyRow.appendChild(this._bodyContainer);
-            // ---- ---- ----
+            var col = document.createElement('div');
+            col.className = 'pc-dialogCol';
+            layoutRow.appendChild(col);
 
-            // ---- FOOTER ----
-            var dialogFooterRow = document.createElement('div');
-            dialogFooterRow.className = 'pc-webLayoutRow';
-            this._footerContainer = document.createElement('div');
-            this._footerContainer.className = 'pc-dialogFooter';
-            //this._footerContainer.innerHTML = footerText;
-            dialogFooterRow.appendChild(this._footerContainer);
-            // ---- ------ ----
+            var center = document.createElement('div');
+            center.className = 'pc-centerCol';
+            layoutRow.appendChild(center);
 
-            // add elements to dialogContainer div
-            this._dom.appendChild(dialogHeaderRow);
-            this._dom.appendChild(dialogBodyRow);
-            this._dom.appendChild(dialogFooterRow);
-        }
+            col = document.createElement('div');
+            col.className = 'pc-dialogCol';
+            layoutRow.appendChild(col);
+
+            var dialog = document.createElement('div');
+            dialog.className = 'pc-dialog';
+            center.appendChild(dialog);
+
+            dialog.appendChild(this._header._dom);
+            dialog.appendChild(this._body._dom);
+            dialog.appendChild(this._footer._dom);
+        },
+        _resizeHandler: function(e) {
+            this._body.style.maxHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom) + 'px';
+        },
+        addButton: function (button) {
+            if (!(button instanceof PocketCode.Ui.Button))
+                throw new Error('invalid argument: button: expected type PocketCode.Ui.Button');
+
+            var count = this._footer._dom.children.length;
+            if (count > 1)
+                throw new Error('add button: there are currently 2 buttons supported at max');
+
+            this._footer.appendChild(button);
+            if (count == 1)
+                this._footer.replaceClassName('dialogFooterSingleButton', 'dialogFooterTwoButtons');
+        },
     });
 
     return Dialog;
