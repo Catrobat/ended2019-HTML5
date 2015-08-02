@@ -127,8 +127,13 @@ PocketCode.Ui.Dialog = (function () {
             dialog.appendChild(this._body._dom);
             dialog.appendChild(this._footer._dom);
         },
-        _resizeHandler: function(e) {
-            this._body.style.maxHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom) + 'px';
+        _resizeHandler: function (e) {
+            var availableHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom);
+            var minHeight = this._minHeight - (this._header.height + this._footer.height);
+            if (availableHeight > minHeight)
+                this._body.style.maxHeight = availableHeight + 'px';
+            else
+                this._body.style.maxHeight = minHeight + 'px';
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))
