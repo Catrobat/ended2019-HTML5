@@ -435,3 +435,11 @@
 		background-color: #2F7D99;
 	}
 
+.dialogFooterSingleButton button {
+	width: 100%;
+}
+
+.dialogFooterTwoButtons button {
+	width: 152px;
+}
+
