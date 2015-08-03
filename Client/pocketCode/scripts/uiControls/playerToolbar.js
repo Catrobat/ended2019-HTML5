@@ -122,6 +122,11 @@ PocketCode.Ui.merge({
                     this._axesButton.checked = value;
                 },
             },
+            backButtonDisabled: {
+                set: function (value) {
+                    this._backButton.disabled = value;
+                },
+            },
             screenshotButtonDisabled: {
                 set: function (value) {
                     this._screenshotButton.disabled = value;

@@ -20,12 +20,14 @@ window.onload = function () {
 
     control.onButtonClicked.addEventListener(new SmartJs.Event.EventListener(onClickEventFired, this));
 
+    layoutContainer.appendChild(control._dom);
+
     window.onresize = function (e) {
         control._onResize.dispatchEvent();
     };
     control._onResize.dispatchEvent();  //once at the beginning
 
-    layoutContainer.appendChild(control._dom);
+    control.backButtonDisabled = true;
 
     control.screenshotButtonDisabled = true;
     outputContainer.innerHTML += '<br />screenshot disabled';
