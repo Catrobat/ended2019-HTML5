@@ -22,15 +22,6 @@ PocketCode.Ui.Button = (function () {
 
     //properties
     Object.defineProperties(Button.prototype, {
-        //icon: {
-        //    get: function () {
-        //        return this._icon;
-        //    },
-        //    set: function (value) {
-        //        this._icon = value;
-
-        //    },
-        //},
         text: {
             get: function () {
                 return this._textNode.text;
@@ -82,33 +73,16 @@ PocketCode.Ui.PlayerSvgButton = (function () {
 
         if (!icon)
             throw new Error('invalid argument: icon');
-        //this._icon = icon;
+
         this._textNode = new SmartJs.Ui.TextNode(text);
         var span = document.createElement('span');
         span.appendChild(this._textNode._dom);
-        this._dom.innerHTML = icon;//appedChild(icon);
+        this._dom.innerHTML = icon;
         this._dom.appendChild(span);
     }
 
     //properties
     Object.defineProperties(PlayerSvgButton.prototype, {
-        //icon: {
-        //    get: function () {
-        //        return this._icon;
-        //    },
-        //    set: function (value) {
-        //        this._icon = value;
-
-        //    },
-        //},
-        //text: {
-        //    get: function () {
-        //        return this._textNode.text;
-        //    },
-        //    set: function (value) {
-        //        this._textNode.text = value;
-        //    },
-        //},
         checked: {
             get: function () {
                 var domClasses = this._dom.className.split(/\s+/);
