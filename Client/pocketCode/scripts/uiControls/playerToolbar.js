@@ -150,7 +150,7 @@ PocketCode.Ui.merge({
 
                 if (this._settings.orientation == 'h') {
                     var fontSize = 10 * this.width / this._defaultWidth;
-                    this.style.fontSize = Math.min(fontSize, 13) + 'px';
+                    this.style.fontSize = Math.min(fontSize, 12) + 'px';
                 }
                 else {
                     var fontSize = 10 * this.height / this._defaultHeight;
