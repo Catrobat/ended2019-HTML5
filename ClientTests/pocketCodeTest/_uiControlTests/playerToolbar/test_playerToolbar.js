@@ -11,7 +11,7 @@ window.onload = function () {
     var tbButton2 = new PocketCode.Ui.Button('ok');
     var tbButton3 = new PocketCode.Ui.Button('not supported');
 
-    var control = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
+    var control = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
 
     //click handler
     var onClickEventFired = function (e) {
@@ -26,6 +26,11 @@ window.onload = function () {
     //control._onResize.dispatchEvent();  //once at the beginning
 
     layoutContainer.appendChild(control._dom);
+
+    control.screenshotButtonDisabled = true;
+    outputContainer.innerHTML += '<br />screenshot disabled';
+    control.axesButtonChecked = true;
+    outputContainer.innerHTML += '<br />axes button checked';
 
     //control.caption = 'some text (header)';
     //outputContainer.innerHTML += '<br />added caption: ' + control.caption;

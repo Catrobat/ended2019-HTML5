@@ -40,8 +40,8 @@ PocketCode.Ui.merge({
             PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() + ' pc-overlay' });
 
             //internal settings (for scaling)
-            this._defaultHeight = 455;  //all buttons at 10px font-size
-            this._defaultWidth = 371;
+            this._defaultHeight = 455;  //all buttons at 10px font-size (vertical)
+            this._defaultWidth = 371;   //(horizontal)
 
             if (settings.position == 'bi') { //with green background
                 this._overlay = new SmartJs.Ui.Control('div', { className: 'pc-playerMenuOverlay' });
@@ -52,14 +52,13 @@ PocketCode.Ui.merge({
                 this._appendChild(this._overlayBtn);
             }
 
-            this._menuContainer = new SmartJs.Ui.ContainerControl('div', { className: 'pc-playerMenuContainer' });
+            this._menuContainer = new SmartJs.Ui.ContainerControl({ className: 'pc-playerMenuContainer' });
             if (settings.position == 'lo') {
-                //TODO: check for bug: this._menuContainer.addClassName('pc-playerMenuOutside');
-                this._menuContainer.className + 'pc-playerMenuContainer pc-playerMenuOutside';
+                this._menuContainer.addClassName('pc-playerMenuOutside');
             }
-            this._menuContainerAlign = new SmartJs.Ui.ContainerControl('div', { className: 'pc-alignedCell' });
-            this._menuContainer.appendChild(this._menuContainerAlign);
             this._appendChild(this._menuContainer);
+            this._menuContainerAlign = new SmartJs.Ui.ContainerControl({ className: 'pc-alignedCell' });
+            this._menuContainer.appendChild(this._menuContainerAlign);
 
             //btns
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'Back');
@@ -83,6 +82,7 @@ PocketCode.Ui.merge({
 
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+            
             //events
             this._onButtonClicked = new SmartJs.Event.Event(this);
         }
@@ -108,6 +108,11 @@ PocketCode.Ui.merge({
             axesButtonChecked: {
                 set: function (value) {
                     this._axesButton.checked = value;
+                },
+            },
+            screenshotButtonDisabled: {
+                set: function (value) {
+                    this._screenshotButton.disabled = value;
                 },
             },
         });

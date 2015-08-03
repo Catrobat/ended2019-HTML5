@@ -215,7 +215,7 @@
 	}
 
 .pc-playerMenuH .pc-alignedCell {
-	margin-left: -0.2em;
+	margin-left: -0.3em;
 }
 
 .pc-playerMenuV .pc-playerMenuOverlay {
@@ -252,12 +252,12 @@
 
 .pc-playerMenuV .pc-playerMenuContainer {
 	top: 0px;
-	left: 1.35em;
+	left: 1.15em;
 	width: 9.3em;
 	height: 100%;
 }
 .pc-playerMenuV .pc-playerMenuOutside {
-	left: -7.1em;
+	left: -7.3em;
 }
 
 	.pc-playerMenuV .pc-alignedCell {

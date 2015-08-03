@@ -218,7 +218,7 @@ SmartJs.Ui.merge({
                 throw new Error('invalid argument: expected parameter "element" as valid HTMLElement or string');
 
             this._dom.id = this._id;
-            this._innerDom = this._dom;
+            //this._innerDom = this._dom;
 
             this._parent = undefined;
             this._childs = [];
@@ -350,8 +350,8 @@ SmartJs.Ui.merge({
                     if (!this.rendered)
                         return 0;
 
-                    var _style = window.getComputedStyle(this._innerDom);
-                    var height = this._innerDom.clientHeight;
+                    var _style = window.getComputedStyle(this._dom);
+                    var height = this._dom.clientHeight;
                     height -= parseInt(_style.paddingTop) || 0;
                     height -= parseInt(_style.paddingBottom) || 0;
                     return height;
@@ -399,8 +399,8 @@ SmartJs.Ui.merge({
                     if (!this.rendered)
                         return 0;
 
-                    var _style = window.getComputedStyle(this._innerDom);
-                    var width = this._innerDom.clientWidth;
+                    var _style = window.getComputedStyle(this._dom);
+                    var width = this._dom.clientWidth;
                     width -= parseInt(_style.paddingLeft) || 0;
                     width -= parseInt(_style.paddingRight) || 0;
                     return width;
@@ -664,7 +664,7 @@ SmartJs.Ui.merge({
         Viewport.extends(SmartJs.Ui.Control, false);
 
         function Viewport() {//propObject) {
-            SmartJs.Ui.Control.call(this, 'div', { style: { height: "100%", width: "100%", } });
+            SmartJs.Ui.Control.call(this, 'div', { style: { height: '100%', width: '100%', } });
 
             this._window = SmartJs.Ui.Window;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
