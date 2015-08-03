@@ -241,9 +241,15 @@
 	.pc-playerMenuV .pc-playerMenuPlayOverlay div {
 		position: absolute;
 		top: -0.3em;
-		right: 0;
+		right: 1.8em;
 	}
+.pc-playerMenuV .pc-iOsClosed {
+	left: 0;
+}
 
+.pc-playerMenuV .pc-iOsClosed div {
+	right: 0;
+}
 
 /* menu toolbar & buttons */
 .pc-playerMenuContainer {

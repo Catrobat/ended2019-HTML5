@@ -41,7 +41,7 @@ PocketCode.Ui.merge({
             PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() + ' pc-overlay' });
 
             //internal settings (for scaling)
-            this._defaultHeight = 500;  //all buttons at 10px font-size (vertical)
+            this._defaultHeight = 550;  //all buttons at 10px font-size (vertical)
             this._defaultWidth = 374;   //(horizontal)
 
             if (settings.position == 'bi') { //with green background
@@ -170,7 +170,7 @@ PocketCode.Ui.merge({
 
                 if (this._overlayBtn) {
                     if (settings.showOnGesture)
-                        this._overlayBtn.style.left = '0';
+                        this._overlayBtn.addClassName('pc-iOsClosed');
                     else
                         this._overlayBtn.hide();
                 }
@@ -188,7 +188,7 @@ PocketCode.Ui.merge({
                     this._overlay.show();
 
                 if (this._overlayBtn) {
-                    this._overlayBtn.style.left = '';
+                    this._overlayBtn.removeClassName('pc-iOsClosed');
                     this._overlayBtn.show();
                 }
                 this._menuContainer.show();
