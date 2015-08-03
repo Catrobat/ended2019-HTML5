@@ -50,9 +50,9 @@ PocketCode.Ui.merge({
                 this._overlayBtn._dom.appendChild(document.createElement('div'));
 
                 if (settings.showOnGesture) {
-                    var openMenuButton = new PocketCode.Ui.Button();
-                    openMenuButton.onClick.addEventListener(new SmartJs.Event.EventListener(this._openMenuClickedHandler, this));
-                    this._overlayBtn.appendChild(openMenuButton);
+                    var touchArea = this._overlayBtn._dom;
+                    this._addDomListener(touchArea, 'touchstart', this._openMenuTabbedHandler);
+                    this._addDomListener(touchArea, 'mousedown', this._openMenuClickedHandler);
                 }
                 this._appendChild(this._overlay);
                 this._appendChild(this._overlayBtn);
@@ -140,9 +140,18 @@ PocketCode.Ui.merge({
 
         //methods
         PlayerToolbar.prototype.merge({
-            _openMenuClickedHandler: function(e) {
+            _openMenuTabbedHandler: function (e) {
                 if (this.hidden)
                     this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
+                e.preventDefault();
+            },
+            _openMenuClickedHandler: function(e) {
+                if (this.hidden) {
+                    if (e.button == 0) { // left click
+                        this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
+                        e.preventDefault();
+                    }
+                }
             },
             _resizeHandler: function (args) {
                 if (this.hidden)

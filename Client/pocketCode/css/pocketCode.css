@@ -196,14 +196,6 @@
 	width: 9.6em;
 	border-radius: 4.8em;
 }
-.pc-playerMenuPlayOverlay button {
-	position: absolute;
-	height: 100%;
-	width: 100%;
-	padding: 0px;
-	border: none;
-	background-color: transparent;
-}
 .pc-playerMenuH .pc-playerMenuOverlay {
 	height: 9.4em;
 	width: 100%;
