@@ -21,13 +21,13 @@ window.onload = function () {
     control.caption = 'some text (header)';
     outputContainer.innerHTML += '<br />added caption: ' + control.caption;
 
-    control.type = PocketCode.DialogType.WARNING;
+    control.type = PocketCode.Ui.DialogType.WARNING;
     outputContainer.innerHTML += '<br />changed type to: ' + control.type;
 
-    control.type = PocketCode.DialogType.ERROR;
+    control.type = PocketCode.Ui.DialogType.ERROR;
     outputContainer.innerHTML += '<br />changed type to: ' + control.type;
 
-    control.type = PocketCode.DialogType.DEFAULT;
+    control.type = PocketCode.Ui.DialogType.DEFAULT;
     outputContainer.innerHTML += '<br />changed type to: ' + control.type;
 
     //add buttons

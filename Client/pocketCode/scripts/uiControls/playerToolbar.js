@@ -22,12 +22,12 @@ PocketCode.Ui.merge({
     },
 
     PlayerBtnCommand: {
-        BACK: 2,//{ command: 2, },
-        RESTART: 3,//{ command: 3, },
-        PLAY: 4,//{ command: 4, },
-        PAUSE: 5,//{ command: 5, },
-        SCREENSHOT: 6,//{ command: 6, },
-        AXES: 7,//{ command: 7, },
+        BACK: 2,
+        RESTART: 3,
+        PLAY: 4,
+        PAUSE: 5,
+        SCREENSHOT: 6,
+        AXES: 7,
     },
 
     PlayerToolbar: (function () {
@@ -35,19 +35,25 @@ PocketCode.Ui.merge({
 
         function PlayerToolbar(settings) {
             if (!settings || !settings.orientation)
-                throw new Error('invalif argument: cntr settings');
+                throw new Error('invalid argument: cntr settings');
+            this._settings = settings;
 
             PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() + ' pc-overlay' });
 
             //internal settings (for scaling)
-            this._defaultHeight = 455;  //all buttons at 10px font-size (vertical)
-            this._defaultWidth = 371;   //(horizontal)
+            this._defaultHeight = 500;  //all buttons at 10px font-size (vertical)
+            this._defaultWidth = 374;   //(horizontal)
 
             if (settings.position == 'bi') { //with green background
                 this._overlay = new SmartJs.Ui.Control('div', { className: 'pc-playerMenuOverlay' });
-                this._overlayBtn = new SmartJs.Ui.Control('div', { className: 'pc-playerMenuPlayOverlay' });
+                this._overlayBtn = new SmartJs.Ui.ContainerControl({ className: 'pc-playerMenuPlayOverlay' });
                 this._overlayBtn._dom.appendChild(document.createElement('div'));
 
+                if (settings.showOnGesture) {
+                    var openMenuButton = new PocketCode.Ui.Button();
+                    openMenuButton.onClick.addEventListener(new SmartJs.Event.EventListener(this._openMenuClickedHandler, this));
+                    this._overlayBtn.appendChild(openMenuButton);
+                }
                 this._appendChild(this._overlay);
                 this._appendChild(this._overlayBtn);
             }
@@ -60,7 +66,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign = new SmartJs.Ui.ContainerControl({ className: 'pc-alignedCell' });
             this._menuContainer.appendChild(this._menuContainerAlign);
 
-            //btns
+            //buttons
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'Back');
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
             this._menuContainerAlign.appendChild(this._backButton);
@@ -91,8 +97,6 @@ PocketCode.Ui.merge({
         Object.defineProperties(PlayerToolbar.prototype, {
             executionState: {
                 set: function (value) {
-                    //this._executionState = value;
-                    //this._updateExecutionState();
                     switch (value) {
                         case PocketCode.ExecutionState.RUNNING:
                             this._playButton.hide();
@@ -103,6 +107,14 @@ PocketCode.Ui.merge({
                             this._pauseButton.hide();
                             break;
                     }
+                },
+            },
+            /* override */
+            hidden: {
+                get: function() {
+                    if (this.height === 0 || this.width === 0)
+                        return true;
+                    return false;
                 },
             },
             axesButtonChecked: {
@@ -128,35 +140,58 @@ PocketCode.Ui.merge({
 
         //methods
         PlayerToolbar.prototype.merge({
+            _openMenuClickedHandler: function(e) {
+                if (this.hidden)
+                    this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
+            },
+            _resizeHandler: function (args) {
+                if (this.hidden)
+                    return;
+
+                if (this._settings.orientation == 'h') {
+                    var fontSize = 10 * this.width / this._defaultWidth;
+                    this.style.fontSize = Math.min(fontSize, 13) + 'px';
+                }
+                else {
+                    var fontSize = 10 * this.height / this._defaultHeight;
+                    this.style.fontSize = Math.min(fontSize, 13) + 'px';
+                }
+            },
             /* override */
-            hide: function() {
-                //this.hideBrowseProjectsButton();
-                SmartJs.Ui.Control.prototype.hide.call(this);
+            hide: function () {
+                var settings = this._settings;
+                if (settings.orientation == 'h')
+                    this.style.height = '0px';
+                else
+                    this.style.width = '0px';
+
+                if (this._overlay)
+                    this._overlay.hide();
+
+                if (this._overlayBtn) {
+                    if (settings.showOnGesture)
+                        this._overlayBtn.style.left = '0';
+                    else
+                        this._overlayBtn.hide();
+                }
+                        
+                if (settings.position !== 'lo')
+                    this._menuContainer.hide();
             },
             /* override */
             show: function() {
-                //this.hideBrowseProjectsButton();
-                SmartJs.Ui.Control.prototype.hide.call(this);
-            },
-            //showBrowseProjectsButton: function () {
-            //    //shows a button "browse other projects" to be called on project onExecuted event
-            //},
-            //hideBrowseProjectsButton: function() {
+                var settings = this._settings;
+                this.style.height = '';
+                this.style.width = '';
 
-            //},
-            //_createMenuBackground: function (container) {
-            //    return container;   //TODO: 
-            //    //returns inner container where the buttons have to be placed in
-            //},
-            //_createMenuButtons: function(container) {
+                if (this._overlay)
+                    this._overlay.show();
 
-            //},
-            //_updateExecutionState: function () {
-
-            //    //show text start/resume and button start or Pause
-            //},
-            _resizeHandler: function (args) {
-
+                if (this._overlayBtn) {
+                    this._overlayBtn.style.left = '';
+                    this._overlayBtn.show();
+                }
+                this._menuContainer.show();
             },
         });
 

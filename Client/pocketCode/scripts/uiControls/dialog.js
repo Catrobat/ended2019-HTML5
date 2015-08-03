@@ -11,7 +11,7 @@
  * dialog dialog types
  * @type {{DEFAULT: string, WARNING: string, ERROR: string}}
  */
-PocketCode.DialogType = {
+PocketCode.Ui.DialogType = {
     DEFAULT: 0,
     WARNING: 1,
     ERROR: 2,
@@ -38,7 +38,7 @@ PocketCode.Ui.Dialog = (function () {
 
         this._createLayout();
 
-        this._type = type || PocketCode.DialogType.DEFAULT;
+        this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
 
         if (caption) {
@@ -56,13 +56,13 @@ PocketCode.Ui.Dialog = (function () {
             },
             set: function (value) {
                 switch (value) {
-                    case PocketCode.DialogType.DEFAULT:
+                    case PocketCode.Ui.DialogType.DEFAULT:
                         this._header.className = 'pc-dialogHeader';
                         break;
-                    case PocketCode.DialogType.WARNING:
+                    case PocketCode.Ui.DialogType.WARNING:
                         this._header.className = 'pc-dialogHeader pc-dialogWarning';
                         break;
-                    case PocketCode.DialogType.ERROR:
+                    case PocketCode.Ui.DialogType.ERROR:
                         this._header.className = 'pc-dialogHeader pc-dialogError';
                         break;
                     default:
