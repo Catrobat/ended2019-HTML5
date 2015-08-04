@@ -40,15 +40,17 @@ PocketCode.Model.merge({
 
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
-                            var tmp = new PocketCode.Model.UserVariableSimple(this._scope, variable.id, variable.name);
+                            //var tmp = 
+                            this._variables[variable.id] = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
                             break;
 
                         case PocketCode.UserVariableType.LIST:
-                            var tmp = new PocketCode.Model.UserVariableList(this._scope, variable.id, variable.name);
+                            //var tmp = 
+                            this._variables[variable.id] = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
                             break;
 
                     }
-                    this._variables[variable.id] = tmp;
+                    //this._variables[variable.id] = tmp;
                 }
             },
             getVariableById: function (id) {
@@ -65,21 +67,36 @@ PocketCode.Model.merge({
 
     UserVariableSimple: (function () {
 
-        function UserVariableSimple(scope, id, name, value) {
-            this.scope = scope;
-            this.id = id;
+        function UserVariableSimple(/*scope,*/ id, name, value) {   //scope is handled already by it's collection
+            //this.scope = scope;
+            this._id = id;
             this.name = name;
-            if (value)
-                this.value = value;
-            else
-                this.value = 0.0;   //init
+            //if (value != undefined)
+                this._value = value;
+            //else
+            //    this.value = undefined;   //init
         }
 
-        UserVariableSimple.prototype = {
-            toString: function () {
-                return this.value.toString();   //TODO: ?
+        //properties
+        Object.defineProperties(UserVariableSimple.prototype, {
+            value: {
+                get: function () {
+                    return this._value;
+                },
+                set: function (value) {
+                    this._value = value;
+                },
             },
-        };
+        });
+
+        //methods
+        UserVariableSimple.prototype.merge({
+            toString: function () {
+                if (this._value)
+                    return this._value.toString();
+                return '';
+            },
+        });
 
         return UserVariableSimple;
     })(),
@@ -87,34 +104,67 @@ PocketCode.Model.merge({
 });
 
 
+/* please notice: this class does not represent a variable list, but a user variable of type list */
 PocketCode.Model.UserVariableList = (function () {
     UserVariableList.extends(PocketCode.Model.UserVariableSimple, false);
 
-    function UserVariableList(scope, id, name, value) {
-        PocketCode.Model.UserVariableSimple.call(this, scope, id, name);
+    function UserVariableList(/*scope,*/ id, name, value) {   //scope is handled already by it's collection
+        PocketCode.Model.UserVariableSimple.call(this, /*scope,*/ id, name);
 
-        if (value)
-            this.value = value;
+        if (value != undefined) {
+            if (!(value instanceof Array))
+                throw new Error('invalid argument: expected: value typeof array');
+            this._value = value;
+        }
         else
-            this.value = [];   //init
+            this._value = [];   //init
     }
 
+    //properties
+    Object.defineProperties(UserVariableList.prototype, {
+        length: {
+            get: function () {
+                return this._value.length;
+            }
+        },
+    });
+
+    //methods
     UserVariableList.prototype.merge({
-        //toString: function () {
-        //    return this.value.toString();   //TODO: ?
-        //},
+        toString: function () {
+            return this._value.join(' ');
+        },
         append: function (value) {
-            this.value.push(value);
+            this._value.push(value);
+        },
+        _validIndex: function (idx) {
+            if (idx < 1 || idx > this._value.length)
+                return false;
+            return true;
+        },
+        valueAt: function(idx) {
+            if (this._validIndex(idx))
+                return this._value[idx - 1];
+            return undefined;
         },
         insertAt: function (idx, value) {
-            this.value.insert(idx, value);
+            if (this._validIndex(idx))
+                this._value.insert(value, idx - 1);  //this.value.insert(idx, value);    //TODO: cahnge insert function in js.js (change parameter order)
+            else if (idx == this._value.length + 1)
+                this.append(value);
         },
         replaceAt: function (idx, value) {
-            if (this.value[idx])
-                this.value[idx] = value;
+            if (this._validIndex(idx))
+                this._value[idx - 1] = value;
         },
         deleteAt: function (idx) {
-            this._value.splice(idx, 1);
+            if (this._validIndex(idx))
+                this._value.splice(idx - 1, 1);
+        },
+        contains: function (value) {
+            if (this._value.indexOf(value) !== -1)
+                return true;
+            return false;
         },
     });
 

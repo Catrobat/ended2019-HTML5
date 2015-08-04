@@ -65,16 +65,16 @@ PocketCode.GameEngine = (function () {
                 return [this._background].concat(this._sprites);
             }
         },
-        background: {
-            get: function () {
-                return this._background;
-            },
-        },
-        sprites: {
-            get: function() {
-                return this._sprites;
-            },
-        },
+        //background: {     //currently not in use- we're keeping them anyway
+        //    get: function () {
+        //        return this._background;
+        //    },
+        //},
+        //sprites: {
+        //    get: function() {
+        //        return this._sprites;
+        //    },
+        //},
         _images: {
             set: function (images) {
                 if (!(images instanceof Array))

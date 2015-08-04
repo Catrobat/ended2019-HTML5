@@ -417,7 +417,7 @@ QUnit.test("Sprite", function (assert) {
     // ********************* variables *********************
     var varArray = [{ id: [21], name: ["two-one"] }, { id: [24], name: ["two-four"] }];
     sprite._variables = varArray;
-    assert.ok(sprite.__variablesSimple._variables[21].value == 0.0, "correct init");
+    assert.ok(sprite.__variablesSimple._variables[21].value == undefined, "correct init");
     assert.ok(sprite.__variablesSimple._variables[21].name == "two-one", "correct insertion of array entries");
     assert.ok(sprite.__variablesSimple._variables[24].name == "two-four", "correct insertion of array entries");
     var fakeArray = "error"
