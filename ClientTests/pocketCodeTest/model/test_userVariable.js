@@ -65,7 +65,7 @@ QUnit.test("UserVariableSimple", function (assert) {
     uv = new PocketCode.Model.UserVariableSimple(1, "2");
     assert.equal(uv.toString(), "", "toString: empty value");
 
-    uv = new PocketCode.Model.UserVariableSimple(1, "2", 3.4);
+    uv = new PocketCode.Model.UserVariableSimple(1, "2", "3.4");
     assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 3.4 && uv.value === 3.4, "properties set correctly: including value");
     assert.equal(uv.toString(), "3.4", "toString(): value");
 
@@ -83,7 +83,7 @@ QUnit.test("UserVariableList", function (assert) {
 
     uv = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, 3.6]);
     assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 3, "properties set: check for list length");
-    assert.deepEqual(uv.value, [3.4, 3.5, 3.6], "properties set: check on equal");
+    assert.deepEqual(uv._value, [3.4, 3.5, 3.6], "properties set: check on equal");
     assert.equal(uv.toString(), "3.4 3.5 3.6", "toString(): value");
 
     //length
@@ -98,42 +98,45 @@ QUnit.test("UserVariableList", function (assert) {
 
     //append
     uv.append("12");
-    assert.deepEqual(uv.value, [3.4, 3.5, 3.6, "12"], "append()");
+    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, 12], "append()");
 
     //insertAt
     uv.insertAt(2, true);
-    assert.deepEqual(uv.value, [3.4, true, 3.5, 3.6, "12"], "insertAt(): simple");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): simple");
     uv.insertAt(0, "invalidindex");
-    assert.deepEqual(uv.value, [3.4, true, 3.5, 3.6, "12"], "insertAt(): position 0 - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): position 0 - not allowed");
     uv.insertAt(-1, "invalidindex");
-    assert.deepEqual(uv.value, [3.4, true, 3.5, 3.6, "12"], "insertAt(): negative position - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): negative position - not allowed");
     uv.insertAt(6, "invalidindex?");
-    assert.deepEqual(uv.value, [3.4, true, 3.5, 3.6, "12", "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
 
     uv.insertAt(8, "validIndex");
-    assert.deepEqual(uv.value, [3.4, true, 3.5, 3.6, "12", "invalidindex?"], "insertAt(): > length + 1 - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
 
     //replaceAt
     uv.replaceAt(2, false);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12", "invalidindex?"], "replaceAt(): valid index");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): valid index");
     uv.replaceAt(0, false);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12", "invalidindex?"], "replaceAt(): invalid index: 0");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): invalid index: 0");
     uv.replaceAt(7, false);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12", "invalidindex?"], "replaceAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): invalid index: > length");
 
     //deleteAt
     uv.deleteAt(6);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12"], "deleeteAt(): valid index");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleeteAt(): valid index");
     uv.deleteAt(0);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12"], "deleteAt(): invalid index: 0");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleteAt(): invalid index: 0");
     uv.deleteAt(6);
-    assert.deepEqual(uv.value, [3.4, false, 3.5, 3.6, "12"], "deleteAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleteAt(): invalid index: > length");
 
     //contains
+    uv.append("string");
     assert.equal(uv.contains(undefined), false, "contains: undefined");
-    assert.equal(uv.contains("12"), true, "contains: string");
+    assert.equal(uv.contains("string"), true, "contains: string");
+    assert.equal(uv.contains("12,0"), false, "contains: string (number not converted)");
     assert.equal(uv.contains(false), true, "contains: bool");
     assert.equal(uv.contains(3.5), true, "contains: number");
+    assert.equal(uv.contains("12"), true, "contains: string number");
 
 });
 
