@@ -164,9 +164,10 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        onError++;
-        assert.equal(e.target, req, "onError target check");
-        //console.log('onError ');
+        assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        done1();
+
+        runTest2();
     };
     //var onAbortHandler = function (e) {
     //    onAbort++;
@@ -375,16 +376,10 @@ QUnit.test("Proxy", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        onError++;
-        assert.equal(e.target, req, "onError target check");
-        //console.log('onError ');
-        assert.ok(e.responseText.length > 0, "error: response text received");
-        assert.equal(e.responseText, e.target.responseText, "error: event response text equal target");
-        assert.ok(typeof e.responseJson === 'object', "error: response text parsed to json");
-        assert.equal(e.responseJson, e.target.responseJson, "error: event response json equal target");
-        assert.ok(e.statusCode != 200, "error: status code");
-        done2();
-        runTest3();
+        assert.ok(false, "WARNING: call to https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        done1();
+
+        runTest2();
     };
     //var onAbortHandler = function (e) {
     //    onAbort++;
@@ -417,10 +412,23 @@ QUnit.test("Proxy", function (assert) {
 
 
     //test2: cors: error
+    var onErrorHandler2 = function (e) {
+        onError++;
+        assert.equal(e.target, req, "onError target check");
+        //console.log('onError ');
+        assert.ok(e.responseText && e.responseText.length > 0, "error: response text received");
+        assert.equal(e.responseText, e.target.responseText, "error: event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "error: response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "error: event response json equal target");
+        assert.ok(e.statusCode != 200, "status code != OK (200)");
+        done2();
+        runTest3();
+    };
+
     var runTest2 = function () {
 
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "0"});
-        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler, this));
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
         PocketCode.Proxy.send(req);
 
         //done2();
@@ -443,16 +451,10 @@ QUnit.test("Proxy", function (assert) {
         runTest4();
     };
     var onErrorHandler3 = function (e) {
-        onError++;
-        assert.equal(e.target, req, "jsonp: onError target check");
-        //console.log('onError ');
-        assert.ok(e.responseText.length > 0, "jsonp: error: response text received");
-        assert.equal(e.responseText, e.target.responseText, "jsonp: error: event response text equal target");
-        assert.ok(typeof e.responseJson === 'object', "jsonp: error: response text parsed to json");
-        assert.equal(e.responseJson, e.target.responseJson, "jsonp: error: event response json equal target");
-        assert.ok(e.statusCode != 200, "jsonp: error: status code");
+        assert.ok(false, "WARNING: call to https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
 
-        done4();
+        done3();
+        runTest4();
     };
 
     var runTest3 = function () {
@@ -466,7 +468,7 @@ QUnit.test("Proxy", function (assert) {
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "874", prop1: "prop_1", prop2: "prop_2" });
         req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
         req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
-        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler, this));
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
         //req.onAbort.addEventListener(new SmartJs.Event.EventListener(onAbortHandler, this));
         req.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler, this));
         req.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler, this));
@@ -476,11 +478,24 @@ QUnit.test("Proxy", function (assert) {
 
     //test4: jsonp error
 
+    var onErrorHandler4 = function (e) {
+        onError++;
+        assert.equal(e.target, req, "jsonp: onError target check");
+        //console.log('onError ');
+        assert.ok(e.responseText && e.responseText.length > 0, "jsonp: error: response text received");
+        assert.equal(e.responseText, e.target.responseText, "jsonp: error: event response text equal target");
+        assert.ok(typeof e.responseJson === 'object', "jsonp: error: response text parsed to json");
+        assert.equal(e.responseJson, e.target.responseJson, "jsonp: error: event response json equal target");
+        assert.ok(e.statusCode != 200, "jsonp: status code != OK (200)");
+
+        done4();
+    };
+
     var runTest4 = function () {
 
         PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
         req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "0" });
-        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
+        req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler4, this));
         PocketCode.Proxy.send(req);
 
     };

@@ -331,10 +331,10 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		runTest2();
 	};
 	var onErrorHandler = function (e) {
-	    onError++;
-	    //alert(JSON.stringify(e));
-		assert.equal(e.target, req, "onError target check");
-		//console.log('onError ');
+	    assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+	    done1();
+
+	    runTest2();
 	};
 	//var onAbortHandler = function (e) {
 	//    onAbort++;
@@ -395,12 +395,12 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	//request fail: same origin
 	var onLoadHandler2 = function (e) {
 		onLoad++;
-		assert.equal(e.target, req2, "onLoad target check");
+		assert.equal(e.target, req2, "onLoad target check 2");
 		//console.log('onLoad ');
 	};
 	var onErrorHandler2 = function (e) {
 		onError++;
-		assert.equal(e.target, req2, "onError target check");
+		assert.equal(e.target, req2, "onError target check 2");
 		//console.log('onError ');
 		assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (cors not enabled)");
 		//^^ onProgressChange > 0 && onLoad === 1 && on some browsers ?
@@ -430,7 +430,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	//request fail: missing endpoint
 	var onLoadHandler3 = function (e) {
 		onLoad++;
-		assert.equal(e.target, req3, "onLoad target check");
+		assert.equal(e.target, req3, "onLoad target check 3");
 		//console.log('onLoad ');
 		//assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "ajax request: fail (missing endpoint)- no onError");
 		//^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -438,7 +438,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	};
 	var onErrorHandler3 = function (e) {
 		onError++;
-		assert.equal(e.target, req3, "onError target check");
+		assert.equal(e.target, req3, "onError target check 3");
 		//console.log('onError ');
 		assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
 		//^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -470,7 +470,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	//cors to our service
 	var onLoadHandler4 = function (e) {
 		onLoad++;
-		assert.equal(e.target, req4, "onLoad target check");
+		assert.equal(e.target, req4, "onLoad target check 4");
 		//console.log('onLoad ');
 		assert.ok(onLoadStart === 1 && onLoad === 1 && onError === 0, "cors request: consuming our service (https://web-test.catrob.at/)");
 		var res = JSON.parse(e.target.responseText);
@@ -479,8 +479,10 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		done4();
 	};
 	var onErrorHandler4 = function (e) {
-		onError++;
-		assert.equal(e.target, req4, "onError target check");
+		//onError++;
+	    //assert.equal(e.target, req4, "onError target check 4");
+	    assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/pocketcode/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+	    done4();
 		//console.log('onError ');
 		//assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
 		//^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
