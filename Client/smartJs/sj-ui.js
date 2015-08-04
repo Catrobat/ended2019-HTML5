@@ -558,7 +558,7 @@ SmartJs.Ui.merge({
                     throw new Error(e.message + ', possibly caused by appending a control to one of its own child controls (recursion loop)');
                 }
                 uiControl._parent = this;
-                this._childs.insert(uiControl, idx);
+                this._childs.insert(idx, uiControl);
 
                 uiControl.verifyResize(this);
                 this.onLayoutChange.dispatchEvent({}, uiControl);
@@ -664,7 +664,7 @@ SmartJs.Ui.merge({
         ContainerControl.extends(SmartJs.Ui.Control, false);
 
         function ContainerControl(propObject) {
-            if (typeof propObject !== 'object')
+            if (propObject && typeof propObject !== 'object')
                 throw new Error('invalid argument: expected: propObject typeof object');
 
             SmartJs.Ui.Control.call(this, 'div', propObject);

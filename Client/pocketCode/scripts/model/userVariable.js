@@ -193,7 +193,7 @@ PocketCode.Model.merge({
             },
             insertAt: function (idx, value) {
                 if (this._validIndex(idx))
-                    this._value.insert(this._toTypedValue(value), idx - 1);  //this.value.insert(idx, value);    //TODO: cahnge insert function in js.js (change parameter order)
+                    this._value.insert(idx - 1, this._toTypedValue(value));
                 else if (idx == this._value.length + 1)
                     this.append(this._toTypedValue(value));
             },

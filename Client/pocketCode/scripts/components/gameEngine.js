@@ -398,7 +398,7 @@ PocketCode.GameEngine = (function () {
                 return false;
 
             idx = Math.max(idx - layers, 0);
-            sprites.insert(sprite, idx);
+            sprites.insert(idx, sprite);
 
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + this._backgroundOffset } }, sprite);    //TODO: check event arguments
             return true;
