@@ -57,17 +57,38 @@ QUnit.test("UserVariableSimple", function (assert) {
 
     assert.ok(uv._id == 1 && uv.name === "2" && uv._value === undefined, "properties set correctly: value initialized");
     uv.value = "new val";
-    assert.ok(uv._value === "new val" && uv.value === "new val", "value accessor");
+    assert.ok(uv._value === "new val" && uv.value === "new val", "value accessor: string");
+    assert.equal(uv.valueAsNumber, 0, "string as number = 0");
 
     uv = new PocketCode.Model.UserVariableSimple(1, "2", 0);
     assert.equal(uv.value, 0, "ctr setter value: 0 as value");
+    assert.equal(uv.valueAsNumber, 0, "0 as number = 0");
 
     uv = new PocketCode.Model.UserVariableSimple(1, "2");
     assert.equal(uv.toString(), "", "toString: empty value");
+    assert.equal(uv.valueAsNumber, 0, "undefined as number = 0");
+    uv.value = "2";
+    assert.equal(uv.valueAsNumber, 2, "2 (string) as number = 2");
 
     uv = new PocketCode.Model.UserVariableSimple(1, "2", "3.4");
     assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 3.4 && uv.value === 3.4, "properties set correctly: including value");
     assert.equal(uv.toString(), "3.4", "toString(): value");
+
+    uv.value = "2,3";   //not detected as number
+    assert.equal(uv.valueAsNumber, 0, "number string (not detected) as number = 0");
+
+    var uv2 = new PocketCode.Model.UserVariableSimple(1, "2", uv);
+    assert.equal(uv.toString(), "2,3", "assign user variable");
+
+    var uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, 3.6]);
+    uv2.value = uvl;
+    assert.equal(uv2.value, "3.4 3.5 3.6", "list is added as string");
+    assert.equal(uv2.valueAsNumber, 0, "list string to number");
+
+    var uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4]);
+    uv2.value = uvl;
+    assert.equal(uv2.value, 3.4, "list is added as string- single item casted");
+    assert.equal(uv2.valueAsNumber, 3.4, "list string to number- single item casted");
 
 });
 
@@ -81,13 +102,13 @@ QUnit.test("UserVariableList", function (assert) {
 
     assert.throws(function () { var test = new PocketCode.Model.UserVariableList(1, "2", 0); }, Error, "ERROR: invalid argument: value");
 
-    uv = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, 3.6]);
-    assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 3, "properties set: check for list length");
-    assert.deepEqual(uv._value, [3.4, 3.5, 3.6], "properties set: check on equal");
-    assert.equal(uv.toString(), "3.4 3.5 3.6", "toString(): value");
+    uv = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, "3.6", "string"]);
+    assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 4, "properties set: check for list length");
+    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string"], "properties set: check on equal");
+    assert.equal(uv.toString(), "3.4 3.5 3.6 string", "toString(): value");
 
     //length
-    assert.equal(uv.length, 3, "length");
+    assert.equal(uv.length, 4, "length");
 
     //value at
     assert.equal(uv.valueAt(2), 3.5, "value at: 2");
@@ -96,38 +117,45 @@ QUnit.test("UserVariableList", function (assert) {
     assert.equal(uv.valueAt(-1), undefined, "value at: < 0");
     assert.equal(uv.valueAt(uv.length + 1), undefined, "value at: length + 1");
 
+    //value as number
+    assert.equal(uv.valueAsNumberAt(3), 3.6, "value as number at: 3");
+    assert.equal(uv.valueAsNumberAt(4), 0, "value as number at: 4 (string");
+    assert.equal(uv.valueAsNumberAt(0), 0, "value as number at: 0");
+    assert.equal(uv.valueAsNumberAt(-1), 0, "value as number at: < 0");
+    assert.equal(uv.valueAsNumberAt(uv.length + 1), 0, "value as number at: length + 1");
+
     //append
     uv.append("12");
-    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, 12], "append()");
+    assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string", 12], "append()");
 
     //insertAt
     uv.insertAt(2, true);
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): simple");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): simple");
     uv.insertAt(0, "invalidindex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): position 0 - not allowed");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): position 0 - not allowed");
     uv.insertAt(-1, "invalidindex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12], "insertAt(): negative position - not allowed");
-    uv.insertAt(6, "invalidindex?");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): negative position - not allowed");
+    uv.insertAt(7, "invalidindex?");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
 
-    uv.insertAt(8, "validIndex");
-    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
+    uv.insertAt(9, "validIndex");
+    assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
 
     //replaceAt
     uv.replaceAt(2, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): valid index");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): valid index");
     uv.replaceAt(0, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): invalid index: 0");
-    uv.replaceAt(7, false);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12, "invalidindex?"], "replaceAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: 0");
+    uv.replaceAt(8, false);
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: > length");
 
     //deleteAt
-    uv.deleteAt(6);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleeteAt(): valid index");
+    uv.deleteAt(7);
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleeteAt(): valid index");
     uv.deleteAt(0);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleteAt(): invalid index: 0");
-    uv.deleteAt(6);
-    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, 12], "deleteAt(): invalid index: > length");
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: 0");
+    uv.deleteAt(7);
+    assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: > length");
 
     //contains
     uv.append("string");
@@ -137,6 +165,27 @@ QUnit.test("UserVariableList", function (assert) {
     assert.equal(uv.contains(false), true, "contains: bool");
     assert.equal(uv.contains(3.5), true, "contains: number");
     assert.equal(uv.contains("12"), true, "contains: string number");
+
+    //add uservars & list
+    var uvs = new PocketCode.Model.UserVariableSimple(1, "2", "13.2");
+    uv.append(uvs);
+    assert.equal(uv.valueAt(uv.length), 13.2, "append: user variable added and casted");
+    assert.equal(uv.valueAsNumberAt(uv.length), 13.2, "append: user variable added and casted: type check internal");
+
+    uv.insertAt(1, uvs);
+    assert.equal(uv.valueAt(1), 13.2, "insert: user variable added and casted");
+    assert.equal(uv.valueAsNumberAt(1), 13.2, "insert: user variable added and casted: type check internal");
+
+    uv.replaceAt(2, uvs);
+    assert.equal(uv.valueAt(2), 13.2, "replace: user variable added and casted");
+    assert.equal(uv.valueAsNumberAt(2), 13.2, "replace: user variable added and casted: type check internal");
+
+    //lists: one test is enough as all setters are checked already
+    var uv2 = new PocketCode.Model.UserVariableList(2, "new", [3.4]);
+    uv.append(uv2);
+    assert.equal(uv.valueAt(uv.length), 3.4, "append: user list: added and casted");
+    //^^ please notice.. as a compare between string and number in qunit will/may assert TRUE even if the types are different the check below is needed
+    assert.equal(uv.valueAsNumberAt(uv.length), 3.4, "append: user list: added and casted: type check internal");
 
 });
 

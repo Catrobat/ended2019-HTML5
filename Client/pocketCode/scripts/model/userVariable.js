@@ -106,7 +106,7 @@ PocketCode.Model.merge({
                 if (value instanceof PocketCode.Model.UserVariableSimple)
                     return value.value;
                 else if (value instanceof PocketCode.Model.UserVariableList)
-                    return value.toString();
+                    return this._toTypedValue(value.toString());
                 else if (typeof value === 'string') {
                     var num = parseFloat(value);
                     return (num.toString() === value ? num : value);
@@ -158,7 +158,7 @@ PocketCode.Model.merge({
                 if (value instanceof PocketCode.Model.UserVariableSimple)
                     return value.value;
                 else if (value instanceof PocketCode.Model.UserVariableList)
-                    return value.toString();
+                    return this._toTypedValue(value.toString());
                 else if (typeof value === 'string') {
                     var num = parseFloat(value);
                     return (num.toString() === value ? num : value);
