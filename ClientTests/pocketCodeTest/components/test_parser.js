@@ -489,14 +489,15 @@ QUnit.test("FormulaParser: logic", function (assert) {
 
 QUnit.test("BrickFactory", function (assert) {
 
-    var allBricksProject = project1;    //using tests_testData.js
-    //^^ includes all types of bricks 
+    var allBricksProject = project1;    //using _resources/testDataProjects.js
+    //^^ includes all types of bricks (once!!! take care if this is still correct)
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
     var soundMgr = new PocketCode.SoundManager([]);
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
+    program._variables = allBricksProject.variables;
     var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
@@ -528,6 +529,8 @@ QUnit.test("BrickFactory", function (assert) {
     var otherBricks = [];
 
     //background:
+    sprite._variables = allBricksProject.background.variables;
+
     var count = 0;
     var bricks = allBricksProject.background.bricks;
     for (var i = 0, l = bricks.length; i < l; i++) {

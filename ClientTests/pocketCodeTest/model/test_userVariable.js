@@ -35,6 +35,8 @@ QUnit.test("UserVariableCollection", function (assert) {
     uvc.initVariableList([]);
     assert.deepEqual(uvc.getVariables(), {}, "initVariableList: clear existing vars");
 
+    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableSimple, "get a new instance (simple): based on a pocketcode bug")
+
     //using lists
     uvc = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.LIST, PocketCode.UserVariableScope.GLOBAL);
     testVars = [
@@ -47,6 +49,9 @@ QUnit.test("UserVariableCollection", function (assert) {
     var test = uvc.getVariables()[4];
     assert.deepEqual(test._value, [6, 16, 26], "lists: variable created correctly");
     assert.ok(uvc.getVariables()[7]._id === 7 && uvc.getVariables()[7].name === "8" && uvc.getVariables()[7].length === 0, "lists: variable created correctly (init value) + length");
+
+    assert.equal(uvc.getVariableById(4).name, 5, "get list var by id");
+    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableList, "get a new instance (list): based on a pocketcode bug")
 
 });
 

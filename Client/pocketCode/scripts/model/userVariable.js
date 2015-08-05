@@ -54,6 +54,12 @@ PocketCode.Model.merge({
                 }
             },
             getVariableById: function (id) {
+                if (id === null) {  //this is required because the android app allows adding a variable brick without defining a name
+                    if (this._type === PocketCode.UserVariableType.SIMPLE)
+                        return new PocketCode.Model.UserVariableSimple(null, "New...");
+                    else
+                        return new PocketCode.Model.UserVariableList(null, "New...");
+                }
                 //if (this._variables[id])
                 return this._variables[id];
                 //throw new Error('variable/list not found: id=' + id + ', type: ' + this._type);
