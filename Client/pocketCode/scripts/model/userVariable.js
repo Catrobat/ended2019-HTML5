@@ -54,7 +54,9 @@ PocketCode.Model.merge({
                 }
             },
             getVariableById: function (id) {
+                //if (this._variables[id])
                 return this._variables[id];
+                //throw new Error('variable/list not found: id=' + id + ', type: ' + this._type);
             },
             getVariables: function () {
                 return this._variables;
