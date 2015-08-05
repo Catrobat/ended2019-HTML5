@@ -12,13 +12,12 @@ PocketCode.Bricks.merge({
         function AppendToListBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            var listId = propObject.referenceId;
-            this._list = this._sprite.getList(this._listId);
+            this._list = sprite.getList(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         AppendToListBrick.prototype._execute = function () {
-            list.append(this._value.calculate());
+            this._list.append(this._value.calculate());
             this._return();
         };
 
@@ -32,8 +31,7 @@ PocketCode.Bricks.merge({
         function InsertAtListBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            var listId = propObject.referenceId;
-            this._list = this._sprite.getList(this._listId);
+            this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -53,8 +51,7 @@ PocketCode.Bricks.merge({
         function ReplaceAtListBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            var listId = propObject.referenceId;
-            this._list = this._sprite.getList(this._listId);
+            this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -74,8 +71,7 @@ PocketCode.Bricks.merge({
         function DeleteAtListBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            var listId = propObject.referenceId;
-            this._list = this._sprite.getList(this._listId);
+            this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
         }
 

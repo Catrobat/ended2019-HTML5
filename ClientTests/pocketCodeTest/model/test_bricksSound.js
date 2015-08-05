@@ -139,7 +139,8 @@ QUnit.test("SpeakBrick", function (assert) {
 
 
     //test: using text generated at runtime (not static)
-    sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    //sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    sprite.__variablesSimple._variables.s15 = new PocketCode.Model.UserVariableSimple("s15", "var_name", "dynamic points");
     //^^ pretty difficult to set a variable for a test case.. maybe we should rewrite this
 
     text = join;    //using testDataFormula.js
