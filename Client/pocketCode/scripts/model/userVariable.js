@@ -40,17 +40,14 @@ PocketCode.Model.merge({
 
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
-                            //var tmp = 
                             this._variables[variable.id] = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
                             break;
 
                         case PocketCode.UserVariableType.LIST:
-                            //var tmp = 
                             this._variables[variable.id] = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
                             break;
 
                     }
-                    //this._variables[variable.id] = tmp;
                 }
             },
             getVariableById: function (id) {
@@ -60,9 +57,7 @@ PocketCode.Model.merge({
                     else
                         return new PocketCode.Model.UserVariableList(null, "New...");
                 }
-                //if (this._variables[id])
                 return this._variables[id];
-                //throw new Error('variable/list not found: id=' + id + ', type: ' + this._type);
             },
             getVariables: function () {
                 return this._variables;
@@ -75,14 +70,10 @@ PocketCode.Model.merge({
 
     UserVariableSimple: (function () {
 
-        function UserVariableSimple(/*scope,*/ id, name, value) {   //scope is handled already by it's collection
-            //this.scope = scope;
+        function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
-            //if (value != undefined)
             this._value = this._toTypedValue(value);
-            //else
-            //    this.value = undefined;   //init
         }
 
         //properties
@@ -99,10 +90,6 @@ PocketCode.Model.merge({
                 get: function () {
                     if (typeof this._value === 'number')
                         return this._value;
-                    //if (typeof this._value === 'string') {    //not scratch conform
-                    //    var num = parseFloat(this._value);
-                    //    return num.toString() === this._value ? num : 0;
-                    //}
                     return 0;
                 },
             },
@@ -136,7 +123,7 @@ PocketCode.Model.merge({
     /* please notice: this class does not represent a variable list, but a user variable of type list */
     UserVariableList: (function () {
 
-        function UserVariableList(/*scope,*/ id, name, value) {   //scope is handled already by it's collection
+        function UserVariableList(id, name, value) {
             this._id = id;
             this.name = name;
 
@@ -147,8 +134,6 @@ PocketCode.Model.merge({
                 for (var i = 0, l = value.length; i < l; i++)
                     this.append(value[i]);
             }
-            //else
-            //    this._value = [];   //init
         }
 
         //properties
@@ -193,10 +178,6 @@ PocketCode.Model.merge({
                 var val = this.valueAt(idx);
                 if (typeof val === 'number')
                     return val;
-                //if (typeof val === 'string') {    //not scratch conform
-                //    var num = parseFloat(val);
-                //    return num.toString() === val ? num : 0;
-                //}
                 return 0;
             },
             insertAt: function (idx, value) {
