@@ -207,6 +207,7 @@ PocketCode.GameEngine = (function () {
             this._broadcasts = jsonProject.broadcasts || [];
             this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
+            //make sure vars and lists are defined before creating bricks and sprites
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
