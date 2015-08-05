@@ -151,7 +151,7 @@ PocketCode.GameEngine = (function () {
     GameEngine.prototype.merge({
 
         loadProject: function (jsonProject) {
-            if (this._executionState === PocketCode.ExecutionState.RUNNING || this._executionState === PocketCode.ExecutionState.PAUSED)
+            if (this._executionState !== PocketCode.ExecutionState.STOPPED)
                 this.stopProject();
 
             this._spritesLoaded = false;
@@ -313,7 +313,7 @@ PocketCode.GameEngine = (function () {
         },
 
         pauseProject: function () {
-            if (this._executionState !== PocketCode.ExecutionState.RUNNING || this._executionState === PocketCode.ExecutionState.PAUSED)//(!this._running || this._paused)
+            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return;
 
             this._soundManager.pauseSounds();
@@ -327,7 +327,7 @@ PocketCode.GameEngine = (function () {
         },
 
         resumeProject: function () {
-            if (this._executionState !== PocketCode.ExecutionState.PAUSED)//(!this._paused)
+            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
 
             this._soundManager.resumeSounds();
