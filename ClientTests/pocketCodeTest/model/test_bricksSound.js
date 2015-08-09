@@ -1,5 +1,5 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksSound.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -14,7 +14,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var soundId = "soundId";
 
     var b = new PocketCode.Bricks.PlaySoundBrick(device, sprite, program._soundManager, { soundId: soundId });
@@ -40,7 +40,7 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.StopAllSoundsBrick(device, sprite, program._soundManager);
 
@@ -65,7 +65,7 @@ QUnit.test("SetVolumeBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"80","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.SetVolumeBrick(device, sprite, program._soundManager, { percentage: percentage });
@@ -91,7 +91,7 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.ChangeVolumeBrick(device, sprite, program._soundManager, { value: value });
@@ -118,7 +118,7 @@ QUnit.test("SpeakBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.SpeakBrick(device, sprite, program._soundManager, { text: text });
@@ -139,7 +139,10 @@ QUnit.test("SpeakBrick", function (assert) {
 
 
     //test: using text generated at runtime (not static)
-    sprite.__variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    //sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+    sprite.__variablesSimple._variables.s15 = new PocketCode.Model.UserVariableSimple("s15", "var_name", "dynamic points");
+    //^^ pretty difficult to set a variable for a test case.. maybe we should rewrite this
+
     text = join;    //using testDataFormula.js
     var b2 = new PocketCode.Bricks.SpeakBrick(device, sprite, program._soundManager, { text: text });
 

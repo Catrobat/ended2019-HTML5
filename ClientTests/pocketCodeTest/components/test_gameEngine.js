@@ -18,12 +18,12 @@ QUnit.test("GameEngine", function (assert) {
     var testDispose = function () {
         gameEngine.dispose();
         assert.ok(gameEngine._disposed, "disposed correctly");
-        assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variables == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
+        assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variablesSimple == undefined && gameEngine.__variablesList == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
         disposedHandled();
     };
 
     gameEngine = new PocketCode.GameEngine();
-    assert.ok(gameEngine instanceof PocketCode.GameEngine, "instance check");
+    assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
     assert.throws(function () { gameEngine._images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images");
     assert.throws(function () { gameEngine._sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds");
@@ -47,14 +47,18 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine.__sounds["id1"] === sounds[0] && gameEngine.__sounds["id2"] === sounds[1] && gameEngine.__sounds["id3"] === sounds[2], "sounds set correctly");
     assert.ok(gameEngine._soundManager.soundManagerInitCalled, "Called SoundManagers init Function");
 
-    var variables = [{ id: "1", name: "name1" }, { id: "2", name: "name2" }, { name: "name3", id: "3" }];
-    gameEngine._variables = variables;
-    assert.ok(gameEngine.__variables["1"] === variables[0] && gameEngine.__variables["2"] === variables[1] && gameEngine.__variables["3"] === variables[2], "variables set correctly");
-    assert.ok(gameEngine._variableNames["1"].name === "name1" && gameEngine._variableNames["2"].name === "name2" && gameEngine._variableNames["3"].name === "name3", "varableNames set correctly");
+    //var variables = [{ id: "1", name: "name1" }, { id: "2", name: "name2" }, { name: "name3", id: "3" }];
+    //gameEngine._variables = variables;
+    //assert.ok(gameEngine.__variablesSimple._variables["1"]._id === variables[0]._id && gameEngine.__variablesSimple._variables["2"]._id === variables[1]._id && gameEngine.__variablesSimple._variables["3"]._id === variables[2]._id, "variables set correctly");
+    //TODO: ^^ this tests should be moved to base class: UserVariableHost including tests for lists (we shouldn't use private vars for assets - that much - either)
 
-    assert.deepEqual(gameEngine.getGlobalVariable("1"), variables[0], "Calling getNewVariable returned correct variable");
-    assert.deepEqual(gameEngine.getGlobalVariableNames(), gameEngine._variableNames, "getGlobalVariableNames returns gameEngine._variableNames");
-    assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
+    //var names = gameEngine.getAllVariables();
+    //names = names.global;
+    //assert.ok(names["1"].name === "name1" && names["2"].name === "name2" && names["3"].name === "name3", "varableNames set correctly");
+
+    //assert.ok(gameEngine.getVariable("1").name === "name1", "Calling getNewVariable returned correct variable");
+    //assert.deepEqual(gameEngine.getAllVariables(), gameEngine._variableNames, "getGlobalVariableNames returns gameEngine._variableNames");
+    //assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
 
     var broadcasts = [{ id: "1" }, { id: "2" }, { id: "3" }];
     assert.ok(typeof gameEngine._broadcastMgr.init == "function", "broadcast mgr interface check");
@@ -71,15 +75,15 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.projectReady = true;
 
     //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
-    var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
+    var spriteInterface = new PocketCode.Sprite(gameEngine, { id: "id", name: "name" });
     assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopScripts == "function", "mock: valid sprite interface");
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
-        TestSprite.extends(PocketCode.Model.Sprite, false);
+        TestSprite.extends(PocketCode.Sprite, false);
 
         function TestSprite(program, args) {
-            PocketCode.Model.Sprite.call(this, program, args);
+            PocketCode.Sprite.call(this, program, args);
             this.status = PocketCode.ExecutionState.STOPPED;
             //this.MOCK = true;   //flag makes debugging much easier
             this.timesStopped = 0;
@@ -227,7 +231,7 @@ QUnit.test("GameEngine", function (assert) {
     //assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting");
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
 
-    var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "newId", name: "myName" });
+    var sprite1 = new PocketCode.Sprite(gameEngine, { id: "newId", name: "myName" });
     sprite1.id = "spriteId1";
     //sprite1.name = "spriteName1";
     gameEngine._sprites.push(sprite1);
@@ -264,11 +268,22 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.setSpriteLayerBack(spriteBeforeLast, 2);
     assert.equal(gameEngine.getSpriteLayer(spriteBeforeLast), 1, "Sprite positioned at first layer if when trying to set back more layers than currently available");
 
-    var projectWithNoSounds = project1;
-    gameEngine.loadProject(projectWithNoSounds);
-    assert.ok(gameEngine._soundsLoaded, "SoundsLoaded set true if there are no sounds");
 
-    var testProject = projectSounds;
+    //var testProject = strProject11; //has no sounds
+    //var testProject = strProject719;
+
+    //add resource path to url
+    var testProject = JSON.parse(JSON.stringify( strProject719));
+    for(i = 0, l = testProject.sounds.length; i< l; i++){
+        testProject.sounds[i].url = "_resources/"+testProject.sounds[i].url;
+    }
+
+    for(i = 0, l = testProject.images.length; i< l; i++){
+        testProject.images[i].url = "_resources/"+testProject.images[i].url;
+    }
+
+
+
     var loadingHandled = assert.async();
     var disposedHandled = assert.async();
 
@@ -276,27 +291,29 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._soundManager = new PocketCode.SoundManager();
     //internal bindings have to be reattached to garantee loading flags are set
     gameEngine._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingErrorHandler, gameEngine));
-    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingProgressHandler, gameEngine));
+    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._assetProgressChangeHandler, gameEngine));
     gameEngine._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(gameEngine._spriteOnExecutedHandler, gameEngine));
     //check if project has finished executing
 
-    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
-        //console.log('progress: ' + e.progress);
+    // todo finsish on loading error and/or timeout
+    var calledNotReadyTestOnce = false;
+    gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
         if (e.progress !== 100) {
-            assert.ok(!gameEngine._soundsLoaded && !gameEngine.projectReady, "Program not ready if sounds are not loaded");
+            if(!calledNotReadyTestOnce){
+                assert.ok(!gameEngine.projectReady, "Program not ready if loading not done");
+                calledNotReadyTestOnce = true;
+            }
             return;
         }
-        //else {
-            assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
-            assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
-
-            loadingHandled();
-            testDispose();
-        //}
+       // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
+        assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
+        loadingHandled();
+        testDispose();
 
         //var gameEngine2 = new PocketCode.GameEngine();
         //gameEngine2.loadProject(strProject14);
     }));
+
 
     //make sure the testProject contains loadable sounds
     gameEngine.loadProject(testProject);
@@ -311,13 +328,13 @@ QUnit.test("GameEngine", function (assert) {
     }
     assert.ok(spritesMatch, "Sprites created correctly");
 
-    var varsMatch = true;
-    for (var i = 0, l = testProject.variables.length; i < l; i++) {
-        if (gameEngine.__variables[testProject.variables[i].id] !== testProject.variables[i]) {
-            varsMatch = false;
-        }
-    }
-    assert.ok(varsMatch, "Variables set correctly");
+    //var varsMatch = true;
+    //for (var i = 0, l = testProject.variables.length; i < l; i++) {
+    //    if (gameEngine.__variablesSimple._variables[testProject.variables[i]._id] !== testProject.variables[i]) {
+    //        varsMatch = false;
+    //    }
+    //}
+    //assert.ok(varsMatch, "Variables set correctly");
 
     var soundsMatch = true;
     for (var i = 0, l = testProject.sounds.length; i < l; i++) {
@@ -339,6 +356,7 @@ QUnit.test("GameEngine", function (assert) {
     //finish async tests if browser does not support sounds
     if (!gameEngine._soundManager.supported) {
         loadingHandled();
+        //window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
         testDispose();
     }
 

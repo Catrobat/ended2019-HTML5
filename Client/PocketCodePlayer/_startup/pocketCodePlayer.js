@@ -9,7 +9,7 @@ if (!PocketCode)
 PocketCode.websiteUrl = 'https://pocketcode.org/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'details/{projectId}';
 PocketCode.mobileUrl = PocketCode.websiteUrl + 'html5/player/{projectId}';
-PocketCode.logoUrl = PocketCode.websiteUrl + 'images/logo/logo_text.png';
+PocketCode.logoUrl = 'images/logo_text.png';
 
 PocketCode.Web = {
 
@@ -125,7 +125,7 @@ PocketCode.Web = {
 						_self.lastExitDate = new Date();
 
 					_self.onFullscreenChange.call(_self, fs());
-				}, 20);
+				}, 10);
 			},
 			_keyHandler: function (e) {
 				e = e || window.event;
@@ -736,7 +736,7 @@ PocketCode.Web.resources = {
 		return PocketCode.Web.resourceRoot;
 	}(),//'../',	//http://localhost:26825/loadingTestScripts/',
 	files: [
-		{ url: 'smartJs/sj.css', type: 'css' },
+		//{ url: 'smartJs/sj.css', type: 'css' },
 		{ url: 'smartJs/sj.js', type: 'js' },
 		{ url: 'smartJs/sj-core.js', type: 'js' },
 		{ url: 'smartJs/sj-event.js', type: 'js' },
@@ -749,13 +749,14 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'js' },
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksVariable.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/sprite.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
@@ -764,6 +765,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		//{ url: 'pocketCode/scripts/components/canvas.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/userVariableHost.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/sprite.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/mvc.js', type: 'js' },
 

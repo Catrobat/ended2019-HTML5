@@ -1,5 +1,5 @@
 /// <reference path="../../qunit/qunit-1.16.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksLook.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -14,7 +14,7 @@ QUnit.test("SetLookBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.SetLookBrick(device, sprite, { id: "lookId" });
 
@@ -39,7 +39,7 @@ QUnit.test("NextLookBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.NextLookBrick(device, sprite);
 
@@ -64,7 +64,7 @@ QUnit.test("SetSizeToBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.SetSizeToBrick(device, sprite, { percentage: percentage });
@@ -90,7 +90,7 @@ QUnit.test("ChangeSizeBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.ChangeSizeBrick(device, sprite, { value: value });
@@ -116,7 +116,7 @@ QUnit.test("HideBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.HideBrick(device, sprite);
 
@@ -141,7 +141,7 @@ QUnit.test("ShowBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.ShowBrick(device, sprite);
 
@@ -166,7 +166,7 @@ QUnit.test("SetTransparencyBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.SetTransparencyBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.GHOST });
@@ -193,7 +193,7 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.ChangeTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
@@ -219,7 +219,7 @@ QUnit.test("SetBrightnessBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.SetBrightnessBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.BRIGHTNESS });
@@ -245,7 +245,7 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Bricks.ChangeBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
@@ -271,7 +271,7 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.ClearGraphicEffectBrick(device, sprite);
 
@@ -296,7 +296,7 @@ QUnit.test("LedOnBrick", function (assert) {
 
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.LedOnBrick(device, sprite);
 
@@ -321,7 +321,7 @@ QUnit.test("LedOffBrick", function (assert) {
 
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Bricks.LedOffBrick(device, sprite);
 

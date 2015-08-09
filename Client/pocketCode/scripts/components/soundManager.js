@@ -97,21 +97,23 @@ PocketCode.SoundManager = (function () {
             createjs.Sound.removeAllEventListeners();
 
             var soundsFormatted = [];
-            var sizeOfAllSounds = 0;
+            this.sizeOfAllSounds = 0;
             for (var i = 0, l = sounds.length; i < l; i++) {
                 if (!sounds[i].hasOwnProperty('url') || !sounds[i].hasOwnProperty('id')) {
                     throw new Error('Sounddata is missing id or url');
                 }
                 soundsFormatted[i] = { id: sounds[i].id, src: sounds[i].url, data: this.maxInstancesOfSameSound, size: sounds[i].size };
-                sizeOfAllSounds += sounds[i].size;
+                this.sizeOfAllSounds += sounds[i].size;
             }
 
-            var percentLoaded = 0;
+            var percentLoaded = this.sizeOfAllSounds > 0 ? 0:100;
+            this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: 0 });
+
             createjs.Sound.addEventListener('fileload', createjs.proxy(function (e) {
                 var loadedFile = soundsFormatted.filter(function (sound) { return sound.src === e.src; });
                 if (loadedFile.length > 0) {
-                    percentLoaded += loadedFile[0].size / sizeOfAllSounds * 100;
-                    this._onLoadingProgress.dispatchEvent({ progress: percentLoaded });
+                    percentLoaded += loadedFile[0].size / this.sizeOfAllSounds * 100;
+                    this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: loadedFile[0].size });
                 }
             }, this));
 
@@ -158,11 +160,14 @@ PocketCode.SoundManager = (function () {
             if (!this.supported)
                 return false;
 
-            //var id = SmartJs.getNewId();
-            //this.loadSoundFile(id, url);
+            var id = SmartJs.getNewId();
+            createjs.Sound.registerSound({mp3: url}, id, this.maxInstancesOfSameSound,'');
+            createjs.Sound.on("fileload", function loadHandler(event) {
+                if(event.id === id)
+                    this.startSound(id);
+            }, this);
 
-            //createjs.Sound.play()
-
+            return id;
         },
 
         pauseSounds: function () {

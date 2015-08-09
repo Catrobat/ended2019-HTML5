@@ -12,7 +12,8 @@ SmartJs.Core.Component = (function () {
     function Component(propObject) {
         //this._id = SmartJs.getNewId();
         //this._disposed = false;   -> not required: if (this._disposed) returns false for false and undefined
-        this._mergeProperties(propObject);
+        if (propObject && typeof propObject == 'object')
+            this._mergeProperties(propObject);
     }
 
     Object.defineProperties(Component.prototype, {

@@ -50,7 +50,7 @@ PocketCode.Formula = (function () {
         uiString: {
             get: function () {
                 if (!this._uiString)
-                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getVariableNames());
+                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getAllVariables());
                 return this._uiString;
             },
         },

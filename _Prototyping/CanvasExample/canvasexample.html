@@ -1,57 +1,57 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de" class="">
 <head>
-    <meta charset="utf-8">
-    <title>PocketCode Canvas Test</title>
-    <link href="../../ClientTests/qunit/qunit-1.16.0.css" rel="stylesheet" />
-    <script src="../../ClientTests/qunit/qunit-1.16.0.js"></script>
-    <!--script src="../qunit/jquery-2.1.1.min.js"></script-->
+	<meta charset="utf-8">
+	<title>PocketCode Canvas Test</title>
+	<link href="../../ClientTests/qunit/qunit-1.16.0.css" rel="stylesheet" />
+	<script src="../../ClientTests/qunit/qunit-1.16.0.js"></script>
+	<!--script src="../qunit/jquery-2.1.1.min.js"></script-->
 
-    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
-    <script src="../../Client/pocketCode/libs/fabric/fabric-1.4.0.js" ></script>
-    <!--script src="../../Client/pocketCode/libs/soundjs_0.6/soundjs-0.6.0..min.js"></script>-->
+	<script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
+	<script src="../../Client/pocketCode/libs/fabric/fabric-1.4.0.js" ></script>
+	<!--script src="../../Client/pocketCode/libs/soundjs_0.6/soundjs-0.6.0..min.js"></script>-->
 
-    <script src="../../Client/smartJs/sj.js"></script>
-    <script src="../../Client/smartJs/sj-core.js"></script>
-    <script src="../../Client/smartJs/sj-event.js"></script>
-    <script src="../../Client/smartJs/sj-components.js"></script>
-    <script src="../../Client/smartJs/sj-animation.js"></script>
-    <script src="../../Client/smartJs/sj-communication.js"></script>
+	<script src="../../Client/smartJs/sj.js"></script>
+	<script src="../../Client/smartJs/sj-core.js"></script>
+	<script src="../../Client/smartJs/sj-event.js"></script>
+	<script src="../../Client/smartJs/sj-components.js"></script>
+	<script src="../../Client/smartJs/sj-animation.js"></script>
+	<script src="../../Client/smartJs/sj-communication.js"></script>
 
   <!--  <script src="_resources/testDataFormula.js"></script>
-    <script src="_resources/testDataProjects.js"></script>-->
+	<script src="_resources/testDataProjects.js"></script>-->
 
-    <script src="../../Client/pocketCode/scripts/core.js" data-cover></script>
-    <!-- model -->
-    <script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/bricksControl.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/bricksMotion.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/sprite.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/core.js" data-cover></script>
+	<!-- model -->
+	<script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/bricksControl.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/bricksMotion.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/component/sprite.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
 
-    <!-- components -->
-    <script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
+	<!-- components -->
+	<script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
+	<script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
 </head>
 	
 	<title>Canvas Drawer</title>
 	<body>
-        <div>
-            <button onClick="updateSprite()"> Update </button>
-            <button onClick="createDataURL()"> Screenshot PNG</button>
-        </div>
+		<div>
+			<button onClick="updateSprite()"> Update </button>
+			<button onClick="createDataURL()"> Screenshot PNG</button>
+		</div>
 
-        <div id="canv">
-            <script src="../../ClientTests/pocketCodeTest/components/test_canvas.js"></script>
-		    <canvas id="pcCanvas" width="400" height="600"></canvas>
-        </div>
+		<div id="canv">
+			<script src="../../ClientTests/pocketCodeTest/components/test_canvas.js"></script>
+			<canvas id="pcCanvas" width="400" height="600"></canvas>
+		</div>
 	</body>
 </html>
 

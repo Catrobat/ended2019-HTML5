@@ -87,7 +87,7 @@ Object.defineProperty(Function.prototype, 'extends', { enumerable: false });
  * @param {Array} o
  * @param {number} idx
  */
-Array.prototype.insert = function (o, idx) {
+Array.prototype.insert = function (idx, o) {
     this.splice(idx, 0, o);
 };
 Object.defineProperty(Array.prototype, 'insert', { enumerable: false });

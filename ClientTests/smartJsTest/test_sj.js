@@ -411,16 +411,16 @@ QUnit.test("Function.prototype.extends (including namespaces)", function (assert
 QUnit.test("Array.prototype.insert", function (assert) {
 	
 	var a = [];
-	a.insert({a:"asd"}, 2);
+	a.insert(2, {a:"asd"});
 	assert.deepEqual(a[a.length-1], { a: "asd" }, "insert on index > length = last entry");
 
-	a.insert({ a: "asd" }, 2);
-	a.insert({ a: "asd" }, 2);
-	a.insert({ a: "jkl" }, 2);
+	a.insert(2, { a: "asd" });
+	a.insert(2, { a: "asd" });
+	a.insert(2, { a: "jkl" });
 	assert.deepEqual(a[2], { a: "jkl" }, "insert on index == length: last entry moved");
 	assert.deepEqual(a[a.length - 1], { a: "asd" }, "3rd moved to 4th entry");
 
-	a.insert(23, 0);
+	a.insert(0, 23);
 	assert.deepEqual(a[0], 23, "mixed type (int) on first entry");
 	assert.ok(a.length == 5, "array resized during insert");
 	assert.deepEqual(a[3], { a: "jkl" }, "entries moved during insert");
@@ -451,7 +451,7 @@ QUnit.test("Array.prototype.remove", function (assert) {
 
 	var x = new X();
 	var x2 = new X();
-	a.insert(x, 0);
+	a.insert(0, x);
 	assert.deepEqual(a[0], new X(), "object inserted correctly");
 	var count = a.remove(x2);
 	assert.equal(count, 0, "return value (count of removed items) if not removed");

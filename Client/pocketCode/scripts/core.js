@@ -9,10 +9,10 @@ if (!PocketCode)
     var PocketCode = {};
 
 /**
- * PocketCode User Interface Namespace
- * @namespace PocketCode.Ui
+ * @namespace Model
+ * @type {{}|*}
  */
-PocketCode.Ui = {};
+PocketCode.Model = {};  //PocketCode.Model || {};
 
 
 PocketCode.merge({

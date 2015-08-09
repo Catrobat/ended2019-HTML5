@@ -9,7 +9,6 @@ class JsonView extends BaseView
 
   public function writeResponseString($outputObject)
   {
-    //var_dump($outputObject);
     echo json_encode($outputObject);
   }
 }

@@ -8,6 +8,7 @@ class SpriteDto {
   public $looks = array();	//of type ResourceDto
   public $sounds = array();	//of type ResourceDto
   public $variables = array();
+  public $lists = array();
   
   public $bricks = array();	//scripts
 

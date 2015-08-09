@@ -4,8 +4,8 @@ require_once("BaseController.class.php");
 require_once("ProjectsController.class.php");
 
 /** @noinspection PhpInconsistentReturnPointsInspection */
-
 /** @noinspection PhpUndefinedClassInspection */
+
 class FileController extends BaseController
 {
   const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
@@ -17,9 +17,14 @@ class FileController extends BaseController
 
   public function __construct($request)
   {
-    parent::__construct($request); // call parent constructor to set request method
-    $this->language = "en"; //default lang
-    $request->responseType = "application/file"; // Override default responseType => to get FileView
+    // call parent constructor to set request method
+    parent::__construct($request);
+
+    //default lang
+    $this->language = "en";
+
+    // Override default responseType => to get FileView
+    $request->responseType = "application/file";
   }
 
   public function get()
@@ -51,15 +56,15 @@ class FileController extends BaseController
     {
       case "tts":
         $this->convertTTS($text);
-
         return $this->mp3;
         break;
+
       case "screenshot":
         return $this->convertImage();
         break;
+
       default:
-        return new ServiceFileMethodNotImplementedException("File-Method not found: " . implode("/",
-                                                                                                $this->request->serviceSubInfo));
+        return new ServiceFileMethodNotImplementedException("File-Method not found: " . implode("/", $this->request->serviceSubInfo));
         break;
     }
   }
@@ -93,15 +98,15 @@ class FileController extends BaseController
     {
       case "tts":
         $this->convertTTS($text);
-
         return $this->mp3;
         break;
+
       case "screenshot":
         return $this->convertImage();
         break;
+
       default:
-        return new ServiceFileMethodNotImplementedException("File-Method not found: " . implode("/",
-                                                                                                $this->request->serviceSubInfo));
+        return new ServiceFileMethodNotImplementedException("File-Method not found: " . implode("/", $this->request->serviceSubInfo));
         break;
     }
   }
@@ -119,66 +124,22 @@ class FileController extends BaseController
       $base64string = $_POST['base64string'];
     }
 
-    //var_dump( $base64string );
-
     if(empty($base64string))
     {
       throw new Exception('missing request parameter: base64string');
     }
 
-    //$encodedData = str_replace(' ','+',$base64string);
-    //return base64_decode($encodedData);
-    $base64string
-      = 'data://' . substr($base64string, 5);  //php needs "data://" canvas toDataURL() provides "data:" only
-    //return base64_decode($base64string);
-    //var_dump( $base64string );
-    //If you want to save data that is derived from a Javascript canvas.toDataURL() function, you have to convert blanks into pluses. If you do not do that, the decoded data is corrupted
+    //php needs "data://" canvas toDataURL() provides "data:" only
+    $base64string = 'data://' . substr($base64string, 5);
+
+    //If you want to save data that is derived from a Javascript canvas.toDataURL() function,
+    // you have to convert blanks into pluses. If you do not do that, the decoded data is corrupted
     $encodedData = str_replace(' ', '+', $base64string);
-    //var_dump( base64_decode($encodedData) );
-    //$decodedData =
     return $encodedData;
-    //return base64_decode($encodedData);
-
-    /*		$extensions = array(
-          IMAGETYPE_GIF => "gif",
-          IMAGETYPE_JPEG => "jpg",
-          IMAGETYPE_PNG => "png",
-          IMAGETYPE_SWF => "swf",
-          IMAGETYPE_PSD => "psd",
-          IMAGETYPE_BMP => "bmp",
-          IMAGETYPE_TIFF_II => "tiff",
-          IMAGETYPE_TIFF_MM => "tiff",
-          IMAGETYPE_JPC => "jpc",
-          IMAGETYPE_JP2 => "jp2",
-          IMAGETYPE_JPX => "jpx",
-          IMAGETYPE_JB2 => "jb2",
-          IMAGETYPE_SWC => "swc",
-          IMAGETYPE_IFF => "iff",
-          IMAGETYPE_WBMP => "wbmp",
-          IMAGETYPE_XBM => "xbm",
-          IMAGETYPE_ICO => "ico"
-        );
-
-        $file_info = new finfo(FILEINFO_MIME);
-        $mime_type = $file_info->buffer($decodedData);
-    echo $mime_type;
-
-        $split = explode( '/', $mime_type );
-        $type = $split[1];
-        //$ext = '';
-        //if (array_key_exists( $extensions[$mime_type] ))
-        //	$ext = $extensions[$mime_type];
-
-        $fp = fopen( 'screenshot.' . $type, 'wb' );
-        fwrite( $fp, $decodedData);
-        fclose( $fp );
-        return $fp;
-    */
   }
 
   private function getParsedUrl()
   {
-    // get Google Speech
     $encoded = urlencode($this->text);
     $url = self::GOOGLE_TTS_SERVICE . "tl={$this->language}&q={$encoded}";
 
@@ -197,7 +158,7 @@ class FileController extends BaseController
     return null;
   }
 
-  // Cut words, that text is under 100 letter
+  // cut words, if text is longer than 100 letters
   public function tokenTruncate($string, $your_desired_width)
   {
     $parts = preg_split('/([\s\n\r]+)/', $string, null, PREG_SPLIT_DELIM_CAPTURE);

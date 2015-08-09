@@ -20,10 +20,10 @@ echo $project_id;
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-touch-fullscreen" content="yes" />
-  <link rel="icon" href="https://pocketcode.org/images/logo/favicon.png?0.7.0" type="image/png" />
+  <link rel="shortcut icon" href="images/favicon.png" type="image/png" />
 
-  <link href="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.css" rel="stylesheet" />
-  <script src="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.js"></script>
+  <link href="pocketCodePlayer.css" rel="stylesheet" />
+  <script src="pocketCodePlayer.js"></script>
   <script type="text/javascript">
     launchProject(<?php echo $project_id; ?>);
   </script>

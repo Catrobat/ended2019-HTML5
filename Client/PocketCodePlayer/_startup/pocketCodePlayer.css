@@ -21,6 +21,11 @@
     left: 0;
     overflow: hidden;
 }
+    .pc-webOverlay * {
+        background: none;
+        border: 0;
+        border-radius: 0;
+    }
 
 .pc-webOpacity {
     position: absolute;
@@ -118,7 +123,7 @@
     padding: 0;
     margin: 6px;
     margin-bottom: 10px;
-    background-color: transparent;
+    border-radius: 0;
     cursor: pointer;
     position: relative;
     width: 38px;
@@ -215,7 +220,7 @@
 /* loading indicator */
 .pc-li {
     position: absolute;
-    width: 19.3em;
+    border-spacing: 0;
 }
 
     .pc-li * {
@@ -227,12 +232,11 @@
 }
 
 .pc-liContainer {
-    height: 2.5em;
-    width: 19em;
-    margin-left: 0.15em;
-    margin-top: 0.2em;
+    display: table;
+    height: 2.6em;
+    width: 19.2em;
+    left: 0.1em;
     position: relative;
-    overflow: hidden;
 }
 
 .pc-liFillColor {
@@ -241,8 +245,7 @@
 
 .pc-liBar {
     position: absolute;
-    height: 100%; /*2.7em;*/
-    top: 0.1em;
+    height: 2.6em;
     overflow: hidden;
 }
 
@@ -252,11 +255,11 @@
 
 .pc-liProgressStyle {
     display: table-row;
+    height: 2.7em;
 }
 
     .pc-liProgressStyle > div {
         display: table-cell;
-        height: 2.5em;
         border: solid 0.2em #05222a;
         width: 2.5em;
     }

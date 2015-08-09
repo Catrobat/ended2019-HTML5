@@ -1,442 +1,65 @@
-﻿<!DOCTYPE html>
-<html lang="de">
+﻿<html>
 <head>
-	<meta charset="utf-8" />
-	<title>Pocket Code Website - Flap-Pac-Man</title>
-	<meta name="description" content="Catrobat is a visual programming language and set of creativity tools for mobile devices.">
-	<meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="viewport" content="width=device-width">
+    <title>Pocket Code Website </title>
+    <link rel="shortcut icon" href="https://web-test.catrob.at/images/logo/favicon.png">
 
-	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="stylesheet" href="https://web-test.catrob.at/compiled/base.css" media="screen">
 
-	<link rel="stylesheet" href="https://pocketcode.org/cache/gcatroid1423867094.css">
-	<link rel="stylesheet" href="https://pocketcode.org/cache/details1423867095.css">
-	<!--script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script-->
-	<script>window.jQuery || document.write('<script src="https://pocketcode.org/cache/jquery2.0.0.min.js"><\/script>')</script>
-	<script src="https://pocketcode.org/cache/jquery.history.js"></script>
+    <!--script src="//www.google-analytics.com/analytics.js" async=""></script-->
+    <script type="text/javascript" src="https://web-test.catrob.at/compiled/script.js"></script>
 
-	<link rel="icon" href="https://pocketcode.org/images/logo/favicon.png?0.7.0" type="image/png" />
-	<!-- CHANGED SNIPPET -->
-	<style type="text/css">
-		/* this are changes made to your original styles - if you keep the layout it is you should integrate them into your existing styles
-				   and delete them here */
+    <link rel="stylesheet" href="https://web-test.catrob.at/compiled/program.css">
 
-		.projectDetailsThumbnail {
-			position: relative;
-		}
-
-		@media screen and (max-width: 800px) {
-			.projectDetailsThumbnail {
-				width: 100%;
-			}
-
-				.projectDetailsThumbnail img {
-					display: block;
-					margin-left: 25%;
-					margin-right: 25%;
-					max-width: 50%;
-					width: 50%;
-				}
-		}
-	</style>
-	<!-- CHANGED SNIPPET -->
-	<!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
-	<link href="_startup/playerInterface.css" rel="stylesheet" />
-	<link href="_startup/pocketCodePlayer.css" rel="stylesheet" />
-	<script src="_startup/pocketCodePlayer.js"></script>
-	<!-- ADDED SNIPPET -->
+    <!-- CHANGED SNIPPET -->
+    <style type="text/css">
+        /* this are changes made to your original styles - if you keep the layout it is you should integrate them into your existing styles
+                   and delete them here */
+        #program-middle #image {
+            position: relative;
+        }
+    </style>
+    <!-- CHANGED SNIPPET -->
+    <!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
+    <link href="_startup/playerInterface.css" rel="stylesheet" />
+    <link href="_startup/pocketCodePlayer.css" rel="stylesheet" />
+    <script src="_startup/pocketCodePlayer.js"></script>
+    <!-- ADDED SNIPPET -->
 </head>
-<body><!-- class="pc-webBody"-->
-	<div id="wrapper">
-
-		<header role="banner">
-			<div id="navigationMenuTop">
-				<div><a href="https://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div>
-				<div><a href="/tutorial">Tutorials</a></div>
-				<div><a href="http://catrobat.org/" target="_blank">Über Pocket Code</a></div>
-			</div>
-			<nav role="navigation">
-				<div id="largeMenu">
-					<div class="marginSpacer"></div>
-					<div class="catroidLink catroidLink2">
-						<a href="https://pocketcode.org/">
-							<!--script pagespeed_no_defer="">
-								//<![CDATA[
-								(function () { var g = this, h = function (b, d) { var a = b.split("."), c = g; a[0] in c || !c.execScript || c.execScript("var " + a[0]); for (var e; a.length && (e = a.shift()) ;) a.length || void 0 === d ? c[e] ? c = c[e] : c = c[e] = {} : c[e] = d }; var l = function (b) { var d = b.length; if (0 < d) { for (var a = Array(d), c = 0; c < d; c++) a[c] = b[c]; return a } return [] }; var m = function (b) { var d = window; if (d.addEventListener) d.addEventListener("load", b, !1); else if (d.attachEvent) d.attachEvent("onload", b); else { var a = d.onload; d.onload = function () { b.call(this); a && a.call(this) } } }; var n, p = function (b, d, a, c, e) { this.f = b; this.h = d; this.i = a; this.c = e; this.e = { height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight, width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth }; this.g = c; this.b = {}; this.a = []; this.d = {} }, q = function (b, d) { var a, c, e = d.getAttribute("pagespeed_url_hash"); if (a = e && !(e in b.d)) if (0 >= d.offsetWidth && 0 >= d.offsetHeight) a = !1; else { c = d.getBoundingClientRect(); var f = document.body; a = c.top + ("pageYOffset" in window ? window.pageYOffset : (document.documentElement || f.parentNode || f).scrollTop); c = c.left + ("pageXOffset" in window ? window.pageXOffset : (document.documentElement || f.parentNode || f).scrollLeft); f = a.toString() + "," + c; b.b.hasOwnProperty(f) ? a = !1 : (b.b[f] = !0, a = a <= b.e.height && c <= b.e.width) } a && (b.a.push(e), b.d[e] = !0) }; p.prototype.checkImageForCriticality = function (b) { b.getBoundingClientRect && q(this, b) }; h("pagespeed.CriticalImages.checkImageForCriticality", function (b) { n.checkImageForCriticality(b) }); h("pagespeed.CriticalImages.checkCriticalImages", function () { r(n) }); var r = function (b) { b.b = {}; for (var d = ["IMG", "INPUT"], a = [], c = 0; c < d.length; ++c) a = a.concat(l(document.getElementsByTagName(d[c]))); if (0 != a.length && a[0].getBoundingClientRect) { for (c = 0; d = a[c]; ++c) q(b, d); a = "oh=" + b.i; b.c && (a += "&n=" + b.c); if (d = 0 != b.a.length) for (a += "&ci=" + encodeURIComponent(b.a[0]), c = 1; c < b.a.length; ++c) { var e = "," + encodeURIComponent(b.a[c]); 131072 >= a.length + e.length && (a += e) } b.g && (e = "&rd=" + encodeURIComponent(JSON.stringify(s())), 131072 >= a.length + e.length && (a += e), d = !0); t = a; if (d) { c = b.f; b = b.h; var f; if (window.XMLHttpRequest) f = new XMLHttpRequest; else if (window.ActiveXObject) try { f = new ActiveXObject("Msxml2.XMLHTTP") } catch (k) { try { f = new ActiveXObject("Microsoft.XMLHTTP") } catch (u) { } } f && (f.open("POST", c + (-1 == c.indexOf("?") ? "?" : "&") + "url=" + encodeURIComponent(b)), f.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"), f.send(a)) } } }, s = function () { var b = {}, d = document.getElementsByTagName("IMG"); if (0 == d.length) return {}; var a = d[0]; if (!("naturalWidth" in a && "naturalHeight" in a)) return {}; for (var c = 0; a = d[c]; ++c) { var e = a.getAttribute("pagespeed_url_hash"); e && (!(e in b) && 0 < a.width && 0 < a.height && 0 < a.naturalWidth && 0 < a.naturalHeight || e in b && a.width >= b[e].k && a.height >= b[e].j) && (b[e] = { rw: a.width, rh: a.height, ow: a.naturalWidth, oh: a.naturalHeight }) } return b }, t = ""; h("pagespeed.CriticalImages.getBeaconData", function () { return t }); h("pagespeed.CriticalImages.Run", function (b, d, a, c, e, f) { var k = new p(b, d, a, e, f); n = k; c && m(function () { window.setTimeout(function () { r(k) }, 0) }) }); })(); pagespeed.CriticalImages.Run('/mod_pagespeed_beacon', 'https://pocketcode.org/details/1532', 'l8PuqRhht8', true, false, 'hblmknZoq6A');
-								//]]></script><img src="https://pocketcode.org/images/logo/logo_text.png" alt="Pocket Code" pagespeed_url_hash="2883336404" onload="                                    pagespeed.CriticalImages.checkImageForCriticality(this);" /-->
-						</a>
-					</div>
-
-					<div id="largeSearchButton" class="largeSearchBarLeft">
-						<button class="img-magnifying-glass"></button>
-					</div>
-
-					<div class="largeSearchBarMiddle">
-						<input type="search" placeholder="Suche …" />
-					</div>
-
-					<div id="largeMenuButton" class="largeSearchBarRight">
-						<button class="img-avatar"></button>
-					</div>
-					<div class="marginSpacer"></div>
-				</div>
-				<div id="smallMenu">
-					<div class="marginSpacer"></div>
-
-					<div id="smallMenuBar" class="catroidLink">
-						<a href="https://pocketcode.org/"><img src="https://pocketcode.org/images/logo/logo_text.png" alt="Pocket Code" pagespeed_url_hash="2883336404" /><!--onload="pagespeed.CriticalImages.checkImageForCriticality(this);" /--></a>
-					</div>
-
-					<div id="smallSearchBar">
-						<input type="search" placeholder="Suche …" />
-					</div>
-
-					<div id="mobileSearchButton">
-						<button class="img-magnifying-glass"></button>
-					</div>
-
-					<div class="marginSpacer"></div>
-
-					<div id="mobileMenuButton" style="background-color:#17A5B8;background-image: linear-gradient(top, #17A5B8, #177f8d);background-image: -moz-linear-gradient(top, #17A5B8, #177f8d);background-image: -webkit-linear-gradient(top, #17A5B8, #177f8d);">
-						<button class="img-avatarMobile"></button>
-					</div>
-
-					<div class="marginSpacer"></div>
-				</div>
-
-				<div id="navigationMenu">
-					<ul>
-						<li id="menuProfileButton"><div class="img-author-big">&nbsp;</div><div>Mein Profil</div></li>
-						<li id="menuLogoutButton"><div class="img-logout">&nbsp;</div><div>Ausloggen</div></li>
-					</ul>
-				</div>
-			</nav>
-		</header>
-		<script type="text/javascript">$(document).ready(function () { Header = new Header(); SearchBar = new SearchBar(Header); });</script>
-		<article>
-			<header>
-				<div>
-					<span id="projectDetailsProjectTitle">Flap-Pac-Man</span>
-					<div class="projectDetailsAuthorTop">
-						<ul>
-							<li>
-								<div class="img-author"></div>
-								<div style="padding-left: 0.5em;">
-									<a href="https://pocketcode.org/profile/644">garygreen</a>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</header>
-			<div id="projectDetailsContainer">
-				<!-- CHANGED SNIPPET -->
-				<div class="projectDetailsThumbnail">
-					<!--a href="https://pocketcode.org/download/1532.catrobat?fname=Flap-Pac-Man"-->
-					<img id="projectDetailsThumbnailImage" src="https://pocketcode.org/resources/thumbnails/1532_large.png" alt="" pagespeed_url_hash="1423789905" /><!--onload="pagespeed.CriticalImages.checkImageForCriticality(this);" /-->
-					<!--/a-->
-					<button class="pc-startButton" onclick="javascript: launchProject(1532);">
-						<svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64">
-							<path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />
-							<polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
-						</svg>
-					</button>
-				</div>
-				<!-- CHANGED SNIPPET -->
-
-				<div class="projectDetailsDescription">
-					<div>
-						<span class="projectDetailsDescriptionHeading">
-							Beschreibung
-						</span>
-					</div>
-					<div class="projectDetailsDescriptionText">
-						<span>
-							The Pac-Men are falling to their doom! Luckily enough though they've sprouted wings - tap them quick enough and they'll fly away from danger. Can you make it to the highest rank of Fantastic Pactastic? Tap screen to start.
-						</span>
-						<div class="projectDetailsDownloadButton">
-							<a style="text-decoration: none;" href="https://pocketcode.org/download/1532.catrobat?fname=Flap-Pac-Man">
-								<div class="blue">
-									<span class="projectDetailsDownloadText shrinkTextToFit">Herunterladen</span>
-								</div>
-							</a>
-						</div>
-						<span id="reportAsInappropriateButton">Als unpassend melden</span>
-						<br />
-						<span id="projectDetailsDownloadLanguageVersion">Catrobat Language Version: 0.91</span>
-					</div>
-				</div>
-
-				<div id="projectDetailsReportContainer">
-					<div class="reportAsInappropriateDialog" id="reportAsInappropriateDialog">
-						Bitte <a href="https://pocketcode.org/login/?requestUri=details/1532">einloggen</a> um dieses Programm als unpassend zu melden.
-					</div>
-				</div>
-
-				<div class="projectDetailsSeperator">
-				</div>
-
-				<div class="projectDetailsInformation">
-
-					<ul>
-						<li>
-							<div class="img-author-blue"></div>
-							<div class="projectDetailsInformationText">
-								<a href="https://pocketcode.org/profile/644">garygreen</a>
-							</div>
-						</li>
-						<li>
-							<div class="img-age"></div>
-							<div class="projectDetailsInformationText">
-								1 Jahr
-							</div>
-						</li>
-						<li>
-							<div class="img-size"></div>
-							<div class="projectDetailsInformationText">
-								0.5 MB groß
-							</div>
-						</li>
-						<li>
-							<div class="img-downloads"></div>
-							<div class="projectDetailsInformationText">
-								<span>2420 mal heruntergeladen</span>
-							</div>
-						</li>
-						<li>
-							<div class="img-views"></div>
-							<div class="projectDetailsInformationText">
-								3120 mal gesehen
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</article>
-		<script type="text/javascript">$(document).ready(function () { Details = new ProjectDetails(); });</script>
-		<div id="noscript">
-			<script>$('#noscript').hide(); $('#wrapper article').show();</script>
-			<img src="https://pocketcode.org/images/symbols/warning.png" alt="" pagespeed_url_hash="3504918963" /><!--onload="pagespeed.CriticalImages.checkImageForCriticality(this);" /-->
-			<p>Bitte aktiviere JavaScript in deinem Browser.</p>
-		</div>
-	</div>
-
-	<footer>
-		<div>
-			<div id="largeFooterMenu">
-				<div>
-					<ul style="float: left;">
-						<li><a href="/tutorial">Tutorial</a></li>
-						<li><a href="http://catrobat.org/" target="_blank">Über Catrobat</a></li>
-						<li><a href="https://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></li>
-						<li><a href="https://pocketcode.org/licenseToPlay">Lizenz zum Spielen</a></li>
-					</ul>
-					<ul style="padding-left: 150px;">
-						<li><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></li>
-						<li><a href="https://pocketcode.org/termsOfUse">Nutzungsbedingungen</a></li>
-						<li><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></li>
-					</ul>
-				</div>
-				<div>
-					<span id="footerSearchButton" class="img-magnifying-glass"></span>
-					<span>
-						<header>Suche</header>
-						<input type="search" placeholder="Suche …" />
-					</span>
-				</div>
-			</div>
-			<div class="footerMenu">
-				<div>
-					<select id="switchLanguage">
-						<option value="ar">‫العربية‬</option>
-						<option value="zh-CN">‪中文（简体中文）‬</option>
-						<option value="zh-TW">‪中文 (繁體中文)‬</option>
-						<option value="en">‪English (United States)‬</option>
-						<option value="fr">‪français‬</option>
-						<option selected value="de">‪Deutsch‬</option>
-						<option value="hu">‪magyar‬</option>
-						<option value="it">‪italiano‬</option>
-						<option value="ja">‪日本語‬</option>
-						<option value="ms">‪Bahasa Melayu‬</option>
-						<option value="pl">‪polski‬</option>
-						<option value="ro">‪română‬</option>
-						<option value="ru">‪русский‬</option>
-						<option value="es">‪español (España)‬</option>
-						<option value="sv">‪svenska‬</option>
-						<option value="tr">‪Türkçe‬</option>
-					</select>
-				</div>
-				<div id="copyright">
-					<a href="http://catrobat.org/" target="_blank">&copy; Catrobat</a>
-				</div>
-				<div>
-					<span id="footerMoreButton">
-						<span class="img-more"></span> mehr
-					</span>
-					<span id="footerLessButton">
-						<span class="img-less"></span> weniger
-					</span>
-				</div>
-			</div>
-		</div>
-
-		<div id="mobileFooterMenu">
-			<ul>
-				<li><a href="https://pocketcode.org/tutorial">Tutorial</a></li>
-				<li><a href="http://catrobat.org/" target="_blank">Über Catrobat</a></li>
-				<li><a href="https://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></li>
-				<li><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></li>
-				<li><a href="https://pocketcode.org/termsOfUse">Nutzungsbedingungen</a></li>
-				<li><a href="https://pocketcode.org/licenseToPlay">Lizenz zum Spielen</a></li>
-				<li><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></li>
-			</ul>
-		</div>
-
-		<script type="text/javascript">$(document).ready(function () { new Footer(); new LanguageHandler(); });</script>
-
-	</footer>
-
-	<script src="https://pocketcode.org/cache/gcatroid1423867108.js"></script>
-	<script src="https://pocketcode.org/cache/details1423867109.js"></script>
-	<img id="ga" src="https://pocketcode.org/ga.php?utmac=&amp;utmn=415377903&amp;utmr=https%3A%2F%2Fpocketcode.org%2F&amp;utmp=%2Fdetails%2F1532&amp;guid=ON" pagespeed_url_hash="3548005739" /><!--onload="pagespeed.CriticalImages.checkImageForCriticality(this);" /-->
-
-	<!-- ADDED SNIPPET: this content should be added dynamically -->
-	<!--div class="pc-webOverlay">
-		<div class="pc-webOpacity"></div>
-		<div class="pc-logo">
-			<img src="https://pocketcode.org/images/logo/logo_text.png" alt="PocketCode" />
-		</div>
-		<div class="pc-webLayout">
-			<div class="pc-webLayoutRow">
-				<div class="pc-leftCol">
-					<div class="pc-webLink"><a href="https://pocketcode.org/"></a></div>
-				</div>
-				<div class="pc-centerCol">
-					<div class="pc-webViewportBorder">
-						<div id="pcWebViewport" class="pc-webViewport">
-							<div class="pc-webLayoutRow">
-								<div class="pc-playerMenuVContainer">
-									<- bottom horizontal: pc-playerMenuHContainer ->
-									<div class="pc-alignedCell">
-										<button class="pc-playerButton" onclick="javascript: alert('TODO: back: disable');" disabled="disabled">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path class="pc-svgPlayerIcon" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
-		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
-		C56.979,45.796,45.796,56.979,32,56.979z" />
-												<polygon class="pc-svgPlayerIcon" points="27.583,32 39.629,44.395 35.001,49 18.371,32 35.001,15 39.629,19.605" />
-											</svg>
-											<span>Back</span>
-										</button>
-										<button class="pc-playerButton" onclick="javascript: alert('TODO: restart');">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path class="pc-svgPlayerIcon" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
-		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
-		C56.979,45.796,45.796,56.979,32,56.979z" />
-												<path d="M42.275,22.056l-3.266,3.267c-1.772-1.773-4.222-2.87-6.927-2.87c-5.41,0-9.796,4.389-9.796,9.8
-			c0,0.001,0-0.002,0,0h3.806l-6.079,6.075l-6.072-6.075h3.726c0-0.001,0,0,0,0c0-7.961,6.454-14.417,14.415-14.417
-			C36.063,17.835,39.666,19.448,42.275,22.056z" />
-												<path d="M50.059,31.747l-6.073-6.075l-6.079,6.075h3.808c0,0.002,0-0.001,0,0c0,5.411-4.387,9.799-9.797,9.799
-			c-2.706,0-5.154-1.097-6.927-2.868l-3.267,3.266c2.608,2.608,6.213,4.221,10.193,4.221c7.961,0,14.414-6.455,14.414-14.417
-			c0,0,0,0.001,0,0H50.059L50.059,31.747z" />
-											</svg>
-											<span>Restart</span>
-										</button>
-										<button class="pc-playerButton pc-menuBigButton" onclick="javascript: alert('TODO: start');" disabled="disabled">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
-				 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
-				C56.979,45.796,45.796,56.979,32,56.979z" />
-												<polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
-											</svg>
-											<span>Continue<-/Start-></span>
-										</button>
-										<-button class="pc-playerButton pc-menuBigButton" onclick="javascript: alert('TODO: pause');">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path d="M32,1C14.88,1,1,14.88,1,31.999c0,17.122,13.88,31,31,31c17.121,0,31-13.879,31-31C63,14.88,49.121,1,32,1z
-						 M32,56.979c-13.796,0-24.98-11.185-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98c13.794,0,24.979,11.186,24.979,24.98
-						C56.979,45.796,45.796,56.979,32,56.979z" />
-					<path id="pause-3-icon" d="M29.95,45.617h-7.932V18.384h7.932V45.617z M42.949,45.617h-7.934V18.384h7.934V45.617z" />
-											</svg>
-											<span>Pause</span>
-										</button->
-										<button class="pc-playerButton" onclick="javascript: alert('TODO: screenshot');">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
-		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
-		C56.979,45.796,45.796,56.979,32,56.979z" />
-												<path d="M35.486,32.488c0,1.867-1.519,3.385-3.385,3.385c-1.868,0-3.388-1.518-3.388-3.385
-		c0-1.867,1.52-3.385,3.388-3.385C33.968,29.103,35.486,30.622,35.486,32.488z" />
-												<path d="M37.338,23.314v-2.832H26.662v2.832H17v18.204h30V23.314H37.338z M32.102,38.787
-		c-3.475,0-6.299-2.825-6.299-6.298s2.824-6.153,6.299-6.153c3.472,0,6.298,2.68,6.298,6.153S35.573,38.787,32.102,38.787z" />
-											</svg>
-											<span>Screenshot</span>
-										</button>
-										<button class="pc-playerButton pc-playerButtonChecked" onclick="javascript: alert('TODO: axes');">
-											<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-												<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z
-		 M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98
-		C56.979,45.796,45.796,56.979,32,56.979z" />
-												<text transform="matrix(1 0 0 1 19.2988 29.2036)" font-family="Arial, sans-serif" font-weight="bold" font-size="15.6718">X</text>
-												<text transform="matrix(1 0 0 1 34.9707 46.7944)" font-family="Arial, sans-serif" font-weight="bold" font-size="15.6718">Y</text>
-												<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416 	" />
-											</svg>
-											<span>Axes</span>
-										</button>
-									</div>
-								</div>
-								<div class="pc-playerPreviewScreen">
-									<img id="asd" class="disabled" src="https://pocketcode.org/resources/thumbnails/1532_large.png">
-									<div class="pc-title">Skydiving Steve Tutorial (long sample text)</div>
-									<div class="pc-loadingIndicator">
-										<div style="display: table; margin: 0 auto;">
-											<-div class="pc-webLayoutRow">
-							<div class="pc-verticalAlignedCell"->
-											TODO:<br />loading...<br />indicator
-											<-/div>
-						</div->
-										</div>
-									</div>
-									<-div class="pc-disabled"></div->
-									<button class="pc-startButton" onclick="javascript: launchProject(1532);" disabled="disabled">
-										<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMid meet">
-											<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />
-											<polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
-										</svg>
-									</button>
-								</div>
-								<div class="pc-playerSplashScreen">
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="pc-rightCol">
-					<div class="pc-webMenu">
-						<button class="pc-webButton" onclick="javascript: alert('TODO: close window');">
-							<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-								<polygon points="60.963,50.831 42.124,31.996 60.96,13.159 50.831,3.037 31.999,21.874 13.164,3.04 3.037,13.16
-	21.876,31.998 3.039,50.836 13.159,60.963 32,42.12 50.842,60.96 " />
-							</svg>
-						</button>
-						<button class="pc-webButton pc-playerButtonChecked" onclick="javascript: alert('TODO: fullscreen');">
-							<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-								<path d="M18.196,56.064L23.122,61H3V40.879l4.936,4.926l8.06-8.061l10.26,10.262L18.196,56.064z M40.879,3
-	l4.926,4.935l-7.896,7.896L48.17,26.09l7.896-7.895L61,23.122V3H40.879z M7.936,18.196L3,23.122V3h20.122l-4.927,4.935l8.06,8.06
-	L15.993,26.256L7.936,18.196z M61,40.879l-4.936,4.926l-7.895-7.896L37.909,48.17l7.895,7.896L40.879,61H61V40.879z" />
-							</svg>
-						</button>
-						<button class="pc-webButton" onclick="javascript: alert('TODO: mute');">
-							<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">
-								<path d="M14.878,42.697H6.903c-2.136,0-3.867-1.729-3.867-3.866V25.165c0-2.135,1.731-3.866,3.867-3.866h7.976
-	L14.878,42.697L14.878,42.697z M19.225,20.34v23.315l18.687,10.764V9.581L19.225,20.34z M60.964,37.92l-5.926-5.922l5.925-5.926
-	l-3.186-3.184l-5.922,5.925l-5.927-5.925l-3.184,3.184l5.925,5.926l-5.925,5.926l3.183,3.184l5.928-5.927l5.925,5.927L60.964,37.92z
-	" />
-							</svg>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div-->
-	<!-- ADDED SNIPPET -->
+<body>
+    <div id="wrapper">
+        <header> <nav> <div id="header-top"> <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div> <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div> <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div> </div> <div id="header-left"> <div id="logo"> <a href="https://web-test.catrob.at/pocketcode/"> <img src="https://web-test.catrob.at/images/logo/logo_text.png" alt="Pocket Code Logo"> </a> </div> <input id="searchbar" class="input-search" placeholder="Suche..."> </div> <div id="header-right"> <div id="menu"> <div class="btn btn-search"> <div id="search-header" class="img-magnifying-glass"></div> </div> <div> <input id="search-input-header" placeholder="Suche..." class="size-large input-search"> </div> <a href="https://web-test.catrob.at/pocketcode/login" id="btn-login"> <div class="btn btn-menu"> <div class="img-avatar"></div> </div> </a> </div> <div id="menu-mobile"> <div class="btn btn-search"> <div id="search-header-mobile" class="img-magnifying-glass"></div> <div class="img-undo-search"></div> </div> <div class="margin-spacer"></div> <a href="https://web-test.catrob.at/pocketcode/login" id="btn-login"> <div class="btn btn-menu"> <div class="img-avatar"></div> </div> </a> </div> </div> </nav> </header> <article>
+            <div id="program-top" class="h1"> <div id="program-name">Flap-Pac-Man</div> <div id="program-user"> <span class="img-author"></span> <a href="https://web-test.catrob.at/pocketcode/profile/644">garygreen</a> </div> <div class="clear"></div> </div> <div id="program-middle">
+                <div id="image">
+                    <!-- CHANGED SNIPPET -->
+                    <!-- a href="https://web-test.catrob.at/pocketcode/download/1532.catrobat?fname=Flap-Pac-Man" -->
+                    <img id="screenshot" src="https://web-test.catrob.at/resources/screenshots/screen_1532.png" height="300" width="300">
+                    <!-- /a--> <button class="pc-startButton" onclick="javascript: launchProject(1532);"> <svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64"> <path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" /> <polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" /> </svg> </button>
+                    <!-- CHANGED SNIPPET -->
+                </div> <div id="info"> <h2>Beschreibung</h2> <div id="description"> The Pac-Men are falling to their doom ! Luckily enough though they've sprouted wings - tap them quick enough and they'll fly away from danger. Can you make it to the highest rank of Fantastic Pactastic? Tap screen to start. </div> <div class="download-container"> <a href="https://web-test.catrob.at/pocketcode/download/1532.catrobat?fname=Flap-Pac-Man"> <button id="download" class="btn btn-primary download-button"> <table style="width: 100%; text-align: center"> <tbody> <tr> <td><img src="https://web-test.catrob.at/images/symbols/download.svg"> </td> <td>Als Programm herunterladen</td> </tr> </tbody> </table> </button> </a> <button style="display: inline-block;" id="apk-generate" class="btn btn-apk download-button"> <table style="width: 100%; text-align: center"> <tbody> <tr> <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td> <td>App erstellen</td> </tr> </tbody> </table> </button> <div style="display: none;" id="apk-pending" class="btn-apk pending-container"> <button class="btn download-button download-pending"> <table style="width: 100%; text-align: center"> <tbody> <tr> <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td> <td>App wird vorbereitet</td> </tr> </tbody> </table> </button> <img class="pending-icon" src="https://web-test.catrob.at/images/symbols/loading.gif"> </div> <button style="display: none;" id="apk-download" class="btn btn-apk download-button"> <table style="width: 100%; text-align: center"> <tbody> <tr> <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td> <td>Als app herunterladen</td> </tr> </tbody> </table> </button> </div> <br> <p> <span id="report">Als unpassend melden</span> <br> Catrobat Language version: 0.91 </p> </div> <div class="clear"></div> <div id="report-container" class="size-large"> Bitte <a href="https://web-test.catrob.at/pocketcode/login">einloggen</a> um dieses Programm als unpassend zu melden. </div>
+            </div> <div id="program-bottom"> <div id="icon-author"> <div class="img-author-2 icon"></div> <a href="https://web-test.catrob.at/pocketcode/profile/644" class="icon-text">garygreen</a> </div> <div> <div class="img-age icon"></div> <span class="icon-text">vor einem Jahr</span> </div> <div> <div class="img-size icon"></div> <span class="icon-text">0.46 MB</span> </div> <div> <div class="img-downloads icon"></div> <span class="icon-text">2626 heruntergeladen</span> </div> <div> <div class="img-views icon"></div> <span class="icon-text">3325 gesehen</span> </div> </div>
+        </article>
+    </div> <footer> <div id="footer-menu-desktop" class="footer-padding"> <div id="footer-menu-desktop-left"> <div> <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div> <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div> <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div> <div><a href="https://web-test.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div> </div> <div> <div><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></div> <div><a href="https://web-test.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div> <div><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></div> </div> </div> <div id="footer-menu-desktop-right"> <div id="search-footer" class="img-magnifying-glass"></div> <input id="search-input-footer" class="input-search" placeholder="Suche..." type="search"> </div> </div> <div id="footer-menu-bottom" class="footer-padding"> <div> <select id="switch-language" autocomplete="off"> <option value="en">English</option> <option value="de" selected="">Deutsch</option> </select> </div> <div id="footer-copyright"> <a href="http://www.catrobat.org" target="_blank">© Catrobat</a> </div> <div id="footer-more-less"> <span id="footer-button-more"><span class="img-more"></span> mehr</span> <span id="footer-button-less"><span class="img-less"></span> weniger</span> </div> </div> <div id="footer-menu-mobile"> <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div> <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div> <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div> <div><a href="https://web-test.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div> <div><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></div> <div><a href="https://web-test.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div> <div><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></div> </div> </footer>
+    <script>
+        new Main('https://web-test.catrob.at/pocketcode/search/0');
+    </script>
+    <script src="https://web-test.catrob.at/js/custom/Program.js"></script>
+    <script>
+        var program = new Program('https://web-test.catrob.at/pocketcode/ci/status/1532', 'https://web-test.catrob.at/pocketcode/ci/build/1532', 'App wird vorbereitet', 'Der Vorgang kann eine Weile dauern', 'https://web-test.catrob.at/images/symbols/loading.gif');
+        program.getApkStatus();
+        program.createLinks();
+        program.setReportListener(1532, 'https://web-test.catrob.at/pocketcode/api/reportProgram/reportProgram.json');
+    </script>
+    <!-- script> (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-42270417-5', 'auto');
+        ga('send', 'pageview');
+        </script-->
 </body>
-</html>
+</html>;

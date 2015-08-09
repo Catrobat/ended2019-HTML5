@@ -690,7 +690,7 @@ QUnit.test("SmartJs.Ui.ContainerControl", function (assert) {
     //create Control
     var cp = new SmartJs.Ui.ContainerControl();
     assert.ok(cp instanceof SmartJs.Ui.ContainerControl && cp instanceof SmartJs.Ui.Control && cp instanceof Object, "instance check");
-    assert.equal(cp.objClassName, "UiContainerControl", "objClassName correct (not equal namespace)");
+    assert.equal(cp.objClassName, "ContainerControl", "objClassName correct (not equal namespace)");
 
     cp.dispose();
     assert.ok(cp._disposed === true && this.id === undefined && this.objClassName === undefined, "recursive dispose");

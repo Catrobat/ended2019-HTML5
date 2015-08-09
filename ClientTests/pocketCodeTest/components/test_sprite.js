@@ -3,9 +3,8 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
-/// <reference path="../../qunit/qunit-1.16.0.js" />
 'use strict';
 
 QUnit.module("sprite.js");
@@ -20,8 +19,8 @@ QUnit.test("Sprite", function (assert) {
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
     var prog = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
-    assert.ok(sprite instanceof PocketCode.Model.Sprite, "instance check");
+    var sprite = new PocketCode.Sprite(prog, {id: "newId", name: "myName"});
+    assert.ok(sprite instanceof PocketCode.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
@@ -40,7 +39,7 @@ QUnit.test("Sprite", function (assert) {
     sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //properties
-    assert.throws(function () { var err = new PocketCode.Model.Sprite(prog); }, Error, "missing ctr arguments");
+    assert.throws(function () { var err = new PocketCode.Sprite(prog); }, Error, "missing ctr arguments");
     assert.equal(sprite.id, "newId", "id ctr setter");
     assert.equal(sprite.name, "myName", "name ctr setter");
 
@@ -69,13 +68,13 @@ QUnit.test("Sprite", function (assert) {
         assert.deepEqual(e.properties, props[0], "onChange event args properties check");
     };
     var prog2 = new PocketCode.GameEngine();
-    var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
+    var evSprite = new PocketCode.Sprite(prog2, { id: "newId", name: "myName" })
     evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     evSprite._triggerOnChange(props);
 
 
-    sprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
+    sprite = new PocketCode.Sprite(prog, { id: "newId", name: "myName" });
     var returnVal;
 
     // ********************* GraphicEffects *********************
@@ -173,14 +172,15 @@ QUnit.test("Sprite", function (assert) {
     jsonSprite.sounds = jsonProject.sounds;
     jsonSprite.variables = strProject11.variables;
 
-    var testSprite = new PocketCode.Model.Sprite(prog, jsonSprite);
+    var testSprite = new PocketCode.Sprite(prog, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly.");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly.");
 
     var varsMatch = true;
     for (var i = 0, length = jsonSprite.variables.length; i < length; i++) {
-        if (!testSprite.__variables[jsonSprite.variables[i].id] === jsonSprite.variables[i].id)
+        //if (!testSprite.__variablesSimple._variables[jsonSprite.variables[i].id] === jsonSprite.variables[i].id)
+        if (testSprite.getVariable(jsonSprite.variables[i].id)._id !== jsonSprite.variables[i].id)
             varsMatch = false;
     }
     assert.ok(varsMatch, "Variables set correctly.");
@@ -209,19 +209,19 @@ QUnit.test("Sprite", function (assert) {
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.bricks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
+    assert.throws(function () { new PocketCode.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.sounds = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
+    assert.throws(function () { new PocketCode.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.variables = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for variables.");
+    assert.throws(function () { new PocketCode.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for variables.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.looks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for looks.");
+    assert.throws(function () { new PocketCode.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for looks.");
 
 
     // *************************************************************
@@ -418,17 +418,17 @@ QUnit.test("Sprite", function (assert) {
     // ********************* variables *********************
     var varArray = [{ id: [21], name: ["two-one"] }, { id: [24], name: ["two-four"] }];
     sprite._variables = varArray;
-    assert.ok(sprite.__variables[21].value == 0.0, "correct init");
-    assert.ok(sprite.__variables[21].name == "two-one", "correct insertion of array entries");
-    assert.ok(sprite.__variables[24].name == "two-four", "correct insertion of array entries");
+    assert.ok(sprite.getVariable(21).value == undefined, "correct init");
+    assert.ok(sprite.getVariable(21).name == "two-one", "correct insertion of array entries");
+    assert.ok(sprite.getVariable(24).name == "two-four", "correct insertion of array entries");
     var fakeArray = "error"
     assert.throws(function () { sprite._variables = fakeArray }, Error, "passing non Array");
     var v = sprite.getVariable(21);
     assert.ok(v.name == "two-one", "get variable");
     assert.throws(function () { sprite.getVariable(22) }, Error, "unknown variable id");
 
-    var varNames = sprite.getVariableNames();
-    assert.ok(varNames[21].name == "two-one", "get variableNames");
+    var varNames = sprite.getAllVariables();
+    assert.ok(varNames.local[21].name == "two-one", "get variableNames");
 
 
     // *************************************************************
@@ -588,14 +588,14 @@ QUnit.test("Sprite", function (assert) {
     // ********************* come to front/go back *********************
     var program = new PocketCode.GameEngine();
 
-    var newSprite = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    var newSprite = new PocketCode.Sprite(program, { id: "newId", name: "myName" });
     program._sprites.push(newSprite);
     var firstLayer = newSprite.layer;
 
-    var newSprite2 = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    var newSprite2 = new PocketCode.Sprite(program, { id: "newId", name: "myName" });
     program._sprites.push(newSprite2);
 
-    var tmpsprite = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
+    var tmpsprite = new PocketCode.Sprite(program, { id: "newId", name: "myName" });
     program._sprites.push(tmpsprite);
 
     newSprite.comeToFront();
@@ -621,7 +621,7 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* point to *********************
     sprite.id = "id1";
-    newSprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });
+    newSprite = new PocketCode.Sprite(prog, { id: "newId", name: "myName" });
     newSprite.id = "id2";
     prog._sprites.push(newSprite);
     var tmp = prog.getSpriteById("id2");

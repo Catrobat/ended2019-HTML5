@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
@@ -23,7 +23,7 @@
     <script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/sprite.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/component/sprite.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
 
     <!-- components -->
@@ -51,7 +51,7 @@
 <script type="text/javascript">
     var c;
     function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
-        var sprite = new PocketCode.Model.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
+        var sprite = new PocketCode.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
 
         sprite.id = id;
         sprite.name = name;

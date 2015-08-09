@@ -1,6 +1,6 @@
 
 .pc-startButton, .pc-startButton:active {
-	background-color: transparent;
+	background: none;
 	border: medium none;
 	color: #a9dcf1;
 	cursor: pointer;
