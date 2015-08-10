@@ -16,42 +16,48 @@
     <script src="../../Client/smartJs/sj-ui.js"></script>
 
     <script src="../../Client/pocketCode/scripts/core.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/ui.js"></script>
+
     <!-- model -->
+
     <script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksControl.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksMotion.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/component/sprite.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script>
 
     <!-- components -->
     <script src="../../Client/pocketCode/scripts/components/mvc.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/userVariableHost.js"></script>
     <script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/sprite.js" data-cover></script>
     <script src="../../Client/PocketCodePlayer/controller/canvasController.js"></script>
     <script src="../../Client/pocketCode/scripts/uiControls/playerViewport.js"></script>
     <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet">
 
 </head>
-<body>
+<body style="background-color: lightgray">
 <div style="background-color:#00aaaa">
-    <input value="Fill" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.init(sprites)>
-    <input value="Clear" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.clearCanvas()>
+    <input value="Fill" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.init(sprites);>
+    <input value="Clear" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.clearCanvas();>
     <input value="Toggle Axes" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.toggleAxes();>
-    <input value="Download" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(1))>
-    <input value="Download x2" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(2))>
+    <input value="Download" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(1));>
+    <input value="Download x2" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(2));>
 </div>
 </body>
 <script type="text/javascript">
     var c;
-    function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
-        var sprite = new PocketCode.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
+    var ge = new PocketCode.GameEngine();
+    function populateSprites(id, name, x, y, scale, imgElement, visible, bright, transp, angle) {
+        var sprite = new PocketCode.Sprite(ge, { id: "newId", name: "myName" });
 
         sprite.id = id;
         sprite.name = name;
@@ -78,7 +84,7 @@
 
     var onLoad = function () {
         for (var i = 0; i < 5; i++) {
-            sprites.push(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
+            sprites.push(populateSprites(i, 'tree', 50 * i, 50 * i, 1, looks, true, i * 60, 0, 90));
         }
         var currentLook2 = new Image();
         currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
@@ -88,20 +94,20 @@
     var _testhandler = function(e) {
         console.log(e.id);
         window.alert('Clicked ' + e.id);
-    } ;
+    };
 
     var onLoad2 = function() {
-        sprites.push(populateSprites(6, 'minion', 6, 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
+        sprites.push(populateSprites(6, 'minion', 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
         // var ge = new PocketCode.GameEngine();
-        c = new PocketCode.CanvasController();
+        var vp = new SmartJs.Ui.Viewport();
+        document.body.appendChild(vp._dom);
+
+        c = new PocketCode.CanvasController(ge);
         //c.init(sprites);
         c.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(_testhandler, this));
         //console.log(document);
-        document.body.appendChild(c._view._dom);
-        console.log(c.downloadCanvas(2));
-        console.log(c.downloadCanvas(1));
-        //console.log('after');
-        //console.log(document);
+        //document.body.appendChild(c._view._dom);
+        vp.appendChild(c._view);
     };
 
     var currentLook = new Image();
@@ -109,7 +115,6 @@
     currentLook.src = "_resources/tree-transparent.png";
     var looks = [];
     looks[0] = currentLook;
-
 
 </script>
 </html>

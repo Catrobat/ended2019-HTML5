@@ -121,6 +121,14 @@ PocketCode.GameEngine = (function () {
             //enumerable: false,
             //configurable: true,
         },
+
+        backgroundOffset: {
+            get: function () {
+                return this._backgroundOffset;
+            }
+            //enumerable: false,
+            //configurable: true,
+        },
     });
 
     //events

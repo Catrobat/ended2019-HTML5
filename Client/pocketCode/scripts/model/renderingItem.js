@@ -25,8 +25,10 @@ PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
                 hasRotatingPoint: false,
                 originX: "center",
                 originY: "center",
-                oX:options.left,
-                oY:options.top
+                positionX:options.x,
+                positionY:options.y,
+                filters:[],
+                opacity:1.0
             });
 
             this.setAngle(options.angle);

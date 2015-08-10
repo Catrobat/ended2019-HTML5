@@ -158,7 +158,7 @@ PocketCode.Sprite = (function () {
         //looks
         looks: {
             set: function (looks) {
-                if (!(looks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' || 
+                if (!(looks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' ||
                     throw new Error('invalid argument: expected looks type of array');
 
                 this._looks = looks;

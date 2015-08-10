@@ -3,108 +3,146 @@
 'use strict';
 
 
-QUnit.module("canvas.js");
+QUnit.module("canvasController.js");
 
-QUnit.test("Canvas", function (assert) {
+QUnit.test("CanvasController", function (assert) {
 
 	var done = assert.async();  //async tests: due to image loading delay
 
 	var sprite2test = null;
 	var dom = document.getElementById("qunit-fixture");
 
-	var el = document.createElement("canvas");
-	dom.appendChild(el);
+	//var el = document.createElement("canvas");
+	//dom.appendChild(el);
 
-	el.width = 600; el.height = 600;
-
-	var canvas = new PocketCode.Canvas(el, 0.5);
+	//el.width = 600; el.height = 600;
+	var gme = new PocketCode.GameEngine();
+	var controller = new PocketCode.CanvasController(gme);
+	dom.appendChild(controller.view._dom);
 
 	var imageOnLoad_runTests = function () {
 
-		assert.ok(canvas.zoomfactor == 0.5, "get zoomfactor");
-		assert.ok(canvas.canvas instanceof fabric.Canvas, "get canvas")
+		// assert.ok(controller.zoomfactor == 0.5, "get zoomfactor"); TODO: zf needed?
+		assert.ok(controller.view.fabricCanvas instanceof fabric.Canvas, "Canvas type correct");
 
 		//create 5 sprites
-		for (var i = 0; i < 5; i++) {
-			canvas.addSprite(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
+		var sprites = [];
+		gme._sprites = sprites;
+		for (var i = 0; i < 5; i++)
+		{
+			//controller.addSprite(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
+			sprites.push(populateSprite(gme,i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90))
 		}
-		//render canvas
-		canvas.render();
+		var spritex = sprites[3];
 
-		assert.ok(canvas._canvas.getObjects().length == 5, "sprite count");
+		// initialize controller
+		controller.init(sprites);
 
-		//insert new element with id 5 (sixth element) at layer 2 
-		canvas.addSprite(populateSprites(5, 'tree', 2, 200, 400, 100, looks, true, 100, 0, 90));
-		canvas.render();
-		var sprites = canvas._canvas.getObjects();
-		assert.ok(sprites.indexOf(canvas._getSpriteOnCanvas(5)) == 2 && sprites.indexOf(canvas._getSpriteOnCanvas(3)) == 4 && sprites.indexOf(canvas._getSpriteOnCanvas(2)) == 3 && sprites.indexOf(canvas._getSpriteOnCanvas(1)) == 1 && canvas._canvas.getObjects().length == 6, "insert sprite at layer in use (move other sprites one layer to front)");
+		assert.ok(controller.initialized == true, "Controller initialized");
+		assert.ok(controller.view.renderingObjects == controller.renderingItems, "rendering lists equal");
+
+		// check if items are passed correctly
+		assert.ok(controller.view.renderingObjects.length == 5, "rendering item array count");
+		assert.ok(controller.view.fabricCanvas.getObjects().length == 5, "rendering item count on canvas");
+
+		spritex.setPosition(20, 45, true);
+		var sx_canvas = controller._getSpriteOnCanvas(spritex.id);
+		assert.ok(sx_canvas.positionX == spritex.positionX, "x position set");
+		assert.ok(sx_canvas.positionY == spritex.positionY, "y position set");
+		// TODO test layer change
+
+		assert.throws(function() {controller.renderingItems = 2;}, SmartJs.Error.InvalidArgumentException,'set rendering items to non-array type');
+
+		var res = controller._getSpriteOnCanvas(100);
+		assert.ok(res == undefined, 'get item not on canvas');
+
+		spritex.comeToFront();
+		assert.ok(gme._sprites.indexOf(spritex) == controller.renderingItems.indexOf(controller._getSpriteOnCanvas(spritex.id)), "index is equal (front)");
+
+		spritex.goBack();
+		assert.ok(gme._sprites.indexOf(spritex) == controller.renderingItems.indexOf(controller._getSpriteOnCanvas(spritex.id)), "index is equal (back)");
+
+		var str = controller.downloadCanvas(1);
+		assert.ok(controller.view.fabricCanvas.toDataURL({multiplier:1}) == str, "download of canvas correct");
+
+
+		controller.clearCanvas();
+		assert.ok(controller.renderingItems.length == 0, "cleared canvas");
+
+		done();
+		//insert new element with id 5 (sixth element) at layer 2
+		//controller.addSprite(populateSprite(gme,5, 'tree', 2, 200, 400, 100, looks, true, 100, 0, 90));
+/*
+		var sprites = controller.view.fabricCanvas.getObjects();
+		// TODO  insertAtIndex assert.ok(sprites.indexOf(controller._getSpriteOnCanvas(5)) == 2 && sprites.indexOf(controller._getSpriteOnCanvas(3)) == 4 && sprites.indexOf(controller._getSpriteOnCanvas(2)) == 3 && sprites.indexOf(controller._getSpriteOnCanvas(1)) == 1 && controller._canvas.getObjects().length == 6, "insert sprite at layer in use (move other sprites one layer to front)");
 
 		// move sprite with id 5 to position 300, 400
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_positionX', value: 300 }, { property: '_positionY', value: 400 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_positionX', value: 300 }, { property: '_positionY', value: 400 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.top == 300 && sprite2test.left == 400, "move sprite to specified position");
 
 		// change layer of sprite
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_layer', value: 0 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
-		assert.ok(sprites.indexOf(sprite2test) == 0 && sprites.indexOf(canvas._getSpriteOnCanvas(0)) == 1 && sprites.indexOf(canvas._getSpriteOnCanvas(3)) == 4, "change layer of sprite");
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_layer', value: 0 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
+		// TODO change Layer assert.ok(sprites.indexOf(sprite2test) == 0 && sprites.indexOf(controller._getSpriteOnCanvas(0)) == 1 && sprites.indexOf(controller._getSpriteOnCanvas(3)) == 4, "change layer of sprite");
 
 		// change direction of sprite
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_direction', value: 180 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_direction', value: 180 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.angle == 90, "change direction of sprite by 180 (should be actual direction of 90 on canvas)");
 
 		// change transparency of sprite
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_transparency', value: 80 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_transparency', value: 80 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.opacity == 0.2, "change transparency of sprite by 80 % (should be 20% opacity on canvas)");
 
 		// change visibility of sprite
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_visible', value: false }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_visible', value: false }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.visible == false, "change visibility of sprite");
 
 		// change brightness of sprite to max brightness
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 200 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 200 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.filters[0].brightness == 255, "change brightness to max (200) (should be 255 on canvas)");
 
 		// change brightness of sprite to min brightness
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 0 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 0 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.filters[0].brightness == -255, "change brightness to min (0) (should be -255 on canvas)");
 
 		// change brightness of sprite to normal brightness (default value)
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 100 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 100 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.filters[0].brightness == 0, "change brightness to default value (100) (should be 0 on canvas)");
 
 		// change brightness of sprite to 50% brightness
-		canvas.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 50 }] });
-		sprite2test = canvas._getSpriteOnCanvas(5);
+		controller.renderSpriteChange({ id: 5, changes: [{ property: '_brightness', value: 50 }] });
+		sprite2test = controller._getSpriteOnCanvas(5);
 		assert.ok(sprite2test.filters[0].brightness == -127, "change brightness to 50% (should be 127 on canvas)");
 
 		//TODO test Axes + click 
 
 		done(); //async tests completed
+*/
 	};
 
 	var currentLook = new Image();
 	var looks = [];
 	looks[0] = currentLook;
 	currentLook.addEventListener("load", imageOnLoad_runTests);  //added handler to run tests when image completed loading
-	currentLook.src = "_resources/tree-transparent.png";
+	currentLook.src = "_resources/img/tree-transparent.png";
 
 
 });
 
 
-function populateSprites(id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
-    var sprite = new PocketCode.Sprite(new PocketCode.GameEngine(), { id: "newId", name: "myName" });
+function populateSprite(ge,id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
+    var sprite = new PocketCode.Sprite(ge,{ id: "newId", name: "myName" });
 
 	sprite.id = id;
 	sprite.name = name;
-	//sprite.layer = layer;
+	// sprite.layer = layer;
 	sprite.setPositionX(x);
 	sprite.setPositionY(y);
 	sprite.setSize(scale);
@@ -125,37 +163,37 @@ function populateSprites(id, name, layer, x, y, scale, imgElement, visible, brig
 
 
 
-function updateSprite() {
+/*function updateSprite() {
 	var sprite2test = null;
 
 	var canvas = new PocketCode.Canvas("pcCanvas", 0.5);
 	var currentLook = new Image();
-	currentLook.src = "_resources/tree-transparent.png";
+	currentLook.src = "_resources/img/tree-transparent.png";
 	var looks = [];
 	looks[0] = currentLook;
 
 	//create 5 sprites
 	for (var i = 0; i < 5; i++) {
-		canvas.addSprite(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
+		canvas.addSprite(populateSprite(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
 	}
 
 	var currentLook2 = new Image();
-	currentLook2.src = "_resources/minion.jpg";
+	currentLook2.src = "_resources/img/minion.jpg";
 
 	var looks2 = [];
 	looks2[0] = currentLook2;
-	canvas.addSprite(populateSprites(5, 'tree', 5, 200, 400, 100, looks2, true, 100, 0, 90));
+	canvas.addSprite(populateSprite(5, 'tree', 5, 200, 400, 100, looks2, true, 100, 0, 90));
 	canvas.render();
 
 	//insert element with id 6 (eleventh element) at layer 3 
-	canvas.addSprite(populateSprites(6, 'tree', 3, 15, 15, 20, looks, true, 0, 0, 90));
+	canvas.addSprite(populateSprite(6, 'tree', 3, 15, 15, 20, looks, true, 0, 0, 90));
 	canvas.render();
 
 	// move sprite with id 5 to position 300, 400
 	canvas.renderSpriteChange({ id: 5, changes: [{ property: '_positionX', value: 300 }, { property: '_positionY', value: 400 }] });
 
 	//	 change layer of sprite
-	canvas.renderSpriteChange({ id: 5, changes: [{ property: '_layer', value: 0 }] });
+	// canvas.renderSpriteChange({ id: 5, changes: [{ property: '_layer', value: 0 }] });
 
 	// change direction of sprite
 	canvas.renderSpriteChange({ id: 5, changes: [{ property: '_direction', value: 180 }] });
@@ -171,22 +209,4 @@ function updateSprite() {
 	canvas.showAxes = true;
 
 	//	canvas.showAxes = false;
-}
-
-
-function download(url,name){
-    // create the link, set the href and download. (emulate dom click)
-    var a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.innerHTML = 'Screenshot';
-    a.setAttribute('download', name);
-    a.click();
-}
-
-function createDataURL(){
-//  convert the canvas to a data url and download it.
-    var canvas = document.getElementById("pcCanvas");
-    //download(canvas.toDataURL(),'screenshot.png');
-	console.log(canvas.toDataURL('image/png'));
-}
-
+}*/
