@@ -369,7 +369,7 @@ PocketCode.GameEngine = (function () {
             idx = Math.max(idx - layers, 0);
             sprites.insert(idx, sprite);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //TODO: check event arguments
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: [{ layer: idx + 1 }] }, sprite);    //TODO: check event arguments
             return true;
         },
 
@@ -382,7 +382,7 @@ PocketCode.GameEngine = (function () {
                 return false;
             sprites.push(sprite);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: [{ layer: sprites.length }] }, sprite);
             return true;
         },
 
