@@ -1,12 +1,11 @@
 <?php
 
-abstract class BaseBrickDto {
-
+class BaseBrickDto
+{
   public $type;
-  
-  
-  public function __construct($type) {
+
+  public function __construct($type)
+  {
     $this->type = $type;
   }
-    
 }

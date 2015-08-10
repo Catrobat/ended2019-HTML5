@@ -1,12 +1,13 @@
 <?php
 
-class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto {
+include_once "ChangeGraphicEffectBrickDto.class.php";
 
-  public function __construct($value) {
-		parent::__construct(EGraphicEffect::BRIGHTNESS, $value);
-		
-		$this->type = "ChangeBrightness";
+class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto
+{
+  public function __construct($value)
+  {
+    parent::__construct(EGraphicEffect::BRIGHTNESS, $value);
 
+    $this->type = "ChangeBrightness";
   }
-
 }

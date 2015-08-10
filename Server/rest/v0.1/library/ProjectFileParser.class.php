@@ -1,9 +1,16 @@
 <?php
 
 require_once("TextToSpeechProvider.class.php");
-require_once("Server/rest/v0.1/dto/ProjectDto.class.php");
-require_once("Server/rest/v0.1/dto/ProjectDeviceDto.class.php");
-require_once("Server/rest/v0.1/dto/ProjectHeaderDto.class.php");
+
+foreach(glob("Server/rest/v0.1/dto/*.class.php") as $class)
+{
+  include_once $class;
+}
+
+foreach(glob("Server/rest/v0.1/library/*.class.php") as $class)
+{
+  include_once $class;
+}
 
 class ProjectFileParser
 {

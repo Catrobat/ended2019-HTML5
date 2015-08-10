@@ -1,5 +1,7 @@
 <?php
 
+include_once "BaseBrickDto.class.php";
+
 class AppendToListBrickDto extends BaseBrickDto
 {
   public $referenceId;

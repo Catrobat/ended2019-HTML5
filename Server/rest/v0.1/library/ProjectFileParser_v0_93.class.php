@@ -1,5 +1,7 @@
 <?php
 
+require_once("Server/rest/v0.1/library/ProjectFileParser.class.php");
+
 class ProjectFileParser_v0_93 extends ProjectFileParser
 {
 
