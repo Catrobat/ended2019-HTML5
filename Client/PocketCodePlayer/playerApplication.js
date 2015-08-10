@@ -43,11 +43,11 @@ PocketCode.PlayerApplication = (function () {
 
         //events
         this._onInit = new SmartJs.Event.Event(this);       //triggered when the loading screen is available
-        this._onError = new SmartJs.Event.Event(this);		//triggered on error
+        //this._onError = new SmartJs.Event.Event(this);		//defined in base class
         this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
     }
 
-    //events
+    //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
     Object.defineProperties(PlayerApplication.prototype, {
         onInit: {
             get: function () {
@@ -88,6 +88,10 @@ PocketCode.PlayerApplication = (function () {
             }
             this._loadPage(data.page, data.viewState, true);
         },
+        //_globalErrorHandler: function(message, fileName, lineNo) {
+        //    this._onError.dispatchEvent();
+        //    return true; //exception handled- not reportet to the user using the browser
+        //},
         _loadPage: function (page, viewState, historyBack) {
             if (!this._pageControllers[page]) {	//new
                 var ctr = page.charAt(0).toUpperCase() + page.slice(1) + 'PageController';
@@ -128,10 +132,10 @@ PocketCode.PlayerApplication = (function () {
                     comp = false;
             }
             if (!comp) {	//framework not loaded correctly or compatibility failed
-                if (this._onError instanceof SmartJs.Event.Event)
-                    this._onError.dispatchEvent();
-                else
-                    alert('sorry.. your browser is not compatible with our application');
+                //if (this._onError instanceof SmartJs.Event.Event)
+                //    this._onError.dispatchEvent();
+                //else
+                    alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
 
                 return;
             }

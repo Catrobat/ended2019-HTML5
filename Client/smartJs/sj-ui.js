@@ -672,7 +672,8 @@ SmartJs.Ui.merge({
 
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
-            //this._containerDom = this._dom;
+            this._containerDom = this._dom; //TODO: override this property to ensure child elements are added inside the container tag and not inside the _dom tag
+                                            //a container ui control can consist of more than one html element
             //TODO: set this._innerDom
             //this._containerChilds = [];
 

@@ -55,29 +55,75 @@ PocketCode.Ui.merge({
 		}(),
 	},
 
+	/* this is a placeholder and used in the future to support/implement business logic and events like: onInternationalizationChange */
 	I18nControl: (function () {
-		I18nControl.extends(SmartJs.Ui.Control, false);
+	    I18nControl.extends(SmartJs.Ui.Control, false);
 
-		//cntr
-		function I18nControl(element, propObject) {
-			SmartJs.Ui.Control.call(this, element, propObject);
+	    //cntr
+	    function I18nControl(element, propObject) {
+	        SmartJs.Ui.Control.call(this, element, propObject);
 
-		}
+	    }
 
-		//properties
-		Object.defineProperties(I18nControl.prototype, {
+	    //properties
+	    Object.defineProperties(I18nControl.prototype, {
 
-		});
+	    });
 
-		//events
-		Object.defineProperties(I18nControl.prototype, {
-		});
+	    //events
+	    Object.defineProperties(I18nControl.prototype, {
+	    });
 
-		//methods
-		I18nControl.prototype.merge({
-		});
+	    //methods
+	    I18nControl.prototype.merge({
+	    });
 
-		return I18nControl;
+	    return I18nControl;
+	})(),
+
+	Viewport: (function () {
+	    Viewport.extends(SmartJs.Ui.Viewport, false);
+
+	    //cntr
+	    function Viewport(element, propObject) {
+	        SmartJs.Ui.Viewport.call(this, element, propObject);
+
+	        this._disableBrowserGestures();
+	    }
+
+	    //properties
+	    Object.defineProperties(Viewport.prototype, {
+
+	    });
+
+	    //events
+	    Object.defineProperties(Viewport.prototype, {
+	    });
+
+	    //methods
+	    Viewport.prototype.merge({
+	        _disableBrowserGestures: function() {
+	            this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false);
+	            this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
+	            this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
+	            this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
+	            this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
+	        },
+	        _enableBrowserGestures: function() {
+	            this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+	            this._removeDomListener(document, 'touchend', this._touchEndHandler);
+	            this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+	            this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
+	            this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+	        },
+	        /*override*/
+	        dispose: function () {
+	            this._enableBrowserGestures();
+	            SmartJs.Ui.Viewport.prototype.dispose(this);    //call super()
+	        },
+	    });
+
+	    return Viewport;
 	})(),
 
 });

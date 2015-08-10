@@ -14,6 +14,7 @@ SmartJs.Components = {
             this._viewport = new SmartJs.Ui.Viewport();
 
             this._onConnectionStatusChange = new SmartJs.Event.Event(this);
+            this._onError = new SmartJs.Event.Event(this);
 
             this._online = navigator.onLine;
             this._addDomListener(window, 'offline', this._offlineHandler);
@@ -21,13 +22,16 @@ SmartJs.Components = {
             this._addDomListener(window, 'error', this._errorHandler);
         }
 
-        Object.defineProperties(Application.prototype, {
-            onConnectionStatusChange: {
-                get: function () { return this._onConnectionStatusChange; },
-                //enumerable: false,
-                //configurable: true,
-            },
-        });
+        //Object.defineProperties(Application.prototype, {  //the application object doesn't need any public properties or events
+        //    onConnectionStatusChange: {
+        //        get: function () { return this._onConnectionStatusChange; },
+        //        //enumerable: false,
+        //        //configurable: true,
+        //    },
+        //    onError: {
+        //        get: function () { return this._onError; },
+        //    },
+        //});
 
         Application.prototype.merge({
             _offlineHandler: function () {
@@ -40,8 +44,9 @@ SmartJs.Components = {
                 this._online = true;
                 this._onConnectionStatusChange.dispatchEvent({ online: true });
             },
-            _errorHandler: function (error, filePath, line) {
-                console.log('SmartJs.Components.Application: global error: ' + error + ', ' + filePath + ', ' + lin);
+            _errorHandler: function (error, fileName, lineNo) {
+                //console.log('SmartJs.Components.Application: global error: ' + error + ', ' + fileName + ', ' + lineNo);
+                this._onError.dispatchEvent();
             },
         });
 

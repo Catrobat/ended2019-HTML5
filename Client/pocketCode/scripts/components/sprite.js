@@ -218,6 +218,8 @@ PocketCode.Sprite = (function () {
                 var brick;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     brick = bricks[i];
+                    //if (!(brick instanceof PocketCode.Bricks.BaseBrick))                               //this change breaks our tests: //TODO: 
+                    //    throw new Error('invalid brick: every brick has to be inherited from BaseBrick');
                     if (brick.onExecuted)  //supported by all root container bricks
                         brick.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
                 }

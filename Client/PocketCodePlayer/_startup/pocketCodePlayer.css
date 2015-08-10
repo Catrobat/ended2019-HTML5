@@ -11,6 +11,15 @@
     background-color: #1F1F1F;  /* fix to IE9 100% sizing */
     position: relative;
 }
+
+.pc-webBody div, .pc-webBody span {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; 
+  cursor: default;
+}
 /* overlay */
 .pc-webOverlay {
     font-family: sans-serif;
@@ -258,7 +267,7 @@
     height: 2.7em;
 }
 
-    .pc-liProgressStyle > div {
+    .pc-liProgressStyle div {
         display: table-cell;
         border: solid 0.2em #05222a;
         width: 2.5em;

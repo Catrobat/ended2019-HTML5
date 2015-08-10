@@ -6,10 +6,10 @@
 if (!PocketCode)
 	var PocketCode = {};
 
-PocketCode.websiteUrl = 'https://pocketcode.org/';
-PocketCode.projectUrl = PocketCode.websiteUrl + 'details/{projectId}';
+PocketCode.websiteUrl = 'https://share.catrob.at/pocketcode/';
+PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
 PocketCode.mobileUrl = PocketCode.websiteUrl + 'html5/player/{projectId}';
-PocketCode.logoUrl = 'images/logo_text.png';
+PocketCode.logoUrl = 'https://share.catrob.at/images/logo/logo_text.png';
 
 PocketCode.Web = {
 
@@ -233,7 +233,11 @@ PocketCode.Web = {
 			this.muteButton.disabled = true;	//disabled by default: sound manager not loaded yet
 
 			this._dom = overlay;
-			this._touchStartHandler = undefined;
+			//this._touchStartHandler = undefined;
+			//this._touchEndHandler = undefined;
+			//this._touchCancelHandler = undefined;
+			//this._touchLeaveandler = undefined;
+			//this._touchMoveHandler = undefined;
 
 			//bind events
 			if (window.addEventListener) {
@@ -292,7 +296,12 @@ PocketCode.Web = {
 				this.viewportContainer.appendChild(splashScreen._dom);
 			},
 			show: function () {
-			    this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+			    this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+			    this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
+			    this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
+			    this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
+			    this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
+
 			    var fapi = PocketCode.Web.FullscreenApi;
 				if (fapi.supported && !fapi.isBrowserFullscreen())
 					this.fullscreenButton.disabled = false;
@@ -311,8 +320,13 @@ PocketCode.Web = {
 					this._splashScreen.show();  //init size
 			},
 			_hide: function () {
-			    this._removeDomListener(document, 'touchmove', this._touchStartHandler);
-				document.body.removeChild(this._dom);
+			    this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+			    this._removeDomListener(document, 'touchend', this._touchEndHandler);
+			    this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+			    this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
+			    this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+
+			    document.body.removeChild(this._dom);
 				if (this._splashScreen)
 					this._splashScreen.hide();
 				PocketCode.Web.FullscreenApi.unbindF11();
@@ -442,6 +456,11 @@ PocketCode.Web = {
 			dialog.appendChild(this._loadingIndicator._dom);
 
 			this._dom = dom;
+			//this._touchStartHandler = undefined;
+			//this._touchEndHandler = undefined;
+			//this._touchCancelHandler = undefined;
+			//this._touchLeaveandler = undefined;
+			//this._touchMoveHandler = undefined;
 
 			//bind events
 			if (window.addEventListener) {
@@ -471,14 +490,24 @@ PocketCode.Web = {
 				this._dom.style.fontSize = fs + 'px';
 			},
 		    show: function () {
-		        this._touchStartHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
-				this._loadingIndicator.show();
+		        this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+		        this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
+		        this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
+		        this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
+		        this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
+
+		        this._loadingIndicator.show();
 				this._dom.style.display = '';
 				this._onResizeHandler();    //init size
 			},
 		    hide: function () {
-		        this._removeDomListener(document, 'touchmove', this._touchStartHandler);
-				this._dom.style.display = 'none';
+		        this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+		        this._removeDomListener(document, 'touchend', this._touchEndHandler);
+		        this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+		        this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
+		        this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+
+		        this._dom.style.display = 'none';
 				this._loadingIndicator.hide();
 			},
 			showBorder: function () {
