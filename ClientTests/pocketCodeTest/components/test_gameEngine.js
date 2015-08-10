@@ -245,7 +245,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //var numberOfSprites = gameEngine._sprites.length;
     //var currentSpriteLayer = gameEngine.getSpriteLayer("spriteId1");    //avoid testing a method by using it -> this may cause wrong positive results
-    var currentSpriteLayer = gameEngine._sprites.indexOf(sprite1) + gameEngine._backgroundOffset;
+    var currentSpriteLayer = gameEngine._sprites.indexOf(sprite1) + 1;
     assert.deepEqual(gameEngine.getSpriteLayer(sprite1), currentSpriteLayer, "Correct Sprite Layer returned by getSpriteLayer");
     gameEngine.setSpriteLayerBack(sprite1, 2);
     assert.deepEqual(gameEngine.getSpriteLayer(sprite1), currentSpriteLayer - 2, "Set sprite layer two Layers back with setSpriteLayerBack");
@@ -257,11 +257,11 @@ QUnit.test("GameEngine", function (assert) {
 
     spriteChanges = 0;
 
-    assert.equal(gameEngine.setSpriteLayerToFront({ sprite: "invlaidSprite object" }), false, "layer: return fals if sprite not found");
+    assert.equal(gameEngine.setSpriteLayerToFront({ sprite: "invalidSprite object" }), false, "layer: return fals if sprite not found");
     assert.ok(gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns true if layers are changed");
     assert.ok(!gameEngine.setSpriteLayerToFront(sprite1), "Bringing Layer to front returns false if no layers are changed");
     assert.deepEqual(spriteChanges, 1, "Sprite Change Event triggered once");
-    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), gameEngine._sprites.length - 1 + gameEngine._backgroundOffset, "Brought Layer to front");
+    assert.deepEqual(gameEngine.getSpriteLayer(sprite1), gameEngine._sprites.length, "Brought Layer to front");
 
     var spriteBeforeLast = gameEngine._sprites[1];
     //spriteBeforeLast.id = "uniqueId";
@@ -289,7 +289,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //make sure sounds not already loaded
     gameEngine._soundManager = new PocketCode.SoundManager();
-    //internal bindings have to be reattached to garantee loading flags are set
+    //internal bindings have to be reattached to guarantee loading flags are set
     gameEngine._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingErrorHandler, gameEngine));
     gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._assetProgressChangeHandler, gameEngine));
     gameEngine._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(gameEngine._spriteOnExecutedHandler, gameEngine));
