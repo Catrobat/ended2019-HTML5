@@ -179,6 +179,10 @@ PocketCode.GameEngine = (function () {
                 imageSize += jsonProject.images[i].size;
             }
             this.assetSize = imageSize + soundSize;
+            if(!this.assetSize){
+                this._assetsLoaded = true;
+                this.assetLoadingProgress = 100;
+            }
 
             this._sounds = jsonProject.sounds || [];
 
@@ -259,7 +263,10 @@ PocketCode.GameEngine = (function () {
 
             //console.log(percentage + "% loaded (+ "+(e.size / this.assetSize) * 100+"%)");
 
-            if(percentage === 100 && this._spritesLoaded){
+            if(percentage === 100){
+                this._assetsLoaded = true;
+            }
+            if(this._assetsLoaded && this._spritesLoaded){
                 this.projectReady = true;
             }
             this._onLoadingProgress.dispatchEvent({ progress: percentage });
