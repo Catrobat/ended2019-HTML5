@@ -76,7 +76,7 @@ QUnit.test("SoundManager", function (assert) {
 
     var soundjsLoaded = function () {   //triggered on init (last lines in file)
 
-        var instance = createjs.Sound.createInstance("_resources/sound/sound.mp3");
+        var instance = createjs.Sound.createInstance("_resources/sounds/sound.mp3");
         var soundManager = new PocketCode.SoundManager([]);    //reinit
         assert.equal(instance.src, null, "Removed Sounds from createjs.Sounds on init");
 
@@ -143,7 +143,7 @@ QUnit.test("SoundManager", function (assert) {
 
             //get url of sound
             var linkToSound = document.createElement("a");
-            linkToSound.href = "_resources/sound/sound.mp3";
+            linkToSound.href = "_resources/sounds/sound.mp3";
             var soundUrl = linkToSound.protocol+"//"+linkToSound.host+linkToSound.pathname+linkToSound.search+linkToSound.hash;
             //play from url
             id = soundManager2.startSoundFromUrl(soundUrl);
@@ -168,7 +168,7 @@ QUnit.test("SoundManager", function (assert) {
 
             soundManager2.startSound("sound");
             var soundInstance = soundManager2._activeSounds[0];
-            assert.equal(soundInstance.src, "_resources/sound/sound.mp3", "Correct sound added to active sounds");
+            assert.equal(soundInstance.src, "_resources/sounds/sound.mp3", "Correct sound added to active sounds");
             assert.equal(soundInstance.playState, "playSucceeded", "Sound started playing");
 
             soundManager2.pauseSounds();
@@ -191,7 +191,7 @@ QUnit.test("SoundManager", function (assert) {
 
             soundManager2.pauseSounds();
 
-            assert.equal(soundManager2._activeSounds[soundManager2._activeSounds.length - 1].src, "_resources/sound/sound2.mp3", "Second sound added to active sounds");
+            assert.equal(soundManager2._activeSounds[soundManager2._activeSounds.length - 1].src, "_resources/sounds/sound2.mp3", "Second sound added to active sounds");
             assert.equal(soundManager2._activeSounds.length, timesToPlaySound + 1, "Multiple Soundinstances of same sound added to active sounds");
 
             var allSoundsStartedPlaying = true;
@@ -216,8 +216,8 @@ QUnit.test("SoundManager", function (assert) {
             soundInstance2.paused = false;
         };
 
-        var soundSrc = "_resources/sound/sound.mp3";
-        var soundSrc2 = "_resources/sound/sound2.mp3";
+        var soundSrc = "_resources/sounds/sound.mp3";
+        var soundSrc2 = "_resources/sounds/sound2.mp3";
 
         progress = 0;
         var expectedProgressChanges = [60, 40];
@@ -250,5 +250,5 @@ QUnit.test("SoundManager", function (assert) {
     //createjs.Sound.addEventListener("event", "handler");
     createjs.Sound.setVolume(0.1);
     createjs.Sound.on("fileload", soundjsLoaded, null, true);
-    createjs.Sound.registerSound("_resources/sound/sound.mp3");
+    createjs.Sound.registerSound("_resources/sounds/sound.mp3");
 });

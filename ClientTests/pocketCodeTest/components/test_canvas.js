@@ -131,7 +131,7 @@ QUnit.test("CanvasController", function (assert) {
 	var looks = [];
 	looks[0] = currentLook;
 	currentLook.addEventListener("load", imageOnLoad_runTests);  //added handler to run tests when image completed loading
-	currentLook.src = "_resources/img/tree-transparent.png";
+	currentLook.src = "_resources/images/tree-transparent.png";
 
 
 });
@@ -168,7 +168,7 @@ function populateSprite(ge,id, name, layer, x, y, scale, imgElement, visible, br
 
 	var canvas = new PocketCode.Canvas("pcCanvas", 0.5);
 	var currentLook = new Image();
-	currentLook.src = "_resources/img/tree-transparent.png";
+	currentLook.src = "_resources/images/tree-transparent.png";
 	var looks = [];
 	looks[0] = currentLook;
 
@@ -178,7 +178,7 @@ function populateSprite(ge,id, name, layer, x, y, scale, imgElement, visible, br
 	}
 
 	var currentLook2 = new Image();
-	currentLook2.src = "_resources/img/minion.jpg";
+	currentLook2.src = "_resources/images/minion.jpg";
 
 	var looks2 = [];
 	looks2[0] = currentLook2;
