@@ -345,13 +345,18 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(soundsMatch, "Sounds set correctly");
 
     var imagesMatch = true;
+    var imageObjectsCreatedCorrectly = true;
     for (var i = 0, l = testProject.images.length; i < l; i++) {
         if (gameEngine.__images[testProject.images[i].id] !== testProject.images[i]) {
             imagesMatch = false;
         }
+        console.log();
+        if(gameEngine.__images[testProject.images[i].id].size !== testProject.images[i].size || testProject.images[i].imageObject.getAttribute("src") !== gameEngine.__images[testProject.images[i].id].url){
+            imageObjectsCreatedCorrectly = false;
+        }
     }
     assert.ok(imagesMatch, "Images set correctly");
-
+    assert.ok(imageObjectsCreatedCorrectly === true, "All images have an imageObject with matching criteria");
 
     //finish async tests if browser does not support sounds
     if (!gameEngine._soundManager.supported) {

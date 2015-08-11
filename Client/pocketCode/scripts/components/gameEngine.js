@@ -351,10 +351,10 @@ PocketCode.GameEngine = (function () {
 
         getSpriteLayer: function (sprite) {
             //return this.layerObjectList.indexOf(sprite);//this.getSpriteById(spriteId));
-            var idx = this._sprites.indexOf(sprite);
+            var idx = this.layerObjectList.indexOf(sprite);
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
-            return idx + 1;
+            return idx;
         },
 
         setSpriteLayerBack: function (sprite, layers) {
