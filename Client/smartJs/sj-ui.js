@@ -183,7 +183,7 @@ SmartJs.Ui.merge({
 
         //methods
         TextNode.prototype.merge({
-            hide: function() {
+            hide: function () {
                 this._dom.textContent = '';
             },
             show: function () {
@@ -621,17 +621,20 @@ SmartJs.Ui.merge({
             },
             hide: function () {
                 var style = this._dom.style;
-                if (style.display === 'none') return;
+                if (style.display === 'none')
+                    return;
 
+                this._styleBeforeHide = style;
                 style.display = 'none';
                 if (this._parent)
                     this._parent.onLayoutChange.dispatchEvent({}, this);
             },
             show: function () {
                 var style = this._dom.style;
-                if (style.display === 'block') return;
+                if (style.display !== 'none')
+                    return;
 
-                style.display = '';//'block';
+                style.display = this._styleBeforeHide || '';
                 if (this._parent)
                     this._parent.onLayoutChange.dispatchEvent({}, this);
             },
@@ -667,13 +670,10 @@ SmartJs.Ui.merge({
             if (propObject && typeof propObject !== 'object')
                 throw new Error('invalid argument: expected: propObject typeof object');
 
-    //UiContainerControl: (function () {
-      //  UiContainerControl.extends(SmartJs.Ui.Control, false);
-
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
             this._containerDom = this._dom; //TODO: override this property to ensure child elements are added inside the container tag and not inside the _dom tag
-                                            //a container ui control can consist of more than one html element
+            //a container ui control can consist of more than one html element
             //TODO: set this._innerDom
             //this._containerChilds = [];
 
@@ -709,19 +709,19 @@ SmartJs.Ui.merge({
         });
 
         ContainerControl.prototype.merge({
-            //adding and removing ui supported on container controls: make public
+            //adding and removing uiControls supported on container controls: make public
             appendChild: function (uiControl) {
-                return this._appendChild(uiControl);//, this._containerChilds, this._containerDom);
+                return this._containerDom._appendChild(uiControl);//, this._containerChilds, this._containerDom);
             },
-            insertBefore: function (existingUiC, newUiC) {
-            },
-            insertAfter: function (existingUiC, newUiC) {
-            },
-            replaceChild: function (existingUiC, newUiC) {
-            },
-            removeChild: function (uiControl) {
-                return this._removeChild(uiControl);//, this._containerChilds, this._containerDom);
-            },
+            //insertBefore: function (existingUiC, newUiC) {
+            //},
+            //insertAfter: function (existingUiC, newUiC) {
+            //},
+            //replaceChild: function (existingUiC, newUiC) {
+            //},
+            //removeChild: function (uiControl) {
+            //    return this._removeChild(uiControl);//, this._containerChilds, this._containerDom);
+            //},
             //clearContents: function () {
             //    throw new SmartJs.Error.NotImplementedException();//TODO: remove, delete, dispose all?
             //},
@@ -729,97 +729,41 @@ SmartJs.Ui.merge({
 
         return ContainerControl;
     })(),
-/*
-    Viewport: (function () {
-        Viewport.extends(SmartJs.Ui.ContainerControl, false);
 
-        function Viewport() {//propObject) {
-            SmartJs.Ui.ContainerControl.call(this, 'div', { style: { height: '100%', width: '100%', } });
+    Viewport: (function () {
+        Viewport.extends(SmartJs.Ui.Control, false);
+
+        function Viewport(propObject) {
+            SmartJs.Ui.Control.call(this, 'div', { style: { height: '100%', width: '100%', }, }.merge(propObject));
 
             this._window = SmartJs.Ui.Window;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);
-            ////var onResizeHandler = function () { };
-            //if (window.orientationchange)
-            //    this._resizeHandlerReference = this._addDomListener(window, 'orientationchange', this.verifyResize);
-            //else
-            //    this._resizeHandlerReference = this._addDomListener(window, 'resize', this.verifyResize);
-            ////TODO: close, refresh: dispose
         }
 
-        Object.defineProperties(Viewport.prototype, {
-            domElement: {
-                get: function () { return this._dom; },
-                //enumerable: false,
-                //configurable: true,
-            },
-        });
+        //Object.defineProperties(Viewport.prototype, {
+        //    //domElement: {
+        //    //    get: function () { return this._dom; },
+        //    //    //enumerable: false,
+        //    //    //configurable: true,
+        //    //},
+        //});
 
         Viewport.prototype.merge({
-            //addToDom: function (dom) {
-            //    id(dom !== undefined && !(dom instanceof HTMLElement))
-
-            //    var dom = dom || document;
-            //    dom.appendChild(this._dom);
-            //},
+            addToDom: function (dom) {
+                if (dom !== undefined && !(dom instanceof HTMLElement))
+                    throw new Error('invalid argument: dom: expectet type HTMLElement');
+                var dom = dom || document;
+                dom.appendChild(this._dom);
+            },
             dispose: function () {
                 this._window.onResize.removeEventListener(this._resizeListener);
-                //this._removeDomListener(this, 'orientationchange', this._resizeHandlerReference);
-                //this._removeDomListener(this, 'resize', this._resizeHandlerReference);
-
                 SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
             },
         });
 
         return Viewport;
     })(),
-    */
 
 });
 
-
-SmartJs.Ui.merge({
-    Viewport: (function () {
-        Viewport.extends(SmartJs.Ui.ContainerControl, false);
-
-        function Viewport() {//propObject) {
-            SmartJs.Ui.ContainerControl.call(this, { style: { height: "100%", width: "100%" } });
-
-            this._window = SmartJs.Ui.Window;
-            this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
-            this._window.onResize.addEventListener(this._resizeListener);
-            ////var onResizeHandler = function () { };
-            //if (window.orientationchange)
-            //    this._resizeHandlerReference = this._addDomListener(window, 'orientationchange', this.verifyResize);
-            //else
-            //    this._resizeHandlerReference = this._addDomListener(window, 'resize', this.verifyResize);
-            ////TODO: close, refresh: dispose
-        }
-
-        Object.defineProperties(Viewport.prototype, {
-            domElement: {
-                get: function () { return this._dom; },
-                //enumerable: false,
-                //configurable: true,
-            },
-        });
-
-        Viewport.prototype.merge({
-            //addToDom: function (dom) {
-            //    id(dom !== undefined && !(dom instanceof HTMLElement))
-
-            //    var dom = dom || document;
-            //    dom.appendChild(this._dom);
-            //},
-            dispose: function () {
-                this._window.onResize.removeEventListener(this._resizeListener);
-                //this._removeDomListener(this, 'orientationchange', this._resizeHandlerReference);
-                //this._removeDomListener(this, 'resize', this._resizeHandlerReference);
-
-                SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
-            },
-        });
-
-        return Viewport;
-    })(),
-});
