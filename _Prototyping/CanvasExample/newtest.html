@@ -5,7 +5,7 @@
     <title>Canvas Test</title>
 
     <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
-    <script src="../../Client/pocketCode/libs/fabric/fabric-1.4.0.js" ></script>
+    <script src="../../Client/pocketCode/libs/fabric/fabric-1.6.0-rc.1.js"></script>
 
     <script src="../../Client/smartJs/sj.js"></script>
     <script src="../../Client/smartJs/sj-core.js"></script>
@@ -26,7 +26,7 @@
     <script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/renderingImage.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script>
 
     <!-- components -->
@@ -40,9 +40,85 @@
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/sprite.js" data-cover></script>
     <script src="../../Client/PocketCodePlayer/controller/canvasController.js"></script>
-    <script src="../../Client/pocketCode/scripts/uiControls/playerViewport.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerViewport.js"></script>
     <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet">
 
+    <script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+
+    <script type="text/javascript">
+    //var c;
+    //var ge = new PocketCode.GameEngine();
+    //function populateSprites(id, name, x, y, scale, imgElement, visible, bright, transp, angle) {
+    //    var sprite = new PocketCode.Sprite(ge, { id: "newId", name: "myName" });
+
+    //    sprite.id = id;
+    //    sprite.name = name;
+    //    //sprite.layer = layer;
+    //    sprite.setPositionX(x);
+    //    sprite.setPositionY(y);
+    //    sprite.setSize(scale);
+    //    sprite.looks = imgElement;
+    //    sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, transp);
+    //    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, bright);
+    //    sprite.setDirection(angle);
+    //    if (visible)
+    //        sprite.show();
+    //    else
+    //        sprite.hide();
+
+    //    return sprite;
+
+    //}
+
+    ////create 5 sprites
+    //var sprites = [];
+    //var looks2 = [];
+
+    //var onLoad = function () {
+    //    for (var i = 0; i < 5; i++) {
+    //        sprites.push(populateSprites(i, 'tree', 50 * i, 50 * i, 1, looks, true, i * 60, 0, 90));
+    //    }
+    //    var currentLook2 = new Image();
+    //    currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
+    //    currentLook2.src = "_resources/minion.jpg";
+    //    looks2[0] = currentLook2;
+    //};
+    //var _testhandler = function(e) {
+    //    console.log(e.id);
+    //    window.alert('Clicked ' + e.id);
+    //};
+
+    //var onLoad2 = function() {
+    //    sprites.push(populateSprites(6, 'minion', 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
+    //    // var ge = new PocketCode.GameEngine();
+    //    var vp = new SmartJs.Ui.Viewport();
+    //    document.body.appendChild(vp._dom);
+
+    //    c = new PocketCode.CanvasController(ge);
+    //    //c.init(sprites);
+    //    c.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(_testhandler, this));
+    //    //console.log(document);
+    //    //document.body.appendChild(c._view._dom);
+    //    vp.appendChild(c._view);
+    //};
+
+    //var currentLook = new Image();
+    //currentLook.addEventListener("load", onLoad);  //added handler to run tests when image completed loading
+    //currentLook.src = "_resources/tree-transparent.png";
+    //var looks = [];
+    //looks[0] = currentLook;
+
+        window.onload = function () {
+            //var test = new fabric.Canvas('c');
+        //do some testing with new canvas control
+            var c = new PocketCode.Ui.Canvas();
+            document.body.appendChild(c._dom);
+            c.height = 123;
+            c.width = 234;
+            alert(c.height + ', ' + c.width);
+        var breakpoint = true;  //for testing only
+    };
+    </script>
 </head>
 <body style="background-color: lightgray">
 <div style="background-color:#00aaaa">
@@ -51,70 +127,7 @@
     <input value="Toggle Axes" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=c.toggleAxes();>
     <input value="Download" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(1));>
     <input value="Download x2" type="button" style="width:80px;height:30px;border-radius: 0; border:0;" onclick=window.open(c.downloadCanvas(2));>
+    <!--canvas id="c"></canvas-->
 </div>
 </body>
-<script type="text/javascript">
-    var c;
-    var ge = new PocketCode.GameEngine();
-    function populateSprites(id, name, x, y, scale, imgElement, visible, bright, transp, angle) {
-        var sprite = new PocketCode.Sprite(ge, { id: "newId", name: "myName" });
-
-        sprite.id = id;
-        sprite.name = name;
-        //sprite.layer = layer;
-        sprite.setPositionX(x);
-        sprite.setPositionY(y);
-        sprite.setSize(scale);
-        sprite.looks = imgElement;
-        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, transp);
-        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, bright);
-        sprite.setDirection(angle);
-        if (visible)
-            sprite.show();
-        else
-            sprite.hide();
-
-        return sprite;
-
-    }
-
-    //create 5 sprites
-    var sprites = [];
-    var looks2 = [];
-
-    var onLoad = function () {
-        for (var i = 0; i < 5; i++) {
-            sprites.push(populateSprites(i, 'tree', 50 * i, 50 * i, 1, looks, true, i * 60, 0, 90));
-        }
-        var currentLook2 = new Image();
-        currentLook2.addEventListener("load", onLoad2);  //added handler to run tests when image completed loading
-        currentLook2.src = "_resources/minion.jpg";
-        looks2[0] = currentLook2;
-    };
-    var _testhandler = function(e) {
-        console.log(e.id);
-        window.alert('Clicked ' + e.id);
-    };
-
-    var onLoad2 = function() {
-        sprites.push(populateSprites(6, 'minion', 640/2, 920 /2, 1, looks2, true, 6 * 60, 0, 90));
-        // var ge = new PocketCode.GameEngine();
-        var vp = new SmartJs.Ui.Viewport();
-        document.body.appendChild(vp._dom);
-
-        c = new PocketCode.CanvasController(ge);
-        //c.init(sprites);
-        c.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(_testhandler, this));
-        //console.log(document);
-        //document.body.appendChild(c._view._dom);
-        vp.appendChild(c._view);
-    };
-
-    var currentLook = new Image();
-    currentLook.addEventListener("load", onLoad);  //added handler to run tests when image completed loading
-    currentLook.src = "_resources/tree-transparent.png";
-    var looks = [];
-    looks[0] = currentLook;
-
-</script>
 </html>
