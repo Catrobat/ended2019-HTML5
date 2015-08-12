@@ -7,7 +7,7 @@
  * @type {{}|*}
  */
 
-PocketCode.RenderingItem = fabric.util.createClass(fabric.Image, {
+PocketCode.Model.RenderingImage = fabric.util.createClass(fabric.Image, {
         type: 'sprite',
 
         initialize: function(element, options) {
