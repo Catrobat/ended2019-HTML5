@@ -184,7 +184,7 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
 });
 
 
-QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded uiControls)", function (assert) {
+QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
 

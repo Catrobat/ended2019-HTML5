@@ -709,7 +709,7 @@ SmartJs.Ui.merge({
         });
 
         ContainerControl.prototype.merge({
-            //adding and removing uiControls supported on container controls: make public
+            //adding and removing ui supported on container controls: make public
             appendChild: function (uiControl) {
                 return this._appendChild(uiControl);//, this._containerChilds, this._containerDom);
             },

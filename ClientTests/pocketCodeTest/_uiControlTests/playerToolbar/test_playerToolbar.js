@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../Client/pocketCode/scripts/uiControls/playerToolbar.js" />
+﻿/// <reference path="../../../../Client/pocketCode/scripts/ui/playerToolbar.js" />
 'use strict';
 
 window.onload = function () {
