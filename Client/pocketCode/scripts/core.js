@@ -45,10 +45,32 @@ PocketCode.merge({
             json: function () {
                 if (JSON && typeof JSON.parse === 'function')
                     return true;
-                else {
-                    _result = _full = false;
-                    return false;
-                }
+
+                _result = _full = false;
+                return false;
+            }(),
+            direction: function () {
+                var tbl = document.createElement('div');
+                tbl.style.merge({ display: 'table' });
+                var left = document.createElement('div');
+                left.style.merge({ height: '10px', width: '10px', display: 'table-cell' });
+                var right = document.createElement('div');
+                right.style.merge({ height: '10px', width: '10px', display: 'table-cell' });
+                tbl.appendChild(left);
+                tbl.appendChild(right);
+                document.body.appendChild(tbl);
+                var xl = left.getBoundingClientRect().left;
+                var xr = right.getBoundingClientRect().left;
+                tbl.style.direction = 'RTL';
+                var xl_ = left.getBoundingClientRect().left;
+                var xr_ = right.getBoundingClientRect().left;
+                document.body.removeChild(tbl);
+
+                if (xr === xl_ && xl === xr_)
+                    return true;
+
+                _result = _full = false;
+                return false;
             }(),
             //sound: function () {  //TODO: check sound support
             //    if (!createjs.Sound.initializeDefaultPlugins()) {
