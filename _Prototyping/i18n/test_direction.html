@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../Client/pocketCode/libs/fabric/fabric-1.5.0.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/renderingImage.js"></script>
+    <script type="text/javascript">
+
+        window.onload = function () {
+            var comp = PocketCode.isPlayerCompatible();
+            //var breakpoint = true;
+            document.body.innerHTML = 'direction supported: ' + comp.tests.direction;
+
+            //test fabricJs
+            var img = new fabric.Image();
+            var breakpoint = true;
+
+            var customImg = new PocketCode.Model.RenderingImage();
+            breakpoint = true;
+        };
+    </script>
+</head>
+<body>
+</body>
+</html>
