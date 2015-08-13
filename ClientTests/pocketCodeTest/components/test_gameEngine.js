@@ -232,7 +232,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
 
     var sprite1 = new PocketCode.Sprite(gameEngine, { id: "newId", name: "myName" });
-    sprite1.id = "spriteId1";
+    sprite1._id = "spriteId1";
     //sprite1.name = "spriteName1";
     gameEngine._sprites.push(sprite1);
     assert.equal(gameEngine.getSpriteById("spriteId1"), sprite1, "Correct sprite returned by getSprite");

@@ -276,7 +276,7 @@ QUnit.test("PointToBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
     var spriteId = "spriteId";
-    sprite.id = spriteId;
+    sprite._id = spriteId;
     program._sprites.push(sprite);
 
 

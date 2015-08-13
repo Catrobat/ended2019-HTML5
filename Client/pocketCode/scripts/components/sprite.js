@@ -139,6 +139,12 @@ PocketCode.Sprite = (function () {
                 };
             },
         },
+        id: {
+            get: function () {
+                return this._id;
+            },
+        },
+
         //motion
         positionX: {
             get: function () {
