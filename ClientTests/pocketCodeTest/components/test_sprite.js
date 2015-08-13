@@ -459,7 +459,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setLook("second");
     assert.ok(sprite._currentLook.name == "look2", "set current look with id");
     assert.ok(returnVal, "set look: change (return value)");
-    assert.ok(lastOnChangeArgs.look !== undefined, "set look event args");
+    assert.ok(lastOnChangeArgs.lookId !== undefined, "set look event args");
     assert.throws(function () { sprite.setLook("non existing"); }, "ERROR: try to set undefined look");
 
     sprite.looks = [];
@@ -471,7 +471,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look1", "next look");
     assert.ok(returnVal, "first look is set after last");
-    assert.ok(lastOnChangeArgs.look !== undefined, "next look event args");
+    assert.ok(lastOnChangeArgs.lookId !== undefined, "next look event args");
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
     assert.ok(returnVal, "next look is set correctly");

@@ -144,7 +144,7 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.onProgramExecuted.removeEventListener(onExecListener);
 
     //layers
-    var layers = gameEngine.layerObjectList;
+    var layers = [gameEngine._background].concat(gameEngine._sprites);//layerObjectList;
     assert.equal(layers[0], gameEngine._background, "Background in correct position in layer list");
     var spriteOrderCorrect = true;
     for (var i = 0, l = gameEngine._sprites.length; i < l; i++) {

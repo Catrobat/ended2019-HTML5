@@ -17,7 +17,7 @@ PocketCode.GameEngine = (function () {
         this._minLoopCycleTime = 25; //ms        //TODO:
         this._assetsLoaded = false;
         this._spritesLoaded = false;
-        this.assetSize = 0 ;
+        this.assetSize = 0;
         this.assetLoadingProgress = 0;
         this.projectReady = false;
 
@@ -56,9 +56,12 @@ PocketCode.GameEngine = (function () {
 
     //properties
     Object.defineProperties(GameEngine.prototype, {
-        layerObjectList: {
+        spritesProperties: {//List: {
             get: function () {
-                return [this._background].concat(this._sprites);
+                var props = [this._background.properties];
+                for (var i = 0, l = this._sprites.length; i < l; i++)
+                    props.push(this._sprites[i].properties);
+                return props;
             }
         },
         //background: {     //currently not in use- we're keeping them anyway
@@ -72,7 +75,7 @@ PocketCode.GameEngine = (function () {
         //    },
         //},
         images: {   //public getter required for rendering //TODO??
-            get: function() {
+            get: function () {
                 return this.__images;
             }
         },
@@ -170,7 +173,7 @@ PocketCode.GameEngine = (function () {
 
             //asset sizes
             var soundSize = 0;
-            for(i = 0, l = jsonProject.sounds.length; i < l; i++){
+            for (i = 0, l = jsonProject.sounds.length; i < l; i++) {
                 soundSize += jsonProject.sounds[i].size;
             }
 
@@ -209,7 +212,7 @@ PocketCode.GameEngine = (function () {
             this._background = this._spriteFactory.create(jsonProject.background);//new PocketCode.Sprite(this, jsonProject.background);
 
             var sp = jsonProject.sprites;
-            var sprite, i,l;
+            var sprite, i, l;
             for (i = 0, l = sp.length; i < l; i++) {
                 sprite = this._spriteFactory.create(sp[i]);
                 sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
@@ -225,14 +228,14 @@ PocketCode.GameEngine = (function () {
                 var image = img[i];
                 image.imageObject = new Image();
                 image.imageObject.size = image.size;    //TODO: size is not an existing property and may not be supprted
-                image.imageObject.onload = function(e){
+                image.imageObject.onload = function (e) {
                     e.size = e.target.size;
                     self._assetProgressChangeHandler(e);
                 };
                 image.imageObject.onerror = this._imageLoadingErrorHandler;
 
                 image.imageObject.src = img[i].url;     //TODO: if you load all images simultaneously the progress will not continously increase
-                                                        //does this work without adding them to the DOM in all browsers?
+                //does this work without adding them to the DOM in all browsers?
                 images.push(image);
             }
             this._images = images;
@@ -244,7 +247,7 @@ PocketCode.GameEngine = (function () {
 
             //this._projectLoaded = true;
         },
-        _imageLoadingErrorHandler:function(e){
+        _imageLoadingErrorHandler: function (e) {
             throw new Error("No image found at " + e.target.src);
         },
         _soundManagerOnLoadingErrorHandler: function (e) {
@@ -260,20 +263,20 @@ PocketCode.GameEngine = (function () {
             }
         },
         _assetProgressChangeHandler: function (e) {
-            if(!e.size || !this.assetSize){
+            if (!e.size || !this.assetSize) {
                 return;
             }
 
             this.assetLoadingProgress += e.size;
-            var percentage =  (this.assetLoadingProgress/ this.assetSize) * 100;
+            var percentage = (this.assetLoadingProgress / this.assetSize) * 100;
 
             //console.log(percentage + "% loaded (+ "+(e.size / this.assetSize) * 100+"%)");
 
-            if(percentage === 100){
+            if (percentage === 100) {
                 this._assetsLoaded = true;
             }
-            if(this._assetsLoaded && this._spritesLoaded){
-            //if(percentage === 100 && this._spritesLoaded){
+            if (this._assetsLoaded && this._spritesLoaded) {
+                //if(percentage === 100 && this._spritesLoaded){
                 this.projectReady = true;
             }
             this._onLoadingProgress.dispatchEvent({ progress: percentage });
@@ -282,7 +285,7 @@ PocketCode.GameEngine = (function () {
         runProject: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
-            if (!this.projectReady){
+            if (!this.projectReady) {
                 throw new Error('no project loaded');
             }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
@@ -354,8 +357,7 @@ PocketCode.GameEngine = (function () {
         getSpriteById: function (spriteId) {
             //var sprite = this._sprites.filter(function (sprite) { return sprite.id === spriteId; })[0];   //a loop is faster than a filter (>55% slower) especially when searching for 1 element only
             var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++)
-            {
+            for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
                     return sprites[i];
             }
@@ -364,10 +366,12 @@ PocketCode.GameEngine = (function () {
         },
 
         getSpriteLayer: function (sprite) { //including background (usind in formulas)
-            var idx = this.layerObjectList.indexOf(sprite);
+            if (sprite === this._background)
+                return 0;
+            var idx = this._sprites.indexOf(sprite);
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
-            return idx;
+            return idx + 1;
         },
 
         setSpriteLayerBack: function (sprite, layers) {

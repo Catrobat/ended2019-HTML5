@@ -123,6 +123,21 @@ PocketCode.Sprite = (function () {
     }
 
     Object.defineProperties(Sprite.prototype, {
+        properties: {   //all rendering propeties as object
+            get: function () {
+                return {
+                    positionX: this._positionX,
+                    positionY: this._positionY,
+                    direction: this._direction,
+                    rotationStyle: this._rotationStyle,
+                    lookId: this._currentLook.id,
+                    size: this._size,
+                    visible: this._visible,
+                    transparency: this._transparency,
+                    brightness: this._brightness,
+                };
+            },
+        },
         //motion
         positionX: {
             get: function () {
@@ -339,7 +354,7 @@ PocketCode.Sprite = (function () {
             for (var i = 0, l = propertyArray.length; i < l; i++) {
                 properties.merge(propertyArray[i]);
             }
-            this._onChange.dispatchEvent({ id: this.id, rotationStyle: this.rotationStyle, properties: properties }, this);
+            this._onChange.dispatchEvent({ id: this.id, properties: properties }, this);
         },
 
         //motion: position
@@ -570,7 +585,7 @@ PocketCode.Sprite = (function () {
                 look = looks[i];
                 if (look.id === lookId) {
                     this._currentLook = look;
-                    this._triggerOnChange([{ look: look }]);
+                    this._triggerOnChange([{ lookId: lookId }]);
                     return true;
                 }
             }
@@ -602,7 +617,7 @@ PocketCode.Sprite = (function () {
                     break;
                 }
             }
-            this._triggerOnChange([{ look: this._currentLook }]);
+            this._triggerOnChange([{ lookId: this._currentLook.id }]);
             return true;
         },
         /**
