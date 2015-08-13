@@ -128,6 +128,63 @@
 		}
 
 
+/* page */
+.pc-page {
+	height: 100%;
+	position: absolute;
+	font-size: 10px;
+}
+.pc-page, .pc-pageHeader, .pc-pageBody, .pc-pageFooter {
+	width: 100%;
+}
+
+.pc-pageHeader {
+	height: 4.8em;
+	border-bottom: solid 1px #a9dcf1;   /*TODO*/
+	background-color: #17a5b8;
+	display: table;
+	border-spacing: 0;
+}
+/*	.pc-pageHeader div {
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	.pc-pageHeader .pc-icon {
+		width: 4.8em;
+		min-width: 4.8em;
+	}
+	.pc-pageHeader .pc-icon img {
+
+	}
+
+	.pc-pageHeader .pc-caption {
+		//TODO: the caption div max-width has to be set using script to enable the text overflow settings/
+		font-size: 3em;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+*/
+	.pc-pageHeader .pc-menuButton {
+		width: 4.8em;
+		min-width: 4.8em;
+	}
+
+.pc-pageBody {
+
+}
+
+.pc-pageFooter {
+	height: 4.8em;
+	border-top: solid 1px #a9dcf1;   /*TODO*/
+	background-color: #17a5b8;
+	position: absolute;
+	bottom: 0;
+	display: table;
+}
+
+
 /* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
 	margin: 0;
