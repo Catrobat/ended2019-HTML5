@@ -245,9 +245,9 @@ QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (a
     assert.equal(root._childs[2], button2, "move: insert on correct position");
     assert.equal(root._childs[1], img, "move: item (after) moved to next position");
 
-    root._insertAtIndex(button, root._childs.length);
+    root._insertAt(root._childs.length, button);
     assert.equal(root._childs[root._childs.length - 1], button, "move: item moved to end- index calculated correctly");
-    root._insertAtIndex(button, 0);
+    root._insertAt(0, button);
     assert.equal(root._childs[0], button, "move: item moved to first- index calculated correctly");
 
     root._insertBefore(button2, button);
@@ -269,8 +269,8 @@ QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (a
     jkl._appendChild(asd);
     assert.ok(asd._parent === jkl, "moved correctly: removed from DOM even there was no parent defined");
 
-    assert.throws(function () { root._insertAtIndex(button2, root._childs.length + 1); }, Error, "ERROR: wrong index");
-    assert.throws(function () { root._insertAtIndex(23, root._childs.length); }, Error, "ERROR: type error");
+    assert.throws(function () { root._insertAt(root._childs.length + 1, button2); }, Error, "ERROR: wrong index");
+    assert.throws(function () { root._insertAt(root._childs.length, 23); }, Error, "ERROR: type error");
     assert.throws(function () { root._insertBefore(button2, 23); }, Error, "ERROR: reference item not found");
 
     button2._appendChild(button);   //button2 idx=0

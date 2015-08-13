@@ -522,7 +522,7 @@ SmartJs.Ui.merge({
                 this.__addClassName(classString, newClass);
                 this.verifyResize(this);
             },
-            _insertAtIndex: function (uiControl, idx) {
+            _insertAt: function (idx, uiControl) {
                 if (uiControl._disposed)
                     throw new Error('object disposed');
                 if (!(uiControl instanceof SmartJs.Ui.Control) && !(uiControl instanceof SmartJs.Ui.TextNode))
@@ -566,7 +566,7 @@ SmartJs.Ui.merge({
                 this.onLayoutChange.dispatchEvent({}, uiControl);
             },
             _appendChild: function (uiControl) {
-                this._insertAtIndex(uiControl, this._childs.length);
+                this._insertAt(this._childs.length, uiControl);
             },
             _insertBefore: function (newUiC, existingUiC) {
                 if (!(newUiC instanceof SmartJs.Ui.Control) && !(existingUiC instanceof SmartJs.Ui.Control))
@@ -576,7 +576,7 @@ SmartJs.Ui.merge({
                 if (idx === -1)
                     throw new Error('reference control could not be found');
 
-                this._insertAtIndex(newUiC, idx);
+                this._insertAt(idx, newUiC);
             },
             _insertAfter: function (newUiC, existingUiC) {
                 if (!(newUiC instanceof SmartJs.Ui.Control) && !(newUiC instanceof SmartJs.Ui.TextNode) ||
@@ -587,7 +587,7 @@ SmartJs.Ui.merge({
                 if (idx === -1)
                     throw new Error('reference control could not be found');
 
-                this._insertAtIndex(newUiC, idx + 1);
+                this._insertAt(idx + 1, newUiC);
             },
             _replaceChild: function (newUiC, existingUiC) {
                 if (!(newUiC instanceof SmartJs.Ui.Control) && !(newUiC instanceof SmartJs.Ui.TextNode) ||
@@ -600,10 +600,10 @@ SmartJs.Ui.merge({
 
                 this._removeChild(existingUiC, true);
                 try {
-                    this._insertAtIndex(newUiC, idx + 1);
+                    this._insertAt(idx + 1, newUiC);
                 }
                 catch (e) {
-                    this._insertAtIndex(existingUiC, idx);  //no changes on error
+                    this._insertAt(idx, existingUiC);  //no changes on error
                     throw e;
                 }
             },

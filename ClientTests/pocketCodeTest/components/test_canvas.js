@@ -74,7 +74,7 @@ QUnit.test("CanvasController", function (assert) {
 		//controller.addSprite(populateSprite(gme,5, 'tree', 2, 200, 400, 100, looks, true, 100, 0, 90));
 /*
 		var sprites = controller.view.fabricCanvas.getObjects();
-		// TODO  insertAtIndex assert.ok(sprites.indexOf(controller._getSpriteOnCanvas(5)) == 2 && sprites.indexOf(controller._getSpriteOnCanvas(3)) == 4 && sprites.indexOf(controller._getSpriteOnCanvas(2)) == 3 && sprites.indexOf(controller._getSpriteOnCanvas(1)) == 1 && controller._canvas.getObjects().length == 6, "insert sprite at layer in use (move other sprites one layer to front)");
+		// TODO  insertAt assert.ok(sprites.indexOf(controller._getSpriteOnCanvas(5)) == 2 && sprites.indexOf(controller._getSpriteOnCanvas(3)) == 4 && sprites.indexOf(controller._getSpriteOnCanvas(2)) == 3 && sprites.indexOf(controller._getSpriteOnCanvas(1)) == 1 && controller._canvas.getObjects().length == 6, "insert sprite at layer in use (move other sprites one layer to front)");
 
 		// move sprite with id 5 to position 300, 400
 		controller.renderSpriteChange({ id: 5, changes: [{ property: '_positionX', value: 300 }, { property: '_positionY', value: 400 }] });
