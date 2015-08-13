@@ -35,7 +35,7 @@ PocketCode.Ui.merge({
 
         function PlayerToolbar(settings) {
             if (!settings || !settings.orientation)
-                throw new Error('invalid argument: cntr settings');
+                throw new Error('invalid argument: constructor settings');
             this._settings = settings;
 
             PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() + ' pc-overlay' });

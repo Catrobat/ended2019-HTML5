@@ -1,4 +1,6 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../smartJs/sj-core.js" />
+/// <reference path="../../smartJs/sj-ui.js" />
 'use strict';
 
 /**
@@ -64,6 +66,41 @@ PocketCode.Ui.merge({
     },
 
     /* this is a placeholder and used in the future to support/implement business logic and events like: onInternationalizationChange */
+    I18nTextNode: (function () {
+        I18nTextNode.extends(SmartJs.Ui.TextNode, false);
+
+        //cntr
+        function I18nTextNode(text) {
+            SmartJs.Ui.TextNode.call(this, text);
+
+            this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+        }
+
+        ////properties
+        //Object.defineProperties(I18nTextNode.prototype, {
+
+        //});
+
+        ////events
+        //Object.defineProperties(I18nTextNode.prototype, {
+
+        //});
+
+        //methods
+        I18nTextNode.prototype.merge({
+            _updateUiStrings: function () {
+                //TODO: override this in the individual controls
+            },
+            dispose: function () {
+                PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
+                SmartJs.Ui.TextNode.prototype.dispose(this);
+            }
+        });
+
+        return I18nTextNode;
+    })(),
+
     I18nControl: (function () {
         I18nControl.extends(SmartJs.Ui.Control, false);
 
@@ -145,31 +182,5 @@ PocketCode.Ui.merge({
         return Viewport;
     })(),
 
-    PageView: (function () {
-        PageView.extends(PocketCode.Mvc.CoreView, false);
-
-        //cntr
-        function PageView(element, propObject) {
-            PocketCode.Mvc.CoreView.call(this, element, propObject);
-
-        }
-
-        //properties
-        Object.defineProperties(PageView.prototype, {
-
-        });
-
-        //events
-        Object.defineProperties(PageView.prototype, {
-
-        });
-
-        //methods
-        PageView.prototype.merge({
-
-        });
-
-        return PageView;
-    })(),
 });
 
