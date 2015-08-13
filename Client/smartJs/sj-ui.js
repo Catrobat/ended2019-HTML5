@@ -271,6 +271,8 @@ SmartJs.Ui.merge({
             },
             rendered: {
                 get: function () {
+                    if (!document.body)
+                        return false;
                     //return (node === document.body) ? false : document.body.contains(node);
                     //if (this._dom)
                     return document.body.contains(this._dom);
@@ -624,7 +626,7 @@ SmartJs.Ui.merge({
                 if (style.display === 'none')
                     return;
 
-                this._styleBeforeHide = style;
+                this._styleBeforeHide = style.display;
                 style.display = 'none';
                 if (this._parent)
                     this._parent.onLayoutChange.dispatchEvent({}, this);
@@ -672,7 +674,7 @@ SmartJs.Ui.merge({
 
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
-            this._containerDom = this._dom; //TODO: override this property to ensure child elements are added inside the container tag and not inside the _dom tag
+            this._container = this; //TODO: override this property to ensure child elements are added inside the container tag and not inside the _dom tag
             //a container ui control can consist of more than one html element
             //TODO: set this._innerDom
             //this._containerChilds = [];
@@ -711,7 +713,7 @@ SmartJs.Ui.merge({
         ContainerControl.prototype.merge({
             //adding and removing uiControls supported on container controls: make public
             appendChild: function (uiControl) {
-                return this._containerDom._appendChild(uiControl);//, this._containerChilds, this._containerDom);
+                return this._container._appendChild(uiControl);//, this._containerChilds, this._containerDom);
             },
             //insertBefore: function (existingUiC, newUiC) {
             //},
