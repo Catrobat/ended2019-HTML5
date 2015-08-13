@@ -5,17 +5,12 @@
     <title>PocketCode Framework Unit Tests</title>
     <link href="../qunit/qunit-1.18.0.css" rel="stylesheet" />
     <script src="../qunit/qunit-1.18.0.js"></script>
-    <!--script src="../qunit/jquery-2.1.1.min.js"></script-->
-
     <script src="../qunit/blanket-1.1.5.min.js"></script>
-
+    <!-- libs -->
     <script src="../../Client/pocketCode/libs/soundjs/soundjs-NEXT.min.js"></script>
-    <!--script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.min.js"></script>-->
-    <!--script src="../../Client/pocketCode/libs/fabric/fabric-1.5.0.js"></script>-->
-    <!--script src="../../Client/pocketCode/libs/fabric/fabric-1.5.0.min.js"></script-->
-    <script src="../../Client/pocketCode/libs/fabric/fabric-1.4.0.js" ></script>
+    <script src="../../Client/pocketCode/libs/fabric/fabric-1.6.0-rc.1.js"></script>
 
-
+    <!-- smart js -->
     <script src="../../Client/smartJs/sj.js"></script>
     <script src="../../Client/smartJs/sj-core.js"></script>
     <script src="../../Client/smartJs/sj-event.js"></script>
@@ -23,14 +18,16 @@
     <script src="../../Client/smartJs/sj-animation.js"></script>
     <script src="../../Client/smartJs/sj-communication.js"></script>
     <script src="../../Client/smartJs/sj-ui.js"></script>
-    <script src="../../Client/smartJs/sj-error.js"></script>
+    <!--script src="../../Client/smartJs/sj-error.js"></script-->
 
-
+    <!-- test data -->
     <script src="_resources/testDataFormula.js"></script>
     <script src="_resources/testDataProjects.js"></script>
 
+    <!-- pocketcode core -->
     <script src="../../Client/pocketCode/scripts/core.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/ui.js" data-cover></script>
+
     <!-- model -->
     <script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksControl.js" data-cover></script>
@@ -39,7 +36,7 @@
     <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/bricksList.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/model/renderingItem.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/renderingImage.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script>
 
     <!-- components -->
@@ -51,12 +48,23 @@
     <script src="../../Client/pocketCode/scripts/components/parser.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/userVariableHost.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/sprite.js" data-cover></script>
-
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/mvc.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/ui/playerViewport.js" data-cover></script>
-    <script src="../../Client/PocketCodePlayer/controller/canvasController.js" data-cover></script>
 
+    <script src="../../Client/pocketCode/scripts/controller/controllerCore.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/controller/programViewportController.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/controller/playerPageController.js" data-cover></script>
+
+    <!-- ui -->
+    <script src="../../Client/pocketCode/scripts/ui/button.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/dialog.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerStartScreen.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerToolbar.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/popupWindow.js"></script>
+
+    <script src="../../Client/pocketCode/scripts/view/pageView.js" data-cover></script>
+    <script src="../../Client/PocketCode/scripts/view/programViewportView.js" data-cover></script>
+    <script src="../../Client/PocketCode/scripts/view/playerPageView.js" data-cover></script>
 </head>
 <body>
     <div id="qunit"></div>
@@ -82,8 +90,8 @@
     <script src="components/test_parser.js"></script>
     <script src="components/test_userVariableHost.js"></script>
     <script src="components/test_sprite.js"></script>
-    <script src="components/test_canvas.js"></script>
+    <!--script src="components/test_canvas.js"></script-->
     <script src="components/test_gameEngine.js"></script>
-    <script src="components/test_mvc.js"></script>
+    <!--script src="components/test_mvc.js"></script-->
 </body>
 </html>

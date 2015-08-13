@@ -350,7 +350,7 @@ QUnit.test("GameEngine", function (assert) {
         if (gameEngine.__images[testProject.images[i].id] !== testProject.images[i]) {
             imagesMatch = false;
         }
-        console.log();
+        //console.log();    -> there shouldn't be a log when pushed
         if(gameEngine.__images[testProject.images[i].id].size !== testProject.images[i].size || testProject.images[i].imageObject.getAttribute("src") !== gameEngine.__images[testProject.images[i].id].url){
             imageObjectsCreatedCorrectly = false;
         }

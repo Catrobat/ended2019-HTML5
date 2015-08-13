@@ -255,15 +255,15 @@ PocketCode.Web = {
 		}
 
 		WebOverlay.prototype = {
-		    _addDomListener: function (target, eventName, eventHandler) {
-		        var handler = eventHandler.bind(this);
-		        target.addEventListener(eventName, handler, false);
-		        return handler;
-		    },
-		    _removeDomListener: function (target, eventName, eventHandler) {
-		        target.removeEventListener(eventName, eventHandler, false);
-		    },
-		    _onResizeHandler: function (e) {
+			_addDomListener: function (target, eventName, eventHandler) {
+				var handler = eventHandler.bind(this);
+				target.addEventListener(eventName, handler, false);
+				return handler;
+			},
+			_removeDomListener: function (target, eventName, eventHandler) {
+				target.removeEventListener(eventName, eventHandler, false);
+			},
+			_onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
@@ -296,13 +296,13 @@ PocketCode.Web = {
 				this.viewportContainer.appendChild(splashScreen._dom);
 			},
 			show: function () {
-			    this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
-			    this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
-			    this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
-			    this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
-			    this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
+				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
+				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
+				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
 
-			    var fapi = PocketCode.Web.FullscreenApi;
+				var fapi = PocketCode.Web.FullscreenApi;
 				if (fapi.supported && !fapi.isBrowserFullscreen())
 					this.fullscreenButton.disabled = false;
 				else
@@ -320,13 +320,13 @@ PocketCode.Web = {
 					this._splashScreen.show();  //init size
 			},
 			_hide: function () {
-			    this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-			    this._removeDomListener(document, 'touchend', this._touchEndHandler);
-			    this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
-			    this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
-			    this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+				this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
+				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 
-			    document.body.removeChild(this._dom);
+				document.body.removeChild(this._dom);
 				if (this._splashScreen)
 					this._splashScreen.hide();
 				PocketCode.Web.FullscreenApi.unbindF11();
@@ -472,15 +472,15 @@ PocketCode.Web = {
 		}
 
 		SplashScreen.prototype = {
-		    _addDomListener: function (target, eventName, eventHandler) {
-		        var handler = eventHandler.bind(this);
-		        target.addEventListener(eventName, handler, false);
-		        return handler;
-		    },
-		    _removeDomListener: function (target, eventName, eventHandler) {
-		        target.removeEventListener(eventName, eventHandler, false);
-		    },
-		    _onResizeHandler: function (e) {
+			_addDomListener: function (target, eventName, eventHandler) {
+				var handler = eventHandler.bind(this);
+				target.addEventListener(eventName, handler, false);
+				return handler;
+			},
+			_removeDomListener: function (target, eventName, eventHandler) {
+				target.removeEventListener(eventName, eventHandler, false);
+			},
+			_onResizeHandler: function (e) {
 				//font-size of 10px => 194px x 90px
 				var fs = Math.round(this._dom.offsetWidth * 0.6 / 19.4);
 				var fh = Math.round(window.innerHeight * 0.3 / 9.0);
@@ -489,25 +489,25 @@ PocketCode.Web = {
 				fs = (fs > 14) ? 14 : fs;
 				this._dom.style.fontSize = fs + 'px';
 			},
-		    show: function () {
-		        this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
-		        this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
-		        this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
-		        this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
-		        this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
+			show: function () {
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
+				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
+				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
+				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
 
-		        this._loadingIndicator.show();
+				this._loadingIndicator.show();
 				this._dom.style.display = '';
 				this._onResizeHandler();    //init size
 			},
-		    hide: function () {
-		        this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-		        this._removeDomListener(document, 'touchend', this._touchEndHandler);
-		        this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
-		        this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
-		        this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+			hide: function () {
+				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+				this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
+				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 
-		        this._dom.style.display = 'none';
+				this._dom.style.display = 'none';
 				this._loadingIndicator.hide();
 			},
 			showBorder: function () {
@@ -774,34 +774,50 @@ PocketCode.Web.resources = {
 		{ url: 'smartJs/sj-communication.js', type: 'js' },
 		{ url: 'smartJs/sj-ui.js', type: 'js' },
 
+		{ url: 'pocketCode/libs/soundjs/soundjs-NEXT.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/fabric/fabric-1.6.0-rc.1.js', type: 'js' },
+
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
-		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.0.min.js', type: 'js' },
-		{ url: 'pocketCode/libs/fabric/fabric-1.5.0.min.js', type: 'js' },
+
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksList.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksVariable.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/renderingImage.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 
-		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/device.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
-		//{ url: 'pocketCode/scripts/components/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/userVariableHost.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },    //make sure includes are in the right order (inheritance)
+		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/sprite.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/mvc.js', type: 'js' },
+
+		{ url: 'pocketCode/scripts/ui/button.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/popupWindow.js', type: 'js' },
+
+		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
+		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },
+		{ url: 'pocketCode/scripts/view/playerViewportView.js', type: 'js' },
+
+		{ url: 'pocketCode/scripts/controller/controllerCore.js', type: 'js' },
+		{ url: 'pocketCode/scripts/controller/playerPageController.js', type: 'js' },
+		{ url: 'pocketCode/scripts/controller/playerViewportController.js', type: 'js' },
 
 		//TODO: insert player scripts
-		{ url: 'PocketCodePlayer/controller/playerPageController.js', type: 'js' },
-		{ url: 'PocketCodePlayer/view/playerPageView.js', type: 'js' },
 		{ url: 'PocketCodePlayer/playerApplication.js', type: 'js' },
 	],
 };
