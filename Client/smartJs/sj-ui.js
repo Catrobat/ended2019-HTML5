@@ -674,36 +674,32 @@ SmartJs.Ui.merge({
 
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
-            this._container = this; //TODO: override this property to ensure child elements are added inside the container tag and not inside the _dom tag
-            //a container ui control can consist of more than one html element
-            //TODO: set this._innerDom
-            //this._containerChilds = [];
-
-            var _onResizeHandler = function () {
-                //while elements docked in a UiControl listen on the resize event of their uiControl,
-                //in a container the resize (dock) event of the parent is used for notification
-                return;
-                //TODO: check if container has changed before triggering an update on all included child objects
-
-                //var cc = this._containerChilds;
-                //for (var i = 0, l = cc.length; i < l; i++) {
-                //    cc[i].onLayoutChange.dispatchEvent({width: this.innerWidth, height: this.innerHeight}, this);
-                //}
-            };
-            this.onResize.addEventListener(new SmartJs.Event.EventListener(_onResizeHandler));
+            this.__container = this;   //the inner container gets stored here
+            //this._container = this; //override this property to ensure child elements are added inside the container tag and not inside the _dom tag
         }
 
         Object.defineProperties(ContainerControl.prototype, {
-            containerInnerHeight: {
-                value: function () {
-                    return this._innerHeight;//_containerDom.clientHeight;
+            _container: {
+                set: function (value) {
+                    if (!(value instanceof SmartJs.Ui.Control))
+                        throw new Error('invalid argument: inner container has to be of instance SmartJs.Ui.Control');
+                    this.__container = value;
                 },
-                //enumerable: true,
-                //configurable: true,
+                get: function () {
+                    return this.__container;    //needed to add to parent control in inherited classes
+                },
             },
-            containerInnerWidth: {
-                value: function () {
-                    return this._innerWidth;//_containerDom.clientWidth;
+            /* override */
+            _innerWidth: {
+                get: function () {
+                    if (!this.rendered || !this.__container)
+                        return 0;
+
+                    var _style = window.getComputedStyle(this.__container._dom);
+                    var width = this.__container._dom.clientWidth;
+                    width -= parseInt(_style.paddingLeft) || 0;
+                    width -= parseInt(_style.paddingRight) || 0;
+                    return width;
                 },
                 //enumerable: true,
                 //configurable: true,
@@ -711,22 +707,33 @@ SmartJs.Ui.merge({
         });
 
         ContainerControl.prototype.merge({
-            //adding and removing uiControls supported on container controls: make public
+            //mapping the methods to the inner container and provide public access
             appendChild: function (uiControl) {
-                return this._container._appendChild(uiControl);//, this._containerChilds, this._containerDom);
+                var cont = this.__container;
+                cont._insertAt(cont._childs.length, uiControl);
             },
-            //insertBefore: function (existingUiC, newUiC) {
-            //},
-            //insertAfter: function (existingUiC, newUiC) {
-            //},
-            //replaceChild: function (existingUiC, newUiC) {
-            //},
-            //removeChild: function (uiControl) {
-            //    return this._removeChild(uiControl);//, this._containerChilds, this._containerDom);
-            //},
-            //clearContents: function () {
-            //    throw new SmartJs.Error.NotImplementedException();//TODO: remove, delete, dispose all?
-            //},
+            insertBefore: function (existingUiC, newUiC) {
+                return this.__container._insertBefore(existingUiC, newUiC);
+            },
+            insertAfter: function (existingUiC, newUiC) {
+                return this.__container._insertAfter(existingUiC, newUiC);
+            },
+            replaceChild: function (existingUiC, newUiC) {
+                return this.__container._replaceChild(existingUiC, newUiC);
+            },
+            removeChild: function (uiControl) {
+                return this.__container._removeChild(uiControl);
+            },
+            removeAll: function() {
+                var cont = this.__container;
+                for (var i = 0, l = cont._childs.length; i < l; i++)
+                    cont.removeChild(cont._childs[i]);
+            },
+            clearContents: function () {    //remove and dispose
+                var cont = this.__container;
+                for (var i = 0, l = cont._childs.length; i < l; i++)
+                    cont._childs[i].dispose();
+            },
         });
 
         return ContainerControl;

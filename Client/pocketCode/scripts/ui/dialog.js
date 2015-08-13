@@ -18,11 +18,11 @@ PocketCode.Ui.DialogType = {
 };
 
 PocketCode.Ui.Dialog = (function () {
-    Dialog.extends(PocketCode.Ui.I18nControl, false);
+    Dialog.extends(SmartJs.Ui.ContainerControl, false);
 
     //cntr
     function Dialog(type, caption) {
-        PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-webOverlay' });
+        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay' });
 
         //settings
         this._minHeight = 200;
@@ -33,7 +33,8 @@ PocketCode.Ui.Dialog = (function () {
         this._captionTextNode = new SmartJs.Ui.TextNode();
         this._header.appendChild(this._captionTextNode);
 
-        this._body = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogBody' });
+        //define the body as inner container
+        this._container = new SmartJs.Ui.Control('div', { className: 'pc-dialogBody' });
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter dialogFooterSingleButton' });
 
         this._createLayout();
@@ -83,10 +84,10 @@ PocketCode.Ui.Dialog = (function () {
         },
         bodyInnerHTML: {
             get: function () {
-                return this._body._dom.innerHTML;
+                return this._container._dom.innerHTML;
             },
             set: function (value) {
-                this._body._dom.innerHTML += value;
+                this._container._dom.innerHTML += value;
                 this._resizeHandler();  //validate layout 
             },
         },
@@ -119,21 +120,20 @@ PocketCode.Ui.Dialog = (function () {
             col.className = 'pc-dialogCol';
             layoutRow.appendChild(col);
 
-            var dialog = document.createElement('div');
-            dialog.className = 'pc-dialog';
-            center.appendChild(dialog);
+            var dialog = new SmartJs.Ui.ContainerControl({className: 'pc-dialog'});
+            center.appendChild(dialog._dom);
 
-            dialog.appendChild(this._header._dom);
-            dialog.appendChild(this._body._dom);
-            dialog.appendChild(this._footer._dom);
+            dialog.appendChild(this._header);
+            dialog.appendChild(this._container);
+            dialog.appendChild(this._footer);
         },
         _resizeHandler: function (e) {
             var availableHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom);
             var minHeight = this._minHeight - (this._header.height + this._footer.height);
             if (availableHeight > minHeight)
-                this._body.style.maxHeight = availableHeight + 'px';
+                this._container.style.maxHeight = availableHeight + 'px';
             else
-                this._body.style.maxHeight = minHeight + 'px';
+                this._container.style.maxHeight = minHeight + 'px';
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))
