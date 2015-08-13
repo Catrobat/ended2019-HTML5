@@ -30,7 +30,7 @@ PocketCode.GameEngine = (function () {
 
         this._background = undefined;
         this._sprites = [];
-        this._images = [];
+        //this._images = [];    //there is a private accessor already
 
         this.resourceBaseUrl = "";
 
@@ -71,6 +71,11 @@ PocketCode.GameEngine = (function () {
         //        return this._sprites;
         //    },
         //},
+        images: {   //public getter required for rendering //TODO??
+            get: function() {
+                return this.__images;
+            }
+        },
         _images: {
             set: function (images) {
                 if (!(images instanceof Array))
@@ -179,7 +184,7 @@ PocketCode.GameEngine = (function () {
                 imageSize += jsonProject.images[i].size;
             }
             this.assetSize = imageSize + soundSize;
-            if(!this.assetSize){
+            if (!this.assetSize) {
                 this._assetsLoaded = true;
                 this.assetLoadingProgress = 100;
             }
@@ -219,14 +224,15 @@ PocketCode.GameEngine = (function () {
             for (i = 0, l = img.length; i < l; i++) {
                 var image = img[i];
                 image.imageObject = new Image();
-                image.imageObject.size = image.size;
+                image.imageObject.size = image.size;    //TODO: size is not an existing property and may not be supprted
                 image.imageObject.onload = function(e){
                     e.size = e.target.size;
                     self._assetProgressChangeHandler(e);
                 };
                 image.imageObject.onerror = this._imageLoadingErrorHandler;
 
-                image.imageObject.src = img[i].url;
+                image.imageObject.src = img[i].url;     //TODO: if you load all images simultaneously the progress will not continously increase
+                                                        //does this work without adding them to the DOM in all browsers?
                 images.push(image);
             }
             this._images = images;
@@ -267,6 +273,7 @@ PocketCode.GameEngine = (function () {
                 this._assetsLoaded = true;
             }
             if(this._assetsLoaded && this._spritesLoaded){
+            //if(percentage === 100 && this._spritesLoaded){
                 this.projectReady = true;
             }
             this._onLoadingProgress.dispatchEvent({ progress: percentage });
@@ -356,8 +363,7 @@ PocketCode.GameEngine = (function () {
             throw new Error('unknown sprite with id: ' + spriteId);
         },
 
-        getSpriteLayer: function (sprite) {
-            //return this.layerObjectList.indexOf(sprite);//this.getSpriteById(spriteId));
+        getSpriteLayer: function (sprite) { //including background (usind in formulas)
             var idx = this.layerObjectList.indexOf(sprite);
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
