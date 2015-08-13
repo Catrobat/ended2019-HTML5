@@ -73,6 +73,7 @@ PocketCode.Sprite = (function () {
 
         //this.id = '';   //initialize to avoid errors when calling _mergeProperties()
         this.name = '';
+        this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
 
         this._looks = [];
         this._sounds = [];
@@ -122,11 +123,7 @@ PocketCode.Sprite = (function () {
     }
 
     Object.defineProperties(Sprite.prototype, {
-        rotationStyle: {
-            value: PocketCode.RotationStyle.ALL_AROUND,   //static property (right now)
-        },
         //motion
-
         positionX: {
             get: function () {
                 return this._positionX;
@@ -138,12 +135,12 @@ PocketCode.Sprite = (function () {
             },
         },
         direction: {
-            set: function (direction) {
-                this._direction = direction;
-            },
             get: function () {
                 return this._direction;
             },
+            //set: function (direction) {
+            //    this._direction = direction;
+            //},
         },
         layer: {
             //set: function (layer) {
@@ -153,6 +150,15 @@ PocketCode.Sprite = (function () {
             get: function () {
                 return this._gameEngine.getSpriteLayer(this);//.id);
             },
+        },
+        rotationStyle: {
+            get: function () {
+                return this._rotationStyle;
+            },
+            //set: function(value) {
+            //    this._rotationStyle = value;
+            //    //value: PocketCode.RotationStyle.ALL_AROUND,   //static property (right now)
+            //},
         },
 
         //looks
@@ -333,7 +339,7 @@ PocketCode.Sprite = (function () {
             for (var i = 0, l = propertyArray.length; i < l; i++) {
                 properties.merge(propertyArray[i]);
             }
-            this._onChange.dispatchEvent({ id: this.id, properties: properties }, this);
+            this._onChange.dispatchEvent({ id: this.id, rotationStyle: this.rotationStyle, properties: properties }, this);
         },
 
         //motion: position
@@ -430,7 +436,7 @@ PocketCode.Sprite = (function () {
             if (!steps)// || steps === 0)
                 return false;
 
-            var rad = this.direction * (Math.PI / 180.0);
+            var rad = this._direction * (Math.PI / 180.0);
             var offsetX = Math.round(Math.sin(rad) * steps);
             var offsetY = Math.round(Math.cos(rad) * steps);
             //var triggerEvent;
@@ -480,10 +486,10 @@ PocketCode.Sprite = (function () {
          */
         setDirection: function (degree, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
-            if (degree === undefined || this.direction === degree)
+            if (degree === undefined || this._direction === degree)
                 return false;
 
-            this.direction = degree;
+            this._direction = degree;
             if (triggerEvent)
                 this._triggerOnChange([{ direction: degree }]);
             return true;
@@ -507,11 +513,11 @@ PocketCode.Sprite = (function () {
                 return false;
 
             var direction = Math.atan2(offsetY, offsetX) * (180.0 / Math.PI);
-            if (this.direction == direction)
+            if (this._direction == direction)
                 return false;
 
-            this.direction = direction;
-            this._triggerOnChange([{ direction: this.direction }]);
+            this._direction = direction;
+            this._triggerOnChange([{ direction: this._direction }]);
             return true;
         },
         //motion: layer
@@ -532,7 +538,18 @@ PocketCode.Sprite = (function () {
             return this._gameEngine.setSpriteLayerToFront(this);//.id);
             //onChange event is triggered by program in this case
         },
+        /**
+         * sets the direction style of the sprite (enum value)
+         * @returns {*}
+         */
+        setRotationStyle: function (value) {
+            if (this._rotationStyle == value)
+                return false;
 
+            this._rotationStyle = value;
+            this._triggerOnChange([{ rotationStyle: this._rotationStyle }]);
+            return true;
+        },
         //looks
         /**
          * sets the look of the sprite
