@@ -56,14 +56,6 @@ PocketCode.GameEngine = (function () {
 
     //properties
     Object.defineProperties(GameEngine.prototype, {
-        spritesProperties: {//List: {
-            get: function () {
-                var props = [this._background.properties];
-                for (var i = 0, l = this._sprites.length; i < l; i++)
-                    props.push(this._sprites[i].properties);
-                return props;
-            }
-        },
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
@@ -293,8 +285,16 @@ PocketCode.GameEngine = (function () {
             this.onProgramStart.dispatchEvent();
         },
 
-        restartProject: function () {
+        restartProject: function (reinitSprites) {
             this.stopProject();
+            //if reinit: all sprites properties have to be set to their default values: default true
+            if (reinitSprites !== false) {
+                this._background.init();
+
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)
+                    sprites[i].init();
+            }
             this.runProject();
         },
 
@@ -364,7 +364,12 @@ PocketCode.GameEngine = (function () {
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
-
+        getSpritesAsPropertyList: function(){
+            var props = [this._background.renderingProperties];
+            for (var i = 0, l = this._sprites.length; i < l; i++)
+                props.push(this._sprites[i].renderingProperties);
+            return props;
+        },
         getSpriteLayer: function (sprite) { //including background (usind in formulas)
             if (sprite === this._background)
                 return 0;

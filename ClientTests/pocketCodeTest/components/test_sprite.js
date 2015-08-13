@@ -40,7 +40,7 @@ QUnit.test("Sprite", function (assert) {
 
     //properties
     assert.throws(function () { var err = new PocketCode.Sprite(prog); }, Error, "missing ctr arguments");
-    assert.equal(sprite.id, "newId", "id ctr setter");
+    assert.equal(sprite._id, "newId", "id ctr setter");
     assert.equal(sprite.name, "myName", "name ctr setter");
 
     assert.throws(function () { sprite.looks = undefined; }, Error, "ERROR: setting looks");
@@ -174,7 +174,7 @@ QUnit.test("Sprite", function (assert) {
 
     var testSprite = new PocketCode.Sprite(prog, jsonSprite);
 
-    assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly.");
+    assert.deepEqual(testSprite._id, jsonSprite.id, "Id set correctly.");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly.");
 
     var varsMatch = true;
@@ -448,7 +448,7 @@ QUnit.test("Sprite", function (assert) {
     looks[0] = look1;
     looks[1] = look2;
     sprite.looks = looks;
-    assert.equal(sprite.looks, looks, "looks getter");
+    assert.equal(sprite._looks, looks, "looks setter");
     assert.ok(sprite._looks[1].name == "look2", "set looks1");
     assert.ok(sprite._currentLook == looks[0], "set looks2");
     assert.ok(sprite._currentLook.name == "look1", "set looks3");

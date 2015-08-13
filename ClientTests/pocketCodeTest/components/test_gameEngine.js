@@ -318,12 +318,12 @@ QUnit.test("GameEngine", function (assert) {
     //make sure the testProject contains loadable sounds
     gameEngine.loadProject(testProject);
 
-    assert.equal(gameEngine._background.id, testProject.background.id, "Correct Background set");
+    assert.equal(gameEngine._background._id, testProject.background.id, "Correct Background set");
     assert.equal(gameEngine._sprites.length, testProject.sprites.length, "No excess sprites left");
 
     var spritesMatch = true;
     for (var i = 0, l = gameEngine._sprites.length; i < l; i++) {
-        if (gameEngine._sprites[i].id !== testProject.sprites[i].id)
+        if (gameEngine._sprites[i]._id !== testProject.sprites[i].id)
             spritesMatch = false;
     }
     assert.ok(spritesMatch, "Sprites created correctly");

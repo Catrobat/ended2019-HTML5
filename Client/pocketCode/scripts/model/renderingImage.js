@@ -52,6 +52,65 @@ PocketCode.Model.RenderingImage = (function () {
         this.merge(spriteProperties);
     }
 
+    //properties
+    Object.defineProperties(RenderingImage.prototype, {
+        object: {
+            get: function () {
+                return this._fabricImage;
+            },
+        },
+        id: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        positionX: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        positionY: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        direction: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        rotationStyle: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        lookId: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        size: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        visible: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        transparency: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+        brightness: {
+            set: function () {
+                //return this._fabricImage;
+            },
+        },
+    });
+
     //methods
     RenderingImage.prototype.merge({
         //setAngle: function (direction) {

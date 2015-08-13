@@ -71,7 +71,6 @@ PocketCode.Sprite = (function () {
         this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
         //this._executionState = PocketCode.ExecutionState.STOPPED;
 
-        //this.id = '';   //initialize to avoid errors when calling _mergeProperties()
         this.name = '';
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
 
@@ -81,17 +80,18 @@ PocketCode.Sprite = (function () {
 
         //attach to bricks onExecuted event, get sure all are executed and not running
         //property initialization
-        //motion
-        this._positionX = 0.0;
-        this._positionY = 0.0;
-        this._direction = 90.0; //pointing to right: 0� means up
-        //sounds: currently not in use but defined: in future: change name + serialization required
-        //looks
-        this._currentLook = undefined;
-        this._size = 100.0;
-        this._visible = true;
-        this._transparency = 0.0;
-        this._brightness = 100.0;
+        this.init();
+        ////motion
+        //this._positionX = 0.0;
+        //this._positionY = 0.0;
+        //this._direction = 90.0; //pointing to right: 0� means up
+        ////sounds: currently not in use but defined: in future: change name + serialization required
+        ////looks
+        //this._currentLook = undefined;
+        //this._size = 100.0;
+        //this._visible = true;
+        //this._transparency = 0.0;
+        //this._brightness = 100.0;
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -100,7 +100,7 @@ PocketCode.Sprite = (function () {
             throw new Error('missing ctr arguments: id and/or name in sprite');
 
         //this._mergeProperties(propObject);
-        this.id = propObject.id;
+        this._id = propObject.id;
         this.name = propObject.name;
 
         //looks: a sprite doesn't always have a look
@@ -123,16 +123,17 @@ PocketCode.Sprite = (function () {
     }
 
     Object.defineProperties(Sprite.prototype, {
-        properties: {   //all rendering propeties as object
+        renderingProperties: {   //all rendering propeties as object
             get: function () {
                 return {
+                    id: this._id,
                     positionX: this._positionX,
                     positionY: this._positionY,
                     direction: this._direction,
                     rotationStyle: this._rotationStyle,
-                    lookId: this._currentLook.id,
+                    lookId: this._currentLook ? this._currentLook.id: undefined,
                     size: this._size,
-                    visible: this._visible,
+                    visible: this._currentLook ? this._visible : false,
                     transparency: this._transparency,
                     brightness: this._brightness,
                 };
@@ -187,9 +188,9 @@ PocketCode.Sprite = (function () {
                 if (looks.length > 0)
                     this._currentLook = looks[0];
             },
-            get: function () {
-                return this._looks;
-            },
+            //get: function () {
+            //    return this._looks;
+            //},
         },
         currentLook: {
             get: function () {
@@ -291,6 +292,20 @@ PocketCode.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
+        init: function() {
+            //property initialization
+            //motion
+            this._positionX = 0.0;
+            this._positionY = 0.0;
+            this._direction = 90.0; //pointing to right: 0� means up
+            //sounds: currently not in use but defined: in future: change name + serialization required
+            //looks
+            this._currentLook = this._looks.length > 0 ? this._looks[0] : undefined;
+            this._size = 100.0;
+            this._visible = true;
+            this._transparency = 0.0;
+            this._brightness = 100.0;
+        },
         ///**
         // * calls execute() on every brick as long as method is available
         // */
@@ -354,7 +369,7 @@ PocketCode.Sprite = (function () {
             for (var i = 0, l = propertyArray.length; i < l; i++) {
                 properties.merge(propertyArray[i]);
             }
-            this._onChange.dispatchEvent({ id: this.id, properties: properties }, this);
+            this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
         },
 
         //motion: position
