@@ -1,4 +1,5 @@
 ﻿/// <reference path="../model/userVariable.js" />
+'use strict';
 
 /*
  * this is a base class for sprite and gameEngine introduced to avoid duplicated code for handling variables and lists
