@@ -140,8 +140,8 @@
 
 .pc-pageHeader {
 	height: 4.8em;
-	border-bottom: solid 1px #a9dcf1;   /*TODO*/
-	background-color: #17a5b8;
+	border-bottom: solid 1px #385F6E;
+	background-color: #003041;
 	display: table;
 	border-spacing: 0;
 }
@@ -177,8 +177,8 @@
 
 .pc-pageFooter {
 	height: 4.8em;
-	border-top: solid 1px #a9dcf1;   /*TODO*/
-	background-color: #17a5b8;
+	border-top: solid 1px #4D7F8F;
+	background-color: #01485F;
 	position: absolute;
 	bottom: 0;
 	display: table;
