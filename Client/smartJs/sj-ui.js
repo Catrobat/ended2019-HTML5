@@ -16,8 +16,11 @@ SmartJs.Ui.Window = (function () {  //static class
         this._visible = true;
 
         //events
+        //this._onLoad = new SmartJs.Event.Event(window);
         this._onResize = new SmartJs.Event.Event(window);
         this._onVisibilityChange = new SmartJs.Event.Event(window);
+
+        //this._addDomListener(window, 'load', this._onLoadHandler);
 
         //var onResizeHandler = function () { };
         var resizeEventName = 'resize';
@@ -69,6 +72,11 @@ SmartJs.Ui.Window = (function () {  //static class
 
     //events
     Object.defineProperties(Window.prototype, {
+        //onLoad: {
+        //    get: function () { return this._onResize; },
+        //    //enumerable: false,
+        //    //configurable: true,
+        //},
         onResize: {
             get: function () { return this._onResize; },
             //enumerable: false,
@@ -130,6 +138,9 @@ SmartJs.Ui.Window = (function () {  //static class
 
     //methods
     Window.prototype.merge({
+        //_onLoadHandler: function(e) {
+        //    this._onLoad.dispatchEvent();
+        //},
         _visibilityChangeHandler: function (e) {
             e = e || window.event;
 
