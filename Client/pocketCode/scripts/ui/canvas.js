@@ -171,11 +171,11 @@ PocketCode.Ui.Canvas = (function () {
                 return this._fcAdapter.getContext('2d');
             },
         },
-        renderingObjects: {
-            set: function (list) {
-                this._fcAdapter.renderingObjects = list;
-            },
-        },
+        //renderingObjects: {
+        //    set: function (list) {
+        //        this._fcAdapter.renderingObjects = list;
+        //    },
+        //},
         //text: {
         //    get: function () {
         //        return this._textNode.text;
@@ -220,7 +220,7 @@ PocketCode.Ui.Canvas = (function () {
         clear: function () {
 
         },
-        render: function () {
+        render: function (renderingObjectList) {
 
         },
     });
