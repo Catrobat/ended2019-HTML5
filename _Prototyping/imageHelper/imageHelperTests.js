@@ -4,7 +4,7 @@ var img1, img2, img3, img4, img5, img6, img7;
 var imgLoadCounter = 0;
 var imgLoadHandler = function () {
     imgLoadCounter++;
-    if (imgLoadCounter == 8) //all loaded
+    if (imgLoadCounter == 9) //all loaded
         runTests();
 };
 
@@ -42,6 +42,10 @@ window.onload = function () {
     img8.addEventListener("load", imgLoadHandler);
     img8.src = "../../ClientTests/pocketCodeTest/_resources/images/imgHelper8.png";
 
+    img9 = new Image();
+    img9.addEventListener("load", imgLoadHandler);
+    img9.src = "../../ClientTests/pocketCodeTest/_resources/images/imgHelper9.png";
+
 };
 
 var runTests = function () {
@@ -49,7 +53,7 @@ var runTests = function () {
     var ih = PocketCode.ImageHelper;
     ih._init(); //call init myself to manipulate the canvas element before calling the methods
     document.body.appendChild(ih._canvas);
-    ih._canvas.style.backgroundColor = 'lightgray';
+    //ih._canvas.style.backgroundColor = 'lightgray';
 
     var offsets;
     //offsets= ih.getTrimOffsets(img1, 1, 0, true, true, true, true);
@@ -65,7 +69,23 @@ var runTests = function () {
     //offsets = ih.getTrimOffsets(img3, 5, 0, true, true, true, true);
     //offsets = ih.getTrimOffsets(img3, 0.5, 0, true, true, true, true);
 
-    offsets = ih.getTrimOffsets(img8, 1, 45, true, true, true, true);
+    offsets = ih.getTrimOffsets(img9, 1, 45, true, true, true, true);
+
+    var imgObject6 = ih.trimAndScale(img6);//, 0.5);
+    document.body.appendChild(imgObject6.img);
+
+    var imgObject7 = ih.trimAndScale(img7);//, 0.5);
+    document.body.appendChild(imgObject7.img);
+
+    var imgObject8 = ih.trimAndScale(img8);//, 0.5);
+    document.body.appendChild(imgObject8.img);
+
+    var imgObject9 = ih.trimAndScale(img9, .3);
+    //imgObject9 = ih.scale(imgObject9, 0.5);//, 0.5);
+    document.body.style.backgroundColor = 'lightblue';
+    document.body.appendChild(imgObject9.img);
+    //alert(imgObject9.offsetX + ', ' + imgObject9.offsetY);
+
     var breakpoint = true;
 
 

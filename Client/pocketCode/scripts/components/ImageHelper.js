@@ -10,7 +10,7 @@
 PocketCode.ImageHelper = (function () {
 
     //ctr
-    function ImageHelper(scope, globalLookupHost) {
+    function ImageHelper() {
         this._initialized = false;  //as a static class using DOM elements it's waiting on the first use to initialize
     }
 
@@ -32,33 +32,69 @@ PocketCode.ImageHelper = (function () {
 
             this._initialized = true;
         },
-        trim: function (img) {
+        scale: function(img, scalingFactor) {
             this._checkInitialized();
-
             if (!(img instanceof HTMLImageElement))
-                throw new Error('invlaid paramter: img: expected type: HTMLImageElement');
+                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
+
+            if (!scalingFactor) //=0 is not allowed here
+                return img;
+            this._canvas.height = Math.ceil(img.naturalHeight * scalingFactor);
+            this._canvas.width = Math.ceil(img.naturalWidth * scalingFactor);
+
+            var ctx = this._ctx;
+            ctx.save();
+            ctx.scale(scalingFactor, scalingFactor);
+            ctx.drawImage(img, 0, 0);
+            var img = new Image();
+            img.src = this._canvas.toDataURL();
+            ctx.restore();
+
+            return img;
+        },
+        trimAndScale: function (img, scalingFactor) {//, symmetrical) {
+            this._checkInitialized();
+            if (!(img instanceof HTMLImageElement))
+                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
 
             var offsets = this.getTrimOffsets(img, 1, 0, true, true, true, true);
+            scalingFactor = scalingFactor || 1;
 
             //this._canvas.style.merge({ height: (img.naturalHeight - offsets.top - offsets.bottom) + 'px', width: (img.naturalWidth - offsets.left - offsets.right) + 'px' });
-            var h = img.naturalHeight - offsets.top - offsets.bottom,
-                w = img.naturalWidth - offsets.left - offsets.right;
+            //var h = img.naturalHeight - offsets.top - offsets.bottom,
+            //    w = img.naturalWidth - offsets.left - offsets.right;
+            //TODO: as all images get rotatet using the image center we can only trim the images symmetrical using their minimum offsets: this may change due to scratch incompatibility
+            //      -> using fabric.util.rotatePoint
+            var offsetX = Math.min(offsets.left, offsets.right),
+                offsetY = Math.min(offsets.top, offsets.bottom),
+                h = img.naturalHeight - 2 * offsetY,
+                w = img.naturalWidth - 2 * offsetX;
 
             //check for transparent images
-            if (h < 0 || w < 0)
+            if (h <= 0 || w <= 0)
                 return { img: new Image(), offsetX: 0, offsetY: 0 };
 
-            this._canvas.height = h;
-            this._canvas.width = w;
+            this._canvas.height = Math.ceil(h * scalingFactor);
+            this._canvas.width = Math.ceil(w * scalingFactor);
 
-            this._ctx.drawImage(img, -offsets.left, -offsets.top);
-
-            return { img: new Image(this._canvas.toDataURL), offsetX: offsets.left, offsetY: offsets.top };
+            var ctx = this._ctx;
+            ctx.save();
+            ctx.scale(scalingFactor, scalingFactor);
+            //ctx.clearRect(0, 0, w, h);
+            //ctx.drawImage(img, -offsets.left, -offsets.top);
+            ctx.drawImage(img, -offsetX, -offsetY);
+            var img = new Image();
+            img.src = this._canvas.toDataURL();
+            ctx.restore();
+            //return { img: img, offsetX: offsets.left, offsetY: offsets.top };
+            return { img: img, offsetX: offsetX, offsetY: offsetY };
         },
         //please notice: the rotaiton angle is in degree here and not eqal to the sprite direction: it depends on the diection + rotationStyle
         //positive angle means clockwise rotation
         getTrimOffsets: function (img, scalingFactor, rotationAngle, top, right, bottom, left) {
             this._checkInitialized();
+            if (!(img instanceof HTMLImageElement))
+                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
 
             var offsets = { top: undefined, right: undefined, bottom: undefined, left: undefined };
 
@@ -83,14 +119,19 @@ PocketCode.ImageHelper = (function () {
             c.width = w;
             c.height = h;
 
-            var ctx = this._ctx;
+            var ctx = this._ctx
+            ctx.save();
             //draw
+            //ctx.scale(1, 1);    //make sure o scaling is applied
+            //ctx.clearRect(0, 0, w, h);
             ctx.translate(w2, h2);
             ctx.rotate(phi);
             ctx.drawImage(img, -imgWidth / 2, -imgHeight / 2);
 
             //now let's search for offsets
             var pixels = ctx.getImageData(0, 0, w, h);
+            ctx.restore();
+
             var data = pixels.data, rowOffset = 0, alpha = 255;
 
             //top
