@@ -48,6 +48,7 @@ PocketCode.GameEngine = (function () {
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
 
+        this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
         this._onProgramExecuted = new SmartJs.Event.Event(this);
         this._onSpriteChange = new SmartJs.Event.Event(this);
@@ -96,14 +97,6 @@ PocketCode.GameEngine = (function () {
             //configurable: true,
         },
 
-        onLoadingProgress: {
-            get: function () {
-                return this._onLoadingProgress;
-            }
-            //enumerable: false,
-            //configurable: true,
-        },
-
         broadcasts: {
             set: function (broadcasts) {
                 if (!(broadcasts instanceof Array))
@@ -121,6 +114,18 @@ PocketCode.GameEngine = (function () {
 
     //events
     Object.defineProperties(GameEngine.prototype, {
+        onLoadingProgress: {
+            get: function () {
+                return this._onLoadingProgress;
+            }
+            //enumerable: false,
+            //configurable: true,
+        },
+        onBeforeProgramStart: {
+            get: function () { return this._onBeforeProgramStart; },
+            //enumerable: false,
+            //configurable: true,
+        },
         onProgramStart: {
             get: function () { return this._onProgramStart; },
             //enumerable: false,
@@ -282,7 +287,8 @@ PocketCode.GameEngine = (function () {
             }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            this.onProgramStart.dispatchEvent();
+            this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
+            this.onProgramStart.dispatchEvent();    //notifies the listerners (bricks) to start executing
         },
 
         restartProject: function (reinitSprites) {
