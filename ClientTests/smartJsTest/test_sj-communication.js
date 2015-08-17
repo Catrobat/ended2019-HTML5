@@ -90,7 +90,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 	var onLoadStartHandler = function (e) {
 		onLoadStart++;
 		//validate request url
-		assert.equal(req._url, "_resources/testDataProjects.js?a=eins&b=2", "valid  request url params: GET");
+		assert.equal(req._url, "_resources/test.js?a=eins&b=2", "valid  request url params: GET");
 		assert.equal(e.target, req, "onLoadStart target check");
 		//console.log('onLoadStart ');
 	};
@@ -158,7 +158,7 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		//console.log('onProgressSupportedChange ' + e.progressSupport);
 	};
 
-	req = new SmartJs.Communication.XmlHttpRequest("_resources/testDataProjects.js");
+	req = new SmartJs.Communication.XmlHttpRequest("_resources/test.js");
 
 	req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
 	req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -244,8 +244,8 @@ QUnit.test("SmartJs.Communication: XmlHttp", function (assert) {
 		req3.send();
 	};
 
-	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "_resources/testDataProjects.js"); //start async requests 
-	//req.send(SmartJs.RequestMethod.GET, "_resources/testDataProjects.js"); //start async requests 
+	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "_resources/test.js"); //start async requests 
+	//req.send(SmartJs.RequestMethod.GET, "_resources/test.js"); //start async requests 
 
 	//var req5 = new SmartJs.Communication.CorsRequest();
 	//assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");
