@@ -60,52 +60,52 @@ PocketCode.Model.RenderingImage = (function () {
             },
         },
         id: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         positionX: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         positionY: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         direction: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         rotationStyle: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
-        lookId: {
-            set: function () {
+        look: {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         size: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         visible: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         transparency: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },
         brightness: {
-            set: function () {
+            set: function (value) {
                 //return this._fabricImage;
             },
         },

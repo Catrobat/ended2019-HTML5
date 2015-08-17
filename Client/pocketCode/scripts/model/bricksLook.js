@@ -51,11 +51,11 @@ PocketCode.Bricks.merge({
         function SetLookBrick(device, sprite, propObject) {
             PocketCode.Bricks.BaseBrick.call(this, device, sprite);
 
-            this._lookId = propObject.id;
+            this._imageId = propObject.imageId;
         }
 
         SetLookBrick.prototype._execute = function () {
-            this._return(this._sprite.setLook(this._lookId));
+            this._return(this._sprite.setLook(this._imageId));
         };
 
         return SetLookBrick;
@@ -229,12 +229,12 @@ PocketCode.Bricks.merge({
         }
 
         LedOnBrick.prototype._execute = function () {
-			this._device.flashlightOn = true;
+            this._device.flashlightOn = true;
             this._return(true);
         };
 
         return LedOnBrick;
-    })(),	
+    })(),
 
     LedOffBrick: (function () {
         LedOffBrick.extends(PocketCode.Bricks.BaseBrick, false);
@@ -244,11 +244,11 @@ PocketCode.Bricks.merge({
         }
 
         LedOffBrick.prototype._execute = function () {
-			this._device.flashlightOn = false;
+            this._device.flashlightOn = false;
             this._return(false);
         };
 
         return LedOffBrick;
-    })(),	
-	
+    })(),
+
 });

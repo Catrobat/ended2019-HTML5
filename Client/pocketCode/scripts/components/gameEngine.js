@@ -439,7 +439,7 @@ PocketCode.GameEngine = (function () {
             var sh = this._screenHeight,
                 sw = this._screenWidth;
             //if (sprite.currentLook) {   //this may be undefined
-            var lookId = sprite.currentLook ? sprite.currentLook.id : undefined,
+            var imageId = sprite.currentLook ? sprite.currentLook.imageId : undefined,
                 scaling = sprite.size / 100,
                 angle = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? sprite.direction - 90 : 0,
                 //^^ sprite has a direction but is not rotated
@@ -447,7 +447,7 @@ PocketCode.GameEngine = (function () {
 
             //if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
             //    angle = sprite.direction - 90;
-            //spriteSize = this._imageStore.getCachedImageSize(lookId, scaling, angle);
+            //spriteSize = this._imageStore.getCachedImageSize(imageId, scaling, angle);
             //}
             //else {
             //    spriteSize = { height: 0, width: 0, pixelExact: true };
@@ -459,7 +459,7 @@ PocketCode.GameEngine = (function () {
             //w2 = Math.ceil(spriteSize.width / 2),
             //top, right, bottom, left;
 
-            var overflow = this._imageStore.getViewportOverflow(sh, sw, sprite.id, lookId, scaling, angle, flipX, sprite.positionX + sw / 2, sprite.positionY + sh / 2);
+            var overflow = this._imageStore.getViewportOverflow(sh, sw, sprite.id, imageId, scaling, angle, flipX, sprite.positionX + sw / 2, sprite.positionY + sh / 2);
             //TODO: make sure this is correct (specification): if there is an overflow on both sides we we ignore it
             if (overflow.top && overflow.bottom) {
                 overflow.bottom = undefined;
@@ -498,7 +498,7 @@ PocketCode.GameEngine = (function () {
             //do we have to check again: direction may change -> check on rotation
             if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND && dir != sprite.direction) {
                 angle = dir - 90;
-                overflow = this._imageStore.getViewportOverflow(this._screenHeight, this._screenWidth, sprite.id, lookId, scaling, angle, newPosX + sw / 2, newPosY + sh / 2, overflow);
+                overflow = this._imageStore.getViewportOverflow(this._screenHeight, this._screenWidth, sprite.id, imageId, scaling, angle, newPosX + sw / 2, newPosY + sh / 2, overflow);
                 if (overflow.top)
                     newPosY += overflow.top;
                 if (overflow.right)

@@ -131,7 +131,7 @@ PocketCode.Sprite = (function () {
                     positionY: this._positionY,
                     direction: this._direction,
                     rotationStyle: this._rotationStyle,
-                    lookId: this._currentLook ? this._currentLook.id: undefined,
+                    look: this._currentLook ? this._currentLook.imageId : undefined,    //TODO: change this to look object
                     size: this._size,
                     visible: this._currentLook ? this._visible : false,
                     transparency: this._transparency,
@@ -298,7 +298,7 @@ PocketCode.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
-        init: function() {
+        init: function () {
             //property initialization
             //motion
             this._positionX = 0.0;
@@ -590,28 +590,28 @@ PocketCode.Sprite = (function () {
         //looks
         /**
          * sets the look of the sprite
-         * @param lookId
+         * @param imageId
          * @returns {boolean}
          */
-        setLook: function (lookId) {
+        setLook: function (imageId) {
             if (this._currentLook == undefined) {
                 // throw new Error('current look is invalid');
                 return false;
             }
 
-            if (this._currentLook.id === lookId)
+            if (this._currentLook.imageId === imageId)
                 return false;
             var looks = this._looks;
             var look;
             for (var i = 0, l = looks.length; i < l; i++) {
                 look = looks[i];
-                if (look.id === lookId) {
+                if (look.imageId === imageId) {
                     this._currentLook = look;
-                    this._triggerOnChange({ lookId: lookId });
+                    this._triggerOnChange({ look: imageId });    //TODO: change this to send real object
                     return true;
                 }
             }
-            throw new Error('look with id ' + lookId + ' could not be found');
+            throw new Error('look image with id ' + imageId + ' could not be found');
         },
         /**
          * sets the current look of the sprite to the next one in the list
@@ -639,7 +639,7 @@ PocketCode.Sprite = (function () {
                     break;
                 }
             }
-            this._triggerOnChange({ lookId: this._currentLook.id });
+            this._triggerOnChange({ look: this._currentLook.imageId }); //TODO: change this -> send object
             return true;
         },
         /**
