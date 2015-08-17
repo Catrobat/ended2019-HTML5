@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Player Example</title>
+
+    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.0.js"></script>
+    <script src="../../Client/pocketCode/libs/fabric/fabric-1.6.0-rc.1.js"></script>
+
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-animation.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+
+    <script src="../../Client/pocketCode/scripts/core.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/ui.js"></script>
+
+    <!-- model -->
+
+    <script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksControl.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksMotion.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksSound.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksLook.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksVariable.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/renderingImage.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script>
+
+    <!-- components -->
+    <script src="../../Client/pocketCode/scripts/components/userVariableHost.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/canvas.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/sprite.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/ImageStore.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/i18nProvider.js" data-cover></script>
+
+
+    <script src="../../Client/pocketCode/scripts/controller/controllerCore.js"></script>
+    <script src="../../Client/pocketCode/scripts/controller/playerViewportController.js"></script>
+    <script src="../../Client/pocketCode/scripts/controller/playerPageController.js"></script>
+
+
+    <script src="../../Client/pocketCode/scripts/view/pageView.js"></script>
+    <script src="../../Client/pocketCode/scripts/view/playerViewportView.js"></script>
+    <script src="../../Client/pocketCode/scripts/view/playerPageView.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerStartScreen.js"></script>
+
+    <script src="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.js"></script>
+
+    <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet">
+
+    <script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+
+    <script type="text/javascript">
+
+        window.onload = function () {
+            var playerPageController = new PocketCode.PlayerPageController();
+            console.log(playerPageController);
+            console.log(playerPageController._view);
+            console.log(playerPageController._view._dom);
+            document.body.appendChild(playerPageController._view._dom);
+        }
+    </script>
+
+</head>
+</html>

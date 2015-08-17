@@ -14,7 +14,7 @@ PocketCode.PlayerPageController = (function () {
             //init: 'init',
             stopped: 'stopped',
             playing: 'playing',
-            paused: 'paused',
+            paused: 'paused'
         };
         this._status = 'init';
         //this._error = undefined;

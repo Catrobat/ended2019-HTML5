@@ -3,9 +3,9 @@
 'use strict';
 
 
-QUnit.module("canvasController.js");
+QUnit.module("playerViewportController.js");
 
-QUnit.test("CanvasController", function (assert) {
+QUnit.test("PlayerViewportController", function (assert) {
 
 	var done = assert.async();  //async tests: due to image loading delay
 
