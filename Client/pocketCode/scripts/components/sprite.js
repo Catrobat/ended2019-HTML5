@@ -134,8 +134,11 @@ PocketCode.Sprite = (function () {
                     look: this._currentLook ? this._currentLook.imageId : undefined,    //TODO: change this to look object
                     size: this._size,
                     visible: this._currentLook ? this._visible : false,
-                    transparency: this._transparency,
-                    brightness: this._brightness,
+                    graphicEffects: [
+                        { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
+                        { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100 },  //send +-100 instead of 0..200
+                        //TODO: add other filters as soon as available
+                    ],
                 };
             },
         },
@@ -781,7 +784,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._transparency = percentage;
-            this._triggerOnChange({ transparency: percentage });
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: percentage }] });
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -805,7 +808,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._transparency = value;
-            this._triggerOnChange({ transparency: value });
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] });
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -828,7 +831,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._brightness = percentage;
-            this._triggerOnChange({ brightness: percentage });
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: percentage - 100 }] });  //send +-100 instead of 0..200
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -852,7 +855,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._brightness = value;
-            this._triggerOnChange({ brightness: value });
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100 }] }); //send +-100 instead of 0..200
             return true;
         },
         /**
@@ -860,21 +863,21 @@ PocketCode.Sprite = (function () {
          * @returns {boolean}
          */
         clearGraphicEffects: function () {
-            var ops = {};
+            var graphicEffects = [];
             if (this._transparency === 0.0 && this._brightness === 100.0)   //TODO: extend this when adding effects
                 return false;
 
             if (this._transparency != 0.0) {
                 this._transparency = 0.0;
-                ops.transparency = 0.0;
+                graphicEffects.push({ effect: PocketCode.GraphicEffect.GHOST, value: 0.0 });
             }
             if (this._brightness != 100.0) {
                 this._brightness = 100.0;
-                ops.brightness = 100.0;
+                graphicEffects.push({ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: 100.0 });
             }
 
-            if (ops.transparency !== undefined || ops.brightness != undefined) {
-                this._triggerOnChange(ops);
+            if (graphicEffects.length > 0) {
+                this._triggerOnChange({ graphicEffects: graphicEffects });
                 return true;
             }
             return false;

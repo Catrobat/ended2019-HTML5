@@ -432,7 +432,7 @@ PocketCode.GameEngine = (function () {
         //},
         ifSpriteOnEdgeBounce: function (sprite) {    //Id, sprite) {  //TODO: check parameters:sprite.rotationStyle???    call: sprite.bounceTo(angle, posX, posY) new method?
 
-            return false; //TODO: included to avoid failing tests so i can push!!!!!!!!!!!
+            //return false; //TODO: included to avoid failing tests so i can push!!!!!!!!!!!
 
             //program viewport
             var spriteSize;
@@ -445,29 +445,19 @@ PocketCode.GameEngine = (function () {
                 //^^ sprite has a direction but is not rotated
                 flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && sprite.direction < 0 ? true : false;
 
-            //if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-            //    angle = sprite.direction - 90;
-            //spriteSize = this._imageStore.getCachedImageSize(imageId, scaling, angle);
-            //}
-            //else {
-            //    spriteSize = { height: 0, width: 0, pixelExact: true };
-            //}
-
-            //var posX = sprite.positionX + sw / 2,   //move the coord axes to top/left
-            //    posY = sprite.positionY + sh / 2;//,
-            //h2 = Math.ceil(spriteSize.height / 2),  //TODO: take care of the spriteSize.pixelExact property
-            //w2 = Math.ceil(spriteSize.width / 2),
-            //top, right, bottom, left;
+            if (!imageId)   //no look defined (cannot be changed either: so no need to handle this)
+                return false;
 
             var overflow = this._imageStore.getViewportOverflow(sh, sw, sprite.id, imageId, scaling, angle, flipX, sprite.positionX + sw / 2, sprite.positionY + sh / 2);
             //TODO: make sure this is correct (specification): if there is an overflow on both sides we we ignore it
-            if (overflow.top && overflow.bottom) {
-                overflow.bottom = undefined;
-                overflow.top = undefined;
+            //TODO: how to handle overflows that cause another overflow during movement? - ignore it? move to edge & which one?
+            if (overflow.top > 0 && overflow.bottom > 0) {
+                overflow.bottom = 0;
+                overflow.top = 0;
             }
-            if (overflow.left && overflow.right) {
-                overflow.left = undefined;
-                overflow.right = undefined;
+            if (overflow.left > 0 && overflow.right > 0) {
+                overflow.left = 0;
+                overflow.right = 0;
             }
 
             //move and rotate
@@ -496,9 +486,16 @@ PocketCode.GameEngine = (function () {
             }
 
             //do we have to check again: direction may change -> check on rotation
-            if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND && dir != sprite.direction) {
+            var sdir = sprite.direction;
+            if (dir != sdirection && sprite.rotationStyle !== PocketCode.RotationStyle.DO_NOT_ROTATE) {
+                var flipped = (dir >= 0 && sdir < 0) || (dir < 0 && sdir >= 0);
+                //if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
                 angle = dir - 90;
-                overflow = this._imageStore.getViewportOverflow(this._screenHeight, this._screenWidth, sprite.id, imageId, scaling, angle, newPosX + sw / 2, newPosY + sh / 2, overflow);
+                if (sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && flipped) {
+                    angle = 0;
+                    flipX = !flipX;
+                };
+                overflow = this._imageStore.getViewportOverflow(this._screenHeight, this._screenWidth, sprite.id, imageId, scaling, angle, flipX, newPosX + sw / 2, newPosY + sh / 2, overflow);    //TODO: param
                 if (overflow.top)
                     newPosY += overflow.top;
                 if (overflow.right)
@@ -508,6 +505,7 @@ PocketCode.GameEngine = (function () {
                 if (overflow.left)
                     newPosX += overflow.left;
             }
+        
 
             //set sprite values: avoid triggering multiple onChange events
             var props = {};

@@ -5,10 +5,10 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("programViewportController.js");
+QUnit.module("playerViewportController.js");
 
 
-QUnit.test("ProgramViewportController", function (assert) {
+QUnit.test("PlayerViewportController", function (assert) {
 
     assert.ok(true, "TODO");
 });
