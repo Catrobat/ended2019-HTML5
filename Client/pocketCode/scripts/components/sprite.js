@@ -367,14 +367,14 @@ PocketCode.Sprite = (function () {
         },
         /**
          * @event helper
-         * @param propertyArray
+         * @param propertyCollection
          * @private
          */
-        _triggerOnChange: function (propertyArray) {
-            var properties = {};
-            for (var i = 0, l = propertyArray.length; i < l; i++) {
-                properties.merge(propertyArray[i]);
-            }
+        _triggerOnChange: function (properties) {
+            //var properties = {};
+            //for (var i = 0, l = propertyArray.length; i < l; i++) {
+            //    properties.merge(propertyArray[i]);
+            //}
             this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
         },
 
@@ -391,21 +391,22 @@ PocketCode.Sprite = (function () {
             if (this._positionX === x && this._positionY === y)
                 return false;
 
-            var ops = [];
+            var ops = {};
             if (this._positionX != x) {
                 this._positionX = x;
-                ops.push({ positionX: x });
+                ops.positionX = x;
             }
             if (this._positionY != y) {
                 this._positionY = y;
-                ops.push({ positionY: y });
+                ops.positionY = y;
             }
-            //if (ops.length == 0)
-            //    return false;
 
-            if (triggerEvent)
-                this._triggerOnChange(ops);
-            return true;
+            if (ops.positionX !== undefined || ops.positionY !== undefined) {
+                if (triggerEvent)
+                    this._triggerOnChange(ops);
+                return true;
+            }
+            return false;
         },
         /**
          * sets the x position of the sprite
@@ -416,7 +417,7 @@ PocketCode.Sprite = (function () {
             if (this._positionX === x)
                 return false;
             this._positionX = x;
-            this._triggerOnChange([{ positionX: x }]);
+            this._triggerOnChange({ positionX: x });
             return true;
         },
         /**
@@ -428,7 +429,7 @@ PocketCode.Sprite = (function () {
             if (!value)// || value === 0)
                 return false;
             this._positionX += value;
-            this._triggerOnChange([{ positionX: this._positionX }]);
+            this._triggerOnChange({ positionX: this._positionX });
             return true;
         },
         /**
@@ -440,7 +441,7 @@ PocketCode.Sprite = (function () {
             if (this._positionY === y)
                 return false;
             this._positionY = y;
-            this._triggerOnChange([{ positionY: y }]);
+            this._triggerOnChange({ positionY: y });
             return true;
         },
         /**
@@ -452,7 +453,7 @@ PocketCode.Sprite = (function () {
             if (!value)// || value === 0)
                 return false;
             this._positionY += value;
-            this._triggerOnChange([{ positionY: this._positionY }]);
+            this._triggerOnChange({ positionY: this._positionY });
             return true;
         },
         /**
@@ -460,7 +461,7 @@ PocketCode.Sprite = (function () {
          * @returns {*}
          */
         ifOnEdgeBounce: function () {
-            return this._gameEngine.checkSpriteOnEdgeBounce(this);//.id, this);    //TODO: check parameters: this, 
+            return this._gameEngine.ifSpriteOnEdgeBounce(this);//.id, this);    //TODO: check parameters: this, 
             //onChange event is triggered by program in this case
         },
         /**
@@ -511,7 +512,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._direction = nd;
-            this._triggerOnChange([{ direction: nd }]);
+            this._triggerOnChange({ direction: nd });
             return true;
         },
         /**
@@ -527,7 +528,7 @@ PocketCode.Sprite = (function () {
 
             this._direction = degree;
             if (triggerEvent)
-                this._triggerOnChange([{ direction: degree }]);
+                this._triggerOnChange({ direction: degree });
             return true;
         },
         /**
@@ -553,7 +554,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._direction = direction;
-            this._triggerOnChange([{ direction: this._direction }]);
+            this._triggerOnChange({ direction: this._direction });
             return true;
         },
         //motion: layer
@@ -575,7 +576,7 @@ PocketCode.Sprite = (function () {
             //onChange event is triggered by program in this case
         },
         /**
-         * sets the direction style of the sprite (enum value)
+         * sets the rotation style of the sprite (enum value)
          * @returns {*}
          */
         setRotationStyle: function (value) {
@@ -583,7 +584,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._rotationStyle = value;
-            this._triggerOnChange([{ rotationStyle: this._rotationStyle }]);
+            this._triggerOnChange({ rotationStyle: this._rotationStyle });
             return true;
         },
         //looks
@@ -606,7 +607,7 @@ PocketCode.Sprite = (function () {
                 look = looks[i];
                 if (look.id === lookId) {
                     this._currentLook = look;
-                    this._triggerOnChange([{ lookId: lookId }]);
+                    this._triggerOnChange({ lookId: lookId });
                     return true;
                 }
             }
@@ -638,7 +639,7 @@ PocketCode.Sprite = (function () {
                     break;
                 }
             }
-            this._triggerOnChange([{ lookId: this._currentLook.id }]);
+            this._triggerOnChange({ lookId: this._currentLook.id });
             return true;
         },
         /**
@@ -655,7 +656,7 @@ PocketCode.Sprite = (function () {
             this._size = percentage;
             if (this._size < 0)
                 this._size = 0;
-            this._triggerOnChange([{ size: this._size }]);
+            this._triggerOnChange({ size: this._size });
             return true;
         },
         /**
@@ -677,7 +678,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._size = size;
-            this._triggerOnChange([{ size: size }]);
+            this._triggerOnChange({ size: size });
             return true;
         },
         /**
@@ -689,7 +690,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._visible = false;
-            this._triggerOnChange([{ visible: false }]);
+            this._triggerOnChange({ visible: false });
             return true;
         },
         /**
@@ -701,7 +702,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._visible = true;
-            this._triggerOnChange([{ visible: true }]);
+            this._triggerOnChange({ visible: true });
             return true;
         },
         /**
@@ -780,7 +781,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._transparency = percentage;
-            this._triggerOnChange([{ transparency: percentage }]);
+            this._triggerOnChange({ transparency: percentage });
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -804,7 +805,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._transparency = value;
-            this._triggerOnChange([{ transparency: value }]);
+            this._triggerOnChange({ transparency: value });
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -827,7 +828,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._brightness = percentage;
-            this._triggerOnChange([{ brightness: percentage }]);
+            this._triggerOnChange({ brightness: percentage });
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -851,7 +852,7 @@ PocketCode.Sprite = (function () {
                 return false;
 
             this._brightness = value;
-            this._triggerOnChange([{ brightness: value }]);
+            this._triggerOnChange({ brightness: value });
             return true;
         },
         /**
@@ -859,21 +860,24 @@ PocketCode.Sprite = (function () {
          * @returns {boolean}
          */
         clearGraphicEffects: function () {
-            var ops = [];
+            var ops = {};
             if (this._transparency === 0.0 && this._brightness === 100.0)   //TODO: extend this when adding effects
                 return false;
 
             if (this._transparency != 0.0) {
                 this._transparency = 0.0;
-                ops.push({ transparency: 0.0 });
+                ops.transparency = 0.0;
             }
             if (this._brightness != 100.0) {
                 this._brightness = 100.0;
-                ops.push({ brightness: 100.0 });
+                ops.brightness = 100.0;
             }
 
-            this._triggerOnChange(ops);
-            return true;
+            if (ops.transparency !== undefined || ops.brightness != undefined) {
+                this._triggerOnChange(ops);
+                return true;
+            }
+            return false;
         },
 
         /* override */

@@ -22,6 +22,7 @@ PocketCode.SoundManager = (function () {
         this._activeSounds = [];
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
+        this._onLoad = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
         this._onFinishedPlaying = new SmartJs.Event.Event(this);
 
@@ -69,6 +70,13 @@ PocketCode.SoundManager = (function () {
             //enumerable: false,
             //configurable: true,
         },
+        onLoad: {
+            get: function () {
+                return this._onLoad;
+            }
+            //enumerable: false,
+            //configurable: true,
+        },
         onLoadingError: {
             get: function () {
                 return this._onLoadingError;
@@ -97,34 +105,36 @@ PocketCode.SoundManager = (function () {
             createjs.Sound.removeAllEventListeners();
 
             var soundsFormatted = [];
-            this.sizeOfAllSounds = 0;
+            this._sizeOfAllSounds = 0;
             for (var i = 0, l = sounds.length; i < l; i++) {
                 if (!sounds[i].hasOwnProperty('url') || !sounds[i].hasOwnProperty('id')) {
                     throw new Error('Sounddata is missing id or url');
                 }
                 soundsFormatted[i] = { id: sounds[i].id, src: sounds[i].url, data: this.maxInstancesOfSameSound, size: sounds[i].size };
-                this.sizeOfAllSounds += sounds[i].size;
+                this._sizeOfAllSounds += sounds[i].size;
             }
 
-            var percentLoaded = this.sizeOfAllSounds > 0 ? 0:100;
+            var percentLoaded = this._sizeOfAllSounds > 0 ? 0 : 100;
             this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: 0 });
+            //TODO: dispatch onLoad after all files loaded.. filesize == 0? ->return?
 
             createjs.Sound.addEventListener('fileload', createjs.proxy(function (e) {
                 var loadedFile = soundsFormatted.filter(function (sound) { return sound.src === e.src; });
                 if (loadedFile.length > 0) {
-                    percentLoaded += loadedFile[0].size / this.sizeOfAllSounds * 100;
+                    percentLoaded += loadedFile[0].size / this._sizeOfAllSounds * 100;
                     this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: loadedFile[0].size });
                 }
+                //TODO: dispatch onLoad after all files loaded.. make sure to handle rounding errors when using == 100
             }, this));
 
             createjs.Sound.addEventListener('fileerror', createjs.proxy(function (e) {
-                this._onLoadingError.dispatchEvent({src: e.src});
+                this._onLoadingError.dispatchEvent({ src: e.src });
             }, this));
 
             createjs.Sound.registerSounds(soundsFormatted, '');
         },
 
-        loadSoundFile: function (id, url) {
+        loadSoundFile: function (id, url) { //TODO: Benny?
             if (!this.supported)
                 return false;
 
@@ -161,9 +171,9 @@ PocketCode.SoundManager = (function () {
                 return false;
 
             var id = SmartJs.getNewId();
-            createjs.Sound.registerSound({mp3: url}, id, this.maxInstancesOfSameSound,'');
+            createjs.Sound.registerSound({ mp3: url }, id, this.maxInstancesOfSameSound, '');
             createjs.Sound.on("fileload", function loadHandler(event) {
-                if(event.id === id)
+                if (event.id === id)
                     this.startSound(id);
             }, this);
 

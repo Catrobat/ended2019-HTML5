@@ -52,6 +52,7 @@ var runTests = function () {
 
     var ih = PocketCode.ImageHelper;
     ih._init(); //call init myself to manipulate the canvas element before calling the methods
+    document.body.style.backgroundColor = 'lightblue';
     document.body.appendChild(ih._canvas);
     //ih._canvas.style.backgroundColor = 'lightgray';
 
@@ -69,7 +70,10 @@ var runTests = function () {
     //offsets = ih.getTrimOffsets(img3, 5, 0, true, true, true, true);
     //offsets = ih.getTrimOffsets(img3, 0.5, 0, true, true, true, true);
 
-    offsets = ih.getTrimOffsets(img9, 1, 45, true, true, true, true);
+    offsets = ih.getTrimOffsets(img9, 1, 30, /*false, false, */true, true, true, true);
+    console.log(offsets);
+    offsets = ih.getTrimOffsets(img9, 1, 30, /*true, true, */true, true, true, true);
+    console.log(offsets);
 
     var imgObject6 = ih.trimAndScale(img6);//, 0.5);
     document.body.appendChild(imgObject6.img);
@@ -82,7 +86,6 @@ var runTests = function () {
 
     var imgObject9 = ih.trimAndScale(img9, .3);
     //imgObject9 = ih.scale(imgObject9, 0.5);//, 0.5);
-    document.body.style.backgroundColor = 'lightblue';
     document.body.appendChild(imgObject9.img);
     //alert(imgObject9.offsetX + ', ' + imgObject9.offsetY);
 

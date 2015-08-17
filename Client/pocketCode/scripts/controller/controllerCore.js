@@ -13,6 +13,16 @@ PocketCode.BaseController = (function () {
         //this._viewOnHide = this._view.onHide;
     }
 
+    //properties
+    Object.defineProperties(BaseController.prototype, {
+        view: {
+            get: function () {
+                return this._view;
+            },
+        },
+    });
+
+    //methods
     BaseController.prototype.merge({
         showView: function () {
             this._view.show();

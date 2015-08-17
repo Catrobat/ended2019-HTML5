@@ -61,11 +61,11 @@ QUnit.test("Sprite", function (assert) {
 
     assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
-    var props = [{ direction: 90 }];
+    var props = { direction: 90 };
     var onChangeHandler = function (e) {
         assert.equal(e.target, evSprite, "onChange target check");
         assert.equal(e.id, "newId", " onChange id check");
-        assert.deepEqual(e.properties, props[0], "onChange event args properties check");
+        assert.deepEqual(e.properties, props, "onChange event args properties check");
     };
     var prog2 = new PocketCode.GameEngine();
     var evSprite = new PocketCode.Sprite(prog2, { id: "newId", name: "myName" })
@@ -293,9 +293,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     //if on edge, bounce
-    assert.ok(typeof prog.checkSpriteOnEdgeBounce === "function", "sprite-brogram interface: if on edge bounce");
+    assert.ok(typeof prog.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
     var ioeCalled = false;
-    prog.checkSpriteOnEdgeBounce = function () {    //override to check call
+    prog.ifSpriteOnEdgeBounce = function () {    //override to check call
         ioeCalled = true;
     };
     sprite.ifOnEdgeBounce();

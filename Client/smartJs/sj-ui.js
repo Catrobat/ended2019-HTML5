@@ -773,7 +773,7 @@ SmartJs.Ui.merge({
             addToDom: function (dom) {
                 if (dom !== undefined && !(dom instanceof HTMLElement))
                     throw new Error('invalid argument: dom: expectet type HTMLElement');
-                var dom = dom || document;
+                var dom = dom || document.body;
                 dom.appendChild(this._dom);
             },
             dispose: function () {
