@@ -536,6 +536,9 @@ PocketCode.GameEngine = (function () {
 
                 //detect object state after rotation
                 innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
+                if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
+                    return false;   //ignore bouncing if area becomes bigger than screen heihgt/width (during rotation)
+
                 //if (angle == 0) {
                 //we flipped or rotated the image, which means we have to adjust the x-coordinate: move the visual areas center to the same position
                 newX += center.x - (innerOffsets.right - innerOffsets.left) / 2;
