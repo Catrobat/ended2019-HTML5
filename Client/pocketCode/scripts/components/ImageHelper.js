@@ -79,7 +79,7 @@ PocketCode.ImageHelper = (function () {
 
             return { boundingHeight: h * scalingFactor, boundingWidth: w * scalingFactor };
         },
-        trimAndScale: function (img, scalingFactor) {//, symmetrical) {
+        trimAndScale: function (img, scalingFactor, rotationCenterX, rotationCenterY) { //TODO: use alternative rotation center if provided
             this._checkInitialized();
             if (!(img instanceof HTMLImageElement))
                 throw new Error('invalid paramter: img: expected type: HTMLImageElement');
@@ -127,7 +127,7 @@ PocketCode.ImageHelper = (function () {
         },
         //please notice: the rotaiton angle is in degree here and not eqal to the sprite direction: it depends on the diection + rotationStyle
         //positive angle means clockwise rotation
-        getTrimOffsets: function (img, scalingFactor, rotationAngle, /*flipH, flipV, */top, right, bottom, left) {
+        getTrimOffsets: function (img, scalingFactor, rotationAngle, /*flipH, flipV, */top, right, bottom, left) {  //TODO:optional parameter: boundingSize (so we do not have to recalculate this)
             this._checkInitialized();
             if (!(img instanceof HTMLImageElement))
                 throw new Error('invalid paramter: img: expected type: HTMLImageElement');

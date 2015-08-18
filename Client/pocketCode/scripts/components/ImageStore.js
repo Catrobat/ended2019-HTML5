@@ -12,7 +12,9 @@ PocketCode.ImageStore = (function () {
 
     //ctr
     function ImageStore() {
-        this._imageCache = {};
+        this._initialScaling = 1;
+        this._images = {};
+        this._lookCache = {};
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
@@ -21,10 +23,11 @@ PocketCode.ImageStore = (function () {
 
     //properties
     Object.defineProperties(ImageStore.prototype, {
-        scaling: {
-            value: 1,
-            writeable: true,
-        },
+        //initialScaling: {     //should not be used for rendering, as it's included in the looks already
+        //    get: function () {
+        //        return this._initialScaling;
+        //    }
+        //},
     });
 
     //events
@@ -48,28 +51,49 @@ PocketCode.ImageStore = (function () {
 
     //methods
     ImageStore.prototype.merge({
-        loadImages: function (resourceBaseUrl, imgArray, totalSize) {  //[{ id: , url: , size: }, { .. }, ..]
+        loadImages: function (resourceBaseUrl, imgArray, initialScaling) {  //[{ id: , url: , size: }, { .. }, ..]
             if (this._isLoading)
                 throw new Error('loading in progress');
             this._isLoading = true;
             var percentLoaded = 0;  //TODO
+            this._initialScaling = initialScaling;
+
             this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: 0 });
             //TODO: load + progressEvents
             //store in _imageCache.id: {img: , offsetX: , offsetY: , scaled: }
             //using the global scaling factor and the imageHelper class
+
+            //TODO: reset:_isLoading onLoad
+            
         },
-        getImage: function (id) {
+        //getImage: function (id) {
             //TODO: returns an image object as {img: , offsetX: , offsetY: , scaled: }
             //make sure to refactor the spriteChangeEvents to seld the current image object as look instead of the lookOrImage id
+        //},
+        getLook: function(id) {
+            //returns a look object including its imageObject -> please notice that this can differ from the original image, e.g. resized due to rotationCenter position, 
+            //including image.initialScaling
+            if (this._images.id)
+                return { imgObject: this._images.id, initialScaling: this._initialScaling };
+            throw new Error('requested look could not be found: ' + id);
         },
-        getViewportOverflow: function (viewportHeight, viewportWidth, spriteId, imgId, scalingFactor, rotationAngle, flipX, posX, posY, boundings) {
+        getLookBoundary: function(spriteId, lookId, scalingFactor, rotationAngle, flipX, pixelAccuracy) {
+            //TODO: move logic:
+            /*  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
+            /*  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
+            /*  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
+            /*  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to inclrease performance)
+            */
+            return { top: 0, right: 0, bottom: 0, left: 0, pixelAccuracy: true };
+        },
+        getViewportOverflow: function (viewportHeight, viewportWidth, spriteId, imgId, scalingFactor, rotationAngle, flipX, posX, posY, boundings) {    //TODO: change bounding param
             //TODO: spriteId is used for cache- lookup
             //the boundings property indicates what we have to look for: only properties != 0, but this time we have to include negative offsets as well
 
             var spriteSize = this._getCachedImageSize(imgId, scalingFactor, rotationAngle);
             var includeNegativeValues = boundings ? true : false;
 
-            var h2 = Math.ceil(spriteSize.height / 2),  //TODO: take care of the spriteSize.pixelExact property
+            var h2 = Math.ceil(spriteSize.height / 2),  //TODO: take care of the spriteSize.pixelAccuracy property
                 w2 = Math.ceil(spriteSize.width / 2),
                 top, right, bottom, left;
 
@@ -169,12 +193,15 @@ PocketCode.ImageStore = (function () {
             return os;
         },
         _getCachedImageSize: function (id, scalingFactor, rotationAngle) {
-            var size = { height: undefined, width: undefined, pixelExact: false };
+            var size = { height: undefined, width: undefined, pixelAccuracy: false };
+
+            //use: getBoundingSize for first check or calculate boundings exactly on first try? (to cache them)
+
             //TODO: calculate bounding size (no pixel based detection) using imaeHelper (if not in cache)
             //      think of caching this or caching relevant data like the diagonal: caching has to be done on imgId + spriteId as images can be used in more than one look
             //      make sure pixel size returnd is int (Math.ceil())
 
-            //the return property "pixelExact" will notify you if the size is based on the bounding box or already takes care of trimOffsets: 
+            //the return property "pixelAccuracy" will notify you if the size is based on the bounding box or already takes care of trimOffsets: 
             //^^ if they are in cache they should be included to avoid double-checking in the ifSpriteOnEdgeBounce method
             return size;
         },

@@ -225,10 +225,11 @@ PocketCode.GameEngine = (function () {
 
             //image loading using store
             //set initial scaling: default = 1
+            var initialScaling = 1;
             //TODO: (commented out due to testing) ): make sure to use the screen params + pixelRatio if needed as the window may not be maximized on desktops
-            //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);
+            //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);   -> this is private now
 
-            this._imageStore.loadImages(jsonProject.resourceBaseUrl, jsonProject.images, imageSize);
+            this._imageStore.loadImages(jsonProject.resourceBaseUrl, jsonProject.images, initialScaling);//, imageSize); -> size can be calculated inside
 
             //var img = jsonProject.images;
             //var images = [];
@@ -397,7 +398,10 @@ PocketCode.GameEngine = (function () {
                 throw new Error('sprite not found: getSpriteLayer');
             return idx + 1;
         },
-
+        getLookImage: function (id) {
+            //used by the sprite to access a look object when firing onSpriteChange (setLook, nextLook bricks)
+            return this._imageStore.getLook(id);    //TODO: the gameEngine Object has much too much public methods and properties (even events like onStart) that are used by sprites and bricks only: IMPORTANT
+        },
         setSpriteLayerBack: function (sprite, layers) {
             var sprites = this._sprites;
             var idx = sprites.indexOf(sprite);
@@ -426,68 +430,102 @@ PocketCode.GameEngine = (function () {
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
             return true;
         },
-        //_getSpritesTrimOffsetsFromCache: function (sprite, top, right, bottom, left) {
-        //    //TODO:
-        //    //direction, size, rotationStyle, currentLook changes -> recalculate using imageHempler, else: return from cache
-        //},
-        ifSpriteOnEdgeBounce: function (sprite) {    //Id, sprite) {  //TODO: check parameters:sprite.rotationStyle???    call: sprite.bounceTo(angle, posX, posY) new method?
+        ifSpriteOnEdgeBounce: function (sprite, recursiveCall) {
 
-            //return false; //TODO: included to avoid failing tests so i can push!!!!!!!!!!!
+            if (!sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
+                return false;
 
-            //program viewport
-            var spriteSize;
             var sh = this._screenHeight,
-                sw = this._screenWidth;
-            //if (sprite.currentLook) {   //this may be undefined
-            var imageId = sprite.currentLook ? sprite.currentLook.imageId : undefined,
+                sw = this._screenWidth,
+
+                lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
                 scaling = sprite.size / 100,
                 angle = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? sprite.direction - 90 : 0,
                 //^^ sprite has a direction but is not rotated
                 flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && sprite.direction < 0 ? true : false;
 
-            if (!imageId)   //no look defined (cannot be changed either: so no need to handle this)
-                return false;
 
-            var overflow = this._imageStore.getViewportOverflow(sh, sw, sprite.id, imageId, scaling, angle, flipX, sprite.positionX + sw / 2, sprite.positionY + sh / 2);
-            //TODO: make sure this is correct (specification): if there is an overflow on both sides we we ignore it
-            //TODO: how to handle overflows that cause another overflow during movement? - ignore it? move to edge & which one?
-            if (overflow.top > 0 && overflow.bottom > 0) {
-                overflow.bottom = 0;
-                overflow.top = 0;
-            }
-            if (overflow.left > 0 && overflow.right > 0) {
-                overflow.left = 0;
-                overflow.right = 0;
+            var imgStore = this._imageStore;
+            /* interface to use: imgStore.getLookBoundary(spriteId, lookId, scalingFactor, rotationAngle, flipX, pixelAccuracy)
+            *  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
+            *  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
+            *  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
+            *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to inclrease performance)
+            */
+
+            var innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, false);
+            //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+            var x = sprite.positionX + sw / 2;  //move the coord systems 0/0 to top/left
+            var y = sprite.positionY + sh / 2;
+
+            if (!innerOffsets.pixelAccuracy) {  //quick check
+                if (y - innerOffsets.top < 0 ||
+                    x + innerOffsets.right > sw ||
+                    y + innerOffsets.bottom > sh ||
+                    x - innerOffsets.left < 0) {
+
+                    innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
+                }
+                else
+                    return false;   //no collision
             }
 
-            //move and rotate
+            //make sure this is correct (specification): if there is an overflow on both sides we ignore it
+            //how to handle overflows that cause another overflow during movement? - ignore it? move to edge & which one?
+            if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
+                return false;   //this meanse: the visible area has a bigger hight or width than the screen
+                                //let's handle that as easy as possible: no conflicting states are handled: if we start to rotate in this cases we get lost
+
+            //retesting with exact bounding (pixelAccuracy = true)
+            var overflow = {    //defining how many pixels the visual area is outside the viewport: if no overflow the values are 0 or negative
+                top: innerOffsets.top - y,
+                right: x + innerOffsets.right - sw,
+                bottom: y + innerOffsets.bottom - sh,
+                left: innerOffsets.left - x,
+            };
+            var center = {  //store the center position of the current area
+                x: (innerOffsets.right - innerOffsets.left) / 2,
+                y: (innerOffsets.top - innerOffsets.bottom) / 2,
+            };
+
+            //calc new positions and direction
             var dir = sprite.direction,
-                newPosX = sprite.positionX,
-                newPosY = sprite.positionY;
-            if (overflow.top) {
-                newPosY += overflow.top;
+                newX = sprite.positionX,
+                newY = sprite.positionY,
+                bounceTop, bounceRight, bounceBottom, bounceLeft;    //to store the current operation: we only bounce once at a time and recall this method
+
+            if (overflow.top > 0) {
+                newY += overflow.top;       //we move them back on the edge because we do not know if we have to rotate right now
+                center.y += overflow.top;   //with the sprite x/y-movement, the areas center moves as well
                 if (Math.abs(dir) < 90)
                     dir = dir > 0 ? 180 - dir : -180 - dir; //make sure we do not get an angle > +-180
+                bounceTop = true;
             }
-            if (overflow.right) {
-                newPosX -= overflow.right;
+            else if (overflow.right > 0) {
+                newX -= overflow.right;
+                center.x -= overflow.right;
                 if (dir > 0 && dir < 180)
                     dir = -dir;
+                bounceRight = true;
             }
-            if (overflow.bottom) {
-                newPosY -= overflow.bottom;
+            else if (overflow.bottom > 0) {
+                newY -= overflow.bottom;
+                center.y -= overflow.bottom;
                 if (Math.abs(dir) > 90)
                     dir = dir > 0 ? 180 - dir : -180 - dir;
+                bounceBottom = true;
             }
-            if (overflow.left) {
-                newPosX += overflow.left;
+            else if (overflow.left > 0) {
+                newX += overflow.left;
+                center.x += overflow.left;
                 if (dir < 0)    //there is no -180
                     dir = -dir;
+                bounceLeft = true;
             }
 
-            //do we have to check again: direction may change -> check on rotation
+            //do we have to check again?: direction change -> check on rotation + reposition
             var sdir = sprite.direction;
-            if (dir != sdirection && sprite.rotationStyle !== PocketCode.RotationStyle.DO_NOT_ROTATE) {
+            if (dir != sdir && sprite.rotationStyle !== PocketCode.RotationStyle.DO_NOT_ROTATE) {
                 var flipped = (dir >= 0 && sdir < 0) || (dir < 0 && sdir >= 0);
                 //if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
                 angle = dir - 90;
@@ -495,31 +533,81 @@ PocketCode.GameEngine = (function () {
                     angle = 0;
                     flipX = !flipX;
                 };
-                overflow = this._imageStore.getViewportOverflow(this._screenHeight, this._screenWidth, sprite.id, imageId, scaling, angle, flipX, newPosX + sw / 2, newPosY + sh / 2, overflow);    //TODO: param
-                if (overflow.top)
-                    newPosY += overflow.top;
-                if (overflow.right)
-                    newPosX -= overflow.right;
-                if (overflow.bottom)
-                    newPosY -= overflow.bottom;
-                if (overflow.left)
-                    newPosX += overflow.left;
-            }
-        
 
+                //detect object state after rotation
+                innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
+                //if (angle == 0) {
+                //we flipped or rotated the image, which means we have to adjust the x-coordinate: move the visual areas center to the same position
+                newX += center.x - (innerOffsets.right - innerOffsets.left) / 2;
+                //}
+                if (angle !== 0) {   //else {
+                    //on rotate we meight have also changed the y position of our area
+                    newY += center.y - (innerOffsets.right - innerOffsets.left) / 2;
+
+                    //we did rotate which means the visible area can be outside the screen now (size of the area changed)
+                    var oar = {    //overflow after rotate
+                        top: innerOffsets.top - newY,
+                        right: newX + innerOffsets.right - sw,
+                        bottom: newY + innerOffsets.bottom - sh,
+                        left: innerOffsets.left - newX,
+                    };
+                    //detect edges we've handled already and move the sprite according to this: only one of them is currently handled
+                    if (bounceTop) {
+                        newY += oar.top;
+                        oar.top = 0;    //was handled already
+                    }
+                    else if (bounceRight) {
+                        newY -= oar.right;
+                        oar.right = 0;
+                    }
+                    else if (bounceBottom) {
+                        newY -= oar.bottom;
+                        oar.bottom = 0;
+                    }
+                    else if (bounceLeft) {
+                        newY += oar.left;
+                        oar.left = 0;
+                    }
+
+                    //now, the rotated image is aligned on the position, but is the visible area inside the screen?
+                    //we already set handled properties = 0 to avoid a conflict
+                    if (oar.top > 0 || oar.right > 0 || oar.bottom > 0 || oar.left > 0) {
+                        //bounce again:
+                        sprite.setDirection(dir, false);    //we apply all changes
+                        sprite.setPosition(newX - sw / 2, newY - sh / 2, false);    //move coords back to system coord: center/center = 0/0
+                        return this.ifSpriteOnEdgeBounce(sprite, true);
+                        //^^ as we do not rotate if the direction is parallel to the bouncing enge, this cannot trigger infinite recursions (should be one (two?) at most)
+                    }
+                }
+            }
+            else {  //sprite was not rotated or flipped, but we do not know if we handled all overflows already
+                if (overflow.top > 0 && !bounceTop ||
+                    overflow.right > 0 && !bounceRight ||
+                    overflow.bottom > 0 && !bounceBottom ||
+                    overflow.left > 0 && !bounceLeft) {
+
+                    //recall method if there are unhandled offsets
+                    sprite.setPosition(newX - sw / 2, newY - sh / 2, false);    //move coords back to system coord: center/center = 0/0
+                    return this.ifSpriteOnEdgeBounce(sprite, true);
+                }
+            }
+
+            //move coords back to system coord: center/center = 0/0
+            newX -= sw / 2;
+            newY -= sh / 2;
             //set sprite values: avoid triggering multiple onChange events
             var props = {};
-            if (sprite.direction !== dir) {
+            if (sprite.direction !== dir || recursiveCall) {
                 sprite.setDirection(dir, false);
                 props.direction = dir;
             }
-            if (sprite.positionX !== newPosX) {
-                props.positionX = newPosX;
+            if (sprite.positionX !== newX || recursiveCall) {
+                props.positionX = newX;
             }
-            if (sprite.positionY !== newPosY) {
-                props.positionY = newPosY;
+            if (sprite.positionY !== newY || recursiveCall) {
+                props.positionY = newY;
             }
-            sprite.setPosition(newPosX, newPosY, false);
+            sprite.setPosition(newX, newY, false);
 
             if (props.direction !== undefined || props.positionX !== undefined || props.positionY !== undefined) {
                 this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: props }, sprite);

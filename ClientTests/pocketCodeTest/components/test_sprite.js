@@ -456,6 +456,12 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setLook("first");
     assert.ok(!returnVal, "set already active look: no change");
 
+    //we do have to overide the gameEngine look equest to test this, as there are no looks registered
+    //game engine: getLookImage
+    assert.ok(typeof prog.getLookImage === "function", "sprite-program interface: get look from store");
+    prog.getLookImage = function (id) {
+        return { imgObject: new Image(), initialScaling: 0.5 };
+    };
     returnVal = sprite.setLook("second");
     assert.ok(sprite._currentLook.name == "look2", "set current look with id");
     assert.ok(returnVal, "set look: change (return value)");
