@@ -512,15 +512,15 @@ QUnit.test("Sprite", function (assert) {
     // ********************* start/pause/resume/stop *********************
     //var device = new PocketCode.Device();
     var programAsync = new PocketCode.GameEngine();
-    var brick1 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    var brick1 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     brick1.id = "first";
-    var brick2 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    var brick2 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     //adding a test brick to the internal brick container
     var testBrick = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 1, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
-    var brick3 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
-    var brick4 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
-    var brick5 = new PocketCode.Bricks.ProgramStartBrick(device, programAsync, sprite);
+    var brick3 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick4 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick5 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;

@@ -3,7 +3,7 @@
 /// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../core.js" />
 /// <reference path="../components/broadcastManager.js" />
-/// <reference path="../components/program.js" />
+/// <reference path="../components/gameEngine.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
 
@@ -17,13 +17,13 @@ PocketCode.Bricks.merge({
     ProgramStartBrick: (function () {
         ProgramStartBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
 
-        function ProgramStartBrick(device, program, sprite) {
+        function ProgramStartBrick(device, sprite, startEvent) {
             PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
 
             //this._bricks; type of PocketCode.Bricks.BrickContainer
-            //listen to program start
-            //program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._programStartHandler, this));
-            program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            //listen to project start
+            //project.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._programStartHandler, this));
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         ProgramStartBrick.prototype.merge({
@@ -55,12 +55,12 @@ PocketCode.Bricks.merge({
     WhenActionBrick: (function () {
         WhenActionBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
 
-        function WhenActionBrick(device, program, sprite, propObject) {
+        function WhenActionBrick(device, sprite, actionEvent, propObject) {
             PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
 
             this._action = propObject.action;
             //listen to 'when tabbed'
-            program.onTabbedAction.addEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
+            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
         }
 
         WhenActionBrick.prototype.merge({
