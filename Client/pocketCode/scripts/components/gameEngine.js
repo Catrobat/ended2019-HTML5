@@ -430,19 +430,31 @@ PocketCode.GameEngine = (function () {
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
             return true;
         },
-        ifSpriteOnEdgeBounce: function (sprite, recursiveCall) {
+        ifSpriteOnEdgeBounce: function (sprite, pendingChanges) {
 
             if (!sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
             var sh = this._screenHeight,
                 sw = this._screenWidth,
+                dir = sprite.direction,
+                x = sprite.positionX + sw / 2,  //move the coord systems 0/0 to top/left
+                y = sprite.positionY + sh / 2;
 
-                lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
+            if (pendingChanges) {
+                if (pendingChanges.direction != undefined)  //be careful when comparing as the positions can become =0
+                    dir = pendingChanges.direction;
+                if (pendingChanges.positionX != undefined)
+                    x = pendingChanges.positionX + sw / 2;
+                if (pendingChanges.positionY != undefined)
+                    y = pendingChanges.positionY + sh / 2;
+            }
+
+            var lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
                 scaling = sprite.size / 100,
-                angle = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? sprite.direction - 90 : 0,
+                angle = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90 : 0,
                 //^^ sprite has a direction but is not rotated
-                flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && sprite.direction < 0 ? true : false;
+                flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0 ? true : false;
 
 
             var imgStore = this._imageStore;
@@ -455,8 +467,6 @@ PocketCode.GameEngine = (function () {
 
             var innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, false);
             //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
-            var x = sprite.positionX + sw / 2;  //move the coord systems 0/0 to top/left
-            var y = sprite.positionY + sh / 2;
 
             if (!innerOffsets.pixelAccuracy) {  //quick check
                 if (y - innerOffsets.top < 0 ||
@@ -464,17 +474,17 @@ PocketCode.GameEngine = (function () {
                     y + innerOffsets.bottom > sh ||
                     x - innerOffsets.left < 0) {
 
-                    innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
+                    innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //update to exact values at collision
                 }
                 else
                     return false;   //no collision
             }
 
             //make sure this is correct (specification): if there is an overflow on both sides we ignore it
-            //how to handle overflows that cause another overflow during movement? - ignore it? move to edge & which one?
+            //how to handle overflows that causes another overflow during movement? - ignore it? move to edge & which one?
             if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
                 return false;   //this meanse: the visible area has a bigger hight or width than the screen
-                                //let's handle that as easy as possible: no conflicting states are handled: if we start to rotate in this cases we get lost
+            //let's handle that as easy as possible: no conflicting states are handled: if we start to rotate in this cases we get lost
 
             //retesting with exact bounding (pixelAccuracy = true)
             var overflow = {    //defining how many pixels the visual area is outside the viewport: if no overflow the values are 0 or negative
@@ -489,46 +499,46 @@ PocketCode.GameEngine = (function () {
             };
 
             //calc new positions and direction
-            var dir = sprite.direction,
-                newX = sprite.positionX,
-                newY = sprite.positionY,
+            var newDir = dir,//sprite.direction,
+                newX = x,//sprite.positionX,
+                newY = y,//sprite.positionY,
                 bounceTop, bounceRight, bounceBottom, bounceLeft;    //to store the current operation: we only bounce once at a time and recall this method
 
             if (overflow.top > 0) {
                 newY += overflow.top;       //we move them back on the edge because we do not know if we have to rotate right now
                 center.y += overflow.top;   //with the sprite x/y-movement, the areas center moves as well
-                if (Math.abs(dir) < 90)
-                    dir = dir > 0 ? 180 - dir : -180 - dir; //make sure we do not get an angle > +-180
+                if (Math.abs(newDir) < 90)
+                    newDir = newDir > 0 ? 180 - newDir : -180 - newDir; //make sure we do not get an angle > +-180
                 bounceTop = true;
             }
             else if (overflow.right > 0) {
                 newX -= overflow.right;
                 center.x -= overflow.right;
-                if (dir > 0 && dir < 180)
-                    dir = -dir;
+                if (newDir > 0 && newDir < 180)
+                    newDir = -newDir;
                 bounceRight = true;
             }
             else if (overflow.bottom > 0) {
                 newY -= overflow.bottom;
                 center.y -= overflow.bottom;
-                if (Math.abs(dir) > 90)
-                    dir = dir > 0 ? 180 - dir : -180 - dir;
+                if (Math.abs(newDir) > 90)
+                    newDir = newDir > 0 ? 180 - newDir : -180 - newDir;
                 bounceBottom = true;
             }
             else if (overflow.left > 0) {
                 newX += overflow.left;
                 center.x += overflow.left;
-                if (dir < 0)    //there is no -180
-                    dir = -dir;
+                if (newDir < 0)    //there is no -180
+                    newDir = -newDir;
                 bounceLeft = true;
             }
 
             //do we have to check again?: direction change -> check on rotation + reposition
-            var sdir = sprite.direction;
-            if (dir != sdir && sprite.rotationStyle !== PocketCode.RotationStyle.DO_NOT_ROTATE) {
-                var flipped = (dir >= 0 && sdir < 0) || (dir < 0 && sdir >= 0);
+            //var sdir = sprite.direction;
+            if (newDir != dir && sprite.rotationStyle !== PocketCode.RotationStyle.DO_NOT_ROTATE) {
+                var flipped = (newDir >= 0 && dir < 0) || (newDir < 0 && dir >= 0);
                 //if (sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle = dir - 90;
+                angle = newDir - 90;
                 if (sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && flipped) {
                     angle = 0;
                     flipX = !flipX;
@@ -537,15 +547,16 @@ PocketCode.GameEngine = (function () {
                 //detect object state after rotation
                 innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
                 if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
-                    return false;   //ignore bouncing if area becomes bigger than screen heihgt/width (during rotation)
+                    return false;   //ignore bouncing if area becomes bigger than screen height/width (during rotation)
 
                 //if (angle == 0) {
                 //we flipped or rotated the image, which means we have to adjust the x-coordinate: move the visual areas center to the same position
-                newX += center.x - (innerOffsets.right - innerOffsets.left) / 2;
+                newX += center.x - (innerOffsets.right - innerOffsets.left) / 2;        //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
+                                                                                        //ELSE: WE HAVE TO ALIGN THE AREA TO ITS PENDING OP OVERFLOW: KEEPING PENDING OPS "ALIVE"
                 //}
                 if (angle !== 0) {   //else {
                     //on rotate we meight have also changed the y position of our area
-                    newY += center.y - (innerOffsets.right - innerOffsets.left) / 2;
+                    newY += center.y - (innerOffsets.right - innerOffsets.left) / 2;    //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
 
                     //we did rotate which means the visible area can be outside the screen now (size of the area changed)
                     var oar = {    //overflow after rotate
@@ -557,7 +568,7 @@ PocketCode.GameEngine = (function () {
                     //detect edges we've handled already and move the sprite according to this: only one of them is currently handled
                     if (bounceTop) {
                         newY += oar.top;
-                        oar.top = 0;    //was handled already
+                        oar.top = 0;    //for each side that was handled already
                     }
                     else if (bounceRight) {
                         newY -= oar.right;
@@ -576,9 +587,9 @@ PocketCode.GameEngine = (function () {
                     //we already set handled properties = 0 to avoid a conflict
                     if (oar.top > 0 || oar.right > 0 || oar.bottom > 0 || oar.left > 0) {
                         //bounce again:
-                        sprite.setDirection(dir, false);    //we apply all changes
-                        sprite.setPosition(newX - sw / 2, newY - sh / 2, false);    //move coords back to system coord: center/center = 0/0
-                        return this.ifSpriteOnEdgeBounce(sprite, true);
+                        //sprite.setDirection(newDir, false);    //we apply all changes
+                        //sprite.setPosition(newX - sw / 2, newY - sh / 2, false);    //move coords back to system coord: center/center = 0/0
+                        return this.ifSpriteOnEdgeBounce(sprite, { direction: newDir, positionX: newX - sw / 2, positionY: newY - sh / 2 });//true);
                         //^^ as we do not rotate if the direction is parallel to the bouncing enge, this cannot trigger infinite recursions (should be one (two?) at most)
                     }
                 }
@@ -591,7 +602,7 @@ PocketCode.GameEngine = (function () {
 
                     //recall method if there are unhandled offsets
                     sprite.setPosition(newX - sw / 2, newY - sh / 2, false);    //move coords back to system coord: center/center = 0/0
-                    return this.ifSpriteOnEdgeBounce(sprite, true);
+                    return this.ifSpriteOnEdgeBounce(sprite, { positionX: newX - sw / 2, positionY: newY - sh / 2 });//true);
                 }
             }
 
@@ -600,14 +611,14 @@ PocketCode.GameEngine = (function () {
             newY -= sh / 2;
             //set sprite values: avoid triggering multiple onChange events
             var props = {};
-            if (sprite.direction !== dir || recursiveCall) {
-                sprite.setDirection(dir, false);
-                props.direction = dir;
+            if (sprite.direction !== newDir) {// || recursiveCall) {
+                sprite.setDirection(newDir, false);
+                props.direction = newDir;
             }
-            if (sprite.positionX !== newX || recursiveCall) {
+            if (sprite.positionX !== newX) {// || recursiveCall) {
                 props.positionX = newX;
             }
-            if (sprite.positionY !== newY || recursiveCall) {
+            if (sprite.positionY !== newY) {// || recursiveCall) {
                 props.positionY = newY;
             }
             sprite.setPosition(newX, newY, false);
