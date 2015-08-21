@@ -248,7 +248,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 		Y.extends(ns.PD, false);
 
 		function Y() {
-		    ns.PD.call(this, "1", 2);
+			ns.PD.call(this, "1", 2);
 			this.prop1_ = "jkl";
 			this.prop_2 = "initialized";
 			//this.prop2 = [1, 2, 3, new Array(4, 5, "asd")];
@@ -292,8 +292,12 @@ QUnit.test("SmartJs.Core.EventTarget", function (assert) {
 		}
 
 		Y.prototype.merge({
-			_clickHandler: function (e) { this.clicked = true; },
-			add: function () { return this._addDomListener(this._dom, "click", this._clickHandler); },
+			_clickHandler: function (e) {
+				this.clicked = true;
+				if (e.arg1 == 1 && e.arg2 == 2)
+					this.eventArgsReceived = true;
+			},
+			add: function () { return this._addDomListener(this._dom, "click", this._clickHandler, {arg1:1, arg2:2}); },
 			remove: function (handler) { this._removeDomListener(this._dom, "click", handler); },
 		});
 		//    testDispose = function () {
@@ -314,6 +318,7 @@ QUnit.test("SmartJs.Core.EventTarget", function (assert) {
 	try {
 		document.getElementById("qunit-fixture").click();
 		assert.equal(a.clicked, true, "added and executed");
+		assert.ok(a.eventArgsReceived, "individual event arguments attached");
 	}
 	catch (e) { assert.ok(true, "PLACEHOLDER: test not supported"); }
 

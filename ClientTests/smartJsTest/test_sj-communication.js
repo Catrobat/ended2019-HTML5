@@ -1,4 +1,5 @@
-﻿/// <reference path="../qunit/qunit-1.18.0.js" />
+﻿/// <reference path="_resources/test.js" />
+/// <reference path="../qunit/qunit-1.18.0.js" />
 /// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
@@ -331,10 +332,10 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		runTest2();
 	};
 	var onErrorHandler = function (e) {
-	    assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
-	    done1();
+		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+		done1();
 
-	    runTest2();
+		runTest2();
 	};
 	//var onAbortHandler = function (e) {
 	//    onAbort++;
@@ -480,9 +481,9 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	};
 	var onErrorHandler4 = function (e) {
 		//onError++;
-	    //assert.equal(e.target, req4, "onError target check 4");
-	    assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
-	    done4();
+		//assert.equal(e.target, req4, "onError target check 4");
+		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+		done4();
 		//console.log('onError ');
 		//assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
 		//^^ && onProgressChange > 0 && onLoad === 1  on some browsers ?
@@ -520,9 +521,237 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 });
 
 
-//QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
+QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
 
-//    assert.ok(true, "TODO: ");
+	var done1 = assert.async();
+	var done2 = assert.async();
+	var done3 = assert.async();
+	var done4 = assert.async();
 
-//});
+	var rl = new SmartJs.Communication.ResourceLoader();
+	assert.equal(rl.useSizeForProgressCalculation, false, "ctr without url + getter");
+	assert.ok(rl instanceof SmartJs.Communication.ResourceLoader && rl instanceof SmartJs.Core.EventTarget, "instance check");
+
+	assert.throws(function () { rl.useSizeForProgressCalculation = "false"; }, Error, "ERROR: useSizeForProgressCalculation setter");
+	rl.useSizeForProgressCalculation = true;
+	assert.ok(rl.useSizeForProgressCalculation, "useSizeForProgressCalculation: getter + setter");
+
+	assert.ok(rl.onProgressChange instanceof SmartJs.Event.Event && rl.onLoad instanceof SmartJs.Event.Event && rl.onError instanceof SmartJs.Event.Event, "event accessors");
+
+	//simulate loading
+	rl._loading = true;
+	try {
+		rl.useSizeForProgressCalculation = true;
+		assert.ok(true, "size can be set but not changed during loading");
+	}
+	catch (e) {
+		assert.ok(false, "size can be set but not changed during loading");
+	}
+	assert.throws(function () { rl.useSizeForProgressCalculation = false; }, Error, "ERROR: changing useSizeForProgressCalculation during loading");
+	assert.throws(function () { rl.load(); }, Error, "ERROR: loading in progress- ");
+	rl._loading = false;
+
+
+	var onLoadCount = 0,
+		onErrorCount = 0,
+		onProgressCount = 0;
+	var onProgressInfo = [],
+		onErrorInfo = undefined;
+
+	var onLoadHandler = function (e) {
+		onLoadCount++;
+	};
+	var onErrorHandler = function (e) {
+		onErrorCount++;
+		onErrorInfo = e;
+	};
+	var onProgressHandler = function (e) {
+		onProgressCount++;
+		onProgressInfo.push(e);
+	};
+
+	var onLoadListener = new SmartJs.Event.EventListener(onLoadHandler),
+		onErrorListener = new SmartJs.Event.EventListener(onErrorHandler),
+		onProgressListener = new SmartJs.Event.EventListener(onProgressHandler);
+
+	rl.onLoad.addEventListener(onLoadListener);
+	rl.onError.addEventListener(onErrorListener);
+	rl.onProgressChange.addEventListener(onProgressListener);
+
+	//empty list
+	var files = [];
+	rl.load(files);
+	assert.ok(onLoadCount == 1 && onErrorCount == 0 && onProgressCount == 0, "loading empty list");
+	onLoadCount = 0;
+
+	rl.useSizeForProgressCalculation = false;
+	files = [{ type: 'mp3', url: '_resources/test.js' }];
+	assert.throws(function () { rl.load(files); }, Error, "ERROR: unsupported file type");
+
+	rl.useSizeForProgressCalculation = true;
+	files = [{ type: 'js', url: '_resources/test.js' }];
+	assert.throws(function () { rl.registerFiles("files"); }, Error, "ERROR: invalid list argument");
+	assert.throws(function () { rl.registerFiles(files); }, Error, "ERROR: useSizeForProgressCalculation set but no size provided");
+	rl.useSizeForProgressCalculation = false;
+
+	files = [{ type: 'js', url: '_resources/test.js', size: 12 },
+			 { type: 'js', url: '_resources/test2.js', size: 24 }];
+	rl.registerFiles(files);
+	assert.ok(rl._registeredFiles[0] === files[0] && rl._registeredFiles[1] === files[1], "file loaded");
+	assert.equal(rl._totalSize, 0, "file size not set: useSizeForProgressCalculation == false");
+
+	//load
+	files = [{ type: 'js', url: '_resources/test.js', size: 12 }];
+
+	var onLoadHandler2 = function () {
+		onLoadCount++;
+		assert.ok(onProgressCount === 1 && onLoadCount === 1, "file loaded");
+		assert.ok(onProgressInfo[0].progress === 100 && onProgressInfo[0].target === rl && onProgressInfo[0].element instanceof HTMLElement && onProgressInfo[0].file == files[0], "file loaded: progress information");
+		done1();
+
+		//cleanup: DOM
+		for (var i = 0, l = onProgressInfo.length; i < l; i++) {
+			try {
+				document.removeChild(onProgressInfo[i].element);
+			}
+			catch (e) { }
+		}
+		window.setTimeout(function () { runTests2(); }, 20);
+	};
+
+	rl.onLoad.removeEventListener(onLoadListener);
+	onLoadListener = new SmartJs.Event.EventListener(onLoadHandler2);
+	rl.onLoad.addEventListener(onLoadListener);
+
+	rl.load(files);
+	assert.throws(function () { rl.registerFiles(files); }, Error, "ERROR: register files during load");
+
+	//abort loading
+	var runTests2 = function () {
+		onLoadCount = 0,
+		onErrorCount = 0,
+		onProgressCount = 0,
+		onProgressInfo = [],
+		onErrorInfo = undefined;
+
+		files = [{ type: 'js', url: '_resources/test.js', size: 12 },
+				{ type: 'js', url: '_resources/test.js', size: 12 },
+				{ type: 'js', url: '_resources/test2.js', size: 12 },
+				{ type: 'css', url: '_resources/test.css', size: 12 },
+				{ type: 'css', url: '_resources/test2.css', size: 12 },
+				{ type: 'css', url: '_resources/test.css', size: 12 },
+				{ type: 'img', url: '_resources/img1.png', size: 12 },
+				{ type: 'img', url: '_resources/img2.png', size: 12 },
+		];
+		var onLoadHandler3 = function (e) {
+			onLoadCount++;
+		};
+		rl.onLoad.removeEventListener(onLoadListener);
+		onLoadListener = new SmartJs.Event.EventListener(onLoadHandler3);
+		rl.onLoad.addEventListener(onLoadListener);
+
+		rl.load(files);
+		rl.abortLoading();
+
+		assert.ok(/*onProgressCount >= 0 && */onLoadCount == 0, "loading aborted");  //no events are triggered- if there is a timing issue onProgressCount will be set (error may occur on other tests?)
+		onProgressCount = 0;
+		done2();
+
+		//cleanup: DOM
+		for (var i = 0, l = onProgressInfo.length; i < l; i++) {
+			try {
+				document.removeChild(onProgressInfo[i].element);
+			}
+			catch (e) { }
+		}
+		window.setTimeout(function () { runTests3(); }, 20);
+	};
+
+	//combined example using size properties
+	var runTests3 = function () {
+		onLoadCount = 0,
+		onErrorCount = 0,
+		onProgressCount = 0,
+		onProgressInfo = [],
+		onErrorInfo = undefined;
+
+		files = [{ type: 'js', url: '_resources/test.js', size: 3 },
+				{ type: 'js', url: '_resources/test.js', size: 5 },
+				{ type: 'js', url: '_resources/test2.js', size: 7 },
+				{ type: 'css', url: '_resources/test.css', size: 13 },
+				{ type: 'css', url: '_resources/test2.css', size: 15 },
+				{ type: 'css', url: '_resources/test.css', size: 17 },
+				{ type: 'img', url: '_resources/img1.png', size: 40 },
+				{ type: 'img', url: '_resources/img2.png', size: 20 },
+				{ type: 'img', url: '_resources/img3.png', size: 20 },
+				{ type: 'img', url: '_resources/img4.png', size: 20 },
+				{ type: 'img', url: '_resources/img5.png', size: 20 },
+				{ type: 'img', url: '_resources/img2.png', size: 20 },
+		];
+		var onLoadHandler4 = function (e) {
+			onLoadCount++;
+			assert.ok(onLoadCount == 1 && onProgressCount == 12, "all files loaded");
+			assert.equal(onProgressInfo[0].element, onProgressInfo[1].element, "files not added to DOM more than once");
+			assert.equal(onProgressInfo[files.length - 1].progress, 100, "final progress = 100");
+			done3();
+
+			//cleanup: DOM
+			for (var i = 0, l = onProgressInfo.length; i < l; i++) {
+				try {
+					document.removeChild(onProgressInfo[i].element);
+				}
+				catch (e) { }
+			}
+			runTests4();
+		};
+		rl.useSizeForProgressCalculation = true;
+		rl.onLoad.removeEventListener(onLoadListener);
+		onLoadListener = new SmartJs.Event.EventListener(onLoadHandler4);
+		rl.onLoad.addEventListener(onLoadListener);
+
+		//rl.useSizeForProgressCalculation = false;
+		rl.load(files);
+		assert.equal(rl._totalSize, 200, "internal: size calculated during initialization");
+		assert.equal(rl._registeredFiles.length, 12, "all files registered");
+	};
+
+
+	////loading error
+	var runTests4 = function () {
+		onLoadCount = 0,
+		onErrorCount = 0,
+		onProgressCount = 0,
+		onProgressInfo = [],
+		onErrorInfo = undefined;
+
+		files = [{ type: 'js', url: '_resources/test.js', size: 12 },
+				{ type: 'js', url: '_resources/test.js', size: 12 },
+				{ type: 'js', url: '_resources/testFAIL.js', size: 12 },
+				//{ type: 'css', url: '_resources/testFAIL.css', size: 12 },  //missing css files are not detected
+		];
+		var onLoadHandler5 = function (e) {
+			onLoadCount++;
+		};
+		var onErrorHandler5 = function (e) {
+			onErrorCount++;
+			onErrorInfo = e;
+
+			//validate
+			assert.ok(onProgressCount === 2 && onErrorCount == 1 && onLoadCount == 0, "events triggered correctly onError");
+			assert.equal(onErrorInfo.file, files[2], "error event file info")
+			assert.ok(onProgressInfo[0].progress == 33 && onProgressInfo[1].progress == 67, "progress information (received)");
+			done4();
+		};
+
+		rl.onLoad.removeEventListener(onLoadListener);
+		onLoadListener = new SmartJs.Event.EventListener(onLoadHandler5);
+		rl.onLoad.addEventListener(onLoadListener);
+		rl.onError.removeEventListener(onErrorListener);
+		onErrorListener = new SmartJs.Event.EventListener(onErrorHandler5);
+		rl.onError.addEventListener(onErrorListener);
+
+		rl.load(files);
+	};
+
+});
 

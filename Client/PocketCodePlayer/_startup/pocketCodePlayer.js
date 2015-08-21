@@ -17,7 +17,6 @@ PocketCode.Web = {
 	resourceRoot: '',   //TODO: add release deployment url
 
 	FullscreenApi: new ((function () {
-
 		function FullscreenApi() {
 			if (window.addEventListener)
 				window.addEventListener('load', this._initOnLoad.bind(this), false);
@@ -537,7 +536,6 @@ PocketCode.Web = {
 	})(),
 
 	ResourceLoader: (function () {
-
 		function ResourceLoader(resources) {
 			this._resources = resources;
 			this._root = resources.root;
