@@ -32,13 +32,16 @@ PocketCode.ImageHelper = (function () {
 
             this._initialized = true;
         },
-        scale: function(img, scalingFactor) {
+        scale: function (img, scalingFactor) {
             this._checkInitialized();
             if (!(img instanceof HTMLImageElement))
                 throw new Error('invalid paramter: img: expected type: HTMLImageElement');
 
             if (!scalingFactor) //=0 is not allowed here
                 return img;
+            else if (typeof scalingFactor !== 'number')
+                throw new Error('invalid paramter: scalingFactor: expected type: number');
+
             var ih = img.naturalHeight * scalingFactor,
                 iw = img.naturalWidth * scalingFactor;
             var ch = Math.ceil(ih),
@@ -55,6 +58,213 @@ PocketCode.ImageHelper = (function () {
             ctx.restore();
 
             return img;
+        },
+        adjustCenterAndTrim: function (img, /*imgScaling, */rotationCenterX, rotationCenterY, includeBoundingCorners) {
+            this._checkInitialized();
+            if (!(img instanceof HTMLImageElement))
+                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
+
+            var h = img.naturalHeight,
+                w = img.naturalWidth,
+                trimOffsets = this.getTrimOffsetsNew(img, 1, 0, true, true, true, true);
+
+            if (rotationCenterX !== undefined || rotationCenterY !== undefined) {   //handle
+                if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
+                    throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
+
+                //rotationCenterX *= imgScaling;
+                //rotationCenterY *= imgScaling;
+                if (rotationCenterX !== w / 2 || rotationCenterY !== h / 2) {   //resize only if dimensions are different
+
+                    var h2 = h / 2,
+                        w2 = w / 2;
+
+                    var imgSize = { //resulting image
+                        h: (h2 + Math.abs(rotationCenterY - h2)) * 2,
+                        w: (w2 + Math.abs(rotationCenterX - w2)) * 2,
+                    };
+                    var canvasSize = {
+                        h: Math.ceil(imgSize.h),
+                        w: Math.ceil(imgSize.w),
+                    };
+                    this._canvas.height = canvasSize.h;
+                    this._canvas.width = canvasSize.w;
+                    var roundingError = {   //not sure this is really necessary
+                        x: (canvasSize.w - imgSize.w) / 2,
+                        y: (canvasSize.h - imgSize.h) / 2,
+                    };
+                    var drawingOffset = {
+                        x: (rotationCenterX < w2 ? w - imgSize.w : 0) + roundingError.x,
+                        y: (rotationCenterY < h2 ? h - imgSize.h : 0) + roundingError.y,
+                    };
+
+                    var ctx = this._ctx;
+                    ctx.save();
+                    ctx.drawImage(img, drawingOffset.x, drawingOffset.y);
+                    img = new Image();
+                    img.src = this._canvas.toDataURL();
+                    ctx.restore();
+
+                    //combine trim offsets
+                    trimOffsets.top += drawingOffset.y;
+                    trimOffsets.left += drawingOffset.x;
+                    trimOffsets.bottom += imgSize.h - h - drawingOffset.y;
+                    trimOffsets.right += imgSize.w - w - drawingOffset.x;
+                }
+            }
+
+            var offsetX = Math.min(trimOffsets.left, trimOffsets.right),    //we cut symmetrical to keep the rotation point
+                offsetY = Math.min(trimOffsets.top, trimOffsets.bottom);
+
+            var ch = h - 2 * offsetY,   //canvas hight/width
+                cw = w - 2 * offsetX;
+            if (ch <= 0 || cw <= 0)     //check for transparent images
+                return new Image();
+
+            this._canvas.height = ch;
+            this._canvas.width = cw;
+
+            var ctx = this._ctx;
+            ctx.save();
+            ctx.drawImage(img, -offsetX, -offsetY, cw, ch);
+            img = new Image();
+            img.src = this._canvas.toDataURL();
+            ctx.restore();
+            returnValue.img = img;
+
+            if (includeBoundingCorners) {
+                //{ image: img, 
+                //tl: { length: undefined, angle: undefined }, //TODO: length /= scaling!!!
+                //tr: { length: undefined, angle: undefined }, 
+                //bl: { length: undefined, angle: undefined }, 
+                //br: { length: undefined, angle: undefined } };
+            }
+            return returnValue; 
+        },
+        getTrimOffsetsNew: function (img, scaling, rotation, top, right, bottom, left) {
+            this._checkInitialized();
+            if (!(img instanceof HTMLImageElement))
+                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
+
+            var h = img.naturalHeight,
+                w = img.naturalWidth,
+                renderedSize = rotation ? this.getBoundingSize(img, 1, rotationAngle) : { height: h, width: w };
+
+            var useScaling = scaling < 1 ? true : false;    //we do not upscale-> performance
+            var ch = useScaling ? Math.ceil(renderedSize.height * scaling) : Math.ceil(renderedSize.height),
+                cw = useScaling ? Math.ceil(renderedSize.width * scaling) : Math.ceil(renderedSize.width);
+            this._canvas.height = ch;
+            this._canvas.width = cw;
+
+            var ctx = this._ctx;
+            if (useScaling)
+                ctx.scale(scaling, scaling);
+            //ctx.clearRect(0, 0, w, h);  //TODO: necessary?
+            ctx.translate(cw / 2, ch / 2);
+            if (rotation)
+                ctx.rotate(rotation * Math.PI / 180);
+            ctx.drawImage(img, -renderedSize.width / 2, -renderedSize.height / 2);
+
+            //search for offsets
+            var pixels = ctx.getImageData(0, 0, cw, ch);
+            ctx.restore();
+
+            var data = pixels.data, rowOffset = 0;
+
+            //top
+            if (top) {
+                for (var y = 0; y < h; y++) {
+                    rowOffset = y * w * 4;
+
+                    for (var x = 0; x < w; x++) {
+                        //alpha = data[rowOffset + x * 4 + 3];
+                        if (data[rowOffset + x * 4 + 3] !== 0) {
+                            offsets.top = y;
+                            break;
+                        }
+                    }
+                    if (offsets.top !== undefined)
+                        break;
+                }
+                if (offsets.top === undefined)
+                    offsets.top = h;
+
+                offsets.top += imgCanvasOffsetY;
+                offsets.top = Math.floor(offsets.top * scalingFactor);
+            }
+
+            //bottom
+            var _topIdx = 0;
+            if (offsets.top)
+                _topIdx = offsets.top;
+            //^^ inner height to present errors on completely transparent images and avoid searching the corner areas twice
+
+            if (bottom) {
+                for (var y = h - 1; y >= _topIdx; y--) {
+                    rowOffset = y * w * 4;
+
+                    for (var x = 0; x < w; x++) {
+                        //alpha = data[rowOffset + x * 4 + 3];
+                        if (data[rowOffset + x * 4 + 3] !== 0) {
+                            offsets.bottom = h - (y + 1);
+                            break;
+                        }
+                    }
+                    if (offsets.bottom !== undefined)
+                        break;
+                }
+                if (offsets.bottom === undefined)
+                    offsets.bottom = h;
+
+                offsets.bottom += imgCanvasOffsetY;
+                offsets.bottom = Math.floor(offsets.bottom * scalingFactor);
+            }
+
+            var _bottomIdx = h - 1;
+            if (offsets.bottom)
+                _bottomIdx -= offsets.bottom;
+
+            //left
+            if (left) {
+                for (var x = 0; x < w; x++) {
+                    for (var y = _topIdx; y <= _bottomIdx; y++) {
+                        //alpha = y * w * 4 + colOffset + 3;
+                        if (data[(y * w + x) * 4 + 3] !== 0) {
+                            offsets.left = x;
+                            break;
+                        }
+                    }
+                    if (offsets.left !== undefined)
+                        break;
+                }
+                if (offsets.left === undefined)
+                    offsets.left = w;
+
+                offsets.left += imgCanvasOffsetX;
+                offsets.left = Math.floor(offsets.left * scalingFactor);
+            }
+
+            //right
+            if (right) {
+                for (var x = w - 1; x >= 0; x--) {
+                    for (var y = _topIdx; y <= _bottomIdx; y++) {
+                        //alpha = y * w * 4 + colOffset + 3;
+                        if (data[(y * w + x) * 4 + 3] !== 0) {
+                            offsets.right = w - (x + 1);
+                            break;
+                        }
+                    }
+                    if (offsets.right !== undefined)
+                        break;
+                }
+                if (offsets.right === undefined)
+                    offsets.right = w;
+
+                offsets.right += imgCanvasOffsetX;
+                offsets.right = Math.floor(offsets.right * scalingFactor);
+            }
+
+            return offsets;
         },
         //getDiagonal: function(img) {
         //    var h = img.naturalHeight,
@@ -77,7 +287,7 @@ PocketCode.ImageHelper = (function () {
                 w = /*Math.ceil(*/imgWidth * absCos + imgHeight * absSin/*)*/;
             }
 
-            return { boundingHeight: h * scalingFactor, boundingWidth: w * scalingFactor };
+            return { height: h * scalingFactor, width: w * scalingFactor };
         },
         trimAndScale: function (img, scalingFactor, rotationCenterX, rotationCenterY) { //TODO: use alternative rotation center if provided
             this._checkInitialized();
@@ -125,7 +335,7 @@ PocketCode.ImageHelper = (function () {
             //return { img: img, offsetX: offsets.left, offsetY: offsets.top };
             return { img: img, /*boundingHeight: ch, boundingWidth: cw, */offsetX: offsetX, offsetY: offsetY, scaled: scalingFactor };
         },
-        //please notice: the rotaiton angle is in degree here and not eqal to the sprite direction: it depends on the diection + rotationStyle
+        //please notice: the rotaiton angle is in degree here and not eqal to the sprite direction: it depends on the direction + rotationStyle
         //positive angle means clockwise rotation
         getTrimOffsets: function (img, scalingFactor, rotationAngle, /*flipH, flipV, */top, right, bottom, left) {  //TODO:optional parameter: boundingSize (so we do not have to recalculate this)
             this._checkInitialized();
@@ -137,15 +347,15 @@ PocketCode.ImageHelper = (function () {
             var imgHeight = img.naturalHeight,
                 imgWidth = img.naturalWidth,
                 boundingSize = this.getBoundingSize(img, 1, rotationAngle);//,
-                //scaleH = flipH ? -1 : 1, // Set horizontal scale to -1 if flip horizontal
-                //scaleV = flipV ? -1 : 1; // Set verical scale to -1 if flip vertical
+            //scaleH = flipH ? -1 : 1, // Set horizontal scale to -1 if flip horizontal
+            //scaleV = flipV ? -1 : 1; // Set verical scale to -1 if flip vertical
 
-            var h = boundingSize.boundingHeight,  //canvas height,width
-                w = boundingSize.boundingWidth;
+            var h = boundingSize.height,  //canvas height,width
+                w = boundingSize.width;
 
             //include the real measurements in return value
-            offsets.boundingHeight = Math.ceil(h * scalingFactor);
-            offsets.boundingWidth = Math.ceil(w * scalingFactor);
+            offsets.height = Math.ceil(h * scalingFactor);
+            offsets.width = Math.ceil(w * scalingFactor);
 
             //trim offsets between the original image size and the canvas size (changes on rotate): if rotated, the bounding box gets bigger->offsets can be negative as well
             //values may be floats but get rounded when applied

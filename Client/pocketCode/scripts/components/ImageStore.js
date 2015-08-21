@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-communication.js" />
 /// <reference path="ImageHelper.js" />
 'use strict';
 
@@ -16,9 +17,16 @@ PocketCode.ImageStore = (function () {
         this._images = {};
         this._lookCache = {};
 
-        this._onLoadingProgress = new SmartJs.Event.Event(this);
-        this._onLoad = new SmartJs.Event.Event(this);
-        this._onLoadingError = new SmartJs.Event.Event(this);
+        this._resourceLoader = new SmartJs.Communication.ResourceLoader();
+        this._resourceLoader.useSizeForProgressCalculation = true;
+        this._onLoadingProgressChange = new SmartJs.Event.Event(this);
+        //this._onLoad = new SmartJs.Event.Event(this);
+        //this._onLoadingError = new SmartJs.Event.Event(this);
+
+        //bind events
+        this._resourceLoader.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._resourceLoaderProgressHandler, this));
+        //this._resourceLoader.onLoad.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onLoad.dispatchEvent(); }, this));
+        //this._resourceLoader.onError.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onLoadingError.dispatchEvent(e); }, this));
     }
 
     //properties
@@ -32,19 +40,19 @@ PocketCode.ImageStore = (function () {
 
     //events
     Object.defineProperties(ImageStore.prototype, {
-        onLoadingProgress: {
+        onLoadingProgressChange: {
             get: function () {
-                return this._onLoadingProgress;
+                return this._onLoadingProgressChange;
             },
         },
         onLoad: {
             get: function () {
-                return this._onLoad;
+                return this._resourceLoader.onLoad;
             },
         },
         onLoadingError: {
             get: function () {
-                return this._onLoadingError;
+                return this._resourceLoader.onError;
             },
         },
     });
@@ -52,19 +60,34 @@ PocketCode.ImageStore = (function () {
     //methods
     ImageStore.prototype.merge({
         loadImages: function (resourceBaseUrl, imgArray, initialScaling) {  //[{ id: , url: , size: }, { .. }, ..]
-            if (this._isLoading)
-                throw new Error('loading in progress');
-            this._isLoading = true;
-            var percentLoaded = 0;  //TODO
+            if (!(imgArray instanceof Array))
+                throw new Error('invalid parameter image array: expected type Array');
+
             this._initialScaling = initialScaling;
-
-            this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: 0 });
-            //TODO: load + progressEvents
-            //store in _imageCache.id: {img: , offsetX: , offsetY: , scaled: }
-            //using the global scaling factor and the imageHelper class
-
-            //TODO: reset:_isLoading onLoad
-            
+            var images = [];
+            var img;
+            for (var i = 0, l = imgArray.length; i < l; i++) {
+                img = imgArray[i];
+                img.url = resourceBaseUrl + img.url;
+                img.type = 'img';
+                images.push(img);
+            }
+            this._resourceLoader.load(images);
+        },
+        _resourceLoaderProgressHandler: function (e) {
+            var file = e.file;
+            var img = e.element;
+            //register in store: this._images.ID = { id: , url: , size: , img: };
+            this._images[file.id] = file;//TODO:.merge({ img: PocketCode.ImageHelper.scale(img, this._initialScaling) });
+            //image preprocessing: //TODO: make sure to edit this per look if supporting scratch (different rotation center information per look)
+            this._images[file.id].look = this._initLook(file.id);
+            this._onLoadingProgressChange.dispatchEvent({ progress: e.progress });
+        },
+        _initLook: function (imgId, rotationCenterX, rotationCenterY) {
+            var img = this._images[imgId].img;
+            //var ih = PocketCode.ImageHelper;
+            var look = new Image();//TODO: PocketCode.ImageHelper.adjustCenterAndTrim(img, /*this._initialScaling, */rotationCenterX / this._initialScaling, rotationCenterY / this._initialScaling, true);
+            return look;
         },
         //getImage: function (id) {
             //TODO: returns an image object as {img: , offsetX: , offsetY: , scaled: }
@@ -74,7 +97,7 @@ PocketCode.ImageStore = (function () {
             //returns a look object including its imageObject -> please notice that this can differ from the original image, e.g. resized due to rotationCenter position, 
             //including image.initialScaling
             if (this._images.id)
-                return { imgObject: this._images.id, initialScaling: this._initialScaling };
+                return { imgObject: this._images.id.look, initialScaling: this._initialScaling };
             throw new Error('requested look could not be found: ' + id);
         },
         getLookBoundary: function(spriteId, lookId, scalingFactor, rotationAngle, flipX, pixelAccuracy) {

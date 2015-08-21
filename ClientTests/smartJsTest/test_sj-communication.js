@@ -738,7 +738,7 @@ QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
 
 			//validate
 			assert.ok(onProgressCount === 2 && onErrorCount == 1 && onLoadCount == 0, "events triggered correctly onError");
-			assert.equal(onErrorInfo.file, files[2], "error event file info")
+			assert.equal(onErrorInfo.file, files[2], "error event file info");
 			assert.ok(onProgressInfo[0].progress == 33 && onProgressInfo[1].progress == 67, "progress information (received)");
 			done4();
 		};
