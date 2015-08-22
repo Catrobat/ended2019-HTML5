@@ -293,20 +293,13 @@ PocketCode.GameEngine = (function () {
             this._onLoadingProgress.dispatchEvent({ progress: percentage });
 
         },
-        runProject: function () {
+        runProject: function (reinitSprites) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
             if (!this.projectReady) {
                 throw new Error('no project loaded');
             }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
 
-            this._executionState = PocketCode.ExecutionState.RUNNING;
-            this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
-            this.onProgramStart.dispatchEvent();    //notifies the listerners (bricks) to start executing
-        },
-
-        restartProject: function (reinitSprites) {
-            this.stopProject();
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
                 this._background.init();
@@ -315,7 +308,14 @@ PocketCode.GameEngine = (function () {
                 for (var i = 0, l = sprites.length; i < l; i++)
                     sprites[i].init();
             }
-            this.runProject();
+            this._executionState = PocketCode.ExecutionState.RUNNING;
+            this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
+            this.onProgramStart.dispatchEvent();    //notifies the listerners (bricks) to start executing
+        },
+
+        restartProject: function (reinitSprites) {
+            this.stopProject();
+            this.runProject(reinitSprites);
         },
 
         pauseProject: function () {
@@ -462,7 +462,7 @@ PocketCode.GameEngine = (function () {
             *  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
             *  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
             *  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
-            *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to inclrease performance)
+            *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
             */
 
             var innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, false);
