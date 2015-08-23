@@ -1,5 +1,5 @@
 ﻿
-var img1, img2, img3, img4, img5, img6, img7;
+var img1, img2, img3, img4, img5, img6, img7, img8, img9;
 
 var imgLoadCounter = 0;
 var imgLoadHandler = function () {

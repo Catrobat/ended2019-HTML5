@@ -435,19 +435,19 @@ PocketCode.GameEngine = (function () {
             if (!sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
-            var sh = this._screenHeight,
-                sw = this._screenWidth,
+            var sh2 = this._screenHeight / 2,
+                sw2 = this._screenWidth / 2,
                 dir = sprite.direction,
-                x = sprite.positionX + sw / 2,  //move the coord systems 0/0 to top/left
-                y = sprite.positionY + sh / 2;
+                x = sprite.positionX,// + sw / 2,  //move the coord systems 0/0 to top/left
+                y = sprite.positionY;// + sh / 2;
 
             if (pendingChanges) {
                 if (pendingChanges.direction != undefined)  //be careful when comparing as the positions can become =0
                     dir = pendingChanges.direction;
                 if (pendingChanges.positionX != undefined)
-                    x = pendingChanges.positionX + sw / 2;
+                    x = pendingChanges.positionX;// + sw / 2;
                 if (pendingChanges.positionY != undefined)
-                    y = pendingChanges.positionY + sh / 2;
+                    y = pendingChanges.positionY;// + sh / 2;
             }
 
             var lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
@@ -465,16 +465,16 @@ PocketCode.GameEngine = (function () {
             *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
             */
 
-            var innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, false);
+            var boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, false);
             //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
-            if (!innerOffsets.pixelAccuracy) {  //quick check
-                if (y - innerOffsets.top < 0 ||
-                    x + innerOffsets.right > sw ||
-                    y + innerOffsets.bottom > sh ||
-                    x - innerOffsets.left < 0) {
+            if (!boundary.pixelAccuracy) {  //quick check
+                if (y - boundary.top < 0 ||
+                    x + boundary.right > sw ||
+                    y + boundary.bottom > sh ||
+                    x - boundary.left < 0) {
 
-                    innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //update to exact values at collision
+                    boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //update to exact values at collision
                 }
                 else
                     return false;   //no collision
@@ -482,20 +482,20 @@ PocketCode.GameEngine = (function () {
 
             //make sure this is correct (specification): if there is an overflow on both sides we ignore it
             //how to handle overflows that causes another overflow during movement? - ignore it? move to edge & which one?
-            if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
-                return false;   //this meanse: the visible area has a bigger hight or width than the screen
+            if (boundary.top + boundary.bottom > sh || boundary.left + boundary.right > sw)
+                return false;   //this meanse: the visible area has a bigger hight or width than the screen                                 //TODO: if on both sides we always bounce depending on the direction
             //let's handle that as easy as possible: no conflicting states are handled: if we start to rotate in this cases we get lost
 
             //retesting with exact bounding (pixelAccuracy = true)
             var overflow = {    //defining how many pixels the visual area is outside the viewport: if no overflow the values are 0 or negative
-                top: innerOffsets.top - y,
-                right: x + innerOffsets.right - sw,
-                bottom: y + innerOffsets.bottom - sh,
-                left: innerOffsets.left - x,
+                top: boundary.top - y,
+                right: x + boundary.right - sw,
+                bottom: y + boundary.bottom - sh,
+                left: boundary.left - x,
             };
             var center = {  //store the center position of the current area
-                x: (innerOffsets.right - innerOffsets.left) / 2,
-                y: (innerOffsets.top - innerOffsets.bottom) / 2,
+                x: (boundary.right - boundary.left) / 2,
+                y: (boundary.top - boundary.bottom) / 2,
             };
 
             //calc new positions and direction
@@ -545,25 +545,25 @@ PocketCode.GameEngine = (function () {
                 };
 
                 //detect object state after rotation
-                innerOffsets = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
-                if (innerOffsets.top + innerOffsets.bottom > sh || innerOffsets.left + innerOffsets.right > sw)
+                boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);
+                if (boundary.top + boundary.bottom > sh || boundary.left + boundary.right > sw)
                     return false;   //ignore bouncing if area becomes bigger than screen height/width (during rotation)
 
                 //if (angle == 0) {
                 //we flipped or rotated the image, which means we have to adjust the x-coordinate: move the visual areas center to the same position
-                newX += center.x - (innerOffsets.right - innerOffsets.left) / 2;        //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
+                newX += center.x - (boundary.right - boundary.left) / 2;        //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
                                                                                         //ELSE: WE HAVE TO ALIGN THE AREA TO ITS PENDING OP OVERFLOW: KEEPING PENDING OPS "ALIVE"
                 //}
                 if (angle !== 0) {   //else {
                     //on rotate we meight have also changed the y position of our area
-                    newY += center.y - (innerOffsets.right - innerOffsets.left) / 2;    //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
+                    newY += center.y - (boundary.right - boundary.left) / 2;    //TODO: IMPORTANT: THIS IS ONLY CORRECT IF THERE IS NO OTHER PENDING OP
 
                     //we did rotate which means the visible area can be outside the screen now (size of the area changed)
                     var oar = {    //overflow after rotate
-                        top: innerOffsets.top - newY,
-                        right: newX + innerOffsets.right - sw,
-                        bottom: newY + innerOffsets.bottom - sh,
-                        left: innerOffsets.left - newX,
+                        top: boundary.top - newY,
+                        right: newX + boundary.right - sw,
+                        bottom: newY + boundary.bottom - sh,
+                        left: boundary.left - newX,
                     };
                     //detect edges we've handled already and move the sprite according to this: only one of them is currently handled
                     if (bounceTop) {
