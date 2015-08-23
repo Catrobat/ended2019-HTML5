@@ -129,6 +129,10 @@ PocketCode.ImageHelper = (function () {
 
             var ch = h - trimOffsets.top - trimOffsets.bottom,
                 cw = w - trimOffsets.left - trimOffsets.right;
+            //check for transparent images
+            if (ch <= 0 || cw <= 0)
+                return { image: new Image(), tl: { length: 0, angle: 0 }, tr: { length: 0, angle: 0 }, bl: { length: 0, angle: 0 }, br: { length: 0, angle: 0 } };
+
             this._canvas.height = ch;
             this._canvas.width = cw;
 
@@ -138,7 +142,7 @@ PocketCode.ImageHelper = (function () {
             img = new Image();
             img.src = this._canvas.toDataURL();
             ctx.restore();
-            var returnValue = { image: img, centerOffsetX: centerOffsetX, centerOffsetY: centerOffsetY };
+            var returnValue = { image: img };//, centerOffsetX: centerOffsetX, centerOffsetY: centerOffsetY };
 
 
             //var offsetX = Math.min(trimOffsets.left, trimOffsets.right),    //we cut symmetrical to keep the rotation point
@@ -213,7 +217,7 @@ PocketCode.ImageHelper = (function () {
                         break;
                 }
                 if (offsets.top === undefined)
-                    offsets.top = ch;
+                    offsets.top = h;
 
                 //offsets.top += imgCanvasOffsetY;
                 //offsets.top = Math.floor(offsets.top * scalingFactor);
@@ -240,7 +244,7 @@ PocketCode.ImageHelper = (function () {
                         break;
                 }
                 if (offsets.bottom === undefined)
-                    offsets.bottom = ch;
+                    offsets.bottom = h;
 
                 //offsets.bottom += imgCanvasOffsetY;
                 //offsets.bottom = Math.floor(offsets.bottom * scalingFactor);
@@ -264,7 +268,7 @@ PocketCode.ImageHelper = (function () {
                         break;
                 }
                 if (offsets.left === undefined)
-                    offsets.left = cw;
+                    offsets.left = w;
 
                 //offsets.left += imgCanvasOffsetX;
                 //offsets.left = Math.floor(offsets.left * scalingFactor);
@@ -284,7 +288,7 @@ PocketCode.ImageHelper = (function () {
                         break;
                 }
                 if (offsets.right === undefined)
-                    offsets.right = cw;
+                    offsets.right = w;
 
                 //offsets.right += imgCanvasOffsetX;
                 //offsets.right = Math.floor(offsets.right * scalingFactor);
@@ -299,11 +303,16 @@ PocketCode.ImageHelper = (function () {
 
             var h = img.naturalHeight,
                 w = img.naturalWidth,
-                renderedSize = rotation ? this.getBoundingSize(img, 1, rotationAngle) : { height: h, width: w };
+                renderedSize = rotation ? this.getBoundingSize(img, 1, rotation) : { height: h, width: w };
 
             var useScaling = scaling && scaling < 1 ? true : false;    //we do not upscale-> performance
             var ch = useScaling ? Math.ceil(renderedSize.height * scaling) : Math.ceil(renderedSize.height),
                 cw = useScaling ? Math.ceil(renderedSize.width * scaling) : Math.ceil(renderedSize.width);
+
+            //check for transparent images
+            if (ch <= 0 || cw <= 0)
+                return { top: 0, right: 0, bottom: 0, left: 0 };
+
             this._canvas.height = ch;
             this._canvas.width = cw;
 
