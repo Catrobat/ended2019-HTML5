@@ -65,10 +65,15 @@ QUnit.test("ImageHelper", function (assert) {
     //scale(img, scalingFactor)
     var runTests_Scale = function () {
 
-        //var h = img8.naturalHeight,
-        //    w = img8.naturalWidth;
+        assert.throws(function () { ih.scale("image"); }, Error, "scale: argument check: image");
+        assert.throws(function () { ih.scale(new Image(), "asd"); }, Error, "scale: argument check: scaling factor");
 
-        var oImg = ih.scale(img8, 2);
+        var oImg = ih.scale(img8, 0);
+        assert.ok(oImg.naturalWidth == 0 && oImg.naturalHeight == 0, "scaling factor = 0");
+        oImg = ih.scale(img8);
+        assert.equal(img8, oImg, "return same image if scaling not applied");
+
+        oImg = ih.scale(img8, 2);
         assert.ok(oImg.naturalHeight == img8.naturalHeight * 2 && oImg.naturalWidth == img8.naturalWidth * 2, "upscaling proportions: h:" + oImg.naturalHeight + ", w:" + oImg.naturalWidth);
 
         var oImg2 = ih.scale(img9, 0.3);
@@ -84,6 +89,10 @@ QUnit.test("ImageHelper", function (assert) {
 
     //getImageTrimOffsets(img, scaling, rotation, top, right, bottom, left)
     var runTests_getImageTrimOffsets = function () {
+
+        //argument check
+        assert.throws(function () { ih.getImageTrimOffsets("image"); }, Error, "ERROR: argument check: getImageTrimOffsets");
+        assert.throws(function () { ih.getDataTrimOffsets([], 12, 12); }, Error, "ERROR: argument check: getDataTrimOffsets");
 
         //simple
         var offsets = ih.getImageTrimOffsets(img1);
@@ -140,6 +149,10 @@ QUnit.test("ImageHelper", function (assert) {
 
     //adjustCenterAndTrim(img, rotationCenterX, rotationCenterY, includeBoundingCorners)
     var runTests_adjustCenterAndTrim = function () {
+
+        //argument check
+        assert.throws(function () { ih.adjustCenterAndTrim("image"); }, Error, "ERROR: invlaid image argument");
+        assert.throws(function () { ih.adjustCenterAndTrim(img8, "a", 3); }, Error, "ERROR: invlaid rotationCenter argument");
 
         //simple
         var oImg9 = ih.adjustCenterAndTrim(img9);  //we start with the slowest and hope that loading time will not effect our tests
@@ -301,6 +314,10 @@ QUnit.test("ImageHelper", function (assert) {
         x = br.length * Math.cos(br.angle),
         y = br.length * Math.sin(br.angle);
         assert.ok(round1000(x) == 1 && round1000(y) == -1, "img3: br corner vector");
+
+        oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);   //check transparent
+        tl = oImg7.tl;
+        assert.ok(tl.length == 0 && tl.angle == 0, "check return value on transparent images");
 
         done3();
     };

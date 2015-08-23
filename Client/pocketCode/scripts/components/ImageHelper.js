@@ -37,7 +37,7 @@ PocketCode.ImageHelper = (function () {
             if (!(img instanceof HTMLImageElement))
                 throw new Error('invalid paramter: img: expected type: HTMLImageElement');
 
-            if (scalingFactor === undefined) //=0 is not allowed here
+            if (scalingFactor === undefined)
                 return img;
             else if (typeof scalingFactor !== 'number')
                 throw new Error('invalid paramter: scalingFactor: expected type: number');
@@ -59,9 +59,6 @@ PocketCode.ImageHelper = (function () {
             img.src = this._canvas.toDataURL();
             ctx.restore();
 
-            //var wait;
-            //while (img.naturalHeight !== ch && img.naturalWidth !== cw)
-            //    wait = Math.exp(Math.PI);
             return img;
         },
         /* rotation center x & y are defined as used in scratch: from the top-left corner of the image to the rc 
@@ -75,10 +72,9 @@ PocketCode.ImageHelper = (function () {
                 w = img.naturalWidth,
                 centerOffsetX = 0,
                 centerOffsetY = 0,
-                trimOffsets = this.getImageTrimOffsets(img, 1, 0);//, true, true, true, true),
-                //drawingOffset = { top: 0, right: 0, bottom: 0, left: 0 };
+                trimOffsets = this.getImageTrimOffsets(img, 1, 0);
 
-            if (rotationCenterX !== undefined || rotationCenterY !== undefined) {   //handle
+            if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
                 if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
                     throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
 
@@ -91,6 +87,7 @@ PocketCode.ImageHelper = (function () {
 
             var ch = h - trimOffsets.top - trimOffsets.bottom,
                 cw = w - trimOffsets.left - trimOffsets.right;
+
             //check for transparent images
             if (ch <= 0 || cw <= 0) {
                 var returnVal = { image: new Image(), m: { length: 0, angle: 0 } };
@@ -164,7 +161,7 @@ PocketCode.ImageHelper = (function () {
             var _topIdx = 0;
             if (offsets.top)
                 _topIdx = offsets.top;
-            //^^ inner height to present errors on completely transparent images and avoid searching the corner areas twice
+            //^^ inner height to prevent errors on completely transparent images and avoid searching the corner areas twice
 
             if (bottom) {
                 for (var y = h - 1; y >= _topIdx; y--) {
@@ -224,7 +221,7 @@ PocketCode.ImageHelper = (function () {
 
             return offsets;
         },
-        getImageTrimOffsets: function (img, scaling, rotation) {//, top, right, bottom, left) {
+        getImageTrimOffsets: function (img, scaling, rotation) {
             this._checkInitialized();
             if (!(img instanceof HTMLImageElement))
                 throw new Error('invalid argument: img: expected type: HTMLImageElement');
@@ -233,26 +230,13 @@ PocketCode.ImageHelper = (function () {
                 w = img.naturalWidth,
                 renderedSize = rotation ? this.getBoundingSize(img, 1, rotation) : { height: h, width: w };
 
-            //var useScaling = scaling && scaling < 1 ? true : false;    //we do not upscale-> performance
-            //var internalScaling = scaling && scaling < 1 ? scaling : 1;
-            //var ch = useScaling ? Math.ceil(renderedSize.height * scaling) : Math.ceil(renderedSize.height),
-            //    cw = useScaling ? Math.ceil(renderedSize.width * scaling) : Math.ceil(renderedSize.width);
             var ch = Math.ceil(renderedSize.height),// * internalScaling),
                 cw = Math.ceil(renderedSize.width);// * internalScaling);
-
-            //check for transparent images
-            //if (ch <= 0 || cw <= 0)
-            //    return { top: 0, right: 0, bottom: 0, left: 0 };
 
             this._canvas.height = ch;
             this._canvas.width = cw;
 
             var ctx = this._ctx;
-            //if (useScaling)
-            //    ctx.scale(scaling, scaling);
-            //if (useScaling)
-            //    ctx.scale(internalScaling, internalScaling);
-            //ctx.clearRect(0, 0, w, h);  //TODO: necessary?
             ctx.translate(cw / 2, ch / 2);
             if (rotation)
                 ctx.rotate(rotation * Math.PI / 180);
@@ -265,12 +249,6 @@ PocketCode.ImageHelper = (function () {
             var offsets = this.getDataTrimOffsets(pixels.data, ch, cw, true, true, true, true);//, top, right, bottom, left);
 
             //apply scaling if defined and not included right now
-            //if (scaling && scaling > 1) {
-            //    offsets.top = Math.floor(offsets.top * scaling);
-            //    offsets.right = Math.floor(offsets.right * scaling);
-            //    offsets.bottom = Math.floor(offsets.bottom * scaling);
-            //    offsets.left = Math.floor(offsets.left * scaling);
-            //}
             if (scaling) {
                 offsets.top = Math.floor(offsets.top * scaling);
                 offsets.right = Math.floor(offsets.right * scaling);
