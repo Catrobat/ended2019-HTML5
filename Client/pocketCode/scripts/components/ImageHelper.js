@@ -66,6 +66,8 @@ PocketCode.ImageHelper = (function () {
 
             var h = img.naturalHeight,
                 w = img.naturalWidth,
+                centerOffsetX = 0,
+                centerOffsetY = 0,
                 trimOffsets = this.getImageTrimOffsets(img, 1, 0, true, true, true, true),
                 drawingOffset = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -73,71 +75,90 @@ PocketCode.ImageHelper = (function () {
                 if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
                     throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
 
-                //rotationCenterX *= imgScaling;
-                //rotationCenterY *= imgScaling;
-                if (rotationCenterX !== w / 2 || rotationCenterY !== h / 2) {   //resize only if dimensions are different
+                centerOffsetX = rotationCenterX - h / 2;
+                centerOffsetY = rotationCenterY - w / 2;
+                ////rotationCenterX *= imgScaling;
+                ////rotationCenterY *= imgScaling;
+                //if (rotationCenterX !== w / 2 || rotationCenterY !== h / 2) {   //resize only if dimensions are different
 
-                    var h2 = h / 2,
-                        w2 = w / 2;
+                //    var h2 = h / 2,
+                //        w2 = w / 2;
 
-                    var imgSize = { //resulting image
-                        h: (h2 + Math.abs(rotationCenterY - h2)) * 2,
-                        w: (w2 + Math.abs(rotationCenterX - w2)) * 2,
-                    };
-                    var canvasSize = {
-                        h: Math.ceil(imgSize.h),
-                        w: Math.ceil(imgSize.w),
-                    };
-                    //this._canvas.height = canvasSize.h;
-                    //this._canvas.width = canvasSize.w;
-                    var roundingError = {   //not sure this is really necessary
-                        x: (canvasSize.w - imgSize.w) / 2,
-                        y: (canvasSize.h - imgSize.h) / 2,
-                    };
-                    drawingOffset = {
-                        top: (rotationCenterY < h2 ? imgSize.h - h : 0) + roundingError.y,
-                        right: (rotationCenterX > w2 ? imgSize.w - w : 0) + roundingError.x,
-                        bottom: (rotationCenterY > h2 ? imgSize.h - h : 0) + roundingError.y,
-                        left: (rotationCenterX < w2 ? imgSize.w - w : 0) + roundingError.x,
-                    };
+                //    var imgSize = { //resulting image
+                //        h: (h2 + Math.abs(rotationCenterY - h2)) * 2,
+                //        w: (w2 + Math.abs(rotationCenterX - w2)) * 2,
+                //    };
+                //    var canvasSize = {
+                //        h: Math.ceil(imgSize.h),
+                //        w: Math.ceil(imgSize.w),
+                //    };
+                //    //this._canvas.height = canvasSize.h;
+                //    //this._canvas.width = canvasSize.w;
+                //    var roundingError = {   //not sure this is really necessary
+                //        x: (canvasSize.w - imgSize.w) / 2,
+                //        y: (canvasSize.h - imgSize.h) / 2,
+                //    };
+                //    drawingOffset = {
+                //        top: (rotationCenterY < h2 ? imgSize.h - h : 0) + roundingError.y,
+                //        right: (rotationCenterX > w2 ? imgSize.w - w : 0) + roundingError.x,
+                //        bottom: (rotationCenterY > h2 ? imgSize.h - h : 0) + roundingError.y,
+                //        left: (rotationCenterX < w2 ? imgSize.w - w : 0) + roundingError.x,
+                //    };
 
-                    //var ctx = this._ctx;  //TODO: do not draw but store offsets to include them in final drawing positions
-                    //ctx.save();
-                    //ctx.drawImage(img, drawingOffset.left, drawingOffset.top);
-                    //img = new Image();
-                    //img.src = this._canvas.toDataURL();
-                    //ctx.restore();
+                //    //var ctx = this._ctx;  //TODO: do not draw but store offsets to include them in final drawing positions
+                //    //ctx.save();
+                //    //ctx.drawImage(img, drawingOffset.left, drawingOffset.top);
+                //    //img = new Image();
+                //    //img.src = this._canvas.toDataURL();
+                //    //ctx.restore();
 
-                    //update size
-                    h = canvasSize.h;
-                    w = canvasSize.w;
+                //    //update size
+                //    h = canvasSize.h;
+                //    w = canvasSize.w;
 
-                    //combine trim offsets
-                    trimOffsets.top += Math.floor(drawingOffset.top);
-                    trimOffsets.left += Math.floor(drawingOffset.left);
-                    trimOffsets.bottom += Math.floor(drawingOffset.bottom);
-                    trimOffsets.right += Math.floor(drawingOffset.right);
-                }
+                //    //combine trim offsets
+                //    trimOffsets.top += Math.floor(drawingOffset.top);
+                //    trimOffsets.left += Math.floor(drawingOffset.left);
+                //    trimOffsets.bottom += Math.floor(drawingOffset.bottom);
+                //    trimOffsets.right += Math.floor(drawingOffset.right);
+                //}
             }
 
-            var offsetX = Math.min(trimOffsets.left, trimOffsets.right),    //we cut symmetrical to keep the rotation point
-                offsetY = Math.min(trimOffsets.top, trimOffsets.bottom);
+            centerOffsetX += (trimOffsets.left - trimOffsets.right) / 2;
+            centerOffsetY += (trimOffsets.bottom - trimOffsets.top) / 2;
 
-            var ch = h - 2 * offsetY,   //canvas hight/width
-                cw = w - 2 * offsetX;
-            if (ch <= 0 || cw <= 0)     //check for transparent images
-                return new Image();
-
+            var ch = h - trimOffsets.top - trimOffsets.bottom,
+                cw = w - trimOffsets.left - trimOffsets.right;
             this._canvas.height = ch;
             this._canvas.width = cw;
 
             var ctx = this._ctx;
             ctx.save();
-            ctx.drawImage(img, -offsetX + drawingOffset.left, -offsetY + drawingOffset.top);//, cw, ch);
+            ctx.drawImage(img, -trimOffsets.left, -trimOffsets.top, cw, ch);
             img = new Image();
             img.src = this._canvas.toDataURL();
             ctx.restore();
-            var returnValue = { image: img };
+            var returnValue = { image: img, centerOffsetX: centerOffsetX, centerOffsetY: centerOffsetY };
+
+
+            //var offsetX = Math.min(trimOffsets.left, trimOffsets.right),    //we cut symmetrical to keep the rotation point
+            //    offsetY = Math.min(trimOffsets.top, trimOffsets.bottom);
+
+            //var ch = h - 2 * offsetY,   //canvas hight/width
+            //    cw = w - 2 * offsetX;
+            //if (ch <= 0 || cw <= 0)     //check for transparent images
+            //    return new Image();
+
+            //this._canvas.height = ch;
+            //this._canvas.width = cw;
+
+            //var ctx = this._ctx;
+            //ctx.save();
+            //ctx.drawImage(img, -offsetX + drawingOffset.left, -offsetY + drawingOffset.top);//, cw, ch);
+            //img = new Image();
+            //img.src = this._canvas.toDataURL();
+            //ctx.restore();
+            //var returnValue = { image: img };
 
             if (includeBoundingCorners) {
                 //{ image: img, 
@@ -147,28 +168,28 @@ PocketCode.ImageHelper = (function () {
                 //br: { length: undefined, angle: undefined } };
 
                 //offsets changed due to cuttings: make sure 2 values are == 0 right now.. otherwise there was an error
-                trimOffsets.top -= offsetY;
-                trimOffsets.left -= offsetX;
-                trimOffsets.bottom -= offsetY;
-                trimOffsets.right -= offsetX;
+                //trimOffsets.top -= offsetY;
+                //trimOffsets.left -= offsetX;
+                //trimOffsets.bottom -= offsetY;
+                //trimOffsets.right -= offsetX;
                 //if (trimOffsets.top > 0 && trimOffsets.bottom > 0 || trimOffsets.left > 0 && trimOffsets.right > 0)
                 //    throw new Error('for testing only: should be removed. error calculating offsets');
                 var mx = cw / 2,    //rotation center
                     my = ch / 2,
-                    x = -mx + trimOffsets.left,
-                    y = -my + trimOffsets.top;
+                    x = centerOffsetX - mx,//-mx + trimOffsets.left,
+                    y = centerOffsetY - my;//-my + trimOffsets.top;
                 returnValue.tl = { length: Math.sqrt(Math.pow(x) + Math.pow(y)), angle: Math.atan2(y, x) };
-                x = mx - trimOffsets.right;
+                x = centerOffsetX + mx;//mx - trimOffsets.right;
                 returnValue.tr = { length: Math.sqrt(Math.pow(x) + Math.pow(y)), angle: Math.atan2(y, x) };
-                y = my - trimOffsets.bottom;
+                y = centerOffsetY + my;//my - trimOffsets.bottom;
                 returnValue.br = { length: Math.sqrt(Math.pow(x) + Math.pow(y)), angle: Math.atan2(y, x) };
-                x = -mx + trimOffsets.left;
+                x = centerOffsetX - mx;//-mx + trimOffsets.left;
                 returnValue.bl = { length: Math.sqrt(Math.pow(x) + Math.pow(y)), angle: Math.atan2(y, x) };
             }
             return returnValue;
         },
         getDataTrimOffsets: function (data, imgHeight, imgWidth, top, right, bottom, left) {
-            if (!(data instanceof Array) || typeof imgHeight !== 'number' || typeof imgWidth !== 'number')
+            if (!(data instanceof Uint8ClampedArray) || typeof imgHeight !== 'number' || typeof imgWidth !== 'number')
                 throw new Error('invalid argument');
 
             var h = imgHeight,
