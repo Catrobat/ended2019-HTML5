@@ -287,4 +287,20 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 
     $this->processProject($projectName, $cache);
   }
+
+  public function testSetVarBrick()
+  {
+    $projectName = "set-var";
+    $cache = $this->cacheDir . __FUNCTION__ . "/";
+
+    $this->processProject($projectName, $cache);
+  }
+
+  public function testChangeVarEBrick()
+  {
+    $projectName = "change-var-e";
+    $cache = $this->cacheDir . __FUNCTION__ . "/";
+
+    $this->processProject($projectName, $cache);
+  }
 }
