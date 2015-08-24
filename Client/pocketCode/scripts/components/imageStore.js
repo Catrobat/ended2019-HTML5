@@ -110,8 +110,8 @@ PocketCode.ImageStore = (function () {
             throw new Error('requested look could not be found: ' + id);
         },
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, /*top, right, bottom, left,*/ existingBoundary) {
-            var scalingFactor = scaling / this._initialScaling,
-                rotation = rotation * Math.PI / 180,
+            var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1,
+                rotation = rotation ? rotation * Math.PI / 180 : 0,
                 initialLook = this._looks[imageId];//.look;  //this may change as soon as looks get an id
             //{ image: img, 
             //tl: { length: undefined, angle: undefined }, //TODO: length /= scaling!!!
@@ -126,7 +126,6 @@ PocketCode.ImageStore = (function () {
                 var calc = {},
                     length = initialLook.tl.length * scalingFactor,
                     angle = initialLook.tl.angle + rotation;
-
                 calc.tl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.tr.length * scalingFactor;
@@ -141,12 +140,21 @@ PocketCode.ImageStore = (function () {
                 angle = initialLook.br.angle + rotation;
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
-                var boundary = {   //due to rotation every corner can become a max/min value
-                    top: Math.ceil(Math.max(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
-                    right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
-                    bottom: Math.floor(Math.min(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
-                    left: Math.floor(Math.min(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
-                };
+                var boundary;
+                //if (rotation)
+                    boundary = {   //due to rotation every corner can become a max/min value
+                        top: Math.ceil(Math.max(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
+                        right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
+                        bottom: Math.floor(Math.min(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
+                        left: Math.floor(Math.min(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
+                    };
+                //else
+                //    boundary = {   //due to rotation every corner can become a max/min value
+                //        top: calc.tr.y,
+                //        right: calc.tr.x,
+                //        bottom: calc.bl.y,
+                //        left: calc.bl.x,
+                //    };
             }
 
             if (!pixelAccuracy) {

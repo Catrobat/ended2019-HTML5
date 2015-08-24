@@ -40,12 +40,12 @@ PocketCode.ImageHelper = (function () {
                 throw new Error('invalid paramter: element, expected: typeof HTMLImageElement or HTMLCanvasElement');
 
             var canvas = document.createElement('canvas');
-            canvas.height = 0;
-            canvas.width = 0;
 
             if (typeof scalingFactor !== 'number')
                 throw new Error('invalid argument: scalingFactor: expected type: number');
             else if (scalingFactor === 0) {
+                canvas.height = 0;
+                canvas.width = 0;
                 return canvas;
             }
 
@@ -64,7 +64,7 @@ PocketCode.ImageHelper = (function () {
         },
         /* rotation center x & y are defined as used in scratch: from the top-left corner of the image to the rc 
            please notice that the axes are defined as: right & bottom = positive */
-        adjustCenterAndTrim: function (element, rotationCenterX, rotationCenterY, includeBoundingCorners, readyListener) {
+        adjustCenterAndTrim: function (element, rotationCenterX, rotationCenterY, includeBoundingCorners) {
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
