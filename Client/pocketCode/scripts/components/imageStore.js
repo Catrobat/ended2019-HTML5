@@ -14,11 +14,9 @@ PocketCode.ImageStore = (function () {
     //ctr
     function ImageStore() {
         this._initialScaling = 1;
-        this._images = {};
-        this._lookCache = {};
-
-        this._canvas = document.createElement('canvas');    //TODO: this was added so I can connect to in for visual debug output
-        this._context = this._canvas.getContext('2d');
+        this._images = {};      //original image objects including the image element
+        this._looks = {};       //look objects including a canvas object (clipped image) + vectors used for calculations and rendering
+        this._lookCache = {};   //{spriteId: {imageId: { caching items } } }: this will change as soon as lookIDs are availanle
 
         this._resourceLoader = new SmartJs.Communication.ResourceLoader();
         this._resourceLoader.useSizeForProgressCalculation = true;
@@ -73,22 +71,25 @@ PocketCode.ImageStore = (function () {
             var imgObject = e.file,
                 imgElement = e.element,
                 look = {};
+            imgObject.image = imgElement;
             
             //register in store: this._images.ID = { id: , url: , size: , img: };
             //var canvas = 
             look.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);//, new SmartJs.Event.EventListener(function (e) {
+            this._looks[imgObject.id] = look;
             //file.merge({ image: tmp_img });
             //file.canvas = canvas;
             //image preprocessing: //TODO: make sure to edit this per look if supporting scratch (different rotation center information per look)
             //var registerdFile = 
-            imgObject.look = look;
+            //imgObject.look = look;
             this._images[imgObject.id] = imgObject;
-            imgObject.look = this._initLook(imgObject.id);
+            //imgObject.look = 
+            this._looks[imgObject.id] = this._initLook(imgObject.id);
             this._onLoadingProgressChange.dispatchEvent({ progress: e.progress });
             //}, this));
         },
-        _initLook: function (imgId, rotationCenterX, rotationCenterY) {
-            var look = this._images[imgId].look;
+        _initLook: function (lookId, rotationCenterX, rotationCenterY) {
+            var look = this._looks[lookId];//.look;
             var canvas = look.canvas;
             var ih = PocketCode.ImageHelper;
 
@@ -98,12 +99,12 @@ PocketCode.ImageStore = (function () {
                 return ih.adjustCenterAndTrim(canvas, rotationCenterX * this._initialScaling, rotationCenterY * this._initialScaling, true);
             throw new Error('both rotation center arguments are required (typeof number)');
         },
-        getLook: function (imageId) {
+        getLook: function (lookId) {
             //returns a look object including its imageObject -> please notice that this can differ from the original image, e.g. resized due to rotationCenter position, 
             //including image.initialScaling
-            var img = this._images[imageId];
-            if (img && img.look) {
-                var look = img.look;
+            var look = this._looks[lookId];
+            if (look) {
+                //var look = img.look;
                 return { canvas: look.canvas, center: { length: look.center.length, angle: look.center.angle }, initialScaling: this._initialScaling };
             }
             throw new Error('requested look could not be found: ' + id);
@@ -111,7 +112,7 @@ PocketCode.ImageStore = (function () {
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, /*top, right, bottom, left,*/ existingBoundary) {
             var scalingFactor = scaling / this._initialScaling,
                 rotation = rotation * Math.PI / 180,
-                initialLook = this._images[imageId].look;  //this may change as soon as looks get an id
+                initialLook = this._looks[imageId];//.look;  //this may change as soon as looks get an id
             //{ image: img, 
             //tl: { length: undefined, angle: undefined }, //TODO: length /= scaling!!!
             //tr: { length: undefined, angle: undefined }, 
