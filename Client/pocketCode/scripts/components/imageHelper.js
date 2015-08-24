@@ -101,17 +101,17 @@ PocketCode.ImageHelper = (function () {
             if (ch <= 0 || cw <= 0) {
                 canvas.width = 0;
                 canvas.height = 0;
-                var returnVal = { canvas: canvas, center: { length: 0, angle: 0 } };
+                var returnValue = { canvas: canvas, center: { length: 0, angle: 0 } };
                 if (includeBoundingCorners)
-                    returnVal.merge({ center: { length: 0, angle: 0 }, tl: { length: 0, angle: 0 }, tr: { length: 0, angle: 0 }, bl: { length: 0, angle: 0 }, br: { length: 0, angle: 0 } });
-                return returnVal;
+                    returnValue.merge({ center: { length: 0, angle: 0 }, tl: { length: 0, angle: 0 }, tr: { length: 0, angle: 0 }, bl: { length: 0, angle: 0 }, br: { length: 0, angle: 0 } });
+                return returnValue;
             }
 
             canvas.height = ch;
             canvas.width = cw;
 
             var ctx = canvas.getContext('2d');
-            ctx.drawImage(element, -trimOffsets.left, -trimOffsets.top);//, cw, ch);
+            ctx.drawImage(element, -trimOffsets.left, -trimOffsets.top);
             var returnValue = { canvas: canvas };
             returnValue.center = { length: Math.sqrt(Math.pow(centerOffsetX, 2) + Math.pow(centerOffsetY, 2)), angle: Math.atan2(centerOffsetY, centerOffsetX) };
 
