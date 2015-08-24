@@ -2,12 +2,12 @@
 
 require_once("TextToSpeechProvider.class.php");
 
-foreach(glob("Server/rest/v0.1/dto/*.class.php") as $class)
+foreach(glob("Server/html5/rest/v0.1/dto/*.class.php") as $class)
 {
   include_once $class;
 }
 
-foreach(glob("Server/rest/v0.1/library/*.class.php") as $class)
+foreach(glob("Server/html5/rest/v0.1/library/*.class.php") as $class)
 {
   include_once $class;
 }

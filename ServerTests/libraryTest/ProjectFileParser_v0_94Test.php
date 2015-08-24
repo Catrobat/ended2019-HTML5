@@ -1,6 +1,6 @@
 <?php
 
-require_once("Server/rest/v0.1/library/ProjectFileParser_v0_94.class.php");
+require_once("Server/html5/rest/v0.1/library/ProjectFileParser_v0_94.class.php");
 
 class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 {
