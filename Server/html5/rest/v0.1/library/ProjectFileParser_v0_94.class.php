@@ -21,7 +21,98 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     return (string)$script["type"];
   }
 
-  protected function includeGlobalVariables()
+  public function getProject()
+  {
+    try
+    {
+      $project = new ProjectDto(intval($this->projectId), $this->resourceBaseUrl);
+
+      //header
+      $project->header = $this->parseHeader();
+
+      //global lists
+      $this->includeGlobalData();
+      $project->variables = $this->variables;
+      $project->lists = $this->lists;
+
+      //sprites
+      array_push($this->cpp, $this->simpleXml->objectList);
+
+      //init all objects including new id and name to archive referencing objects during parsing:
+      //1st entry = background
+      $bg = true;
+      foreach($this->simpleXml->objectList->children() as $sprite)
+      {
+        //take care: this can be a referenced object as well
+        $sprite = $this->getObject($sprite, $this->cpp);
+
+        if($bg === true)
+        {
+          $project->background = new SpriteDto($this->getNewId(), $this->getName($sprite));
+          $bg = false;
+        }
+        else
+        {
+          array_push($this->sprites, new SpriteDto($this->getNewId(), $this->getName($sprite)));
+        }
+      }
+
+      //parse sprites
+      //1st entry = background
+      $bg = true;
+      foreach($this->simpleXml->objectList->children() as $sprite)
+      {
+        //take care: this can be a referenced object as well
+        $sprite = $this->getObject($sprite, $this->cpp);
+
+        if($bg === true)
+        {
+          $project->background = $this->parseSprite($sprite, $project->background->id);
+          $bg = false;
+        }
+        else
+        {
+          $name = $this->getName($sprite);
+          $idx = -1;
+          $len = count($this->sprites);
+
+          for($i = 0; $i < $len; $i++)
+          {
+            if($this->sprites[$i]->name === $name)
+            {
+              $idx = $i;
+              break;
+            }
+          }
+
+          $id = $this->sprites[$idx]->id;
+
+          //override existing object with completely parsed sprite
+          $this->sprites[$idx] = $this->parseSprite($sprite, $id);
+        }
+      }
+
+      array_pop($this->cpp);
+
+      $project->sprites = $this->sprites;
+
+      //set total number of bricks in header
+      $project->header->bricksCount = $this->bricksCount;
+
+      //resources
+      $project->images = $this->images;
+      $project->sounds = $this->sounds;
+      $project->broadcasts = $this->broadcasts;
+
+      return $project;
+    }
+    catch(Exception $e)
+    {
+      return new FileParserException($e);
+    }
+  }
+
+  protected function includeGlobalData()
   {
     $data = $this->simpleXml->data;
     array_push($this->cpp, $data);
