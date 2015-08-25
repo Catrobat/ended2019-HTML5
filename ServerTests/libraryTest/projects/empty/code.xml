@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<program>
+  <header>
+    <applicationBuildName></applicationBuildName>
+    <applicationBuildNumber>0</applicationBuildNumber>
+    <applicationName>Pocket Code</applicationName>
+    <applicationVersion>0.9.17</applicationVersion>
+    <catrobatLanguageVersion>0.95</catrobatLanguageVersion>
+    <dateTimeUpload></dateTimeUpload>
+    <description></description>
+    <deviceName>GT-I9300</deviceName>
+    <isPhiroProProject>false</isPhiroProProject>
+    <mediaLicense></mediaLicense>
+    <platform>Android</platform>
+    <platformVersion>18.0</platformVersion>
+    <programLicense></programLicense>
+    <programName>empty</programName>
+    <remixOf></remixOf>
+    <screenHeight>1280</screenHeight>
+    <screenMode>STRETCH</screenMode>
+    <screenWidth>720</screenWidth>
+    <tags></tags>
+    <url></url>
+    <userHandle></userHandle>
+  </header>
+  <objectList>
+    <object name="Hintergrund">
+      <lookList/>
+      <soundList/>
+      <scriptList/>
+      <userBricks/>
+    </object>
+  </objectList>
+  <data>
+    <objectListOfList/>
+    <objectVariableList/>
+    <programListOfLists/>
+    <programVariableList/>
+    <userBrickVariableList/>
+  </data>
+  <settings/>
+</program>
