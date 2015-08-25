@@ -5,11 +5,6 @@ if( isset( $_GET["projectId"]) ) {
   $project_id = $_GET["projectId"];
 }
 
-if( $project_id == 0 ) {
-
-  //header( "location: /");
-}
-echo $project_id;
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
@@ -20,7 +15,7 @@ echo $project_id;
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-touch-fullscreen" content="yes" />
-  <link rel="shortcut icon" href="images/favicon.png" type="image/png" />
+  <link rel="shortcut icon" href="img/favicon.png" type="image/png" />
 
   <link href="pocketCodePlayer.css" rel="stylesheet" />
   <script src="pocketCodePlayer.js"></script>
