@@ -74,19 +74,11 @@ PocketCode.ImageStore = (function () {
             imgObject.image = imgElement;
             
             //register in store: this._images.ID = { id: , url: , size: , img: };
-            //var canvas = 
-            look.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);//, new SmartJs.Event.EventListener(function (e) {
+            look.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
             this._looks[imgObject.id] = look;
-            //file.merge({ image: tmp_img });
-            //file.canvas = canvas;
-            //image preprocessing: //TODO: make sure to edit this per look if supporting scratch (different rotation center information per look)
-            //var registerdFile = 
-            //imgObject.look = look;
             this._images[imgObject.id] = imgObject;
-            //imgObject.look = 
             this._looks[imgObject.id] = this._initLook(imgObject.id);
             this._onLoadingProgressChange.dispatchEvent({ progress: e.progress });
-            //}, this));
         },
         _initLook: function (lookId, rotationCenterX, rotationCenterY) {
             var look = this._looks[lookId];//.look;
@@ -107,7 +99,7 @@ PocketCode.ImageStore = (function () {
             }
             throw new Error('requested look could not be found: ' + id);
         },
-        _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, /*top, right, bottom, left,*/ existingBoundary) {
+        _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
             var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1,
                 rotation = rotation ? rotation * Math.PI / 180 : 0,
                 initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
@@ -124,19 +116,19 @@ PocketCode.ImageStore = (function () {
             else {
                 var calc = {},
                     length = initialLook.tl.length * scalingFactor,
-                    angle = initialLook.tl.angle + rotation;
+                    angle = initialLook.tl.angle - rotation;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
                 calc.tl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.tr.length * scalingFactor;
-                angle = initialLook.tr.angle + rotation;
+                angle = initialLook.tr.angle - rotation;
                 calc.tr = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.bl.length * scalingFactor;
-                angle = initialLook.bl.angle + rotation;
+                angle = initialLook.bl.angle - rotation;
                 calc.bl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.br.length * scalingFactor;
-                angle = initialLook.br.angle + rotation;
+                angle = initialLook.br.angle - rotation;
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 var boundary;
@@ -146,25 +138,30 @@ PocketCode.ImageStore = (function () {
                         right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
                         bottom: Math.floor(Math.min(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
                         left: Math.floor(Math.min(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
+                        pixelAccuracy: false,
                     };
-                else
+                else {
                     boundary = {   //due to rotation every corner can become a max/min value
-                        top: calc.tr.y,
-                        right: calc.tr.x,
-                        bottom: calc.bl.y,
-                        left: calc.bl.x,
+                        top: Math.ceil(calc.tr.y),
+                        right: Math.ceil(calc.tr.x),
+                        bottom: Math.floor(calc.bl.y),
+                        left: Math.floor(calc.bl.x),
+                        pixelAccuracy: true,
                     };
+                    //return boundary;    //pixelAccuracy already included
+                }
             }
 
-            if (!pixelAccuracy) {
+            if (!pixelAccuracy || boundary.pixelAccuracy) {
                 return boundary;
             }
             //calc pixel-exact values
-            var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(initialLook.canvas, scaling, rotation);//, true, true, true, true);//, right, bottom, left);
+            var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(initialLook.canvas, scaling, rotation);
             boundary.top -= Math.floor(trimOffsets.top / this._initialScaling);
             boundary.right -= Math.floor(trimOffsets.right / this._initialScaling);
             boundary.bottom += Math.ceil(trimOffsets.bottom / this._initialScaling);
             boundary.left += Math.ceil(trimOffsets.left / this._initialScaling);
+            boundary.pixelAccuracy = true;
 
             return boundary;
         },
@@ -173,6 +170,7 @@ PocketCode.ImageStore = (function () {
             var tmp = boundary.left
             boundary.left = -boundary.right;
             boundary.right = -tmp;
+            return boundary;
         },
         getLookBoundary: function (spriteId, lookId, scaling, rotation, flipX, pixelAccuracy) {
             /* returns the looks offsets depending on the looks rotation centre = image center */
@@ -184,43 +182,45 @@ PocketCode.ImageStore = (function () {
             */
             var //initialLook = this._images[spriteId].look,
                 lc = this._lookCache,
-                sprite = lc[spriteId],
-                look;
+                cachedSprite = lc[spriteId],
+                cachedLook;
 
-            if (!sprite) {//lc[spriteId] && lc[spriteId][lookId])
+            if (!cachedSprite) {//lc[spriteId] && lc[spriteId][lookId])
                 lc[spriteId] = {};
-                sprite = lc[spriteId];
+                cachedSprite = lc[spriteId];
             }
-            look = sprite[lookId];
-            //if (!look)
-            //    sprite[lookId] = {};
+            cachedLook = cachedSprite[lookId];
 
-            if (look) { //look: {scaling: , rotation: , top: , right: , bottom: , left: , pixelAccuracy: }
-                if (look.scaling === scaling && look.rotation === rotation) {
-                    if (pixelAccuracy && !look.pixelAccuracy) {
-                        var boundary = this._calcLookBoundary(lookId, scaling, rotation, pixelAccuracy, look);
-                        look.merge(boundary);
+            if (cachedLook) { //cachedLook: {scaling: , rotation: , top: , right: , bottom: , left: , pixelAccuracy: }
+                if (cachedLook.scaling === scaling && cachedLook.rotation === rotation) {
+                    if (pixelAccuracy && !cachedLook.pixelAccuracy) {
+                        var boundary = this._calcLookBoundary(lookId, scaling, rotation, pixelAccuracy, cachedLook);
+                        cachedLook.scaling = scaling;
+                        cachedLook.rotation = rotation;
+                        cachedLook.merge(boundary);
                         if (flipX)
                             return this._flipXBoundary(boundary);
                         return boundary;
                     }
-                    var ret = { top: look.top, right: look.right, bottom: look.bottom, left: look.left, pixelAccuracy: look.pixelAccuracy };   //make sure the cache cannot be overwritten from outside
+                    var ret = { top: cachedLook.top, right: cachedLook.right, bottom: cachedLook.bottom, left: cachedLook.left, pixelAccuracy: cachedLook.pixelAccuracy };   //make sure the cache cannot be overwritten from outside
                     if (flipX)
                         return this._flipXBoundary(ret);
                     return ret;
                 }
                 else {
                     var boundary = this._calcLookBoundary(lookId, scaling, rotation, pixelAccuracy);
-                    look.merge(boundary);
+                    cachedLook.scaling = scaling;
+                    cachedLook.rotation = rotation;
+                    cachedLook.merge(boundary);
                     if (flipX)
                         return this._flipXBoundary(boundary);
                     return boundary;
                 }
             }
             else {
-                sprite[lookId] = { scaling: scaling, rotation: rotation };
+                cachedSprite[lookId] = { scaling: scaling, rotation: rotation };
                 var boundary = this._calcLookBoundary(lookId, scaling, rotation, pixelAccuracy);
-                sprite[lookId].merge(boundary);
+                cachedSprite[lookId].merge(boundary);
                 if (flipX)
                     return this._flipXBoundary(boundary);
                 return boundary;

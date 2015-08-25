@@ -134,6 +134,12 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 		var spriteId = "test";
 		var b = is.getLookBoundary(spriteId, "i1", 1, 0);
 		assert.ok(b.top >= -3 && b.right >= 3 && b.bottom <= -4 && b.left <= -5, "img1: corner check");
+		b = is.getLookBoundary(spriteId, "i1", 1, 90);
+		assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "img1: 90° corner check");
+		b = is.getLookBoundary(spriteId, "i1", 1, 180);
+		assert.ok(b.top >= 4 && b.right >= 5 && b.bottom <= 3 && b.left <= -3, "img1: 180° corner check");
+		b = is.getLookBoundary(spriteId, "i1", 1, 360);
+		assert.ok(b.top >= -3 && b.right >= 3 && b.bottom <= -4 && b.left <= -5, "img1: 360° corner check");
 
 		b = is.getLookBoundary(spriteId, "i2", 1, 0);
 		assert.ok(b.top >= 4 && b.right >= 5 && b.bottom <= 3 && b.left <= -3, "img2: corner check");
@@ -158,16 +164,49 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 
 		b = is.getLookBoundary(spriteId, "i9", 1, 0);
 		assert.ok(b.top >= 349 && b.right >= 254 && b.bottom <= -253 && b.left <= -217, "img9: corner check");
-	    //^^ I checked this with the mathematical measurements: there is a rounding error that is higher on small images (what's totally ok)
-	    //please notice that the offsets already include an offset caused by moving the rotation point (took me a while to figure out the differences)
+		//^^ I checked this with the mathematical measurements: there is a rounding error that is higher on small images (what's totally ok)
+		//please notice that the offsets already include an offset caused by moving the rotation point (took me a while to figure out the differences when calculating the test data)
 
-	    //check cache
+		//if not rotated, pixelAccuracy should be true
+		assert.equal(b.pixelAccuracy, true, "pixelAccuracy set for unrotated objects");
+		b = is.getLookBoundary(spriteId, "i1", 1, 90);
+		assert.equal(b.pixelAccuracy, false, "pixelAccuracy not set for rotated objects");
 
-	    //if not rotated, pixelAccuracy should be true
+		//check lookCache
+		var lookCache = is._lookCache[spriteId]["i9"];
+		assert.ok(lookCache.scaling !== undefined && lookCache.rotation !== undefined && lookCache.top !== undefined && lookCache.right !== undefined && lookCache.bottom !== undefined && lookCache.left !== undefined, "boundary lookCached correctly");
+		b = is.getLookBoundary(spriteId, "i9", 1, 0);   //loading from lookCache: pixelAccurancy = true
+		assert.ok(b.top >= 349 && b.right >= 254 && b.bottom <= -253 && b.left <= -217, "img9 from cache: corner check (not rotated)");
+		b = is.getLookBoundary(spriteId, "i1", 1, 90);
+		assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "img1 from cache: corner check (rotated)");
 
+		var lookCache = is._lookCache[spriteId]["i1"];
+		assert.ok(lookCache.scaling == 1 && lookCache.rotation == 90 && lookCache.top !== undefined && lookCache.right !== undefined && lookCache.bottom !== undefined && lookCache.left !== undefined, "boundary lookCached correctly: update");
 
+		//flipped horizontal
+		b = is.getLookBoundary(spriteId, "i1", 1, 90, true);
+		assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X");
+		//flipped horizontal (from cache)
+		b = is.getLookBoundary(spriteId, "i1", 1, 90, true);
+		assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X (from cache)");
+		assert.equal(b.pixelAccuracy, false, "pixelAccuracy not set for rotated objects");
 
+	    //pixelAccuracy: rotated
 		var breakpoint = true;
+		b = is.getLookBoundary(spriteId, "i1", 1, 90, false, true);
+		assert.equal(b.pixelAccuracy, true, "pixelAccuracy set when requested (loaded init boundary from cache)");
+		assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "boundary not changes: 0, 90, 180, -90 will always return exact boundaries (even we search them)");
+
+	    //pixelAccuracy: flipped look
+		//is._lookCache[spriteId]["i1"] = {}; //clear cache
+		b = is.getLookBoundary(spriteId, "i1", 1, 0, false);    //reset
+		b = is.getLookBoundary(spriteId, "i1", 1, 90, true, true);
+		assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X: pixelAccuracy");
+		b = is.getLookBoundary(spriteId, "i1", 1, 90, true, true);
+		assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X: pixelAccuracy (from cache)");
+		b = is.getLookBoundary(spriteId, "i1", 1, 180);    //reset
+		b = is.getLookBoundary(spriteId, "i1", 1, 180, true, true);
+		assert.ok(b.top >= 4 && b.right >= 3 && b.bottom <= 3 && b.left <= -5, "img1: 180°, flipped + pixelAccurency");
 
 		done1();
 	};
