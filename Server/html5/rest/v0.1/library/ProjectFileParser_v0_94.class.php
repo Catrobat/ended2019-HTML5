@@ -120,7 +120,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     array_push($this->cpp, $data->programListOfLists);
     foreach($data->programListOfLists->children() as $userList)
     {
-      $userList = $this->getObject($userList, $this->cpp);
+      $userList = $this->getList($userList);
       array_push($this->lists, new ListDto($this->getNewId(), (string)$userList));
     }
 
