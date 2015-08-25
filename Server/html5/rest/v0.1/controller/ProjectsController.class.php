@@ -175,13 +175,27 @@ class ProjectsController extends BaseController
       {
         $zip = new ZipArchive;
         $res = $zip->open($projectFilePath);
+        for( $i = 0; $i < $zip->numFiles; $i++ )
+        {
+          $filename = $zip->getNameIndex( $i );
+          $filename = str_replace("images/", "", $filename);
+          $filename = str_replace("sounds/", "", $filename);
+
+          if($filename != ".nomedia")
+            $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
+
+          if( ! mb_detect_encoding( $filename, 'ASCII' ) || preg_match( '/[^A-Za-z0-9 _ .-]/', $filename ))
+          {
+            throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
+          }
+        }
         if($res === true)
         {
           // extract it to the path we determined above
           $success = $zip->extractTo($cacheDir);
           if($success !== true)
           {
-            throw new Exception("error extracting project (zip) file");
+            throw new Exception("error extracting project -> (zip) file");
           }
           $zip->close();
         }
