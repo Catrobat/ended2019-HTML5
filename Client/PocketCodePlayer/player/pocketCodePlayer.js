@@ -684,10 +684,10 @@ PocketCode.Web = {
 				if (this._projectId)
 					this.launchProject();
 			},
-			launchProject: function (projectId) {
-				if (projectId)
-					this._projectId = projectId;
-
+			launchProject: function (projectId, rfc3066, containerElement) {  //TODO:
+				//if (projectId)
+				this._projectId = projectId;    //undefined allowed and handled in application
+				this._rfc3066 = rfc3066;
 				if (!this._domLoaded)
 					return;
 
@@ -726,7 +726,7 @@ PocketCode.Web = {
 			_initApplication: function () {
 				//the whole framework is already loaded
 				var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-				this._player = new PocketCode.PlayerApplication(vpc);//this._splashScreen, this._webOverlay);
+				this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);//this._splashScreen, this._webOverlay);
 				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 				this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
 				this._player.loadProject(this._projectId);
@@ -818,25 +818,27 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/controller/playerViewportController.js', type: 'js' },
 
 		//TODO: insert player scripts
-		{ url: 'PocketCodePlayer/playerApplication.js', type: 'js' },
+		{ url: 'PocketCodePlayer/player/scripts/playerApplication.js', type: 'js' },
 	],
 };
 
 
-function launchProject(projectId) {
+if (!launchProject) {
+	var launchProject = function (projectId, rfc3066, containerElement) {
 
-	//if (PocketCode.Web.isTablet || PocketCode.Web.isMobile) {
-	//    window.location = "http://www.catrob.at/pocketcode/html5/" + projectId#player;
-	//    return;
-	//}
+		//if (PocketCode.Web.isTablet || PocketCode.Web.isMobile) {
+		//    window.location = "http://www.catrob.at/pocketcode/html5/" + projectId#player;
+		//    return;
+		//}
 
-	PocketCode.Web.PlayerInterface.launchProject(projectId);
-	//open popup layer
-	//alert("coming so: project id= " + projectId);
+		PocketCode.Web.PlayerInterface.launchProject(projectId, rfc3066, containerElement);
+		//open popup layer
+		//alert("coming so: project id= " + projectId);
 
-	//window.location.href = "../LayoutTests/startpageMockup.html";
+		//window.location.href = "../LayoutTests/startpageMockup.html";
 
-	//launch app
+		//launch app
+	}
 }
 
 //test: running before dom ready
