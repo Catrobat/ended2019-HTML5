@@ -437,9 +437,19 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->checkJSON( $projectName, $cache );
   }
 
-  public function testSwordPlay()
+  /*public function testSwordPlay()
   {
     $projectName = "sword-play";
+    $cache = $this->cacheDir . __FUNCTION__ . "/";
+
+    $this->processProject($projectName, $cache);
+
+    $this->checkJSON( $projectName, $cache );
+  }*/
+
+  public function testHillRacing()
+  {
+    $projectName = "hill-racing";
     $cache = $this->cacheDir . __FUNCTION__ . "/";
 
     $this->processProject($projectName, $cache);
