@@ -10,8 +10,13 @@
 PocketCode.PlayerApplication = (function () {
     PlayerApplication.extends(SmartJs.Components.Application);
 
-    function PlayerApplication(viewportContainer) {
+    function PlayerApplication(viewportContainer, rfc3066) {
         this._vp = viewportContainer || document.body;
+        //if (rfc3066)  //TODO:
+        //    this._rfc3066 = rfc3066;
+        //else
+        //    this._initI18nProvider;
+
         //webOverlay is undefined if running in mobile page, no viewport defined
         //this._splashScreen = splashScreen;
         this._isMobile = viewportContainer ? false : true;	//this represents the players mode, not the device

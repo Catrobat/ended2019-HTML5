@@ -21,58 +21,66 @@ PocketCode.ImageHelper = (function () {
                 return;
 
             if (document.readyState === 'complete')
-                this._init();
+                this._initialized = true;
             else
                 throw new Error('The static image helper class uses the DOM and cannot be used until loading completed');
         },
-        _init: function (e) {
-            var canvas = document.createElement('canvas');
-            this._canvas = canvas;
-            this._ctx = canvas.getContext('2d');
-
-            this._initialized = true;
-        },
-        scale: function (img, scalingFactor) {
+        scale: function (element, scalingFactor) {
             this._checkInitialized();
-            if (!(img instanceof HTMLImageElement))
-                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
+            var h, w;
+            if (element instanceof HTMLImageElement) {
+                h = element.naturalHeight;
+                w = element.naturalWidth;
+            }
+            else if (element instanceof HTMLCanvasElement) {
+                h = element.height;
+                w = element.width;
+            }
+            else
+                throw new Error('invalid paramter: element, expected: typeof HTMLImageElement or HTMLCanvasElement');
 
-            if (scalingFactor === undefined)
-                return img;
-            else if (typeof scalingFactor !== 'number')
-                throw new Error('invalid paramter: scalingFactor: expected type: number');
-            else if (scalingFactor === 0)
-                return new Image();
+            var canvas = document.createElement('canvas');
 
-            var ih = img.naturalHeight * scalingFactor,
-                iw = img.naturalWidth * scalingFactor;
+            if (typeof scalingFactor !== 'number')
+                throw new Error('invalid argument: scalingFactor: expected type: number');
+            else if (scalingFactor === 0) {
+                canvas.height = 0;
+                canvas.width = 0;
+                return canvas;
+            }
+
+            var ih = h * scalingFactor,
+                iw = w * scalingFactor;
             var ch = Math.ceil(ih),
                 cw = Math.ceil(iw)
-            this._canvas.height = ch;
-            this._canvas.width = cw;
 
-            var ctx = this._ctx;
-            ctx.save();
+            canvas.height = ch;
+            canvas.width = cw;
+
+            var ctx = canvas.getContext('2d');
             ctx.scale(scalingFactor, scalingFactor);
-            ctx.drawImage(img, (cw - iw) / 2, (ch - ih) / 2);
-            var img = new Image();
-            img.src = this._canvas.toDataURL();
-            ctx.restore();
-
-            return img;
+            ctx.drawImage(element, (cw - iw) / 2, (ch - ih) / 2);
+            return canvas;
         },
         /* rotation center x & y are defined as used in scratch: from the top-left corner of the image to the rc 
            please notice that the axes are defined as: right & bottom = positive */
-        adjustCenterAndTrim: function (img, rotationCenterX, rotationCenterY, includeBoundingCorners) {
+        adjustCenterAndTrim: function (element, rotationCenterX, rotationCenterY, includeBoundingCorners) {
             this._checkInitialized();
-            if (!(img instanceof HTMLImageElement))
-                throw new Error('invalid paramter: img: expected type: HTMLImageElement');
+            var h, w;
+            if (element instanceof HTMLImageElement) {
+                h = element.naturalHeight;
+                w = element.naturalWidth;
+            }
+            else if (element instanceof HTMLCanvasElement) {
+                h = element.height;
+                w = element.width;
+            }
+            else
+                throw new Error('invalid paramter: element, expected: typeof HTMLImageElement or HTMLCanvasElement');
 
-            var h = img.naturalHeight,
-                w = img.naturalWidth,
-                centerOffsetX = 0,
-                centerOffsetY = 0,
-                trimOffsets = this.getImageTrimOffsets(img, 1, 0);
+            var centerOffsetX = 0,
+                centerOffsetY = 0;
+            var trimOffsets = this.getElementTrimOffsets(element, 1, 0);
 
             if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
                 if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
@@ -88,25 +96,24 @@ PocketCode.ImageHelper = (function () {
             var ch = h - trimOffsets.top - trimOffsets.bottom,
                 cw = w - trimOffsets.left - trimOffsets.right;
 
+            var canvas = document.createElement('canvas');
             //check for transparent images
             if (ch <= 0 || cw <= 0) {
-                var returnVal = { image: new Image(), m: { length: 0, angle: 0 } };
+                canvas.width = 0;
+                canvas.height = 0;
+                var returnValue = { canvas: canvas, center: { length: 0, angle: 0 } };
                 if (includeBoundingCorners)
-                    returnVal.merge({ m: { length: 0, angle: 0 }, tl: { length: 0, angle: 0 }, tr: { length: 0, angle: 0 }, bl: { length: 0, angle: 0 }, br: { length: 0, angle: 0 } });
-                return returnVal;
+                    returnValue.merge({ center: { length: 0, angle: 0 }, tl: { length: 0, angle: 0 }, tr: { length: 0, angle: 0 }, bl: { length: 0, angle: 0 }, br: { length: 0, angle: 0 } });
+                return returnValue;
             }
 
-            this._canvas.height = ch;
-            this._canvas.width = cw;
+            canvas.height = ch;
+            canvas.width = cw;
 
-            var ctx = this._ctx;
-            ctx.save();
-            ctx.drawImage(img, -trimOffsets.left, -trimOffsets.top, cw, ch);
-            img = new Image();
-            img.src = this._canvas.toDataURL();
-            ctx.restore();
-            var returnValue = { image: img };
-            returnValue.m = { length: Math.sqrt(Math.pow(centerOffsetX, 2) + Math.pow(centerOffsetY, 2)), angle: Math.atan2(centerOffsetY, centerOffsetX) };
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(element, -trimOffsets.left, -trimOffsets.top);
+            var returnValue = { canvas: canvas };
+            returnValue.center = { length: Math.sqrt(Math.pow(centerOffsetX, 2) + Math.pow(centerOffsetY, 2)), angle: Math.atan2(centerOffsetY, centerOffsetX) };
 
             if (includeBoundingCorners) {
                 //{ image: img, 
@@ -129,12 +136,13 @@ PocketCode.ImageHelper = (function () {
             }
             return returnValue;
         },
-        getDataTrimOffsets: function (data, imgHeight, imgWidth, top, right, bottom, left) {
-            if (!(data instanceof Uint8ClampedArray) || typeof imgHeight !== 'number' || typeof imgWidth !== 'number')
-                throw new Error('invalid argument');
+        getDataTrimOffsets: function (imageData, top, right, bottom, left) {
+            if (!(imageData instanceof ImageData))
+                throw new Error('invalid argument: imageData, expected type: ImageData');
 
-            var h = imgHeight,
-                w = imgWidth,
+            var data = imageData.data,
+                w = imageData.width,
+                h = imageData.height,
                 rowOffset = 0,
                 offsets = { top: undefined, right: undefined, bottom: undefined, left: undefined };
 
@@ -221,32 +229,43 @@ PocketCode.ImageHelper = (function () {
 
             return offsets;
         },
-        getImageTrimOffsets: function (img, scaling, rotation) {
+        getElementTrimOffsets: function (element, scaling, rotation) {
             this._checkInitialized();
-            if (!(img instanceof HTMLImageElement))
-                throw new Error('invalid argument: img: expected type: HTMLImageElement');
+            var h, w;
+            if (element instanceof HTMLImageElement) {
+                h = element.naturalHeight;
+                w = element.naturalWidth;
+            }
+            else if (element instanceof HTMLCanvasElement) {
+                h = element.height;
+                w = element.width;
+            }
+            else
+                throw new Error('invalid paramter: element, expected: typeof HTMLImageElement or HTMLCanvasElement');
 
-            var h = img.naturalHeight,
-                w = img.naturalWidth,
-                renderedSize = rotation ? this.getBoundingSize(img, 1, rotation) : { height: h, width: w };
+            var offsets;
+            if (element instanceof HTMLCanvasElement && (rotation === undefined || rotation == 0)) {
+                var ctx = element.getContext('2d');
+                offsets = this.getDataTrimOffsets(ctx.getImageData(0, 0, w, h), true, true, true, true);
+            }
+            else {
+                var renderedSize = rotation ? this.getBoundingSize(element, 1, rotation) : { height: h, width: w };
 
-            var ch = Math.ceil(renderedSize.height),// * internalScaling),
-                cw = Math.ceil(renderedSize.width);// * internalScaling);
+                var ch = Math.ceil(renderedSize.height),
+                    cw = Math.ceil(renderedSize.width);
 
-            this._canvas.height = ch;
-            this._canvas.width = cw;
+                var canvas = document.createElement('canvas');
+                canvas.height = ch;
+                canvas.width = cw;
 
-            var ctx = this._ctx;
-            ctx.translate(cw / 2, ch / 2);
-            if (rotation)
-                ctx.rotate(rotation * Math.PI / 180);
-            ctx.drawImage(img, -w / 2, -h / 2);
+                var ctx = canvas.getContext('2d');
+                ctx.translate(cw / 2, ch / 2);
+                if (rotation)
+                    ctx.rotate(rotation * Math.PI / 180);
+                ctx.drawImage(element, -w / 2, -h / 2);
 
-            //search for offsets
-            var pixels = ctx.getImageData(0, 0, cw, ch);
-            ctx.restore();
-
-            var offsets = this.getDataTrimOffsets(pixels.data, ch, cw, true, true, true, true);//, top, right, bottom, left);
+                offsets = this.getDataTrimOffsets(ctx.getImageData(0, 0, cw, ch), true, true, true, true);
+            }
 
             //apply scaling if defined and not included right now
             if (scaling) {
@@ -257,22 +276,31 @@ PocketCode.ImageHelper = (function () {
             }
             return offsets;
         },
-        getBoundingSize: function (img, scaling, rotation) {
-            var imgHeight = img.naturalHeight,
-                imgWidth = img.naturalWidth;
+        getBoundingSize: function (element, scaling, rotation) {
+            var h, w;
+            if (element instanceof HTMLImageElement) {
+                h = element.naturalHeight;
+                w = element.naturalWidth;
+            }
+            else if (element instanceof HTMLCanvasElement) {
+                h = element.height;
+                w = element.width;
+            }
+            else
+                throw new Error('invalid paramter: element, expected: typeof HTMLImageElement or HTMLCanvasElement');
 
             var phi = 0;
-            var h = imgHeight,
-                w = imgWidth;
+            var newH = h,
+                newW = w;
             if (rotation) {
                 phi = rotation * Math.PI / 180;
                 var absCos = Math.abs(Math.cos(phi)),
                     absSin = Math.abs(Math.sin(phi));
-                h = imgWidth * absSin + imgHeight * absCos;
-                w = imgWidth * absCos + imgHeight * absSin;
+                newH = w * absSin + h * absCos;
+                newW = w * absCos + h * absSin;
             }
 
-            return { height: h * scaling, width: w * scaling };
+            return { height: newH * scaling, width: newW * scaling };
         },
 
     });
