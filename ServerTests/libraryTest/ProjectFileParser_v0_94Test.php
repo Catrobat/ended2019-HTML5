@@ -160,7 +160,6 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->processProject($projectName, $cache);
   }
 
-  /*
   public function testBumpBorderBrick()
   {
     $projectName = "bump-border";
@@ -369,5 +368,4 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 
     $this->processProject($projectName, $cache);
   }
-  */
 }
