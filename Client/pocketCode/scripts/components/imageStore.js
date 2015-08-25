@@ -101,10 +101,8 @@ PocketCode.ImageStore = (function () {
         },
         getLook: function (lookId) {
             //returns a look object including its imageObject -> please notice that this can differ from the original image, e.g. resized due to rotationCenter position, 
-            //including image.initialScaling
             var look = this._looks[lookId];
             if (look) {
-                //var look = img.look;
                 return { canvas: look.canvas, center: { length: look.center.length, angle: look.center.angle }, initialScaling: this._initialScaling };
             }
             throw new Error('requested look could not be found: ' + id);
@@ -112,9 +110,10 @@ PocketCode.ImageStore = (function () {
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, /*top, right, bottom, left,*/ existingBoundary) {
             var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1,
                 rotation = rotation ? rotation * Math.PI / 180 : 0,
-                initialLook = this._looks[imageId];//.look;  //this may change as soon as looks get an id
-            //{ image: img, 
-            //tl: { length: undefined, angle: undefined }, //TODO: length /= scaling!!!
+                initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
+            //{ canvas: canvas,                                 //minmized image (clipped + scaled initial) 
+            //center: { length: undefined, angle: undefined },  //rotation point to look center
+            //tl: { length: undefined, angle: undefined },      //rotation point to corner vectors
             //tr: { length: undefined, angle: undefined }, 
             //bl: { length: undefined, angle: undefined }, 
             //br: { length: undefined, angle: undefined } };
@@ -141,20 +140,20 @@ PocketCode.ImageStore = (function () {
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 var boundary;
-                //if (rotation)
+                if (rotation)
                     boundary = {   //due to rotation every corner can become a max/min value
                         top: Math.ceil(Math.max(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
                         right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
                         bottom: Math.floor(Math.min(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
                         left: Math.floor(Math.min(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
                     };
-                //else
-                //    boundary = {   //due to rotation every corner can become a max/min value
-                //        top: calc.tr.y,
-                //        right: calc.tr.x,
-                //        bottom: calc.bl.y,
-                //        left: calc.bl.x,
-                //    };
+                else
+                    boundary = {   //due to rotation every corner can become a max/min value
+                        top: calc.tr.y,
+                        right: calc.tr.x,
+                        bottom: calc.bl.y,
+                        left: calc.bl.x,
+                    };
             }
 
             if (!pixelAccuracy) {

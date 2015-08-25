@@ -161,6 +161,10 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 	    //^^ I checked this with the mathematical measurements: there is a rounding error that is higher on small images (what's totally ok)
 	    //please notice that the offsets already include an offset caused by moving the rotation point (took me a while to figure out the differences)
 
+	    //check cache
+
+	    //if not rotated, pixelAccuracy should be true
+
 
 
 		var breakpoint = true;
