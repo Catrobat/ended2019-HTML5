@@ -1,11 +1,9 @@
 <?php
 
-require_once("Server/html5/rest/v0.1/library/ProjectFileParser.class.php");
+require_once __DIR__ . "\\ProjectFileParser.class.php";
 
 class ProjectFileParser_v0_93 extends ProjectFileParser
 {
-
-
   public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml)
   {
     parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
@@ -21,7 +19,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
   {
     return (string)$script["type"];
   }
-
 
   protected function includeGlobalVariables()
   {
