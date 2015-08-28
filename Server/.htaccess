@@ -1,4 +1,6 @@
+Options -MultiViews
 RewriteEngine On
+RewriteBase /html5/
 RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
 RewriteRule .* - [F]
 
