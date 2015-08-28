@@ -10,6 +10,7 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
   public $cacheDir = "cache/";
   public $xmlDir = "xml-codes/";
   public $projectsDir = "projects/";
+  public $resId = 0;
 
   private function getId()
   {
@@ -19,6 +20,17 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
   private function debug( $str )
   {
     fwrite( STDERR, print_r( $str, TRUE ) );
+  }
+
+  private function randomStr($length = 5)
+  {
+    $randomString = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+    return $randomString;
+  }
+
+  private function newResId()
+  {
+    return $this->resId++;
   }
 
   private function prepareCache($cache)
@@ -62,6 +74,14 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     @mkdir($dst);
     while(false !== ($file = readdir($dir)))
     {
+      /*
+      if(strpos($file, "?"))
+      {
+        $oldName = $file;
+        $file = str_replace("?", $this->newResId(), $file);
+        rename($oldName, $file);
+      }
+      */
       if(($file != '.') && ($file != '..'))
       {
         if(is_dir($src . '/' . $file))
@@ -452,9 +472,9 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $projectName = "hill-racing";
     $cache = $this->cacheDir . __FUNCTION__ . "/";
 
-    $this->processProject($projectName, $cache);
+    //$this->processProject($projectName, $cache);
 
-    $this->checkJSON( $projectName, $cache );
+    //$this->checkJSON( $projectName, $cache );
   }
 
 }
