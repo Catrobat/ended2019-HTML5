@@ -19,7 +19,7 @@ QUnit.test("ProgramStartBrick", function (assert) {
     program._background = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
-    var b = new PocketCode.Bricks.ProgramStartBrick("device", program, "sprite");
+    var b = new PocketCode.Bricks.ProgramStartBrick("device", "sprite", program.onProgramStart);
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ProgramStartBrick, "instance check");
@@ -86,7 +86,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Bricks.WhenActionBrick("device", program, sprite, { action: "action" });
+    var b = new PocketCode.Bricks.WhenActionBrick("device", sprite, program.onTabbedAction, { action: "action" });
 
     assert.ok(b._device === "device" && b._sprite === sprite && b._action === "action", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.WhenActionBrick, "instance check");

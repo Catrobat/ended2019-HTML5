@@ -500,10 +500,185 @@ SmartJs.Communication.merge({
         return CorsRequest;
     })(),
 
+    ResourceLoader: (function () {
+        ResourceLoader.extends(SmartJs.Core.EventTarget);
+
+        function ResourceLoader () {
+            this._loading = false;      //loading in progress
+            this._useSizeForProgressCalculation = false;
+            this._totalSize = 0;        //calcualted size if useSizeForProgressCalculation == true
+            this._loadedSize = 0;
+            this._registeredFiles = []; //files to load
+
+            //events
+            this._onProgressChange = new SmartJs.Event.Event(this);
+            this._onLoad = new SmartJs.Event.Event(this);
+            this._onError = new SmartJs.Event.Event(this);
+        }
+
+        //properties
+        Object.defineProperties(ResourceLoader.prototype, {
+            useSizeForProgressCalculation: {    //otherwise: files.length is used (default)
+                get: function() {
+                    return this._useSizeForProgressCalculation;
+                },
+                set: function (value) {
+                    if (value == this._useSizeForProgressCalculation)
+                        return;
+                    if (this._loading)
+                        throw new Error('switching progress calculation not allowed during loading');
+                    
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: useSizeForProgressCalculation: expected type boolean');
+                    this._useSizeForProgressCalculation = value;
+                },
+            },
+        });
+
+        //events
+        Object.defineProperties(ResourceLoader.prototype, {
+            onProgressChange: {
+                get: function () {
+                    return this._onProgressChange;
+                },
+            },
+            onLoad: {
+                get: function () {
+                    return this._onLoad;
+                },
+            },
+            onError: {
+                get: function () {
+                    return this._onError;
+                },
+            },
+        });
+
+        //methods
+        ResourceLoader.prototype.merge({
+            registerFiles: function (files) {
+                if (this._loading)
+                    throw new Error('loading in progress: files cannot be registered');
+                if (!(files instanceof Array))
+                    throw new Error('invalid argument: files, expected type: Array');
+
+                var file;
+                this._registeredFiles = [];
+                this._totalSize = 0;
+                for (var i = 0, l = files.length; i < l; i++) {
+                    file = files[i];
+                    this._registeredFiles.push(file);
+                    if (this.useSizeForProgressCalculation) {
+                        if (typeof file.size !== 'number')
+                            throw new Error('invalid size definition');
+                        this._totalSize += file.size;
+                    }
+                }
+            },
+            load: function(files) {
+                if (files)
+                    this.registerFiles(files);
+                else if (this._loading)
+                    throw new Error('loading in progress: you have to wait');
+
+                this._loadedSize = 0;
+                if (this._registeredFiles.length > 0) {
+                    this._loading = true;
+                    this._requestFile(0);
+                }
+                else
+                    this._onLoad.dispatchEvent();
+            },
+            abortLoading: function () {
+                this._loading = false;
+            },
+            _fileErrorHandler: function (e) {
+                if (!this._loading)
+                    return;
+                this._loading = false;
+
+                var idx = e.fileIndex;
+                this._onError.dispatchEvent({ file: this._registeredFiles[e.fileIndex], element: e.element });
+            },
+            _fileSuccessHandler: function(e) {
+                if (!this._loading) //aborted
+                    return;
+                var idx = e.fileIndex;
+                if (this.useSizeForProgressCalculation) {
+                    var file = this._registeredFiles[idx];
+                    this._loadedSize += file.size;
+                    this._onProgressChange.dispatchEvent({ progress: Math.round(this._loadedSize / this._totalSize * 100), file: this._registeredFiles[idx], element: e.element });
+                }
+                else
+                    this._onProgressChange.dispatchEvent({ progress: Math.round((idx + 1) / this._registeredFiles.length * 100), file: this._registeredFiles[idx], element: e.element });
+                if (idx + 1 == this._registeredFiles.length) {
+                    this._loading = false;
+                    this._onLoad.dispatchEvent();
+                }
+                else {
+                    var loadNextFile = this._requestFile.bind(this, idx + 1);
+                    window.setTimeout(loadNextFile, 20);    //make sure the ui gets rerendered
+                }
+            },
+            _requestFile: function (fileIndex) {
+                var oHead = document.head || document.getElementsByTagName("head")[0];
+                var file = this._registeredFiles[fileIndex];
+
+                var tag = document.getElementById(file.url);
+                if (tag) {    //make sure files files are not loaded more than once (inserted in DOM)
+                    this._fileSuccessHandler({ fileIndex: fileIndex, element: tag });
+                    return;
+                }
+
+                switch (file.type) {
+                    case 'js':
+                        var oScript = document.createElement("script");
+                        oScript.async = false;  //ensure execution order after async download
+                        this._addDomListener(oScript, 'error', this._fileErrorHandler, { fileIndex: fileIndex, element: oScript });
+
+                        var loaded = false;
+                        oScript.onload = oScript.onreadystatechange = function (e) {
+                            if (!loaded && (!oScript.readyState || oScript.readyState === "loaded" || oScript.readyState === "complete")) {
+                                loaded = true;
+                                oScript.onload = oScript.onreadystatechange = null;
+                                e = e || {};
+                                e.merge({ fileIndex: fileIndex, element: oScript });
+                                this._fileSuccessHandler(e);
+                            }
+                        }.bind(this);
+                        oHead.appendChild(oScript);
+                        oScript.id = oScript.src = file.url;
+                        break;
+                    case 'css':
+                        var oCss = document.createElement("link");
+                        oCss.type = "text/css";
+                        oCss.rel = "stylesheet";
+                        oCss.id = file.url;
+                        oHead.appendChild(oCss);
+
+                        var oCssSim = new Image();
+                        this._addDomListener(oCssSim, 'error', this._fileSuccessHandler, { fileIndex: fileIndex, element: oCss });
+                        oCssSim.src = file.url;
+                        break;
+                    case 'img':
+                        var oImg = new Image();
+                        this._addDomListener(oImg, 'error', this._fileErrorHandler, { fileIndex: fileIndex, element: oImg});
+                        this._addDomListener(oImg, 'load', this._fileSuccessHandler, { fileIndex: fileIndex, element: oImg });
+                        oImg.src = file.url;
+                        break;
+                    default:
+                        this._loading = false;
+                        //this._onError.dispatchEvent({ target: this._registeredFiles[fileIndex], error: 'invalid fileType: ' + file.type });
+                        throw new Error('invalid fileType: ' + file.type);
+                }
+            },
+        });
+
+        return ResourceLoader;
+    })(),
 });
 
 
-//TODO: add resource loader
 
 //file: http://www.binaryintellect.net/articles/859d32c8-945d-4e5d-8c89-775388598f62.aspx
 //form data: http://www.matlus.com/html5-file-upload-with-progress/

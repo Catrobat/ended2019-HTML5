@@ -4,7 +4,7 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../core.js" />
 /// <reference path="../ui.js" />
-/// <reference path="../../libs/fabric/fabric-1.5.0.js" />
+/// <reference path="../../libs/fabric/fabric-1.6.0-rc.1.js" />
 'use strict';
 
 PocketCode.Ui.Canvas = (function () {
@@ -212,17 +212,18 @@ PocketCode.Ui.Canvas = (function () {
     Canvas.prototype.merge({
         _onClickHandler: function (e) {
         //    this._onClick.dispatchEvent();
-        //    //e.target.blur();//preventDefault(); //stop event so the button dowsn't get focus
+        //    //e.target.blur();//preventDefault(); //stop event so the button doesn't get focus
         },
         _onResizeHandler: function(e) {
 
         },
-        clear: function () {
+        clear: function () {    //TODO??
 
         },
         render: function (renderingObjectList) {
 
         },
+        //TODO: add toDataUrl(scaling?)
     });
 
     return Canvas;

@@ -1,5 +1,5 @@
 ﻿
-var img1, img2, img3, img4, img5, img6, img7;
+var img1, img2, img3, img4, img5, img6, img7, img8, img9;
 
 var imgLoadCounter = 0;
 var imgLoadHandler = function () {
@@ -57,36 +57,36 @@ var runTests = function () {
     //ih._canvas.style.backgroundColor = 'lightgray';
 
     var offsets;
-    //offsets= ih.getTrimOffsets(img1, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img2, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img3, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img4, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img5, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img6, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img7, 1, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img8, 1, 0, true, true, true, true);
+    //offsets= ih.getImageTrimOffsets(img1, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img2, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img3, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img4, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img5, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img6, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img7, 1, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img8, 1, 0, true, true, true, true);
 
-    //offsets = ih.getTrimOffsets(img3, 10, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img3, 5, 0, true, true, true, true);
-    //offsets = ih.getTrimOffsets(img3, 0.5, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img3, 10, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img3, 5, 0, true, true, true, true);
+    //offsets = ih.getImageTrimOffsets(img3, 0.5, 0, true, true, true, true);
 
-    offsets = ih.getTrimOffsets(img9, 1, 30, /*false, false, */true, true, true, true);
+    offsets = ih.getImageTrimOffsets(img9, 1, 30, /*false, false, */true, true, true, true);
     console.log(offsets);
-    offsets = ih.getTrimOffsets(img9, 1, 30, /*true, true, */true, true, true, true);
+    offsets = ih.getImageTrimOffsets(img9, 1, 30, /*true, true, */true, true, true, true);
     console.log(offsets);
 
-    var imgObject6 = ih.trimAndScale(img6);//, 0.5);
-    document.body.appendChild(imgObject6.img);
+    var imgObject6 = ih.adjustCenterAndTrim(img6);//, 0.5);
+    document.body.appendChild(imgObject6.image);
 
-    var imgObject7 = ih.trimAndScale(img7);//, 0.5);
-    document.body.appendChild(imgObject7.img);
+    var imgObject7 = ih.adjustCenterAndTrim(img7);//, 0.5);
+    document.body.appendChild(imgObject7.image);
 
-    var imgObject8 = ih.trimAndScale(img8);//, 0.5);
-    document.body.appendChild(imgObject8.img);
+    var imgObject8 = ih.adjustCenterAndTrim(img8);//, 0.5);
+    document.body.appendChild(imgObject8.image);
 
-    var imgObject9 = ih.trimAndScale(img9, .3);
+    var imgObject9 = ih.adjustCenterAndTrim(img9, .3);
     //imgObject9 = ih.scale(imgObject9, 0.5);//, 0.5);
-    document.body.appendChild(imgObject9.img);
+    document.body.appendChild(imgObject9.image);
     //alert(imgObject9.offsetX + ', ' + imgObject9.offsetY);
 
     var breakpoint = true;

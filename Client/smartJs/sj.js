@@ -40,7 +40,8 @@
  * @param o: object that is merged into the original object
  */
 Object.prototype.merge = function (o) {
-
+    if (typeof o !== 'object')
+        return;
     if (this instanceof Array)
         throw new Error('Object.merge not valid on simple data types and arrays');
 

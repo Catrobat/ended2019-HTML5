@@ -131,7 +131,7 @@ PocketCode.Sprite = (function () {
                     positionY: this._positionY,
                     direction: this._direction,
                     rotationStyle: this._rotationStyle,
-                    look: this._currentLook ? this._currentLook.imageId : undefined,    //TODO: change this to look object
+                    look: this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId) : undefined,
                     size: this._size,
                     visible: this._currentLook ? this._visible : false,
                     graphicEffects: [
@@ -610,7 +610,7 @@ PocketCode.Sprite = (function () {
                 look = looks[i];
                 if (look.imageId === imageId) {
                     this._currentLook = look;
-                    this._triggerOnChange({ look: imageId });    //TODO: change this to send real object
+                    this._triggerOnChange({ look: this._gameEngine.getLookImage(imageId) });
                     return true;
                 }
             }
@@ -642,7 +642,7 @@ PocketCode.Sprite = (function () {
                     break;
                 }
             }
-            this._triggerOnChange({ look: this._currentLook.imageId }); //TODO: change this -> send object
+            this._triggerOnChange({ look: this._gameEngine.getLookImage(this._currentLook.imageId) });
             return true;
         },
         /**

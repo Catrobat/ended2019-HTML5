@@ -12,10 +12,10 @@
 PocketCode.merge({
 
     SpriteFactory: (function () {
-        function SpriteFactory(device, program, broadcastMgr, soundMgr, totalCount) {
+        function SpriteFactory(device, project, broadcastMgr, soundMgr, totalCount) {
             //this._bricksCount = bricksCount || 0;
-            this._program = program;
-            this._brickFactory = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, totalCount);
+            this._program = project;
+            this._brickFactory = new PocketCode.BrickFactory(device, project, broadcastMgr, soundMgr, totalCount);
 
             //we use the brickFactory events here
             this._onProgressChange = this._brickFactory.onProgressChange;
@@ -54,9 +54,9 @@ PocketCode.merge({
 
 
     BrickFactory: (function () {
-        function BrickFactory(device, program, broadcastMgr, soundMgr, totalCount) {
+        function BrickFactory(device, project, broadcastMgr, soundMgr, totalCount) {
             this._device = device;
-            this._gameEngine = program;
+            this._project = project;
             this._broadcastMgr = broadcastMgr;
             this._soundMgr = soundMgr;
 
@@ -91,8 +91,11 @@ PocketCode.merge({
 
                 switch (type) {
                     case 'ProgramStartBrick':
+                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
+                        break;
+
                     case 'WhenActionBrick':
-                        brick = new PocketCode.Bricks[type](this._device, this._gameEngine, currentSprite, jsonBrick);
+                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
                         break;
 
                     case 'BroadcastReceiveBrick':
