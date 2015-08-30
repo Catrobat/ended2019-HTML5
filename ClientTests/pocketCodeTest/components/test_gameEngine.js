@@ -375,7 +375,8 @@ QUnit.test("GameEngine", function (assert) {
 QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 	var done1 = assert.async();
-	
+	var done2 = assert.async();
+
 	var /*newSpritePositionX, newSpritePositionY, newSpriteDirection,*/ newSpritePositionTriggerUpdate;
 	var fakeSprite = {
 		id: "spriteId_test",
@@ -409,13 +410,13 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 	var baseUrl = "_resources/images/",
 	images = [
 		{ id: "i1", url: "imgHelper1.png", size: 1 },
-		{ id: "i2", url: "imgHelper2.png", size: 1 },
-		{ id: "i3", url: "imgHelper3.png", size: 1 },
-		{ id: "i4", url: "imgHelper4.png", size: 1 },
-		{ id: "i5", url: "imgHelper5.png", size: 1 },
-		{ id: "i6", url: "imgHelper6.png", size: 1 },
-		{ id: "i7", url: "imgHelper7.png", size: 1 },
-		{ id: "i8", url: "imgHelper8.png", size: 1 },
+		//{ id: "i2", url: "imgHelper2.png", size: 1 },
+		//{ id: "i3", url: "imgHelper3.png", size: 1 },
+		//{ id: "i4", url: "imgHelper4.png", size: 1 },
+		//{ id: "i5", url: "imgHelper5.png", size: 1 },
+		//{ id: "i6", url: "imgHelper6.png", size: 1 },
+		//{ id: "i7", url: "imgHelper7.png", size: 1 },
+		//{ id: "i8", url: "imgHelper8.png", size: 1 },
 		{ id: "i9", url: "imgHelper9.png", size: 1 },
 	];
 
@@ -435,10 +436,10 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 	};
 	ga.onSpriteChange.addEventListener(new SmartJs.Event.EventListener(onSpriteUpdate));
 
+	var opReturn, boundary;//, overflow;
 
 	var startTest = function () {
 
-		var opReturn, boundary;//, overflow;
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.ok(opReturn == false && lastUpdateEventArgs == undefined, "simple: no change");
 		assert.equal(ga.ifSpriteOnEdgeBounce(), false, "no change if no sprite is passed to method");
@@ -597,27 +598,235 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 		//including rotation
 		fakeSprite.rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
-		//right
+		//left
 		lastUpdateEventArgs = undefined;
-
-		fakeSprite.positionX = 0;   //no bounce
+		fakeSprite.positionX = 0;
 		fakeSprite.positionY = 0;
 		fakeSprite.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
-		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.equal(lastUpdateEventArgs, undefined, "rotation: left but without overflow: no event triggered");
+
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+		assert.equal(overflowLeft, 0, "rotation: left overflow: aligned after bounce");
+
+		//right
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.equal(lastUpdateEventArgs, undefined, "rotation: right but without overflow: no event triggered");
 
 		fakeSprite.positionX = 40;
 		fakeSprite.positionY = 0;
 		fakeSprite.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
 		overflowRight = fakeSprite.positionX + boundary.right - sw2;
 		assert.equal(overflowRight, 0, "rotation: right overflow: aligned after bounce");
 
+		//top
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(lastUpdateEventArgs, undefined, "rotation: top but without overflow: no event triggered");
 
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		assert.equal(overflowTop, 0, "rotation: top overflow: aligned after bounce");
+
+		//bottom
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(lastUpdateEventArgs, undefined, "rotation: bottom but without overflow: no event triggered");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		assert.equal(overflowBottom, 0, "rotation: bottom overflow: aligned after bounce");
+
+		//overflow on two sides without conflicts (look size > viewport size)
+		//top right: one edge in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = -5;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, -175, "top/right: direction after bounce");
+		//top right: both edges in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, -135, "top/right: direction after bounce");
+
+
+		//top left: one edge in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 15;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+		assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, 165, "top/left: direction after bounce");
+		//top left: both edges in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = -5;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+		assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, 175, "top/left: direction after bounce");
+
+		//bottom right: one edge in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 5;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, -5, "bottom/right: direction after bounce");
+		//bottom right: both edges in direction
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 105;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, -75, "bottom/right: direction after bounce");
+
+		//bottom left
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = -95;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - fakeSprite.direction, false, true);
+		overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+		assert.ok(overflowBottom == 0 && overflowLeft == 0, "bottom/left: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/left: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, 85, "bottom/left: direction after bounce");
+
+		//flipX
+		fakeSprite.rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+		lastUpdateEventArgs = undefined;
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 105;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, true, true);
+		overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.ok(overflowBottom == 0 && overflowRight == 0, "flipX: bottom/right: 2 sides + rotation: aligned after bounce");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "flipX: bottom/right: 2 sides + rotation: event args check");
+		assert.equal(fakeSprite.direction, -75, "flipX: bottom/right: direction after bounce");
+
+		
+		complexTests();
 		done1();
+	};
+
+	var complexTests = function () {
+		//complex cases: overflow on opposite edges (before/after rotate)
+
+	    fakeSprite.currentLook = {
+	        imageId: "i9",
+	    };
+	    fakeSprite.rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+
+	    //overflow on all sides: the sprite should bounce from the top/right corner(direction = 90)
+	    lastUpdateEventArgs = undefined;
+	    fakeSprite.positionX = 0;
+	    fakeSprite.positionY = 0;
+	    fakeSprite.direction = 90;
+	    opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+	    boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - fakeSprite.direction, false, true);
+	    var overflowTop = fakeSprite.positionY + boundary.top - sh2;
+	    var overflowRight = fakeSprite.positionX + boundary.right - sw2;
+	    assert.ok(overflowTop == 0 && overflowRight == 0, "complex: bounce from top/right");
+
+	    //overflow on all sides: the sprite should bounce from the bottom/right corner (direction = 100)
+	    lastUpdateEventArgs = undefined;
+	    fakeSprite.positionX = 0;
+	    fakeSprite.positionY = 0;
+	    fakeSprite.direction = 100;
+	    opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+	    boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - fakeSprite.direction, false, true);
+	    var overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+	    overflowRight = fakeSprite.positionX + boundary.right - sw2;
+	    assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: bounce from bottom/right");
+
+	    //overflow on all sides: the sprite should bounce from the top/left corner(direction = -90)
+	    lastUpdateEventArgs = undefined;
+	    fakeSprite.positionX = 0;
+	    fakeSprite.positionY = 0;
+	    fakeSprite.direction = -90;
+	    opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+	    boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - fakeSprite.direction, false, true);
+	    overflowTop = fakeSprite.positionY + boundary.top - sh2;
+	    var overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+	    assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: bounce from top/left");
+
+	    //overflow on all sides: the sprite should bounce from the bottom/left corner (direction = -100)
+	    lastUpdateEventArgs = undefined;
+	    fakeSprite.positionX = 0;
+	    fakeSprite.positionY = 0;
+	    fakeSprite.direction = -100;
+	    opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+	    boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - fakeSprite.direction, false, true);
+	    overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+	    overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+	    assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: bounce from bottom/left");
+
+	    //take care of overflows that occur during bounce
+
+
+		done2();
 	};
 
 });

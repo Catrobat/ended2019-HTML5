@@ -529,7 +529,7 @@ PocketCode.GameEngine = (function () {
                         //c = l.ignore ? 0 : l.overflow;  //overflow can be negative as well (there can only be one ignored per x/y-direction)
                         //c = r.ignore ? 0 : -r.overflow;
                         //return c;
-                        return l.ignore ? -r.overflow : l.overflow;
+                        return l.ignore ? -r.overflow : l.overflow; //overflows can be negativ as well (after rotation)- we also have to take care of this 
                     }
                     //after rotation there can be a an overflow that didn't exist before
                     if (l.overflow > 0 && r.overflow > 0 || l.overflow + r.overflow > 0) {  //check as well, if the rotated area still fits in the viewport
@@ -557,9 +557,10 @@ PocketCode.GameEngine = (function () {
                         t = vpEdges.top,
                         b = vpEdges.bottom;
                     if (t.ignore || b.ignore) {
-                        c = t.ignore || t.overflow <= 0 ? 0 : -t.overflow;
-                        c = b.ignore || b.overflow <= 0 ? 0 : b.overflow;
-                        return c;
+                        //c = t.ignore || t.overflow <= 0 ? 0 : -t.overflow;
+                        //c = b.ignore || b.overflow <= 0 ? 0 : b.overflow;
+                        //return c;
+                        return t.ignore ? b.overflow : -t.overflow;
                     }
                     //after rotation
                     if (t.overflow > 0 && b.overflow > 0) {
