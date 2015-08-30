@@ -565,7 +565,7 @@ PocketCode.GameEngine = (function () {
                     //after rotation
                     if (t.overflow > 0 && b.overflow > 0) {
                         //move from original direction
-                        if (Math.abs(dir) > 90)
+                        if (Math.abs(dir) <= 90)
                             return -t.overflow;
                         else
                             return b.overflow;
@@ -659,19 +659,20 @@ PocketCode.GameEngine = (function () {
             var updateBoundary = false;
             if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
                 angle = 90 - newDir;
-                boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
+                //boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
                 updateBoundary = true;
             }
             else if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
                 angle = 0;
                 if ((newDir >= 0 && dir < 0) || (newDir < 0 && dir >= 0)) { //flipX changed
                     flipX = !flipX;
-                    boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
+                    //boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
                     updateBoundary = true;
                 }
             }
                 
             if (updateBoundary) {
+                boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
                 //adjust/keep the area center during rotate
                 newX += center.x - (boundary.right + boundary.left) / 2;
                 newY += center.y - (boundary.top + boundary.bottom) / 2;

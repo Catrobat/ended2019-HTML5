@@ -855,28 +855,30 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		assert.ok(overflowBottom == 0 && overflowRight == 0, "complex (3 sides): bounce from bottom/right");
 
 		//take care of overflows that occur during bounce
-		//spriteMock.positionX = -100;
-		//spriteMock.positionY = 0;
-		//spriteMock.direction = -105;
-		//opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		//boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
-		//overflowLeft = -spriteMock.positionX - boundary.left - sw2;
-		//assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
+		spriteMock.positionX = -100;
+		spriteMock.positionY = 0;
+		spriteMock.direction = -105;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
+		assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
 
-		////test on top/bottom: landscape
-		//ga._screenHeight = 50;
-		//ga._screenWidth = 100;
-		//sh2 = ga._screenHeight / 2,
-		//sw2 = ga._screenWidth / 2;
+		//test on top/bottom: landscape
+		ga._screenHeight = 50;
+		ga._screenWidth = 100;
+		sh2 = ga._screenHeight / 2,
+		sw2 = ga._screenWidth / 2;
 		//spriteMock.size = 200;
 
-		//spriteMock.positionX = 0;
-		//spriteMock.positionY = 100;
-		//spriteMock.direction = -25;
-		//opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		//overflowTop = spriteMock.positionY + boundary.top - sh2;
+		spriteMock.positionX = 100;
+		spriteMock.positionY = 0;
+		spriteMock.direction = 5;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		overflowTop = spriteMock.positionY + boundary.top - sh2;
+		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		//overflowLeft = -spriteMock.positionX - boundary.left - sw2;
-		//assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from top/bottom");
+		assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom");
 
 
 		done2();
