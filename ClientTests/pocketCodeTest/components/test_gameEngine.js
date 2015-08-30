@@ -435,7 +435,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 	var startTest = function () {
 
-	    var opReturn, boundary;//, overflow;
+		var opReturn, boundary;//, overflow;
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.ok(opReturn == false && lastUpdateEventArgs == undefined, "simple: no change");
 		assert.equal(ga.ifSpriteOnEdgeBounce(), false, "no change if no sprite is passed to method");
@@ -451,7 +451,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		var overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
 		assert.equal(overflowLeft, 0, "simple: left overflow: aligned after bounce");
 		assert.equal(fakeSprite.direction, 90, "left: direction not changed");
-	    //directions
+		//directions
 		fakeSprite.positionX = -40;
 		fakeSprite.positionY = 0;
 		fakeSprite.direction = -170;
@@ -483,7 +483,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		assert.equal(fakeSprite.direction, 180, "left: direction not changed (180 = sprite direction parallel to handled edge)");
 
 
-	    //right
+		//right
 		fakeSprite.positionX = 40;
 		fakeSprite.positionY = 0;
 		fakeSprite.direction = 90;
@@ -494,7 +494,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		var overflowRight = fakeSprite.positionX + boundary.right - sw2;
 		assert.equal(overflowRight, 0, "simple: right overflow: aligned after bounce");
 		assert.equal(fakeSprite.direction, -90, "left: direction changed");
-	    //directions
+		//directions
 		fakeSprite.positionX = 40;
 		fakeSprite.positionY = 0;
 		fakeSprite.direction = 10;
@@ -531,7 +531,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		var overflowTop = fakeSprite.positionY + boundary.top - sh2;
 		assert.equal(overflowTop, 0, "simple: top overflow: aligned after bounce");
 		assert.equal(fakeSprite.direction, 180, "top: direction changed");
-	    //directions
+		//directions
 		fakeSprite.positionX = 0;
 		fakeSprite.positionY = 70;
 		fakeSprite.direction = -90;
@@ -556,7 +556,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.equal(fakeSprite.direction, 140, "top: direction changed (40 -> 140)");
 
-	    //bottom
+		//bottom
 		fakeSprite.positionX = 0;
 		fakeSprite.positionY = -70;
 		fakeSprite.direction = 180;
@@ -567,7 +567,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		var overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
 		assert.equal(overflowBottom, 0, "simple: bottom overflow: aligned after bounce");
 		assert.equal(fakeSprite.direction, 0, "bottom: direction changed");
-	    //directions
+		//directions
 		fakeSprite.positionX = 0;
 		fakeSprite.positionY = -70;
 		fakeSprite.direction = 90;
@@ -592,8 +592,9 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.equal(fakeSprite.direction, -10, "bottom: direction not changed (-170 -> -10)");
 
-	    //including rotation
+		//including rotation
 		fakeSprite.rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+		//right
 		lastUpdateEventArgs = undefined;
 
 		fakeSprite.positionX = 0;   //no bounce
