@@ -293,7 +293,7 @@ QUnit.test("GameEngine", function (assert) {
 	gameEngine._soundManager = new PocketCode.SoundManager();
 	//internal bindings have to be reattached to guarantee loading flags are set
 	gameEngine._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(gameEngine._soundManagerOnLoadingErrorHandler, gameEngine));
-	gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._assetProgressChangeHandler, gameEngine));
+	gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._resourceProgressChangeHandler, gameEngine));
 	gameEngine._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(gameEngine._spriteOnExecutedHandler, gameEngine));
 	//check if project has finished executing
 
