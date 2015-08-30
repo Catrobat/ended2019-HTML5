@@ -19,4 +19,5 @@ SetOutputFilter DEFLATE
 
 RewriteRule ^rest/([^/]*)/(.*)$ html5/rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
+RewriteCond %{REQUEST_FILENAME} !\.(gif|jpg|png|jpeg|css|js|ico)$ [NC]
 RewriteRule ^html5/player/(.*)$ html5/index.php?projectId=$1

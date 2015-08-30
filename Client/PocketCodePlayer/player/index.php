@@ -4,12 +4,6 @@ $project_id = 0;
 if( isset( $_GET["projectId"]) ) {
   $project_id = $_GET["projectId"];
 }
-
-if( $project_id == 0 ) {
-
-  //header( "location: /");
-}
-echo $project_id;
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
