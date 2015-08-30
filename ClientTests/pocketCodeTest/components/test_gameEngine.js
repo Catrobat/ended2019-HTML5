@@ -275,6 +275,7 @@ QUnit.test("GameEngine", function (assert) {
 
 	//add resource path to url
 	var testProject = JSON.parse(JSON.stringify( strProject719));
+	testProject.resourceBaseUrl = "";
 	for(i = 0, l = testProject.sounds.length; i< l; i++){
 		testProject.sounds[i].url = "_resources/"+testProject.sounds[i].url;
 	}
@@ -285,8 +286,8 @@ QUnit.test("GameEngine", function (assert) {
 
 
 
-	//TODO: not called due to changes on image loading:     var loadingHandled = assert.async();
-	//                                                      var disposedHandled = assert.async();
+	var loadingHandled = assert.async();
+	var disposedHandled = assert.async();
 
 	//make sure sounds not already loaded
 	gameEngine._soundManager = new PocketCode.SoundManager();
@@ -309,7 +310,9 @@ QUnit.test("GameEngine", function (assert) {
 	   // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
 		assert.ok(gameEngine.projectReady, "Program ready set to true after loading is done");
 		loadingHandled();
-		testDispose();
+
+		window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
+		//testDispose();
 
 		//var gameEngine2 = new PocketCode.GameEngine();
 		//gameEngine2.loadProject(strProject14);

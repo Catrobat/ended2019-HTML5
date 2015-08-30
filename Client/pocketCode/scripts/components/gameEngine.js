@@ -38,6 +38,7 @@ PocketCode.GameEngine = (function () {
         this.resourceBaseUrl = "";
 
         this._imageStore = new PocketCode.ImageStore();//Math.min(SmartJs.Ui.Window.height, SmartJs.Ui.Window.width))   -> avaliable onLoad
+        this._imageStore.onLoadingProgressChange.addEventListener(new SmartJs.Event.EventListener(this._assetProgressChangeHandler, this));
         //this.__images = {};
         this.__sounds = {};
 
@@ -176,25 +177,28 @@ PocketCode.GameEngine = (function () {
             this._sprites.dispose();
 
             //asset sizes
-            var soundSize = 0;
+            this.soundSize = 0;
             for (i = 0, l = jsonProject.sounds.length; i < l; i++) {
-                soundSize += jsonProject.sounds[i].size;
+                this.soundSize += jsonProject.sounds[i].size;
             }
 
             //todo handle instead of merely skipping
             if (!this._soundManager.supported) {
-                soundSize = 0;
+                this.soundSize = 0;
             }
 
-            var imageSize = 0;
+            this.imageSize = 0;
             for (i = 0, l = jsonProject.images.length; i < l; i++) {
-                imageSize += jsonProject.images[i].size;
+                this.imageSize += jsonProject.images[i].size;
             }
-            this.assetSize = imageSize + soundSize;
+
+            this.assetSize = this.imageSize + this.soundSize;
             if (!this.assetSize) {
                 this._assetsLoaded = true;
                 this.assetLoadingProgress = 100;
             }
+            this.imageProgress = 0;
+            this.soundProgress = 0;
 
             this._sounds = jsonProject.sounds || [];
 
@@ -274,24 +278,23 @@ PocketCode.GameEngine = (function () {
             }
         },
         _assetProgressChangeHandler: function (e) {
-            if (!e.size || !this.assetSize) {
+            if(e.target === this._imageStore){
+                this.imageProgress = e.progress;
+            }else if(e.target === this._soundManager){
+                this.soundProgress = e.progress;
+            }else{
                 return;
             }
 
-            this.assetLoadingProgress += e.size;
-            var percentage = (this.assetLoadingProgress / this.assetSize) * 100;
+            this.assetLoadingProgress = this.soundProgress * (this.soundSize/this.assetSize) + this.imageProgress * (this.imageSize/this.assetSize);
 
-            //console.log(percentage + "% loaded (+ "+(e.size / this.assetSize) * 100+"%)");
-
-            if (percentage === 100) {
+            if (this.assetLoadingProgress === 100) {
                 this._assetsLoaded = true;
             }
             if (this._assetsLoaded && this._spritesLoaded) {
-                //if(percentage === 100 && this._spritesLoaded){
                 this.projectReady = true;
             }
-            this._onLoadingProgress.dispatchEvent({ progress: percentage });
-
+            this._onLoadingProgress.dispatchEvent({ progress: this.assetLoadingProgress });
         },
         runProject: function (reinitSprites) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
