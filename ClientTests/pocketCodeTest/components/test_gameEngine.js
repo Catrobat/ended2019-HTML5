@@ -617,7 +617,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.equal(overflowLeft, 0, "rotation: left overflow: aligned after bounce");
 
@@ -633,7 +633,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.equal(overflowRight, 0, "rotation: right overflow: aligned after bounce");
 
@@ -649,7 +649,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 70;
 		spriteMock.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		assert.equal(overflowTop, 0, "rotation: top overflow: aligned after bounce");
 
@@ -665,7 +665,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = -70;
 		spriteMock.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		assert.equal(overflowBottom, 0, "rotation: bottom overflow: aligned after bounce");
 
@@ -676,7 +676,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 70;
 		spriteMock.direction = -5;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
@@ -688,7 +688,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 70;
 		spriteMock.direction = 45;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
@@ -702,7 +702,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 70;
 		spriteMock.direction = 15;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
@@ -714,7 +714,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 70;
 		spriteMock.direction = -5;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
@@ -727,7 +727,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = -70;
 		spriteMock.direction = 5;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
@@ -739,7 +739,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = -70;
 		spriteMock.direction = 105;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
@@ -752,7 +752,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = -70;
 		spriteMock.direction = -95;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowBottom == 0 && overflowLeft == 0, "bottom/left: 2 sides + rotation: aligned after bounce");
@@ -792,7 +792,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = 90;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i9", 1, spriteMock.direction - 90, false, true);
 		var overflowTop = spriteMock.positionY + boundary.top - sh2;
 		var overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowTop == 0 && overflowRight == 0, "complex: bounce from top/right");
@@ -803,7 +803,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = 100;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i9", 1, spriteMock.direction - 90, false, true);
 		var overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: bounce from bottom/right");
@@ -814,7 +814,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = -90;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i9", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		var overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: bounce from top/left");
@@ -825,7 +825,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = -100;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i9", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i9", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: bounce from bottom/left");
@@ -839,7 +839,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 100;
 		spriteMock.direction = 0;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowTop == 0 && overflowRight == 0, "complex (3 sides): bounce from top/right");
@@ -849,7 +849,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = -100;
 		spriteMock.direction = 0;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, spriteMock.direction - 90, false, true);
 		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		assert.ok(overflowBottom == 0 && overflowRight == 0, "complex (3 sides): bounce from bottom/right");
@@ -859,7 +859,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		spriteMock.positionY = 0;
 		spriteMock.direction = -105;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, spriteMock.direction - 90, false, true);
 		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
 
@@ -872,13 +872,61 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 		spriteMock.positionX = 100;
 		spriteMock.positionY = 0;
-		spriteMock.direction = 5;
+		spriteMock.direction = 80;
 		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
-		boundary = is.getLookBoundary("spriteId_test", "i10", 1, 90 - spriteMock.direction, false, true);
+		boundary = is.getLookBoundary("spriteId_test", "i10", 1, spriteMock.direction - 90, false, true);
 		overflowTop = spriteMock.positionY + boundary.top - sh2;
 		overflowRight = spriteMock.positionX + boundary.right - sw2;
 		//overflowLeft = -spriteMock.positionX - boundary.left - sw2;
 		assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom");
+
+		//imagge11: diagonal
+		spriteMock.currentLook = {
+			imageId: "i11",
+		};
+		ga._screenHeight = 50;
+		ga._screenWidth = 50;
+		sh2 = ga._screenHeight / 2,
+		sw2 = ga._screenWidth / 2;
+		//top
+		spriteMock.positionX = 0;
+		spriteMock.positionY = 40;
+		spriteMock.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i11", 1, spriteMock.direction - 90, false, true);
+		overflowTop = spriteMock.positionY + boundary.top - sh2;
+		overflowRight = spriteMock.positionX + boundary.right - sw2;
+		assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from left/right: 45");
+		//bottom
+		spriteMock.positionX = 0;
+		spriteMock.positionY = -40;
+		spriteMock.direction = -135;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i11", 1, spriteMock.direction - 90, false, true);
+		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
+		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
+		assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from left/right: -135");
+	    //right
+		spriteMock.positionX = 40;
+		spriteMock.positionY = 0;
+		spriteMock.direction = 135;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i11", 1, spriteMock.direction - 90, false, true);
+		overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
+	    //overflowTop = spriteMock.positionY + boundary.top - sh2;
+		overflowRight = spriteMock.positionX + boundary.right - sw2;
+		//overflowLeft = -spriteMock.positionX - boundary.left - sw2;
+		assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom: 135");
+	    //left
+		spriteMock.positionX = -40;
+		spriteMock.positionY = 0;
+		spriteMock.direction = -45;
+		opReturn = ga.ifSpriteOnEdgeBounce(spriteMock);
+		boundary = is.getLookBoundary("spriteId_test", "i11", 1, spriteMock.direction - 90, false, true);
+	    //overflowBottom = -spriteMock.positionY - boundary.bottom - sh2;
+		overflowTop = spriteMock.positionY + boundary.top - sh2;
+		overflowLeft = -spriteMock.positionX - boundary.left - sw2;
+		assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from top/bottom: -135");
 
 
 		done2();
