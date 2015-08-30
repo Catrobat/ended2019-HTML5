@@ -373,16 +373,21 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 	var done1 = assert.async();
 	
-	var newSpritePositionX, newSpritePositionY, newSpritePositionTriggerUpdate;
+	var /*newSpritePositionX, newSpritePositionY, newSpriteDirection,*/ newSpritePositionTriggerUpdate;
 	var fakeSprite = {
-		direction: 0,
-		positionX: 0,
-		positionY: 0,
+		id: "spriteId_test",
+		direction: 90,
+		rotationStyle: PocketCode.RotationStyle.DO_NOT_ROTATE, /*.ALL_AROUND,*/
+		positionX: -10,
+		positionY: -10,
 		size: 100,
 		setPosition: function (x, y, triggerUpdate) {
-			newSpritePositionX = x;
-			newSpritePositionY = y;
+			fakeSprite.positionX = x;
+			fakeSprite.positionY = y;
 			newSpritePositionTriggerUpdate = triggerUpdate;
+		},
+		setDirection: function(dir) {
+			fakeSprite.direction = dir;
 		},
 		currentLook: {
 			imageId: "i1",
@@ -391,6 +396,8 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 	var ga = new PocketCode.GameEngine();
 	ga._screenHeight = 100;
 	ga._screenWidth = 50;
+	var sh2 = ga._screenHeight / 2,
+		sw2 = ga._screenWidth / 2;
 	var is = new PocketCode.ImageStore();
 	//inject image store to load test images directly
 	ga._imageStore = is;
@@ -417,7 +424,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 		startTest();
 	};
 	is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
-	is.loadImages(baseUrl, images, 0.5); //do not apply an initial scaling as this has an impact on corner calculations
+	is.loadImages(baseUrl, images, 0.5);
 
 	var lastUpdateEventArgs;
 	var onSpriteUpdate = function (e) {
@@ -428,12 +435,183 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 
 	var startTest = function () {
 
-		var opReturn;
+	    var opReturn, boundary;//, overflow;
 		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
 		assert.ok(opReturn == false && lastUpdateEventArgs == undefined, "simple: no change");
+		assert.equal(ga.ifSpriteOnEdgeBounce(), false, "no change if no sprite is passed to method");
+
+		//simple movements in one direction
+		//left
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: left overflow");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY === undefined && lastUpdateEventArgs.id == "spriteId_test", "left overflow: event argument check");
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		var overflowLeft = -fakeSprite.positionX - boundary.left - sw2;
+		assert.equal(overflowLeft, 0, "simple: left overflow: aligned after bounce");
+		assert.equal(fakeSprite.direction, 90, "left: direction not changed");
+	    //directions
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = -170;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 170, "left: direction changed (-170 -> 170)");
+
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = -90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 90, "left: direction changed (180 turn around)");
+
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = -40;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 40, "left: direction changed (-40 -> 40)");
+
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 0;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 0, "left: direction not changed (0 = sprite direction parallel to handled edge)");
+
+		fakeSprite.positionX = -40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 180;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 180, "left: direction not changed (180 = sprite direction parallel to handled edge)");
 
 
-		assert.ok(true, "ok");
+	    //right
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: right overflow");
+		assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY === undefined && lastUpdateEventArgs.id == "spriteId_test", "right overflow: event argument check");
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		var overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.equal(overflowRight, 0, "simple: right overflow: aligned after bounce");
+		assert.equal(fakeSprite.direction, -90, "left: direction changed");
+	    //directions
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 10;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -10, "left: direction changed (10 -> -10)");
+
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 150;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -150, "left: direction changed (150 -> -150)");
+
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 0;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 0, "left: direction not changed (0)");
+
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 180;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 180, "left: direction not changed (180)");
+
+
+		//top
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 0;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: top overflow");
+		assert.ok(lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.positionX === undefined && lastUpdateEventArgs.id == "spriteId_test", "top overflow: event argument check");
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		var overflowTop = fakeSprite.positionY + boundary.top - sh2;
+		assert.equal(overflowTop, 0, "simple: top overflow: aligned after bounce");
+		assert.equal(fakeSprite.direction, 180, "top: direction changed");
+	    //directions
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = -90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -90, "top: direction not changed (-90 = sprite direction parallel to handled edge)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 90, "top: direction not changed (90 = sprite direction parallel to handled edge)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = -20;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -160, "top: direction changed (-20 -> -160)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = 70;
+		fakeSprite.direction = 40;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 140, "top: direction changed (40 -> 140)");
+
+	    //bottom
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 180;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: bottom overflow");
+		assert.ok(lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.positionX === undefined && lastUpdateEventArgs.id == "spriteId_test", "bottom overflow: event argument check");
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		var overflowBottom = -fakeSprite.positionY - boundary.bottom - sh2;
+		assert.equal(overflowBottom, 0, "simple: bottom overflow: aligned after bounce");
+		assert.equal(fakeSprite.direction, 0, "bottom: direction changed");
+	    //directions
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 90, "bottom: direction not changed (90 = sprite direction parallel to handled edge)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = -90;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -90, "bottom: direction not changed (-90 = sprite direction parallel to handled edge)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = 100;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, 80, "bottom: direction not changed (100 -> 80)");
+
+		fakeSprite.positionX = 0;
+		fakeSprite.positionY = -70;
+		fakeSprite.direction = -170;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		assert.equal(fakeSprite.direction, -10, "bottom: direction not changed (-170 -> -10)");
+
+	    //including rotation
+		fakeSprite.rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+		lastUpdateEventArgs = undefined;
+
+		fakeSprite.positionX = 0;   //no bounce
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.equal(lastUpdateEventArgs, undefined, "rotation: right but without overflow: no event triggered");
+
+		fakeSprite.positionX = 40;
+		fakeSprite.positionY = 0;
+		fakeSprite.direction = 45;
+		opReturn = ga.ifSpriteOnEdgeBounce(fakeSprite);
+		boundary = is.getLookBoundary("spriteId_test", "i1", 1, 0, false, true);
+		overflowRight = fakeSprite.positionX + boundary.right - sw2;
+		assert.equal(overflowRight, 0, "rotation: right overflow: aligned after bounce");
+
 
 		done1();
 	};
