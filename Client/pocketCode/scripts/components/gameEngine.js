@@ -433,7 +433,7 @@ PocketCode.GameEngine = (function () {
             this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
             return true;
         },
-        ifSpriteOnEdgeBounce: function (sprite) {//, pendingChanges) {
+        ifSpriteOnEdgeBounce: function (sprite) {
 
             if (!sprite || !sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
@@ -441,17 +441,8 @@ PocketCode.GameEngine = (function () {
             var sh2 = this._screenHeight / 2,
                 sw2 = this._screenWidth / 2,
                 dir = sprite.direction,
-                x = sprite.positionX,// + sw / 2,  //move the coord systems 0/0 to top/left
-                y = sprite.positionY;// + sh / 2;
-
-            //if (pendingChanges) {
-            //    if (pendingChanges.direction != undefined)  //be careful when comparing as the positions can become =0
-            //        dir = pendingChanges.direction;
-            //    if (pendingChanges.positionX != undefined)
-            //        x = pendingChanges.positionX;// + sw / 2;
-            //    if (pendingChanges.positionY != undefined)
-            //        y = pendingChanges.positionY;// + sh / 2;
-            //}
+                x = sprite.positionX,
+                y = sprite.positionY;
 
             var lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
                 scaling = sprite.size / 100,
@@ -482,12 +473,6 @@ PocketCode.GameEngine = (function () {
                 else
                     return false;   //no collision: calculated boundary
             }
-
-            //make sure this is correct (specification): if there is an overflow on both sides we ignore it
-            //how to handle overflows that causes another overflow during movement? - ignore it? move to edge & which one?
-            //if (boundary.top + boundary.bottom > sh || boundary.left + boundary.right > sw)
-            //    return false;   //this meanse: the visible area has a bigger hight or width than the screen                                 //TODO: if on both sides we always bounce depending on the direction
-            //let's handle that as easy as possible: no conflicting states are handled: if we start to rotate in this cases we get lost
 
             //retesting with exact bounding (pixelAccuracy = true)
             var center = {  //store the center position of the current area
@@ -526,9 +511,6 @@ PocketCode.GameEngine = (function () {
                         r = vpEdges.right;
 
                     if (l.ignore || r.ignore) {
-                        //c = l.ignore ? 0 : l.overflow;  //overflow can be negative as well (there can only be one ignored per x/y-direction)
-                        //c = r.ignore ? 0 : -r.overflow;
-                        //return c;
                         return l.ignore ? -r.overflow : l.overflow; //overflows can be negativ as well (after rotation)- we also have to take care of this 
                     }
                     //after rotation there can be a an overflow that didn't exist before
@@ -543,13 +525,6 @@ PocketCode.GameEngine = (function () {
                         return l.overflow;  //check if lo+ro < 0 -> else: include direction
                     else if (r.overflow > 0)
                         return -r.overflow;
-                    //else {
-                    //    //move to original center position
-                    //    var newCenterX = x + (boundary.right - boundary.left) / 2;
-                    //    var c = center.x - newCenterX;
-                    //    //TODO. make sure this does not cause an overflow
-                    //    return c;
-                    //}
                     return 0;   //move to center already applied
                 },
                 getYCorrection: function () {       //TODO: abhängig von dir  (nicht newDir)- falls beide nicht ignored
@@ -557,9 +532,6 @@ PocketCode.GameEngine = (function () {
                         t = vpEdges.top,
                         b = vpEdges.bottom;
                     if (t.ignore || b.ignore) {
-                        //c = t.ignore || t.overflow <= 0 ? 0 : -t.overflow;
-                        //c = b.ignore || b.overflow <= 0 ? 0 : b.overflow;
-                        //return c;
                         return t.ignore ? b.overflow : -t.overflow;
                     }
                     //after rotation
@@ -574,14 +546,6 @@ PocketCode.GameEngine = (function () {
                         return -t.overflow;
                     else if (b.overflow > 0)
                         return b.overflow;
-                    //else {
-                    //    //move to original center position
-                    //    var newCenterY = y + (boundary.top - boundary.bottom) / 2;
-                    //    //var c = 
-                    //    return center.y - newCenterY;
-                    //    //TODO. make sure this does not cause an overflow
-                    //    //return c;
-                    //}
                     return 0;   //move to center already applied
                 },
             };
@@ -658,17 +622,13 @@ PocketCode.GameEngine = (function () {
                 
             var updateBoundary = false;
             if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
-                //angle = 90 - newDir;
                 rotation = newDir - 90;
-                //boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
                 updateBoundary = true;
             }
             else if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
-                //angle = 0;
                 rotation = 0;
                 if ((newDir >= 0 && dir < 0) || (newDir < 0 && dir >= 0)) { //flipX changed
                     flipX = !flipX;
-                    //boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, angle, flipX, true);    //recalculate
                     updateBoundary = true;
                 }
             }
