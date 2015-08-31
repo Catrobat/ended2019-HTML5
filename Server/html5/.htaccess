@@ -1,4 +1,6 @@
+Options -MultiViews
 RewriteEngine On
+RewriteBase /html5/
 RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
 RewriteRule .* - [F]
 
@@ -19,4 +21,5 @@ SetOutputFilter DEFLATE
 
 RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
-RewriteRule ^player/(.*)$ index.php?projectId=$1
+RewriteCond %{REQUEST_FILENAME} !\.(gif|jpg|png|jpeg|css|js|ico)$ [NC]
+RewriteRule ^player/(.*)$ Client/PocketCodePlayer/index.php?projectId=$1

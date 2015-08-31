@@ -170,7 +170,7 @@ class ProjectsController extends BaseController
         }
       }
 
-      //check validity of file names
+      //unzip
       try
       {
         $zip = new ZipArchive;
@@ -184,22 +184,11 @@ class ProjectsController extends BaseController
           if($filename != ".nomedia")
             $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
 
-          if( ! mb_detect_encoding( $filename, 'ASCII' ) /*|| preg_match( '/[^A-Za-z0-9 _ .-]/', $filename )*/)
+          if( ! mb_detect_encoding( $filename, 'ASCII' ) || preg_match( '/[^A-Za-z0-9 _ .-]/', $filename ))
           {
-            throw new FileParserException("error extracting invalid file name '" . $filename . "' in (zip) file");
+            throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
           }
         }
-      }
-      catch(Exception $e)
-      {
-        throw new FileParserException("error extracting project (zip) file: " . $e);
-      }
-
-      //unzip
-      try
-      {
-        $zip = new ZipArchive;
-        $res = $zip->open($projectFilePath);
         if($res === true)
         {
           // extract it to the path we determined above
@@ -255,7 +244,6 @@ class ProjectsController extends BaseController
 
       $server_base = $protocol . "://" . $_SERVER["SERVER_NAME"];
       $resourceRoot = $server_base . "/html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/";
-      $resourceRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . $resourceRoot);
 
       // load parser using catrobat file version
       $parser = null;

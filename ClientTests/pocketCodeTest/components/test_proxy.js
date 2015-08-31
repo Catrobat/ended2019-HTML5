@@ -164,7 +164,7 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -376,7 +376,7 @@ QUnit.test("Proxy", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -451,7 +451,7 @@ QUnit.test("Proxy", function (assert) {
         runTest4();
     };
     var onErrorHandler3 = function (e) {
-        assert.ok(false, "WARNING: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
 
         done3();
         runTest4();

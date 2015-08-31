@@ -100,8 +100,8 @@ PocketCode.ImageStore = (function () {
             throw new Error('requested look could not be found: ' + id);
         },
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
-            var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1,
-                rotation = rotation ? rotation * Math.PI / 180 : 0,
+            var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1 / this._initialScaling,
+                rotationRad = rotation ? rotation * Math.PI / 180 : 0,
                 initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
             //{ canvas: canvas,                                 //minmized image (clipped + scaled initial) 
             //center: { length: undefined, angle: undefined },  //rotation point to look center
@@ -115,20 +115,20 @@ PocketCode.ImageStore = (function () {
                 boundary = existingBoundary;
             else {
                 var calc = {},
-                    length = initialLook.tl.length * scalingFactor,
-                    angle = initialLook.tl.angle - rotation;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
+                length = initialLook.tl.length * scalingFactor,
+                angle = initialLook.tl.angle - rotationRad;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
                 calc.tl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.tr.length * scalingFactor;
-                angle = initialLook.tr.angle - rotation;
+                angle = initialLook.tr.angle - rotationRad;
                 calc.tr = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.bl.length * scalingFactor;
-                angle = initialLook.bl.angle - rotation;
+                angle = initialLook.bl.angle - rotationRad;
                 calc.bl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 length = initialLook.br.length * scalingFactor;
-                angle = initialLook.br.angle - rotation;
+                angle = initialLook.br.angle - rotationRad;
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 var boundary;
@@ -141,14 +141,13 @@ PocketCode.ImageStore = (function () {
                         pixelAccuracy: false,
                     };
                 else {
-                    boundary = {   //due to rotation every corner can become a max/min value
+                    boundary = {
                         top: Math.ceil(calc.tr.y),
                         right: Math.ceil(calc.tr.x),
                         bottom: Math.floor(calc.bl.y),
                         left: Math.floor(calc.bl.x),
                         pixelAccuracy: true,
                     };
-                    //return boundary;    //pixelAccuracy already included
                 }
             }
 

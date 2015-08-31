@@ -107,6 +107,7 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 		{ id: "i7", url: "imgHelper7.png", size: 1 },
 		{ id: "i8", url: "imgHelper8.png", size: 1 },
 		{ id: "i9", url: "imgHelper9.png", size: 1 },
+		{ id: "i11", url: "imgHelper11.png", size: 1 },
 	];
 
 
@@ -207,6 +208,12 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 		b = is.getLookBoundary(spriteId, "i1", 1, 180);    //reset
 		b = is.getLookBoundary(spriteId, "i1", 1, 180, true, true);
 		assert.ok(b.top >= 4 && b.right >= 3 && b.bottom <= 3 && b.left <= -5, "img1: 180°, flipped + pixelAccurency");
+
+	    //img 11
+		b = is.getLookBoundary(spriteId, "i11", 1, 45, false, false);
+		var b2 = is.getLookBoundary(spriteId, "i11", 1, 45, false, true);
+		assert.ok(b2.top < b.top && b2.bottom > b.bottom, "make sure pixel-based operation is successful");
+
 
 		done1();
 	};

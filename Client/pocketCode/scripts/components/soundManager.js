@@ -115,14 +115,14 @@ PocketCode.SoundManager = (function () {
             }
 
             var percentLoaded = this._sizeOfAllSounds > 0 ? 0 : 100;
-            this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: 0 });
+            this._onLoadingProgress.dispatchEvent({ progress: percentLoaded });
             //TODO: dispatch onLoad after all files loaded.. filesize == 0? ->return?
 
             createjs.Sound.addEventListener('fileload', createjs.proxy(function (e) {
                 var loadedFile = soundsFormatted.filter(function (sound) { return sound.src === e.src; });
                 if (loadedFile.length > 0) {
                     percentLoaded += loadedFile[0].size / this._sizeOfAllSounds * 100;
-                    this._onLoadingProgress.dispatchEvent({ progress: percentLoaded, size: loadedFile[0].size });
+                    this._onLoadingProgress.dispatchEvent({ progress: percentLoaded });
                 }
                 //TODO: dispatch onLoad after all files loaded.. make sure to handle rounding errors when using == 100
             }, this));

@@ -117,22 +117,24 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     $data = $this->simpleXml->data;
     array_push($this->cpp, $data);
 
+    // parse global lists
     array_push($this->cpp, $data->programListOfLists);
     foreach($data->programListOfLists->children() as $userList)
     {
       $userList = $this->getList($userList);
       array_push($this->lists, new ListDto($this->getNewId(), (string)$userList));
     }
+    array_pop($this->cpp);
 
+    // parse global vars
     array_push($this->cpp, $data->programVariableList);
     foreach($data->programVariableList->children() as $userVar)
     {
       $userVar = $this->getObject($userVar, $this->cpp);
       array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
     }
+    array_pop($this->cpp);
 
-    array_pop($this->cpp);
-    array_pop($this->cpp);
     array_pop($this->cpp);
   }
 
