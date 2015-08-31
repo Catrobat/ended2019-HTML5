@@ -21,7 +21,7 @@ PocketCode.Ui.PlayerPageView = (function () {
             setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE;
         else {
             setting = PocketCode.Ui.PlayerToolbarSettings.DESKTOP;
-            menuOffset = '10%';
+            // menuOffset = '10%';
         }
 
         this._viewport = new PocketCode.PlayerViewportController()._view; //TODO: a controller instance in a view?
