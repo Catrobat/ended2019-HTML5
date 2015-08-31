@@ -1,10 +1,10 @@
-﻿/*html, body {
+﻿html, body {
 	height: 100%;
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
 	box-sizing: border-box;
-}*/
+}
 
 /* inner player screens */
 .pc-playerStartScreen {
@@ -222,9 +222,9 @@
 /* overlay */
 .pc-overlay {
 	position: absolute;
-	width: 100%;
+	/*width: 100%;
 	height: 100%;
-	background-color: #000;
+	background-color: #000; */
 	-moz-opacity: 0.6;
 	opacity: 0.6;
 	filter: alpha(opacity = 60);
@@ -437,7 +437,7 @@
 
 
 /* viewport */
-.pc-playerViewport {
+.pc-playerViewportView {
 	border: 0;
 	width: 100%;
 	height: 100%;
@@ -454,7 +454,7 @@
 }
 
 .canvas-container {
-	background-color: #FFF;
+	background-color: #475;
 }
 
 

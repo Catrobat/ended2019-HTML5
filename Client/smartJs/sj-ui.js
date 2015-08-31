@@ -215,9 +215,9 @@ SmartJs.Ui.merge({
     })(),
 
     Control: (function () {
-        UiControl.extends(SmartJs.Core.EventTarget, false);
+        Control.extends(SmartJs.Core.EventTarget, false);
 
-        function UiControl(element, propObject) {
+        function Control(element, propObject) {
             this._id = SmartJs.getNewId();
 
             if (element instanceof HTMLElement)
@@ -239,7 +239,9 @@ SmartJs.Ui.merge({
             //events
             this._onResize = new SmartJs.Event.Event(this);
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function (e) {
+
                 var size = this._cachedSize;// = { height: this.height, width: this.width };
+
                 size.height = this.height;
                 size.width = this.width;
 
@@ -251,6 +253,7 @@ SmartJs.Ui.merge({
                     for (var i = 0, l = childs.length; i < l; i++)
                         childs[i].verifyResize(this);
                 }
+
                 var parent = this._parent;
                 if (parent && parent !== e.caller)
                     this._parent.onLayoutChange.dispatchEvent({ caller: this });
@@ -272,7 +275,7 @@ SmartJs.Ui.merge({
         }
 
         //properties
-        Object.defineProperties(UiControl.prototype, {
+        Object.defineProperties(Control.prototype, {
             id: {
                 get: function () {
                     return this._id;
@@ -362,7 +365,6 @@ SmartJs.Ui.merge({
                 get: function () {
                     if (!this.rendered)
                         return 0;
-
                     var _style = window.getComputedStyle(this._dom);
                     var height = this._dom.clientHeight;
                     height -= parseInt(_style.paddingTop) || 0;
@@ -434,7 +436,7 @@ SmartJs.Ui.merge({
         });
 
         //events
-        Object.defineProperties(UiControl.prototype, {
+        Object.defineProperties(Control.prototype, {
             onResize: {
                 get: function () { return this._onResize; },
                 //enumerable: false,
@@ -448,14 +450,15 @@ SmartJs.Ui.merge({
         });
 
         //methods
-        UiControl.prototype.merge({
+        Control.prototype.merge({
             verifyResize: function (caller) {
                 if (this.hidden || !this.rendered) return;
-
                 var size = this._cachedSize;
+
                 if (size.height !== this.height || size.width !== this.width)
                     this.onResize.dispatchEvent({ caller: caller });
             },
+
             addClassName: function (className) {
                 if (typeof className === undefined) return;
                 if (typeof className !== 'string')
@@ -670,7 +673,7 @@ SmartJs.Ui.merge({
 
         });
 
-        return UiControl;
+        return Control;
     })(),
 
 });
@@ -780,6 +783,17 @@ SmartJs.Ui.merge({
                 this._window.onResize.removeEventListener(this._resizeListener);
                 SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
             },
+
+            /*verifyResize: function (caller) {
+                if (this.hidden || !this.rendered) return;
+                var size = this._cachedSize;
+
+                // console.log('VP:', this.height, size.height);
+                if (size.height !== this.height || size.width !== this.width)
+                    this.onResize.dispatchEvent({ caller: caller });
+
+            },*/
+
         });
 
         return Viewport;
