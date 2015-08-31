@@ -15,8 +15,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         this._canvas = document.createElement('canvas', { className: 'pc-canvas' });
         //this._canvas.className = 'pc-canvas';
-        var cheight = 920.0;
-        var cwidth = 640.0;
+        var cheight = 480.0;
+        var cwidth = 320.0;
         var cvprops = {
             width: cwidth,
             height: cheight,
@@ -43,8 +43,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //if (!originalHeight || !originalWidth)
         //    throw new Error('invalid argument: missing hight and/or width property of original app screen');
 
-        //this._originalHeight = cheight;
-        //this._originalWidth = cwidth;
+        this._originalHeight = cheight;
+        this._originalWidth = cwidth;
 
         this._ratio = cheight / cwidth;
 
@@ -60,10 +60,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //window.addEventListener('resize', this._updateScaling.bind(this)); // remove bind
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
         this._onSpriteClicked = new SmartJs.Event.Event(this);
-        //console.log('cl1');
+
         this._fabricCanvas.on('mouse:down', function (e) {
             if (typeof e.target != 'undefined') {
-                //console.log('cl2');
                 _self.onSpriteClicked.dispatchEvent({ id: e.target.id });
             }
         });
@@ -152,7 +151,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
 
         _updateScaling: function () {
-            var height = this.height;// || window.innerHeight;
+            var height = this.height || window.innerHeight; // TODO fix this, height stays 0
             var width = this.width;// || window.innerWidth;
 
             this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
@@ -173,20 +172,17 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 }
             });
 
-            this._canvas.width = this._fabricCanvas.width;
-            this._canvas.height = this._fabricCanvas.height;
+            //this._canvas.width = this._fabricCanvas.width;
+            //this._canvas.height = this._fabricCanvas.height;
             //this._fabricCanvas.style.position = 'static';
 
             var style = this._fabricCanvas.wrapperEl.style;
             style.position = 'absolute';
-            //style.height = this._fabricCanvas.height + 'px';
-            //style.width = this._fabricCanvas.width + 'px';
+            style.height = this._fabricCanvas.height + 'px';
+            style.width = this._fabricCanvas.width + 'px';
             style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
-            //this._framerect.width = this._fabricCanvas.width - 1;
-            //this._framerect.height = this._fabricCanvas.height -1;
-            console.log("update");
             this.render();
         },
 
