@@ -29,8 +29,8 @@ PocketCode.Device = (function () {
         this._z = null;
 
         this._rotationRate = null;
-
-        //sensor support
+		
+		//sensor support
         this._sensorSupport = {
             X_ACCELERATION: false,
             Y_ACCELERATION: false,
@@ -74,21 +74,21 @@ PocketCode.Device = (function () {
         accelerationX: {
             get: function () {
                 if (this._sensorSupport.X_ACCELERATION)
-                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                    return this._x;
                 return this._sensorEmulatedData.X_ACCELERATION;
             },
         },
         accelerationY: {
             get: function () {
                 if (this._sensorSupport.Y_ACCELERATION)
-                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                    return this._y;
                 return this._sensorEmulatedData.Y_ACCELERATION;
             },
         },
         accelerationZ: {
             get: function () {
                 if (this._sensorSupport.Z_ACCELERATION)
-                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                    return this._z;
                 return this._sensorEmulatedData.Z_ACCELERATION;
             },
         },
@@ -102,14 +102,14 @@ PocketCode.Device = (function () {
         inclinationX: {
             get: function () {
                 if (this._sensorSupport.X_INCLINATION)
-                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                    return this._inclinationX = 180 - this._gamma;
                 return this._sensorEmulatedData.X_INCLINATION;
             },
         },
         inclinationY: {
             get: function () {
                 if (this._sensorSupport.Y_INCLINATION)
-                    return 0;   //TODO: (Armend) calculate return value based on alpha, beta, gamma, rotation, x, y, z
+                    return this._inclinationY = 180 - this._beta;
                 return this._sensorEmulatedData.Y_INCLINATION;
             },
         },
