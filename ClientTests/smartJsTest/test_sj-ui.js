@@ -55,7 +55,7 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
     tn.text = "NEW TEXT NODE";
     assert.equal(tn.text, "NEW TEXT NODE", "textnode: get/set text");
 
-    var vp = new SmartJs.Ui.Control(div);   //if you make dom a UiControl in UnitTests the ID will change and cause errors on other test cases
+    var vp = new SmartJs.Ui.Control(div);   //if you make dom a Control in UnitTests the ID will change and cause errors on other test cases
     vp._appendChild(tn);
     assert.equal(div.innerHTML, tn.text, "textnode: append");
 
@@ -108,7 +108,7 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
     //create Control
     var cp = new SmartJs.Ui.Control("div");
     assert.ok(cp instanceof SmartJs.Ui.Control && cp instanceof SmartJs.Core.EventTarget, "instance check");
-    assert.equal(cp.objClassName, "UiControl", "objClassName correct (not equal namespace)");
+    assert.equal(cp.objClassName, "Control", "objClassName correct (not equal namespace)");
     assert.ok(cp._dom instanceof HTMLDivElement, "constructor using string");
 
     var div = document.createElement("div");
@@ -188,7 +188,7 @@ QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (a
 
     var dom = document.getElementById("qunit-fixture");
 
-    var root = new SmartJs.Ui.Control('div');   //uiControl container to test with
+    var root = new SmartJs.Ui.Control('div');   //control container to test with
     var root2 = new SmartJs.Ui.Control('div');
     //dom.appendChild(root._dom);
 

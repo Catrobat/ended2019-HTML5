@@ -140,8 +140,8 @@ PocketCode.Ui.merge({
         Viewport.extends(SmartJs.Ui.Viewport, false);
 
         //cntr
-        function Viewport(element, propObject) {
-            SmartJs.Ui.Viewport.call(this, element, propObject);
+        function Viewport(propObject) {
+            SmartJs.Ui.Viewport.call(this, {className: 'pc-playerViewport'});
 
             this._disableBrowserGestures();
         }
@@ -171,6 +171,12 @@ PocketCode.Ui.merge({
                 this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
                 this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
                 this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
+            },
+            loadPage: function(page) {
+                if (!(page instanceof PocketCode.Ui.PageView))
+                    throw new Error('invalid parameter: page');
+                //TODO: register page in navigation
+                this._appendChild(page);
             },
             /*override*/
             dispose: function () {

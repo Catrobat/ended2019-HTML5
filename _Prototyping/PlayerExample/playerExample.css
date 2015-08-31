@@ -1,0 +1,19 @@
+﻿html, body {
+	height: 100%;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	box-sizing: border-box;
+	background-color: #05222a;
+	overflow: hidden;
+}
+
+/*.canvas-container {
+	background-color: #475;
+}*/
+
+#testContainer {
+	height: 100%;
+	width: 100%;
+	margin-left: 100px;
+}

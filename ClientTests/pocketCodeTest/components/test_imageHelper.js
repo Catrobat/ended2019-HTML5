@@ -21,13 +21,13 @@ QUnit.test("ImageHelper", function (assert) {
         return Math.round(value * 1000) / 1000;
     };
 
-    var img1, img2, img3, img4, img5, img6, img7, img8, img9,
+    var img1, img2, img3, img4, img5, img6, img7, img8, img9, img11,
         ih = PocketCode.ImageHelper;
 
     var imgLoadCounter = 0;
     var imgLoadHandler = function () {
         imgLoadCounter++;
-        if (imgLoadCounter == 9) //all loaded
+        if (imgLoadCounter == 10) //all loaded
             runTests_Scale();
     };
 
@@ -67,6 +67,10 @@ QUnit.test("ImageHelper", function (assert) {
     img9 = new Image();
     img9.addEventListener("load", imgLoadHandler);
     img9.src = "_resources/images/imgHelper9.png";
+
+    img11 = new Image();
+    img11.addEventListener("load", imgLoadHandler);
+    img11.src = "_resources/images/imgHelper11.png";
 
 
     //scale(img, scalingFactor)

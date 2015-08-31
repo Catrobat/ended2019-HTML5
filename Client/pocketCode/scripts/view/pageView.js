@@ -24,7 +24,7 @@ PocketCode.Ui.PageView = (function () {
         this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBody' });  //TODO: style really needed?
         this._appendChild(this._container);
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-pageFooter' });
-        this.appendChild(this._footer);
+        this._appendChild(this._footer);
 
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._handleResize, this));
     }

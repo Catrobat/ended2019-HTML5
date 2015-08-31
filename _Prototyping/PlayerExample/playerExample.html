@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head lang="en">
     <meta charset="UTF-8">
@@ -63,15 +63,19 @@
     <script type="text/javascript">
 
         window.onload = function () {
-            var vp = new SmartJs.Ui.Viewport();
-
-            vp.addToDom(document.body);
+            var vp = new PocketCode.Ui.Viewport();//SmartJs.Ui.Viewport();
+            var testContainer = document.getElementById("testContainer");
+            vp.addToDom(testContainer);//document.body);
             var playerPageController = new PocketCode.PlayerPageController();
             // var playerVPController = new PocketCode.PlayerViewportController();
             //vp._appendChild(playerVPController._view);
-            vp._appendChild(playerPageController._view);
+            vp.loadPage(playerPageController.view);//._view);
         }
     </script>
+    <link href="playerExample.css" rel="stylesheet" />
 
 </head>
+<body>
+    <div id="testContainer" />
+</body>
 </html>

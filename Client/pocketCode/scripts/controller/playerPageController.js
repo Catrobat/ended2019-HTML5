@@ -5,7 +5,12 @@ PocketCode.PlayerPageController = (function () {
     PlayerPageController.extends(PocketCode.BaseController, false);
 
     function PlayerPageController() {
-        PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView());
+        this._playerViewPort = new PocketCode.PlayerViewportController();
+        PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView(this._playerViewPort.view));
+        //this._view = new PocketCode.Ui.PlayerPageView();
+        //this._view.appendChild(this._playerViewPort.view);
+
+ 
         //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
 
         //TODO: loading libs? 
@@ -18,6 +23,7 @@ PocketCode.PlayerPageController = (function () {
         };
         this._status = 'init';
         //this._error = undefined;
+
 
         //TODO:
         //SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this.doSomething like pause, this));

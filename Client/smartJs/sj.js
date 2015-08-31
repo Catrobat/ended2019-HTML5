@@ -41,7 +41,7 @@
  */
 Object.prototype.merge = function (o) {
     if (typeof o !== 'object')
-        return;
+        return this;
     if (this instanceof Array)
         throw new Error('Object.merge not valid on simple data types and arrays');
 
@@ -53,6 +53,7 @@ Object.prototype.merge = function (o) {
                 this[m] = o[m];
         }
     }
+    return this;
 };
 Object.defineProperty(Object.prototype, 'merge', { enumerable: false });
 
