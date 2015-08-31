@@ -13,8 +13,20 @@ PocketCode.Ui.PlayerPageView = (function () {
         this._header.hide();
         this._footer.hide();
 
-        this._viewport = new PocketCode.PlayerViewportController(); //TODO: a controller instance in a view?
-        //this._toolbar = new PocketCode.Ui.PlayerToolbar();    //TODO: ctr settings
+        var setting = undefined;
+        var menuOffset = 0;
+        if (SmartJs.Device.isIOs)
+            setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS;
+        else if (SmartJs.Device.isMobile)
+            setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE;
+        else {
+            setting = PocketCode.Ui.PlayerToolbarSettings.DESKTOP;
+            menuOffset = '10%';
+        }
+
+        this._viewport = new PocketCode.PlayerViewportController()._view; //TODO: a controller instance in a view?
+        this._viewport.style.merge({"margin-left":menuOffset});
+        this._toolbar = new PocketCode.Ui.PlayerToolbar(setting);    //TODO: ctr settings
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
 
         this._initPageLayout();
@@ -22,9 +34,9 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     PlayerPageView.prototype.merge({
         _initPageLayout: function() {
-            //this.appendChild(this._viewport); //TODO: add a view and not the controller
-            //this.appendChild(this._toolbar);
-            this.appendChild(this._startScreen);
+            this.appendChild(this._viewport); //TODO: add a view and not the controller
+            this.appendChild(this._toolbar);
+            // this.appendChild(this._startScreen);
         },
         /* override */    //this is a test->remove this
         show: function () {
