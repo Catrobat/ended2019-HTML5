@@ -267,14 +267,14 @@ PocketCode.Web = {
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
 
-				var hwr = this.hwRatio;
-				if (hwr > ah / aw) {
-					var h = ah;
-					var w = ah / hwr;
+				var hwr = this.hwRatio, w, h;
+				if (hwr >= ah / aw) {
+					w = ah / hwr;
+					h = ah;
 				}
 				else {
-					var w = aw;
-					var h = aw * hwr
+					w = aw;
+					h = aw * hwr;
 				}
 				if (h < this.vpMinHeight) {
 					h = this.vpMinHeight;

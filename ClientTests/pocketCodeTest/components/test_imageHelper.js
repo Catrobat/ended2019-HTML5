@@ -157,7 +157,7 @@ QUnit.test("ImageHelper", function (assert) {
         offsets = ih.getElementTrimOffsets(img7, 1, 90);  //transparent
         assert.ok(offsets.top == 10 && offsets.right == 8 && offsets.bottom == 10 && offsets.left == 8, "rotate: 90: transparent");
         offsets = ih.getElementTrimOffsets(img8, 1, 90);  //centered
-        assert.ok(offsets.top == 3 && offsets.right == 2 && offsets.bottom == 3 && offsets.left == 2, "rotate: 90: centered");
+        assert.ok(offsets.top == 3 && offsets.right == 2 && offsets.bottom == 3 && offsets.left == 2, "rotate: 90: centered (may be a scaling issue in mozilla?)");
         offsets = ih.getElementTrimOffsets(img9, 1, 90);
         assert.ok(offsets.top == 143 && offsets.right == 243 && offsets.bottom == 106 && offsets.left == 339, "rotate: 90: large");
 
