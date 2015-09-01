@@ -152,7 +152,7 @@ SmartJs.Ui.Window = (function () {  //static class
             else
                 this._visible = true;	//default
 
-            this._onVisibilityChange.dispatchEvent(e.merge({ visible: this._visible }));
+            this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
         },
         dispose: function () {
             //override as a static class cannot be disposed
@@ -760,6 +760,7 @@ SmartJs.Ui.merge({
             SmartJs.Ui.Control.call(this, 'div', { style: { height: '100%', width: '100%', }, }.merge(propObject));
 
             this._window = SmartJs.Ui.Window;
+            //this._parentContainer;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);
         }
@@ -773,11 +774,12 @@ SmartJs.Ui.merge({
         //});
 
         Viewport.prototype.merge({
-            addToDom: function (dom) {
-                if (dom !== undefined && !(dom instanceof HTMLElement))
+            addToDom: function (parent) {
+                if (parent !== undefined && !(parent instanceof HTMLElement))
                     throw new Error('invalid argument: dom: expectet type HTMLElement');
-                var dom = dom || document.body;
-                dom.appendChild(this._dom);
+                var parent = parent || document.body;
+                parent.appendChild(this._dom);
+                //this._parentContainer = parent;
             },
             dispose: function () {
                 this._window.onResize.removeEventListener(this._resizeListener);
