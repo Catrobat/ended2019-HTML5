@@ -7,8 +7,9 @@ PocketCode.PlayerPageController = (function () {
 
     function PlayerPageController() {
         //set defautl values and update as soon as project is loaded
-        this._screenHeight = 160;
-        this._screenWidth = 100;
+        //this._screenHeight = 160;
+        //this._screenWidth = 100;
+        this._axesVisible = false;
 
         //var viewportView = new PocketCode.Ui.PlayerViewportView(this._screenWidth, this._screenHeight); //TODO: shouldn't the controller get these settings?
         this._playerViewPort = new PocketCode.PlayerViewportController();//viewportView);
@@ -20,6 +21,7 @@ PocketCode.PlayerPageController = (function () {
         //this._view.appendChild(this._playerViewPort.view);
 
         //test
+        this._playerViewPort.setProjectScreenSize(200, 320);
         //this._playerViewPort.showAxes();
         //this._playerViewPort.hideAxes();
         //this._playerViewPort.showAxes();
@@ -84,7 +86,16 @@ PocketCode.PlayerPageController = (function () {
                     alert();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
-                    alert();
+                    if (!this._axesVisible) {
+                        this._playerViewPort.showAxes();
+                        this.view.axesButtonChecked = true;
+                        this._axesVisible = true;
+                    }
+                    else {
+                        this._playerViewPort.hideAxes();
+                        this.view.axesButtonChecked = false;
+                        this._axesVisible = false;
+                    }
                     break;
                 default:
             }

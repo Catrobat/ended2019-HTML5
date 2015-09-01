@@ -49,6 +49,25 @@ PocketCode.Ui.PlayerPageView = (function () {
         //this._initPageLayout();
     }
 
+    //properties
+    Object.defineProperties(PlayerPageView.prototype, {
+        axesButtonChecked: {
+            set: function (value) {
+                this._toolbar.axesButtonChecked = value;
+            },
+        },
+        backButtonDisabled: {
+            set: function (value) {
+                this._toolbar.backButtonDisabled = value;
+            },
+        },
+        screenshotButtonDisabled: {
+            set: function (value) {
+                this._toolbar.screenshotButtonDisabled = value;
+            },
+        },
+    });
+
     //events
     Object.defineProperties(PlayerPageView.prototype, {
         onToolbarButtonClicked: {

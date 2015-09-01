@@ -18,8 +18,8 @@ PocketCode.PlayerViewportController = (function () {
         load: function (images, sprites) {
 
         },
-        setProgramScreenSize: function (width, height) {
-            this.view.setViewportSize(width, height);
+        setProjectScreenSize: function (width, height) {
+            this.view.setOriginalViewportSize(width, height);
         },
         showAxes: function () {
             this.view.showAxes();

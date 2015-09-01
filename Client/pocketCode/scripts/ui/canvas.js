@@ -50,6 +50,13 @@ PocketCode.Ui.Canvas = (function () {
             //methods
             FCAdapter.prototype.merge({
                 //TODO: override rendering
+                setDimensions: function (width, height) {   //without rerendering
+                    this._setBackstoreDimension('width', width);
+                    this._setCssDimension('width', width + 'px');
+                    this._setBackstoreDimension('height', height);
+                    this._setCssDimension('height', height + 'px');
+                    this.calcOffset();
+                },
                 //_searchPossibleTargets: function (e) {
 
                 //    // Cache all targets where their bounding box contains point.
@@ -150,18 +157,18 @@ PocketCode.Ui.Canvas = (function () {
     Object.defineProperties(Canvas.prototype, {
         /* override */
         height: {
-            set: function (value) {
-                this._fcAdapter.setHeight(value);
-            },
+            //set: function (value) {
+            //    this._fcAdapter.setHeight(value);
+            //},
             get: function () {
                 return this._fcAdapter.getHeight();
             },
         },
         /* override */
         width: {
-            set: function (value) {
-                this._fcAdapter.setWidth(value);
-            },
+            //set: function (value) {
+            //    this._fcAdapter.setWidth(value);
+            //},
             get: function () {
                 return this._fcAdapter.getWidth();
             },
@@ -217,6 +224,9 @@ PocketCode.Ui.Canvas = (function () {
         //_onResizeHandler: function(e) {
 
         //},
+        setDimensions: function(width, height) {
+            this._fcAdapter.setDimensions(width, height);
+        },
         clear: function () {
             this._fcAdapter.clear();    //TODO: make sure to clear the right context (only)
         },
@@ -224,7 +234,7 @@ PocketCode.Ui.Canvas = (function () {
 
         },
         toDataUrl: function (scaling) {
-            return this._fcAdapter.toDataUrl(scaling);
+            return this._fcAdapter.toDataUrl({ multiplier: 1 / scaling });
         },
     });
 

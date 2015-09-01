@@ -14,8 +14,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //var props = {width:originalWidth, height:originalHeight};
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-playerViewportView' });
 
-        this._originalWidth = 100;  //default: until set
-        this._originalHeight = 160;
+        this._originalWidth = 200;  //default: until set
+        this._originalHeight = 380;
         this._axesVisible = false;
         this._scaling = 1;
 
@@ -97,32 +97,32 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        originalHight: {
-            //get: function () {
-            //    return this._originalHight;
-            //},
-            set: function (value) {
-                if (this._originalHight === value)
-                    return;
-                this._originalHight = value;
-                this._updateScaling();//Factor();
-            }
-            //enumerable: false,
-            //configurable: true,
-        },
-        originalWidth: {
-            //get: function () {
-            //    return this._originalWidth;
-            //},
-            set: function (value) {
-                if (this._originalWidth === value)
-                    return;
-                this._originalWidth = value;
-                this._updateScaling();//Factor();
-            }
-            //enumerable: false,
-            //configurable: true,
-        },
+        //originalHight: {
+        //    //get: function () {
+        //    //    return this._originalHight;
+        //    //},
+        //    set: function (value) {
+        //        if (this._originalHight === value)
+        //            return;
+        //        this._originalHight = value;
+        //        this._updateScaling();//Factor();
+        //    }
+        //    //enumerable: false,
+        //    //configurable: true,
+        //},
+        //originalWidth: {
+        //    //get: function () {
+        //    //    return this._originalWidth;
+        //    //},
+        //    set: function (value) {
+        //        if (this._originalWidth === value)
+        //            return;
+        //        this._originalWidth = value;
+        //        this._updateScaling();//Factor();
+        //    }
+        //    //enumerable: false,
+        //    //configurable: true,
+        //},
         renderingObjects: {
             set: function (value) {
                 this._renderingObjects = value;
@@ -188,8 +188,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var canvas = this._canvas;
             var cw = Math.floor(ow * scaling),
                 ch = Math.floor(oh * scaling);
-            canvas.width = cw;
-            canvas.height = ch;
+            //canvas.width = cw;
+            //canvas.height = ch;
+            canvas.setDimensions(cw, ch);
             canvas.style.left = Math.floor((w - cw) / 2) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2) + 'px';
 
@@ -226,7 +227,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             //this.render();
         },
-        setViewportSize: function(width, height) {
+        setOriginalViewportSize: function(width, height) {
             this._originalWidth = width;
             this._originalHeight = height;
             this._resizeHandler();
@@ -250,36 +251,40 @@ PocketCode.Ui.PlayerViewportView = (function () {
         _drawAxes: function () {
             //if (this._showGrid) {
             if (this._axesVisible) {
-                var ctx = this._canvas.context;
-                var width = this._canvas.width;
-                var height = this._canvas.height;
-                var color = 'red';
+                var ctx = this._canvas.context,
+                    width = this._canvas.width,
+                    height = this._canvas.height,
+                    color = 'red',
+                    pixelRatio = 1;/*function () {
+                        if (window.devicePixelRatio)
+                            return Math.round(window.devicePixelRatio);
+                        return 1;
+                    }();*/
                 //ctx.stroke();
                 ctx.save();
 
                 ctx.beginPath();
-                ctx.moveTo(width / 2, 0);
-                ctx.lineTo(width / 2, height);
+                ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
+                ctx.lineTo(Math.round(width / 2), height);
 
-                ctx.moveTo(0, height / 2);
-                ctx.lineTo(width, height / 2);
+                ctx.moveTo(0, Math.round(height / 2));
+                ctx.lineTo(width, Math.round(height / 2));
 
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 1;
-                ctx.font = "13px Arial";
+                ctx.lineWidth = pixelRatio;
+                ctx.font = (12 * pixelRatio) + 'px Arial';
                 ctx.fillStyle = color;
                 //center
-                ctx.fillText("0", width / 2 + 10, height / 2 + 15);
+                ctx.fillText('0', width / 2 + 5, height / 2 + 15);
                 //width
-                ctx.fillText("-" + this._originalWidth / 2, 5, height / 2 + 15);
+                ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
                 ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
                 //height
-                ctx.fillText("-" + this._originalHeight / 2, width / 2 + 10, 15);
-                ctx.fillText(this._originalHeight / 2, width / 2 + 10, height - 5);
+                ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
+                ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
 
                 ctx.stroke();
                 ctx.restore();
-
             }
         },
 
