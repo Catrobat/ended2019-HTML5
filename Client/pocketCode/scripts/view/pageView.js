@@ -51,6 +51,8 @@ PocketCode.Ui.PageView = (function () {
 
             // TODO: make sure to edit the caption area as well to enable text-overflow: ellipsis (max-width)
             // console.log(e);
+            //this.height = this.height;   //width/height is defined as 100% -> has to be set as px valiu to enablel page transitions
+            //this.width = this.width;
             this._container.height = this.height - this._header.height - this._footer.height;
         },
         hideHeader: function () {

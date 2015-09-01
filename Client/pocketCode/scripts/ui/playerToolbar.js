@@ -38,7 +38,9 @@ PocketCode.Ui.merge({
                 throw new Error('invalid argument: constructor settings');
             this._settings = settings;
 
-            PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() + ' pc-overlay' });
+            PocketCode.Ui.I18nControl.call(this, 'div', { className: 'pc-playerMenu' + settings.orientation.toUpperCase() });// + ' pc-overlay' });
+            //this._inactiveOverlay = new SmartJs.Ui.Control('div', { className: 'pc-overlay' });
+            this._appendChild(new SmartJs.Ui.Control('div', { className: 'pc-overlay' }));//this._inactiveOverlay);
 
             //internal settings (for scaling)
             this._defaultHeight = 550;  //all buttons at 10px font-size (vertical)
@@ -111,7 +113,9 @@ PocketCode.Ui.merge({
             },
             /* override */
             hidden: {
-                get: function() {
+                get: function () {
+                    if (this._settings.position == 'lo')    //in desktop mode the toolbar is not hidden, even if the width (overlay) is set to 0
+                        return false;
                     if (this.height === 0 || this.width === 0)
                         return true;
                     return false;

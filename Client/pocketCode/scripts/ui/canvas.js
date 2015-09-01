@@ -126,8 +126,8 @@ PocketCode.Ui.Canvas = (function () {
         })())(document.createElement('canvas'), config);
 
         args = args || {};
-        SmartJs.Ui.Control.call(this, this._fcAdapter.wrapperEl, args);//{ className: 'pc-canvas' }.merge(args));
-        this.className = 'pc-canvas';
+        SmartJs.Ui.Control.call(this, this._fcAdapter.wrapperEl, args); //the fabricJs wrapper div becomes our _dom root element
+        //this.className = 'pc-canvas';
 
         this._fcAdapter.on('mouse:down', (function (e) {
             if (e.target)// != 'undefined') {
@@ -210,20 +210,22 @@ PocketCode.Ui.Canvas = (function () {
 
     //methods
     Canvas.prototype.merge({
-        _onClickHandler: function (e) {
-        //    this._onClick.dispatchEvent();
-        //    //e.target.blur();//preventDefault(); //stop event so the button doesn't get focus
+        //_onClickHandler: function (e) {
+        ////    this._onClick.dispatchEvent();
+        ////    //e.target.blur();//preventDefault(); //stop event so the button doesn't get focus
+        //},
+        //_onResizeHandler: function(e) {
+
+        //},
+        clear: function () {
+            this._fcAdapter.clear();    //TODO: make sure to clear the right context (only)
         },
-        _onResizeHandler: function(e) {
+        render: function (renderingObjectList) {    //TODO??     we will have to init the list first to achive click events on sprites
 
         },
-        clear: function () {    //TODO??
-
+        toDataUrl: function (scaling) {
+            return this._fcAdapter.toDataUrl(scaling);
         },
-        render: function (renderingObjectList) {
-
-        },
-        //TODO: add toDataUrl(scaling?)
     });
 
     return Canvas;

@@ -25,6 +25,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
             this._toolbar.hide();
+            this._toolbar.screenshotButtonDisabled = true;
         }
         this.appendChild(this._toolbar);
 
@@ -43,10 +44,21 @@ PocketCode.Ui.PlayerPageView = (function () {
         //this._viewport.style.merge({"margin-left":menuOffset});
         //this._toolbar = new PocketCode.Ui.PlayerToolbar(setting);    //TODO: ctr settings
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
-        //this.appendChild(this._startScreen);
+        this.appendChild(this._startScreen);
+        this._startScreen.hide();
         //this._initPageLayout();
     }
 
+    //events
+    Object.defineProperties(PlayerPageView.prototype, {
+        onToolbarButtonClicked: {
+            get: function () {
+                return this._toolbar.onButtonClicked;
+            },
+        },
+    });
+
+    //methods
     PlayerPageView.prototype.merge({
         _initPageLayout: function() {
             //this.appendChild(this._viewport); //TODO: add a view and not the controller
@@ -54,9 +66,9 @@ PocketCode.Ui.PlayerPageView = (function () {
             // this.appendChild(this._startScreen);
         },
         /* override */    //this is a test->remove this
-        show: function () {
-            //?
-        },
+        //show: function () {
+        //    //?
+        //},
     });
 
     return PlayerPageView;

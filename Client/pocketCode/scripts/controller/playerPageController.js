@@ -1,20 +1,34 @@
 ﻿/// <reference path="../core.js" />
+/// <reference path="../view/playerPageView.js" />
 'use strict';
 
 PocketCode.PlayerPageController = (function () {
     PlayerPageController.extends(PocketCode.BaseController, false);
 
     function PlayerPageController() {
-        this._playerViewPort = new PocketCode.PlayerViewportController();
+        //set defautl values and update as soon as project is loaded
+        this._screenHeight = 160;
+        this._screenWidth = 100;
+
+        //var viewportView = new PocketCode.Ui.PlayerViewportView(this._screenWidth, this._screenHeight); //TODO: shouldn't the controller get these settings?
+        this._playerViewPort = new PocketCode.PlayerViewportController();//viewportView);
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView(this._playerViewPort.view));
+
+        //bind events
+        this.view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         //this._view = new PocketCode.Ui.PlayerPageView();
         //this._view.appendChild(this._playerViewPort.view);
 
- 
+        //test
+        //this._playerViewPort.showAxes();
+        //this._playerViewPort.hideAxes();
+        //this._playerViewPort.showAxes();
+
         //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
 
         //TODO: loading libs? 
-        this._gameEngine = new PocketCode.GameEngine();
+        this._gameEngine = new PocketCode.GameEngine(); //TODO: get screen size and update UI
+
         this._statusDict = {    //TODO: check if necessary
             //init: 'init',
             stopped: 'stopped',
@@ -50,6 +64,29 @@ PocketCode.PlayerPageController = (function () {
         _escKeyHandler: function(e) {
             if (e.keyCode == 27) {
                 console.log('esc pressed');
+            }
+        },
+        _buttonClickedHandler: function(e) {
+            switch (e.command) {
+                case PocketCode.Ui.PlayerBtnCommand.BACK:
+                    alert();
+                    break;
+                case PocketCode.Ui.PlayerBtnCommand.RESTART:
+                    alert();
+                    break;
+                case PocketCode.Ui.PlayerBtnCommand.PLAY:
+                    alert();
+                    break;
+                case PocketCode.Ui.PlayerBtnCommand.PAUSE:
+                    alert();
+                    break;
+                case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
+                    alert();
+                    break;
+                case PocketCode.Ui.PlayerBtnCommand.AXES:
+                    alert();
+                    break;
+                default:
             }
         },
         /* override */
