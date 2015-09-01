@@ -22,6 +22,8 @@ PocketCode.PlayerPageController = (function () {
 
         //test
         this._playerViewPort.setProjectScreenSize(200, 320);
+        this.view.screenshotButtonDisabled = true;
+        //this.view.executionState = PocketCode.ExecutionState.RUNNING;
         //this._playerViewPort.showAxes();
         //this._playerViewPort.hideAxes();
         //this._playerViewPort.showAxes();

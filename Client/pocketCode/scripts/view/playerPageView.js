@@ -25,7 +25,6 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
             this._toolbar.hide();
-            this._toolbar.screenshotButtonDisabled = true;
         }
         this.appendChild(this._toolbar);
 
@@ -51,6 +50,11 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
+        executionState: {
+            set: function (value) {
+                this._toolbar.executionState = value;
+            },
+        },
         axesButtonChecked: {
             set: function (value) {
                 this._toolbar.axesButtonChecked = value;
