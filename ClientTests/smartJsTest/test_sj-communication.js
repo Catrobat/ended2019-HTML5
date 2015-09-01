@@ -301,7 +301,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	var onLoadStartHandler = function (e) {
 		onLoadStart++;
 		//validate request url
-		assert.equal(req._url, "https://web-test.catrob.at/html5/rest/v0.1/projects/874/details?a=eins&b=2", "valid  request url params: GET");
+		assert.equal(req._url, "https://web-test.catrob.at/html5/rest/v0.1/projects/824/details?a=eins&b=2", "valid  request url params: GET");
 		assert.equal(e.target, req, "onLoadStart target check");
 		//console.log('onLoadStart ');
 	};
@@ -332,7 +332,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		runTest2();
 	};
 	var onErrorHandler = function (e) {
-		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/824/details failed - this may be an error caused by the server");
 		done1();
 
 		runTest2();
@@ -382,7 +382,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 		//console.log('onProgressSupportedChange ' + e.progressSupport);
 	};
 
-	req = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/html5/rest/v0.1/projects/874/details");  //public service
+	req = new SmartJs.Communication.CorsRequest("https://web-test.catrob.at/html5/rest/v0.1/projects/824/details");  //public service
 
 	req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
 	req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -482,7 +482,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 	var onErrorHandler4 = function (e) {
 		//onError++;
 		//assert.equal(e.target, req4, "onError target check 4");
-		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+		assert.ok(false, "WARNING: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/824/details failed - this may be an error caused by the server");
 		done4();
 		//console.log('onError ');
 		//assert.ok(onLoadStart === 1 && onLoad === 0 && onError === 1, "cors request: fail (missing endpoint)");
@@ -512,7 +512,7 @@ QUnit.test("SmartJs.Communication: Cors", function (assert) {
 
 
 	//start async
-	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.1/projects/874/details"); //start async requests 
+	req.sendData({ a: "eins", b: 2 }, SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.1/projects/824/details"); //start async requests 
 
 	//var req5 = new SmartJs.Communication.CorsRequest();
 	//assert.throws(function () { req5.send(); }, Error, "ERROR: service url not specified");

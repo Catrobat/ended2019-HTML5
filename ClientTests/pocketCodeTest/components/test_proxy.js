@@ -164,7 +164,7 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.1/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -204,7 +204,7 @@ QUnit.test("JsonpRequest", function (assert) {
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.1/projects/874/details");//, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
+    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.1/projects/824/details");//, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
     req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -376,7 +376,7 @@ QUnit.test("Proxy", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.1/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -398,7 +398,7 @@ QUnit.test("Proxy", function (assert) {
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "874", prop1: "prop_1", prop2: "prop_2" });
+    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
     //req._url = ""; //overwrite default URL to request local server
     //^^ the proxy works cross-origin and will select a service to get a response from our server
     //var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_SEARCH, SmartJs.RequestMethod.GET, { id: "8744", prop1: "prop_1", prop2: "prop_2" });
@@ -451,7 +451,7 @@ QUnit.test("Proxy", function (assert) {
         runTest4();
     };
     var onErrorHandler3 = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.1/projects/874/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.1/projects/824/details failed - this may be an error caused by the server");
 
         done3();
         runTest4();
@@ -465,7 +465,7 @@ QUnit.test("Proxy", function (assert) {
         onError = 0;
 
         PocketCode.Proxy._sendUsingCors = function () { return false; };    //simulate cors not supported
-        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "874", prop1: "prop_1", prop2: "prop_2" });
+        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
         req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
         req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler3, this));
         req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler3, this));
