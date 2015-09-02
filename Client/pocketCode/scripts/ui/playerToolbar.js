@@ -106,8 +106,8 @@ PocketCode.Ui.merge({
                             this._hideOverlay();
                             break;
                         default:
-                            this._playButton.show();
                             this._pauseButton.hide();
+                            this._playButton.show();
                             this._showOverlay();
                             break;
                     }

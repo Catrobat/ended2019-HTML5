@@ -52,7 +52,7 @@ SmartJs.Ui.Window = (function () {  //static class
 
         if (this._visibilityChangeEventName !== "")
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
-        //else {
+        else {
             // IE 9 and lower:
             if ("onfocusin" in document) {
                 //document.onfocusin = document.onfocusout = onchange;
@@ -67,7 +67,7 @@ SmartJs.Ui.Window = (function () {  //static class
                 this._addDomListener(window, 'focus', this._visibilityChangeHandler);
                 this._addDomListener(window, 'blur', this._visibilityChangeHandler);
             }
-        //}
+        }
     }
 
     //events
