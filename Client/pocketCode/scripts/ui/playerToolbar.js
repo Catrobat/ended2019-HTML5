@@ -103,24 +103,26 @@ PocketCode.Ui.merge({
                         case PocketCode.ExecutionState.RUNNING:
                             this._playButton.hide();
                             this._pauseButton.show();
+                            this._hideOverlay();
                             break;
                         default:
                             this._playButton.show();
                             this._pauseButton.hide();
+                            this._showOverlay();
                             break;
                     }
                 },
             },
             /* override */
-            hidden: {
-                get: function () {
-                    if (this._settings.position == 'lo')    //in desktop mode the toolbar is not hidden, even if the width (overlay) is set to 0
-                        return false;
-                    if (this.height === 0 || this.width === 0)
-                        return true;
-                    return false;
-                },
-            },
+            //hidden: {
+            //    get: function () {
+            //        if (this._settings.position == 'lo')    //in desktop mode the toolbar is not hidden, even if the width (overlay) is set to 0
+            //            return false;
+            //        if (this.height === 0 || this.width === 0)
+            //            return true;
+            //        return false;
+            //    },
+            //},
             axesButtonChecked: {
                 set: function (value) {
                     this._axesButton.checked = value;
@@ -150,12 +152,12 @@ PocketCode.Ui.merge({
         //methods
         PlayerToolbar.prototype.merge({
             _openMenuTabbedHandler: function (e) {
-                if (this.hidden)
+                if (PocketCode.ExecutionState.RUNNING)
                     this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
                 e.preventDefault();
             },
             _openMenuClickedHandler: function(e) {
-                if (this.hidden) {
+                if (PocketCode.ExecutionState.RUNNING) {
                     if (e.button == 0) { // left click
                         this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
                         e.preventDefault();
@@ -163,8 +165,8 @@ PocketCode.Ui.merge({
                 }
             },
             _resizeHandler: function (args) {
-                if (this.hidden)
-                    return;
+                //if (this.hidden)
+                //    return;
 
                 if (this._settings.orientation == 'h') {
                     var fontSize = 10 * this.width / this._defaultWidth;
@@ -175,8 +177,7 @@ PocketCode.Ui.merge({
                     this.style.fontSize = Math.min(fontSize, 13) + 'px';
                 }
             },
-            /* override */
-            hide: function () {
+            _hideOverlay: function () {
                 var settings = this._settings;
                 if (settings.orientation == 'h')
                     this.style.height = '0px';
@@ -196,8 +197,7 @@ PocketCode.Ui.merge({
                 if (settings.position !== 'lo')
                     this._menuContainer.hide();
             },
-            /* override */
-            show: function() {
+            _showOverlay: function() {
                 var settings = this._settings;
                 this.style.height = '';
                 this.style.width = '';

@@ -287,7 +287,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 ctx.restore();
             }
         },
-
+        getCanvasDataURL: function (scaling) {
+            return this._canvas.toDataURL(scaling);
+        },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
             this._canvas.clear();

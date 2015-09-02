@@ -9,24 +9,32 @@ PocketCode.PlayerPageController = (function () {
         //set defautl values and update as soon as project is loaded
         //this._screenHeight = 160;
         //this._screenWidth = 100;
-        this._axesVisible = false;
 
         //var viewportView = new PocketCode.Ui.PlayerViewportView(this._screenWidth, this._screenHeight); //TODO: shouldn't the controller get these settings?
-        this._playerViewPort = new PocketCode.PlayerViewportController();//viewportView);
-        PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView(this._playerViewPort.view));
+        PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView());//this._playerViewport.view));
+        this._playerViewport = new PocketCode.PlayerViewportController();//viewportView);
+        this._view.insertAt(0, this._playerViewport.view);
+        this._axesVisible = false;
+        //this._viewportScaling = 1;
 
         //bind events
-        this.view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
+        this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
+        //this._playerViewport.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
+        this._playerViewport.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+
         //this._view = new PocketCode.Ui.PlayerPageView();
-        //this._view.appendChild(this._playerViewPort.view);
+        //this._view.appendChild(this._playerViewport.view);
+
+        this._playerViewport.setProjectScreenSize(200, 320);
+        if (!SmartJs.Device.isMobile || history.length == 0)
+            this._view.backButtonDisabled = true;
 
         //test
-        this._playerViewPort.setProjectScreenSize(200, 320);
-        this.view.screenshotButtonDisabled = true;
-        //this.view.executionState = PocketCode.ExecutionState.RUNNING;
-        //this._playerViewPort.showAxes();
-        //this._playerViewPort.hideAxes();
-        //this._playerViewPort.showAxes();
+        //this._view.screenshotButtonDisabled = true;
+        //this._view.executionState = PocketCode.ExecutionState.RUNNING;
+        //this._playerViewport.showAxes();
+        //this._playerViewport.hideAxes();
+        //this._playerViewport.showAxes();
 
         //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
 
@@ -47,8 +55,8 @@ PocketCode.PlayerPageController = (function () {
         //SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this.doSomething like pause, this));
 
         this._onNavigateBack = new SmartJs.Event.Event(this);
-        this._escKeyHandlerRef = undefined;//this._addDomEventListener(document, 'keyup', this._escKeyHandler);
-        this._load();
+        //this._escKeyHandlerRef = undefined;//this._addDomEventListener(document, 'keyup', this._escKeyHandler);
+        //this._load();
     }
 
     //events
@@ -62,55 +70,71 @@ PocketCode.PlayerPageController = (function () {
 
     //methods
     PlayerPageController.prototype.merge({
-        _viewHideHandler: function () {
+        //_viewHideHandler: function () {
             //onHide -> pause()
+        //},
+        //_escKeyHandler: function(e) {
+        //    if (e.keyCode == 27) {
+        //        console.log('esc pressed');
+        //    }
+        //},
+        //project handler
+        _projectOnExecutedhandler: function() {
+            //TODO:
+            this._view.executionState = PocketCode.ExecutionState.STOPPED;
         },
-        _escKeyHandler: function(e) {
-            if (e.keyCode == 27) {
-                console.log('esc pressed');
-            }
-        },
+        //view handler
         _buttonClickedHandler: function(e) {
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
-                    alert();
+                    this._onNavigateBack.dispatchEvent();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.RESTART:
                     alert();
+                    this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PLAY:
                     alert();
+                    this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PAUSE:
                     alert();
+                    this._view.executionState = PocketCode.ExecutionState.PAUSED;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
-                    alert();
+                    var img = this._playerViewport.takeScreenshot();
+                    this._showScreenshotDialog(img);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
-                        this._playerViewPort.showAxes();
-                        this.view.axesButtonChecked = true;
+                        this._playerViewport.showAxes();
+                        this._view.axesButtonChecked = true;
                         this._axesVisible = true;
                     }
                     else {
-                        this._playerViewPort.hideAxes();
-                        this.view.axesButtonChecked = false;
+                        this._playerViewport.hideAxes();
+                        this._view.axesButtonChecked = false;
                         this._axesVisible = false;
                     }
                     break;
                 default:
             }
         },
+        _spriteClickedHandler: function(e) {
+            //TODO: get id + dispatch event in gameEngine
+        },
         /* override */
         updateViewState: function (viewState) {
-
+            //TODO: ??
         },
-        _load: function () {
+        //_load: function () {
 
-        },
+        //},
         loadProject: function (jsonProject) {
             //this._gameEngine.loadProject(jsonProject);
+        },
+        _showScreenshotDialog: function (image) {
+            alert('todo: show screenshot dialog');
         },
     });
 

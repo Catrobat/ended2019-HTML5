@@ -537,10 +537,10 @@ SmartJs.Ui.merge({
                 this.verifyResize(this);
             },
             _insertAt: function (idx, uiControl) {
-                if (uiControl._disposed)
-                    throw new Error('object disposed');
                 if (!(uiControl instanceof SmartJs.Ui.Control) && !(uiControl instanceof SmartJs.Ui.TextNode))
                     throw new Error('invalid argument: uiControl, expected: instance of SmartJs.Ui.Control or SmartJs.Ui.TextNode');
+                if (uiControl._disposed)
+                    throw new Error('object disposed');
                 if (typeof idx !== 'number')
                     throw new Error('invalid argument: idx, expected: typeof number');
 
@@ -724,7 +724,10 @@ SmartJs.Ui.merge({
             //mapping the methods to the inner container and provide public access
             appendChild: function (uiControl) {
                 var cont = this.__container;
-                cont._insertAt(cont._childs.length, uiControl);
+                cont.__container._insertAt(cont._childs.length, uiControl);
+            },
+            insertAt: function(idx, uiControl) {
+                this.__container._insertAt(idx, uiControl);
             },
             insertBefore: function (existingUiC, newUiC) {
                 return this.__container._insertBefore(existingUiC, newUiC);

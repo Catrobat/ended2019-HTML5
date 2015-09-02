@@ -7,6 +7,12 @@
 /// <reference path="../core.js" />
 'use strict';
 
+PocketCode.PlayerApplicationMode = {
+    OVERLAY: 1,     //showing the player in a web overlay
+    STANDALONE: 2,  //opening the player in our index.php
+    EMBEDDED: 3,    //embedding the player in a page (container)
+};
+
 PocketCode.PlayerApplication = (function () {
     PlayerApplication.extends(SmartJs.Components.Application);
 
@@ -19,15 +25,15 @@ PocketCode.PlayerApplication = (function () {
 
         //webOverlay is undefined if running in mobile page, no viewport defined
         //this._splashScreen = splashScreen;
-        this._isMobile = viewportContainer ? false : true;	//this represents the players mode, not the device
+        this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
         //if (this._isMobile)
         //	 window.addEventListener ('beforeunload', function() { return 'Exit PocketCode Player?'; }, false);
 
-        this._isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);	//TODO: if device is a static class, this should be moved?
+        //this._isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);	//TODO: if device is a static class, this should be moved?
         //this._webOverlay = webOverlay;
 
         //navigation controller
-        if (this._isMobile) {
+        if (this._isMobilePage) {
             //this._navigation = {	//index is url hash
             //    //'': PocketCode.PlayerExitController,
             //    player: PocketCode.PlayerPageController,
@@ -160,7 +166,7 @@ PocketCode.PlayerApplication = (function () {
 
             //TODO: rethink splashScreen scaling: check on mobile device 
             //console.log
-            alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._isMobile);
+            alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._isMobilePage);
             //this._onInit.dispatchEvent();
 
 

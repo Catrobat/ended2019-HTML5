@@ -49,14 +49,14 @@ PocketCode.Ui.Canvas = (function () {
 
             //methods
             FCAdapter.prototype.merge({
-                //TODO: override rendering
-                setDimensions: function (width, height) {   //without rerendering
+                setDimensionsWr: function (width, height) {   //without rerendering
                     this._setBackstoreDimension('width', width);
                     this._setCssDimension('width', width + 'px');
                     this._setBackstoreDimension('height', height);
                     this._setCssDimension('height', height + 'px');
                     this.calcOffset();
                 },
+                //TODO: override rendering
                 //_searchPossibleTargets: function (e) {
 
                 //    // Cache all targets where their bounding box contains point.
@@ -225,7 +225,7 @@ PocketCode.Ui.Canvas = (function () {
 
         //},
         setDimensions: function(width, height) {
-            this._fcAdapter.setDimensions(width, height);
+            this._fcAdapter.setDimensionsWr(width, height);
         },
         clear: function () {
             this._fcAdapter.clear();    //TODO: make sure to clear the right context (only)
@@ -233,8 +233,9 @@ PocketCode.Ui.Canvas = (function () {
         render: function (renderingObjectList) {    //TODO??     we will have to init the list first to achive click events on sprites
 
         },
-        toDataUrl: function (scaling) {
-            return this._fcAdapter.toDataUrl({ multiplier: 1 / scaling });
+        toDataURL: function (scaling) {
+            scaling = scaling || 1;
+            return this._fcAdapter.toDataURL({ multiplier: 1 / scaling });
         },
     });
 

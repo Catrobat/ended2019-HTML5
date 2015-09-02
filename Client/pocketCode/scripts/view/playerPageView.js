@@ -8,14 +8,14 @@
 PocketCode.Ui.PlayerPageView = (function () {
     PlayerPageView.extends(PocketCode.Ui.PageView);
 
-    function PlayerPageView(playerViewportView) {
+    function PlayerPageView() {//playerViewportView) {
 
         this._header.hide();
         this._footer.hide();
 
-        if (!(playerViewportView instanceof PocketCode.Ui.PlayerViewportView))
-            throw new Error('invalid ctr argument: PlayerViewportView');
-        this.appendChild(playerViewportView);
+        //if (!(playerViewportView instanceof PocketCode.Ui.PlayerViewportView))
+        //    throw new Error('invalid ctr argument: PlayerViewportView');
+        //this.appendChild(playerViewportView);
 
         this._toolbar;
         if (SmartJs.Device.isIOs)
@@ -24,12 +24,16 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
-            this._toolbar.hide();
+            //this._toolbar.hide();
         }
         this.appendChild(this._toolbar);
 
         var setting = undefined;
         var menuOffset = 0;
+
+        //test
+        //this.executionState = PocketCode.ExecutionState.RUNNING;
+
         //if (SmartJs.Device.isIOs)
         //    setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS;
         //else if (SmartJs.Device.isMobile)
