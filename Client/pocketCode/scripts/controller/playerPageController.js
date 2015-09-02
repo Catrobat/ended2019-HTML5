@@ -21,7 +21,7 @@ PocketCode.PlayerPageController = (function () {
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         //this._playerViewport.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
         this._playerViewport.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
-
+        SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
         //this._view = new PocketCode.Ui.PlayerPageView();
         //this._view.appendChild(this._playerViewport.view);
 
@@ -78,6 +78,10 @@ PocketCode.PlayerPageController = (function () {
         //        console.log('esc pressed');
         //    }
         //},
+        _visibilityChangeHandler:function(e) {
+            if (e.visible == false)
+                this._pauseProject();
+        },
         //project handler
         _projectOnExecutedhandler: function() {
             //TODO:
@@ -98,8 +102,7 @@ PocketCode.PlayerPageController = (function () {
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PAUSE:
-                    alert();
-                    this._view.executionState = PocketCode.ExecutionState.PAUSED;
+                    this._pauseProject();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
                     var img = this._playerViewport.takeScreenshot();
@@ -122,6 +125,11 @@ PocketCode.PlayerPageController = (function () {
         },
         _spriteClickedHandler: function(e) {
             //TODO: get id + dispatch event in gameEngine
+        },
+        _pauseProject: function() {
+            //alert();
+            this._view.executionState = PocketCode.ExecutionState.PAUSED;
+
         },
         /* override */
         updateViewState: function (viewState) {

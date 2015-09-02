@@ -52,7 +52,7 @@ SmartJs.Ui.Window = (function () {  //static class
 
         if (this._visibilityChangeEventName !== "")
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
-        else {
+        //else {
             // IE 9 and lower:
             if ("onfocusin" in document) {
                 //document.onfocusin = document.onfocusout = onchange;
@@ -67,7 +67,7 @@ SmartJs.Ui.Window = (function () {  //static class
                 this._addDomListener(window, 'focus', this._visibilityChangeHandler);
                 this._addDomListener(window, 'blur', this._visibilityChangeHandler);
             }
-        }
+        //}
     }
 
     //events
@@ -144,14 +144,18 @@ SmartJs.Ui.Window = (function () {  //static class
         _visibilityChangeHandler: function (e) {
             e = e || window.event;
 
-            //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
-            //var visible = {focus: true, focusin: true, pageshow: true};
-            var hidden = { blur: false, focusout: false, pagehide: false };
-            if (e.type in hidden)
-                this._visible = false;
-            else
-                this._visible = true;	//default
-
+            //if (e.target.visibilityState) {
+            //    this._visible = e.target.visibilityState == 'visible' ? true : false;
+            //}
+            //else {
+                //onfocusin and onfocusout are required for IE 9 and lower, while all others make use of onfocus and onblur, except for iOS, which uses onpageshow and onpagehide
+                //var visible = {focus: true, focusin: true, pageshow: true};
+                var hidden = { blur: false, focusout: false, pagehide: false };
+                if (e.type in hidden)
+                    this._visible = false;
+                else
+                    this._visible = e.target[this._hiddenProperty] ? false : true;//true;	//default
+            //}
             this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
         },
         dispose: function () {
