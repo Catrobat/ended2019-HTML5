@@ -805,6 +805,8 @@ class ProjectFileParser
             $fileName = (string)$sound->fileName;
 
             $res = $this->findResourceInArray("sounds/" . $fileName, $this->sounds);
+            if($res == false)
+              throw new FileParserException("sound file '" . $fileName . "' not existent");
             $id = $res->id;
           }
           $brick = new PlaySoundBrickDto($id);
