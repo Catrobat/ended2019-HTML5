@@ -7,21 +7,25 @@ class ProjectsController extends BaseController
   const CACHING_ENABLED = true;//false;
   const INCREMENT_PROJECT_VIEW_COUNTER = false;
 
-  const DEPLOY_API = "https://share.catrob.at/pocketcode";
-  const TEST_API = "https://web-test.catrob.at/pocketcode";
+  const DEPLOY_API = "https://share.catrob.at";
+  const TEST_API = "https://web-test.catrob.at";
 
   public $SERVER_ROOT = "/var/www/";
   public $API = self::TEST_API;
+  public $BASE_URL = "";
 
   public function __construct($request)
   {
     parent::__construct($request);
+    $this->BASE_URL = $this->API;
+    $this->API = $this->API . "/pocketcode";
 
     if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
     {
       // is localhost
       $local_path = str_replace("pocketCode\\rest\\v0.1", "", getcwd());
       $this->SERVER_ROOT = $local_path;
+      $this->BASE_URL = "localhost";
     }
   }
 
@@ -242,8 +246,8 @@ class ProjectsController extends BaseController
         $protocol = "http";
       }
 
-      $server_base = $protocol . "://" . $_SERVER["SERVER_NAME"];
-      $resourceRoot = $server_base . "/html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/";
+      //$server_base = $protocol . "://" . $_SERVER["SERVER_NAME"];
+      $resourceRoot = $this->BASE_URL . "/html5/rest/" . $this->request->serviceVersion . "/projects/" . $projectId . "/";
 
       // load parser using catrobat file version
       $parser = null;
