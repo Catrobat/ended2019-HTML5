@@ -5,7 +5,7 @@
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksMotion.js" />
 /// <reference path="../model/bricksSound.js" />
-/// <reference path="../model/bricksVariables.js" />
+/// <reference path="../model/bricksData.js" />
 /// <reference path="../component/sprite.js" />
 'use strict';
 

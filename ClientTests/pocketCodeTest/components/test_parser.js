@@ -4,13 +4,12 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/parser.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
-/// 
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksLook.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksMotion.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksSound.js" />
-/// <reference path="../../../Client/pocketCode/scripts/model/bricksVariable.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/bricksData.js" />
 /// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
