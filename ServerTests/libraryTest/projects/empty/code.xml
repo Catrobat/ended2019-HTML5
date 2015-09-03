@@ -24,7 +24,7 @@
     <userHandle></userHandle>
   </header>
   <objectList>
-    <object name="Hintergrund">
+    <object name="Background">
       <lookList/>
       <soundList/>
       <scriptList/>
