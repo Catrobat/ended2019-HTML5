@@ -1,6 +1,6 @@
 ﻿/// <reference path="../components/sprite.js" />
 
-PocketCode.Model.RenderingImage = (function () {
+PocketCode.RenderingImage = (function () {
 
     function RenderingImage(spriteProperties) {
         this.type = 'sprite';

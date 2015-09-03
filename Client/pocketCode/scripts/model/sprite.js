@@ -56,7 +56,7 @@ PocketCode.GraphicEffect = {
  *
  *
  */
-PocketCode.Sprite = (function () {
+PocketCode.Model.Sprite = (function () {
     Sprite.extends(PocketCode.UserVariableHost, false);
 
     /**

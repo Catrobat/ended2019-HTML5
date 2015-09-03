@@ -60,7 +60,7 @@ PocketCode.Canvas = (function(){
 		/**
 		 * adds a pocket code sprite to the canvas 
 		 * note: sprite will not be rendered - if requested call render() after this method
-		 * @param {PocketCode.Sprite} pcSprite 
+		 * @param {PocketCode.Model.Sprite} pcSprite 
 		 */
 		addSprite: function(pcSprite){
 			var sprites = this._canvas.getObjects();
@@ -143,7 +143,7 @@ PocketCode.Canvas = (function(){
 		
 		/**
 		 * creates a new object of type CanvasSprite which extends fabric.js's Image Class. This object can then be added to a fabric.js Canvas  
-		 * @param {PocketCode.Sprite} pcSprite: sprite that shall be converted into an object that can be added to the canvas 
+		 * @param {PocketCode.Model.Sprite} pcSprite: sprite that shall be converted into an object that can be added to the canvas 
 		 */
 		_createCanvasSprite: function(pcSprite){
 			var sprite = new PocketCode.RenderingItem(pcSprite._currentLook,{

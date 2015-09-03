@@ -786,7 +786,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksVariable.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/renderingImage.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/sprite.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
@@ -799,8 +799,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/renderingImage.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/sprite.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/ui/button.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },

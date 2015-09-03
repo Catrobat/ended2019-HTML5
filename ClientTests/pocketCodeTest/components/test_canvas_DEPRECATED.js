@@ -31,7 +31,7 @@ QUnit.test("PlayerViewportController", function (assert) {
 		for (var i = 0; i < 5; i++)
 		{
 			//controller.addSprite(populateSprites(i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
-			sprites.push(populateSprite(gme,i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90))
+		    sprites.push(populateSprite(gme, i, 'tree', i, 50 * i, 50 * i, 20, looks, true, i * 60, 0, 90));
 		}
 		var spritex = sprites[3];
 
@@ -138,7 +138,7 @@ QUnit.test("PlayerViewportController", function (assert) {
 
 
 function populateSprite(ge,id, name, layer, x, y, scale, imgElement, visible, bright, transp, angle) {
-    var sprite = new PocketCode.Sprite(ge,{ id: "newId", name: "myName" });
+	var sprite = new PocketCode.Model.Sprite(ge,{ id: "newId", name: "myName" });
 
 	sprite.id = id;
 	sprite.name = name;

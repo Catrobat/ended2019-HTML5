@@ -76,15 +76,15 @@ QUnit.test("GameEngine", function (assert) {
 	gameEngine.projectReady = true;
 
 	//Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
-	var spriteInterface = new PocketCode.Sprite(gameEngine, { id: "id", name: "name" });
+	var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
 	assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopScripts == "function", "mock: valid sprite interface");
 
 	//Mock GameEngine and SoundManagers start, pause, stop methods
 	var TestSprite = (function () {
-		TestSprite.extends(PocketCode.Sprite, false);
+		TestSprite.extends(PocketCode.Model.Sprite, false);
 
 		function TestSprite(program, args) {
-			PocketCode.Sprite.call(this, program, args);
+			PocketCode.Model.Sprite.call(this, program, args);
 			this.status = PocketCode.ExecutionState.STOPPED;
 			//this.MOCK = true;   //flag makes debugging much easier
 			this.timesStopped = 0;
@@ -232,7 +232,7 @@ QUnit.test("GameEngine", function (assert) {
 	//assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting");
 	assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
 
-	var sprite1 = new PocketCode.Sprite(gameEngine, { id: "newId", name: "myName" });
+	var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "newId", name: "myName" });
 	sprite1._id = "spriteId1";
 	//sprite1.name = "spriteName1";
 	gameEngine._sprites.push(sprite1);

@@ -120,7 +120,7 @@ PocketCode.Model.merge({
     })(),
 
 
-    /* please notice: this class does not represent a variable list, but a user variable of type list */
+    /* please notice: this class does not represent a list of variables, but a user variable of type list */
     UserVariableList: (function () {
 
         function UserVariableList(id, name, value) {
