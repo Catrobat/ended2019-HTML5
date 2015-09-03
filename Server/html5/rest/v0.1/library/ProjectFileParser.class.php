@@ -25,6 +25,7 @@ class ProjectFileParser
   protected $images = [];
   protected $sounds = [];
   protected $variables = [];
+  protected $lists = [];
   protected $broadcasts = [];
 
   //generate ids starting with id = 1
@@ -59,8 +60,7 @@ class ProjectFileParser
     array_push($this->cpp, $simpleXml);
   }
 
-
-  protected function includeGlobalVariables()
+  protected function includeGlobalData()
   {
     $vars = $this->simpleXml->variables;
     array_push($this->cpp, $vars);
@@ -86,8 +86,9 @@ class ProjectFileParser
       $project->header = $this->parseHeader();
 
       //global variables
-      $this->includeGlobalVariables();
+      $this->includeGlobalData();
       $project->variables = $this->variables;
+			$project->lists = $this->lists;
 
       //sprites
       array_push($this->cpp, $this->simpleXml->objectList);
@@ -160,6 +161,14 @@ class ProjectFileParser
 
       return $project;
     }
+    catch(FileParserException $e)
+    {
+      return $e;
+    }
+    catch(InvalidProjectFileException $e)
+    {
+      return $e;
+    }
     catch(Exception $e)
     {
       return new FileParserException($e);
@@ -199,13 +208,13 @@ class ProjectFileParser
   }
 
   //resource already registered
-  protected function findResourceInArray($url, $array)
+  protected function findItemInArrayByUrl($url, $array)
   {
-    foreach($array as $res)
+    foreach($array as $item)
     {
-      if($res->url === $url)
+      if($item->url === $url)
       {
-        return $res;
+        return $item;
       }
     }
 
@@ -213,13 +222,13 @@ class ProjectFileParser
   }
 
   //global variable?
-  protected function findVariableInArray($name, $array)
+  protected function findItemInArrayByName($name, $array)
   {
-    foreach($array as $var)
+    foreach($array as $item)
     {
-      if($var->name === $name)
+      if($item->name === $name)
       {
-        return $var;
+        return $item;
       }
     }
 
@@ -236,13 +245,13 @@ class ProjectFileParser
     }
 
     // global search
-    $res = $this->findVariableInArray($name, $this->variables);
+    $res = $this->findItemInArrayByName($name, $this->variables);
     if($res === false)
     {
       //dto to insert
       $obj = $this->currentSprite;
       //local search
-      $res = $this->findVariableInArray($name, $obj->variables);
+      $res = $this->findItemInArrayByName($name, $obj->variables);
       if($res === false)
       {
         //not defined yet
@@ -338,12 +347,17 @@ class ProjectFileParser
     {
       $look = $this->getObject($look, $this->cpp);
 
-      $res = $this->findResourceInArray("images/" . (string)$look->fileName, $this->images);
+      $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
       if($res === false)
       {
         $id = $this->getNewId();
-        $size = filesize($this->cacheDir . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName);
-        array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
+		$path = $this->cacheDir . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName;
+		if (is_file($path))
+			$size = filesize($path);
+		else
+			throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
+
+		array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
       }
       else
       {
@@ -362,12 +376,17 @@ class ProjectFileParser
       $sound = $this->getObject($sound, $this->cpp);
 
       //= false, if not found
-      $res = $this->findResourceInArray("sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName, $this->sounds);
+      $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
       if($res === false)
       {
         $id = $this->getNewId();
-        $size = filesize($this->cacheDir . "sounds/" . (string)$sound->fileName);
-        array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
+		$path = $this->cacheDir . "sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName;
+		if (is_file($path))
+			$size = filesize($path);
+		else
+			throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
+
+		array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
       }
       else
       {
@@ -592,6 +611,10 @@ class ProjectFileParser
     {
       throw $e;
     }
+    catch(InvalidProjectFileException $e)
+    {
+      throw $e;
+    }
     catch(Exception $e)
     {
       /** @noinspection PhpUndefinedVariableInspection */
@@ -623,7 +646,7 @@ class ProjectFileParser
 
         case "BroadcastScript":
           $msg = (string)$script->receivedMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts);
+          $res = $this->findItemInArrayByName($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -665,7 +688,7 @@ class ProjectFileParser
 
         case "BroadcastBrick":
           $msg = (string)$script->broadcastMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts);
+          $res = $this->findItemInArrayByName($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -681,7 +704,7 @@ class ProjectFileParser
 
         case "BroadcastWaitBrick":
           $msg = (string)$script->broadcastMessage;
-          $res = $this->findVariableInArray($msg, $this->broadcasts);
+          $res = $this->findItemInArrayByName($msg, $this->broadcasts);
           if($res === false)
           {
             $id = $this->getNewId();
@@ -802,11 +825,10 @@ class ProjectFileParser
           {
             //play sound brick is initial set to "New.." and has no child tags per default
             $sound = $this->getObject($script->sound, $this->cpp);
-            $fileName = (string)$sound->fileName;
 
-            $res = $this->findResourceInArray("sounds/" . $fileName, $this->sounds);
-            if($res == false)
-              throw new FileParserException("sound file '" . $fileName . "' not existent");
+            $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+            if($res === false)	//will only return false on invalid projects, as resources are registered already
+              throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
             $id = $res->id;
           }
           $brick = new PlaySoundBrickDto($id);
@@ -837,7 +859,9 @@ class ProjectFileParser
         /*look bricks*/
         case "SetLookBrick":
           $look = $this->getObject($script->look, $this->cpp);
-          $res = $this->findResourceInArray("images/" . (string)$look->fileName, $this->images);
+          $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+          if($res === false)	//will only return false on invalid projects, as resources are registered already
+            throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
 
           //the image has already been included in the resources
           $id = $res->id;
@@ -891,7 +915,7 @@ class ProjectFileParser
           break;
 
 
-        /*variable bricks*/
+        /*data bricks*/
         case "SetVariableBrick":
           $var = $this->getObject($script->userVariable, $this->cpp);
           $id = $this->getVariableId((string)$var->name);
@@ -921,6 +945,10 @@ class ProjectFileParser
 
     }
     catch(FileParserException $e)
+    {
+      throw $e;
+    }
+    catch(InvalidProjectFileException $e)
     {
       throw $e;
     }

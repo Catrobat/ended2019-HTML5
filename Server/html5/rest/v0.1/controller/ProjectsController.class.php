@@ -4,7 +4,7 @@ require_once("BaseController.class.php");
 
 class ProjectsController extends BaseController
 {
-  const CACHING_ENABLED = false;
+  const CACHING_ENABLED = true;//false;
   const INCREMENT_PROJECT_VIEW_COUNTER = false;
 
   const DEPLOY_API = "https://share.catrob.at/pocketcode";
@@ -20,7 +20,7 @@ class ProjectsController extends BaseController
     if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
     {
       // is localhost
-      $local_path = str_replace("html5\\rest\\v0.1", "", getcwd());
+      $local_path = str_replace("pocketCode\\rest\\v0.1", "", getcwd());
       $this->SERVER_ROOT = $local_path;
     }
   }
@@ -97,7 +97,7 @@ class ProjectsController extends BaseController
 
     //load zip
     $cacheRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "html5/projects/");
-    $cacheDir = $cacheRoot . $this->request->serviceVersion . "/" . $projectId . "/";
+    $cacheDir = $cacheRoot . $this->request->serviceVersion . DIRECTORY_SEPARATOR . $projectId . DIRECTORY_SEPARATOR;
 
     //check if project exists
     if(!file_exists($projectFilePath))
@@ -108,12 +108,12 @@ class ProjectsController extends BaseController
     }
 
     //check if project is valid (found in DB and not masked as inappropriate)
-    /*if(!is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
+    if(!is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
     {
       //delete our cache as well
       FileHelper::deleteDirectory($cacheDir);
       throw new ProjectNotFoundException($projectId);
-    }*/
+    }
 
     //increment view counter: simulate page request
     if(self::INCREMENT_PROJECT_VIEW_COUNTER)
@@ -175,33 +175,33 @@ class ProjectsController extends BaseController
       {
         $zip = new ZipArchive;
         $res = $zip->open($projectFilePath);
-        for( $i = 0; $i < $zip->numFiles; $i++ )
-        {
-          $filename = $zip->getNameIndex( $i );
-          $filename = str_replace("images/", "", $filename);
-          $filename = str_replace("sounds/", "", $filename);
+        //for( $i = 0; $i < $zip->numFiles; $i++ )
+        //{
+        //  $filename = $zip->getNameIndex( $i );
+        //  $filename = str_replace("images/", "", $filename);
+        //  $filename = str_replace("sounds/", "", $filename);
 
-          if($filename != ".nomedia")
-            $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
+        //  if($filename != ".nomedia")
+        //    $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
 
-          if( ! mb_detect_encoding( $filename, 'ASCII' ) || preg_match( '/[^A-Za-z0-9 _ .-]/', $filename ))
-          {
-            throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
-          }
-        }
+        //  if( ! mb_detect_encoding( $filename, 'ASCII' ) || preg_match( '/[^A-Za-z0-9 _ .-]/', $filename ))
+        //  {
+        //    throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
+        //  }
+        //}
         if($res === true)
         {
           // extract it to the path we determined above
           $success = $zip->extractTo($cacheDir);
           if($success !== true)
           {
-            throw new Exception("error extracting project -> (zip) file");
+            throw new InvalidProjectFileException("error extracting project -> (zip) file");
           }
           $zip->close();
         }
         else
         {
-          throw new Exception("invalid project archive or server setup");
+          throw new InvalidProjectFileException("invalid project archive or server setup");
         }
       }
       catch(Exception $e)
@@ -259,8 +259,6 @@ class ProjectsController extends BaseController
             $parser = new ProjectFileParser_v0_93($projectId, $resourceRoot, $cacheDir, $xml);
             break;
           case 0.94:
-            $parser = new ProjectFileParser_v0_94($projectId, $resourceRoot, $cacheDir, $xml);
-            break;
           case 0.95:
             $parser = new ProjectFileParser_v0_94($projectId, $resourceRoot, $cacheDir, $xml);
             break;
@@ -271,7 +269,17 @@ class ProjectsController extends BaseController
       }
 
       $project = $parser->getProject();
-
+			if ($project instanceof Exception) {
+				//delete our cache
+				try {
+				FileHelper::deleteDirectory($cacheDir);
+				}
+				catch(Exception $e) {
+					//silent catch: an unhandled exception might be thown if the zip archive was not valid
+				}
+				return $project;
+			}
+			
       //save for caching
       $objData = serialize($project);
       $filePath = $cacheDir . "code.cache";
@@ -326,11 +334,11 @@ class ProjectsController extends BaseController
     }
 
     //save json
-    $project_json = json_encode($project);
-    $filePath = $cacheDir . "code.json";
-    $fp = fopen($filePath, "w");
-    fwrite($fp, $project_json);
-    fclose($fp);
+    //$project_json = json_encode($project);
+    //$filePath = $cacheDir . "code.json";
+    //$fp = fopen($filePath, "w");
+    //fwrite($fp, $project_json);
+    //fclose($fp);
 
     return $project;
   }

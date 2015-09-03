@@ -126,6 +126,11 @@ if(class_exists($view_name))
                                    $result->getLine());
         break;
 
+      case "InvalidProjectFileException":
+        $result = new ExceptionDto("InvalidProjectFileException", $result->getMessage(), $result->getCode(), $result->getFile(),
+                                   $result->getLine());
+        break;
+
       default:    //exception
         $result = new ExceptionDto("UnhandledException", $result->getMessage(), $result->getCode(), $result->getFile(),
                                    $result->getLine());
