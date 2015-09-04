@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . "\\ProjectFileParser_v0_93.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "ProjectFileParser_v0_93.class.php";
 
 class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
 {
