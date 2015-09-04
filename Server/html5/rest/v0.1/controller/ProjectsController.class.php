@@ -7,8 +7,8 @@ class ProjectsController extends BaseController
   const CACHING_ENABLED = true;//false;
   const INCREMENT_PROJECT_VIEW_COUNTER = false;
 
-  const DEPLOY_API = "https://share.catrob.at";
-  const TEST_API = "https://web-test.catrob.at";
+  const DEPLOY_API = "https://share.catrob.at/";
+  const TEST_API = "https://web-test.catrob.at/";
 
   public $SERVER_ROOT = "/var/www/";
   public $API = self::TEST_API;
@@ -18,14 +18,13 @@ class ProjectsController extends BaseController
   {
     parent::__construct($request);
     $this->BASE_URL = $this->API;
-    $this->API = $this->API . "/pocketcode";
+    $this->API = $this->API . "pocketcode/";
 
     if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
     {
       // is localhost
-      $local_path = str_replace("pocketCode\\rest\\v0.1", "", getcwd());
+      $local_path = str_replace("html5\\rest\\v0.1", "", getcwd());
       $this->SERVER_ROOT = $local_path;
-      $this->BASE_URL = "localhost";
     }
   }
 
@@ -64,7 +63,7 @@ class ProjectsController extends BaseController
 
   private function getProjectDetails($projectId)
   {
-    $data = file_get_contents($this->API . "/api/projects/getInfoById.json?id=" . $projectId);
+    $data = file_get_contents($this->API . "api/projects/getInfoById.json?id=" . $projectId);
     $data = json_decode($data, false);
 
     try
@@ -93,7 +92,41 @@ class ProjectsController extends BaseController
     return $details;
   }
 
-
+    //zip file helper methods
+    private function extractFilenames(\ZipArchive $zipArchive)
+    {
+        $filenames = array();
+        $fileCount = $zipArchive->numFiles;
+        for ($i = 0; $i < $fileCount; $i++) {
+                if (($filename = $this->extractFilename($zipArchive, $i)) !== false) {
+                        $filenames[] = $filename;
+                }
+        }
+        return $filenames;
+    }
+    private function extractFilename(\ZipArchive $zipArchive, $fileIndex)
+    {
+        $entry = $zipArchive->statIndex($fileIndex);
+        // convert Windows directory separator to Unix style
+        $filename  = str_replace('\\', '/', $entry['name']);
+        if ($this->isValidPath($filename)) {
+                return $filename;
+        }
+        throw new \Exception('Invalid filename path in zip archive');
+    }
+    private function isValidPath($path)
+    {
+        $pathParts = explode('/', $path);
+        if (!strncmp($path, '/', 1) ||
+                array_search('..', $pathParts) !== false ||
+                strpos($path, ':') !== false)
+        {
+                return false;
+        }
+        return true;
+    }
+        
+    
   private function getProject($projectId)
   {
     $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/resources/programs/");
@@ -123,7 +156,7 @@ class ProjectsController extends BaseController
     if(self::INCREMENT_PROJECT_VIEW_COUNTER)
     {
       //try to read 1 byte only
-      file_get_contents($this->API . "/details/" . $projectId, 0, null, 0, 1);
+      file_get_contents($this->API . "details/" . $projectId, 0, null, 0, 1);
     }
 
     //create cache directory if not already created
@@ -193,10 +226,12 @@ class ProjectsController extends BaseController
         //    throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
         //  }
         //}
-        if($res === true)
-        {
+        if($res === true) {
+            //extract file names
+            $fileNames = $this->extractFilenames($zip);
+
           // extract it to the path we determined above
-          $success = $zip->extractTo($cacheDir);
+          $success = $zip->extractTo($cacheDir, $fileNames);
           if($success !== true)
           {
             throw new InvalidProjectFileException("error extracting project -> (zip) file");
@@ -247,7 +282,7 @@ class ProjectsController extends BaseController
       }
 
       //$server_base = $protocol . "://" . $_SERVER["SERVER_NAME"];
-      $resourceRoot = $this->BASE_URL . "/html5/rest/" . $this->request->serviceVersion . "/projects/" . $projectId . "/";
+      $resourceRoot = $this->BASE_URL . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/";
 
       // load parser using catrobat file version
       $parser = null;
@@ -273,17 +308,23 @@ class ProjectsController extends BaseController
       }
 
       $project = $parser->getProject();
-			if ($project instanceof Exception) {
-				//delete our cache
-				try {
-				FileHelper::deleteDirectory($cacheDir);
-				}
-				catch(Exception $e) {
-					//silent catch: an unhandled exception might be thown if the zip archive was not valid
-				}
-				return $project;
-			}
-			
+      if ($project instanceof Exception) {
+        //delete our cache
+        try {
+            FileHelper::deleteDirectory($cacheDir);
+        }
+        catch(Exception $e) {
+            //silent catch: an unhandled exception might be thown if the zip archive was not valid
+        }
+      //$objData = serialize(new ExceptionDto("Exception", $project->getMessage(), $project->getCode(), $project->getFile(), $project->getLine()));
+      //$filePath = $cacheDir . "code.cache";
+      //$fp = fopen($filePath, "w");
+      //fwrite($fp, $objData);
+      //fclose($fp);
+
+              return $project;
+            }
+            
       //save for caching
       $objData = serialize($project);
       $filePath = $cacheDir . "code.cache";
@@ -374,7 +415,7 @@ class ProjectsController extends BaseController
     $featured = [];
     if($offset === 0)
     {
-      $data = file_get_contents($this->API . "/api/projects/featured.json?limit=3");
+      $data = file_get_contents($this->API . "api/projects/featured.json?limit=3");
       $data = json_decode($data, false);
       $baseUrl = $data->CatrobatInformation->BaseUrl;
 
@@ -385,7 +426,7 @@ class ProjectsController extends BaseController
       }
     }
 
-    $url = $this->API . "/api/projects/";
+    $url = $this->API . "api/projects/";
 
     switch($mask)
     {

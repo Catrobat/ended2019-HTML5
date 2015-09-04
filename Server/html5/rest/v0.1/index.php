@@ -116,6 +116,11 @@ if(class_exists($view_name))
                                    $result->getLine());
         break;
 
+      case "InvalidProjectFileException":
+        $result = new ExceptionDto("InvalidProjectFileException", $result->getMessage(), $result->getCode(), $result->getFile(),
+                                   $result->getLine());
+        break;
+
       case "ProjectNotFoundException":
         $result = new ExceptionDto("ProjectNotFoundException", $result->getMessage(), $result->getCode(), $result->getFile(),
                                    $result->getLine());
@@ -123,11 +128,6 @@ if(class_exists($view_name))
 
       case "FileParserException":
         $result = new ExceptionDto("FileParserException", $result->getMessage(), $result->getCode(), $result->getFile(),
-                                   $result->getLine());
-        break;
-
-      case "InvalidProjectFileException":
-        $result = new ExceptionDto("InvalidProjectFileException", $result->getMessage(), $result->getCode(), $result->getFile(),
                                    $result->getLine());
         break;
 
