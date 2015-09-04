@@ -1,10 +1,10 @@
 ﻿/// <reference path="../components/sprite.js" />
 
-PocketCode.RenderingImage = (function () {
+PocketCode.RenderingText = (function () {
 
-    function RenderingImage(spriteProperties) {
-        this.type = 'sprite';
-        this._fabricImage = fabric.util.createClass(fabric.Image, {
+    function RenderingText(textProperties) {
+        this.type = 'variable';
+        this._fabricText = fabric.util.createClass(fabric.Text, {
             //type: 'sprite',
 
             initialize: function (element, options) {
@@ -20,8 +20,8 @@ PocketCode.RenderingImage = (function () {
                     hasControls: false,
                     hasBorders: false,
                     hasRotatingPoint: false,
-                    originX: "center",
-                    originY: "center",
+                    originX: "left",
+                    originY: "top",
                     positionX: options.x,
                     positionY: options.y,
                     //flipX = flipH: false, //already a property and false (default)
@@ -30,8 +30,8 @@ PocketCode.RenderingImage = (function () {
                     opacity: 1.0
                 });
 
-                this.setAngle(options.angle);
-                this.setOpacity(options.opacity);
+                //this.setAngle(options.angle);
+                //this.setOpacity(options.opacity);
             },
 
             toObject: function () {
@@ -46,73 +46,73 @@ PocketCode.RenderingImage = (function () {
             },
         });
 
-        if (!spriteProperties || !(typeof spriteProperties === 'object'))
+        if (!textProperties || !(typeof textProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
 
-        this.merge(spriteProperties);
+        this.merge(textProperties);
     }
 
     //properties
-    Object.defineProperties(RenderingImage.prototype, {
-        object: {
-            get: function () {
-                return this._fabricImage;
-            },
-        },
-        id: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        positionX: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        positionY: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        direction: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        rotationStyle: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        look: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        size: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        visible: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        transparency: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
-        brightness: {
-            set: function (value) {
-                //return this._fabricImage;
-            },
-        },
+    Object.defineProperties(RenderingText.prototype, {
+        //object: {
+        //    get: function () {
+        //        return this._fabricImage;
+        //    },
+        //},
+        //id: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //positionX: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //positionY: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //direction: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //rotationStyle: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //look: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //size: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //visible: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //transparency: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
+        //brightness: {
+        //    set: function (value) {
+        //        //return this._fabricImage;
+        //    },
+        //},
     });
 
     //methods
-    RenderingImage.prototype.merge({
+    RenderingText.prototype.merge({
         //setAngle: function (direction) {
         //    this.angle = direction - 90;
         //},
@@ -155,5 +155,5 @@ PocketCode.RenderingImage = (function () {
         //}
     });
 
-    return RenderingImage;
+    return RenderingText;
 })();

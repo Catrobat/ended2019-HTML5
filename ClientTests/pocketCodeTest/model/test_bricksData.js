@@ -97,6 +97,72 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });
 
+QUnit.test("ShowTextBrick", function (assert) {
+
+    var program = new PocketCode.GameEngine();
+    program._background = "background";  //to avoid error on start
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
+
+    var x = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}'),
+        y = JSON.parse('{"type":"NUMBER","value":"2.0","right":null,"left":null}');
+
+    var b = new PocketCode.Bricks.ShowTextBrick("device", sprite, { referenceId: "var1", x: x, y: y });
+
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.BaseBrick && b instanceof PocketCode.Bricks.ShowTextBrick, "instance check");
+    assert.ok(b.objClassName === "ShowTextBrick", "objClassName check");
+
+    //check and override sprite interface
+    assert.ok(typeof sprite.showVariableAt === "function", "brick sprite interface checked");
+    var methodCalled;
+    sprite.showVariableAt = function (id, positionX, positionY) {
+        methodCalled = { id: id, x: positionX, y: positionY };
+    };
+
+    var executedHandler = function (e) {
+        assert.equal(e.id, "showText", "event args id correct");
+        var loopDelay = e.loopDelay ? e.loopDelay : false;
+        assert.equal(loopDelay, false, "loop delay check");
+    };
+    b.execute(new SmartJs.Event.EventListener(executedHandler, this), "showText");
+
+    assert.equal(methodCalled.id, "var1", "sprite interface called: id checked");
+    assert.equal(methodCalled.x, 1, "sprite interface called: positionX checked");
+    assert.equal(methodCalled.y, 2, "sprite interface called: positionY checked");
+});
+
+QUnit.test("HideTextBrick", function (assert) {
+
+    var program = new PocketCode.GameEngine();
+    program._background = "background";  //to avoid error on start
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
+
+    var b = new PocketCode.Bricks.HideTextBrick("device", sprite, { referenceId: "var1" });
+
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1", "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Bricks.BaseBrick && b instanceof PocketCode.Bricks.HideTextBrick, "instance check");
+    assert.ok(b.objClassName === "HideTextBrick", "objClassName check");
+
+    //check and override sprite interface
+    assert.ok(typeof sprite.hideVariable === "function", "brick sprite interface checked");
+    var methodCalledId = false;
+    sprite.hideVariable = function (id) {
+        methodCalledId = id;
+    };
+
+    var executedHandler = function (e) {
+        assert.equal(e.id, "hideText", "event args id correct");
+        var loopDelay = e.loopDelay ? e.loopDelay : false;
+        assert.equal(loopDelay, false, "loop delay check");
+    };
+    b.execute(new SmartJs.Event.EventListener(executedHandler, this), "hideText");
+
+    assert.equal(methodCalledId, "var1", "sprite interface called");
+
+});
+
 QUnit.test("AppendToListBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();

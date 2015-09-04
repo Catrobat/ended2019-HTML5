@@ -2,7 +2,7 @@
 
 PocketCode.RenderingImage = (function () {
 
-    function RenderingImage(spriteProperties) {
+    function RenderingImage(imageProperties) {
         this.type = 'sprite';
         this._fabricImage = fabric.util.createClass(fabric.Image, {
             //type: 'sprite',
@@ -46,10 +46,10 @@ PocketCode.RenderingImage = (function () {
             },
         });
 
-        if (!spriteProperties || !(typeof spriteProperties === 'object'))
+        if (!imageProperties || !(typeof imageProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
 
-        this.merge(spriteProperties);
+        this.merge(imageProperties);
     }
 
     //properties

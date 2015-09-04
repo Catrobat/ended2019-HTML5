@@ -42,6 +42,42 @@ PocketCode.Bricks.merge({
         return ChangeVariableBrick;
     })(),
 
+    ShowTextBrick: (function() {
+        ShowTextBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function ShowTextBrick(device, sprite, propObject) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+
+            this._varId = propObject.referenceId;
+            this._x = new PocketCode.Formula(device, sprite, propObject.x);
+            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+        }
+
+        ShowTextBrick.prototype._execute = function () {
+            this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
+            this._return();
+        };
+
+        return ShowTextBrick;
+    })(),
+
+    HideTextBrick: (function() {
+        HideTextBrick.extends(PocketCode.Bricks.BaseBrick, false);
+
+        function HideTextBrick(device, sprite, propObject) {
+            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+
+            this._varId = propObject.referenceId;
+        }
+
+        HideTextBrick.prototype._execute = function () {
+            this._sprite.hideVariable(this._varId);
+            this._return();
+        };
+
+        return HideTextBrick;
+    })(),
+
     AppendToListBrick: (function () {
         AppendToListBrick.extends(PocketCode.Bricks.BaseBrick, false);
 
