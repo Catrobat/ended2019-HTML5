@@ -42,7 +42,7 @@ PocketCode.Formula = (function () {
                     this.calculate = parsed.calculate;
                 }
                 this._uiString = undefined;
-                this._validateFormula();
+                //this._validateFormula();  //validation dring loading will throw an error as not all objects may be loaded at this time
             },
             //enumerable: false,
             //configurable: true,
