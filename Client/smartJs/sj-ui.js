@@ -764,7 +764,7 @@ SmartJs.Ui.merge({
         Viewport.extends(SmartJs.Ui.Control, false);
 
         function Viewport(propObject) {
-            SmartJs.Ui.Control.call(this, 'div', { style: { height: '100%', width: '100%', }, }.merge(propObject));
+            SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });//, }.merge(propObject));
 
             this._window = SmartJs.Ui.Window;
             //this._parentContainer;
