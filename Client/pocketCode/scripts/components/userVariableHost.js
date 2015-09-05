@@ -62,6 +62,12 @@ PocketCode.UserVariableHost = (function () {
             }
             return tmp;
         },
+        showVariableAt: function(id, positionX, positionY) {
+            //TODO
+        },
+        hideVariable: function(id) {
+            //TODO
+        },
         getList: function (id) {
             var tmp = this.__variablesList.getVariableById(id);
             if (!tmp && this.__variableLookupHost)
