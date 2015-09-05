@@ -39,12 +39,13 @@ PocketCode.GameEngine = (function () {
 
         this._imageStore = new PocketCode.ImageStore();//Math.min(SmartJs.Ui.Window.height, SmartJs.Ui.Window.width))   -> avaliable onLoad
         this._imageStore.onLoadingProgressChange.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+        this._imageStore.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         //this.__images = {};
         this.__sounds = {};
 
         this._soundManager = new PocketCode.SoundManager();
-        this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._soundManagerOnLoadingErrorHandler, this));
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+        this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
 
         this._broadcasts = [];
@@ -52,6 +53,8 @@ PocketCode.GameEngine = (function () {
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
+        this._onLoad = new SmartJs.Event.Event(this);
+        this._onLoadingError = new SmartJs.Event.Event(this);
 
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
@@ -122,9 +125,21 @@ PocketCode.GameEngine = (function () {
         onLoadingProgress: {
             get: function () {
                 return this._onLoadingProgress;
-            }
+            },
             //enumerable: false,
             //configurable: true,
+        },
+        onLoad: {
+            get: function () {
+                return this._onLoad;
+            },
+            //enumerable: false,
+            //configurable: true,
+        },
+        onLoadingError: {
+            get: function () {
+                return this._onLoadingError;
+            },
         },
         onBeforeProgramStart: {
             get: function () { return this._onBeforeProgramStart; },
@@ -262,27 +277,24 @@ PocketCode.GameEngine = (function () {
 
             //this._projectLoaded = true;
         },
-        _imageLoadingErrorHandler: function (e) {
-            throw new Error("No image found at " + e.target.src);
-        },
-        _soundManagerOnLoadingErrorHandler: function (e) {
-            throw new Error("Could not load sound" + e.src);
-        },
 
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
                 this._spritesLoaded = true;
                 if (this._resourcesLoaded) {
                     this.projectReady = true;
+                    this._onLoad.dispatchEvent();
                 }
             }
         },
         _resourceProgressChangeHandler: function (e) {
             if(e.target === this._imageStore){
                 this.imageProgress = e.progress;
-            }else if(e.target === this._soundManager){
+            }
+            else if (e.target === this._soundManager) {
                 this.soundProgress = e.progress;
-            }else{
+            }
+            else {
                 return;
             }
 
@@ -293,8 +305,16 @@ PocketCode.GameEngine = (function () {
             }
             if (this._resourcesLoaded && this._spritesLoaded) {
                 this.projectReady = true;
+                this._onLoad.dispatchEvent();
             }
             this._onLoadingProgress.dispatchEvent({ progress: this.resourceLoadingProgress });
+        },
+        //_imageLoadingErrorHandler: function (e) {
+        //    throw new Error("No image found at " + e.target.src);
+        //},
+        _resourceLoadingErrorHandler: function (e) {
+            //TODO: throw new Error("Could not load image or sound: " + e.src);
+            this._onLoadingError.dispatchEvent();
         },
         runProject: function (reinitSprites) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
@@ -393,7 +413,7 @@ PocketCode.GameEngine = (function () {
                 props.push(this._sprites[i].renderingProperties);
             return props;
         },
-        getSpriteLayer: function (sprite) { //including background (usind in formulas)
+        getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
                 return 0;
             var idx = this._sprites.indexOf(sprite);
