@@ -114,7 +114,9 @@ PocketCode.Ui.merge({
                 //title
                 var tmp = document.createElement('div');
                 tmp.className = 'pc-title';
-                tmp.appendChild(this._titleTextNode._dom);
+                var text = document.createElement('div');
+                tmp.appendChild(text);
+                text.appendChild(this._titleTextNode._dom);
                 this._dom.appendChild(tmp);
                 //loading indicator
                 this.progressLayout.className = 'pc-loadingIndicatorLayout';
