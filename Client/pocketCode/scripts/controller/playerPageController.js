@@ -39,15 +39,16 @@ PocketCode.PlayerPageController = (function () {
         //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
 
         //TODO: loading libs? 
-        this._gameEngine = new PocketCode.GameEngine(); //TODO: get screen size and update UI
+        this._gameEngine = undefined;
+        //this._gameEngine = new PocketCode.GameEngine(); //TODO: get screen size and update UI
 
-        this._statusDict = {    //TODO: check if necessary
-            //init: 'init',
-            stopped: 'stopped',
-            playing: 'playing',
-            paused: 'paused'
-        };
-        this._status = 'init';
+        //this._statusDict = {    //TODO: check if necessary
+        //    //init: 'init',
+        //    stopped: 'stopped',
+        //    playing: 'playing',
+        //    paused: 'paused'
+        //};
+        //this._status = 'init';
         //this._error = undefined;
 
 
@@ -58,6 +59,32 @@ PocketCode.PlayerPageController = (function () {
         //this._escKeyHandlerRef = undefined;//this._addDomEventListener(document, 'keyup', this._escKeyHandler);
         //this._load();
     }
+
+    //properties
+    Object.defineProperties(PlayerPageController.prototype, {
+        project: {
+            set: function (value) {
+                if (!(value instanceof PocketCode.GameEngine))      //TODO: change this as soon project is available
+                    throw new Error('invalid argumenent: project');
+                if (value === this._gameEngine)
+                    return;
+                if (this._gameEngine) {
+                    //unbind existing project
+                    this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
+                    this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                    this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                    this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
+                    this._gameEngine.onSpriteChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                }
+                this._gameEngine = value;
+                this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
+                this._gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
+                this._gameEngine.onSpriteChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+            },
+        },
+    });
 
     //events
     Object.defineProperties(PlayerPageController.prototype, {
@@ -78,27 +105,40 @@ PocketCode.PlayerPageController = (function () {
         //        console.log('esc pressed');
         //    }
         //},
+        //browser
         _visibilityChangeHandler:function(e) {
+            //console.log('pause: ' + Date.now()+' ' + e.visible);
             if (e.visible == false)
                 this._pauseProject();
         },
         //project handler
-        _projectOnExecutedhandler: function() {
-            //TODO:
+        _projectLoadingProgressHandler: function (e) {
+            console.log('project loading progress: ' + e);
+        },
+        _projectLoadHandler: function (e) {
+            console.log('project load: ' + e);
+        },
+        _projectStartHandler: function (e) {
+            console.log('project start: ' + e);
+        },
+        _projectExecutedHandler: function (e) {
             this._view.executionState = PocketCode.ExecutionState.STOPPED;
         },
-        //view handler
+        _uiUpdateHandler: function (e) {
+            console.log('uiUpdate: ' + e);
+        },
+        //user
         _buttonClickedHandler: function(e) {
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
                     this._onNavigateBack.dispatchEvent();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.RESTART:
-                    alert();
+                    this._gameEngine.restartProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PLAY:
-                    alert();
+                    this._gameEngine.runProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PAUSE:
@@ -126,15 +166,15 @@ PocketCode.PlayerPageController = (function () {
         _spriteClickedHandler: function(e) {
             //TODO: get id + dispatch event in gameEngine
         },
-        _pauseProject: function() {
-            //alert();
+        _pauseProject: function () {
+            if (this._gameEngine)   //may be undefined when triggered on onVisibilityChange
+                this._gameEngine.pauseProject();
             this._view.executionState = PocketCode.ExecutionState.PAUSED;
-
         },
         /* override */
-        updateViewState: function (viewState) {
-            //TODO: ??
-        },
+        //updateViewState: function (viewState) {
+        //    //TODO: ??
+        //},
         //_load: function () {
 
         //},

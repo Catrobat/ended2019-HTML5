@@ -24,10 +24,14 @@
     <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/imageStore.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/i18nProvider.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/renderingImage.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/formula.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/imageHelper.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/parser.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/renderingImage.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/renderingText.js"></script>
 
     <!-- model -->
     <script src="../../Client/pocketCode/scripts/model/bricksCore.js" data-cover></script>
@@ -39,6 +43,7 @@
     <script src="../../Client/pocketCode/scripts/model/sprite.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script>
 
+    <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
     <!-- controller -->
     <script src="../../Client/pocketCode/scripts/controller/controllerCore.js"></script>
     <script src="../../Client/pocketCode/scripts/controller/playerViewportController.js"></script>
@@ -53,6 +58,7 @@
     <script src="../../Client/pocketCode/scripts/ui/button.js"></script>
 
     <script src="../../Client/PocketCodePlayer/player/pocketCodePlayer.js"></script>
+    <script src="../../Client/PocketCodePlayer/player/scripts/playerApplication.js"></script>
 
     <link href="../../Client/PocketCodePlayer/player/pocketCodePlayer.css" rel="stylesheet" />
     <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet">
@@ -62,13 +68,16 @@
     <script type="text/javascript">
 
         window.onload = function () {
-            var vp = new PocketCode.Ui.Viewport();
             var testContainer = document.getElementById("testContainer");
-            vp.addToDom(testContainer);
-            var playerPageController = new PocketCode.PlayerPageController();
-            // var playerVPController = new PocketCode.PlayerViewportController();
-            //vp._appendChild(playerVPController._view);
-            vp.loadPage(playerPageController.view);
+            var player = new PocketCode.PlayerApplication(testContainer, "en-US");
+            player.loadProject(824);
+
+            //var vp = new PocketCode.Ui.Viewport();
+            //vp.addToDom(testContainer);
+            //var playerPageController = new PocketCode.PlayerPageController();
+            //// var playerVPController = new PocketCode.PlayerViewportController();
+            ////vp._appendChild(playerVPController._view);
+            //vp.loadPage(playerPageController.view);
         }
     </script>
     <link href="playerExample.css" rel="stylesheet" />
