@@ -533,6 +533,11 @@ SmartJs.Communication.merge({
                     this._useSizeForProgressCalculation = value;
                 },
             },
+            crossoriginProperty: {
+                set: function(value) {
+                    this._crossoriginProperty = value;
+                }
+            }
         });
 
         //events
@@ -662,6 +667,8 @@ SmartJs.Communication.merge({
                         break;
                     case 'img':
                         var oImg = new Image();
+                        if (this._crossoriginProperty)
+                            oImg.crossOrigin = this._crossoriginProperty;//'anonymous';
                         this._addDomListener(oImg, 'error', this._fileErrorHandler, { fileIndex: fileIndex, element: oImg});
                         this._addDomListener(oImg, 'load', this._fileSuccessHandler, { fileIndex: fileIndex, element: oImg });
                         oImg.src = file.url;
