@@ -141,8 +141,7 @@ class FileController extends BaseController
   private function getParsedUrl()
   {
     $encoded = urlencode($this->text);
-    $url = self::GOOGLE_TTS_SERVICE . "tl={$this->language}&q={$encoded}";
-
+    $url = self::GOOGLE_TTS_SERVICE . "tl={$this->language}&q={$encoded}&client=t";
     return $url;
   }
 
@@ -155,7 +154,17 @@ class FileController extends BaseController
     }
     $this->mp3 = file_get_contents($this->getParsedUrl());
 
-    return null;
+    /*
+    $ch = curl_init();
+    $timeout = 5; // 0 wenn kein Timeout
+    curl_setopt($ch, CURLOPT_URL, $this->getParsedUrl());
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    $this->mp3 = curl_exec($ch);
+    curl_close($ch);
+    */
+
+    return $this->mp3;
   }
 
   // cut words, if text is longer than 100 letters
