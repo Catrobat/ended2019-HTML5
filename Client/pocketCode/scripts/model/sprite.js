@@ -192,7 +192,11 @@ PocketCode.Model.Sprite = (function () {
                 if (!(looks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' ||
                     throw new Error('invalid argument: expected looks type of array');
 
-                this._looks = looks;
+                //this._looks = looks;  //TODO: change this as soon as looks becode own DTOs with ID
+                for (var i = 0, l = looks.length; i < l; i++) {
+                    var look = looks[i];
+                    this._looks.push({ imageId: look.id, name: look.name });
+                }
                 this._currentLook = undefined; //make sure its deleted on re-initialize
                 if (looks.length > 0)
                     this._currentLook = looks[0];

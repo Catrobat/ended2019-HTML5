@@ -831,7 +831,7 @@ PocketCode.Web.resources = {
 		{ url: 'smartJs/sj-communication.js', type: 'js' },
 		{ url: 'smartJs/sj-ui.js', type: 'js' },
 
-		{ url: 'pocketCode/libs/soundjs/soundjs-NEXT.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.min.js', type: 'js' },
 		{ url: 'pocketCode/libs/fabric/fabric-1.6.0-rc.1.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },

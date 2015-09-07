@@ -131,7 +131,7 @@ PocketCode.PlayerApplication = (function () {
                 var device = json.header.device;
                 this._onHWRatioChange.dispatchEvent({ratio: device.screenHeight / device.screenWidth });
             }
-            //this._project.loadProject(json);
+            this._project.loadProject(json);
         },
         _projectRequestErrorHandler: function(e) {
             if (this._disposed)

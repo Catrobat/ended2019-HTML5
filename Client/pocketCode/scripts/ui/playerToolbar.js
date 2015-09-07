@@ -90,7 +90,7 @@ PocketCode.Ui.merge({
 
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
-            this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 100); }.bind(this), this));
+            this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
 
             //events
             this._onButtonClicked = new SmartJs.Event.Event(this);
