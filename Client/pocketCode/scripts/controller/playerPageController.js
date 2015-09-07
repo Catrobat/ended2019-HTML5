@@ -125,7 +125,7 @@ PocketCode.PlayerPageController = (function () {
             this._view.executionState = PocketCode.ExecutionState.STOPPED;
         },
         _uiUpdateHandler: function (e) {
-            console.log('uiUpdate: ' + e);
+            console.log('ui update: { spriteId: ' + e.id + ', properties: ' + JSON.stringify(e.properties) + ' }');
         },
         //user
         _buttonClickedHandler: function(e) {
