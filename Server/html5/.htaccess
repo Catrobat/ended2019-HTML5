@@ -1,4 +1,8 @@
 Options -MultiViews
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Headers "origin, x-requested-with, content-type"
+Header set Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS"
+
 RewriteEngine On
 RewriteBase /html5/
 RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
