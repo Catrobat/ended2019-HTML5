@@ -601,4 +601,14 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 
     $this->checkJSON($projectName, $cache);
   }
+
+  public function testShowHide()
+  {
+    $projectName = "show-hide";
+    $cache = $this->cacheDir . __FUNCTION__ . "/";
+
+    $this->processProject($projectName, $cache);
+
+    $this->checkJSON($projectName, $cache);
+  }
 }

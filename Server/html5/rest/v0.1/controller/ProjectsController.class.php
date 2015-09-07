@@ -145,12 +145,12 @@ class ProjectsController extends BaseController
     }
 
     //check if project is valid (found in DB and not masked as inappropriate)
-    if(!is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
+    /*if(!is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
     {
       //delete our cache as well
       FileHelper::deleteDirectory($cacheDir);
       throw new ProjectNotFoundException($projectId);
-    }
+    }*/
 
     //increment view counter: simulate page request
     if(self::INCREMENT_PROJECT_VIEW_COUNTER)
@@ -299,6 +299,7 @@ class ProjectsController extends BaseController
             break;
           case 0.94:
           case 0.95:
+          case 0.96:
             $parser = new ProjectFileParser_v0_94($projectId, $resourceRoot, $cacheDir, $xml);
             break;
           default:

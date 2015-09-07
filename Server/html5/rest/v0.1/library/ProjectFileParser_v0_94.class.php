@@ -547,6 +547,27 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
           array_pop($this->cpp);
           break;
 
+        case "ShowTextBrick":
+          $var = $this->getObject($script->userVariable, $this->cpp);
+          $id = $this->getVariableId((string)$var);
+
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $brick = new ShowTextBrickDto($id, $this->parseFormula($fl->formula[1]),
+            $this->parseFormula($fl->formula[0]));
+          array_pop($this->cpp);
+          break;
+
+        case "HideTextBrick":
+          $var = $this->getObject($script->userVariable, $this->cpp);
+          $id = $this->getVariableId((string)$var);
+
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $brick = new HideTextBrickDto($id);
+          array_pop($this->cpp);
+          break;
+
         //default: return xml to verify which brick implementation is missing without generating a parser error
         default:
           $brick = new UnsupportedBrickDto($script->asXML(), (string)$script["type"]);
