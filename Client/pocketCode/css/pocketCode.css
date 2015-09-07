@@ -14,14 +14,19 @@
 	position: relative;
 	font-family: Arial, sans-serif;
 	font-size: 10px;
+	background-color: #003041;
 }
 .pc-playerViewport button {
 	border: 0;
 	border-radius: 0;
 	padding: 0;
 	margin: 0;
-	background-color: transparent;
-	background-image: none;
+	background: none;
+	font-weight: normal;
+	text-decoration: none;
+	text-shadow: none;
+	/*text-align: initial;*/
+	text-transform: none;
 }
 
 /* inner player screens */
@@ -33,7 +38,7 @@
 	left: 0;
 	height: 100%;
 	width: 100%;
-	background-color: #05222a;
+	background-color: #003041;
 	overflow: hidden;
 	box-sizing: border-box;
 }
@@ -77,7 +82,7 @@
 		color: #ef7716;
 		width: 100%;
 		text-align: center;
-		background-color: #05222a;
+		background-color: #003041;
 	}
 
 		.pc-playerStartScreen .pc-loadingIndicatorLayout span {
@@ -154,7 +159,6 @@
 /* page */
 .pc-page {
 	height: 100%;
-	width: 100%;
 	position: absolute;
 	font-size: 10px;
 }

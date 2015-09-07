@@ -93,8 +93,8 @@ PocketCode.Ui.merge({
                 //TODO: override this in the individual controls
             },
             dispose: function () {
-                PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.TextNode.prototype.dispose(this);
+                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
+                SmartJs.Ui.TextNode.prototype.dispose.call(this);
             }
         });
 
@@ -128,8 +128,8 @@ PocketCode.Ui.merge({
                 //TODO: override this in the individual controls
             },
             dispose: function () {
-                PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.Control.prototype.dispose(this);
+                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
+                SmartJs.Ui.Control.prototype.dispose.call(this);
             }
         });
 
@@ -181,7 +181,7 @@ PocketCode.Ui.merge({
             /*override*/
             dispose: function () {
                 this._enableBrowserGestures();
-                SmartJs.Ui.Viewport.prototype.dispose(this);    //call super()
+                SmartJs.Ui.Viewport.prototype.dispose.call(this);    //call super()
             },
         });
 

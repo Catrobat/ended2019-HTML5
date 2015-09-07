@@ -87,11 +87,11 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     //methods
     PlayerPageView.prototype.merge({
-        _initPageLayout: function() {
-            //this.appendChild(this._viewport); //TODO: add a view and not the controller
-            //this.appendChild(this._toolbar);
-            // this.appendChild(this._startScreen);
-        },
+        //_initPageLayout: function() {
+        //    //this.appendChild(this._viewport); //TODO: add a view and not the controller
+        //    //this.appendChild(this._toolbar);
+        //    // this.appendChild(this._startScreen);
+        //},
         /* override */    //this is a test->remove this
         //show: function () {
         //    //?

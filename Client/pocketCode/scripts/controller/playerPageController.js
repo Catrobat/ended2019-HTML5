@@ -178,11 +178,27 @@ PocketCode.PlayerPageController = (function () {
         //_load: function () {
 
         //},
-        loadProject: function (jsonProject) {
-            //this._gameEngine.loadProject(jsonProject);
-        },
+        //loadProject: function (jsonProject) {
+        //    //this._gameEngine.loadProject(jsonProject);
+        //},
         _showScreenshotDialog: function (image) {
             alert('todo: show screenshot dialog');
+        },
+        dispose: function () {
+            this._pauseProject();
+            SmartJs.Ui.Window.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
+            if (this._gameEngine) {
+                //unbind existing project
+                this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
+                this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
+                this._gameEngine.onSpriteChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine = undefined;
+            }
+            this._playerViewport.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+            //this._playerViewport.dispose();
+            PocketCode.BaseController.prototype.dispose.call(this);
         },
     });
 

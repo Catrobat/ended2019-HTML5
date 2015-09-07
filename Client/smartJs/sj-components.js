@@ -10,8 +10,8 @@ SmartJs.Components = {
     Application: (function () {
         Application.extends(SmartJs.Core.EventTarget);
 
-        function Application() {
-            this._viewport = new SmartJs.Ui.Viewport();
+        function Application(viewport) {
+            this._viewport = viewport;
 
             this._onConnectionStatusChange = new SmartJs.Event.Event(this);
             this._onError = new SmartJs.Event.Event(this);
@@ -47,6 +47,13 @@ SmartJs.Components = {
             _errorHandler: function (error, fileName, lineNo) {
                 //console.log('SmartJs.Components.Application: global error: ' + error + ', ' + fileName + ', ' + lineNo);
                 this._onError.dispatchEvent();
+            },
+            dispose: function () {
+                this._removeDomListener(window, 'offline', this._offlineHandler);
+                this._removeDomListener(window, 'online', this._onlineHandler);
+                this._removeDomListener(window, 'error', this._errorHandler);
+                if (this._viewport)
+                    this._viewport.dispose();
             },
         });
 

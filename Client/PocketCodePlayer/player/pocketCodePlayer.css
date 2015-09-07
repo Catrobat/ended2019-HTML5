@@ -31,7 +31,7 @@
     overflow: hidden;
 }
     .pc-webOverlay * {
-        background: none;
+        /*background: none;*/
         border: 0;
         border-radius: 0;
     }
@@ -40,7 +40,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: #05222a;
+    background-color: #003041;
     -moz-opacity: 0.92;
     opacity: 0.92;
     filter: alpha(opacity = 92);
@@ -140,6 +140,7 @@
     border: none;
     fill: #A9DCF1;
     outline: none;
+    background: none;
 }
 
     .pc-webButton:active {
@@ -187,7 +188,7 @@
     overflow: hidden;
     font-size: 10px;
     font-family: sans-serif;
-    background-color: #05222a;
+    background-color: #003041;
     box-sizing: border-box;
 }
 
@@ -269,6 +270,6 @@
 
     .pc-liProgressStyle div {
         display: table-cell;
-        border: solid 0.2em #05222a;
+        border: solid 0.2em #003041;
         width: 2.5em;
     }

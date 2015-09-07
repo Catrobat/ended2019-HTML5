@@ -186,8 +186,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //var scaling = Math.min(this.height / oh, this.width / oh);
             this._scaling = scaling;
             var canvas = this._canvas;
-            var cw = Math.floor(ow * scaling),
-                ch = Math.floor(oh * scaling);
+            var cw = Math.ceil(ow * scaling),
+                ch = Math.ceil(oh * scaling);
             //canvas.width = cw;
             //canvas.height = ch;
             canvas.setDimensions(cw, ch);

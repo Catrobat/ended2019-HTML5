@@ -69,6 +69,10 @@ PocketCode.I18nProvider = (function (propObject) {
             //this._onLanguageChange.dispatch({languageCode: this._languageCode, countryCode: this._countryCode, name: 'clear name from dict'});
             //this._onDirectionChange.dispatch({direction: PocketCode.Ui.Direction.LTR OR PocketCode.Ui.Direction.RTL});
         },
+        /* override */
+        dispose: function () {
+            //static class: cannot be disposed
+        },
     });
 
     return I18nProvider;

@@ -48,12 +48,23 @@ PocketCode.Web = {
 				};
 			},
 			_addDomListener: function (target, eventName, eventHandler) {
-				var handler = eventHandler.bind(this);
-				target.addEventListener(eventName, handler, false);
-				return handler;
+			    var _self = this;
+			    var handler = function (e) {
+			        e = e || {};
+			        e.stopPropagation();
+			        return eventHandler.call(_self, e);
+			    };
+			    if (target.addEventListener)
+			        target.addEventListener(eventName, handler, false);
+			    else
+			        target.attachEvent('on' + eventName, handler);
+			    return handler;
 			},
 			_removeDomListener: function (target, eventName, eventHandler) {
-				target.removeEventListener(eventName, eventHandler, false);
+			    if (target.removeEventListener)
+			        target.removeEventListener(eventName, eventHandler, false);
+			    else
+			        target.detachEvent('on' + eventName, eventHandler);
 			},
 			bindF11: function () {
 				if (this.supported && !this.isBrowserFullscreen()) {
@@ -239,30 +250,45 @@ PocketCode.Web = {
 			//this._touchMoveHandler = undefined;
 
 			//bind events
-			if (window.addEventListener) {
-				window.addEventListener('resize', this._onResizeHandler.bind(this), false);
-				this.closeButton.addEventListener('click', this._hide.bind(this), false);
-				this.fullscreenButton.addEventListener('click', this._toggleFullscreenHandler.bind(this), false);
-				this.muteButton.addEventListener('click', this._toggleMuteHandler.bind(this), false);
-			}
-			else {
-				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
-				this.closeButton.attachEvent('onclick', this._hide.bind(this));
-				this.fullscreenButton.attachEvent('onclick', this._toggleFullscreenHandler.bind(this));
-				this.muteButton.attachEvent('onclick', this._toggleMuteHandler.bind(this));
-			}
+			this._addDomListener(window, 'resize', this._onResizeHandler);
+			//this._addDomListener(this.closeButton, 'click', this._close);
+			this._addDomListener(this.fullscreenButton, 'click', this._toggleFullscreenHandler);
+			//this._addDomListener(this.muteButton, 'click', this._toggleMuteHandler);
+			//if (window.addEventListener) {
+			//	window.addEventListener('resize', this._onResizeHandler.bind(this), false);
+			//	this.closeButton.addEventListener('click', this._hide.bind(this), false);
+			//	this.fullscreenButton.addEventListener('click', this._toggleFullscreenHandler.bind(this), false);
+			//	this.muteButton.addEventListener('click', this._toggleMuteHandler.bind(this), false);
+			//}
+			//else {
+			//	window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
+			//	this.closeButton.attachEvent('onclick', this._hide.bind(this));
+			//	this.fullscreenButton.attachEvent('onclick', this._toggleFullscreenHandler.bind(this));
+			//	this.muteButton.attachEvent('onclick', this._toggleMuteHandler.bind(this));
+			//}
 		}
 
 		WebOverlay.prototype = {
-			_addDomListener: function (target, eventName, eventHandler) {
-				var handler = eventHandler.bind(this);
-				target.addEventListener(eventName, handler, false);
-				return handler;
-			},
-			_removeDomListener: function (target, eventName, eventHandler) {
-				target.removeEventListener(eventName, eventHandler, false);
-			},
-			_onResizeHandler: function (e) {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var _self = this;
+		        var handler = function (e) {
+		            e = e || {};
+		            e.stopPropagation();
+		            return eventHandler.call(_self, e);
+		        };
+		        if (target.addEventListener)
+		            target.addEventListener(eventName, handler, false);
+		        else
+		            target.attachEvent('on' + eventName, handler);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        if (target.removeEventListener)
+		            target.removeEventListener(eventName, eventHandler, false);
+		        else
+		            target.detachEvent('on' + eventName, eventHandler);
+		    },
+		    _onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
@@ -281,15 +307,15 @@ PocketCode.Web = {
 					w = h / hwr;
 				}
 
-				style.width = w + 'px';
-				style.height = h + 'px';
+				style.width = Math.ceil(w) + 'px';
+				style.height = Math.ceil(h) + 'px';
 			},
 			_toggleFullscreenHandler: function (e) {
 				PocketCode.Web.FullscreenApi.toggleFullscreen();
 			},
-			_toggleMuteHandler: function (e) {
-				console.log('TODO: trigger event to notify application');
-			},
+			//_toggleMuteHandler: function (e) {
+			//	console.log('TODO: trigger event to notify application');
+			//},
 			appendSplash: function (splashScreen) {
 				this._splashScreen = splashScreen;
 				this.viewportContainer.appendChild(splashScreen._dom);
@@ -318,7 +344,7 @@ PocketCode.Web = {
 				if (this._splashScreen)
 					this._splashScreen.show();  //init size
 			},
-			_hide: function () {
+			hide: function () {
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
 				this._removeDomListener(document, 'touchend', this._touchEndHandler);
 				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
@@ -337,7 +363,7 @@ PocketCode.Web = {
 				this.hwRatio = ratio;
 				//set the css min-height/min-width property according to the ratio & min-height: 450px
 				var style = this.viewportContainer.style;
-				style.minWidth = (450 / ratio) + 'px';
+				style.minWidth = Math.ceil(450 / ratio) + 'px';
 				//update UI
 				this._onResizeHandler();
 			},
@@ -667,14 +693,30 @@ PocketCode.Web = {
 	PlayerInterface: new ((function () {
 		function PlayerInterface() {
 			this._domLoaded = false;
-			if (window.addEventListener)
-				window.addEventListener('load', this._initOnLoad.bind(this), false);
-			else
-				window.attachEvent('onload', this._initOnLoad.bind(this));
+			this._addDomListener(window, 'load', this._initOnLoad);
 		}
 
 		PlayerInterface.prototype = {
-			_initOnLoad: function () {
+		    _addDomListener: function (target, eventName, eventHandler) {
+		        var _self = this;
+		        var handler = function (e) {
+		            e = e || {};
+		            e.stopPropagation();
+		            return eventHandler.call(_self, e);
+		        };
+		        if (target.addEventListener)
+		            target.addEventListener(eventName, handler, false);
+		        else
+		            target.attachEvent('on' + eventName, handler);
+		        return handler;
+		    },
+		    _removeDomListener: function (target, eventName, eventHandler) {
+		        if (target.removeEventListener)
+		            target.removeEventListener(eventName, eventHandler, false);
+		        else
+		            target.detachEvent('on' + eventName, eventHandler);
+		    },
+		    _initOnLoad: function () {
 				this._domLoaded = true;
 				this._splashScreen = new PocketCode.Web.SplashScreen();
 				this._loader = new PocketCode.Web.ResourceLoader(PocketCode.Web.resources);
@@ -698,6 +740,8 @@ PocketCode.Web = {
 
 				//Desktop: UI
 				var ol = new PocketCode.Web.WebOverlay();
+				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
+				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
 				this._webOverlay = ol;
 
 				ol.appendSplash(this._splashScreen);
@@ -732,7 +776,8 @@ PocketCode.Web = {
 				this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
-				this._splashScreen.hide();
+			    this._splashScreen.hide();
+			    this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 			},
 			_applicationRatioChangetHandler: function (e) {
 				if (this._webOverlay)
@@ -745,6 +790,18 @@ PocketCode.Web = {
 				this._splashScreen.setProgress(current, total);
 				if (current === total)
 					this._initApplication();
+			},
+			_muteHandler: function (e) {
+
+			},
+			_closeHandler: function () {
+			    this._webOverlay.hide();
+			    this._projectId = undefined;
+			    this._rfc3066 = undefined;
+			    this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+			    this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+			    this._player.dispose();
+			    this._player = undefined;
 			},
 		}
 		return PlayerInterface;

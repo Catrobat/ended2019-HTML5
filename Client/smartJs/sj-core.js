@@ -46,10 +46,12 @@ SmartJs.Core.Component = (function () {
             for (var prop in this) {
                 if (!this.hasOwnProperty(prop))
                     continue;
-                if (protoDispose && typeof this[prop] === 'function')
+                if (typeof this[prop] === 'function')
                     continue;
+                //if (protoDispose && typeof this[prop] === 'function')
+                //    continue;
 
-                if (this[prop] && this[prop].dispose && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) {
+                if (this[prop] && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) { //&& this[prop].dispose
                     this[prop].dispose();
                 }
 
@@ -61,7 +63,7 @@ SmartJs.Core.Component = (function () {
                 //else alert('_disposing found');
             }
             var _proto = Object.getPrototypeOf(this);
-            if (_proto.__dispose)
+            if (typeof _proto.__dispose === 'function')
                 _proto.__dispose(true);
 
             //if (!protoDispose)
@@ -70,6 +72,7 @@ SmartJs.Core.Component = (function () {
             //delete this;  //objects references (this) cannot be deleted or set to undefined
         },
         dispose: function () {
+            console.log(this.objClassName);
             this.__dispose();
             delete this.constructor;
             //delete this.constructor;// = undefined;
@@ -136,12 +139,18 @@ SmartJs.Core.EventTarget = (function () {
                 e.merge(args);
                 return eventHandler.call(_self, e);
             };
-            target.addEventListener(eventName, handler, false);
+            if (target.addEventListener)
+                target.addEventListener(eventName, handler, false);
+            else
+                target.attachEvent('on' + eventName, handler);
             return handler;
         },
 
         _removeDomListener: function (target, eventName, eventHandler) {
-            target.removeEventListener(eventName, eventHandler, false);
+            if (target.removeEventListener)
+                target.removeEventListener(eventName, eventHandler, false);
+            else
+                target.detachEvent('on' + eventName, eventHandler);
         },
     });
 

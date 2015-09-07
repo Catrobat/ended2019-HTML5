@@ -114,8 +114,8 @@ Object.defineProperty(Array.prototype, 'remove', { enumerable: false });
  */
 Array.prototype.dispose = function () {
 
-    for (var i in this) {
-        if (this[i] && this[i].dispose && typeof this[i].dispose === 'function') {
+    for (var i = this.length - 1; i >= 0; i--) {// in this) {
+        if (this[i] && typeof this[i].dispose === 'function') { //&& this[i].dispose 
             this[i].dispose();
         }
     }

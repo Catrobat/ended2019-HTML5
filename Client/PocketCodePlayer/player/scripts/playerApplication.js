@@ -14,30 +14,33 @@ PocketCode.PlayerApplicationMode = {
 };
 
 PocketCode.PlayerApplication = (function () {
-    PlayerApplication.extends(SmartJs.Components.Application);
+    PlayerApplication.extends(SmartJs.Components.Application, false);
 
     function PlayerApplication(viewportContainer, rfc3066) {
+        var vp = new PocketCode.Ui.Viewport();
+        vp.hide();
+        SmartJs.Components.Application.call(this, vp);
 
         this._pages = {
             player: new PocketCode.PlayerPageController(),
         };
         this._currentPage = this._pages.player;
+        vp.loadPage(this._currentPage.view);
 
         //this._viewportContainer = viewportContainer || document.body;
-        this._vp = new PocketCode.Ui.Viewport();
-        this._vp.hide();
-        this._vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
+        //this._viewport = new PocketCode.Ui.Viewport();
+        //this._viewport.hide();
+        vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
 
         this._project = new PocketCode.GameEngine();
         this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
         this._currentProjectId = undefined;
         //set project in page controller
         this._currentPage.project = this._project;
-        this._vp.loadPage(this._currentPage.view);
         //this._playerPageController = new PocketCode.PlayerPageController();
 
-        //if (rfc3066)  //TODO:
-        //    this._rfc3066 = rfc3066;
+        if (rfc3066)  //TODO:
+            this._rfc3066 = rfc3066;
         //else
         //    this._initI18nProvider;
 
@@ -99,29 +102,41 @@ PocketCode.PlayerApplication = (function () {
         _projectLoadingErrorHandler: function(e) {
             alert("loading failed: cross origin error");
         },
-        _projectDetailsRequestLoadHandler: function(e) {
+        _projectDetailsRequestLoadHandler: function (e) {
+            if (this._disposed)
+                return;
             var json = e.target.responseJson;
             this._onInit.dispatchEvent();
-            this._vp.show();
+            this._viewport.show();
             this._requestProject(this._currentProjectId);
         },
         _projectDetailsRequestErrorHandler: function (e) {
+            if (this._disposed)
+                return;
             this._onInit.dispatchEvent();
-            this._vp.show();
+            this._viewport.show();
             console.log('ERROR project details: ' + e);
         },
-        _projectRequestLoadHandler: function(e) {
-            var json = e.target.responseJson;
-            this._project.loadProject(json);
-        },
-        _projectRequestErrorHandler: function(e) {
-            console.log('ERROR project: ' + e);
-        },
-        _requestProjectDetails: function(projectId) {
+        _requestProjectDetails: function (projectId) {
             var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
             req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestLoadHandler, this));
             req.onError.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestErrorHandler, this));
             PocketCode.Proxy.send(req);
+        },
+        _projectRequestLoadHandler: function (e) {
+            if (this._disposed)
+                return;
+            var json = e.target.responseJson;
+            if (json.header && json.header.device) {
+                var device = json.header.device;
+                this._onHWRatioChange.dispatchEvent({ratio: device.screenHeight / device.screenWidth });
+            }
+            //this._project.loadProject(json);
+        },
+        _projectRequestErrorHandler: function(e) {
+            if (this._disposed)
+                return;
+            console.log('ERROR project: ' + e);
         },
         _requestProject: function(projectId) {
             var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });//, imgDataMax: 0 });
@@ -183,6 +198,9 @@ PocketCode.PlayerApplication = (function () {
         //    to.showView();
         //},
         loadProject: function (projectId) {
+            if (this._projectLoaded)    //prevent loading more than once
+                return;
+            this._projectLoaded = true;
 
             //check browser compatibility
             var comp = true;
@@ -206,7 +224,7 @@ PocketCode.PlayerApplication = (function () {
             this._currentProjectId = projectId;
             this._requestProjectDetails(projectId);
             //add viewport to DOM
-            //this._vp.addToDom(this._viewportContainer);
+            //this._viewport.addToDom(this._viewportContainer);
 
             //download project details
 
@@ -237,6 +255,15 @@ PocketCode.PlayerApplication = (function () {
             //test: set ratio
             //if (this._webOverlay)
             //    this._webOverlay.setHWRatio(16/9);
+        },
+        dispose: function () {
+            this._currentPage = undefined;
+            for (var page in this._pages)
+                this._pages[page].dispose();
+
+            this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+            this._project.dispose();// = undefined;//.dispose();
+            SmartJs.Components.Application.prototype.dispose.call(this);    //call super()
         },
     });
 

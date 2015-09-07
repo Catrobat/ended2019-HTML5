@@ -154,7 +154,7 @@ SmartJs.Ui.Window = (function () {  //static class
                 if (e.type in hidden)
                     this._visible = false;
                 else
-                    this._visible = e.target[this._hiddenProperty] ? false : true;//true;	//default
+                    this._visible = document[this._hiddenProperty] === true ? false : true;//true;	//default
             //}
             this._onVisibilityChange.dispatchEvent({ visible: this._visible }.merge(e));
         },
@@ -367,6 +367,8 @@ SmartJs.Ui.merge({
             },
             _innerHeight: {
                 get: function () {
+                    if (this.__container && this.__container !== this)
+                        return this.__container._innerHeight;
                     if (!this.rendered)
                         return 0;
                     var _style = window.getComputedStyle(this._dom);
@@ -415,6 +417,8 @@ SmartJs.Ui.merge({
             },
             _innerWidth: {
                 get: function () {
+                    if (this.__container && this.__container !== this)
+                        return this.__container._innerWidth;
                     if (!this.rendered)
                         return 0;
 
@@ -657,6 +661,7 @@ SmartJs.Ui.merge({
                 style.display = this._styleBeforeHide || '';
                 if (this._parent)
                     this._parent.onLayoutChange.dispatchEvent({}, this);
+                this.verifyResize(this);
             },
 
             dispose: function () {
@@ -665,13 +670,20 @@ SmartJs.Ui.merge({
                 else if (this.rendered)    //in DOM but no parent: rootElement (viewport)
                     this._dom.parentNode.removeChild(this._dom);
 
+                //this._onResize.dispose();
+                //this._onLayoutChange.dispose();
+
                 //dispose childs first to avoid DOM level recursion error 
                 //(deleting this._dom will delete all _dom sub elements as well)
-                var childs = this._childs;
-                if (childs) {
-                    for (var i = 0, l = childs.length; i < l; i++)
-                        childs[i].dispose();
-                }
+                //var childs = this._childs;
+                //if (childs) {
+                //    for (var i = childs.length - 1; i >= 0; i--) {
+                //        childs[i].dispose();
+                //        childs.remove(childs[i]);
+                //    }
+                //}
+                if (this._childs)
+                    this._childs.dispose();
                 SmartJs.Core.EventTarget.prototype.dispose.call(this);  //super.dispose();
             },
 
@@ -708,20 +720,20 @@ SmartJs.Ui.merge({
                 },
             },
             /* override */
-            _innerWidth: {
-                get: function () {
-                    if (!this.rendered || !this.__container)
-                        return 0;
-
-                    var _style = window.getComputedStyle(this.__container._dom);
-                    var width = this.__container._dom.clientWidth;
-                    width -= parseInt(_style.paddingLeft) || 0;
-                    width -= parseInt(_style.paddingRight) || 0;
-                    return width;
-                },
-                //enumerable: true,
-                //configurable: true,
-            },
+            //_innerWidth: {
+            //    get: function () { 
+            //        if (this.__container !== this)
+            //            return this.__container._innerWidth;
+            //        return SmartJs.Ui.Control.prototype._innerWidth.call(this);
+            //    },
+            //},
+            //_innerHeight: {
+            //    get: function () {
+            //        if (this.__container !== this)
+            //            return this.__container._innerHeight;
+            //        return SmartJs.Ui.Control.prototype._innerHeight.call(this);
+            //    },
+            //},
         });
 
         ContainerControl.prototype.merge({
@@ -743,9 +755,15 @@ SmartJs.Ui.merge({
                 return this.__container._replaceChild(existingUiC, newUiC);
             },
             removeChild: function (uiControl) {
-                return this.__container._removeChild(uiControl);
+                return this._removeChild(uiControl);
             },
-            removeAll: function() {
+            _removeChild: function (uiControl, suppressResizeEvent) {
+                if (this.__container !== this)
+                    this.__container._removeChild(uiControl, suppressResizeEvent);
+                else
+                SmartJs.Ui.Control.prototype._removeChild.call(this, uiControl, suppressResizeEvent);
+            },
+            removeAll: function () {
                 var cont = this.__container;
                 for (var i = 0, l = cont._childs.length; i < l; i++)
                     cont.removeChild(cont._childs[i]);
@@ -754,6 +772,11 @@ SmartJs.Ui.merge({
                 var cont = this.__container;
                 for (var i = 0, l = cont._childs.length; i < l; i++)
                     cont._childs[i].dispose();
+            },
+            dispose: function () {
+                if (this.__container && this.__container !== this)
+                    this.__container.dispose();
+                SmartJs.Ui.Control.prototype.dispose.call(this);
             },
         });
 
@@ -787,21 +810,24 @@ SmartJs.Ui.merge({
                 var parent = parent || document.body;
                 parent.appendChild(this._dom);
                 //this._parentContainer = parent;
+                this.onResize.dispatchEvent();
             },
             dispose: function () {
+                //if (this._disposed)
+                //    return;
                 this._window.onResize.removeEventListener(this._resizeListener);
                 SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
             },
 
-            /*verifyResize: function (caller) {
-                if (this.hidden || !this.rendered) return;
-                var size = this._cachedSize;
+            //verifyResize: function (caller) {
+            //    if (this.hidden || !this.rendered) return;
+            //    var size = this._cachedSize;
 
-                // console.log('VP:', this.height, size.height);
-                if (size.height !== this.height || size.width !== this.width)
-                    this.onResize.dispatchEvent({ caller: caller });
+            //    // console.log('VP:', this.height, size.height);
+            //    if (size.height !== this.height || size.width !== this.width)
+            //        this.onResize.dispatchEvent({ caller: caller });
 
-            },*/
+            //},
 
         });
 

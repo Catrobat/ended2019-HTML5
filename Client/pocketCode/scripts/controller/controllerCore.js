@@ -3,6 +3,7 @@
 'use strict';
 
 PocketCode.BaseController = (function () {
+    BaseController.extends(SmartJs.Core.EventTarget);
 
     function BaseController(view) {
         if (!(view instanceof SmartJs.Ui.Control))
@@ -31,6 +32,9 @@ PocketCode.BaseController = (function () {
             this._view.hide();
         },
         updateViewState: function (viewState) { },  //TODO: ???
+        //dispose: function () {
+        //    this._view.dispose();
+        //},
     });
 
     return BaseController;
@@ -56,6 +60,10 @@ PocketCode.PageController = (function () {
         //    this._view.hide();
         //},
         //updateViewState: function (viewState) { },
+        //dispose: function () {
+        //    this._view.dispose(); //the view can already be disposed or will calling the base class
+        //    SmartJs.Ui.Control.prototype.dispose.call(this);
+        //},
     });
 
     return PageController;

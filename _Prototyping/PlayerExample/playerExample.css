@@ -5,7 +5,7 @@
 	margin: 0px;
 	box-sizing: border-box;
 	background-color: #05222a;
-	/*overflow: hidden;*/
+	overflow: hidden;
 }
 
 /*.canvas-container {
