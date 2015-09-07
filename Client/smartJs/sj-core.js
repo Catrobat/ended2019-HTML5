@@ -72,7 +72,6 @@ SmartJs.Core.Component = (function () {
             //delete this;  //objects references (this) cannot be deleted or set to undefined
         },
         dispose: function () {
-            console.log(this.objClassName);
             this.__dispose();
             delete this.constructor;
             //delete this.constructor;// = undefined;

@@ -71,9 +71,9 @@ var runTests = function () {
     //offsets = ih.getImageTrimOffsets(img3, 0.5, 0, true, true, true, true);
 
     offsets = ih.getImageTrimOffsets(img9, 1, 30, /*false, false, */true, true, true, true);
-    console.log(offsets);
+    //console.log(offsets);
     offsets = ih.getImageTrimOffsets(img9, 1, 30, /*true, true, */true, true, true, true);
-    console.log(offsets);
+    //console.log(offsets);
 
     var imgObject6 = ih.adjustCenterAndTrim(img6);//, 0.5);
     document.body.appendChild(imgObject6.image);

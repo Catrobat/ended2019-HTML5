@@ -798,6 +798,8 @@ PocketCode.Web = {
 			    this._webOverlay.hide();
 			    this._projectId = undefined;
 			    this._rfc3066 = undefined;
+			    if (!this._player)  //close before initialize
+			        return;
 			    this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 			    this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
 			    this._player.dispose();

@@ -634,8 +634,8 @@ SmartJs.Ui.merge({
                     throw new Error('invalid argument: uiControl, expected: instance of SmartJs.Ui.Control or SmartJs.Ui.TextNode');
 
                 if (uiControl._parent !== this) return;
-
                 uiControl._parent = undefined;
+                if (uiControl._disposed) return;
 
                 if (this._childs.remove(uiControl) > 0) {  //found in Array
                     this._dom.removeChild(uiControl._dom);
@@ -709,6 +709,10 @@ SmartJs.Ui.merge({
         }
 
         Object.defineProperties(ContainerControl.prototype, {
+            //__container: {
+            //    value: this,
+            //    writable: true,
+            //},
             _container: {
                 set: function (value) {
                     if (!(value instanceof SmartJs.Ui.Control))
@@ -758,7 +762,7 @@ SmartJs.Ui.merge({
                 return this._removeChild(uiControl);
             },
             _removeChild: function (uiControl, suppressResizeEvent) {
-                if (this.__container !== this)
+                if (this.__container && this.__container !== this)
                     this.__container._removeChild(uiControl, suppressResizeEvent);
                 else
                 SmartJs.Ui.Control.prototype._removeChild.call(this, uiControl, suppressResizeEvent);
@@ -778,6 +782,11 @@ SmartJs.Ui.merge({
                     this.__container.dispose();
                 SmartJs.Ui.Control.prototype.dispose.call(this);
             },
+            //verifyResize: function () {
+            //    if (this.__container && this.__container !== this)
+            //        this.__container.verifyResize(this);
+            //    SmartJs.Ui.Control.prototype.verifyResize.call(this);
+            //}
         });
 
         return ContainerControl;

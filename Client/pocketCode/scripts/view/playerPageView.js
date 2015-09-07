@@ -6,10 +6,10 @@
 'use strict';
 
 PocketCode.Ui.PlayerPageView = (function () {
-    PlayerPageView.extends(PocketCode.Ui.PageView);
+    PlayerPageView.extends(PocketCode.Ui.PageView, false);
 
     function PlayerPageView() {//playerViewportView) {
-
+        PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
         this._header.hide();
         this._footer.hide();
 

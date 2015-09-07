@@ -19,6 +19,7 @@
 .pc-playerViewport button {
 	border: 0;
 	border-radius: 0;
+	display: block;
 	padding: 0;
 	margin: 0;
 	background: none;
@@ -162,7 +163,7 @@
 	position: absolute;
 	font-size: 10px;
 }
-.pc-page, .pc-pageHeader, .pc-pageBody, .pc-pageFooter {
+.pc-page, .pc-pageHeader, .pc-pageBodyLayout, .pc-pageBody, .pc-pageFooter {
 	width: 100%;
 }
 
@@ -170,8 +171,8 @@
 	height: 4.8em;
 	border-bottom: solid 1px #385F6E;
 	background-color: #003041;
-	display: table;
-	border-spacing: 0;
+	/*display: table;
+	*/border-spacing: 0;
 }
 /*	.pc-pageHeader div {
 		display: table-cell;
@@ -199,8 +200,9 @@
 		min-width: 4.8em;
 	}
 
-.pc-pageBody {
+.pc-pageBodyLayout, .pc-pageBody {
 	position: relative;
+	height: 100%;
 }
 
 .pc-pageFooter {
@@ -209,7 +211,7 @@
 	background-color: #003041;/*#01485F;*/
 	position: absolute;
 	bottom: 0;
-	display: table;
+	/*display: table;*/
 }
 
 
@@ -318,7 +320,7 @@
 .pc-playerMenuV .pc-playerMenuPlayOverlay {
 	height: 9.2em;
 	width: 3em;
-	left: 9.4em;
+	left: 9.37em;
 	top: 50%;
 	margin-top: -4.6em;
 }

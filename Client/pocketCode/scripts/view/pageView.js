@@ -22,7 +22,9 @@ PocketCode.Ui.PageView = (function () {
 
         //define body as inner container: override
         this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBody' });  //TODO: style really needed?
-        this._appendChild(this._container);
+        this._bodyLayout = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBodyLayout' });
+        this._bodyLayout.appendChild(this._container);
+        this._appendChild(this._bodyLayout);
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-pageFooter' });
         this._appendChild(this._footer);
 
@@ -53,7 +55,20 @@ PocketCode.Ui.PageView = (function () {
             // console.log(e);
             //this.height = this.height;   //width/height is defined as 100% -> has to be set as px valiu to enablel page transitions
             //this.width = this.width;
-            this._container.height = this.height - this._header.height - this._footer.height;
+            //this._container.height = this.height - this._header.height - this._footer.height;
+            var style = this._bodyLayout.style,
+                hh = this._header.hidden,
+                fh = this._footer.hidden;
+
+            if (!hh && !fh)
+                style.paddingBottom = (this._header.height + this._footer.height) + 'px';
+            else if (hh && fh)
+                style.paddingBottom = '0';
+            else if (hh)
+                style.paddingBottom = this._footer.height + 'px';
+            else if (fh)
+                style.paddingBottom = this._header.height + 'px';
+            this._container.verifyResize(this);
         },
         hideHeader: function () {
             this._header.hide();

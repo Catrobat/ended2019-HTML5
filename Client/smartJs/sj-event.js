@@ -100,6 +100,8 @@ SmartJs.Event = {
                 }
             },
             dispose: function () {
+                if (this._disposed)
+                    return;
                 //clear cross reference: prevent dispose of 'linked' objects
                 this.target = undefined;
                 this._listeners = undefined;

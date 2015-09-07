@@ -25,7 +25,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //events
         this._onScalingChanged = new SmartJs.Event.Event(this);
 
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+        this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 100); }.bind(this), this));
         this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
 
         //test
@@ -171,7 +172,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //methods
     PlayerViewportView.prototype.merge({
-        _resizeHandler: function () {
+        _resizeHandler: function (e) {
             var w = this.width,// || window.innerWidth;
                 h = this.height,// || window.innerHeight; // TODO fix this, height stays 0
                 ow = this._originalWidth,
@@ -301,6 +302,13 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         clear: function () {
             this._canvas.clear();
+        },
+        dispose: function () {
+            this._onScalingChanged.dispose();// = new SmartJs.Event.Event(this);
+
+            this._onResize.dispose();//.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+            this._canvas.onAfterRender.dispose();//.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+
         }
     });
 
