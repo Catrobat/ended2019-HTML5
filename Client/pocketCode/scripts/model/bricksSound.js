@@ -74,7 +74,7 @@ PocketCode.Bricks.merge({
         }
 
         ChangeVolumeBrick.prototype._execute = function () {
-            this._soundManager.changeVolume(this._value.calculate());
+            this._soundManager.volume += this._value.calculate();   //changeVolume(this._value.calculate());
             this._return();
         };
 

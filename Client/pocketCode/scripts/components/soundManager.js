@@ -23,6 +23,7 @@ PocketCode.SoundManager = (function () {
         this._muted = false;
 
         this._activeSounds = [];
+        this._registeredSounds = [];
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
@@ -51,6 +52,11 @@ PocketCode.SoundManager = (function () {
             set: function (value) {
                 if (typeof value !== 'number')
                     throw new Error('invalid argument: volume expects argument type: number');
+
+                if (value < 0)
+                    value = 0;
+                else if (value > 100)
+                    value = 100;
                 this._volume = value / 100;
                 //TODO: update instances
                 //createjs.Sound.setVolume(value / 100);
@@ -117,22 +123,24 @@ PocketCode.SoundManager = (function () {
 
     //methods
     SoundManager.prototype.merge({
+        _removeAllSounds: function () {  //TODO: remove this._registeredSounds only
+            createjs.Sound.removeAllSounds();
+            createjs.Sound.removeAllEventListeners();
+        },
         loadSounds: function (resourceBaseUrl, sounds) {
             if (!(sounds instanceof Array))
                 throw new Error('sounds expects type Array');
             if (!this.supported)
                 return false;
 
-            createjs.Sound.removeAllSounds();
-            createjs.Sound.removeAllEventListeners();
-
+            this._removeAllSounds();
             var soundsFormatted = [];
             this._sizeOfAllSounds = 0;
             for (var i = 0, l = sounds.length; i < l; i++) {
-                if (!sounds[i].url || !sounds[i].id) {
-                    throw new Error('Sounddata is missing id or url');
+                if (!sounds[i].url || !sounds[i].id || !sounds[i].size) {
+                    throw new Error('Sounddata is missing id, url or size');
                 }
-                soundsFormatted[i] = { id: this._id + sounds[i].id, src: sounds[i].url, data: this._maxInstancesOfSameSound, size: sounds[i].size };
+                soundsFormatted[i] = { id: this._id + sounds[i].id, src: resourceBaseUrl + sounds[i].url, data: this._maxInstancesOfSameSound, size: sounds[i].size };
                 this._sizeOfAllSounds += sounds[i].size;
             }
 
@@ -140,20 +148,20 @@ PocketCode.SoundManager = (function () {
             this._onLoadingProgress.dispatchEvent({ progress: percentLoaded });
             //TODO: dispatch onLoad after all files loaded.. filesize == 0? ->return?
 
-            createjs.Sound.addEventListener('fileload', function (e) {
+            createjs.Sound.addEventListener('fileload', createjs.proxy(function (e) {
                 var loadedFile = soundsFormatted.filter(function (sound) { return sound.src === e.src; });
                 if (loadedFile.length > 0) {
                     percentLoaded += loadedFile[0].size / this._sizeOfAllSounds * 100;
                     this._onLoadingProgress.dispatchEvent({ progress: percentLoaded });
                 }
                 //TODO: dispatch onLoad after all files loaded.. make sure to handle rounding errors when using == 100
-            }.bind(this));
+            }, this));
 
-            createjs.Sound.addEventListener('fileerror', function (e) {
+            createjs.Sound.addEventListener('fileerror', createjs.proxy(function (e) {
                 this._onLoadingError.dispatchEvent({ src: e.src });
-            }.bind(this));
+            }, this));
 
-            createjs.Sound.registerSounds(soundsFormatted, resourceBaseUrl);
+            createjs.Sound.registerSounds(soundsFormatted, '');
         },
 
         loadSoundFile: function (id, url) { //TODO: Benny?
@@ -193,33 +201,35 @@ PocketCode.SoundManager = (function () {
                 return false;
 
             var soundId = SmartJs.getNewId();
-            createjs.Sound.on("fileload", function (e) {
+            createjs.Sound.on("fileload", createjs.proxy(function (e) {
                 var id = this._id + soundId;
                 if (e.id === id)
                     this.startSound(id);
-            }.bind(this));
+            }, this));
             createjs.Sound.registerSound({ id: this._id + soundId, src: url });
 
             return true;
         },
 
         pauseSounds: function () {
-            for (var i = 0; i < this._activeSounds.length; i++) {
-                if (this._activeSounds[i].paused === false) {
-                    this._activeSounds[i].paused = true;
+            var sounds = this._activeSounds;
+            for (var i = 0, l = sounds.length; i < l; i++) {
+                if (sounds[i].paused === false) {
+                    sounds[i].paused = true;
 
                     //fixes rounding errors in the framework that occurs when sounds are paused before 1ms
-                    if (this._activeSounds[i].position < 1) {
-                        this._activeSounds[i].position = 0;
+                    if (sounds[i].position < 1) {
+                        sounds[i].position = 0;
                     }
                 }
             }
         },
 
         resumeSounds: function () {
-            for (var i = 0; i < this._activeSounds.length; i++) {
-                if (this._activeSounds[i].paused === true) {
-                    this._activeSounds[i].paused = false;
+            var sounds = this._activeSounds;
+            for (var i = 0, l = sounds.length; i < l; i++) {
+                if (sounds[i].paused === true) {
+                    sounds[i].paused = false;
                 }
             }
         },
@@ -228,14 +238,17 @@ PocketCode.SoundManager = (function () {
             if (!this.supported)
                 return false;
 
-            createjs.Sound.stop();
+            //createjs.Sound.stop();
+            var sounds = this._activeSounds;
+            for (var i = 0, l = sounds.length; i < l; i++)
+                sounds[i].stop();
             this._activeSounds = [];
             return true;
         },
 
-        changeVolume: function (byValue) {
-            createjs.Sound.setVolume(createjs.Sound.getVolume() + byValue / 100.0);
-        },
+        //changeVolume: function (byValue) {
+        //    createjs.Sound.setVolume(createjs.Sound.getVolume() + byValue / 100.0);
+        //},
 
         dispose: function () {
             createjs.Sound.removeAllSounds();

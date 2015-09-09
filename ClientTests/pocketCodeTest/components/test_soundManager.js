@@ -26,17 +26,17 @@ QUnit.test("SoundManager", function (assert) {
     assert.equal(soundManager.volume, 20, "volume setter");
 
     soundManager.volume = 25;
-    soundManager.changeVolume(1);
-    assert.ok(soundManager.volume.toFixed(2) == 26.00 && createjs.Sound.getVolume().toFixed(2) == 0.26, "Volume changed and converted correctly(+)");
+    soundManager.volume += 1;//.changeVolume(1);
+    assert.ok(soundManager.volume.toFixed(2) == 26.00 && soundManager._volume.toFixed(2) == 0.26, "Volume changed and converted correctly(+)");
 
-    soundManager.changeVolume(-5);
-    assert.ok(soundManager.volume.toFixed(2) == 21.00 && createjs.Sound.getVolume().toFixed(2) == 0.21, "Volume changed and converted correctly(-)");
+    soundManager.volume += -5;//changeVolume(-5);
+    assert.ok(soundManager.volume.toFixed(2) == 21.00 && soundManager._volume.toFixed(2) == 0.21, "Volume changed and converted correctly(-)");
 
     soundManager.volume = -1;
-    assert.ok(soundManager.volume === 0 && createjs.Sound.getVolume() === 0, "Volume shows correct behaviour with negative input values");
+    assert.ok(soundManager.volume === 0 && soundManager._volume === 0, "Volume shows correct behaviour with negative input values");
 
     soundManager.volume = 110;
-    assert.ok(soundManager.volume === 100 && createjs.Sound.getVolume() === 1, "Volume shows correct behaviour with too large input values");
+    assert.ok(soundManager.volume === 100 && soundManager._volume === 1, "Volume shows correct behaviour with too large input values");
     soundManager.muted = false;
 
     assert.throws(function () { soundManager.muted = 2; }, Error, "ERROR: wrong mute() parameter");
