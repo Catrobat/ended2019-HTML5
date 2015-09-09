@@ -20,7 +20,8 @@ PocketCode.merge({
     ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
         STOPPED: 0,
         RUNNING: 1,
-        PAUSED: 3  //and running
+        PAUSED: 3,  //and running
+        ERROR: 4,
     },
 
     isPlayerCompatible: function () {

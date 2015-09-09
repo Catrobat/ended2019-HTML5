@@ -19,7 +19,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._axesVisible = false;
         this._scaling = 1;
 
-        this._canvas = new PocketCode.Ui.Canvas({ className: 'pc-canvas' });
+        this._canvas = new PocketCode.Ui.Canvas();//{ className: 'pc-canvas' });
         this._appendChild(this._canvas);
 
         //events
@@ -304,12 +304,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clear();
         },
         dispose: function () {
-            this._onScalingChanged.dispose();// = new SmartJs.Event.Event(this);
-
-            this._onResize.dispose();//.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
-            this._canvas.onAfterRender.dispose();//.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
-
-        }
+            this.onResize.dispose();
+            //override: to make sure a view is disposed by it's controller
+        },
     });
 
     return PlayerViewportView;

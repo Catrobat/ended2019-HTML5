@@ -89,7 +89,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._axesButton);
 
             this.executionState = PocketCode.ExecutionState.STOPPED;
-            this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
+            this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
 
             //events
@@ -101,6 +101,9 @@ PocketCode.Ui.merge({
             executionState: {
                 set: function (value) {
                     switch (value) {
+                        case PocketCode.ExecutionState.ERROR:
+                            //TODO: disable all buttons? only play + pause?
+                            break;
                         case PocketCode.ExecutionState.RUNNING:
                             this._playButton.hide();
                             this._pauseButton.show();
@@ -211,6 +214,17 @@ PocketCode.Ui.merge({
                     this._overlayBtn.show();
                 }
                 this._menuContainer.show();
+            },
+            dispose: function () {
+                this._onResize.dispose();
+                this._backButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
+                this._restartButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.RESTART }); }, this));
+                this._playButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PLAY }); }, this));
+                this._pauseButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE }); }, this));
+                this._screenshotButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.SCREENSHOT }); }, this));
+                this._axesButton.onClick.removeEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
+
+                PocketCode.Ui.I18nControl.prototype.dispose.call(this);
             },
         });
 

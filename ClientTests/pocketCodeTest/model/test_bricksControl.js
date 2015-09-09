@@ -456,9 +456,9 @@ QUnit.test("ForeverBrick", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
 
-    var b = new PocketCode.Bricks.ForeverBrick("device", "sprite");
+    var b = new PocketCode.Bricks.ForeverBrick("device", "sprite", 24);
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._minLoopCycleTime === 24, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.ForeverBrick, "instance check");
     assert.ok(b.objClassName === "ForeverBrick", "objClassName check");
 
@@ -685,9 +685,9 @@ QUnit.test("RepeatBrick", function (assert) {
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
+    var b = new PocketCode.Bricks.RepeatBrick("device", sprite, 24, { timesToRepeat: nTimes });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Bricks.RepeatBrick, "instance check");
     assert.ok(b.objClassName === "RepeatBrick", "objClassName check");
 
@@ -763,7 +763,7 @@ QUnit.test("RepeatBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Bricks.RepeatBrick("device", sprite, { timesToRepeat: nTimes });
+    var b2 = new PocketCode.Bricks.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
     var tb2 = new TestBrick2("device", "sprite");
     tb2.loopDelay = true;
     bca = [];

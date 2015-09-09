@@ -424,9 +424,9 @@ QUnit.test("LoopBrick", function (assert) {
     assert.expect(4);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var b = new PocketCode.Bricks.LoopBrick("device", "sprite");
+    var b = new PocketCode.Bricks.LoopBrick("device", "sprite", 24);
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._minLoopCycleTime === 24, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Bricks.LoopBrick, "instance check");
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 

@@ -3,7 +3,7 @@
 'use strict';
 
 PocketCode.PlayerPageController = (function () {
-    PlayerPageController.extends(PocketCode.BaseController, false);
+    PlayerPageController.extends(PocketCode.PageController, false);
 
     function PlayerPageController() {
         //set defautl values and update as soon as project is loaded
@@ -11,7 +11,7 @@ PocketCode.PlayerPageController = (function () {
         //this._screenWidth = 100;
 
         //var viewportView = new PocketCode.Ui.PlayerViewportView(this._screenWidth, this._screenHeight); //TODO: shouldn't the controller get these settings?
-        PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerPageView());//this._playerViewport.view));
+        PocketCode.PageController.call(this, new PocketCode.Ui.PlayerPageView());//this._playerViewport.view));
         this._playerViewport = new PocketCode.PlayerViewportController();//viewportView);
         this._view.insertAt(0, this._playerViewport.view);
         this._axesVisible = false;
@@ -185,9 +185,9 @@ PocketCode.PlayerPageController = (function () {
             alert('todo: show screenshot dialog');
         },
         dispose: function () {
-            this._pauseProject();
+            //this._pauseProject();
             SmartJs.Ui.Window.onVisibilityChange.removeEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
-            if (this._gameEngine) {
+            if (this._gameEngine && !this._gameEngine._disposing && !this._gameEngine._disposed) {
                 //unbind existing project
                 this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                 this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
@@ -198,7 +198,7 @@ PocketCode.PlayerPageController = (function () {
             }
             this._playerViewport.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
             //this._playerViewport.dispose();
-            PocketCode.BaseController.prototype.dispose.call(this);
+            PocketCode.PageController.prototype.dispose.call(this);
         },
     });
 

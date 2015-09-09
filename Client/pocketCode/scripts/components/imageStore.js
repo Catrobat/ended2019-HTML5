@@ -69,6 +69,9 @@ PocketCode.ImageStore = (function () {
             }
             this._resourceLoader.load(images);
         },
+        abortLoading: function() {
+            this._resourceLoader.abortLoading();
+        },
         _resourceLoaderProgressHandler: function (e) {
             var imgObject = e.file,
                 imgElement = e.element,
@@ -226,6 +229,12 @@ PocketCode.ImageStore = (function () {
                     return this._flipXBoundary(boundary);
                 return boundary;
             }
+        },
+        dispose: function () {
+            this.abortLoading();
+            this._resourceLoader.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoaderProgressHandler, this));
+
+            SmartJs.Core.EventTarget.prototype.dispose.call(this);
         },
     });
 

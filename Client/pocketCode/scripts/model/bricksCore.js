@@ -106,6 +106,12 @@ PocketCode.Bricks = {
                         bricks[i].stop();
                 }
             },
+            dispose: function () {
+                this.stop();
+                var bricks = this._bricks;
+                for (var i = 0, l = bricks.length; i < l; i++)
+                    bricks[i].dispose();
+            },
         });
 
         return BrickContainer;

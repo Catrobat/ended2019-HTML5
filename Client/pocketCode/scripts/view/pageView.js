@@ -28,7 +28,7 @@ PocketCode.Ui.PageView = (function () {
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-pageFooter' });
         this._appendChild(this._footer);
 
-        this.onResize.addEventListener(new SmartJs.Event.EventListener(this._handleResize, this));
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(this._handleResize, this));
     }
 
     //properties
@@ -85,6 +85,10 @@ PocketCode.Ui.PageView = (function () {
         showFooter: function () {
             this._footer.show();
             this._handleResize();
+        },
+        dispose: function () {
+            this._onResize.removeEventListener(new SmartJs.Event.EventListener(this._handleResize, this));
+            //override: to make sure a view is disposed by it's controller
         },
     });
 

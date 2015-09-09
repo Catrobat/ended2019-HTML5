@@ -170,7 +170,7 @@ PocketCode.Web = {
 			this.hPixelOffset = 80;
 			this.vPixelOffset = 17;
 			this.vpMinHeight = 225;
-			//this.vpMinWidth = 135;
+		    //this.vpMinWidth = 135;
 
 			//init DOM
 			//viewportContainer
@@ -247,7 +247,9 @@ PocketCode.Web = {
 			//this._touchEndHandler = undefined;
 			//this._touchCancelHandler = undefined;
 			//this._touchLeaveandler = undefined;
-			//this._touchMoveHandler = undefined;
+		    //this._touchMoveHandler = undefined;
+			//this.hide();
+			this.hidden = true;
 
 			//bind events
 			this._addDomListener(window, 'resize', this._onResizeHandler);
@@ -321,6 +323,7 @@ PocketCode.Web = {
 				this.viewportContainer.appendChild(splashScreen._dom);
 			},
 			show: function () {
+			    this.hidden = false;
 				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
 				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
@@ -345,7 +348,8 @@ PocketCode.Web = {
 					this._splashScreen.show();  //init size
 			},
 			hide: function () {
-				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+			    this.hidden = true;
+			    this._removeDomListener(document, 'touchstart', this._touchStartHandler);
 				this._removeDomListener(document, 'touchend', this._touchEndHandler);
 				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
@@ -597,6 +601,7 @@ PocketCode.Web = {
 				return suppressErrorAlert;
 			},
 			startLoading: function () {
+			    this._loadingAborted = false;
 				var size = 0;
 				var files = this._files;
 
@@ -607,6 +612,9 @@ PocketCode.Web = {
 					var file = files[0];
 					this._requestFile(this._root, file, this._onFileLoadHandler, this._onErrorHandler);
 				}
+			},
+			abortLoading: function () {
+			    this._loadingAborted = true;
 			},
 			_requestFile: function (root, file, successHandler, errorHandler) {
 				//check for exising tag: prevent duplicated files due to simultanous loaders
@@ -661,7 +669,8 @@ PocketCode.Web = {
 			_onFileLoadHandler: function () {
 				if (this._errorOccured)
 					return;
-
+				if (this._loadingAborted)
+				    return;
 				var files = this._files;
 				var l = files.length;
 				if (this._loadingFileIdx++ < l - 1) {
@@ -768,6 +777,8 @@ PocketCode.Web = {
 				this._loader.startLoading();
 			},
 			_initApplication: function () {
+			    if (this._webOverlay.hidden)
+			        return;
 				//the whole framework is already loaded
 				var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
 				this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);//this._splashScreen, this._webOverlay);
@@ -778,6 +789,7 @@ PocketCode.Web = {
 			_applicationInitHandler: function () {
 			    this._splashScreen.hide();
 			    this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
+			    this._webOverlay.muteButton.disabled = false;
 			},
 			_applicationRatioChangetHandler: function (e) {
 				if (this._webOverlay)
@@ -787,23 +799,40 @@ PocketCode.Web = {
 				this._splashScreen.showError();
 			},
 			_loaderOnProgress: function (current, total) {
+			    //console.log(current + ', ' + total);
 				this._splashScreen.setProgress(current, total);
 				if (current === total)
 					this._initApplication();
 			},
 			_muteHandler: function (e) {
-
+			    var btn = this._webOverlay.muteButton;
+			    var muted = this._player.toggleMuteSounds();
+			    if (muted)  //true
+			        btn.className += ' pc-webButtonChecked ';
+			    else
+			        btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
 			},
 			_closeHandler: function () {
-			    this._webOverlay.hide();
-			    this._projectId = undefined;
-			    this._rfc3066 = undefined;
+			    this._loader.abortLoading();
+			    try {
+			        this._webOverlay.hide();
+			        var btn = this._webOverlay.muteButton;
+			        btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+			        btn.disabled = true;
+			        this._projectId = undefined;
+			        this._rfc3066 = undefined;
+			    }
+			    catch (e) { }   //silent catch: avoid errors onClose during init
+
 			    if (!this._player)  //close before initialize
 			        return;
-			    this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-			    this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-			    this._player.dispose();
-			    this._player = undefined;
+			    try {
+			        this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+			        this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+			        this._player.dispose();
+			        //this._player = undefined;
+			    }
+			    catch (e) { }   //silent catch: avoid errors onClose during init
 			},
 		}
 		return PlayerInterface;

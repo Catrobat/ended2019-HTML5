@@ -17,7 +17,7 @@ PocketCode.GameEngine = (function () {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
         this._executionState = PocketCode.ExecutionState.STOPPED;
-        this._minLoopCycleTime = 25; //ms        //TODO:
+        this._minLoopCycleTime = 20; //ms        //TODO:
         this._resourcesLoaded = false;
         this._spritesLoaded = false;
         this.resourceSize = 0;
@@ -99,7 +99,7 @@ PocketCode.GameEngine = (function () {
                 for (var i = 0, l = sounds.length; i < l; i++)
                     this.__sounds[sounds[i].id] = sounds[i];
 
-                this._soundManager.init(sounds);
+                this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
             //enumerable: false,
             //configurable: true,
@@ -172,6 +172,8 @@ PocketCode.GameEngine = (function () {
     GameEngine.prototype.merge({
 
         loadProject: function (jsonProject) {
+            if (this._disposing || this._disposed)
+                return;
             if (this._executionState !== PocketCode.ExecutionState.STOPPED)
                 this.stopProject();
 
@@ -229,7 +231,7 @@ PocketCode.GameEngine = (function () {
             if (bricksCount <= 0)
                 this._spritesLoaded = true;
 
-            this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount);
+            this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
 
             this._background = this._spriteFactory.create(jsonProject.background);//new PocketCode.Model.Sprite(this, jsonProject.background);
@@ -247,8 +249,8 @@ PocketCode.GameEngine = (function () {
             var initialScaling = 1;
             //TODO: (commented out due to testing) ): make sure to use the screen params + pixelRatio if needed as the window may not be maximized on desktops
             //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);   -> this is private now
-
-            this._imageStore.loadImages(jsonProject.resourceBaseUrl, jsonProject.images, initialScaling);//, imageSize); -> size can be calculated inside
+            this._resourceBaseUrl = jsonProject.resourceBaseUrl;
+            this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images, initialScaling);//, imageSize); -> size can be calculated inside
 
             //var img = jsonProject.images;
             //var images = [];
@@ -281,6 +283,7 @@ PocketCode.GameEngine = (function () {
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
                 this._spritesLoaded = true;
+                this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
                     this.projectReady = true;
                     this._onLoad.dispatchEvent();
@@ -689,6 +692,22 @@ PocketCode.GameEngine = (function () {
         /* override */
         dispose: function () {
             this.stopProject();
+
+            this._imageStore.onLoadingProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+            this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
+            this._imageStore.abortLoading();
+            //this._imageStore.dispose();
+
+            this._soundManager.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+            this._soundManager.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
+            this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            //this._soundManager.stopAllSounds();   //already stopped in stopProject()
+            //this._soundManager.dispose();
+
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            }
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },

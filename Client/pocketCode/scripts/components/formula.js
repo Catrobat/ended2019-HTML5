@@ -4,6 +4,7 @@
 'use strict';
 
 PocketCode.Formula = (function () {
+    //Formula.extends(SmartJs.Core.Component);
 
     function Formula(device, sprite, jsonFormula) {
 
@@ -75,6 +76,10 @@ PocketCode.Formula = (function () {
             catch (e) {
                 throw new Error('Error parsing formula: ' + e.message);
             }
+        },
+        dispose: function () {
+            this._device = undefined;
+            this._sprite = undefined;
         },
     });
 

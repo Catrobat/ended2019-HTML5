@@ -890,8 +890,14 @@ PocketCode.Model.Sprite = (function () {
         /* override */
         dispose: function () {
             this.stopScripts();
-            //make sure the game engine is not disposed
-            this._gameEngine = undefined;
+            
+            this._gameEngine = undefined;   //make sure the game engine is not disposed
+            for (var i = 0, l = this._bricks.length; i < l; i++) {  //remove handlers
+                var brick = this._bricks[i];    
+                if (brick.onExecuted)  //supported by all root container bricks
+                    brick.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
+            }
+
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },

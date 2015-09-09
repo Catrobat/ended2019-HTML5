@@ -23,6 +23,7 @@ PocketCode.Bricks.merge({
             //this._bricks; type of PocketCode.Bricks.BrickContainer
             //listen to project start
             //project.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._programStartHandler, this));
+            this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
@@ -46,6 +47,10 @@ PocketCode.Bricks.merge({
             //resume: function () {
             //	this._bricks.resume();
             //},
+            dispose: function () {
+                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                PocketCode.Bricks.RootContainerBrick.prototype.dispose.call(this);
+            },
         });
 
         return ProgramStartBrick;
@@ -60,6 +65,7 @@ PocketCode.Bricks.merge({
 
             this._action = propObject.action;
             //listen to 'when tabbed'
+            this._onAction = actionEvent;
             actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
         }
 
@@ -81,6 +87,10 @@ PocketCode.Bricks.merge({
             //resume: function () {
             //	this._bricks.resume();
             //},
+            dispose: function () {
+                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
+                PocketCode.Bricks.RootContainerBrick.prototype.dispose.call(this);
+            },
         });
 
         return WhenActionBrick;
@@ -347,7 +357,7 @@ PocketCode.Bricks.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Bricks.LoopBrick, false);
 
-        function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
+        function RepeatBrick(device, sprite, minLoopCycleTime, propObject) {
             PocketCode.Bricks.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
