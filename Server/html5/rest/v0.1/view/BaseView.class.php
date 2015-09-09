@@ -74,11 +74,6 @@ abstract class BaseView
 
   private function writeResponseHeader()
   {
-    //insert headers to enable CORS
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET, POST");
-    header("Access-Control-Allow-Headers: X-Requested-With");
-
     if(isset($_SERVER["HTTP_ACCEPT_ENCODING"]) && !(strpos($_SERVER["HTTP_ACCEPT_ENCODING"], "gzip") === false)
        && extension_loaded('zlib')
        && self::GZIP_SUPPORTED

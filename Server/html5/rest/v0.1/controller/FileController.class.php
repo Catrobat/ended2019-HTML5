@@ -29,10 +29,6 @@ class FileController extends BaseController
 
   public function get()
   {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET");
-    header("Access-Control-Allow-Headers: X-Requested-With");
-
     // Variable Initialization
     $text = "";
     if(isset($_GET['text']))
@@ -71,10 +67,6 @@ class FileController extends BaseController
 
   public function post()
   {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: POST");
-    header("Access-Control-Allow-Headers: X-Requested-With");
-
     // Variable Initialization
     $text = "";
     if(isset($_POST['text']))
