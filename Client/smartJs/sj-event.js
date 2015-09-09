@@ -35,6 +35,8 @@ SmartJs.Event = {
                 return false;
             },
             removeEventListener: function (listener) {
+                if (this._disposed)
+                    return false;
                 if (!(listener instanceof SmartJs.Event.EventListener))
                     throw new Error('invalid argument: expected listener type: SmartJs.Event.EventListener');
 
@@ -100,8 +102,8 @@ SmartJs.Event = {
                 }
             },
             dispose: function () {
-                if (this._disposed)
-                    return;
+                //if (this._disposed)
+                //    return;
                 //clear cross reference: prevent dispose of 'linked' objects
                 this.target = undefined;
                 this._listeners = undefined;

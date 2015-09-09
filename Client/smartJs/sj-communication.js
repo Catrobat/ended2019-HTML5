@@ -626,6 +626,8 @@ SmartJs.Communication.merge({
                 }
             },
             _requestFile: function (fileIndex) {
+                if (this._disposed)
+                    return;
                 var oHead = document.head || document.getElementsByTagName("head")[0];
                 var file = this._registeredFiles[fileIndex];
 
@@ -678,6 +680,10 @@ SmartJs.Communication.merge({
                         //this._onError.dispatchEvent({ target: this._registeredFiles[fileIndex], error: 'invalid fileType: ' + file.type });
                         throw new Error('invalid fileType: ' + file.type);
                 }
+            },
+            dispose: function () {
+                this.abortLoading();
+                SmartJs.Core.EventTarget.prototype.dispose.call(this);
             },
         });
 

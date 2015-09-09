@@ -682,9 +682,15 @@ SmartJs.Ui.merge({
                 //        childs.remove(childs[i]);
                 //    }
                 //}
+
+                
                 if (this._childs)
+                //    this._childs.length = 0;   //do not dispose the ui DOM chain, as controls may be bound and reused
                     this._childs.dispose();
-                SmartJs.Core.EventTarget.prototype.dispose.call(this);  //super.dispose();
+
+                //this._dom = undefined;
+                this._disposed = true;
+                //SmartJs.Core.EventTarget.prototype.dispose.call(this);  //super.dispose();
             },
 
         });

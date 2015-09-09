@@ -52,8 +52,9 @@ SmartJs.Components = {
                 this._removeDomListener(window, 'offline', this._offlineHandler);
                 this._removeDomListener(window, 'online', this._onlineHandler);
                 this._removeDomListener(window, 'error', this._errorHandler);
-                if (this._viewport)
-                    this._viewport.dispose();
+                //if (this._viewport)
+                //    this._viewport.dispose();
+                SmartJs.Core.EventTarget.prototype.dispose.call(this);
             },
         });
 

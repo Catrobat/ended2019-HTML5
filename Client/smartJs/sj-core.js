@@ -36,45 +36,32 @@ SmartJs.Core.Component = (function () {
 
     Component.prototype.merge({
         __dispose: function (protoDispose) {
-            //delete this._super;
-            //delete this._superCtor;
-
-            //protoDispose = protoDispose || false;
             if (this._disposing || this._disposed) return;     //already disposed
             this._disposing = true;
 
             for (var prop in this) {
-                if (!this.hasOwnProperty(prop))
+                if (typeof this[prop] === 'function' || !this.hasOwnProperty(prop))
                     continue;
-                if (typeof this[prop] === 'function')
-                    continue;
-                //if (protoDispose && typeof this[prop] === 'function')
-                //    continue;
 
-                if (this[prop] && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) { //&& this[prop].dispose
+                if (this[prop] && typeof this[prop].dispose === 'function' && (!this[prop]._disposing || !this[prop]._disposed)) {
                     this[prop].dispose();
                 }
 
-                //try {
-                //    this[prop] = undefined;
-                //} catch (e) { };    //catch error on readOnly properties
-                if (prop !== '_disposing')
+                if (typeof prop !== 'function' && prop !== '_disposing')
                     delete this[prop];
-                //else alert('_disposing found');
             }
             var _proto = Object.getPrototypeOf(this);
             if (typeof _proto.__dispose === 'function')
                 _proto.__dispose(true);
 
-            //if (!protoDispose)
-            //    this._disposed = true;
+            if (!protoDispose)
+                this._disposed = true;
             delete this._disposing;
             //delete this;  //objects references (this) cannot be deleted or set to undefined
         },
         dispose: function () {
             this.__dispose();
-            delete this.constructor;
-            //delete this.constructor;// = undefined;
+            delete this.constructor;// = undefined;
             this._disposed = true;
         },
         _mergeProperties: function (propertyObject, object) {//, root) {
