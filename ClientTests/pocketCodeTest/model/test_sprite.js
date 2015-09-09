@@ -46,8 +46,8 @@ QUnit.test("Sprite", function (assert) {
     assert.throws(function () { sprite.looks = undefined; }, Error, "ERROR: setting looks");
     var looks = [{ id: 1 }, { id: 2 }];
     sprite.looks = looks;
-    assert.equal(sprite._looks, looks, "looks setter");
-    assert.equal(sprite.currentLook, looks[0], "current look getter");
+    assert.ok(sprite._looks[0].imageId === looks[0].id && sprite._looks[1].imageId === looks[1].id, "looks setter");
+    assert.equal(sprite.currentLook.imageId, looks[0].id, "current look getter");
 
     assert.equal(sprite.size, 100, "size (percentage) initial");
     assert.equal(sprite.visible, true, "visibility initial");
@@ -195,14 +195,14 @@ QUnit.test("Sprite", function (assert) {
 
     var bricksMatch = true;
     for (var i = 0, length = jsonSprite.bricks.length; i < length; i++) {
-        if (testSprite._bricks[i].id !== jsonSprite.bricks[i].id)
+        if (testSprite._bricks[i].imageId !== jsonSprite.bricks[i].id)
             bricksMatch = false;
     }
     assert.ok(bricksMatch, "Bricks set correctly.");
 
     var looksMatch = true;
     for (var i = 0, length = jsonSprite.looks.length; i < length; i++) {
-        if (testSprite._looks[i].id !== jsonSprite.looks[i].id)
+        if (testSprite._looks[i].imageId !== jsonSprite.looks[i].id)
             looksMatch = false;
     }
     assert.ok(looksMatch, "Looks set correctly.");
@@ -440,18 +440,18 @@ QUnit.test("Sprite", function (assert) {
 
     var look1 = new Object();
     look1.name = "look1";
-    look1.imageId = "first";
+    look1.id = "first";
     var look2 = new Object();
     look2.name = "look2";
-    look2.imageId = "second";
+    look2.id = "second";
     var looks = [];
     looks[0] = look1;
     looks[1] = look2;
     sprite.looks = looks;
-    assert.equal(sprite._looks, looks, "looks setter");
-    assert.ok(sprite._looks[1].name == "look2", "set looks1");
-    assert.ok(sprite._currentLook == looks[0], "set looks2");
-    assert.ok(sprite._currentLook.name == "look1", "set looks3");
+    assert.ok(sprite._looks[0].imageId === looks[0].id && sprite._looks[1].imageId === looks[1].id, "looks setter");
+    assert.equal(sprite._looks[1].name, "look2", "set looks1");
+    assert.equal(sprite._currentLook.imageId, "first", "set looks2");
+    assert.equal(sprite._currentLook.name, "look1", "set looks3");
 
     returnVal = sprite.setLook("first");
     assert.ok(!returnVal, "set already active look: no change");
@@ -468,7 +468,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(lastOnChangeArgs.look !== undefined, "set look event args");
     assert.throws(function () { sprite.setLook("non existing"); }, "ERROR: try to set undefined look");
 
-    sprite.looks = [];
+    sprite._looks = [];
     returnVal = sprite.nextLook();
     assert.ok(!returnVal, "next look on nonexisting look");
 
@@ -482,18 +482,18 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
     assert.ok(returnVal, "next look is set correctly");
 
-    looks.pop();    //only one left
+    sprite._looks.pop();    //only one left
     returnVal = sprite.nextLook();
     assert.ok(!returnVal, "next look if only one is defined");
 
     looks[1] = look2;   //add again
     var look3 = new Object();
     look3.name = "look3";
-    look3.imageId = "third";
+    look3.id = "third";
     looks[2] = look3;
     sprite.looks = looks;
     assert.ok(sprite._currentLook.name == "look1", "current look set back to first after look setter");
-    assert.ok(sprite._looks.length == 3, "looks count increased");
+    assert.equal(sprite._looks.length, 3, "looks count increased");
 
     sprite.setLook("third");
     assert.ok(sprite._currentLook.name == "look3", "next look to last look");
@@ -512,15 +512,15 @@ QUnit.test("Sprite", function (assert) {
     // ********************* start/pause/resume/stop *********************
     //var device = new PocketCode.Device();
     var programAsync = new PocketCode.GameEngine();
-    var brick1 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick1 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     brick1.id = "first";
-    var brick2 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick2 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     //adding a test brick to the internal brick container
-    var testBrick = new PocketCode.Bricks.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 1, right: null, left: null } });
+    var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 1, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
-    var brick3 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    var brick4 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    var brick5 = new PocketCode.Bricks.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick3 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick4 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick5 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;

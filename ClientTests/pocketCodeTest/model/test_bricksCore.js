@@ -13,7 +13,7 @@ QUnit.test("BrickContainer", function (assert) {
     var done3 = assert.async();
     var doneFinal = assert.async();
 
-    var bc = new PocketCode.Bricks.BrickContainer();
+    var bc = new PocketCode.Model.BrickContainer();
     var handler1Called = false;
     var handler1LoopDelay = false;
     var handler1CallId = undefined;
@@ -35,7 +35,7 @@ QUnit.test("BrickContainer", function (assert) {
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
     assert.ok(bc._bricks.length === 0, "brick created and properties set correctly");   //initialized as array
-    assert.ok(bc instanceof PocketCode.Bricks.BrickContainer, "instance check");
+    assert.ok(bc instanceof PocketCode.Model.BrickContainer, "instance check");
 
     var handler2 = function (e) {
         handler1Called = true;
@@ -54,10 +54,10 @@ QUnit.test("BrickContainer", function (assert) {
 
 
     var TestBrick = (function () {
-        TestBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
             this.executed = 0;
         }
 
@@ -72,10 +72,10 @@ QUnit.test("BrickContainer", function (assert) {
     })();
 
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick2(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
             this.executed = 0;
         }
 
@@ -101,10 +101,10 @@ QUnit.test("BrickContainer", function (assert) {
     })();
 
     var TestBrick3 = (function () {
-        TestBrick3.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick3.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick3(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
             this.executed = 0;
         }
 
@@ -118,7 +118,7 @@ QUnit.test("BrickContainer", function (assert) {
         return TestBrick3;
     })();
 
-    bc = new PocketCode.Bricks.BrickContainer([new TestBrick("device", "sprite"), new TestBrick2("device", "sprite"), new TestBrick3("device", "sprite")]);
+    bc = new PocketCode.Model.BrickContainer([new TestBrick("device", "sprite"), new TestBrick2("device", "sprite"), new TestBrick3("device", "sprite")]);
 
     assert.ok(bc._bricks.length === 3, "bricks array loaded");
     assert.throws(function () { bc.execute(l1, 23); }, Error, "ERROR: simple argument error check");
@@ -149,17 +149,17 @@ QUnit.test("BrickContainer", function (assert) {
 
 QUnit.test("BaseBrick", function (assert) {
 
-    var b = new PocketCode.Bricks.BaseBrick("device", "sprite");
+    var b = new PocketCode.Model.BaseBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.BaseBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "BaseBrick", "objClassName check");
 
     var TestBrick = (function () {
-        TestBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        TestBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function TestBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
         }
 
         TestBrick.prototype.merge({
@@ -194,17 +194,17 @@ QUnit.test("BaseBrick", function (assert) {
 
 QUnit.test("ThreadedBrick", function (assert) {
 
-    var b = new PocketCode.Bricks.ThreadedBrick("device", "sprite");
+    var b = new PocketCode.Model.ThreadedBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.ThreadedBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.ThreadedBrick, "instance check");
     assert.ok(b.objClassName === "ThreadedBrick", "objClassName check");
 
     var TestBrick = (function () {
-        TestBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
         }
 
         TestBrick.prototype.merge({
@@ -248,10 +248,10 @@ QUnit.test("SingleContainerBrick", function (assert) {
     assert.expect(12);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var b = new PocketCode.Bricks.SingleContainerBrick("device", "sprite");
+    var b = new PocketCode.Model.SingleContainerBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.SingleContainerBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.SingleContainerBrick, "instance check");
     assert.ok(b.objClassName === "SingleContainerBrick", "objClassName check");
 
     assert.throws(function () { b.bricks = []; }, Error, "ERROR: validating bricks setter");
@@ -267,7 +267,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
-    var cont = new PocketCode.Bricks.BrickContainer();  //empty conatiner
+    var cont = new PocketCode.Model.BrickContainer();  //empty conatiner
     b.bricks = cont;
     b.execute(l1, "sx23");
     assert.ok(handler1Called && !handler1LoopDelay && handler1CallId === "sx23", "call on empty container");
@@ -276,10 +276,10 @@ QUnit.test("SingleContainerBrick", function (assert) {
 
     var bricks = [];
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick2(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
             this.executed = 0;
         }
 
@@ -325,7 +325,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
-    var bc = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    var bc = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
     b.bricks = bc;
 
     assert.equal(b._bricks, bc, "bricks setter");
@@ -347,10 +347,10 @@ QUnit.test("RootContainerBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var b = new PocketCode.Bricks.RootContainerBrick("device", "sprite");
+    var b = new PocketCode.Model.RootContainerBrick("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.RootContainerBrick && b instanceof PocketCode.Bricks.SingleContainerBrick, "instance and inheritance check");
+    assert.ok(b instanceof PocketCode.Model.RootContainerBrick && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "RootContainerBrick", "objClassName check");
 
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
@@ -358,10 +358,10 @@ QUnit.test("RootContainerBrick", function (assert) {
     //advanced tests using brick with delay
     var bricks = [];
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Bricks.ThreadedBrick, false);
+        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
         function TestBrick2(device, sprite) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
             this.executed = 0;
         }
 
@@ -391,7 +391,7 @@ QUnit.test("RootContainerBrick", function (assert) {
     bricks.push(new TestBrick2("", ""));
     bricks.push(new TestBrick2("", ""));
 
-    var bc = new PocketCode.Bricks.BrickContainer(bricks);    //container including bricks
+    var bc = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
     b.bricks = bc;
 
     assert.equal(b._bricks, bc, "bricks setter");
@@ -424,10 +424,10 @@ QUnit.test("LoopBrick", function (assert) {
     assert.expect(4);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var b = new PocketCode.Bricks.LoopBrick("device", "sprite", 24);
+    var b = new PocketCode.Model.LoopBrick("device", "sprite", 24);
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._minLoopCycleTime === 24, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.LoopBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.LoopBrick, "instance check");
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 
     //the only test case we can trigger here is an empty loop due to the fact the return handler is always called from inside a specific loop implementation
@@ -448,10 +448,10 @@ QUnit.test("LoopBrick", function (assert) {
 
 QUnit.test("UnsupportedBrick", function (assert) {
 
-    var b = new PocketCode.Bricks.UnsupportedBrick("device", "sprite", { xml: "xml", brickType: "brickType" });
+    var b = new PocketCode.Model.UnsupportedBrick("device", "sprite", { xml: "xml", brickType: "brickType" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._xml === "xml" && b._brickType === "brickType", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.UnsupportedBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.UnsupportedBrick, "instance check");
     assert.ok(b.objClassName === "UnsupportedBrick", "objClassName check");
 
     var handler1Called = false;

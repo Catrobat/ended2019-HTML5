@@ -492,17 +492,18 @@ QUnit.test("BrickFactory", function (assert) {
     //^^ includes all types of bricks (once!!! take care if this is still correct)
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager([]);
+    var soundMgr = new PocketCode.SoundManager();
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
     program._variables = allBricksProject.variables;
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var minLoopCycleTime = 14;
 
-    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, minLoopCycleTime);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
-    assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount, "properties set correctly");
+    assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount && bf._minLoopCycleTime === 14, "properties set correctly");
 
     var progress = [];
     var progressHandler = function (e) {
@@ -524,7 +525,7 @@ QUnit.test("BrickFactory", function (assert) {
     var soundBricks = [];
     var motionBricks = [];
     var lookBricks = [];
-    var variableBricks = [];
+    var dataBricks = [];
     var otherBricks = [];
 
     //background:
@@ -554,7 +555,7 @@ QUnit.test("BrickFactory", function (assert) {
                 bricks = lookBricks;
                 break;
             case 3:
-                bricks = variableBricks;
+                bricks = dataBricks;
                 break;
         }
 
@@ -592,10 +593,10 @@ QUnit.test("BrickFactory", function (assert) {
     var program = new PocketCode.GameEngine(allBricksProject.id);
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
-    assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount, "properties set correctly");
+    assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount && bf._minLoopCycleTime === 26, "properties set correctly");
 
     var progress = [];
     var progressHandler = function (e) {
@@ -617,7 +618,7 @@ QUnit.test("BrickFactory", function (assert) {
     var soundBricks = [];
     var motionBricks = [];
     var lookBricks = [];
-    var variableBricks = [];
+    var dataBricks = [];
     var otherBricks = [];
 
     //background:
@@ -645,7 +646,7 @@ QUnit.test("BrickFactory", function (assert) {
                 bricks = lookBricks;
                 break;
             case 3:
-                bricks = variableBricks;
+                bricks = dataBricks;
                 break;
         }
 

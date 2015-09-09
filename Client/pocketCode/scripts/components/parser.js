@@ -102,17 +102,17 @@ PocketCode.merge({
 
                 switch (type) {
                     case 'ProgramStartBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
                         break;
 
                     case 'WhenActionBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
                         break;
 
                     case 'BroadcastReceiveBrick':
                     case 'BroadcastBrick':
                     case 'BroadcastAndWaitBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
                     case 'PlaySoundBrick':
@@ -120,28 +120,28 @@ PocketCode.merge({
                     case 'SetVolumeBrick':
                     case 'ChangeVolumeBrick':
                     case 'SpeakBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
                     case 'ForeverBrick':
                     case 'RepeatBrick':
-                        brick = new PocketCode.Bricks[type](this._device, currentSprite, this._soundMgr, this._minLoopCycleTime, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, this._minLoopCycleTime, jsonBrick);
                         break;
 
                     default:
-                        if (PocketCode.Bricks[type])
-                            brick = new PocketCode.Bricks[type](this._device, currentSprite, jsonBrick);
+                        if (PocketCode.Model[type])
+                            brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
                         else {
-                            brick = new PocketCode.Bricks.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                            brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         }
                 }
 
-                if (brick instanceof PocketCode.Bricks.UnsupportedBrick)
+                if (brick instanceof PocketCode.Model.UnsupportedBrick)
                     this._unsupportedBricks.push(brick);
 
 
                 //load sub bricks
-                if (!(brick instanceof PocketCode.Bricks.UnsupportedBrick)) {
+                if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
                     if (jsonBrick.bricks)   //all loops
                         brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
@@ -154,7 +154,7 @@ PocketCode.merge({
                 this._updateProgress();
 
                 //add event listener
-                //if (brick instanceof PocketCode.Bricks.RootContainerBrick) {
+                //if (brick instanceof PocketCode.Model.RootContainerBrick) {
                 //	//TODO: this has to be handled by the brick itself: check if there is a testcast for adding an event handler
                 //}
 
@@ -167,7 +167,7 @@ PocketCode.merge({
                 var bricks = [];
                 for (var i = 0, l = jsonBricks.length; i < l; i++)
                     bricks.push(this.create(currentSprite, jsonBricks[i]));
-                return new PocketCode.Bricks.BrickContainer(bricks);
+                return new PocketCode.Model.BrickContainer(bricks);
             },
             _updateProgress: function () {
                 var progress = 100.0 / this._total * this._parsed;

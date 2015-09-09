@@ -18,10 +18,10 @@ QUnit.test("PlaceAtBrick", function (assert) {
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.PlaceAtBrick(device, sprite, { x: x, y: y });
+    var b = new PocketCode.Model.PlaceAtBrick(device, sprite, { x: x, y: y });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.PlaceAtBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.PlaceAtBrick, "instance check");
     assert.ok(b.objClassName === "PlaceAtBrick", "objClassName check");
 
     //execute
@@ -44,10 +44,10 @@ QUnit.test("SetXBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetXBrick(device, sprite, { value: x });
+    var b = new PocketCode.Model.SetXBrick(device, sprite, { value: x });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.SetXBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.SetXBrick, "instance check");
     assert.ok(b.objClassName === "SetXBrick", "objClassName check");
 
     //execute
@@ -70,10 +70,10 @@ QUnit.test("SetYBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.SetYBrick(device, sprite, { value: y });
+    var b = new PocketCode.Model.SetYBrick(device, sprite, { value: y });
 
     assert.ok(b._device === device && b._sprite === sprite && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.SetYBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.SetYBrick, "instance check");
     assert.ok(b.objClassName === "SetYBrick", "objClassName check");
 
     //execute
@@ -96,10 +96,10 @@ QUnit.test("ChangeXBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeXBrick(device, sprite, { value: x });
+    var b = new PocketCode.Model.ChangeXBrick(device, sprite, { value: x });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.ChangeXBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.ChangeXBrick, "instance check");
     assert.ok(b.objClassName === "ChangeXBrick", "objClassName check");
 
     //execute
@@ -122,10 +122,10 @@ QUnit.test("ChangeYBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.ChangeYBrick(device, sprite, { value: y });
+    var b = new PocketCode.Model.ChangeYBrick(device, sprite, { value: y });
 
     assert.ok(b._device === device && b._sprite === sprite && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.ChangeYBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.ChangeYBrick, "instance check");
     assert.ok(b.objClassName === "ChangeYBrick", "objClassName check");
 
     //execute
@@ -147,10 +147,10 @@ QUnit.test("IfOnEdgeBounceBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Bricks.IfOnEdgeBounceBrick(device, sprite);
+    var b = new PocketCode.Model.IfOnEdgeBounceBrick(device, sprite);
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.IfOnEdgeBounceBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.IfOnEdgeBounceBrick, "instance check");
     assert.ok(b.objClassName === "IfOnEdgeBounceBrick", "objClassName check");
 
     //execute
@@ -173,10 +173,10 @@ QUnit.test("MoveNStepsBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var steps = JSON.parse('{"type":"NUMBER","value":"14","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.MoveNStepsBrick(device, sprite, { steps: steps });
+    var b = new PocketCode.Model.MoveNStepsBrick(device, sprite, { steps: steps });
 
     assert.ok(b._device === device && b._sprite === sprite && b._steps instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.MoveNStepsBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.MoveNStepsBrick, "instance check");
     assert.ok(b.objClassName === "MoveNStepsBrick", "objClassName check");
 
     //execute
@@ -199,10 +199,10 @@ QUnit.test("TurnLeftBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.TurnLeftBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.TurnLeftBrick(device, sprite, { degrees: degrees });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.TurnLeftBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.TurnLeftBrick, "instance check");
     assert.ok(b.objClassName === "TurnLeftBrick", "objClassName check");
 
     //execute
@@ -225,10 +225,10 @@ QUnit.test("TurnRightBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"30","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.TurnRightBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.TurnRightBrick(device, sprite, { degrees: degrees });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.TurnRightBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.TurnRightBrick, "instance check");
     assert.ok(b.objClassName === "TurnRightBrick", "objClassName check");
 
     //execute
@@ -251,10 +251,10 @@ QUnit.test("PointInDirectionBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.PointInDirectionBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.PointInDirectionBrick(device, sprite, { degrees: degrees });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.PointInDirectionBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.PointInDirectionBrick, "instance check");
     assert.ok(b.objClassName === "PointInDirectionBrick", "objClassName check");
 
     //execute
@@ -280,10 +280,10 @@ QUnit.test("PointToBrick", function (assert) {
     program._sprites.push(sprite);
 
 
-    var b = new PocketCode.Bricks.PointToBrick(device, sprite, { spriteId: spriteId });
+    var b = new PocketCode.Model.PointToBrick(device, sprite, { spriteId: spriteId });
 
     assert.ok(b._device === device && b._sprite === sprite && b._spriteId === spriteId, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.PointToBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.PointToBrick, "instance check");
     assert.ok(b.objClassName === "PointToBrick", "objClassName check");
 
     //execute
@@ -315,10 +315,10 @@ QUnit.test("GlideToBrick", function (assert) {
     var y = JSON.parse('{"type":"NUMBER","value":"50","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.GlideToBrick(device, sprite, { x: x, y: y, duration: duration });
+    var b = new PocketCode.Model.GlideToBrick(device, sprite, { x: x, y: y, duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");  // && b._duration === "duration" -> duration is parsed as formula 
-    assert.ok(b instanceof PocketCode.Bricks.GlideToBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.GlideToBrick, "instance check");
     assert.ok(b.objClassName === "GlideToBrick", "objClassName check");
 
     //alert(b._duration.calculate);
@@ -358,7 +358,7 @@ QUnit.test("GlideToBrick", function (assert) {
         this._positionY = y;
     };
 
-    var b2 = new PocketCode.Bricks.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
+    var b2 = new PocketCode.Model.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
 
     var asyncHandler2 = function (e) {
         var end = new Date();
@@ -390,7 +390,7 @@ QUnit.test("GlideToBrick", function (assert) {
     spriteMock2._positionX = -10;
     spriteMock2._positionY = -30;
 
-    var b3 = new PocketCode.Bricks.GlideToBrick(device, spriteMock2, { x: x, y: y, duration: duration });
+    var b3 = new PocketCode.Model.GlideToBrick(device, spriteMock2, { x: x, y: y, duration: duration });
 
     var asyncHandler3 = function (e) {
         //handler not called because the animation is stopped
@@ -444,10 +444,10 @@ QUnit.test("GoBackBrick", function (assert) {
     program._sprites.push(sprite);
     var layers = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.GoBackBrick(device, sprite, { layers: layers });
+    var b = new PocketCode.Model.GoBackBrick(device, sprite, { layers: layers });
 
     assert.ok(b._device === device && b._sprite === sprite && b._layers instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.GoBackBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.GoBackBrick, "instance check");
     assert.ok(b.objClassName === "GoBackBrick", "objClassName check");
 
     //execute
@@ -470,10 +470,10 @@ QUnit.test("ComeToFrontBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     program._sprites.push(sprite);
 
-    var b = new PocketCode.Bricks.ComeToFrontBrick(device, sprite);
+    var b = new PocketCode.Model.ComeToFrontBrick(device, sprite);
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.ComeToFrontBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.ComeToFrontBrick, "instance check");
     assert.ok(b.objClassName === "ComeToFrontBrick", "objClassName check");
 
     //execute
@@ -496,10 +496,10 @@ QUnit.test("VibrationBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var duration = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Bricks.VibrationBrick(device, sprite, { duration: duration });
+    var b = new PocketCode.Model.VibrationBrick(device, sprite, { duration: duration });
 
     assert.ok(b._device === device && b._sprite === sprite && b._duration instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Bricks.VibrationBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.VibrationBrick, "instance check");
     assert.ok(b.objClassName === "VibrationBrick", "objClassName check");
 
     //execute

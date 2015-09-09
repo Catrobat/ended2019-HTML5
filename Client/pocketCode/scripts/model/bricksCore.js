@@ -14,7 +14,10 @@
  *
  */
 
-PocketCode.Bricks = {
+if (!PocketCode.Model)
+    PocketCode.Model = {};
+
+PocketCode.Model.merge({
 
     /**
      * @class BrickContainer: BrickContainer is a Brick object that can contain other Brick(Container)s
@@ -176,13 +179,13 @@ PocketCode.Bricks = {
         return BaseBrick;
     })(),
 
-};
+});
 
 /**
  * @class ThreadedBrick: Thread based type of Brick with unique Id
  */
-PocketCode.Bricks.ThreadedBrick = (function () {
-    ThreadedBrick.extends(PocketCode.Bricks.BaseBrick, false);
+PocketCode.Model.ThreadedBrick = (function () {
+    ThreadedBrick.extends(PocketCode.Model.BaseBrick, false);
     /**
      * Initializes pendingOps
      * @param device
@@ -190,7 +193,7 @@ PocketCode.Bricks.ThreadedBrick = (function () {
      * @constructor
      */
     function ThreadedBrick(device, sprite) {
-        PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        PocketCode.Model.BaseBrick.call(this, device, sprite);
         this._pendingOps = {};
     }
 
@@ -250,8 +253,8 @@ PocketCode.Bricks.ThreadedBrick = (function () {
 /**
  * @class SingleContainerBrick
  */
-PocketCode.Bricks.SingleContainerBrick = (function () {
-    SingleContainerBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+PocketCode.Model.SingleContainerBrick = (function () {
+    SingleContainerBrick.extends(PocketCode.Model.ThreadedBrick, false);
     /**
      * Initializes bricks as a new BrickContainer
      * @param device
@@ -259,19 +262,19 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
      * @constructor
      */
     function SingleContainerBrick(device, sprite) {
-        PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+        PocketCode.Model.ThreadedBrick.call(this, device, sprite);
 
-        this._bricks = new PocketCode.Bricks.BrickContainer([]);
+        this._bricks = new PocketCode.Model.BrickContainer([]);
     }
 
     //properties
     Object.defineProperties(SingleContainerBrick.prototype, {
         bricks: {
             set: function (brickContainer) {
-                if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+                if (brickContainer instanceof PocketCode.Model.BrickContainer)
                     this._bricks = brickContainer;
                 else
-                    throw new Error('invalid argument brickContainer: expected type PocketCode.Bricks.BrickContainer');
+                    throw new Error('invalid argument brickContainer: expected type PocketCode.Model.BrickContainer');
             },
             //enumerable: false,
             //configurable: true,
@@ -312,7 +315,7 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
          * calls "stop()" on bricks and threadedBrick
          */
         stop: function () {
-            PocketCode.Bricks.ThreadedBrick.prototype.stop.call(this);
+            PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
             this._bricks.stop();
         },
     });
@@ -323,8 +326,8 @@ PocketCode.Bricks.SingleContainerBrick = (function () {
 /**
  * @class RootContainerBrick
  */
-PocketCode.Bricks.RootContainerBrick = (function () {
-    RootContainerBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
+PocketCode.Model.RootContainerBrick = (function () {
+    RootContainerBrick.extends(PocketCode.Model.SingleContainerBrick, false);
     /**
      * Initializes onExecuted event
      * @param device
@@ -332,7 +335,7 @@ PocketCode.Bricks.RootContainerBrick = (function () {
      * @constructor
      */
     function RootContainerBrick(device, sprite) {
-        PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
+        PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
 
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -370,7 +373,7 @@ PocketCode.Bricks.RootContainerBrick = (function () {
          */
         execute: function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
+            PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();
             }, this), SmartJs.getNewId());
@@ -380,7 +383,7 @@ PocketCode.Bricks.RootContainerBrick = (function () {
          * calls "pause()" on bricks
          */
         pause: function () {
-            PocketCode.Bricks.SingleContainerBrick.prototype.pause.call(this);
+            PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
             this._executionState = PocketCode.ExecutionState.PAUSED;
         },
         /**
@@ -388,13 +391,13 @@ PocketCode.Bricks.RootContainerBrick = (function () {
          */
         resume: function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            PocketCode.Bricks.SingleContainerBrick.prototype.resume.call(this);
+            PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
         },
         /**
          * calls "stop()" on bricks and threadedBrick
          */
         stop: function () {
-            PocketCode.Bricks.SingleContainerBrick.prototype.stop.call(this);
+            PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
     });
@@ -405,8 +408,8 @@ PocketCode.Bricks.RootContainerBrick = (function () {
 /**
  * @class LoopBrick
  */
-PocketCode.Bricks.LoopBrick = (function () {
-    LoopBrick.extends(PocketCode.Bricks.SingleContainerBrick, false);
+PocketCode.Model.LoopBrick = (function () {
+    LoopBrick.extends(PocketCode.Model.SingleContainerBrick, false);
     /**
      *
      * @param device
@@ -414,10 +417,10 @@ PocketCode.Bricks.LoopBrick = (function () {
      * @constructor
      */
     function LoopBrick(device, sprite, minLoopCycleTime) {
-        PocketCode.Bricks.SingleContainerBrick.call(this, device, sprite);
+        PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
 
         this._minLoopCycleTime = minLoopCycleTime || 20;
-        //this._bricks typeof PocketCode.Bricks.BrickContainer
+        //this._bricks typeof PocketCode.Model.BrickContainer
     }
 
     LoopBrick.prototype.merge({
@@ -511,11 +514,11 @@ PocketCode.Bricks.LoopBrick = (function () {
 /**
  * @class UnsupportedBrick: for bricks which are currently not supported
  */
-PocketCode.Bricks.UnsupportedBrick = (function () {
-    UnsupportedBrick.extends(PocketCode.Bricks.BaseBrick, false);
+PocketCode.Model.UnsupportedBrick = (function () {
+    UnsupportedBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function UnsupportedBrick(device, sprite, propObject) {
-        PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+        PocketCode.Model.BaseBrick.call(this, device, sprite);
 
         this._xml = propObject.xml;
         this._brickType = propObject.brickType;

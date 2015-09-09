@@ -12,15 +12,15 @@
  * @version 1.0
  */
 
-PocketCode.Bricks.merge({
+PocketCode.Model.merge({
 
     ProgramStartBrick: (function () {
-        ProgramStartBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
+        ProgramStartBrick.extends(PocketCode.Model.RootContainerBrick, false);
 
         function ProgramStartBrick(device, sprite, startEvent) {
-            PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
 
-            //this._bricks; type of PocketCode.Bricks.BrickContainer
+            //this._bricks; type of PocketCode.Model.BrickContainer
             //listen to project start
             //project.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._programStartHandler, this));
             this._onStart = startEvent;
@@ -49,7 +49,7 @@ PocketCode.Bricks.merge({
             //},
             dispose: function () {
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
-                PocketCode.Bricks.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
             },
         });
 
@@ -58,10 +58,10 @@ PocketCode.Bricks.merge({
 
 
     WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
+        WhenActionBrick.extends(PocketCode.Model.RootContainerBrick, false);
 
         function WhenActionBrick(device, sprite, actionEvent, propObject) {
-            PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
 
             this._action = propObject.action;
             //listen to 'when tabbed'
@@ -89,7 +89,7 @@ PocketCode.Bricks.merge({
             //},
             dispose: function () {
                 this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
-                PocketCode.Bricks.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
             },
         });
 
@@ -98,10 +98,10 @@ PocketCode.Bricks.merge({
 
 
     WaitBrick: (function () {
-        WaitBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+        WaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function WaitBrick(device, sprite, propObject) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
 
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
         }
@@ -146,21 +146,21 @@ PocketCode.Bricks.merge({
 
 
     BroadcastReceiveBrick: (function () {
-        BroadcastReceiveBrick.extends(PocketCode.Bricks.RootContainerBrick, false);
+        BroadcastReceiveBrick.extends(PocketCode.Model.RootContainerBrick, false);
 
         function BroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Bricks.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
 
             //this._broadcastMgr = broadcastMgr;
             //this._receiveMsgId = propObject.receiveMsgId;
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
-            //this._bricks; type of PocketCode.Bricks.BrickContainer
+            //this._bricks; type of PocketCode.Model.BrickContainer
         }
 
         BroadcastReceiveBrick.prototype.merge({
             _onBroadcastHandler: function (e) {
                 if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-                    PocketCode.Bricks.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
+                    PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
                 }
                 else {
                     //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
@@ -190,10 +190,10 @@ PocketCode.Bricks.merge({
 
 
     BroadcastBrick: (function () {
-        BroadcastBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        BroadcastBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function BroadcastBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
@@ -209,10 +209,10 @@ PocketCode.Bricks.merge({
 
 
     BroadcastAndWaitBrick: (function () {
-        BroadcastAndWaitBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+        BroadcastAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function BroadcastAndWaitBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
@@ -242,10 +242,10 @@ PocketCode.Bricks.merge({
 
 
     NoteBrick: (function () {
-        NoteBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        NoteBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function NoteBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._text = propObject.text;
         }
@@ -259,10 +259,10 @@ PocketCode.Bricks.merge({
 
 
     ForeverBrick: (function () {
-        ForeverBrick.extends(PocketCode.Bricks.LoopBrick, false);
+        ForeverBrick.extends(PocketCode.Model.LoopBrick, false);
 
         function ForeverBrick(device, sprite, minLoopCycleTime) {
-            PocketCode.Bricks.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             //this._bricks = propObject.bricks;
         }
@@ -289,34 +289,34 @@ PocketCode.Bricks.merge({
 
 
     IfThenElseBrick: (function () {
-        IfThenElseBrick.extends(PocketCode.Bricks.ThreadedBrick, false);
+        IfThenElseBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function IfThenElseBrick(device, sprite, propObject) {
-            PocketCode.Bricks.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
-            this._ifBricks = new PocketCode.Bricks.BrickContainer([]);
-            this._elseBricks = new PocketCode.Bricks.BrickContainer([]);
+            this._ifBricks = new PocketCode.Model.BrickContainer([]);
+            this._elseBricks = new PocketCode.Model.BrickContainer([]);
         }
 
         //properties
         Object.defineProperties(IfThenElseBrick.prototype, {
             ifBricks: {
                 set: function (brickContainer) {
-                    if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+                    if (brickContainer instanceof PocketCode.Model.BrickContainer)
                         this._ifBricks = brickContainer;
                     else
-                        throw new Error('invalid argument brickConatiner: expected type PocketCode.Bricks.BrickContainer');
+                        throw new Error('invalid argument brickConatiner: expected type PocketCode.Model.BrickContainer');
                 },
                 //enumerable: false,
                 //configurable: true,
             },
             elseBricks: {
                 set: function (brickContainer) {
-                    if (brickContainer instanceof PocketCode.Bricks.BrickContainer)
+                    if (brickContainer instanceof PocketCode.Model.BrickContainer)
                         this._elseBricks = brickContainer;
                     else
-                        throw new Error('invalid argument brickConatiner: expected type PocketCode.Bricks.BrickContainer');
+                        throw new Error('invalid argument brickConatiner: expected type PocketCode.Model.BrickContainer');
                 },
                 //enumerable: false,
                 //configurable: true,
@@ -344,7 +344,7 @@ PocketCode.Bricks.merge({
                 this._elseBricks.resume();
             },
             stop: function () {
-                PocketCode.Bricks.ThreadedBrick.prototype.stop.call(this);
+                PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
                 this._ifBricks.stop();
                 this._elseBricks.stop();
             },
@@ -355,10 +355,10 @@ PocketCode.Bricks.merge({
 
 
     RepeatBrick: (function () {
-        RepeatBrick.extends(PocketCode.Bricks.LoopBrick, false);
+        RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
         function RepeatBrick(device, sprite, minLoopCycleTime, propObject) {
-            PocketCode.Bricks.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
             this._bricks = propObject.bricks;

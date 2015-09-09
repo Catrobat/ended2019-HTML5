@@ -5,13 +5,13 @@
 /// <reference path="../components/proxy.js" />
 'use strict';
 
-PocketCode.Bricks.merge({
+PocketCode.Model.merge({
 
     PlaySoundBrick: (function () {
-        PlaySoundBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        PlaySoundBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function PlaySoundBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
             this._soundId = propObject.soundId;
@@ -27,10 +27,10 @@ PocketCode.Bricks.merge({
 
 
     StopAllSoundsBrick: (function () {
-        StopAllSoundsBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        StopAllSoundsBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function StopAllSoundsBrick(device, sprite, soundManager) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
         }
@@ -45,10 +45,10 @@ PocketCode.Bricks.merge({
 
 
     SetVolumeBrick: (function () {
-        SetVolumeBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVolumeBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
@@ -64,10 +64,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeVolumeBrick: (function () {
-        ChangeVolumeBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeVolumeBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -83,10 +83,10 @@ PocketCode.Bricks.merge({
 
 
     SpeakBrick: (function () {
-        SpeakBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SpeakBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SpeakBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
             this._text = new PocketCode.Formula(device, sprite, propObject.text);

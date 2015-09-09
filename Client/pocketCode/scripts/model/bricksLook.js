@@ -4,13 +4,13 @@
 /// <reference path="bricksCore.js" />
 'use strict';
 
-PocketCode.Bricks.merge({
+PocketCode.Model.merge({
 
     SetGraphicEffectBrick: (function () {
-        SetGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -25,10 +25,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeGraphicEffectBrick: (function () {
-        ChangeGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -43,13 +43,13 @@ PocketCode.Bricks.merge({
 
 });
 
-PocketCode.Bricks.merge({
+PocketCode.Model.merge({
 
     SetLookBrick: (function () {
-        SetLookBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetLookBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._imageId = propObject.imageId;
         }
@@ -63,10 +63,10 @@ PocketCode.Bricks.merge({
 
 
     NextLookBrick: (function () {
-        NextLookBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        NextLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function NextLookBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
         }
 
@@ -79,10 +79,10 @@ PocketCode.Bricks.merge({
 
 
     SetSizeToBrick: (function () {
-        SetSizeToBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetSizeToBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetSizeToBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
@@ -96,10 +96,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeSizeBrick: (function () {
-        ChangeSizeBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeSizeBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -113,10 +113,10 @@ PocketCode.Bricks.merge({
 
 
     HideBrick: (function () {
-        HideBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        HideBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function HideBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
         }
 
         HideBrick.prototype._execute = function () {
@@ -128,10 +128,10 @@ PocketCode.Bricks.merge({
 
 
     ShowBrick: (function () {
-        ShowBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ShowBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ShowBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
         }
 
         ShowBrick.prototype._execute = function () {
@@ -143,10 +143,10 @@ PocketCode.Bricks.merge({
 
 
     SetTransparencyBrick: (function () {
-        SetTransparencyBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
+        SetTransparencyBrick.extends(PocketCode.Model.SetGraphicEffectBrick, false);
 
         function SetTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.SetGraphicEffectBrick.call(this, device, sprite, propObject);
             //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
@@ -159,10 +159,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeTransparencyBrick: (function () {
-        ChangeTransparencyBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
+        ChangeTransparencyBrick.extends(PocketCode.Model.ChangeGraphicEffectBrick, false);
 
         function ChangeTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
             //this._effect = PocketCode.GraphicEffect.GHOST;
         }
 
@@ -175,10 +175,10 @@ PocketCode.Bricks.merge({
 
 
     SetBrightnessBrick: (function () {
-        SetBrightnessBrick.extends(PocketCode.Bricks.SetGraphicEffectBrick, false);
+        SetBrightnessBrick.extends(PocketCode.Model.SetGraphicEffectBrick, false);
 
         function SetBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.SetGraphicEffectBrick.call(this, device, sprite, propObject);
             //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
@@ -191,10 +191,10 @@ PocketCode.Bricks.merge({
 
 
     ChangeBrightnessBrick: (function () {
-        ChangeBrightnessBrick.extends(PocketCode.Bricks.ChangeGraphicEffectBrick, false);
+        ChangeBrightnessBrick.extends(PocketCode.Model.ChangeGraphicEffectBrick, false);
 
         function ChangeBrightnessBrick(device, sprite, propObject) {
-            PocketCode.Bricks.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
             //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
         }
 
@@ -207,10 +207,10 @@ PocketCode.Bricks.merge({
 
 
     ClearGraphicEffectBrick: (function () {
-        ClearGraphicEffectBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ClearGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ClearGraphicEffectBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
         }
 
@@ -222,10 +222,10 @@ PocketCode.Bricks.merge({
     })(),
 
     LedOnBrick: (function () {
-        LedOnBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        LedOnBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function LedOnBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
         }
 
         LedOnBrick.prototype._execute = function () {
@@ -237,10 +237,10 @@ PocketCode.Bricks.merge({
     })(),
 
     LedOffBrick: (function () {
-        LedOffBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        LedOffBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function LedOffBrick(device, sprite) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
         }
 
         LedOffBrick.prototype._execute = function () {

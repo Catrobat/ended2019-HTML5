@@ -4,13 +4,13 @@
 'use strict';
 
 
-PocketCode.Bricks.merge({
+PocketCode.Model.merge({
 
     SetVariableBrick: (function () {
-        SetVariableBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        SetVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVariableBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._var = sprite.getVariable(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -25,10 +25,10 @@ PocketCode.Bricks.merge({
     })(),
 
     ChangeVariableBrick: (function () {
-        ChangeVariableBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ChangeVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeVariableBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._var = sprite.getVariable(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -43,10 +43,10 @@ PocketCode.Bricks.merge({
     })(),
 
     ShowTextBrick: (function() {
-        ShowTextBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ShowTextBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ShowTextBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
@@ -62,10 +62,10 @@ PocketCode.Bricks.merge({
     })(),
 
     HideTextBrick: (function() {
-        HideTextBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        HideTextBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function HideTextBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
         }
@@ -79,10 +79,10 @@ PocketCode.Bricks.merge({
     })(),
 
     AppendToListBrick: (function () {
-        AppendToListBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        AppendToListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AppendToListBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._list = sprite.getList(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -98,10 +98,10 @@ PocketCode.Bricks.merge({
 
 
     InsertAtListBrick: (function () {
-        InsertAtListBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        InsertAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function InsertAtListBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
@@ -118,10 +118,10 @@ PocketCode.Bricks.merge({
 
 
     ReplaceAtListBrick: (function () {
-        ReplaceAtListBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        ReplaceAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ReplaceAtListBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
@@ -138,10 +138,10 @@ PocketCode.Bricks.merge({
 
 
     DeleteAtListBrick: (function () {
-        DeleteAtListBrick.extends(PocketCode.Bricks.BaseBrick, false);
+        DeleteAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function DeleteAtListBrick(device, sprite, propObject) {
-            PocketCode.Bricks.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._list = sprite.getList(propObject.referenceId);
             this._idx = propObject.index;
@@ -157,4 +157,4 @@ PocketCode.Bricks.merge({
 
 });
 
-//e.g. var brick = new PocketCode.Bricks.SetVariableBrick({ value: "asd", id: 123 });
+//e.g. var brick = new PocketCode.Model.SetVariableBrick({ value: "asd", id: 123 });

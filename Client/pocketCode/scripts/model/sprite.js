@@ -193,13 +193,14 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('invalid argument: expected looks type of array');
 
                 //this._looks = looks;  //TODO: change this as soon as looks becode own DTOs with ID
+                this._looks = [];
                 for (var i = 0, l = looks.length; i < l; i++) {
                     var look = looks[i];
                     this._looks.push({ imageId: look.id, name: look.name });
                 }
                 this._currentLook = undefined; //make sure its deleted on re-initialize
                 if (looks.length > 0)
-                    this._currentLook = looks[0];
+                    this._currentLook = this._looks[0];
             },
             //get: function () {
             //    return this._looks;
@@ -253,7 +254,7 @@ PocketCode.Model.Sprite = (function () {
                 var brick;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     brick = bricks[i];
-                    //if (!(brick instanceof PocketCode.Bricks.BaseBrick))                               //this change breaks our tests: //TODO: 
+                    //if (!(brick instanceof PocketCode.Model.BaseBrick))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid brick: every brick has to be inherited from BaseBrick');
                     if (brick.onExecuted)  //supported by all root container bricks
                         brick.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
