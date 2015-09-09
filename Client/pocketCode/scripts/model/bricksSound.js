@@ -96,7 +96,7 @@ PocketCode.Model.merge({
                 this._text = this._text.calculate();
                 //caching
                 var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { string: this._text });
-                this._soundManager.loadSoundFile(this._soundId, request.url);
+                this._soundManager.loadSound(this._soundId, request.url);
             }
         }
 

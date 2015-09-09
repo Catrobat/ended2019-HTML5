@@ -113,13 +113,13 @@ PocketCode.PlayerPageController = (function () {
         },
         //project handler
         _projectLoadingProgressHandler: function (e) {
-            console.log('project loading progress: ' + e);
+            console.log('project loading progress: ' + e.progress);//JSON.stringify(e.progress) + ', ' + JSON.stringify(e.file));
         },
         _projectLoadHandler: function (e) {
-            console.log('project load: ' + e);
+            console.log('project load: ' + JSON.stringify(e));
         },
         _projectStartHandler: function (e) {
-            console.log('project start: ' + e);
+            console.log('project start: ' + JSON.stringify(e));
         },
         _projectExecutedHandler: function (e) {
             this._view.executionState = PocketCode.ExecutionState.STOPPED;

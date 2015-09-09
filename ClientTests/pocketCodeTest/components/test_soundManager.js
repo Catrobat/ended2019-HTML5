@@ -50,7 +50,7 @@ QUnit.test("SoundManager", function (assert) {
         var error = false;
         try {
             //some of them were already tested (above)
-            soundManager.loadSoundFile("id", "url");
+            soundManager.loadSound("id", "url");
             soundManager.startSound("id");
             soundManager.pauseSounds();
             soundManager.resumeSounds();
@@ -86,7 +86,7 @@ QUnit.test("SoundManager", function (assert) {
 
         soundManager.volume = 25;
         soundManager.muted = true;
-        assert.ok(soundManager.volume.toFixed(2) == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly");
+        assert.ok(soundManager.volume == 25 && createjs.Sound.getVolume().toFixed(2) == 0.25, "Volume set and converted correctly");
 
         assert.ok(soundManager._muted && createjs.Sound.getMute(), "Muted set true and stays true after changing volume");
         soundManager.muted = false;
@@ -119,7 +119,7 @@ QUnit.test("SoundManager", function (assert) {
             });
 
             soundManager2.onLoadingError.addEventListener(onLoadingErrorListener);
-            soundManager2.loadSounds("invalid/", [{ url: "invalid/url.mp3", id: "sound", size: 3 }]);
+            soundManager2.loadSounds("invalid/", [{ url: "url.mp3", id: "sound", size: 3 }, { url: "url.mp3", id: "sound2", size: 5 }]);
 
             //star sounds from url test
             var startSoundFromUrlTestDone = false;
@@ -218,15 +218,15 @@ QUnit.test("SoundManager", function (assert) {
             soundInstance2.paused = false;
         };
 
-        var soundSrc = "_resources/sounds/sound.mp3";
-        var soundSrc2 = "_resources/sounds/sound2.mp3";
+        var soundSrc = "sounds/sound.mp3";
+        var soundSrc2 = "sounds/sound2.mp3";
 
         progress = 0;
         var expectedProgressChanges = [60, 40];
 
         var sounds = [{ url: soundSrc, id: "sound", size: 3 }, { url: soundSrc2, id: "sound2", size: 2 }];
         var soundManager2 = new PocketCode.SoundManager();
-        soundManager2.loadSounds("", sounds);
+        soundManager2.loadSounds("_resources/", sounds);
 
         var filesLoaded = [];
         var smId = soundManager2._id;   //th sounds get new internal ids based on the sound mgr instance to make sure instances are independent (in future)
