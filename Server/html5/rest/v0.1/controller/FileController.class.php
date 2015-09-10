@@ -31,13 +31,13 @@ class FileController extends BaseController
   {
     // Variable Initialization
     $text = "";
-    if(isset($_GET['text']))
+    if(isset($this->request->requestParameters['text']))
     {
-      $text = utf8_decode($_GET['text']);
+      $text = utf8_decode($this->request->requestParameters['text']);
     }
-    if(isset($_GET['lang']))
+    if(isset($this->request->requestParameters['lang']))
     {
-      $this->language = $_GET['lang'];
+      $this->language = $this->request->requestParameters['lang'];
     }
 
     // Error handling if only ../file/ is given
@@ -69,13 +69,13 @@ class FileController extends BaseController
   {
     // Variable Initialization
     $text = "";
-    if(isset($_POST['text']))
+    if(isset($this->request->requestParameters['text']))
     {
-      $text = utf8_decode($_POST['text']);
+      $text = utf8_decode($this->request->requestParameters['text']);
     }
-    if(isset($_POST['lang']))
+    if(isset($this->request->requestParameters['lang']))
     {
-      $this->language = $_POST['lang'];
+      $this->language = $this->request->requestParameters['lang'];
     }
 
     // Error handling if only ../file/ is given
@@ -106,14 +106,9 @@ class FileController extends BaseController
   private function convertImage()
   {
     $base64string = "";
-    if(isset($_GET['base64string']))
+    if(isset($this->request->requestParameters['base64string']))
     {
-      $base64string = $_GET['base64string'];
-    }
-
-    if(isset($_POST['base64string']))
-    {
-      $base64string = $_POST['base64string'];
+      $base64string = $this->request->requestParameters['base64string'];
     }
 
     if(empty($base64string))
