@@ -8,7 +8,7 @@ require_once("ProjectsController.class.php");
 
 class FileController extends BaseController
 {
-  const GOOGLE_TTS_SERVICE = "http://translate.google.com/translate_tts?";
+  const GOOGLE_TTS_SERVICE = "https://translate.google.com/translate_tts?";
   const MAX_LETTER_COUNT = 100;
 
   public $text;
@@ -145,16 +145,6 @@ class FileController extends BaseController
       return "";
     }
     $this->mp3 = file_get_contents($this->getParsedUrl());
-
-    /*
-    $ch = curl_init();
-    $timeout = 5; // 0 wenn kein Timeout
-    curl_setopt($ch, CURLOPT_URL, $this->getParsedUrl());
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-    $this->mp3 = curl_exec($ch);
-    curl_close($ch);
-    */
 
     return $this->mp3;
   }
