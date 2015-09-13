@@ -54,6 +54,7 @@ class Request
     {
       if(strlen($value) > 0)  //do not use empty() here as it will return true for 0 as well
         $this->requestParameters[$field] = $value;
+        unset($_GET[$field]);
     }
 
     //while GET & DELETE use the query string only, POST and PUT have properties included in the request body
@@ -85,11 +86,12 @@ class Request
       //  //TODO:
       //break;
 
-      default:  //"application/x-www-form-urlencoded"
+      default:  //"application/x-www-form-urlencoded", "text/plain; charset=UTF-8""
         foreach($_POST as $field => $value)
         {
           if(strlen($value) > 0)  //do not use empty() here as it will return true for 0 as well
             $this->requestParameters[$field] = $value;
+            unset($_POST[$field]);
         }
 
     }

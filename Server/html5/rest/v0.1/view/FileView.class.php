@@ -24,11 +24,12 @@ class FileView
       header('Content-Disposition: attachment; filename=' . $filename);
       header("Content-Type: " . $mime_type);
       header("Content-Transfer-Encoding: binary");
-      //$outputObject = file_get_contents($outputObject);
+      $outputObject = file_get_contents($outputObject);
+      echo $outputObject;
 
-      $data = str_replace("data://image/" . $mime_type . "base64,", "", $outputObject);
-      $img = base64_decode($data);
-      echo $img;
+      //$data = str_replace("data://image/" . $mime_type . ";base64,", "", $outputObject);
+      //$img = base64_decode($data);
+      //echo $img;
     }
     else
     {
