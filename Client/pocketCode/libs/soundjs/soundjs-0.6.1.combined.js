@@ -4634,12 +4634,9 @@ this.createjs = this.createjs || {};
 		if (!s.initializeDefaultPlugins()) {return new createjs.DefaultSoundInstance(src, startTime, duration);}
 
 		var defaultPlayProps = s._defaultPlayPropsHash[src];	// for audio sprites, which create and store defaults by id
-		src = s._getSrcById(src);
-		var details;
-		if (typeof src === 'object')
-		    details = src;
-		else
-		    details = s._parsePath(src.src);
+		var details = s._getSrcById(src);
+		if (details.id === undefined)
+		    details = s._parsePath(details.src);
 
 		var instance = null;
 		if (details != null && details.src != null) {

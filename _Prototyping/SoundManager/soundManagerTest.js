@@ -139,7 +139,6 @@ window.onload = function () {
         //sm4.muted = true;
         //sm4.volume = 60;
         sm4.startSound("newId");
-        
     };
     var sm4ErrorHandler = function (e) {
         sm4Error = e;
@@ -160,6 +159,8 @@ window.onload = function () {
     //sm4.loadSound('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished', 'newId', 'mp3');//, undefined);
 
     //window.setTimeout(sm4.startSound('newId'), 2000);
+    sm4.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=this is a sound not cached and started directly using our text-to-speech service');
+    sm4.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=simultanous tts output');
     var breakpoint = true;
 
 };
