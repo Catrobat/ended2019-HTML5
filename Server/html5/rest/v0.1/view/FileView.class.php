@@ -34,11 +34,12 @@ class FileView
     else
     {
       // write return header: generic version
-      $file_info = new finfo(FILEINFO_MIME);
-      $mime_type = $file_info->buffer($outputObject);
+      //$file_info = new finfo(FILEINFO_MIME);
+      //$mime_type = $file_info->buffer($outputObject);
 
-      header("Content-Transfer-Encoding: binary");
-      header("Content-Type: " . $mime_type);
+      //header("Content-Transfer-Encoding: binary");
+      //header("Content-Type: " . $mime_type);
+	  header("Content-Type: " . "audio/mpeg");
       echo $outputObject;
     }
   }

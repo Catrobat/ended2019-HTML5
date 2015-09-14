@@ -38,7 +38,7 @@ PocketCode.GameEngine = (function () {
         this.resourceBaseUrl = "";
 
         this._imageStore = new PocketCode.ImageStore();//Math.min(SmartJs.Ui.Window.height, SmartJs.Ui.Window.width))   -> avaliable onLoad
-        this._imageStore.onLoadingProgressChange.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+        this._imageStore.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
         this._imageStore.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         //this.__images = {};
         this.__sounds = {};
@@ -693,7 +693,7 @@ PocketCode.GameEngine = (function () {
         dispose: function () {
             this.stopProject();
 
-            this._imageStore.onLoadingProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
+            this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
             this._imageStore.abortLoading();
             //this._imageStore.dispose();

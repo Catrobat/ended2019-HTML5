@@ -4206,7 +4206,7 @@ this.createjs = this.createjs || {};
 				}
 			}
 		}
-		if (loadItem.id != null) {s._idHash[loadItem.id] = {src: loadItem.src}};
+		if (loadItem.id != null) { s._idHash[loadItem.id] = loadItem; }//{src: loadItem.src}};
 		var loader = s.activePlugin.register(loadItem);
 
 		SoundChannel.create(loadItem.src, numChannels);
@@ -4635,8 +4635,11 @@ this.createjs = this.createjs || {};
 
 		var defaultPlayProps = s._defaultPlayPropsHash[src];	// for audio sprites, which create and store defaults by id
 		src = s._getSrcById(src);
-
-		var details = s._parsePath(src.src);
+		var details;
+		if (typeof src === 'object')
+		    details = src;
+		else
+		    details = s._parsePath(src.src);
 
 		var instance = null;
 		if (details != null && details.src != null) {

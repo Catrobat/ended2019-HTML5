@@ -22,7 +22,7 @@ PocketCode.ImageStore = (function () {
         this._resourceLoader.useSizeForProgressCalculation = true;
         this._resourceLoader.crossoriginProperty = "anonymous";
 
-        this._onLoadingProgressChange = new SmartJs.Event.Event(this);
+        this._onLoadingProgress = new SmartJs.Event.Event(this);
 
         //bind events
         this._resourceLoader.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._resourceLoaderProgressHandler, this));
@@ -34,9 +34,9 @@ PocketCode.ImageStore = (function () {
 
     //events
     Object.defineProperties(ImageStore.prototype, {
-        onLoadingProgressChange: {
+        onLoadingProgress: {
             get: function () {
-                return this._onLoadingProgressChange;
+                return this._onLoadingProgress;
             },
         },
         onLoad: {
@@ -60,10 +60,14 @@ PocketCode.ImageStore = (function () {
             if (initialScaling !== undefined)
                 this._initialScaling = initialScaling;
             var images = [];
-            var img;
+            var img, url, idx;
             for (var i = 0, l = imgArray.length; i < l; i++) {
                 img = imgArray[i];
-                img.url = resourceBaseUrl + img.url;
+                url = img.url.split('/');
+                idx = url.length - 1;
+                url[idx] = encodeURIComponent(url[idx]);
+
+                img.url = resourceBaseUrl + url.join('/');
                 img.type = 'img';
                 images.push(img);
             }
@@ -83,7 +87,7 @@ PocketCode.ImageStore = (function () {
             this._looks[imgObject.id] = look;
             this._images[imgObject.id] = imgObject;
             this._looks[imgObject.id] = this._initLook(imgObject.id);
-            this._onLoadingProgressChange.dispatchEvent({ progress: e.progress });
+            this._onLoadingProgress.dispatchEvent({ progress: e.progress, file: e.file });
         },
         _initLook: function (lookId, rotationCenterX, rotationCenterY) {
             var look = this._looks[lookId];//.look;

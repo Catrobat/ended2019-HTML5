@@ -19,7 +19,7 @@ QUnit.test("ImageStore: init and loading", function (assert) {
 
 	assert.ok(is instanceof PocketCode.ImageStore && is instanceof SmartJs.Core.EventTarget, "instance check");
 	assert.ok(is.onLoad === is._resourceLoader.onLoad && is.onLoadingError === is._resourceLoader.onError &&
-		is.onLoadingProgressChange instanceof SmartJs.Event.Event, "event binding and accessors");
+		is.onLoadingProgress instanceof SmartJs.Event.Event, "event binding and accessors");
 
 	//init tests
 	var baseUrl = "_resources/images/",
@@ -60,7 +60,7 @@ QUnit.test("ImageStore: init and loading", function (assert) {
 	assert.throws(function () { is.loadImages("", "list"); }, Error, "invalid fiel list");
 
 	//add listeners
-	is.onLoadingProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressHandler));
+	is.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(onProgressHandler));
 	is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
 	is.onLoadingError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler));
 

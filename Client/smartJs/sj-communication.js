@@ -329,7 +329,6 @@ SmartJs.Communication.merge({
         return XmlHttpRequest;
     })(),
 
-
     CorsRequest: (function () {
         CorsRequest.extends(SmartJs.Communication.ServiceRequest, false);
 
