@@ -12,7 +12,7 @@ SmartJs.Ui.Window = (function () {  //static class
     //ctr
     function Window() {
 
-        this._hiddenProperty = "hidden";
+        this._hiddenProperty = 'hidden';
         this._visible = true;
 
         //events
@@ -32,29 +32,29 @@ SmartJs.Ui.Window = (function () {  //static class
         //    this._resizeHandlerReference = this._addDomListener(window, 'resize', this._onResize.dispatchEvent({ height: this.height, width: this.width }));
 
         // Set the name of the hidden property and the change event for visibility
-        var visibilityChangeEventName = "";
-        if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support 
-            this._hiddenProperty = "hidden";
-            visibilityChangeEventName = "visibilitychange";
+        var visibilityChangeEventName = '';
+        if (typeof document.hidden !== undefined) { // Opera 12.10 and Firefox 18 and later support 
+            this._hiddenProperty = 'hidden';
+            visibilityChangeEventName = 'visibilitychange';
         }
-        else if (typeof document.mozHidden !== "undefined") {
-            this._hiddenProperty = "mozHidden";
-            visibilityChangeEventName = "mozvisibilitychange";
+        else if (typeof document.mozHidden !== undefined) {
+            this._hiddenProperty = 'mozHidden';
+            visibilityChangeEventName = 'mozvisibilitychange';
         }
-        else if (typeof document.msHidden !== "undefined") {
-            this._hiddenProperty = "msHidden";
-            visibilityChangeEventName = "msvisibilitychange";
+        else if (typeof document.msHidden !== undefined) {
+            this._hiddenProperty = 'msHidden';
+            visibilityChangeEventName = 'msvisibilitychange';
         }
-        else if (typeof document.webkitHidden !== "undefined") {
-            this._hiddenProperty = "webkitHidden";
-            visibilityChangeEventName = "webkitvisibilitychange";
+        else if (typeof document.webkitHidden !== undefined) {
+            this._hiddenProperty = 'webkitHidden';
+            visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (this._visibilityChangeEventName !== "")
+        if (this._visibilityChangeEventName !== '')
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
         else {
             // IE 9 and lower:
-            if ("onfocusin" in document) {
+            if ('onfocusin' in document) {
                 //document.onfocusin = document.onfocusout = onchange;
                 this._addDomListener(document, 'focusin', this._visibilityChangeHandler);
                 this._addDomListener(document, 'focusout', this._visibilityChangeHandler);

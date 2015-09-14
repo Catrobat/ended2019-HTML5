@@ -139,8 +139,8 @@ var SmartJs = {
      * SmartJs.Device is a helper object to simply indicate if a device supports touch events and/or is a mobile device
      */
     Device: {
-        isIOs: ((typeof window.orientation !== "undefined") && navigator.userAgent.match(/iPad|iPhone/i)),
-        isMobile: (typeof window.orientation !== "undefined") || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
+        isIOs: ((typeof window.orientation !== undefined) && navigator.userAgent.match(/iPad|iPhone/i)),
+        isMobile: (typeof window.orientation !== undefined) || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
         isTouch: ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0),
     },
 
@@ -197,16 +197,16 @@ var SmartJs = {
                 return false;
             }(),
             event_stopPropagation: function () {
-                var e = document.createEvent("MouseEvents");
-                e.initEvent("click", false, true);
+                var e = document.createEvent('MouseEvents');
+                e.initEvent('click', false, true);
                 if (e.stopPropagation) return true;
 
                 _result = false;
                 return false;
             }(),
             //event_target: function () {   //checking on one property is enough
-            //    var e = document.createEvent("MouseEvents");
-            //    e.initEvent("click", false, true);
+            //    var e = document.createEvent('MouseEvents');
+            //    e.initEvent('click', false, true);
             //    if (e.target) return true;
 
             //    _result = false;

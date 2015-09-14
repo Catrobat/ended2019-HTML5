@@ -70,7 +70,7 @@ SmartJs.Core.Component = (function () {
             //root = (root === undefined) ? true : false; //map to DOM element
 
             if (typeof propertyObject !== 'object')
-                throw new Error('invalid argument: expectet "propertyObject typeof object');
+                throw new Error('invalid argument: expectet "propertyObject" typeof object');
 
             for (var p in propertyObject) {
                 if (object[p] === undefined)

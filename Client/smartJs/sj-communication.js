@@ -125,14 +125,14 @@ SmartJs.Communication = {
                 if (this._xhr.readyState !== 4)
                     return;
 
-                //console.log("onloadend ");
+                //console.log('onloadend ');
                 //if (this._error) {
                 //    this._onError.dispatchEvent(this._error);
-                //    //console.log("error1 ");
+                //    //console.log('error1 ');
                 //}
                 //else {
                 if (this._xhr.status !== 200) { //this._loaded && 
-                    //console.log("error2 ");
+                    //console.log('error2 ');
                     var err = new Error();//this._xhr.responseText);
                     err.responseText = this._xhr.responseText;
                     try {
@@ -143,7 +143,7 @@ SmartJs.Communication = {
                     this._onError.dispatchEvent(err);//{}.merge(e));
                 }
                 else
-                    //console.log("loaaaaaded, " + this._xhr.readyState + ", " + this._xhr.status);
+                    //console.log('loaaaaaded, ' + this._xhr.readyState + ', ' + this._xhr.status);
                     this._onLoad.dispatchEvent({}.merge(e.target));
                 //}
             },
@@ -289,8 +289,8 @@ SmartJs.Communication.merge({
                             }
                             else {
                                 this._xhr.open(this.method, this._url);
-                                //this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                                var form = "";
+                                //this._xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                var form = '';
                                 for (var prop in data)
                                     form += prop + '=' + data[prop] + '&';
                                 this._xhr.send(form);
@@ -442,8 +442,8 @@ SmartJs.Communication.merge({
                             }
                             else {
                                 this._xhr.open(this.method, this._url);
-                                //this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                                var form = "";
+                                //this._xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                var form = '';
                                 for (var prop in data)
                                     form += prop + '=' + data[prop] + '&';
                                 this._xhr.send(form);
@@ -464,12 +464,12 @@ SmartJs.Communication.merge({
                     }
                     else {
                         this._xhr.open(this.method, this._url);   //handle RequestMethod.PUT & DELETE outside this class if needed
-                        //this._xhr.setRequestHeader("Referer", window.location);
+                        //this._xhr.setRequestHeader('Referer', window.location);
                         this._xhr.send();
                     }
                 }
                 catch (e) {
-                    //console.log("internal: error");
+                    //console.log('internal: error');
                     e.statusCode = 0;
                     this._onError.dispatchEvent(e);//{ statusCode: 0 }.merge(e));
                 }
@@ -627,7 +627,7 @@ SmartJs.Communication.merge({
             _requestFile: function (fileIndex) {
                 if (this._disposed)
                     return;
-                var oHead = document.head || document.getElementsByTagName("head")[0];
+                var oHead = document.head || document.getElementsByTagName('head')[0];
                 var file = this._registeredFiles[fileIndex];
 
                 var tag = document.getElementById(file.url);
@@ -638,13 +638,13 @@ SmartJs.Communication.merge({
 
                 switch (file.type) {
                     case 'js':
-                        var oScript = document.createElement("script");
+                        var oScript = document.createElement('script');
                         oScript.async = false;  //ensure execution order after async download
                         this._addDomListener(oScript, 'error', this._fileErrorHandler, { fileIndex: fileIndex, element: oScript });
 
                         var loaded = false;
                         oScript.onload = oScript.onreadystatechange = function (e) {
-                            if (!loaded && (!oScript.readyState || oScript.readyState === "loaded" || oScript.readyState === "complete")) {
+                            if (!loaded && (!oScript.readyState || oScript.readyState === 'loaded' || oScript.readyState === 'complete')) {
                                 loaded = true;
                                 oScript.onload = oScript.onreadystatechange = null;
                                 e = e || {};
@@ -656,9 +656,9 @@ SmartJs.Communication.merge({
                         oScript.id = oScript.src = file.url;
                         break;
                     case 'css':
-                        var oCss = document.createElement("link");
-                        oCss.type = "text/css";
-                        oCss.rel = "stylesheet";
+                        var oCss = document.createElement('link');
+                        oCss.type = 'text/css';
+                        oCss.rel = 'stylesheet';
                         oCss.id = file.url;
                         oHead.appendChild(oCss);
 
@@ -698,26 +698,26 @@ SmartJs.Communication.merge({
 /*
     var xhr = new XMLHttpRequest();
     var data = new FormData();
-    var files = $("#FileUpload1").get(0).files;
+    var files = $('#FileUpload1').get(0).files;
     for (var i = 0; i < files.length; i++) {
       data.append(files[i].name, files[i]);
     }
-    xhr.upload.addEventListener("progress", function (evt) {
+    xhr.upload.addEventListener('progress', function (evt) {
     if (evt.lengthComputable) {
       var progress = Math.round(evt.loaded * 100 / evt.total);
-      $("#progressbar").progressbar("value", progress);
+      $('#progressbar').progressbar('value', progress);
     }
     }, false);
-    xhr.open("POST", "UploadHandler.ashx");
+    xhr.open('POST', 'UploadHandler.ashx');
     xhr.send(data);
 
-    $("#progressbar").progressbar({
+    $('#progressbar').progressbar({
       max: 100,
       change: function (evt, ui) {
-        $("#progresslabel").text($("#progressbar").progressbar("value") + "%");
+        $('#progresslabel').text($('#progressbar').progressbar('value') + '%');
       },
       complete: function (evt, ui) {
-        $("#progresslabel").text("File upload successful!");
+        $('#progresslabel').text('File upload successful!');
       }
     });
     evt.preventDefault();
