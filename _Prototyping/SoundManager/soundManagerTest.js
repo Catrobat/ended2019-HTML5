@@ -31,7 +31,7 @@ window.onload = function () {
     var resourceBaseUrl3 = 'https://web-test.catrob.at/html5/projects/v0.1/968/';
     var sounds3 = JSON.parse('[{"id":"s16","url":"sounds\/3ec79f9addcf5055e069ec794db954e8_c.mp3","size":11140},{"id":"s17","url":"sounds\/778fc114464dcf4b368c7d2841863beb_d.mp3","size":11140},{"id":"s18","url":"sounds\/152badadc1a428c7a89b46cf6d82a43b_e.mp3","size":11140},{"id":"s19","url":"sounds\/dbdd35220c46b04c7ace3f04af185702_f.mp3","size":11140},{"id":"s20","url":"sounds\/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3","size":11140},{"id":"s21","url":"sounds\/ba454104796ff54154552e6501870d10_a.mp3","size":11140},{"id":"s22","url":"sounds\/9cfb811c257d934d69671369ac15e88e_H.mp3","size":139142},{"id":"s25","url":"sounds\/8586959b14c74023b91e2c17da40cab4_c#.mp3","size":141755},{"id":"s26","url":"sounds\/3bdf92aad67a35e1d67f8b9c304cc732_d#.mp3","size":94734},{"id":"s27","url":"sounds\/7511b8919dadb9d098d77ab228d41ca5_e#.mp3","size":159518},{"id":"s28","url":"sounds\/459ab4eb37f698e3cee4a7f773870a79_f#.mp3","size":23159},{"id":"s29","url":"sounds\/590e4930d1a4d647da8b5d43919fd2ab_g#.mp3","size":56595}]');
 
-    load: sm1
+    //load: sm1
     var sm1Progress = [],
         sm1Load,
         sm1Error,
@@ -50,6 +50,7 @@ window.onload = function () {
     };
     var sm1FinishedPlayingHandler = function (e) {
         sm1Finished = e;
+        console.log('finished playing');
     };
 
     sm1.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm1ProgressHandler, this));
@@ -58,7 +59,7 @@ window.onload = function () {
     sm1.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(sm1FinishedPlayingHandler, this));
     //sm1.loadSounds(resourceBaseUrl, sounds);
 
-    load: sm2
+    //load: sm2
     var sm2Progress = [],
         sm2Load,
         sm2Error,
@@ -70,7 +71,7 @@ window.onload = function () {
     var sm2LoadHandler = function (e) {
         sm2Load = e;
         console.log('load2');
-        sm2.loadSound('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished', 'newId');
+        sm2.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished: two');//, 'newId', 'mp3');
     };
     var sm2ErrorHandler = function (e) {
         sm2Error = e;
@@ -78,16 +79,17 @@ window.onload = function () {
     };
     var sm2FinishedPlayingHandler = function (e) {
         sm2Finished = e;
+        console.log('finished playing2');
     };
 
     sm2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm2ProgressHandler, this));
     sm2.onLoad.addEventListener(new SmartJs.Event.EventListener(sm2LoadHandler, this));
     sm2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm2ErrorHandler, this));
     sm2.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(sm2FinishedPlayingHandler, this));
-    //sm2.loadSounds(resourceBaseUrl2, sounds2);  //2 errors thrown: firefox: 
+    sm2.loadSounds(resourceBaseUrl2, sounds2);  //2 errors thrown: firefox: 
 
 
-    load: sm3
+    //load: sm3
     var sm3 = new PocketCode.SoundManager();
     var sm3Progress = [],
         sm3Load,
@@ -103,7 +105,7 @@ window.onload = function () {
         sm3.muted = true;
         sm3.volume = 60;
         sm1.dispose();
-        sm2.dispose();
+        //sm2.dispose();
         sm3.startSound("s25");
     };
     var sm3ErrorHandler = function (e) {
@@ -112,7 +114,7 @@ window.onload = function () {
     };
     var sm3FinishedPlayingHandler = function (e) {
         sm3Finished = e;
-        console.log('finished playing');
+        console.log('finished playing3');
         sm3.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished');
     };
 
@@ -146,7 +148,7 @@ window.onload = function () {
     };
     var sm4FinishedPlayingHandler = function (e) {
         sm4Finished = e;
-        console.log('finished playing');
+        console.log('finished playing4');
         sm4.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished');
     };
 

@@ -95,8 +95,8 @@ PocketCode.Model.merge({
                 this._soundId = SmartJs.getNewId();
                 this._text = this._text.calculate();
                 //caching
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { string: this._text });
-                this._soundManager.loadSound(this._soundId, request.url);
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: this._text });
+                this._soundManager.loadSound(request.url, this._soundId, 'mp3');
             }
         }
 
@@ -107,7 +107,7 @@ PocketCode.Model.merge({
             else {
                 var text = this._text.calculate();
                 //we use a request object here to generate an url
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { string: text });
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
                 this._soundManager.startSoundFromUrl(request.url);
             }
             this._return();
