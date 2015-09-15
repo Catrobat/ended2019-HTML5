@@ -24,6 +24,7 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
+            //this._toolbar.disabled = true;
             //this._toolbar.hide();
         }
         this.appendChild(this._toolbar);

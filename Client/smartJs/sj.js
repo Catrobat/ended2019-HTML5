@@ -139,8 +139,8 @@ var SmartJs = {
      * SmartJs.Device is a helper object to simply indicate if a device supports touch events and/or is a mobile device
      */
     Device: {
-        isIOs: ((typeof window.orientation !== undefined) && navigator.userAgent.match(/iPad|iPhone/i)),
-        isMobile: (typeof window.orientation !== undefined) || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
+        isIOs: ((typeof window.orientation !== 'undefined') && navigator.userAgent.match(/iPad|iPhone/i)),
+        isMobile: (typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
         isTouch: ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0),
     },
 
