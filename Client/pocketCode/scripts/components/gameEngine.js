@@ -13,16 +13,13 @@
 PocketCode.GameEngine = (function () {
     GameEngine.extends(PocketCode.UserVariableHost, false);
 
-    function GameEngine() {
+    function GameEngine(minLoopCycleTime) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
         this._executionState = PocketCode.ExecutionState.STOPPED;
-        this._minLoopCycleTime = 20; //ms        //TODO:
+        this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
         this._spritesLoaded = false;
-        this.resourceSize = 0;
-        this.resourceLoadingProgress = 0;
-        this.projectReady = false;
 
         this._id = "";
         this.title = "";
@@ -33,20 +30,21 @@ PocketCode.GameEngine = (function () {
 
         this._background = undefined;
         this._sprites = [];
-        //this._images = [];    //there is a private accessor already
 
         this.resourceBaseUrl = "";
 
-        this._imageStore = new PocketCode.ImageStore();//Math.min(SmartJs.Ui.Window.height, SmartJs.Ui.Window.width))   -> avaliable onLoad
+        this._imageStore = new PocketCode.ImageStore();
         this._imageStore.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
         this._imageStore.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
-        //this.__images = {};
+        this._imageStore.onLoad.addEventListener(new SmartJs.Event.EventListener(this._imageStoreLoadHandler, this));
         this.__sounds = {};
 
         this._soundManager = new PocketCode.SoundManager();
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
+        this._soundManager.onLoad.addEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
+        this._invalidSoundFiles = [];
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -65,6 +63,11 @@ PocketCode.GameEngine = (function () {
 
     //properties
     Object.defineProperties(GameEngine.prototype, {
+        projectLoaded: {
+            get: function () {
+                return this._resourcesLoaded && this._spritesLoaded;
+            },
+        },
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
@@ -75,7 +78,7 @@ PocketCode.GameEngine = (function () {
         //        return this._sprites;
         //    },
         //},
-        //images: {   //public getter required for rendering //TODO??
+        //images: {   //public getter required for rendering //TODO: change this to looks/costumes
         //    get: function () {
         //        return this.__images;
         //    }
@@ -101,70 +104,43 @@ PocketCode.GameEngine = (function () {
 
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
-            //enumerable: false,
-            //configurable: true,
         },
-
         broadcasts: {
             set: function (broadcasts) {
                 if (!(broadcasts instanceof Array))
                     throw new Error('setter expects type Array');
 
-                //for (i = 0, l = broadcasts.length; i < l; i++)
-                //    this._broadcasts[broadcasts[i].id] = broadcasts[i];
                 this._broadcasts = broadcasts;
                 this._broadcastMgr.init(broadcasts);
             },
-            //enumerable: false,
-            //configurable: true,
         }
     });
 
     //events
     Object.defineProperties(GameEngine.prototype, {
         onLoadingProgress: {
-            get: function () {
-                return this._onLoadingProgress;
-            },
-            //enumerable: false,
-            //configurable: true,
+            get: function () { return this._onLoadingProgress; },
         },
         onLoad: {
-            get: function () {
-                return this._onLoad;
-            },
-            //enumerable: false,
-            //configurable: true,
+            get: function () { return this._onLoad; },
         },
         onLoadingError: {
-            get: function () {
-                return this._onLoadingError;
-            },
+            get: function () { return this._onLoadingError; },
         },
         onBeforeProgramStart: {
             get: function () { return this._onBeforeProgramStart; },
-            //enumerable: false,
-            //configurable: true,
         },
         onProgramStart: {
             get: function () { return this._onProgramStart; },
-            //enumerable: false,
-            //configurable: true,
         },
         onProgramExecuted: {
             get: function () { return this._onProgramExecuted; },
-            //enumerable: false,
-            //configurable: true,
         },
         onSpriteChange: {
             get: function () { return this._onSpriteChange; },
-            //enumerable: false,
-            //configurable: true,
         },
         onTabbedAction: {
             get: function () { return this._onTabbedAction; },
-            //enumerable: false,
-            //configurable: true,
         },
     });
 
@@ -176,11 +152,14 @@ PocketCode.GameEngine = (function () {
                 return;
             if (this._executionState !== PocketCode.ExecutionState.STOPPED)
                 this.stopProject();
+            if (!jsonProject)
+                throw new Error('invalid argument: json project');
+            else
+                this._jsonProject = jsonProject;
 
             this._spritesLoaded = false;
             this._resourcesLoaded = false;
 
-            this.projectReady = false;
             this._id = jsonProject.id;
             var header = jsonProject.header;
             this.title = header.title;
@@ -194,30 +173,28 @@ PocketCode.GameEngine = (function () {
             this._sprites.dispose();
 
             //resource sizes
-            this.soundSize = 0;
-            for (i = 0, l = jsonProject.sounds.length; i < l; i++) {
-                this.soundSize += jsonProject.sounds[i].size;
-            }
-
-            //todo handle instead of merely skipping
-            if (!this._soundManager.supported) {
-                this.soundSize = 0;
-            }
-
-            this.imageSize = 0;
+            this._resourceTotalSize = 0;
+            this._resourceLoadedSize = 0;
             for (i = 0, l = jsonProject.images.length; i < l; i++) {
-                this.imageSize += jsonProject.images[i].size;
+                this._resourceTotalSize += jsonProject.images[i].size;
+            }
+            for (i = 0, l = jsonProject.sounds.length; i < l; i++) {
+                this._resourceTotalSize += jsonProject.sounds[i].size;
             }
 
-            this.resourceSize = this.imageSize + this.soundSize;
-            if (!this.resourceSize) {
+            if (this._resourceTotalSize === 0)
                 this._resourcesLoaded = true;
-                this.resourceLoadingProgress = 100;
+            else {
+                this._onLoadingProgress.dispatchEvent({ progress: 0 });
+                //image loading using store
+                //TODO: set initial scaling: default = 1
+                var initialScaling = 1;
+                //TODO: (commented out due to testing) ): make sure to use the screen params + pixelRatio if needed as the window may not be maximized on desktops
+                //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);   -> this is private now
+                this._resourceBaseUrl = jsonProject.resourceBaseUrl;
+                this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images, initialScaling);
+                //sounds are loaded after images using the image stores onLoad event
             }
-            this.imageProgress = 0;
-            this.soundProgress = 0;
-
-            this._sounds = jsonProject.sounds || [];
 
             this._broadcasts = jsonProject.broadcasts || [];
             this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -234,7 +211,7 @@ PocketCode.GameEngine = (function () {
             this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
 
-            this._background = this._spriteFactory.create(jsonProject.background);//new PocketCode.Model.Sprite(this, jsonProject.background);
+            this._background = this._spriteFactory.create(jsonProject.background);
 
             var sp = jsonProject.sprites;
             var sprite, i, l;
@@ -243,88 +220,49 @@ PocketCode.GameEngine = (function () {
                 sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
                 this._sprites.push(sprite);
             }
-
-            //image loading using store
-            //set initial scaling: default = 1
-            var initialScaling = 1;
-            //TODO: (commented out due to testing) ): make sure to use the screen params + pixelRatio if needed as the window may not be maximized on desktops
-            //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);   -> this is private now
-            this._resourceBaseUrl = jsonProject.resourceBaseUrl;
-            this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images, initialScaling);//, imageSize); -> size can be calculated inside
-
-            //var img = jsonProject.images;
-            //var images = [];
-            //var self = this;
-
-            //for (i = 0, l = img.length; i < l; i++) {
-            //    var image = img[i];
-            //    image.imageObject = new Image();
-            //    image.imageObject.size = image.size;    //TODO: size is not an existing property and may not be supprted
-            //    image.imageObject.onload = function (e) {
-            //        e.size = e.target.size;
-            //        self._resourceProgressChangeHandler(e);
-            //    };
-            //    image.imageObject.onerror = this._imageLoadingErrorHandler;
-
-            //    image.imageObject.src = img[i].url;     //TODO: if you load all images simultaneously the progress will not continously increase
-            //    //does this work without adding them to the DOM in all browsers?
-            //    images.push(image);
-            //}
-            //this._images = images;
-
-            //sp = this._sprites;
-            //for (i = 0, l = sp.length; i < l; i++) {
-            //    sp[i].onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-            //}
-
-            //this._projectLoaded = true;
         },
-
+        //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
                 this._spritesLoaded = true;
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
-                    this.projectReady = true;
                     this._onLoad.dispatchEvent();
                 }
             }
         },
         _resourceProgressChangeHandler: function (e) {
-            if(e.target === this._imageStore){
-                this.imageProgress = e.progress;
-            }
-            else if (e.target === this._soundManager) {
-                this.soundProgress = e.progress;
-            }
-            else {
+            if (e.progress === 0)
                 return;
-            }
 
-            this.resourceLoadingProgress = this.soundProgress * (this.soundSize/this.resourceSize) + this.imageProgress * (this.imageSize/this.resourceSize);
-
-            if (this.resourceLoadingProgress === 100) {
-                this._resourcesLoaded = true;
-            }
-            if (this._resourcesLoaded && this._spritesLoaded) {
-                this.projectReady = true;
+            var size = e.file.size;
+            this._resourceLoadedSize += size;
+            this._onLoadingProgress.dispatchEvent({ progress: Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10 });
+        },
+        _imageStoreLoadHandler: function (e) {
+            this._sounds = this._jsonProject.sounds || [];
+        },
+        _soundManagerLoadHandler: function (e) {
+            if (this._invalidSoundFiles.length > 0)
+                this._onLoadingError.dispatchEvent({ files: this._invalidSoundFiles });
+            this._resourcesLoaded = true;
+            if (this._spritesLoaded) {
                 this._onLoad.dispatchEvent();
             }
-            this._onLoadingProgress.dispatchEvent({ progress: this.resourceLoadingProgress });
         },
-        //_imageLoadingErrorHandler: function (e) {
-        //    throw new Error("No image found at " + e.target.src);
-        //},
         _resourceLoadingErrorHandler: function (e) {
-            //TODO: throw new Error("Could not load image or sound: " + e.src);
-            this._onLoadingError.dispatchEvent();
+            if (e.target === this._soundManager)
+                this._invalidSoundFiles.push(e.file);
+            else
+                this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
+        //project interaction
         runProject: function (reinitSprites) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
-            if (!this.projectReady) {
+            if (!this.projectLoaded) {
                 throw new Error('no project loaded');
-            }//this._background && this._sprites.length === 0 || !this.projectReady)    -> in theory there do not have to be a sprite or beackground
+            }
 
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
@@ -336,14 +274,12 @@ PocketCode.GameEngine = (function () {
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
-            this.onProgramStart.dispatchEvent();    //notifies the listerners (bricks) to start executing
+            this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
         },
-
         restartProject: function (reinitSprites) {
             this.stopProject();
             this.runProject(reinitSprites);
         },
-
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return;
@@ -357,7 +293,6 @@ PocketCode.GameEngine = (function () {
             }
             this._executionState = PocketCode.ExecutionState.PAUSED;
         },
-
         resumeProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
@@ -371,7 +306,6 @@ PocketCode.GameEngine = (function () {
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
         },
-
         stopProject: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
@@ -391,17 +325,16 @@ PocketCode.GameEngine = (function () {
 
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                if (sprites[i].scriptsRunning)//status !== PocketCode.ExecutionState.STOPPED)
+                if (sprites[i].scriptsRunning)
                     return;
             }
 
             this._executionState = PocketCode.ExecutionState.STOPPED;
-            this._onProgramExecuted.dispatchEvent();
+            this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endless loop brick
         },
 
-        //Brick-Sprite Interaction
+        //brick-sprite interaction
         getSpriteById: function (spriteId) {
-            //var sprite = this._sprites.filter(function (sprite) { return sprite.id === spriteId; })[0];   //a loop is faster than a filter (>55% slower) especially when searching for 1 element only
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
@@ -440,7 +373,7 @@ PocketCode.GameEngine = (function () {
             idx = Math.max(idx - layers, 0);
             sprites.insert(idx, sprite);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //TODO: check event arguments
+            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);
             return true;
         },
 
@@ -582,15 +515,15 @@ PocketCode.GameEngine = (function () {
 
             //handle conflics: if there is an overflow on both sides we always bounce from the side the sprites points to
             if (vpEdges.top.overflow > 0 && vpEdges.bottom.overflow > 0) {
-                if (Math.abs(dir) <= 90) 
+                if (Math.abs(dir) <= 90)
                     vpEdges.bottom.ignore = true;
-                else 
+                else
                     vpEdges.top.ignore = true;
             }
             if (vpEdges.left.overflow > 0 && vpEdges.right.overflow > 0) {
-                if (dir < 0) 
+                if (dir < 0)
                     vpEdges.right.ignore = true;
-                else 
+                else
                     vpEdges.left.ignore = true;
             }
 
@@ -642,7 +575,7 @@ PocketCode.GameEngine = (function () {
                 newDir = p.calcDirection(newDir);
             if (s && s.inDirection)
                 newDir = s.calcDirection(newDir);
-                
+
             var updateBoundary = false;
             if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
                 rotation = newDir - 90;
@@ -655,7 +588,7 @@ PocketCode.GameEngine = (function () {
                     updateBoundary = true;
                 }
             }
-                
+
             if (updateBoundary) {
                 boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //recalculate
                 //adjust/keep the area center during rotate
