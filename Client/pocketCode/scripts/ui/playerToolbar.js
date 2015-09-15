@@ -70,6 +70,7 @@ PocketCode.Ui.merge({
 
             //buttons
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'Back');
+            this._backButtonDisabled = false;
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
             this._menuContainerAlign.appendChild(this._backButton);
             this._restartButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.RESTART, 'Restart');
@@ -82,6 +83,7 @@ PocketCode.Ui.merge({
             this._pauseButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE }); }, this));
             this._menuContainerAlign.appendChild(this._pauseButton);
             this._screenshotButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.SCREENSHOT, 'Screenshot');
+            this._screenshotButtonDisabled = false;
             this._screenshotButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.SCREENSHOT }); }, this));
             this._menuContainerAlign.appendChild(this._screenshotButton);
             this._axesButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.AXES, 'Axes');
@@ -127,18 +129,45 @@ PocketCode.Ui.merge({
             //        return false;
             //    },
             //},
+            disabled: {
+                set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
+
+                    if (this._backButtonDisabled)
+                        this._backButton.disabled = true;
+                    else
+                        this._backButton.disabled = value;
+                    this._restartButton.disabled = value;
+                    this._playButton.disabled = value;
+                    this._pauseButton.disabled = value;
+                    if (this._screenshotButtonDisabled)
+                        this._screenshotButton.disabled = true;
+                    else
+                        this._screenshotButton.disabled = value;
+                    this._axesButton.disabled = value;
+                },
+            },
             axesButtonChecked: {
                 set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
                     this._axesButton.checked = value;
                 },
             },
             backButtonDisabled: {
                 set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
+                    this._backButtonDisabled = value;
                     this._backButton.disabled = value;
                 },
             },
             screenshotButtonDisabled: {
                 set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
+                    this._screenshotButtonDisabled = value;
                     this._screenshotButton.disabled = value;
                 },
             },
