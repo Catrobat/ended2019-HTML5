@@ -32,7 +32,10 @@ QUnit.test("ProgramStartBrick", function (assert) {
     };
 
     program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    program._projectLoaded = true;  //simulate a loaded project
+    //simulate project loaded for tests
+    program._resourcesLoaded = true;
+    program._spritesLoaded = true;
+
     program.runProject();
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
