@@ -172,7 +172,7 @@ PocketCode.merge({
             _updateProgress: function () {
                 var progress = 100.0 / this._total * this._parsed;
                 //we do not want to trigger several hundred progress updates.. every 5% should be enough
-                if (progress === 100.0 || (progress - this._updatePercentage) >= 5.0) {
+                if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
                     this._updatePercentage = progress;
                     progress = Math.round(progress * 10) / 10;  //show only one decimal place
                     this._onProgressChange.dispatchEvent({ progress: progress });
