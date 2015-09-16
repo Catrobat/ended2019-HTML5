@@ -257,7 +257,8 @@ PocketCode.PlayerApplication = (function () {
             //    this._webOverlay.setHWRatio(16/9);
         },
         toggleMuteSounds: function () {
-            this._muted = this._muted ? false : true;   //TODO: this is only an example to check the UI
+            this._muted = this._muted ? false : true;
+            this._project.muted = this._muted;
             return this._muted;
         },
         dispose: function () {

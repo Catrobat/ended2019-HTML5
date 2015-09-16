@@ -315,9 +315,6 @@ PocketCode.Web = {
 			_toggleFullscreenHandler: function (e) {
 				PocketCode.Web.FullscreenApi.toggleFullscreen();
 			},
-			//_toggleMuteHandler: function (e) {
-			//	console.log('TODO: trigger event to notify application');
-			//},
 			appendSplash: function (splashScreen) {
 				this._splashScreen = splashScreen;
 				this.viewportContainer.appendChild(splashScreen._dom);

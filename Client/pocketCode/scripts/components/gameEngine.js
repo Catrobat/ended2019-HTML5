@@ -73,6 +73,13 @@ PocketCode.GameEngine = (function () {
                 return { width: this._originalScreenWidth, height: this._originalScreenHeight };
             },
         },
+        muted: {
+            set: function (value) {
+                //if (typeof value !== 'boolean')
+                //    throw new Error('invalid parameter: muted');
+                this._soundManager.muted = value;
+            },
+        },
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
