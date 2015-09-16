@@ -152,12 +152,6 @@
         cursor: default;
     }
 
-.pc-webButtonChecked {
-    color: #ef7716;
-    fill: #ef7716;
-    border-color: #ef7716;
-}
-
 .pc-webButton svg {
     position: absolute;
     width: inherit;
@@ -178,6 +172,14 @@
 
 .pc-webButton:disabled {
     fill: #A5A5A5;
+}
+.pc-webButtonChecked {
+    color: #ef7716;
+    fill: #ef7716;
+    border-color: #ef7716;
+}
+.pc-webButtonChecked:hover {
+    fill: #E8CCB9;
 }
 
 

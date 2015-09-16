@@ -464,6 +464,11 @@
 	fill: #ef7716;
 	border-color: #ef7716;
 }
+.pc-playerButtonChecked:hover {
+	color: #E8CCB9;
+	fill: #E8CCB9;
+	border-color: #E8CCB9;
+}
 
 
 /* player viewport view*/
