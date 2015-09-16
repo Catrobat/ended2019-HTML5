@@ -25,8 +25,8 @@ PocketCode.GameEngine = (function () {
         this.title = "";
         this.description = "";
         this.author = "";
-        this._screenHeight = 0;
-        this._screenWidth = 0;
+        this._originalScreenHeight = 0;
+        this._originalScreenWidth = 0;
 
         this._background = undefined;
         this._sprites = [];
@@ -165,8 +165,8 @@ PocketCode.GameEngine = (function () {
             this.title = header.title;
             this.description = header.description;
             this.author = header.author;
-            this._screenHeight = header.device.screenHeight;
-            this._screenWidth = header.device.screenWidth;
+            this._originalScreenHeight = header.device.screenHeight;
+            this._originalScreenWidth = header.device.screenWidth;
 
             if (this._background)
                 this._background.dispose();// = undefined;
@@ -186,11 +186,16 @@ PocketCode.GameEngine = (function () {
                 this._resourcesLoaded = true;
             else {
                 this._onLoadingProgress.dispatchEvent({ progress: 0 });
-                //image loading using store
-                //TODO: set initial scaling: default = 1
-                var initialScaling = 1;
-                //TODO: (commented out due to testing) ): make sure to use the screen params + pixelRatio if needed as the window may not be maximized on desktops
-                //this._imageStore.scaling = Math.min(SmartJs.Ui.Window.height / this._screenHeight, SmartJs.Ui.Window.width / this._screenWidth, 1);   -> this is private now
+                var initialScaling = 1;     //set initial scaling: default = 1
+                if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
+                    var min = Math.min(window.innerWidth, window.innerHeight),
+                        max = Math.max(window.innerWidth, window.innerHeight),
+                        smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
+                        smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
+                    var scaling = Math.max(min / smin, max / smax);
+                    if (scaling < 1)
+                        initialScaling = scaling;
+                }
                 this._resourceBaseUrl = jsonProject.resourceBaseUrl;
                 this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images, initialScaling);
                 //sounds are loaded after images using the image stores onLoad event
@@ -210,6 +215,7 @@ PocketCode.GameEngine = (function () {
 
             this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
+            this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
             this._background = this._spriteFactory.create(jsonProject.background);
 
@@ -230,6 +236,10 @@ PocketCode.GameEngine = (function () {
                     this._onLoad.dispatchEvent();
                 }
             }
+        },
+        _spriteFactoryUnsupportedBricksHandler: function (e) {
+            var bricks = e.unsupportedBricks;
+            //TODO:
         },
         _resourceProgressChangeHandler: function (e) {
             if (e.progress === 0)
@@ -394,8 +404,8 @@ PocketCode.GameEngine = (function () {
             if (!sprite || !sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
-            var sh2 = this._screenHeight / 2,
-                sw2 = this._screenWidth / 2,
+            var sh2 = this._originalScreenHeight / 2,
+                sw2 = this._originalScreenWidth / 2,
                 dir = sprite.direction,
                 x = sprite.positionX,
                 y = sprite.positionY;

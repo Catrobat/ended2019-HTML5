@@ -167,9 +167,9 @@ QUnit.test("SetTransparencyBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
+    var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetTransparencyBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.GHOST });
+    var b = new PocketCode.Model.SetTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
     //^^ effect is set server side
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
@@ -220,9 +220,9 @@ QUnit.test("SetBrightnessBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
+    var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetBrightnessBrick(device, sprite, { value: percentage, effect: PocketCode.GraphicEffect.BRIGHTNESS });
+    var b = new PocketCode.Model.SetBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetBrightnessBrick, "instance check");

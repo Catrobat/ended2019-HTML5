@@ -125,7 +125,7 @@ PocketCode.merge({
 
                     case 'ForeverBrick':
                     case 'RepeatBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, this._minLoopCycleTime, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
                         break;
 
                     default:
