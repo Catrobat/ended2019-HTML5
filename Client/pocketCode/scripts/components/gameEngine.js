@@ -68,6 +68,11 @@ PocketCode.GameEngine = (function () {
                 return this._resourcesLoaded && this._spritesLoaded;
             },
         },
+        projectScreenSize: {
+            get: function() {
+                return { width: this._originalScreenWidth, height: this._originalScreenHeight };
+            },
+        },
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
