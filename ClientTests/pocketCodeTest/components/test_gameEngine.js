@@ -410,10 +410,10 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
         },
     };
     var ga = new PocketCode.GameEngine();
-    ga._screenHeight = 100;
-    ga._screenWidth = 50;
-    var sh2 = ga._screenHeight / 2,
-        sw2 = ga._screenWidth / 2;
+    ga._originalScreenHeight = 100;
+    ga._originalScreenWidth = 50;
+    var sh2 = ga._originalScreenHeight / 2,
+        sw2 = ga._originalScreenWidth / 2;
     var is = new PocketCode.ImageStore();
     //inject image store to load test images directly
     ga._imageStore = is;
@@ -876,10 +876,10 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
         assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
 
         //test on top/bottom: landscape
-        ga._screenHeight = 50;
-        ga._screenWidth = 100;
-        sh2 = ga._screenHeight / 2,
-        sw2 = ga._screenWidth / 2;
+        ga._originalScreenHeight = 50;
+        ga._originalScreenWidth = 100;
+        sh2 = ga._originalScreenHeight / 2,
+        sw2 = ga._originalScreenWidth / 2;
         //spriteMock.size = 200;
 
         spriteMock.positionX = 100;
@@ -896,10 +896,10 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
         spriteMock.currentLook = {
             imageId: "i11",
         };
-        ga._screenHeight = 50;
-        ga._screenWidth = 50;
-        sh2 = ga._screenHeight / 2,
-        sw2 = ga._screenWidth / 2;
+        ga._originalScreenHeight = 50;
+        ga._originalScreenWidth = 50;
+        sh2 = ga._originalScreenHeight / 2,
+        sw2 = ga._originalScreenWidth / 2;
         //top
         spriteMock.positionX = 0;
         spriteMock.positionY = 40;
