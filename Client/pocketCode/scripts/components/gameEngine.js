@@ -287,6 +287,8 @@ PocketCode.GameEngine = (function () {
             if (!this.projectLoaded) {
                 throw new Error('no project loaded');
             }
+            if (this._executionState === PocketCode.ExecutionState.PAUSED)
+                return this.resumeProject();
 
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
