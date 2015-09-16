@@ -217,8 +217,10 @@ PocketCode.GameEngine = (function () {
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
-            this._background = this._spriteFactory.create(jsonProject.background);
-
+            if (jsonProject.background) {
+                this._background = this._spriteFactory.create(jsonProject.background);
+                this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            }
             var sp = jsonProject.sprites;
             var sprite, i, l;
             for (i = 0, l = sp.length; i < l; i++) {
@@ -276,8 +278,8 @@ PocketCode.GameEngine = (function () {
 
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
-                this._background.init();
-
+                if (this._background)
+                    this._background.init();
                 var sprites = this._sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)
                     sprites[i].init();
@@ -332,7 +334,8 @@ PocketCode.GameEngine = (function () {
         _spriteOnExecutedHandler: function (e) {
             if (this._soundManager.isPlaying)
                 return;
-
+            if (this._background && this._background.scriptsRunning)
+                return;
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].scriptsRunning)
@@ -647,6 +650,8 @@ PocketCode.GameEngine = (function () {
             //this._soundManager.stopAllSounds();   //already stopped in stopProject()
             //this._soundManager.dispose();
 
+            if (this._background)
+                this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));

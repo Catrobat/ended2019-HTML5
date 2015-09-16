@@ -375,7 +375,7 @@ PocketCode.Model.RootContainerBrick = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
                 this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._onExecuted.dispatchEvent();
+                window.setTimeout(function () { this._onExecuted.dispatchEvent(); }.bind(this), 20);  //delay neede to allow other scripts to start
             }, this), SmartJs.getNewId());
             //throw new Error('execute() cannot be called directly on root containers')
         },
