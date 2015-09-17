@@ -26,31 +26,13 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
             //this._toolbar.hide();
         }
-        this._toolbar.disabled = true;
         this.appendChild(this._toolbar);
 
-        var setting = undefined;
-        var menuOffset = 0;
-
-        //test
-        //this.executionState = PocketCode.ExecutionState.RUNNING;
-
-        //if (SmartJs.Device.isIOs)
-        //    setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS;
-        //else if (SmartJs.Device.isMobile)
-        //    setting = PocketCode.Ui.PlayerToolbarSettings.MOBILE;
-        //else {
-        //    setting = PocketCode.Ui.PlayerToolbarSettings.DESKTOP;
-        //    // menuOffset = '10%';
-        //}
-
-        //this._viewport = new PocketCode.PlayerViewportController()._view; //TODO: a controller instance in a view?
-        //this._viewport.style.merge({"margin-left":menuOffset});
-        //this._toolbar = new PocketCode.Ui.PlayerToolbar(setting);    //TODO: ctr settings
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
         this._startScreen.hide();
-        //this._initPageLayout();
+
+        this.disabled = true;
     }
 
     //properties
@@ -60,9 +42,10 @@ PocketCode.Ui.PlayerPageView = (function () {
                 this._toolbar.executionState = value;
             },
         },
-        toolbarDisabled: {
+        disabled: {
             set: function (value) {
                 this._toolbar.disabled = value;
+                this._startScreen.startEnabled = !value;
             },
         },
         axesButtonChecked: {
@@ -89,10 +72,27 @@ PocketCode.Ui.PlayerPageView = (function () {
                 return this._toolbar.onButtonClicked;
             },
         },
+        onStartClicked: {
+            get: function () {
+                return this._startScreen.onStartClicked;
+            },
+        },
     });
 
     //methods
     PlayerPageView.prototype.merge({
+        showStartScreen: function (title, thumbnailUrl) {
+            this._startScreen.title = title;
+            this._startScreen.previewImage = thumbnailUrl;
+            this._startScreen.setProgress(0);
+            this._startScreen.show();
+        },
+        hideStartScreen:function() {
+            this._startScreen.hide();
+        },
+        updateLoadingProgress: function (progress) {
+            this._startScreen.setProgress(progress);
+        },
         //_initPageLayout: function() {
         //    //this.appendChild(this._viewport); //TODO: add a view and not the controller
         //    //this.appendChild(this._toolbar);

@@ -100,7 +100,7 @@ PocketCode.PlayerApplication = (function () {
     //methods
     PlayerApplication.prototype.merge({
         _projectLoadingErrorHandler: function(e) {
-            alert("loading failed: cross origin error");
+            alert("loading failed: cross origin error or unsupported format");
         },
         _requestProjectDetails: function (projectId) {
             var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
@@ -113,6 +113,7 @@ PocketCode.PlayerApplication = (function () {
                 return;
             var json = e.target.responseJson;
             this._onInit.dispatchEvent();
+            this._pages.player.projectDetails = json;//showLoadingScreen(json.title, json.baseUrl + json.thumbnailUrl);
             this._viewport.show();
             this._requestProject(this._currentProjectId);
         },

@@ -11,7 +11,9 @@ window.onload = function () {
     var tbButton2 = new PocketCode.Ui.Button('ok');
     var tbButton3 = new PocketCode.Ui.Button('not supported');
 
-    var control = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
+    var control = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
+    control.disabled = true;
+    control.disabled = false;
 
     //click handler
     var onClickEventFired = function (e) {
