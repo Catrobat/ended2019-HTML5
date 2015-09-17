@@ -269,6 +269,8 @@ PocketCode.GameEngine = (function () {
             this._sounds = this._jsonProject.sounds || [];
         },
         _soundManagerLoadHandler: function (e) {
+            if (this._resourceLoadedSize !== this._resourceTotalSize)
+                return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
             if (this._invalidSoundFiles.length > 0)
                 this._onLoadingError.dispatchEvent({ files: this._invalidSoundFiles });
             this._resourcesLoaded = true;
