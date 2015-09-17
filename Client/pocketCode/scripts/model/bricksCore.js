@@ -393,15 +393,16 @@ PocketCode.Model.RootContainerBrick = (function () {
          */
         pause: function () {
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
-            this._execStateBeforePause = this._executionState;
-            //^^we have to store the original state to enable onExecute while pausing bricks to avoid errors on broadcasts
-            this._executionState = PocketCode.ExecutionState.PAUSED;
+            //if (this._executionState === PocketCode.ExecutionState.RUNNING)
+            //    this._executionState = PocketCode.ExecutionState.PAUSED;
+            //^^ while pausing the bricks we do not updae the current exection state
         },
         /**
          * calls "resume()" on bricks
          */
         resume: function () {
-            this._executionState = this._execStateBeforePause;//PocketCode.ExecutionState.RUNNING;
+            //if (this._executionState === PocketCode.ExecutionState.PAUSED)
+            //    this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
         },
         /**

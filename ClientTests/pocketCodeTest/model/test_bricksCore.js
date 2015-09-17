@@ -406,8 +406,9 @@ QUnit.test("RootContainerBrick", function (assert) {
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
     b.execute();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
+    var execState = b.executionState;
     b.pause();
-    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state: pause");
+    assert.equal(b.executionState, execState, "exec state: not updated on pause()");
     assert.ok(b._bricks._bricks[0].paused && b._bricks._bricks[1].paused && b._bricks._bricks[2].paused && b._bricks._bricks[3].paused, "super call: pause");
     b.resume();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: resume");
