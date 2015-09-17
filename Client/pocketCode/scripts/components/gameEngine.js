@@ -180,6 +180,7 @@ PocketCode.GameEngine = (function () {
             this._originalScreenHeight = header.device.screenHeight;
             this._originalScreenWidth = header.device.screenWidth;
 
+            //crear objects
             if (this._background)
                 this._background.dispose();// = undefined;
             this._sprites.dispose();
@@ -220,9 +221,9 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            var device = new PocketCode.Device(this._soundManager);
+            var device = new PocketCode.Device(this._soundManager); //TODO: used desktop device (future)
             var bricksCount = jsonProject.header.bricksCount;
-            if (bricksCount <= 0)
+            if (bricksCount <= 0)   //TODO: necessary? - add test case
                 this._spritesLoaded = true;
 
             this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
@@ -253,7 +254,8 @@ PocketCode.GameEngine = (function () {
         },
         _spriteFactoryUnsupportedBricksHandler: function (e) {
             var bricks = e.unsupportedBricks;
-            //TODO:
+            //TODO: make unsupported bricks and resource loading errors (files) public to check on onLoad?
+            //TODO: formula is not validated during loaded (sprites not ready): how to check on device features like sensors?
         },
         _resourceProgressChangeHandler: function (e) {
             if (e.progress === 0)
