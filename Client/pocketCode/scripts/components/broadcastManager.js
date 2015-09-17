@@ -35,13 +35,19 @@ PocketCode.BroadcastManager = (function () {
          * each id is a tuple entry without subscriber. Pending broadcastWait list is also cleared.
          * @param {List} broadcasts: tuple list of broadcast [id,name]
          */
-        init: function(broadcasts) {
+        init: function (broadcasts) {
             this._pendingBW = {};
 
             this._subscriptions = {};
             for (var i = 0, l = broadcasts.length; i < l; i++) {
                 this._subscriptions[broadcasts[i].id] = [];
             }
+        },
+        /**
+         * Stop method clears all pending ops
+         */
+        stop: function () {
+            this._pendingBW = {};
         },
         /**
          * Subscribe method is responsible for attaching a given listener to a given broadcastID within the
@@ -138,7 +144,9 @@ PocketCode.BroadcastManager = (function () {
          */
         _brickExecutedHandler: function (e) {
             var pendingBW = this._pendingBW[e.id];
-            if (pendingBW.counter === 1) {
+            if (!pendingBW)
+                return;
+            else if (pendingBW.counter === 1) {
                 var callId = pendingBW.callId;
                 var pubListener = pendingBW.listener;
                 var loopDelay = pendingBW.loopDelay || e.loopDelay;

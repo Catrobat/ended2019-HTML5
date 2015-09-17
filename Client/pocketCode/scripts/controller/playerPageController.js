@@ -118,6 +118,7 @@ PocketCode.PlayerPageController = (function () {
         _projectLoadHandler: function (e) {
             var screenSize = this._gameEngine.projectScreenSize;
             this._playerViewport.setProjectScreenSize(screenSize.width, screenSize.height);
+            this._view.toolbarDisabled = false;
             console.log('project load: ');// + JSON.stringify(e));
         },
         _projectStartHandler: function (e) {
@@ -125,7 +126,7 @@ PocketCode.PlayerPageController = (function () {
         },
         _projectExecutedHandler: function (e) {
             this._view.executionState = PocketCode.ExecutionState.STOPPED;
-            console.log('project successfully executed');
+            console.log('project executed (detected)');
         },
         _uiUpdateHandler: function (e) {
             console.log('ui update: { spriteId: ' + e.id + ', properties: ' + JSON.stringify(e.properties) + ' }');
@@ -152,6 +153,7 @@ PocketCode.PlayerPageController = (function () {
                     this._showScreenshotDialog(img);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
+                    this._gameEngine.stopProject(); //test only
                     if (!this._axesVisible) {
                         this._playerViewport.showAxes();
                         this._view.axesButtonChecked = true;

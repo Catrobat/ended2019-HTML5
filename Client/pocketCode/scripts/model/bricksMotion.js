@@ -204,6 +204,7 @@ PocketCode.Model.merge({
 			this._x = new PocketCode.Formula(device, sprite, propObject.x);
 			this._y = new PocketCode.Formula(device, sprite, propObject.y);
 			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+			this._paused = false;
 		}
 
 		GlideToBrick.prototype.merge({
@@ -217,34 +218,46 @@ PocketCode.Model.merge({
 			_execute: function (callId) {
 				var sprite = this._sprite;
 				var po = this._pendingOps[callId];
+				po.paused = this._paused;
 				var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
 				animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
 				animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
 				po.animation = animation;
 				animation.start({ callId: callId });
+				if (this._paused)
+				    animation.pause();
 			},
 			pause: function () {
-				var po = this._pendingOps;
-				for (var o in po) {
-					var animation = po[o].animation;
-					if (animation)
-						animation.pause();
+			    this._paused = true;
+				var po, pos = this._pendingOps;
+				for (var p in pos) {
+				    if (!pos.hasOwnProperty(p))
+				        continue;
+				    po = pos[p];
+				    po.animation.pause();
+				    po.paused = true;
 				}
 			},
 			resume: function () {
-				var po = this._pendingOps;
-				for (var o in po) {
-					var animation = po[o].animation;
-					if (animation)
-						animation.resume();
+			    this._paused = false;
+			    var po, pos = this._pendingOps;
+			    for (var p in pos) {
+			        if (!pos.hasOwnProperty(p))
+			            continue;
+			        po = pos[p];
+			        if (po.paused) {
+			            po.paused = false;
+			            po.animation.resume();
+			        }
 				}
 			},
 			stop: function () {
-				var po = this._pendingOps;
-				for (var o in po) {
-					var animation = po[o].animation;
-					if (animation)
-						animation.stop();
+			    var po, pos = this._pendingOps;
+			    for (var p in pos) {
+			        if (!pos.hasOwnProperty(p))
+			            continue;
+			        po = pos[p];
+			        po.animation.stop();
 				}
 				this._pendingOps = {};
 			},

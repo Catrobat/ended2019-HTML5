@@ -103,7 +103,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
     program._onTabbedAction.dispatchEvent({ sprite: sprite });
-    assert.ok(handlerCalled === 1, "executed handler called (once)");
+    assert.equal(handlerCalled, 1, "executed handler called (once)");
 
     //add a brick container
     var bricks = [];
@@ -118,8 +118,8 @@ QUnit.test("WhenActionBrick", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 100);
+                //var _self = this;
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
         });

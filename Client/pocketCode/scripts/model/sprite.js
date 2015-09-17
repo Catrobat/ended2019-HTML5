@@ -122,6 +122,7 @@ PocketCode.Model.Sprite = (function () {
         }
     }
 
+    //properties
     Object.defineProperties(Sprite.prototype, {
         renderingProperties: {   //all rendering propeties as object
             get: function () {
@@ -893,8 +894,9 @@ PocketCode.Model.Sprite = (function () {
             this.stopScripts();
             
             this._gameEngine = undefined;   //make sure the game engine is not disposed
-            for (var i = 0, l = this._bricks.length; i < l; i++) {  //remove handlers
-                var brick = this._bricks[i];    
+            var bricks = this._bricks;
+            for (var i = 0, l = bricks.length; i < l; i++) {  //remove handlers
+                var brick = bricks[i];    
                 if (brick.onExecuted)  //supported by all root container bricks
                     brick.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
             }

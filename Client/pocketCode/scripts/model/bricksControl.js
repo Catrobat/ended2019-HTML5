@@ -104,6 +104,7 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite);
 
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+            this._paused = false;
         }
 
         WaitBrick.prototype.merge({
@@ -112,30 +113,40 @@ PocketCode.Model.merge({
             },
             _execute: function (callId) {
                 var po = this._pendingOps[callId];
+                po.paused = this._paused;
                 po.timer = new SmartJs.Components.Timer(this._duration.calculate() * 1000, new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                if (this._paused)
+                    po.timer.pause();
             },
             pause: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var timer = po[o].timer;
-                    if (timer)
-                        timer.pause();
+                this._paused = true;
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    if (!pos.hasOwnProperty(p))
+                        continue;
+                    po = pos[p];
+                    po.timer.pause();
+                    po.paused = true;
                 }
             },
             resume: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var timer = po[o].timer;
-                    if (timer)
-                        timer.resume();
+                this._paused = false;
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    if (!pos.hasOwnProperty(p))
+                        continue;
+                    po = pos[p];
+                    po.paused = false;
+                    po.timer.resume();
                 }
             },
             stop: function () {
-                var po = this._pendingOps;
-                for (var o in po) {
-                    var timer = po[o].timer;
-                    if (timer)
-                        timer.stop();
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    if (!pos.hasOwnProperty(p))
+                        continue;
+                    po = pos[p];
+                    po.timer.stop();
                 }
                 this._pendingOps = {};
             },
@@ -276,8 +287,8 @@ PocketCode.Model.merge({
             //_returnHandler: function (e) {
             //	this._return(e.id, e.loopDelay);  
             //},
-            _execute: function (callId) {
-                this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
+            _execute: function (threadId) {
+                this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), threadId);
             },
             //stop: function () {
             //	//required? 
@@ -366,9 +377,12 @@ PocketCode.Model.merge({
 
         RepeatBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function (callId) {
-                var po = this._pendingOps[callId];
-                if (po.loopCounter === undefined)
+            _loopConditionMet: function (threadId) {
+                var po = this._pendingOps[threadId];
+                if (!po)
+                    return false;
+
+                if (po.loopCounter === undefined) //the formula may change during look cycle? //TODO: separate counter from condition?
                     po.loopCounter = Math.round(this._timesToRepeat.calculate());
 
                 if (po.loopCounter > 0)
@@ -380,13 +394,15 @@ PocketCode.Model.merge({
             //rerun _execute on container n times and than call _return
             //this._return(e.id, e.loopDelay);
             //},
-            _execute: function (callId) {
-                var po = this._pendingOps[callId];
+            _execute: function (threadId) {
+                var po = this._pendingOps[threadId];
+                if (!po)
+                    return false;
                 //if (!po.loopCounter)  //not required: loopCondition has to be checkt first
                 //    po.loopCounter = this._timesToRepeat.calculate();
                 po.loopCounter--;// = po.loopCounter - 1;
 
-                this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), callId);
+                this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), threadId);
             },
         });
 

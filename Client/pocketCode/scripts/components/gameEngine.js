@@ -290,6 +290,7 @@ PocketCode.GameEngine = (function () {
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
+            this._broadcastMgr.stop();
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
                 if (this._background)
@@ -314,8 +315,9 @@ PocketCode.GameEngine = (function () {
             if (this._background)
                 this._background.pauseScripts();
 
-            for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].pauseScripts();
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].pauseScripts();
             }
             this._executionState = PocketCode.ExecutionState.PAUSED;
         },
@@ -327,8 +329,9 @@ PocketCode.GameEngine = (function () {
             if (this._background)
                 this._background.resumeScripts();
 
-            for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].resumeScripts();
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].resumeScripts();
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
         },
@@ -339,25 +342,31 @@ PocketCode.GameEngine = (function () {
             if (this._background)
                 this._background.stopScripts();
 
-            for (var i = 0, l = this._sprites.length; i < l; i++) {
-                this._sprites[i].stopScripts();
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].stopScripts();
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 
         _spriteOnExecutedHandler: function (e) {
-            if (this._soundManager.isPlaying)
-                return;
-            if (this._background && this._background.scriptsRunning)
-                return;
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                if (sprites[i].scriptsRunning)
+            window.setTimeout(function () {
+                if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once 
                     return;
-            }
+            
+                if (this._soundManager.isPlaying)
+                    return;
+                if (this._background && this._background.scriptsRunning)
+                    return;
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    if (sprites[i].scriptsRunning)
+                        return;
+                }
 
-            this._executionState = PocketCode.ExecutionState.STOPPED;
-            this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endless loop brick
+                this._executionState = PocketCode.ExecutionState.STOPPED;
+                this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endless loop brick
+            }.bind(this), 100);  //delay neede to allow other scripts to start
         },
 
         //brick-sprite interaction
@@ -372,8 +381,9 @@ PocketCode.GameEngine = (function () {
         },
         getSpritesAsPropertyList: function () {
             var props = [this._background.renderingProperties];
-            for (var i = 0, l = this._sprites.length; i < l; i++)
-                props.push(this._sprites[i].renderingProperties);
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++)
+                props.push(sprites[i].renderingProperties);
             return props;
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)

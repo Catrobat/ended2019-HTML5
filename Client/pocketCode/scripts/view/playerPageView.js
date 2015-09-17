@@ -24,9 +24,9 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
-            //this._toolbar.disabled = true;
             //this._toolbar.hide();
         }
+        this._toolbar.disabled = true;
         this.appendChild(this._toolbar);
 
         var setting = undefined;
@@ -58,6 +58,11 @@ PocketCode.Ui.PlayerPageView = (function () {
         executionState: {
             set: function (value) {
                 this._toolbar.executionState = value;
+            },
+        },
+        toolbarDisabled: {
+            set: function (value) {
+                this._toolbar.disabled = value;
             },
         },
         axesButtonChecked: {
