@@ -19,7 +19,9 @@ PocketCode.Model.merge({
 		}
 
 		PlaceAtBrick.prototype._execute = function () {
-			this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
 		};
 
 		return PlaceAtBrick;
@@ -36,7 +38,9 @@ PocketCode.Model.merge({
 		}
 
 		SetXBrick.prototype._execute = function () {
-			this._return(this._sprite.setPositionX(this._x.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.setPositionX(this._x.calculate()));
 		};
 
 		return SetXBrick;
@@ -53,7 +57,9 @@ PocketCode.Model.merge({
 		}
 
 		SetYBrick.prototype._execute = function () {
-			this._return(this._sprite.setPositionY(this._y.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.setPositionY(this._y.calculate()));
 		};
 
 		return SetYBrick;
@@ -70,7 +76,9 @@ PocketCode.Model.merge({
 		}
 
 		ChangeXBrick.prototype._execute = function () {
-			this._return(this._sprite.changePositionX(this._x.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.changePositionX(this._x.calculate()));
 		};
 
 		return ChangeXBrick;
@@ -87,7 +95,9 @@ PocketCode.Model.merge({
 		}
 
 		ChangeYBrick.prototype._execute = function () {
-			this._return(this._sprite.changePositionY(this._y.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.changePositionY(this._y.calculate()));
 		};
 
 		return ChangeYBrick;
@@ -103,7 +113,9 @@ PocketCode.Model.merge({
 		}
 
 		IfOnEdgeBounceBrick.prototype._execute = function () {
-			this._return(this._sprite.ifOnEdgeBounce());
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.ifOnEdgeBounce());
 		};
 
 		return IfOnEdgeBounceBrick;
@@ -120,7 +132,9 @@ PocketCode.Model.merge({
 		}
 
 		MoveNStepsBrick.prototype._execute = function () {
-			this._return(this._sprite.move(this._steps.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.move(this._steps.calculate()));
 		};
 
 		return MoveNStepsBrick;
@@ -137,7 +151,9 @@ PocketCode.Model.merge({
 		}
 
 		TurnLeftBrick.prototype._execute = function () {
-			this._return(this._sprite.turnLeft(this._degrees.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.turnLeft(this._degrees.calculate()));
 		};
 
 		return TurnLeftBrick;
@@ -154,7 +170,9 @@ PocketCode.Model.merge({
 		}
 
 		TurnRightBrick.prototype._execute = function () {
-			this._return(this._sprite.turnRight(this._degrees.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.turnRight(this._degrees.calculate()));
 		};
 
 		return TurnRightBrick;
@@ -171,7 +189,9 @@ PocketCode.Model.merge({
 		}
 
 		PointInDirectionBrick.prototype._execute = function () {
-			this._return(this._sprite.setDirection(this._degrees.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.setDirection(this._degrees.calculate()));
 		};
 
 		return PointInDirectionBrick;
@@ -188,7 +208,9 @@ PocketCode.Model.merge({
 		}
 
 		PointToBrick.prototype._execute = function () {
-			this._return(this._sprite.pointTo(this._spriteId));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.pointTo(this._spriteId));
 		};
 
 		return PointToBrick;
@@ -216,7 +238,9 @@ PocketCode.Model.merge({
 				this._return(callId, true);
 			},
 			_execute: function (callId) {
-				var sprite = this._sprite;
+			    if (this._disposed)
+			        return;
+			    var sprite = this._sprite;
 				var po = this._pendingOps[callId];
 				po.paused = this._paused;
 				var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
@@ -277,7 +301,9 @@ PocketCode.Model.merge({
 		}
 
 		GoBackBrick.prototype._execute = function () {
-			this._return(this._sprite.goBack(this._layers.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.goBack(this._layers.calculate()));
 		};
 
 		return GoBackBrick;
@@ -293,7 +319,9 @@ PocketCode.Model.merge({
 		}
 
 		ComeToFrontBrick.prototype._execute = function () {
-			this._return(this._sprite.comeToFront());
+		    if (this._disposed)
+		        return;
+		    this._return(this._sprite.comeToFront());
 		};
 
 		return ComeToFrontBrick;
@@ -309,7 +337,9 @@ PocketCode.Model.merge({
 		}
 
 		VibrationBrick.prototype._execute = function () {
-			this._return(this._device.vibrate(this._duration.calculate()));
+		    if (this._disposed)
+		        return;
+		    this._return(this._device.vibrate(this._duration.calculate()));
 		};
 
 		return VibrationBrick;

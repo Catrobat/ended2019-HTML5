@@ -17,6 +17,8 @@ PocketCode.Model.merge({
         }
 
         SetGraphicEffectBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.setGraphicEffect(this._effect, this._value.calculate()));
         };
 
@@ -35,6 +37,8 @@ PocketCode.Model.merge({
         }
 
         ChangeGraphicEffectBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.changeGraphicEffect(this._effect, this._value.calculate()));
         };
 
@@ -55,6 +59,8 @@ PocketCode.Model.merge({
         }
 
         SetLookBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.setLook(this._imageId));
         };
 
@@ -71,6 +77,8 @@ PocketCode.Model.merge({
         }
 
         NextLookBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.nextLook());
         };
 
@@ -88,6 +96,8 @@ PocketCode.Model.merge({
         }
 
         SetSizeToBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.setSize(this._percentage.calculate()));
         };
 
@@ -105,6 +115,8 @@ PocketCode.Model.merge({
         }
 
         ChangeSizeBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.changeSize(this._value.calculate()));
         };
 
@@ -120,6 +132,8 @@ PocketCode.Model.merge({
         }
 
         HideBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.hide());
         };
 
@@ -135,6 +149,8 @@ PocketCode.Model.merge({
         }
 
         ShowBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.show());
         };
 
@@ -215,6 +231,8 @@ PocketCode.Model.merge({
         }
 
         ClearGraphicEffectBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._return(this._sprite.clearGraphicEffects());
         };
 
@@ -229,6 +247,8 @@ PocketCode.Model.merge({
         }
 
         LedOnBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._device.flashlightOn = true;
             this._return(true);
         };
@@ -244,6 +264,8 @@ PocketCode.Model.merge({
         }
 
         LedOffBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._device.flashlightOn = false;
             this._return(false);
         };

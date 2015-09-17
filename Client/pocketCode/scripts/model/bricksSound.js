@@ -18,6 +18,8 @@ PocketCode.Model.merge({
         }
 
         PlaySoundBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._soundManager.startSound(this._soundId);
             this._return();
         };
@@ -36,6 +38,8 @@ PocketCode.Model.merge({
         }
 
         StopAllSoundsBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._soundManager.stopAllSounds();
             this._return();
         };
@@ -55,6 +59,8 @@ PocketCode.Model.merge({
         }
 
         SetVolumeBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._soundManager.volume = this._percentage.calculate();
             this._return();
         };
@@ -74,6 +80,8 @@ PocketCode.Model.merge({
         }
 
         ChangeVolumeBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._soundManager.volume += this._value.calculate();   //changeVolume(this._value.calculate());
             this._return();
         };
@@ -101,6 +109,8 @@ PocketCode.Model.merge({
         }
 
         SpeakBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             if (this._soundId) {
                 this._soundManager.startSound(this._soundId);
             }

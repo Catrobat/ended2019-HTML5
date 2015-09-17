@@ -304,6 +304,8 @@ PocketCode.Model.SingleContainerBrick = (function () {
          * @private
          */
         _execute: function (threadId) {
+            if (this._disposed)
+                return;
             this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
         },
         /**

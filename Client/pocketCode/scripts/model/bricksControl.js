@@ -34,6 +34,8 @@ PocketCode.Model.merge({
             //	//to call our custom event
             //},
             _execute: function (id) {
+                if (this._disposed)
+                    return;
                 //if (!this._bricks) {
                 //	this._return(id);
                 //	return;
@@ -75,6 +77,8 @@ PocketCode.Model.merge({
                     this.execute();
             },
             _execute: function (id) {
+                if (this._disposed)
+                    return;
                 //if (!this._bricks) {
                 //	this._return(id);
                 //	return;
@@ -112,6 +116,8 @@ PocketCode.Model.merge({
                 this._return(e.callId);
             },
             _execute: function (callId) {
+                if (this._disposed)
+                    return;
                 var po = this._pendingOps[callId];
                 po.paused = this._paused;
                 po.timer = new SmartJs.Components.Timer(this._duration.calculate() * 1000, new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
@@ -182,6 +188,8 @@ PocketCode.Model.merge({
             //    this._return(e.id, e.loopDelay)
             //},
             _execute: function (id) {
+                if (this._disposed)
+                    return;
                 //if (!this._bricks) {
                 //	this._return(id);
                 //	return;
@@ -211,6 +219,8 @@ PocketCode.Model.merge({
         }
 
         BroadcastBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._broadcastMgr.publish(this._broadcastMsgId);
             this._return();
         };
@@ -234,6 +244,8 @@ PocketCode.Model.merge({
                 this._return(e.id, e.loopDelay)
             },
             _execute: function (id) {
+                if (this._disposed)
+                    return;
                 //this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(_waitHandler, this), id);
                 this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(this._returnHandler, this), id);
             },
@@ -288,6 +300,8 @@ PocketCode.Model.merge({
             //	this._return(e.id, e.loopDelay);  
             //},
             _execute: function (threadId) {
+                if (this._disposed)
+                    return;
                 this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), threadId);
             },
             //stop: function () {
@@ -395,6 +409,8 @@ PocketCode.Model.merge({
             //this._return(e.id, e.loopDelay);
             //},
             _execute: function (threadId) {
+                if (this._disposed)
+                    return;
                 var po = this._pendingOps[threadId];
                 if (!po)
                     return false;

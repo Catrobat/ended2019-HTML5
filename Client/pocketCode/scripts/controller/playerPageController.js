@@ -153,7 +153,6 @@ PocketCode.PlayerPageController = (function () {
                     this._showScreenshotDialog(img);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
-                    this._gameEngine.stopProject(); //test only
                     if (!this._axesVisible) {
                         this._playerViewport.showAxes();
                         this._view.axesButtonChecked = true;

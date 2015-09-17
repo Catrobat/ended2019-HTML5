@@ -17,6 +17,8 @@ PocketCode.Model.merge({
         }
 
         SetVariableBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._var.value = this._value.calculate();
             this._return();
         };
@@ -35,6 +37,8 @@ PocketCode.Model.merge({
         }
 
         ChangeVariableBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._var.value += this._value.calculate();
             this._return();
         };
@@ -54,6 +58,8 @@ PocketCode.Model.merge({
         }
 
         ShowTextBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
             this._return();
         };
@@ -71,6 +77,8 @@ PocketCode.Model.merge({
         }
 
         HideTextBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._sprite.hideVariable(this._varId);
             this._return();
         };
@@ -89,6 +97,8 @@ PocketCode.Model.merge({
         }
 
         AppendToListBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._list.append(this._value.calculate());
             this._return();
         };
@@ -109,6 +119,8 @@ PocketCode.Model.merge({
         }
 
         InsertAtListBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._list.insertAt(this._idx, this._value.calculate());
             this._return();
         };
@@ -129,6 +141,8 @@ PocketCode.Model.merge({
         }
 
         ReplaceAtListBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._list.replaceAt(this._idx, this._value.calculate());
             this._return();
         };
@@ -148,6 +162,8 @@ PocketCode.Model.merge({
         }
 
         DeleteAtListBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
             this._list.deleteAt(this._idx);
             this._return();
         };
