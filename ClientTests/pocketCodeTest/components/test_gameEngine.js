@@ -139,13 +139,13 @@ QUnit.test("GameEngine", function (assert) {
     var onExecutedCalled = 0;
     var onExecutedHandler = function () {
         onExecutedCalled++;
+        assert.equal(onExecutedCalled, 1, "onExecuted dispatched once");    //this will throw an error as soon as there is a second call
     };
     var onExecListener = new SmartJs.Event.EventListener(onExecutedHandler, this);
     gameEngine.onProgramExecuted.addEventListener(onExecListener);
     //simulate onExecuted dispatch
     gameEngine._spriteOnExecutedHandler();
-    assert.equal(onExecutedCalled, 1, "onExecuted dispatched once");
-    gameEngine.onProgramExecuted.removeEventListener(onExecListener);
+    //gameEngine.onProgramExecuted.removeEventListener(onExecListener); //keep the event handler attached
 
     //layers
     var layers = [gameEngine._background].concat(gameEngine._sprites);//layerObjectList;

@@ -512,15 +512,17 @@ QUnit.test("Sprite", function (assert) {
     // ********************* start/pause/resume/stop *********************
     //var device = new PocketCode.Device();
     var programAsync = new PocketCode.GameEngine();
+    programAsync._executionState = PocketCode.ExecutionState.RUNNING;
+
     var brick1 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     brick1.id = "first";
     var brick2 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     //adding a test brick to the internal brick container
-    var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 1, right: null, left: null } });
+    var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
     var brick3 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    var brick4 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    var brick5 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    //var brick4 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    //var brick5 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;
@@ -589,6 +591,7 @@ QUnit.test("Sprite", function (assert) {
                 }, "script stopped correctly: deep check: no threaded items left");
 
     //start script again to get an onExecEvent in the gameEngine
+    programAsync._executionState = PocketCode.ExecutionState.RUNNING;
     programAsync.onProgramStart.dispatchEvent();
 
     // ********************* come to front/go back *********************
