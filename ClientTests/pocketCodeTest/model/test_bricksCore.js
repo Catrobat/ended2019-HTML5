@@ -7,7 +7,7 @@ QUnit.module("bricksCore.js");
 
 QUnit.test("BrickContainer", function (assert) {
 
-    assert.expect(15);
+    assert.expect(17);
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
@@ -143,6 +143,29 @@ QUnit.test("BrickContainer", function (assert) {
         bc.stop();
         assert.equal(bc._bricks[1].stopped, true, "bricks stopped");
 
+        testDispose();
+    }
+
+    function checkBricksDisposed(parentBrick) {
+        //we only check the first hierachy here
+        return parentBrick._disposed == true;
+    }
+
+    function testDispose() {
+        //simulate pending ops
+        bc._pendingOps.newID = { test: "only" };
+        bc.dispose();
+        assert.deepEqual(bc._pendingOps, {}, "pending operations cleared during dispose");
+        var disposed = true;
+        for (var i = 0, l = bc._bricks.length; i < l; i++) {
+            disposed = disposed && checkBricksDisposed(bc._bricks[i])
+            if (!disposed)
+                break;
+        }
+        assert.ok(disposed, "all bricks (including sub bricks) disposed");
+
+        bc.execute(l1, "newId");
+
         doneFinal();
     }
 });
@@ -228,12 +251,22 @@ QUnit.test("ThreadedBrick", function (assert) {
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
 
+    //run threaded brick: please notice that _execute() is a method to be overridden
+    b.execute(l1, "initialId");
+    assert.ok(handler1Called, "initial: handler called");
+    assert.equal(handler1LoopDelay, false, "initial: loop delay (always false)");
+    assert.equal(handler1CallId, "initialId", "initial: call id handled corrrectly");
+
+    //run inherited brick
+    var handler1Called = false;
+    var handler1LoopDelay = false;
+    var handler1CallId = undefined;
     assert.throws(function () { testBrick.execute(l1, 23); }, Error, "ERROR: simple argument error check");
 
     testBrick.execute(l1, "callId");
     assert.ok(handler1Called, "handler called");
     assert.ok(handler1LoopDelay, "loop delay handled corrrectly");
-    assert.ok(handler1CallId === "callId", "call id handled corrrectly");
+    assert.equal(handler1CallId, "callId", "call id handled corrrectly");
 
     var count = 0;
     for (p in testBrick._pendingOps)
@@ -422,8 +455,10 @@ QUnit.test("RootContainerBrick", function (assert) {
 
 QUnit.test("LoopBrick", function (assert) {
 
-    assert.expect(4);   //init async asserts (to wait for)
+    //assert.expect(4);   //init async asserts (to wait for)
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var b = new PocketCode.Model.LoopBrick("device", "sprite", 24);
 
@@ -431,19 +466,60 @@ QUnit.test("LoopBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Model.LoopBrick, "instance check");
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 
-    //the only test case we can trigger here is an empty loop due to the fact the return handler is always called from inside a specific loop implementation
+    //empty loop
     var startTime = new Date();
     var handler1 = function (e) {
         assert.equal(e.id, "loopId", "loop id returned correctly");
 
-        var execTime = new Date() - startTime;
+        //var execTime = new Date() - startTime;
         //assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
         //^^ test case removed: only a recalled loop has a delay, a single cycle is not delayed
         done1();
     };
     var l1 = new SmartJs.Event.EventListener(handler1, this);
-
     b.execute(l1, "loopId");
+
+    //loops including brick
+    var device = new PocketCode.Device("soundManager");
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var testBrick2 = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
+
+    //pause on inactive loop
+    var b2 = new PocketCode.Model.LoopBrick("device", "sprite", 24);
+    b2.bricks = new PocketCode.Model.BrickContainer([testBrick2]);    //add brick to loop
+    b2._loopCount = 3;
+    b2._loopConditionMet = function (id) { this._loopCount--; return this._loopCount !== 0; };   //override to simulate running
+    var called = 0;
+    var handler2 = function (e) {
+        called++;
+        done2();
+    };
+    var l2 = new SmartJs.Event.EventListener(handler2, this);
+    b2.pause();
+    assert.ok(b2._paused, "loop set paused");
+    b2.execute(l2, "pausedId");
+    //window.setTimeout(function () { b.resume(); }, 50);
+    b2.resume();
+
+    //pause on active loop
+    var testBrick3 = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.1, right: null, left: null } });
+    var b3 = new PocketCode.Model.LoopBrick("device", "sprite", 24);
+    b3.bricks = new PocketCode.Model.BrickContainer([testBrick3]);    //add brick to loop
+
+    var handler3 = function (e) {
+        b.stop();
+        done3();
+    };
+    var l3 = new SmartJs.Event.EventListener(handler3, this);
+    b3._loopCount = 3;
+    b3._loopConditionMet = function (id) { this._loopCount--; return this._loopCount !== 0; };   //override to simulate running
+    b3.execute(l3, "id");
+    b3.pause();
+    assert.notDeepEqual(b3._pendingOps, {}, "loop running- paused after start");
+    assert.ok(testBrick3._paused, "internal brick paused and running");
+
+    b3.resume();
 
 });
 

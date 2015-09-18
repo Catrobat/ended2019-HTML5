@@ -10,12 +10,11 @@
  * SingleContainerBrick, RootContainerBrick, LoopBrick, UnsupportedBrick
  *
  * @author catrobat HTML5 team
- * @version 1.0
  *
  */
 
-if (!PocketCode.Model)
-    PocketCode.Model = {};
+//if (!PocketCode.Model)    //defined in core.js
+//    PocketCode.Model = {};
 
 PocketCode.Model.merge({
 
@@ -210,6 +209,8 @@ PocketCode.Model.ThreadedBrick = (function () {
          * SmartJs.Event.EventListener
          */
         execute: function (onExecutedListener, threadId) {
+            if (this._disposed)
+                return;
             if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                 throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
 
@@ -239,13 +240,6 @@ PocketCode.Model.ThreadedBrick = (function () {
             if (listener)
                 listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
         },
-        //pause: function () {
-
-        //},
-        //resume: function () {
-
-        //},
-
         /**
          * clears pendingOps list
          */
@@ -303,10 +297,10 @@ PocketCode.Model.SingleContainerBrick = (function () {
          * @param {String} threadId
          * @private
          */
-        _execute: function (threadId) {
+        _execute: function (id) {
             if (this._disposed)
                 return;
-            this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+            this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);
         },
         /**
          * calls "pause()" on bricks
@@ -454,7 +448,24 @@ PocketCode.Model.LoopBrick = (function () {
                 this._return(id);
         },
         /**
-         *
+         * override to enable loop condition check
+         * @param {String} id
+         * @private
+         */
+        _execute: function (id) {
+            if (this._disposed)
+                return;
+            this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id);
+        },
+        /**
+         * the loop condition is overridden in every single loop brick
+         * @returns {boolean}
+         * @private
+         */
+        _loopConditionMet: function () {
+            return false;
+        },
+        /**
          * @param e
          * @private
          */
@@ -485,14 +496,6 @@ PocketCode.Model.LoopBrick = (function () {
             else
                 this._return(id);
         },
-        /**
-         * the loop condition is overridden in every single loop brick
-         * @returns {boolean}
-         * @private
-         */
-        _loopConditionMet: function () {
-            return false;
-        },
         pause: function () {
             this._paused = true;
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
@@ -516,36 +519,6 @@ PocketCode.Model.LoopBrick = (function () {
                     this._return(id);
             }
         },
-        ///**
-        // *
-        // * @param id
-        // * @private
-        // */
-        //_return: function (id) {
-        //    var op = this._pendingOps[id];
-        //    if (!op)  //stopped
-        //        return;
-
-        //    var listener = op.listener;
-        //    var callId = op.callId;
-
-        //    //var executionDelay = 0;
-        //    //if (loopDelay)
-        //    //    executionDelay = 20 - (new Date() - op.startTime);  //20ms min loop cycle time
-        //    delete this._pendingOps[id];
-
-        //    //if (executionDelay > 0) {
-        //    //    window.setTimeout(function () {
-        //    //        listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
-        //    //    }, executionDelay);
-        //    //}
-        //    //else {  //spend 3ms on a roundtrip to avoid long running script messages + enable UI update
-        //    //window.setTimeout(function () {
-        //    //    listener.handler.call(listener.scope, { id: callId, loopDelay: false });    //loop delay is always false (handled internally)
-        //    //}, 3);
-        //    listener.handler.call(listener.scope, { id: callId, loopDelay: false });
-        //    //}
-        //},
     });
 
     return LoopBrick;
@@ -564,10 +537,6 @@ PocketCode.Model.UnsupportedBrick = (function () {
         this._brickType = propObject.brickType;
         this._json = propObject;
     }
-
-    //UnsupportedBrick.prototype._execute = function () {
-    //    this._return();
-    //};
 
     return UnsupportedBrick;
 })();
