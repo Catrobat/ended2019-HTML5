@@ -41,7 +41,7 @@ SmartJs.Animation = {
         //ctr
         function Animation(start, end, time, /* function */ render/*, updateListener, startOnInit, callbackArgs*/) {
             if (isNaN(start) || isNaN(end))
-                throw new Error('invalif argument: start and/or end: expected type: number');
+                throw new Error('invalid argument: start and/or end: expected type: number');
 
             if (render !== undefined && (typeof render !== 'function' || render(1) !== 1))  //!=undefined to allow base ctr calls
                 throw new Error('parameter \'render\' has to be a function with render(1) = 1 to terminate the animation correctly');

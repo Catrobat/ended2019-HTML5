@@ -73,17 +73,20 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
-            if (value)
-                this._value = this._toTypedValue(value);
-            else
-                this._value = 0.00000001;   //prevent division by zero
+            //if (value != undefined)
+            this._value = this._toTypedValue(value);
+            this._defaultValue = 0.000001;
+            //else
+            //    this._value = 0.000001;   //prevent division by zero
         }
 
         //properties
         Object.defineProperties(UserVariableSimple.prototype, {
             value: {
                 get: function () {
-                    return this._value;
+                    if (this._value !== undefined)
+                        return this._value;
+                    return this._defaultValue;
                 },
                 set: function (value) {
                     this._value = this._toTypedValue(value);

@@ -16,7 +16,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     var a = new SmartJs.Animation.Animation(10, 20, 320, SmartJs.Animation.Type.LINEAR);
     assert.ok(a instanceof SmartJs.Animation.Animation, "instance check");
 
-    assert.throws(function () { var b = new SmartJs.Animation.Animation(10, "20", 1000, SmartJs.Animation.Type.LINEAR); }, Error, "ERROR: simple argument check");
+    assert.throws(function () { var b = new SmartJs.Animation.Animation(10, undefined, 1000, SmartJs.Animation.Type.LINEAR); }, Error, "ERROR: simple argument check");
     assert.throws(function () { var b = new SmartJs.Animation.Animation(10, 20, 1000, function (progress) { return 2 * progress; }); }, Error, "ERROR: render function argument check");
 
     var events = [];
