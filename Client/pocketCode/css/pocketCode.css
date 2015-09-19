@@ -68,7 +68,7 @@
 		background-color: rgba(0,71,94,.8);
 	}	
 	.pc-playerStartScreen .pc-title div {
-		color: #a9dcf1;
+		color: #A9DCF1;
 		font-size: 3.8em;
 		font-weight: 700;
 		padding: 0.37em;
@@ -118,9 +118,9 @@
 	.pc-playerStartScreen button, .pc-playerStartScreen button:active {
 		background: none;
 		border: medium none;
-		color: #a9dcf1;
+		color: #A9DCF1;
 		cursor: pointer;
-		fill: #a9dcf1;
+		fill: #A9DCF1;
 		height: 100%;
 		margin: 0;
 		outline: medium none;
@@ -142,11 +142,11 @@
 		}
 
 		.pc-playerStartScreen button:hover {
-			fill: #ffffff;
+			fill: #FFFFFF;
 		}
 
 		.pc-playerStartScreen button:active {
-			fill: #17a5b8;
+			fill: #17A5B8;
 			margin: 0;
 			padding: 0;
 		}
@@ -440,16 +440,16 @@
 }
 
 .pc-playerButton:hover {
-	color: #fff;
-	fill: #fff;
-	border-color: #fff;
+	color: #FFF;
+	fill: #FFFFFF;
+	border-color: #FFF;
 }
 
 .pc-playerButton:active {
 	padding: 0;
-	color: #17a5b8;
-	fill: #17a5b8;
-	border-color: #17a5b8;
+	color: #17A5B8;
+	fill: #17A5B8;
+	border-color: #17A5B8;
 }
 
 .pc-playerButton:disabled {
@@ -478,6 +478,7 @@
 	height: 100%;
 	position: relative;
 	overflow: hidden;
+	background-color: #EEE;
 }
 
 

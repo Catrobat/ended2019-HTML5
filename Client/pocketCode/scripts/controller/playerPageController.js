@@ -158,11 +158,13 @@ PocketCode.PlayerPageController = (function () {
                     this._pauseProject();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
+                    this._view.hideStartScreen();
                     var img = this._playerViewport.takeScreenshot();
                     this._showScreenshotDialog(img);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
+                        this._view.hideStartScreen();
                         this._playerViewport.showAxes();
                         this._view.axesButtonChecked = true;
                         this._axesVisible = true;

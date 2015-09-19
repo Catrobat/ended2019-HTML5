@@ -740,7 +740,7 @@ PocketCode.Web = {
 				if (!this._domLoaded)
 					return;
 
-				if (document.body.children.length <= 1) {
+				if ((typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i)) {  //mobile
 					this._launchMobile();
 					return;
 				}
@@ -748,6 +748,8 @@ PocketCode.Web = {
 				//Desktop: UI
 				var ol = new PocketCode.Web.WebOverlay();
 				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
+				if (document.body.children.length <= 1)
+				    ol.closeButton.disabled = true;
 				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
 				this._webOverlay = ol;
 
