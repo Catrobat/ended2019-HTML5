@@ -40,7 +40,7 @@ SmartJs.Animation = {
 
         //ctr
         function Animation(start, end, time, /* function */ render/*, updateListener, startOnInit, callbackArgs*/) {
-            if (typeof start !== 'number' || typeof end !== 'number')
+            if (isNaN(start) || isNaN(end))
                 throw new Error('invalif argument: start and/or end: expected type: number');
 
             if (render !== undefined && (typeof render !== 'function' || render(1) !== 1))  //!=undefined to allow base ctr calls
@@ -123,8 +123,8 @@ SmartJs.Animation = {
                     if (progress <= 1.0)    //timers are not exact
                         this._updateValue(this._render(progress));
                     else //{
-                        this._updateValue(1.0);
-                        //return;
+                        this._updateValue(this._render(1.0));
+                    //return;
                     //}
 
                     if (!this._paused && remaining !== 0) {
@@ -178,7 +178,7 @@ SmartJs.Animation.Animation2D = (function () {
     //ctr
     function Animation2D(start, end, time, /* function */ render/*, listener, startOnInit, callbackArgs*/) {
         SmartJs.Animation.Animation.call(this, 0, 0, time);//, render/*, listener, startOnInit, callbackArgs*/);
-        if (typeof start.x !== 'number' || typeof start.y !== 'number' || typeof end.x !== 'number' || typeof end.y !== 'number')
+        if (isNaN(start.x) || isNaN(start.y) || isNaN(end.x) || isNaN(end.y))
             throw new Error('invalid argument: start and/or end: expected type: object { x: [number], y: [number] }');
 
         if (typeof render !== 'function' || render(1).x !== 1 || render(1).y !== 1)
