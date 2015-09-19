@@ -397,6 +397,8 @@ PocketCode.Model.Sprite = (function () {
          */
         setPosition: function (x, y, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
+            if (isNaN(x) || isNaN(y))
+                throw new Error('invalid argument: position');
             if (this._positionX === x && this._positionY === y)
                 return false;
 
@@ -423,6 +425,8 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         setPositionX: function (x) {
+            if (isNaN(x))
+                throw new Error('invalid argument: position');
             if (this._positionX === x)
                 return false;
             this._positionX = x;
@@ -435,6 +439,8 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         changePositionX: function (value) {
+            if (isNaN(value))
+                throw new Error('invalid argument: position');
             if (!value)// || value === 0)
                 return false;
             this._positionX += value;
@@ -447,6 +453,8 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         setPositionY: function (y) {
+            if (isNaN(y))
+                throw new Error('invalid argument: position');
             if (this._positionY === y)
                 return false;
             this._positionY = y;
@@ -459,6 +467,8 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         changePositionY: function (value) {
+            if (isNaN(value))
+                throw new Error('invalid argument: position');
             if (!value)// || value === 0)
                 return false;
             this._positionY += value;
@@ -532,6 +542,7 @@ PocketCode.Model.Sprite = (function () {
          */
         setDirection: function (degree, triggerEvent) {
             triggerEvent = triggerEvent || true;    //default
+
             if (degree === undefined || this._direction === degree)
                 return false;
 
