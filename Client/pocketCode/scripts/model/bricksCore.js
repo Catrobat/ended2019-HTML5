@@ -519,6 +519,10 @@ PocketCode.Model.LoopBrick = (function () {
                     this._return(id);
             }
         },
+        stop: function () {
+            this._paused = false;
+            PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+        },
     });
 
     return LoopBrick;

@@ -109,6 +109,7 @@ PocketCode.Model.merge({
                 }
             },
             stop: function () {
+                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
                     if (!pos.hasOwnProperty(p))
