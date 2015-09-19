@@ -22,6 +22,16 @@ SmartJs.Event = {
             this._listeners = [];
         };
 
+        //properties
+        Object.defineProperties(Event.prototype, {
+            listenersAttached: {
+                get: function () {
+                    return this._listeners && this._listeners.length > 0;
+                },
+            },
+        });
+
+        //methods
         Event.prototype.merge({
             addEventListener: function (listener) {
                 if (!(listener instanceof SmartJs.Event.EventListener))

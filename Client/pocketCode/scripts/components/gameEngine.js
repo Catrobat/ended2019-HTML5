@@ -357,7 +357,9 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(function () {
                 if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once 
                     return;
-            
+                if (this._onTabbedAction.listenersAttached)
+                    return; //still waiting for user interaction
+
                 if (this._soundManager.isPlaying)
                     return;
                 if (this._background && this._background.scriptsRunning)
@@ -369,7 +371,7 @@ PocketCode.GameEngine = (function () {
                 }
 
                 this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endless loop brick
+                this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
             }.bind(this), 100);  //delay neede to allow other scripts to start
         },
 
