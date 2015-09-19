@@ -169,8 +169,7 @@ PocketCode.Web = {
 			this.hwRatio = 15 / 9;
 			this.hPixelOffset = 80;
 			this.vPixelOffset = 17;
-			this.vpMinHeight = 225;
-			//this.vpMinWidth = 135;
+			this.vpMinHeight = 370;
 
 			//init DOM
 			//viewportContainer
@@ -294,20 +293,22 @@ PocketCode.Web = {
 				var style = this.viewportContainer.style;
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
+				if (ah < this.vpMinHeight)
+				    ah = this.vpMinHeight;
 
 				var hwr = this.hwRatio, w, h;
 				if (hwr >= ah / aw) {
-					w = ah / hwr;
-					h = ah;
+				    h = ah;
+				    w = ah / hwr;
 				}
 				else {
 					w = aw;
 					h = aw * hwr;
 				}
-				if (h < this.vpMinHeight) {
-					h = this.vpMinHeight;
-					w = h / hwr;
-				}
+				//if (h < this.vpMinHeight) {
+				//	h = this.vpMinHeight;
+				//	w = ah / hwr;
+				//}
 
 				style.width = Math.ceil(w) + 'px';
 				style.height = Math.ceil(h) + 'px';
@@ -363,8 +364,8 @@ PocketCode.Web = {
 			setHWRatio: function (ratio) {
 				this.hwRatio = ratio;
 				//set the css min-height/min-width property according to the ratio & min-height: 450px
-				var style = this.viewportContainer.style;
-				style.minWidth = Math.ceil(450 / ratio) + 'px';
+				//var style = this.viewportContainer.style;
+				//style.minWidth = Math.ceil(450 / ratio) + 'px';
 				//update UI
 				this._onResizeHandler();
 			},
