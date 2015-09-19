@@ -258,7 +258,8 @@ PocketCode.Model.merge({
 				    if (!pos.hasOwnProperty(p))
 				        continue;
 				    po = pos[p];
-				    po.animation.pause();
+                    if (po.animation)
+    				    po.animation.pause();
 				    po.paused = true;
 				}
 			},
@@ -271,7 +272,8 @@ PocketCode.Model.merge({
 			        po = pos[p];
 			        if (po.paused) {
 			            po.paused = false;
-			            po.animation.resume();
+			            if (po.animation)
+			                po.animation.resume();
 			        }
 				}
 			},
@@ -281,7 +283,8 @@ PocketCode.Model.merge({
 			        if (!pos.hasOwnProperty(p))
 			            continue;
 			        po = pos[p];
-			        po.animation.stop();
+			        if (po.animation)
+			            po.animation.stop();
 				}
 				this._pendingOps = {};
 			},
