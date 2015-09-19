@@ -73,7 +73,10 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
-            this._value = this._toTypedValue(value);
+            if (value)
+                this._value = this._toTypedValue(value);
+            else
+                this._value = 0.00000001;   //prevent division by zero
         }
 
         //properties
@@ -149,7 +152,7 @@ PocketCode.Model.merge({
         UserVariableList.prototype.merge({
             _toTypedValue: function (value) {
                 if (value instanceof PocketCode.Model.UserVariableSimple)
-                    return value.value;
+                    return this._toTypedValue(value.value);
                 else if (value instanceof PocketCode.Model.UserVariableList)
                     return this._toTypedValue(value.toString());
                 else if (typeof value === 'string') {
