@@ -199,16 +199,20 @@ PocketCode.GameEngine = (function () {
                 this._resourcesLoaded = true;
             else {
                 this._onLoadingProgress.dispatchEvent({ progress: 0 });
-                var initialScaling = 1;     //set initial scaling: default = 1
+                var initialScaling = 1,     //set initial scaling: default = 1
+                    scaling;
                 if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
                     var min = Math.min(window.innerWidth, window.innerHeight),
                         max = Math.max(window.innerWidth, window.innerHeight),
                         smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
                         smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
-                    var scaling = Math.max(min / smin, max / smax);
-                    if (scaling < 1)
-                        initialScaling = scaling;
+                    scaling = Math.min(min / smin, max / smax);
                 }
+                else
+                    scaling = Math.min(screen.width / this._originalScreenWidth, screen.height / this._originalScreenHeight);
+
+                if (scaling < 1)
+                    initialScaling = scaling;
                 this._resourceBaseUrl = jsonProject.resourceBaseUrl;
                 this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images, initialScaling);
                 //sounds are loaded after images using the image stores onLoad event
