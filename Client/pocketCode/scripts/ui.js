@@ -172,6 +172,12 @@ PocketCode.Ui.merge({
                 this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
                 this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
             },
+            addDialog: function(dialog) {
+                if (!(dialog instanceof PocketCode.Ui.Dialog))
+                    throw new Error('invalid parameter: dialog');
+                //TODO: register page in navigation
+                this._appendChild(dialog);
+            },
             loadPage: function(page) {
                 if (!(page instanceof PocketCode.Ui.PageView))
                     throw new Error('invalid parameter: page');
