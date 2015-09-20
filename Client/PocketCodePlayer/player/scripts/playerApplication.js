@@ -16,11 +16,14 @@ PocketCode.PlayerApplicationMode = {
 PocketCode.PlayerApplication = (function () {
     PlayerApplication.extends(SmartJs.Components.Application, false);
 
-    function PlayerApplication(viewportContainer, rfc3066) {
+    function PlayerApplication(viewportContainer, rfc3066, mobileInitialized) {
+        //var vp;// = viewport;
+        //if (!vp) {
         var vp = new PocketCode.Ui.Viewport();
         vp.hide();
+        //}
         SmartJs.Components.Application.call(this, vp);
-
+        this._mobileInitialized = mobileInitialized;
         this._pages = {
             player: new PocketCode.PlayerPageController(),
         };
@@ -30,7 +33,8 @@ PocketCode.PlayerApplication = (function () {
         //this._viewportContainer = viewportContainer || document.body;
         //this._viewport = new PocketCode.Ui.Viewport();
         //this._viewport.hide();
-        vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
+        if (!vp.rendered)
+            vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
 
         this._project = new PocketCode.GameEngine();
         this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
@@ -75,6 +79,7 @@ PocketCode.PlayerApplication = (function () {
 
         //events
         this._onInit = new SmartJs.Event.Event(this);       //triggered when the loading screen is available
+        this._onMobileInitRequired = new SmartJs.Event.Event(this); //triggered on mobile devices to run the app in the scope of an user event
         //this._onError = new SmartJs.Event.Event(this);		//defined in base class
         this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
     }
@@ -84,6 +89,13 @@ PocketCode.PlayerApplication = (function () {
         onInit: {
             get: function () {
                 return this._onInit;
+            }
+            //enumerable: false,
+            //configurable: true,
+        },
+        onMobileInitRequired: {
+            get: function () {
+                return this._onMobileInitRequired;
             }
             //enumerable: false,
             //configurable: true,
@@ -198,12 +210,33 @@ PocketCode.PlayerApplication = (function () {
         //        from.hide();
         //    to.showView();
         //},
+        _showMobileRestrictionDialog: function() {
+            var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
+            restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
+            restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
+            this._viewport.addDialog(restrictionDialog);
+            this._onInit.dispatchEvent();   //hide splash screen
+            this._viewport.show();
+
+        },
+        _mobileCancelHandler: function(e) {
+            this._viewport.hide();
+        	if (history.length > 0)
+        		history.back();
+        	else
+        	    window.close();
+        },
+        _mobileConfirmHandler: function(e) {
+            this._viewport.hide();
+            this._onMobileInitRequired.dispatchEvent(e);
+        },
         loadProject: function (projectId) {
             if (this._disposing || this._disposed)// || this._projectLoaded)    //prevent loading more than once
                 return;
             //this._projectLoaded = true;
 
             //check browser compatibility
+            //TODO: show PocketCode.Ui.NotSupportedDialog()
             var comp = true;
             //if (!PocketCode.isPlayerCompatible)
             //    comp = false;
@@ -219,6 +252,11 @@ PocketCode.PlayerApplication = (function () {
                 //else
                 alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
 
+                return;
+            }
+
+            if (SmartJs.Device.isMobile && !this._mobileInitialized) {
+                this._showMobileRestrictionDialog();    //reinit app in the scope of an user event
                 return;
             }
 

@@ -294,12 +294,12 @@ PocketCode.Web = {
 				var aw = window.innerWidth - 2 * this.hPixelOffset;
 				var ah = window.innerHeight - 2 * this.vPixelOffset;
 				if (ah < this.vpMinHeight)
-				    ah = this.vpMinHeight;
+					ah = this.vpMinHeight;
 
 				var hwr = this.hwRatio, w, h;
 				if (hwr >= ah / aw) {
-				    h = ah;
-				    w = ah / hwr;
+					h = ah;
+					w = ah / hwr;
 				}
 				else {
 					w = aw;
@@ -701,6 +701,7 @@ PocketCode.Web = {
 		function PlayerInterface() {
 			this._domLoaded = false;
 			this._addDomListener(window, 'load', this._initOnLoad);
+			this._isMobile = (typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i);
 		}
 
 		PlayerInterface.prototype = {
@@ -740,7 +741,7 @@ PocketCode.Web = {
 				if (!this._domLoaded)
 					return;
 
-				if ((typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i)) {  //mobile
+				if (this._isMobile) {
 					this._launchMobile();
 					return;
 				}
@@ -749,7 +750,7 @@ PocketCode.Web = {
 				var ol = new PocketCode.Web.WebOverlay();
 				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
 				if (document.body.children.length <= 1)
-				    ol.closeButton.disabled = true;
+					ol.closeButton.disabled = true;
 				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
 				this._webOverlay = ol;
 
@@ -777,14 +778,35 @@ PocketCode.Web = {
 				this._loader.startLoading();
 			},
 			_initApplication: function () {
-				if (this._webOverlay && this._webOverlay.hidden)
-					return;
-				//the whole framework is already loaded
-				var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-				this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);//this._splashScreen, this._webOverlay);
-				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-				this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-				this._player.loadProject(this._projectId);
+				if (this._isMobile) {
+				    this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
+				    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+				    this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
+				    this._player.loadProject(this._projectId);
+				//	var vp = new PocketCode.Ui.Viewport();
+				//	var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
+				//	restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
+				//	restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
+				//	vp.appendChild(restrictionDialog);
+				//	this._splashScreen.hide();
+				//	vp.addToDom();
+				}
+				else {
+					if (this._webOverlay && this._webOverlay.hidden)
+						return;
+					//the whole framework is already loaded
+					var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
+					this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);
+					this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+					this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+					this._player.loadProject(this._projectId);
+				}
+			},
+			_reinitMobileHandler: function (e) {
+			    this._player.dispose();
+			    this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
+			    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+			    this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
 				this._splashScreen.hide();
@@ -861,7 +883,7 @@ PocketCode.Web.resources = {
 		{ url: 'smartJs/sj-communication.js', type: 'js' },
 		{ url: 'smartJs/sj-ui.js', type: 'js' },
 
-		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.combined.js', type: 'js' },
 		{ url: 'pocketCode/libs/fabric/fabric-1.6.0-rc.1.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
