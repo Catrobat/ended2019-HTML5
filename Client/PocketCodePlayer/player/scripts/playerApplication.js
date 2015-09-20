@@ -82,6 +82,8 @@ PocketCode.PlayerApplication = (function () {
         this._onMobileInitRequired = new SmartJs.Event.Event(this); //triggered on mobile devices to run the app in the scope of an user event
         //this._onError = new SmartJs.Event.Event(this);		//defined in base class
         this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
+
+        this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
     }
 
     //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
@@ -111,6 +113,14 @@ PocketCode.PlayerApplication = (function () {
 
     //methods
     PlayerApplication.prototype.merge({
+        _globalErrorHandler: function(e) {
+            var error = e.error,
+                msg = error.message;
+                file = error.file,
+                line = error.lineNo;
+
+            alert('TODO: show a dialog (and log): global error: ' + msg + ' in ' + file + ' at line ' + line);
+        },
         _projectLoadingErrorHandler: function(e) {
             alert("loading failed: cross origin error or unsupported format");
         },

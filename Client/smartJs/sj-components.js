@@ -44,9 +44,9 @@ SmartJs.Components = {
                 this._online = true;
                 this._onConnectionStatusChange.dispatchEvent({ online: true });
             },
-            _errorHandler: function (error, fileName, lineNo) {
+            _errorHandler: function (e) {//error, fileName, lineNo) {
                 //console.log('SmartJs.Components.Application: global error: ' + error + ', ' + fileName + ', ' + lineNo);
-                this._onError.dispatchEvent();
+                this._onError.dispatchEvent({error: e});//{ error: error, file: fileName, lineNo: lineNo });
             },
             dispose: function () {
                 this._removeDomListener(window, 'offline', this._offlineHandler);
