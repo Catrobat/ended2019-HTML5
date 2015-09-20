@@ -87,7 +87,7 @@ PocketCode.Ui.Dialog = (function () {
                 return this._container._dom.innerHTML;
             },
             set: function (value) {
-                this._container._dom.innerHTML += value;
+                this._container._dom.innerHTML = value;
                 this._resizeHandler();  //validate layout 
             },
         },
@@ -152,3 +152,60 @@ PocketCode.Ui.Dialog = (function () {
     return Dialog;
 })();
 
+PocketCode.Ui.merge({
+    NotSupportedDialog: (function () {
+        NotSupportedDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function NotSupportedDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Framework Not Supported');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnCancel);
+
+            this.bodyInnerHTML = 'This application makes use of many html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We’re sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
+        }
+
+        //events
+        Object.defineProperties(NotSupportedDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        return NotSupportedDialog;
+    })(),
+
+    MobileRestrictionDialog: (function () {
+        MobileRestrictionDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function MobileRestrictionDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Please Confirm');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this._btnConfirm = new PocketCode.Ui.Button('Confirm');
+            this.addButton(this._btnConfirm);
+
+            this.bodyInnerHTML = 'Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.<br /><br />';
+            this.bodyInnerHTML += 'There is currently NO official support for mobile devices- this is an experimental preview only! So please do NOT file bugs until there is an official release available.';
+        }
+
+        //events
+        Object.defineProperties(MobileRestrictionDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onConfirm: {
+                get: function () {
+                    return this._btnConfirm.onClick;
+                },
+            },
+        });
+
+        return MobileRestrictionDialog;
+    })(),
+});
