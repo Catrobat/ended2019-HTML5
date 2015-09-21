@@ -751,7 +751,7 @@ PocketCode.Web = {
 					return;
 
 				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
-				if (this._isMobile && window.location !== expectedUrl)
+				if (this._isMobile && window.location.href !== expectedUrl)
 				    window.location = expectedUrl;
 				if (this._isMobile) {
 					this._launchMobile();
