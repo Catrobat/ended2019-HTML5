@@ -94,7 +94,10 @@
 
 .pc-leftCol, .pc-rightCol {
     width: 50%;
-    min-width: 80px;
+    min-width: 95px;
+}
+.pc-rightCol {
+    min-width: 50px;
 }
 
 .pc-centerCol {
@@ -126,6 +129,7 @@
     width: 50px;
     float: right;
     margin: 10px;
+    margin-left: 5px;
 }
 
 .pc-webButton, .pc-webButton:active {

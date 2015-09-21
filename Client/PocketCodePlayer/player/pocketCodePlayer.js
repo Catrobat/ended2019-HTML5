@@ -167,8 +167,8 @@ PocketCode.Web = {
 		function WebOverlay() {
 			/* default settings for layout */
 			this.hwRatio = 15 / 9;
-			this.hPixelOffset = 80;
-			this.vPixelOffset = 17;
+			this.hPixelOffset = 160;    //we will have to change them based on css changes
+			this.vPixelOffset = 34;
 			this.vpMinHeight = 370;
 
 			//init DOM
@@ -291,8 +291,8 @@ PocketCode.Web = {
 			},
 			_onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
-				var aw = window.innerWidth - 2 * this.hPixelOffset;
-				var ah = window.innerHeight - 2 * this.vPixelOffset;
+				var aw = window.innerWidth - this.hPixelOffset;
+				var ah = window.innerHeight - this.vPixelOffset;
 				if (ah < this.vpMinHeight)
 					ah = this.vpMinHeight;
 
