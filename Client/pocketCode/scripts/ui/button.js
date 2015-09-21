@@ -18,6 +18,7 @@ PocketCode.Ui.Button = (function () {
         //events
         this._onClick = new SmartJs.Event.Event(this);
         this._addDomListener(this._dom, 'click', this._clickHandler);
+        this._addDomListener(this._dom, 'touchend', function (e) { this._dom.click(); });
     }
 
     //properties

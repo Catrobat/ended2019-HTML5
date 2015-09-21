@@ -159,6 +159,8 @@ PocketCode.Ui.merge({
         //methods
         Viewport.prototype.merge({
             _disableBrowserGestures: function () {
+                this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
+                this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
                 this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false);
                 this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
                 this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
@@ -166,6 +168,8 @@ PocketCode.Ui.merge({
                 this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
             },
             _enableBrowserGestures: function () {
+                this._removeDomListener(document, 'click', this._clickHandler);
+                this._removeDomListener(document, 'dblclick', this._dblClickHandler);
                 this._removeDomListener(document, 'touchstart', this._touchStartHandler);
                 this._removeDomListener(document, 'touchend', this._touchEndHandler);
                 this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);

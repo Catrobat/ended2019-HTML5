@@ -323,6 +323,8 @@ PocketCode.Web = {
 			},
 			show: function () {
 				this.hidden = false;
+				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
+				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
 				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
 				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
@@ -348,6 +350,8 @@ PocketCode.Web = {
 			},
 			hide: function () {
 				this.hidden = true;
+				this._removeDomListener(document, 'click', this._clickHandler);
+				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
 				this._removeDomListener(document, 'touchend', this._touchEndHandler);
 				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
@@ -518,7 +522,9 @@ PocketCode.Web = {
 				this._dom.style.fontSize = fs + 'px';
 			},
 			show: function () {
-				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+			    this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
+			    this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
+			    this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
 				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
@@ -529,7 +535,9 @@ PocketCode.Web = {
 				this._onResizeHandler();    //init size
 			},
 			hide: function () {
-				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+			    this._removeDomListener(document, 'click', this._clickHandler);
+			    this._removeDomListener(document, 'dblclick', this._dblClickHandler);
+			    this._removeDomListener(document, 'touchstart', this._touchStartHandler);
 				this._removeDomListener(document, 'touchend', this._touchEndHandler);
 				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
@@ -742,6 +750,9 @@ PocketCode.Web = {
 				if (!this._domLoaded)
 					return;
 
+				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
+				if (this._isMobile && window.location !== expectedUrl)
+				    window.location = expectedUrl;
 				if (this._isMobile) {
 					this._launchMobile();
 					return;

@@ -561,6 +561,7 @@
 	.pc-dialogFooter button {
 		height: 100%;
 		color: inherit;
+		font-size: 13px;
 		font-weight: bold;
 		cursor: pointer;
 		padding: 0;
@@ -583,12 +584,3 @@
 	.pc-dialogFooter button::-moz-focus-inner {
 		border: 0;
 	}
-/*
-.dialogFooterSingleButton button {
-	width: 100%;
-}
-
-.dialogFooterTwoButtons button {
-	width: 154px;
-}
-*/

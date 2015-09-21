@@ -32,6 +32,7 @@ PocketCode.Ui.merge({
             this._startButton = document.createElement('button');
             this.startEnabled = false;
             this._addDomListener(this._startButton, 'click', this._startClickHandler);
+            this._addDomListener(this._startButton, 'touchend', function (e) { this._startButton.click(); });
 
             this._createLayout();
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
@@ -100,7 +101,7 @@ PocketCode.Ui.merge({
 
         //methods
         PlayerStartScreen.prototype.merge({
-            _startClickHandler: function () {
+            _startClickHandler: function (e) {
                 this._onStartClicked.dispatchEvent();
             },
             _onResizeHandler: function (e) {
