@@ -32,6 +32,7 @@
 }
     .pc-webOverlay * {
         /*background: none;*/
+        background-color: transparent;
         border: 0;
         border-radius: 0;
     }
@@ -80,6 +81,7 @@
     padding: 0px;
     margin: 0px;
     overflow: hidden;
+    border-spacing: 0;
 }
 
 .pc-webLayoutRow {

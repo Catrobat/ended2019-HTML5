@@ -120,12 +120,13 @@ PocketCode.Ui.Dialog = (function () {
             col.className = 'pc-dialogCol';
             layoutRow.appendChild(col);
 
-            var dialog = new SmartJs.Ui.ContainerControl({className: 'pc-dialog'});
+            var dialog = new SmartJs.Ui.ContainerControl({ className: 'pc-dialog' });
             center.appendChild(dialog._dom);
 
             dialog.appendChild(this._header);
             dialog.appendChild(this._container);
             dialog.appendChild(this._footer);
+            this._dialog = dialog;
         },
         _resizeHandler: function (e) {
             var availableHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom);
@@ -134,6 +135,16 @@ PocketCode.Ui.Dialog = (function () {
                 this._container.style.maxHeight = availableHeight + 'px';
             else
                 this._container.style.maxHeight = minHeight + 'px';
+            //var width = this.width - 30;
+            this._dialog.style.width = (this.width - 30) + 'px';//width + 'px';
+
+            var buttons = this._footer._dom.children;
+            for (var i = 0, l = buttons.length; i < l; i++)
+                if (l == 1)
+                    buttons[i].style.width = '100%';
+                else
+                    buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
+
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))
@@ -144,8 +155,8 @@ PocketCode.Ui.Dialog = (function () {
                 throw new Error('add button: there are currently 2 buttons supported at max');
 
             this._footer.appendChild(button);
-            if (count == 1)
-                this._footer.replaceClassName('dialogFooterSingleButton', 'dialogFooterTwoButtons');
+            //if (count == 1)
+            //    this._footer.replaceClassName('dialogFooterSingleButton', 'dialogFooterTwoButtons');
         },
     });
 
