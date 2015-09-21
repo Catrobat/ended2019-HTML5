@@ -6,10 +6,11 @@
 if (!PocketCode)
 	var PocketCode = {};
 
-PocketCode.websiteUrl = 'https://share.catrob.at/pocketcode/';
+PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
+PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
-PocketCode.mobileUrl = PocketCode.websiteUrl + 'html5/player/{projectId}';
-PocketCode.logoUrl = 'https://share.catrob.at/images/logo/logo_text.png';
+PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
+PocketCode.logoUrl = PocketCode.domain + 'html5/player/img/logo.png';
 
 PocketCode.Web = {
 
@@ -868,11 +869,11 @@ PocketCode.Web = {
 PocketCode.Web.resources = {
 	root: function () {
 		var hn = window.location.hostname;
-		if (hn === 'localhost' || hn === '' || hn === 'web-test.catrob.at' || hn === 'pocketcode.org')
+		if (hn === 'localhost' || hn === '' || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
 			return '../';
 
-		return PocketCode.Web.resourceRoot;
-	}(),//'../',	//http://localhost:26825/loadingTestScripts/',
+		return PocketCode.domain + 'html5/';
+	}(),
 	files: [
 		//{ url: 'smartJs/sj.css', type: 'css' },
 		{ url: 'smartJs/sj.js', type: 'js' },
@@ -929,7 +930,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/controller/playerViewportController.js', type: 'js' },
 
 		//TODO: insert player scripts
-		{ url: 'PocketCodePlayer/player/scripts/playerApplication.js', type: 'js' },
+		{ url: 'player/scripts/playerApplication.js', type: 'js' },
 	],
 };
 

@@ -14,7 +14,7 @@ if( isset( $_GET["projectId"]) ) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-touch-fullscreen" content="yes" />
-  <link rel="shortcut icon" href="images/favicon.png" type="image/png" />
+  <link href="img/favicon.png" rel="shortcut icon" />
 
   <link href="pocketCodePlayer.css" rel="stylesheet" />
   <script src="pocketCodePlayer.js"></script>
@@ -24,6 +24,6 @@ if( isset( $_GET["projectId"]) ) {
   <title>PocketCode HTML5 Player</title>
 </head>
 <body class="pc-webBody pc-webBodyMobile">
-<noscript>This application needs javascript to be enabled!</noscript>
+  <noscript>This application needs javascript to be enabled!</noscript>
 </body>
 </html>

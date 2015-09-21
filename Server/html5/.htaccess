@@ -25,5 +25,5 @@ SetOutputFilter DEFLATE
 
 RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
-RewriteCond %{REQUEST_FILENAME} !\.(gif|jpg|png|jpeg|css|js|ico)$ [NC]
-RewriteRule ^player/(.*)$ Client/PocketCodePlayer/index.php?projectId=$1
+RewriteCond %{REQUEST_FILENAME} !\.(gif|jpg|png|jpeg|css|js|ico|htm|html|php)$ [NC]
+RewriteRule ^player/(.*)$ player/index.php?projectId=$1

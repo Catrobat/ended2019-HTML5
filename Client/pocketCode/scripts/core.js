@@ -24,6 +24,8 @@ PocketCode.merge({
         ERROR: 4,
     },
 
+    favicon: new Image(''),
+
     isPlayerCompatible: function () {
         var _result = true;
         var _full = true;
