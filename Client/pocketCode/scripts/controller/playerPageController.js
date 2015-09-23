@@ -138,7 +138,12 @@ PocketCode.PlayerPageController = (function () {
             console.log('project executed (detected)');
         },
         _uiUpdateHandler: function (e) {
-            console.log('ui update: { spriteId: ' + e.id + ', properties: ' + JSON.stringify(e.properties) + ' }');
+            try {
+                console.log('ui update: { spriteId: ' + e.id + ', properties: ' + JSON.stringify(e.properties) + ' }');
+            }
+            catch (e) {
+                //just to make sure recursive parse will not throw an error -> //TODO:
+            }
         },
         //user
         _buttonClickedHandler: function(e) {
