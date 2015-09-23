@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 .pc-webBodyMobile {
-    background-color: #1F1F1F;  /* fix to IE9 100% sizing */
+    background-color: #003041;
     position: relative;
 }
 
@@ -134,7 +134,7 @@
     margin-left: 5px;
 }
 
-.pc-webButton, .pc-webButton:active {
+.pc-webButton { /*}, .pc-webButton:active {*/
     padding: 0;
     margin: 6px;
     margin-bottom: 10px;
@@ -145,6 +145,7 @@
     height: 38px;
     border: none;
     fill: #A9DCF1;
+    color: #A9DCF1;
     outline: none;
     background: none;
 }
@@ -170,10 +171,12 @@
 
 .pc-webButton:hover {
     fill: #fff;
+    color: #fff;
 }
 
 .pc-webButton:active {
     fill: #17a5b8;
+    color: #17a5b8;
 }
 
 .pc-webButton:disabled {
@@ -188,6 +191,24 @@
     fill: #E8CCB9;
 }
 
+.pc-backButton {
+    position: relative;
+    width: 120px;
+    height: 30px;
+    margin: 8px;
+}
+    .pc-backButton svg {
+        width: 30px;
+    }
+    .pc-backButton span {
+        position: relative;
+        float: left;
+        left: 34px;
+        font-size: 18px;
+        line-height: 32px;
+        /*color: #A9DCF1;
+        */cursor: pointer;
+    }
 
 /* splashScreen */
 .pc-splashScreen {

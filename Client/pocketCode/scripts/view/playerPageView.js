@@ -10,7 +10,12 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     function PlayerPageView() {//playerViewportView) {
         PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
-        this._header.hide();
+        if (SmartJs.Device.isMobile) {
+            this._header._dom.appendChild((new PocketCode.Web.BackButton())._dom);
+            this._header.style.padding = '8px';
+        }
+        else
+            this._header.hide();
         this._footer.hide();
 
         //if (!(playerViewportView instanceof PocketCode.Ui.PlayerViewportView))
@@ -89,6 +94,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         },
         hideStartScreen:function() {
             this._startScreen.hide();
+            this.hideHeader();
         },
         updateLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);

@@ -164,6 +164,23 @@ PocketCode.Web = {
 		return FullscreenApi;
 	})())(),
 
+	BackButton:  (function () {
+		function BackButton() {
+			var btn = document.createElement('button');
+			btn.className = 'pc-webButton pc-backButton';
+			btn.innerHTML = '<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">' +
+				'<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z"></path>' +
+				'<polygon points="27.583,32 39.629,44.395 35.001,49 18.371,32 35.001,15 39.629,19.605" class="pc-svgPlayerIcon"></polygon>' +
+			'</svg>' + 
+			'<span>Back</span>';
+			this._dom = btn;
+			btn.addEventListener('click', function (e) { if (history.length > 0) history.back(); else window.close(); }, false);
+			btn.addEventListener('touchend', function (e) { if (history.length > 0) history.back(); else window.close(); }, false);
+		}
+
+		return BackButton;
+	})(),
+
 	WebOverlay: (function () {
 		function WebOverlay() {
 			/* default settings for layout */
@@ -255,6 +272,8 @@ PocketCode.Web = {
 			this._addDomListener(window, 'resize', this._onResizeHandler);
 			//this._addDomListener(this.closeButton, 'click', this._close);
 			this._addDomListener(this.fullscreenButton, 'click', this._toggleFullscreenHandler);
+			this._addDomListener(this.fullscreenButton, 'touchend', this._toggleFullscreenHandler);
+			
 			//this._addDomListener(this.muteButton, 'click', this._toggleMuteHandler);
 			//if (window.addEventListener) {
 			//	window.addEventListener('resize', this._onResizeHandler.bind(this), false);
@@ -317,9 +336,9 @@ PocketCode.Web = {
 			_toggleFullscreenHandler: function (e) {
 				PocketCode.Web.FullscreenApi.toggleFullscreen();
 			},
-			appendSplash: function (splashScreen) {
-				this._splashScreen = splashScreen;
-				this.viewportContainer.appendChild(splashScreen._dom);
+			appendControl: function (control) {
+				this._splashScreen = control;
+				this.viewportContainer.appendChild(control._dom);
 			},
 			show: function () {
 				this.hidden = false;
@@ -765,12 +784,14 @@ PocketCode.Web = {
 				//Desktop: UI
 				var ol = new PocketCode.Web.WebOverlay();
 				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
+				this._addDomListener(ol.closeButton, 'touchend', this._closeHandler);
 				if (document.body.children.length <= 1)
 					ol.closeButton.disabled = true;
 				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
+				this._addDomListener(ol.muteButton, 'touchend', this._muteHandler);
 				this._webOverlay = ol;
 
-				ol.appendSplash(this._splashScreen);
+				ol.appendControl(this._splashScreen);
 				var fapi = PocketCode.Web.FullscreenApi;
 				fapi.onFullscreenChange = function (state) {
 					var btn = ol.fullscreenButton;
@@ -791,6 +812,8 @@ PocketCode.Web = {
 				this._splashScreen.showBorder();
 				document.body.appendChild(this._splashScreen._dom);
 				this._splashScreen.show();  //init size
+				this._backButton = new PocketCode.Web.BackButton();
+				document.body.appendChild(this._backButton._dom);
 				this._loader.startLoading();
 			},
 			_initApplication: function () {
@@ -827,7 +850,11 @@ PocketCode.Web = {
 				this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
-				this._splashScreen.hide();
+			    this._splashScreen.hide();
+			    if (this._backButton) {
+			        document.body.removeChild(this._backButton._dom);
+			        delete this._backButton;
+			    }
 				this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 				if (this._webOverlay)
 					this._webOverlay.muteButton.disabled = false;
@@ -940,7 +967,6 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
-		{ url: 'pocketCode/scripts/ui/popupWindow.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },

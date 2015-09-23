@@ -24,58 +24,61 @@ PocketCode.PlayerApplication = (function () {
         //}
         SmartJs.Components.Application.call(this, vp);
         this._mobileInitialized = mobileInitialized;
-        this._pages = {
-            player: new PocketCode.PlayerPageController(),
-        };
-        this._currentPage = this._pages.player;
-        vp.loadPage(this._currentPage.view);
 
-        //this._viewportContainer = viewportContainer || document.body;
-        //this._viewport = new PocketCode.Ui.Viewport();
-        //this._viewport.hide();
+        if (!SmartJs.Device.isMobile || mobileInitialized) { //do not initilaize the UI if app needs to be recreated for mobile 
+            this._pages = {
+                player: new PocketCode.PlayerPageController(),
+            };
+            this._currentPage = this._pages.player;
+            vp.loadPage(this._currentPage.view);
+
+            //this._viewportContainer = viewportContainer || document.body;
+            //this._viewport = new PocketCode.Ui.Viewport();
+            //this._viewport.hide();
+
+            this._project = new PocketCode.GameEngine();
+            this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+            this._currentProjectId = undefined;
+            //set project in page controller
+            this._currentPage.project = this._project;
+            //this._playerPageController = new PocketCode.PlayerPageController();
+
+            if (rfc3066)  //TODO:
+                this._rfc3066 = rfc3066;
+            //else
+            //    this._initI18nProvider;
+
+            //webOverlay is undefined if running in mobile page, no viewport defined
+            //this._splashScreen = splashScreen;
+            //this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
+            //if (this._isMobile)
+            //	 window.addEventListener ('beforeunload', function() { return 'Exit PocketCode Player?'; }, false);
+
+            //this._isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);	//TODO: if device is a static class, this should be moved?
+            //this._webOverlay = webOverlay;
+
+            ////navigation controller
+            //if (this._isMobilePage) {
+            //    //this._navigation = {	//index is url hash
+            //    //    //'': PocketCode.PlayerExitController,
+            //    //    player: PocketCode.PlayerPageController,
+            //    //};
+            //    //this._navigationHome = this._navigation.player;
+            //    this._navigationId = 0;
+            //    this._currentNavId = 0;
+
+            //    //init
+            //    if (history.pushState) {
+            //        history.replaceState({ command: 'exit', historyLength: history.length, historyId: this._navigationId++ }, document.title, '');//document.location.href);	//initial push to save entry point and trigger 'playerClose' event
+            //        this._addDomListener(window, 'popstate', this._popstateHandler);
+            //    }
+            //}
+
+            //this._pageControllers = {};
+            ////this._currentPage = undefined;
+        }
         if (!vp.rendered)
             vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
-
-        this._project = new PocketCode.GameEngine();
-        this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
-        this._currentProjectId = undefined;
-        //set project in page controller
-        this._currentPage.project = this._project;
-        //this._playerPageController = new PocketCode.PlayerPageController();
-
-        if (rfc3066)  //TODO:
-            this._rfc3066 = rfc3066;
-        //else
-        //    this._initI18nProvider;
-
-        //webOverlay is undefined if running in mobile page, no viewport defined
-        //this._splashScreen = splashScreen;
-        //this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
-        //if (this._isMobile)
-        //	 window.addEventListener ('beforeunload', function() { return 'Exit PocketCode Player?'; }, false);
-
-        //this._isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);	//TODO: if device is a static class, this should be moved?
-        //this._webOverlay = webOverlay;
-
-        ////navigation controller
-        //if (this._isMobilePage) {
-        //    //this._navigation = {	//index is url hash
-        //    //    //'': PocketCode.PlayerExitController,
-        //    //    player: PocketCode.PlayerPageController,
-        //    //};
-        //    //this._navigationHome = this._navigation.player;
-        //    this._navigationId = 0;
-        //    this._currentNavId = 0;
-
-        //    //init
-        //    if (history.pushState) {
-        //        history.replaceState({ command: 'exit', historyLength: history.length, historyId: this._navigationId++ }, document.title, '');//document.location.href);	//initial push to save entry point and trigger 'playerClose' event
-        //        this._addDomListener(window, 'popstate', this._popstateHandler);
-        //    }
-        //}
-
-        //this._pageControllers = {};
-        ////this._currentPage = undefined;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);       //triggered when the loading screen is available
@@ -322,7 +325,8 @@ PocketCode.PlayerApplication = (function () {
             return this._muted;
         },
         dispose: function () {
-            this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+            if (this._project)
+                this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
             for (var page in this._pages)   //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
                 this._pages[page].dispose();

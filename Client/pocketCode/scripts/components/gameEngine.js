@@ -255,7 +255,8 @@ PocketCode.GameEngine = (function () {
                 this._spritesLoaded = true;
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
-                    window.setTimeout(function () { this._onLoad.dispatchEvent() }.bind(this), 100);    //update UI before
+                    //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
+                    this._onLoad.dispatchEvent();
                 }
             }
             else {
@@ -288,7 +289,8 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: this._invalidSoundFiles });
             this._resourcesLoaded = true;
             if (this._spritesLoaded) {
-                window.setTimeout(function () { this._onLoad.dispatchEvent() }.bind(this), 100);    //update UI before
+                //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
+                this._onLoad.dispatchEvent();
             }
         },
         _resourceLoadingErrorHandler: function (e) {
