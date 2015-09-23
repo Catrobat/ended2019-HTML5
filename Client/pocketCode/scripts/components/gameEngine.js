@@ -19,7 +19,9 @@ PocketCode.GameEngine = (function () {
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
+        this._resourceLoadedSize = 0;
         this._spritesLoaded = false;
+        this._spritesLoadingProgress = 0;
 
         this._id = "";
         this.title = "";
@@ -230,6 +232,7 @@ PocketCode.GameEngine = (function () {
             if (bricksCount <= 0)   //TODO: necessary? - add test case
                 this._spritesLoaded = true;
 
+            this._spritesLoadingProgress = 0;
             this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
@@ -255,6 +258,11 @@ PocketCode.GameEngine = (function () {
                     window.setTimeout(function () { this._onLoad.dispatchEvent() }.bind(this), 100);    //update UI before
                 }
             }
+            else {
+                this._spritesLoadingProgress = e.progress;
+                var resourceProgress = Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10;
+                this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, this._spritesLoadingProgress) });
+            }
         },
         _spriteFactoryUnsupportedBricksHandler: function (e) {
             var bricks = e.unsupportedBricks;
@@ -267,7 +275,8 @@ PocketCode.GameEngine = (function () {
 
             var size = e.file.size;
             this._resourceLoadedSize += size;
-            this._onLoadingProgress.dispatchEvent({ progress: Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10 });
+            var progress = Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10;
+            this._onLoadingProgress.dispatchEvent({ progress: Math.min(progress, this._spritesLoadingProgress) });
         },
         _imageStoreLoadHandler: function (e) {
             this._sounds = this._jsonProject.sounds || [];
