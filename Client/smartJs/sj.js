@@ -140,8 +140,9 @@ var SmartJs = {
      */
     Device: {
         isIOs: ((typeof window.orientation !== 'undefined') && navigator.userAgent.match(/iPad|iPhone/i)),
-        isMobile: (typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
         isTouch: ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0),
+        isMobile: (typeof window.orientation !== 'undefined') || !!navigator.userAgent.match(/iPad|iPhone|Android|BlackBerry|Phone|ZuneWP7|WPDesktop|webOS/i),
+        isFirefoxOS: (!!"mozApps" in navigator && navigator.userAgent.search("Mobile") != -1 && avigator.userAgent.search("Android") < 0),
     },
 
     /**

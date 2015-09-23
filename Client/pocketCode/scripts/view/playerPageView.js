@@ -18,7 +18,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         //this.appendChild(playerViewportView);
 
         this._toolbar;
-        if (SmartJs.Device.isIOs)
+        if (SmartJs.Device.isIOs || SmartJs.Device.isFirefoxOS) //devices with no hardware back button
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS);
         else if (SmartJs.Device.isMobile)
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
