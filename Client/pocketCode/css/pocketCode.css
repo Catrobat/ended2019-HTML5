@@ -547,6 +547,7 @@
 	font-weight: 500;
 	overflow-x: hidden;
 	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	padding: 17px 14px;
 	border: solid 1px #282828;
 }
