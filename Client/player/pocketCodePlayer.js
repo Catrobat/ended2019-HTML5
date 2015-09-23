@@ -21,8 +21,8 @@ PocketCode.Web = {
 		function FullscreenApi() {
 			if (window.addEventListener)
 				window.addEventListener('load', this._initOnLoad.bind(this), false);
-			else
-				window.attachEvent('onload', this._initOnLoad.bind(this));
+			//else
+			//	window.attachEvent('onload', this._initOnLoad.bind(this));
 		}
 
 		FullscreenApi.prototype = {
@@ -57,8 +57,8 @@ PocketCode.Web = {
 				};
 				if (target.addEventListener)
 					target.addEventListener(eventName, handler, false);
-				else
-					target.attachEvent('on' + eventName, handler);
+				//else
+				//	target.attachEvent('on' + eventName, handler);
 				return handler;
 			},
 			_removeDomListener: function (target, eventName, eventHandler) {
@@ -280,15 +280,15 @@ PocketCode.Web = {
 				};
 				if (target.addEventListener)
 					target.addEventListener(eventName, handler, false);
-				else
-					target.attachEvent('on' + eventName, handler);
+				//else
+				//	target.attachEvent('on' + eventName, handler);
 				return handler;
 			},
 			_removeDomListener: function (target, eventName, eventHandler) {
 				if (target.removeEventListener)
 					target.removeEventListener(eventName, eventHandler, false);
-				else
-					target.detachEvent('on' + eventName, eventHandler);
+				//else
+				//	target.detachEvent('on' + eventName, eventHandler);
 			},
 			_onResizeHandler: function (e) {
 				var style = this.viewportContainer.style;
@@ -495,12 +495,12 @@ PocketCode.Web = {
 			//this._touchMoveHandler = undefined;
 
 			//bind events
-			if (window.addEventListener) {
+			if (window.addEventListener)
 				window.addEventListener('resize', this._onResizeHandler.bind(this), false);
-			}
-			else {
-				window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
-			}
+			//}
+			//else {
+			//	window.attachEvent('onresize', this._onResizeHandler.bind(this)._onResizeHandler);
+			//}
 		}
 
 		SplashScreen.prototype = {
@@ -522,9 +522,9 @@ PocketCode.Web = {
 				this._dom.style.fontSize = fs + 'px';
 			},
 			show: function () {
-			    this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
-			    this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
-			    this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
+				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
+				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
 				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
@@ -535,9 +535,9 @@ PocketCode.Web = {
 				this._onResizeHandler();    //init size
 			},
 			hide: function () {
-			    this._removeDomListener(document, 'click', this._clickHandler);
-			    this._removeDomListener(document, 'dblclick', this._dblClickHandler);
-			    this._removeDomListener(document, 'touchstart', this._touchStartHandler);
+				this._removeDomListener(document, 'click', this._clickHandler);
+				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
+				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
 				this._removeDomListener(document, 'touchend', this._touchEndHandler);
 				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
@@ -723,8 +723,8 @@ PocketCode.Web = {
 				};
 				if (target.addEventListener)
 					target.addEventListener(eventName, handler, false);
-				else
-					target.attachEvent('on' + eventName, handler);
+				//else
+				//	target.attachEvent('on' + eventName, handler);
 				return handler;
 			},
 			_removeDomListener: function (target, eventName, eventHandler) {
@@ -743,7 +743,11 @@ PocketCode.Web = {
 				if (this._projectId)
 					this.launchProject(this._projectId);
 			},
-			launchProject: function (projectId, rfc3066, containerElement) {  //TODO:
+			launchProject: function (projectId, rfc3066, containerElement) {
+				if (!window.addEventListener) {
+					alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
+					return;
+				}
 				if (projectId)
 					this._projectId = projectId;    //undefined allowed and handled in application
 				this._rfc3066 = rfc3066;
@@ -752,7 +756,7 @@ PocketCode.Web = {
 
 				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
 				if (this._isMobile && window.location.href !== expectedUrl)
-				    window.location = expectedUrl;
+					window.location = expectedUrl;
 				if (this._isMobile) {
 					this._launchMobile();
 					return;
@@ -791,10 +795,11 @@ PocketCode.Web = {
 			},
 			_initApplication: function () {
 				if (this._isMobile) {
-				    this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
-				    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-				    this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
-				    this._player.loadProject(this._projectId);
+					this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
+					this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+					this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
+					this._player.onClose.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+					this._player.loadProject(this._projectId);
 				//	var vp = new PocketCode.Ui.Viewport();
 				//	var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
 				//	restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
@@ -811,14 +816,15 @@ PocketCode.Web = {
 					this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);
 					this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+					this._player.onClose.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					this._player.loadProject(this._projectId);
 				}
 			},
 			_reinitMobileHandler: function (e) {
-			    this._player.dispose();
-			    this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
-			    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-			    this._player.loadProject(this._projectId);
+				this._player.dispose();
+				this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
+				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+				this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
 				this._splashScreen.hide();
@@ -856,6 +862,9 @@ PocketCode.Web = {
 					btn.disabled = true;
 					this._projectId = undefined;
 					this._rfc3066 = undefined;
+
+					if (document.body.children.length <= 1 && history.length > 0)   //try navigate back if our index.php was called
+						history.back();
 				}
 				catch (e) { }   //silent catch: avoid errors onClose during init
 
@@ -864,6 +873,7 @@ PocketCode.Web = {
 				try {
 					this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+					this._player.onClose.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					this._player.dispose();
 					//this._player = undefined;
 				}

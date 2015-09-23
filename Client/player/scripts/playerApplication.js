@@ -82,6 +82,7 @@ PocketCode.PlayerApplication = (function () {
         this._onMobileInitRequired = new SmartJs.Event.Event(this); //triggered on mobile devices to run the app in the scope of an user event
         //this._onError = new SmartJs.Event.Event(this);		//defined in base class
         this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
+        this._onClose = new SmartJs.Event.Event(this);    //triggered to notify weboverlay to be closed & disposed
 
         this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
     }
@@ -108,6 +109,13 @@ PocketCode.PlayerApplication = (function () {
             }
             //enumerable: false,
             //configurable: true,
+        },
+        onClose: {
+            get: function () {
+                return this._onClose;
+            }
+            //enumerable: false,
+            //configurable: true,
         }
     });
 
@@ -115,14 +123,17 @@ PocketCode.PlayerApplication = (function () {
     PlayerApplication.prototype.merge({
         _globalErrorHandler: function(e) {
             var error = e.error,
-                msg = error.message;
-                file = error.file,
-                line = error.lineNo;
+                msg = error.message,
+                file = error.file || error.filename || error.fileName,
+                line = error.lineno;
 
             alert('TODO: show a dialog (and log): global error: ' + msg + ' in ' + file + ' at line ' + line);
         },
         _projectLoadingErrorHandler: function(e) {
             alert("loading failed: cross origin error or unsupported format");
+            this._onClose.dispatchEvent();
+            //TODO: cross origin should be checkt during startup- listed in Jira already
+
         },
         _requestProjectDetails: function (projectId) {
             var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
@@ -261,7 +272,7 @@ PocketCode.PlayerApplication = (function () {
                 //    this._onError.dispatchEvent();
                 //else
                 alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
-
+                this._onClose.dispatchEvent();
                 return;
             }
 
