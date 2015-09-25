@@ -42,7 +42,7 @@ PocketCode.GraphicEffect = {
  * @property {PocketCode.GameEngine} _gameEngine reference to gameEngine object
  * @property {Array} _looks list of looks
  * @property {Array} _sounds list of sounds
- * @property {number} _onChange maps events to gameEngine.onSpriteChange
+ * @property {number} _onChange maps events to gameEngine.onSpriteUiChange
  * @property {Array} _bricks list of bricks
  * @property {number} _positionX horizontal position
  * @property {number} _positionY vertical position
@@ -68,7 +68,9 @@ PocketCode.Model.Sprite = (function () {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
-        this._onChange = gameEngine.onSpriteChange;    //mapping event (defined in gameEngine)
+        this._onChange = gameEngine.onSpriteUiChange;    //mapping event (defined in gameEngine)
+        //this._onVariableChange = gameEngine._onVariableChange;
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
         //this._executionState = PocketCode.ExecutionState.STOPPED;
 
         this.name = '';
@@ -291,11 +293,11 @@ PocketCode.Model.Sprite = (function () {
     Object.defineProperties(Sprite.prototype, {
         /**
          * @event
-         * returns the onSpriteChange of gameEngine
+         * returns the onSpriteUiChange of gameEngine
          */
-        onChange: {
-            get: function () { return this._gameEngine.onSpriteChange; },
-        },
+        //onChange: {
+        //    get: function () { return this._gameEngine.onSpriteUiChange; },
+        //},
         /**
          * @event
          * indicates whether the sprite finished execution

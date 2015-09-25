@@ -55,23 +55,23 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.brightness, 100, "brighness initial");
 
     //events
-    assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
-    assert.equal(sprite.onChange, prog.onSpriteChange, "program - sprite event sharing");
-    assert.equal(sprite.onChange.target, prog, "onSpriteChange target check");
+    //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
+    //assert.equal(sprite.onChange, prog.onSpriteChange, "program - sprite event sharing");
+    //assert.equal(sprite.onChange.target, prog, "onSpriteChange target check");
 
-    assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
+    //assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
-    var props = { direction: 90 };
-    var onChangeHandler = function (e) {
-        assert.equal(e.target, evSprite, "onChange target check");
-        assert.equal(e.id, "newId", " onChange id check");
-        assert.deepEqual(e.properties, props, "onChange event args properties check");
-    };
-    var prog2 = new PocketCode.GameEngine();
-    var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
-    evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    //var props = { direction: 90 };
+    //var onChangeHandler = function (e) {
+    //    assert.equal(e.target, evSprite, "onChange target check");
+    //    assert.equal(e.id, "newId", " onChange id check");
+    //    assert.deepEqual(e.properties, props, "onChange event args properties check");
+    //};
+    //var prog2 = new PocketCode.GameEngine();
+    //var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
+    //evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
-    evSprite._triggerOnChange(props);
+    //evSprite._triggerOnChange(props);
 
 
     sprite = new PocketCode.Model.Sprite(prog, { id: "newId", name: "myName" });

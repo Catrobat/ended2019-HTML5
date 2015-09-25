@@ -25,10 +25,25 @@ PocketCode.UserVariableHost = (function () {
 
         this.__variablesSimple = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.SIMPLE, scope);
         this.__variablesList = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.LIST, scope);
+
+        this._onVariableChange = new SmartJs.Event.Event(this);
+        this.__variablesSimple.onVariableChange.addEventListener(new SmartJs.Event.EventListener(this._valueChangeHandler, this));
+        //this.__variablesList.onVariableChange.addEventListener(new SmartJs.Event.EventListener(this._valueChangeHandler, this));
     }
 
     //properties
     Object.defineProperties(UserVariableHost.prototype, {
+        renderingVariables: {
+            get: function () {
+                var obj = {},
+                    vars = this.__variablesSimple.getVariables();
+                for (var v in vars) {   //{[id]: {}}
+                    if (vars.hasOwnProperty(v))
+                        obj[v] = { /*id: [v],*/ value: v.value, positionX: 0, positionY: 0, visible: false };
+                }
+                return obj;
+            },
+        },
         _variables: {
             set: function (value) {
                 this.__variablesSimple.initVariableList(value);
@@ -40,6 +55,16 @@ PocketCode.UserVariableHost = (function () {
             },
         },
     });
+
+    //events
+    //Object.defineProperties(UserVariableHost.prototype, {
+    //    _onVariableChange: {
+    //        get: function () { return this.__variablesSimple.onVariableChange },    //binding to internal event
+    //    },
+    //    _onListChange: {
+    //        get: function () { return this.__variablesList.onVariableChange },      //binding to internal event
+    //    },
+    //});
 
     //methods
     UserVariableHost.prototype.merge({
@@ -56,17 +81,26 @@ PocketCode.UserVariableHost = (function () {
             var tmp = {};
             tmp[this.__variableScope] = this.__variablesSimple.getVariables();
             if (this.__variableScope === PocketCode.UserVariableScope.LOCAL) {
-                tmp[PocketCode.UserVariableScope.GLOBAL] = {};  //make sure a gloabl property exists
+                tmp[PocketCode.UserVariableScope.GLOBAL] = {};  //make sure a global property exists
                 if (this.__variableLookupHost)
                     tmp.merge(this.__variableLookupHost.getAllVariables());
             }
             return tmp;
         },
-        showVariableAt: function(id, positionX, positionY) {
-            //TODO
+        _valueChangeHandler: function(e) {
+            this._onVariableChange.dispatchEvent({ id: e.id, properties: { value: e.target.value} });
         },
-        hideVariable: function(id) {
-            //TODO
+        showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
+            var tmp = this.getVariable(id);
+            if (!tmp)
+                throw new Error('show variable: variable with id = ' + id + 'could not be found');
+            this._onVariableChange.dispatchEvent({ id: id, properties: { value: tmp.value, visible: true, positionX: positionX, positionY: positionY } });
+        },
+        hideVariable: function (id) {    //called as sprite.hide.. from brick
+            var tmp = this.getVariable(id);
+            if (!tmp)
+                throw new Error('hide variable: variable with id = ' + id + 'could not be found');
+            this._onVariableChange.dispatchEvent({ id: id, properties: { visible: false } });
         },
         getList: function (id) {
             var tmp = this.__variablesList.getVariableById(id);

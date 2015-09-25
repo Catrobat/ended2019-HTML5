@@ -59,12 +59,37 @@ PocketCode.GameEngine = (function () {
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
         this._onProgramExecuted = new SmartJs.Event.Event(this);
-        this._onSpriteChange = new SmartJs.Event.Event(this);
+        this._onSpriteUiChange = new SmartJs.Event.Event(this);
+        this._onVariableUiChange = new SmartJs.Event.Event(this);
+        //map the base class (global variable host) to our public event
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
+
         this._onTabbedAction = new SmartJs.Event.Event(this);
     }
 
     //properties
     Object.defineProperties(GameEngine.prototype, {
+        //rendering
+        spritesAsPropertyList: {
+            get: function () {
+                var props = [this._background.renderingProperties];
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)
+                    props.push(sprites[i].renderingProperties);
+                return props;
+            },
+        },
+        variablesAsPropertyObject: {
+            get: function () {
+                var obj = this.renderingVariables;
+                obj.merge(this._background.renderingVariables);
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)
+                    obj.merge(sprites[i].renderingVariables);
+                return obj;
+            },
+        },
+        //project execution
         projectLoaded: {
             get: function () {
                 return this._resourcesLoaded && this._spritesLoaded;
@@ -82,6 +107,7 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.muted = value;
             },
         },
+
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
@@ -150,8 +176,11 @@ PocketCode.GameEngine = (function () {
         onProgramExecuted: {
             get: function () { return this._onProgramExecuted; },
         },
-        onSpriteChange: {
-            get: function () { return this._onSpriteChange; },
+        onSpriteUiChange: {
+            get: function () { return this._onSpriteUiChange; },
+        },
+        onVariableUiChange: {
+            get: function () { return this._onVariableUiChange; },
         },
         onTabbedAction: {
             get: function () { return this._onTabbedAction; },
@@ -400,13 +429,6 @@ PocketCode.GameEngine = (function () {
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
-        getSpritesAsPropertyList: function () {
-            var props = [this._background.renderingProperties];
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++)
-                props.push(sprites[i].renderingProperties);
-            return props;
-        },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
                 return 0;
@@ -416,7 +438,7 @@ PocketCode.GameEngine = (function () {
             return idx + 1;
         },
         getLookImage: function (id) {
-            //used by the sprite to access a look object when firing onSpriteChange (setLook, nextLook bricks)
+            //used by the sprite to access a look object when firing onSpriteUiChange (setLook, nextLook bricks)
             return this._imageStore.getLook(id);    //TODO: the gameEngine Object has much too much public methods and properties (even events like onStart) that are used by sprites and bricks only: IMPORTANT
         },
         setSpriteLayerBack: function (sprite, layers) {
@@ -431,7 +453,7 @@ PocketCode.GameEngine = (function () {
             idx = Math.max(idx - layers, 0);
             sprites.insert(idx, sprite);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);
             return true;
         },
 
@@ -444,7 +466,7 @@ PocketCode.GameEngine = (function () {
                 return false;
             sprites.push(sprite);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
             return true;
         },
         ifSpriteOnEdgeBounce: function (sprite) {
@@ -676,7 +698,7 @@ PocketCode.GameEngine = (function () {
             }
             sprite.setPosition(newX, newY, false);
 
-            this._onSpriteChange.dispatchEvent({ id: sprite.id, properties: props }, sprite);
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: props }, sprite);
             return true;
         },
 

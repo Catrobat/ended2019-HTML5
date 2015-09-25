@@ -38,6 +38,7 @@ PocketCode.merge({
             },
         });
 
+        //methods
         SpriteFactory.prototype.merge({
             create: function (jsonSprite) {
                 if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)

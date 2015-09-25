@@ -1,4 +1,7 @@
-﻿/// <reference path="../core.js" />
+﻿/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj-core.js" />
+/// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../core.js" />
 'use strict';
 
 
@@ -27,26 +30,39 @@ PocketCode.Model.merge({
             this._scope = scope;
 
             this._variables = {};
+            this._onVariableChange = new SmartJs.Event.Event(this);
         }
 
-        UserVariableCollection.prototype = {
+        //events
+        Object.defineProperties(UserVariableCollection.prototype, {
+            onVariableChange: {
+                get: function () { return this._onVariableChange; },
+            },
+        });
+
+        //methods
+        UserVariableCollection.prototype.merge({
             initVariableList: function (variables) {
                 if (!(variables instanceof Array))
                     throw new Error('setter expects type Array');
 
                 this._variables = {};   //empty
+                var variable, tmp;
                 for (var i = 0, l = variables.length; i < l; i++) {
-                    var variable = variables[i];
+                    variable = variables[i];
 
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
-                            this._variables[variable.id] = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
+                            tmp = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({id: e.id}, e.target); }, this)); //target override
+                            this._variables[variable.id] = tmp;
                             break;
 
                         case PocketCode.UserVariableType.LIST:
-                            this._variables[variable.id] = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
+                            tmp = new PocketCode.Model.UserVariableList(variable.id, variable.name, variable.value ? variable.value : undefined);
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this));
+                            this._variables[variable.id] = tmp;
                             break;
-
                     }
                 }
             },
@@ -62,7 +78,7 @@ PocketCode.Model.merge({
             getVariables: function () {
                 return this._variables;
             },
-        };
+        });
 
         return UserVariableCollection;
     })(),
@@ -73,11 +89,13 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
-            //if (value != undefined)
-            this._value = this._toTypedValue(value);
             this._defaultValue = 0.000001;
             //else
             //    this._value = 0.000001;   //prevent division by zero
+            this._onChange = new SmartJs.Event.Event(this);
+            //init
+            if (value != undefined)
+                this._value = this._toTypedValue(value);
         }
 
         //properties
@@ -90,6 +108,7 @@ PocketCode.Model.merge({
                 },
                 set: function (value) {
                     this._value = this._toTypedValue(value);
+                    this._onChange.dispatchEvent({ id: this._id });
                 },
             },
             valueAsNumber: {
@@ -98,6 +117,13 @@ PocketCode.Model.merge({
                         return this._value;
                     return 0;
                 },
+            },
+        });
+
+        //events
+        Object.defineProperties(UserVariableSimple.prototype, {
+            onChange: {
+                get: function () { return this._onChange; },
             },
         });
 
@@ -134,6 +160,8 @@ PocketCode.Model.merge({
             this.name = name;
 
             this._value = [];
+            this._onChange = new SmartJs.Event.Event(this);
+            //init
             if (value != undefined) {
                 if (!(value instanceof Array))
                     throw new Error('invalid argument: expected: value typeof array');
@@ -148,6 +176,13 @@ PocketCode.Model.merge({
                 get: function () {
                     return this._value.length;
                 }
+            },
+        });
+
+        //events
+        Object.defineProperties(UserVariableList.prototype, {
+            onChange: {
+                get: function () { return this._onChange; },
             },
         });
 
@@ -169,6 +204,7 @@ PocketCode.Model.merge({
             },
             append: function (value) {
                 this._value.push(this._toTypedValue(value));
+                this._onChange.dispatchEvent({ id: this._id });
             },
             _validIndex: function (idx) {
                 if (idx < 1 || idx > this._value.length)
@@ -191,14 +227,17 @@ PocketCode.Model.merge({
                     this._value.insert(idx - 1, this._toTypedValue(value));
                 else if (idx == this._value.length + 1)
                     this.append(this._toTypedValue(value));
+                this._onChange.dispatchEvent({ id: this._id });
             },
             replaceAt: function (idx, value) {
                 if (this._validIndex(idx))
                     this._value[idx - 1] = this._toTypedValue(value);
+                this._onChange.dispatchEvent({ id: this._id });
             },
             deleteAt: function (idx) {
                 if (this._validIndex(idx))
                     this._value.splice(idx - 1, 1);
+                this._onChange.dispatchEvent({ id: this._id });
             },
             contains: function (value) {
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
