@@ -82,18 +82,18 @@ QUnit.test("TestRequestAllProjects", function(assert) {
   {
     var receivedAllProjects = e.responseJson;
     assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
-    console.log(receivedAllProjects);
+    //console.log(receivedAllProjects);
 
     var projectCount = receivedAllProjects.limit;
-    console.log(projectCount);
+    //console.log(projectCount);
     assert.ok(projectCount == 20, 'correct nr (20) of projects');
 
     var mask = receivedAllProjects.mask;
-    console.log(mask);
+    //console.log(mask);
     assert.equal(mask, 'recent', 'correct mask: recent');
 
     var projects = receivedAllProjects.items;
-    console.log(projects);
+    //console.log(projects);
     assert.ok(projects instanceof Array, 'array of projects');
 
     for(var i = 0; i < projectCount; i++)
@@ -104,7 +104,7 @@ QUnit.test("TestRequestAllProjects", function(assert) {
       ids.push(parseInt(project['id']));
       var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
       srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
-      console.log('requesting project [' + project['id'] + ']: ' + project['title']);
+      //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
       PocketCode.Proxy.send(srSingleProject);
     }
   };

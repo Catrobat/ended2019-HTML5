@@ -201,22 +201,22 @@ QUnit.test("SoundManager", function (assert) {
             sm1Finished;
         var sm1ProgressHandler = function (e) {
             sm1Progress.push(e);
-            console.log('progress: ' + e.progress);
+            //console.log('progress: ' + e.progress);
         };
         var sm1LoadHandler = function (e) {
             sm1Load = e;
-            console.log('load');
+            //console.log('load');
             //sm1.loadSound("_resources/sounds/459ab4eb37f698e3cee4a7f773870a79_f#.mp3", "H");
             //done3();
             runStopTests();
         };
         var sm1ErrorHandler = function (e) {
             sm1Error = e;
-            console.log('error');
+            //console.log('error');
         };
         var sm1FinishedPlayingHandler = function (e) {
             sm1Finished = e;
-            console.log('finished playing');
+            //console.log('finished playing');
         };
 
         sm1.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm1ProgressHandler, this));

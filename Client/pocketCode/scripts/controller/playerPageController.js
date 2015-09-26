@@ -80,14 +80,14 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
-                    this._gameEngine.onSpriteChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                    this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 }
                 this._gameEngine = value;
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                 this._gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
-                this._gameEngine.onSpriteChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
             },
         },
     });
@@ -217,7 +217,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
                 this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
-                this._gameEngine.onSpriteChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine = undefined;
             }
             this._playerViewport.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));

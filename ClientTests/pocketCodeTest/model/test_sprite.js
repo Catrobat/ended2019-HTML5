@@ -56,8 +56,8 @@ QUnit.test("Sprite", function (assert) {
 
     //events
     //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
-    //assert.equal(sprite.onChange, prog.onSpriteChange, "program - sprite event sharing");
-    //assert.equal(sprite.onChange.target, prog, "onSpriteChange target check");
+    //assert.equal(sprite.onChange, prog.onSpriteUiChange, "program - sprite event sharing");
+    //assert.equal(sprite.onChange.target, prog, "onSpriteUiChange target check");
 
     //assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
@@ -418,8 +418,8 @@ QUnit.test("Sprite", function (assert) {
     // ********************* variables *********************
     var varArray = [{ id: [21], name: ["two-one"] }, { id: [24], name: ["two-four"] }];
     sprite._variables = varArray;
-    //assert.ok(sprite.getVariable(21).value == undefined, "correct init"); //vars have to be initialized
-    assert.equal(sprite.getVariable(21).value, 0.000001, "correct init"); //vars have to be initialized
+    assert.ok(sprite.getVariable(21).value == undefined, "correct init"); //vars have to be initialized
+    //assert.equal(sprite.getVariable(21).value, 0.000001, "correct init"); //vars have to be initialized
     assert.ok(sprite.getVariable(21).name == "two-one", "correct insertion of array entries");
     assert.ok(sprite.getVariable(24).name == "two-four", "correct insertion of array entries");
     var fakeArray = "error"

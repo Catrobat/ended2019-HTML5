@@ -39,7 +39,13 @@ PocketCode.Model.merge({
         ChangeVariableBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._var.value += this._value.calculate();
+            var value = this._value.calculate();
+            if (!isNaN(value)) {
+                if (!isNaN(this._var.value))
+                    this._var.value += value;
+                else
+                    this._var.value = value;
+            }
             this._return();
         };
 
@@ -51,7 +57,7 @@ PocketCode.Model.merge({
 
         function ShowTextBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
-
+             
             this._varId = propObject.referenceId;
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);

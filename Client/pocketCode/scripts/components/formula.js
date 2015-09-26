@@ -68,15 +68,29 @@ PocketCode.Formula = (function () {
         _log10: function (val) {
             return Math.log(val) / Math.LN10;
         },
-
-        _validateFormula: function () {
-            try {
-                var test = this.calculate();
-            }
-            catch (e) {
-                throw new Error('Error parsing formula: ' + e.message);
-            }
+        _validateNumeric: function (left, operator, right) {
+            if (isNaN(left))
+                left = 0;
+            if (isNaN(right)) {
+                right = 0;
+                if (operator == ' / ')  //handle division by zero
+                    return 0;
+                else if (operator == ' % ') {   //modulo
+                    var func = new Function('return ' + left + ';');
+                    return func();
+                }
+        }
+            var func = new Function('return ' + left + operator + right + ';');
+            return func();
         },
+        //_validateFormula: function () {
+        //    try {
+        //        var test = this.calculate();
+        //    }
+        //    catch (e) {
+        //        throw new Error('Error parsing formula: ' + e.message);
+        //    }
+        //},
         dispose: function () {
             this._device = undefined;
             this._sprite = undefined;

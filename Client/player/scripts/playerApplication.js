@@ -134,7 +134,7 @@ PocketCode.PlayerApplication = (function () {
         },
         _projectLoadingErrorHandler: function(e) {
             alert("loading failed: cross origin error or unsupported format");
-            this._onClose.dispatchEvent();
+            //TODO: this._onClose.dispatchEvent();
             //TODO: cross origin should be checkt during startup- listed in Jira already
 
         },

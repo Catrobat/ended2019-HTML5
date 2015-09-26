@@ -209,7 +209,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-
+                //console.log(formulaString);
                 //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
 
@@ -264,12 +264,15 @@ PocketCode.merge({
                         return '\'' + jsonFormula.value + '\'';
 
                     default:
-                        throw new Error('formula parser: unknown type: ' + jsonFormula.type);
+                        throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
                 }
             },
 
-            _concatOperatorFormula: function (jsonFormula, operator, uiString) {
-                return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+            _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
+                if (uiString || !numeric)
+                    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+
+                return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
@@ -311,22 +314,22 @@ PocketCode.merge({
                         return this._concatOperatorFormula(jsonFormula, ' > ', uiString);
 
                     case 'PLUS':
-                        return this._concatOperatorFormula(jsonFormula, ' + ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' + ', uiString, true);
 
                     case 'MINUS':
                         if (uiString && jsonFormula.left === null)    //singed number
                             return this._concatOperatorFormula(jsonFormula, '-', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' - ', uiString);
+                        return this._concatOperatorFormula(jsonFormula, ' - ', uiString, jsonFormula.left !== null);
 
                     case 'MULT':
                         if (uiString)
-                            return this._concatOperatorFormula(jsonFormula, ' x ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' * ');
+                            return this._concatOperatorFormula(jsonFormula, ' x ', uiString, true);
+                        return this._concatOperatorFormula(jsonFormula, ' * ', uiString, true);
 
                     case 'DIVIDE':
                         if (uiString)
-                            return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' / ');
+                            return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
+                        return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
 
                         //case 'MOD':
                         //    return this._concatOperatorFormula(jsonFormula, ' % ');
@@ -340,7 +343,7 @@ PocketCode.merge({
                         return '!' + this._parseJsonType(jsonFormula.right);
 
                     default:
-                        throw new Error('formula parser: unknown operator: ' + jsonFormula.value);
+                        throw new Error('formula parser: unknown operator: ' + jsonFormula.value);  //TODO: do we need an onError event? -> new and unsupported operators?
                 }
             },
 
@@ -434,7 +437,7 @@ PocketCode.merge({
                     case 'MOD':
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return this._concatOperatorFormula(jsonFormula, ' % ');
+                        return this._concatOperatorFormula(jsonFormula, ' % ', true);
 
                     case 'ARCSIN':
                         if (uiString)
@@ -513,7 +516,7 @@ PocketCode.merge({
                         //TODO:
 
                     default:
-                        throw new Error('formula parser: unknown function: ' + jsonFormula.value);
+                        throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?
 
                 }
             },
@@ -652,7 +655,7 @@ PocketCode.merge({
                         return 'this._sprite.positionY';
 
                     default:
-                        throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);
+                        throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);      //TODO: do we need an onError event? -> new and unsupported operators? PHIRO?
                 }
             },
             dispose: function () {

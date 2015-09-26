@@ -239,7 +239,7 @@ QUnit.test("GameEngine", function (assert) {
 	assert.equal(gameEngine.getSpriteById("spriteId1"), sprite1, "Correct sprite returned by getSprite");
 
 	var spriteChanges = 0;
-	gameEngine._onSpriteChange.addEventListener(new SmartJs.Event.EventListener(function () {
+	gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(function () {
 		spriteChanges++;
 		//TODO tests for event
 	}));
@@ -436,7 +436,7 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
 	var onSpriteUpdate = function (e) {
 		lastUpdateEventArgs = e;
 	};
-	ga.onSpriteChange.addEventListener(new SmartJs.Event.EventListener(onSpriteUpdate));
+	ga.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(onSpriteUpdate));
 
 	var opReturn, boundary;//, overflow;
 

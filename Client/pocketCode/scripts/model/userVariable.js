@@ -89,7 +89,7 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
-            this._defaultValue = 0.000001;
+            //this._defaultValue = 0.000001;
             //else
             //    this._value = 0.000001;   //prevent division by zero
             this._onChange = new SmartJs.Event.Event(this);
@@ -102,9 +102,9 @@ PocketCode.Model.merge({
         Object.defineProperties(UserVariableSimple.prototype, {
             value: {
                 get: function () {
-                    if (this._value !== undefined)
+                    //if (this._value !== undefined)
                         return this._value;
-                    return this._defaultValue;
+                    //return this._defaultValue;
                 },
                 set: function (value) {
                     this._value = this._toTypedValue(value);
