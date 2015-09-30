@@ -11,31 +11,31 @@ PocketCode.PlayerPageController = (function () {
         //this._screenWidth = 100;
 
         //var viewportView = new PocketCode.Ui.PlayerViewportView(this._screenWidth, this._screenHeight); //TODO: shouldn't the controller get these settings?
-        PocketCode.PageController.call(this, new PocketCode.Ui.PlayerPageView());//this._playerViewport.view));
-        this._playerViewport = new PocketCode.PlayerViewportController();//viewportView);
-        this._view.insertAt(0, this._playerViewport.view);
+        PocketCode.PageController.call(this, new PocketCode.Ui.PlayerPageView());//this._playerViewportController.view));
+        this._playerViewportController = new PocketCode.PlayerViewportController();//viewportView);
+        this._view.insertAt(0, this._playerViewportController.view);
         this._axesVisible = false;
         //this._viewportScaling = 1;
 
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.PLAY })); }, this));
-        //this._playerViewport.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
-        this._playerViewport.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+        //this._playerViewportController.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
+        this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
         SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
         //this._view = new PocketCode.Ui.PlayerPageView();
-        //this._view.appendChild(this._playerViewport.view);
+        //this._view.appendChild(this._playerViewportController.view);
 
-        this._playerViewport.setProjectScreenSize(200, 320);
+        this._playerViewportController.setProjectScreenSize(200, 320);
         if (!SmartJs.Device.isMobile || history.length == 0)
             this._view.backButtonDisabled = true;
 
         //test
         //this._view.screenshotButtonDisabled = true;
         //this._view.executionState = PocketCode.ExecutionState.RUNNING;
-        //this._playerViewport.showAxes();
-        //this._playerViewport.hideAxes();
-        //this._playerViewport.showAxes();
+        //this._playerViewportController.showAxes();
+        //this._playerViewportController.hideAxes();
+        //this._playerViewportController.showAxes();
 
         //this._view.onHide.addEventListener(new SmartJs.Event.EventListener(this._viewHideHandler, this)); //TODO: onHide event = undefined
 
@@ -81,6 +81,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                    this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
                 }
                 this._gameEngine = value;
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
@@ -88,6 +89,8 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
+
             },
         },
     });
@@ -125,9 +128,10 @@ PocketCode.PlayerPageController = (function () {
         },
         _projectLoadHandler: function (e) {
             var screenSize = this._gameEngine.projectScreenSize;
-            this._playerViewport.setProjectScreenSize(screenSize.width, screenSize.height);
+            this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
             this._view.disabled = false;
-            console.log('project load: ');// + JSON.stringify(e));
+            console.log('project loaded');// + JSON.stringify(e));
+            // TODO create renderingImages from gameEngine.spritesAsPropertyList
         },
         _projectStartHandler: function (e) {
             this._view.hideStartScreen();
@@ -164,18 +168,18 @@ PocketCode.PlayerPageController = (function () {
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
                     this._view.hideStartScreen();
-                    var img = this._playerViewport.takeScreenshot();
+                    var img = this._playerViewportController.takeScreenshot();
                     this._showScreenshotDialog(img);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
                         this._view.hideStartScreen();
-                        this._playerViewport.showAxes();
+                        this._playerViewportController.showAxes();
                         this._view.axesButtonChecked = true;
                         this._axesVisible = true;
                     }
                     else {
-                        this._playerViewport.hideAxes();
+                        this._playerViewportController.hideAxes();
                         this._view.axesButtonChecked = false;
                         this._axesVisible = false;
                     }
@@ -220,8 +224,8 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine = undefined;
             }
-            this._playerViewport.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
-            //this._playerViewport.dispose();
+            this._playerViewportController.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+            //this._playerViewportController.dispose();
             PocketCode.PageController.prototype.dispose.call(this);
         },
     });

@@ -36,7 +36,7 @@ PocketCode.PlayerViewportController = (function () {
             get: function () {
                 return this._view.onSpriteClicked;
             }
-        },
+        }
     });
 
     //methods
@@ -44,6 +44,7 @@ PocketCode.PlayerViewportController = (function () {
         _scalingChangedHandler: function (e) {
             this._viewportScaling = e.scaling;
             //TODO: renderAll
+            this._view.canvasNeedsRedraw = true;
             //tested: console.log(this._viewportScaling);
         },
         load: function (images, sprites) {
@@ -62,6 +63,11 @@ PocketCode.PlayerViewportController = (function () {
             var img = new Image();
             img.src = this._view.getCanvasDataURL(this._viewportScaling);
             return img;
+        },
+
+        spriteChanged: function (e) {
+            this._view.canvasNeedsRedraw = true;
+            this._view.handleSpriteChange(e.id, e.properties);
         },
     });
 

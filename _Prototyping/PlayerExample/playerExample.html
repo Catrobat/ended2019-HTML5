@@ -57,20 +57,21 @@
     <script src="../../Client/pocketCode/scripts/ui/playerToolbar.js"></script>
     <script src="../../Client/pocketCode/scripts/ui/button.js"></script>
 
-    <script src="../../Client/PocketCodePlayer/player/pocketCodePlayer.js"></script>
-    <script src="../../Client/PocketCodePlayer/player/scripts/playerApplication.js"></script>
+    <script src="../../Client/player/pocketCodePlayer.js"></script>
+    <script src="../../Client/player/scripts/playerApplication.js"></script>
 
-    <link href="../../Client/PocketCodePlayer/player/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../../Client/player/pocketCodePlayer.css" rel="stylesheet" />
     <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet">
 
     <script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/dialog.js"></script>
 
     <script type="text/javascript">
 
         window.onload = function () {
             var testContainer = document.getElementById("testContainer");
             var player = new PocketCode.PlayerApplication(testContainer, "en-US");
-            player.loadProject(824);
+            player.loadProject(719);
 
             //var vp = new PocketCode.Ui.Viewport();
             //vp.addToDom(testContainer);
