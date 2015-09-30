@@ -18,6 +18,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalHeight = 380;
         this._axesVisible = false;
         this._scaling = 1;
+        this._canvasNeedsRedraw = false;
+
 
         this._canvas = new PocketCode.Ui.Canvas();//{ className: 'pc-canvas' });
         this._appendChild(this._canvas);
@@ -91,6 +93,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //properties
     Object.defineProperties(PlayerViewportView.prototype, {
+        canvasNeedsRedraw: {
+          set: function (value) {
+              this._canvasNeedsRedraw = value;
+          }
+        },
+
         axisVisible: {
             get: function () {
                 return this._axesVisible;
@@ -306,6 +314,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         dispose: function () {
             this.onResize.dispose();
             //override: to make sure a view is disposed by it's controller
+        },
+
+        handleSpriteChange: function (id, changes) {
+            console.log(id, changes);
         },
     });
 
