@@ -133,7 +133,7 @@ PocketCode.PlayerApplication = (function () {
             alert('TODO: show a dialog (and log): global error: ' + msg + ' in ' + file + ' at line ' + line);
         },
         _projectLoadingErrorHandler: function(e) {
-            alert("loading failed: cross origin error or unsupported format");
+            alert("loading failed: unsupported sound format");
             //TODO: this._onClose.dispatchEvent();
             //TODO: cross origin should be checkt during startup- listed in Jira already
 

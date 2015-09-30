@@ -10,7 +10,68 @@ PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
 PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
-PocketCode.logoUrl = PocketCode.domain + 'html5/player/img/logo.png';
+PocketCode.logoUrl = PocketCode.domain + 'html5/pocketCode/img/logo.png';
+
+PocketCode.crossOrigin = new ((function () {
+
+	function CrossOrigin() {
+		//init: worst case
+		this._current = true;
+		this._supported = false;
+		this._initialized = false;
+
+		var loc = window.location, a = document.createElement('a');
+		a.href = PocketCode.domain;
+		var port = loc.protocol == 'https:' ? '443' : loc.port;
+		var aPort = a.port; //safari fix
+		if (aPort == '0')
+			aPort = '';
+		if (a.hostname == loc.hostname && (aPort == loc.port || aPort == port) && a.protocol == loc.protocol) {  //TODO: check sub domains
+			this._current = false;
+			this._initialized = true;
+		}
+		else {
+			//this._current = true;
+		    var oImg = new Image();
+		    if (!('crossOrigin' in oImg)) {
+				this._initialized = true;
+				return;
+			}
+		    oImg.crossOrigin = 'anonymous';
+		    oImg.onload = function () {
+				this._supported = true;
+				this._initialized = true;
+			}.bind(this);
+		    oImg.onerror = function () {
+				this._supported = false;
+				this._initialized = true;
+				//throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
+			}.bind(this);
+		    oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
+		}
+	}
+
+	//properties
+	Object.defineProperties(CrossOrigin.prototype, {
+		current: {
+			get: function () {
+				return this._current;
+			},
+		},
+		supported: {
+			get: function () {
+				return this._supported;
+			},
+		},
+		initialized: {
+			get: function () {
+				return this._initialized;
+			},
+		},
+	});
+
+	return CrossOrigin;
+})())(),
 
 PocketCode.Web = {
 
@@ -774,7 +835,8 @@ PocketCode.Web = {
 					return;
 
 				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
-				if (this._isMobile && window.location.href !== expectedUrl)
+				//redirect for mobile and browsers that do not support cross origin img loading
+				if (this._isMobile && window.location.href !== expectedUrl || PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported)
 					window.location = expectedUrl;
 				if (this._isMobile) {
 					this._launchMobile();
@@ -785,7 +847,8 @@ PocketCode.Web = {
 				var ol = new PocketCode.Web.WebOverlay();
 				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
 				this._addDomListener(ol.closeButton, 'touchend', this._closeHandler);
-				if (document.body.children.length <= 1)
+				//var check = document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0');
+				if (document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0')) //on our index page
 					ol.closeButton.disabled = true;
 				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
 				this._addDomListener(ol.muteButton, 'touchend', this._muteHandler);
@@ -850,11 +913,11 @@ PocketCode.Web = {
 				this._player.loadProject(this._projectId);
 			},
 			_applicationInitHandler: function () {
-			    this._splashScreen.hide();
-			    if (this._backButton) {
-			        document.body.removeChild(this._backButton._dom);
-			        delete this._backButton;
-			    }
+				this._splashScreen.hide();
+				if (this._backButton) {
+					document.body.removeChild(this._backButton._dom);
+					delete this._backButton;
+				}
 				this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 				if (this._webOverlay)
 					this._webOverlay.muteButton.disabled = false;

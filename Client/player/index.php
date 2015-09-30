@@ -24,6 +24,6 @@ if( isset( $_GET["projectId"]) ) {
   <title>PocketCode HTML5 Player</title>
 </head>
 <body class="pc-webBody pc-webBodyMobile">
-  <noscript>This application needs javascript to be enabled!</noscript>
+  <noscript id="97F79358-0DA5-4243-8C1C-A1AE3BF226C0">This application needs javascript to be enabled!</noscript>
 </body>
 </html>
