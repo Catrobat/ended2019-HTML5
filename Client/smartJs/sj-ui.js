@@ -50,9 +50,10 @@ SmartJs.Ui.Window = (function () {  //static class
             visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (this._visibilityChangeEventName !== '')
+        if (this._visibilityChangeEventName !== '') 
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
-        else {
+
+        if (this._visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
             // IE 9 and lower:
             if ('onfocusin' in document) {
                 //document.onfocusin = document.onfocusout = onchange;
