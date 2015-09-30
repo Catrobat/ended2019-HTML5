@@ -2,6 +2,7 @@
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-communication.js" />
+/// <reference path="../core.js" />
 /// <reference path="ImageHelper.js" />
 'use strict';
 
@@ -20,7 +21,9 @@ PocketCode.ImageStore = (function () {
 
         this._resourceLoader = new SmartJs.Communication.ResourceLoader();
         this._resourceLoader.useSizeForProgressCalculation = true;
-        this._resourceLoader.crossOriginProperty = "anonymous";
+        var origin = PocketCode.crossOrigin;
+        if (origin.initialized && origin.current && origin.supported)
+            this._resourceLoader.crossOriginProperty = 'anonymous';
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
 

@@ -14,6 +14,7 @@ if (!PocketCode)
  */
 PocketCode.Model = {};  //PocketCode.Model || {};
 
+PocketCode.projectRoot = 'https://web-test.catrob.at/html5/';
 
 PocketCode.merge({
 
@@ -24,7 +25,66 @@ PocketCode.merge({
         ERROR: 4,
     },
 
-    favicon: new Image(''),
+    crossOrigin: new ((function() {
+    
+        function CrossOrigin() {
+            //init: worst case
+            this._current = true;
+            this._supported = false;
+            this._initialized = false;
+
+            var loc = window.location, a = document.createElement('a');
+            a.href = this._url;
+            var port = loc.protocol == 'https:' ? '443' : loc.port;
+            var aPort = a.port; //safari fix
+            if (aPort == '0')
+                aPort = '';    
+            if (a.hostname != loc.hostname || (aPort != loc.port && aPort != port) || a.protocol != loc.protocol) {  //TODO: check sub domains
+                this._current = false;
+                this._initialized = true;
+            }
+            else {
+                //this._current = true;
+                if ('crossOrigin' in oImg) {
+                    this._initialized = true;
+                    return;
+                }
+                this._img = new Image();
+                this._img.crossOrigin = 'anonymous';
+                this._img.onload = function () {
+                    this._supported = true;
+                    this._initialized = true;
+                }.bind(this);
+                this._img.onerror = function () {
+                    this._supported = false;
+                    this._initialized = true;
+                    //throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
+                }.bind(this);
+                this._img.src = PocketCode.projectRoot + 'pocketCode/img/favicon.png';
+            }
+        }
+
+        //properties
+        Object.defineProperties(CrossOrigin.prototype, {
+            current: {
+                get: function () {
+                    return this._current;
+                },
+            },
+            supported: {
+                get: function () {
+                    return this._supported;
+                },
+            },
+            initialized: {
+                get: function () {
+                    return this._initialized;
+                },
+            },
+        });
+
+        return CrossOrigin;
+    })())(),
 
     isPlayerCompatible: function () {
         var _result = true;
