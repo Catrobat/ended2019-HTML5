@@ -20,7 +20,7 @@ PocketCode.ImageStore = (function () {
 
         this._resourceLoader = new SmartJs.Communication.ResourceLoader();
         this._resourceLoader.useSizeForProgressCalculation = true;
-        this._resourceLoader.crossoriginProperty = "anonymous";
+        this._resourceLoader.crossOriginProperty = "anonymous";
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
 
@@ -29,8 +29,8 @@ PocketCode.ImageStore = (function () {
     }
 
     //properties
-    Object.defineProperties(ImageStore.prototype, {
-    });
+    //Object.defineProperties(ImageStore.prototype, {
+    //});
 
     //events
     Object.defineProperties(ImageStore.prototype, {
