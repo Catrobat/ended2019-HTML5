@@ -35,7 +35,7 @@ PocketCode.Ui.Dialog = (function () {
 
         //define the body as inner container
         this._container = new PocketCode.Ui.ScrollContainer({ className: 'pc-dialogBody' }, { className: 'pc-dialogContent' });
-        this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter dialogFooterSingleButton' });
+        this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter' });// dialogFooterSingleButton' });
 
         this._createLayout();
 
@@ -127,6 +127,11 @@ PocketCode.Ui.Dialog = (function () {
             dialog.appendChild(this._footer);
             this._dialog = dialog;
         },
+        /* override */
+        verifyResize: function(caller) {
+            SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, this);
+            this._container.verifyResize(this);
+        },
         _resizeHandler: function (e) {
             var availableHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom);
             var minHeight = this._minHeight - (this._header.height + this._footer.height);
@@ -143,7 +148,8 @@ PocketCode.Ui.Dialog = (function () {
                     buttons[i].style.width = '100%';
                 else
                     buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
-            this._container.verifyResize();
+
+            //this._container.verifyResize(this); //=SmartJs.Ui.ContainerControl.prototype...
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))
@@ -157,26 +163,34 @@ PocketCode.Ui.Dialog = (function () {
             //if (count == 1)
             //    this._footer.replaceClassName('dialogFooterSingleButton', 'dialogFooterTwoButtons');
         },
+        handleHistoryBack: function () {
+            //this method should be overridden to implement specific functionality on browser-back navigation
+            //e.g. calling dispatch() on the default buttons click event
+            if (this.onCancel)
+                this.onCancel.dispatchEvent();
+            else if (this.onOK)
+                this.onOK.dispatchEvent();
+        },
     });
 
     return Dialog;
 })();
 
 PocketCode.Ui.merge({
-    NotSupportedDialog: (function () {
-        NotSupportedDialog.extends(PocketCode.Ui.Dialog, false);
+    GlobalErrorDialog: (function () {
+        GlobalErrorDialog.extends(PocketCode.Ui.Dialog, false);
 
         //cntr
-        function NotSupportedDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Framework Not Supported');
+        function GlobalErrorDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Global Error');
             this._btnOK = new PocketCode.Ui.Button('OK');
-            this.addButton(this._btnCancel);
+            this.addButton(this._btnOK);
 
-            this.bodyInnerHTML = 'This application makes use of many html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We’re sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
+            this.bodyInnerHTML = 'We are sorry.<br/>. A global exception was detected. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
         }
 
         //events
-        Object.defineProperties(NotSupportedDialog.prototype, {
+        Object.defineProperties(GlobalErrorDialog.prototype, {
             onOK: {
                 get: function () {
                     return this._btnOK.onClick;
@@ -184,7 +198,47 @@ PocketCode.Ui.merge({
             },
         });
 
-        return NotSupportedDialog;
+        //methods
+        //GlobalErrorDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return GlobalErrorDialog;
+    })(),
+
+    BrowserNotSupportedDialog: (function () {
+        BrowserNotSupportedDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function BrowserNotSupportedDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Framework Not Supported');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnOK);
+
+            this.bodyInnerHTML = 'This application makes use of many html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We’re sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
+        }
+
+        //events
+        Object.defineProperties(BrowserNotSupportedDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //methods
+        //BrowserNotSupportedDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return BrowserNotSupportedDialog;
     })(),
 
     MobileRestrictionDialog: (function () {
@@ -216,6 +270,150 @@ PocketCode.Ui.merge({
             },
         });
 
+        //methods
+        //MobileRestrictionDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onCancel.dispatchEvent();
+        //    },
+        //});
+
         return MobileRestrictionDialog;
     })(),
+
+    ProjectNotFoundDialog: (function () {
+        ProjectNotFoundDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ProjectNotFoundDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Found');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnOK);
+
+            this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting could not be found on our server. Plese make sure you are using a valid Project ID.';
+        }
+
+        //events
+        Object.defineProperties(ProjectNotFoundDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //methods
+        //ProjectNotFoundDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return ProjectNotFoundDialog;
+    })(),
+
+    ProjectNotValidDialog: (function () {
+        ProjectNotValidDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ProjectNotValidDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Valid');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnOK);
+
+            this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting has an invalid file structure or missing resources.<br/>Details:<br/>';
+        }
+
+        //events
+        Object.defineProperties(ProjectNotValidDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //methods
+        //ProjectNotValidDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return ProjectNotValidDialog;
+    })(),
+
+    ParserErrorDialog: (function () {
+        ParserErrorDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ParserErrorDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Error Parsing Project');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnOK);
+
+            this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting could not be parsed correctly on our server. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
+        }
+
+        //events
+        Object.defineProperties(ParserErrorDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //methods
+        //ParserErrorDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return ParserErrorDialog;
+    })(),
+
+    UnsupportedSoundFileDialog: (function () {
+        UnsupportedSoundFileDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function UnsupportedSoundFileDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Sound File');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this._btnContinue = new PocketCode.Ui.Button('Continue');
+            this.addButton(this._btnContinue);
+
+            this.bodyInnerHTML = 'We have detected a sound file (or codec) that is not compatible with your current browser.<br />You can run the project anyway- unsupported sounds will be ignored.';
+        }
+
+        //events
+        Object.defineProperties(UnsupportedSoundFileDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onContinue: {
+                get: function () {
+                    return this._btnContinue.onClick;
+                },
+            },
+        });
+
+        //methods
+        //UnsupportedSoundFileDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onCancel.dispatchEvent();
+        //    },
+        //});
+
+        return UnsupportedSoundFileDialog;
+    })(),
+
 });

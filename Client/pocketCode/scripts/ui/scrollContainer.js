@@ -33,7 +33,7 @@ PocketCode.Ui.ScrollContainer = (function () {
             },
             set: function (value) {
                 this._container._dom.innerHTML = value;
-                this._resizeHandler();  //validate layout 
+                this.verifyResize(this);//_resizeHandler();  //validate layout
             },
         },
     });

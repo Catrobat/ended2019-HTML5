@@ -32,7 +32,7 @@ PocketCode.Ui.merge({
             this._startButton = document.createElement('button');
             this.startEnabled = false;
             this._addDomListener(this._startButton, 'click', this._startClickHandler);
-            this._addDomListener(this._startButton, 'touchend', function (e) { this._startButton.click(); });
+            this._addDomListener(this._startButton, 'touchend', function (e) { this._startButton.click(); this._dom.blur(); });
 
             this._createLayout();
             this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));

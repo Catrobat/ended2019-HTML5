@@ -712,6 +712,7 @@ SmartJs.Ui.merge({
             SmartJs.Ui.Control.call(this, 'div', propObject);
 
             this.__container = this;   //the inner container gets stored here
+            //this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
             //this._container = this; //override this property to ensure child elements are added inside the container tag and not inside the _dom tag
         }
 
@@ -748,6 +749,14 @@ SmartJs.Ui.merge({
         });
 
         ContainerControl.prototype.merge({
+            /* override */
+            //verifyResize: function(caller) {
+            //    SmartJs.Ui.Control.prototype.verifyResize.call(this, this);
+            //    this.__container.verifyResize(this);
+            //},
+            //_resizeHandler: function(e) {
+            //    this.__container.verifyResize(this);
+            //},
             //mapping the methods to the inner container and provide public access
             appendChild: function (uiControl) {
                 var cont = this.__container;
