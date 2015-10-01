@@ -34,10 +34,22 @@ PocketCode.Ui.Dialog = (function () {
         this._header.appendChild(this._captionTextNode);
 
         //define the body as inner container
-        this._container = new SmartJs.Ui.Control('div', { className: 'pc-dialogBody' });
+        this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogBody' });
+        this._content = new SmartJs.Ui.Control('div', { className: 'pc-dialogContent' });
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter dialogFooterSingleButton' });
 
         this._createLayout();
+        var myScroll = new IScroll(this._container._dom, {
+            mouseWheel: true,
+            //scrollbars: true,
+            //fadeScrollbars: true,           //on mobile
+            interactiveScrollbars: true,  //on desktop ^^use this exclusive?
+            scrollbars: 'custom',
+            bounce: true,   //default
+            shrinkScrollbars: 'clip',
+            //invertWheelDirection: true,
+            preventDefault: true,
+        });
 
         this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
@@ -84,10 +96,10 @@ PocketCode.Ui.Dialog = (function () {
         },
         bodyInnerHTML: {
             get: function () {
-                return this._container._dom.innerHTML;
+                return this._content._dom.innerHTML;
             },
             set: function (value) {
-                this._container._dom.innerHTML = value;
+                this._content._dom.innerHTML = value;
                 this._resizeHandler();  //validate layout 
             },
         },
@@ -124,6 +136,7 @@ PocketCode.Ui.Dialog = (function () {
             center.appendChild(dialog._dom);
 
             dialog.appendChild(this._header);
+            this._container.appendChild(this._content);
             dialog.appendChild(this._container);
             dialog.appendChild(this._footer);
             this._dialog = dialog;
