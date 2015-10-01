@@ -606,9 +606,9 @@ PocketCode.Web = {
 				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
 				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
 				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);;
-				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);;
-				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);;
+				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
+				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
+				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
 
 				this._loadingIndicator.show();
 				this._dom.style.display = '';
@@ -1031,6 +1031,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/scrollContainer.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },

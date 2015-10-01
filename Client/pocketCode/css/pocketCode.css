@@ -553,36 +553,15 @@
 	/*overflow-x: hidden;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;*/
-	padding: 0px 14px;
+	padding: 0px 17px;
 	border: solid 1px #282828;
 }
 
 	.pc-dialogBody .pc-dialogContent {
-		padding-top: 17px;
-		padding-bottom: 17px;
+		padding-top: 14px;
+		padding-bottom: 14px;
 		cursor: default;
 	}
-
-.iScrollVerticalScrollbar {
-	background-image: url('../img/scrollbarBackground.gif');
-	position: absolute;
-	z-index: 9999;
-	width: 7px;
-	bottom: 2px;
-	top: 2px;
-	right: 3px;
-	overflow: hidden;
-}
-
-.iScrollIndicator {
-	width: 7px;
-	position: absolute;
-	border-radius: 1px;
-	background-color: #00475E;
-	-moz-opacity: 0.8;
-	opacity: 0.8;
-	filter: alpha(opacity = 80);
-}
 
 .pc-dialogFooter {
 	border: solid 1px #282828;
@@ -617,3 +596,26 @@
 		.pc-dialogFooter button::-moz-focus-inner {
 			border: 0;
 		}
+
+/* scroll container: iScroll */
+.iScrollVerticalScrollbar {
+	background-image: url('../img/scrollbarBackground.gif');
+	position: absolute;
+	z-index: 9999;
+	width: 7px;
+	bottom: 2px;
+	top: 2px;
+	right: 3px;
+	overflow: hidden;
+}
+
+.iScrollIndicator {
+	width: 7px;
+	position: absolute;
+	border-radius: 1px;
+	background-color: #00475E;
+	-moz-opacity: 0.8;
+	opacity: 0.8;
+	filter: alpha(opacity = 80);
+}
+

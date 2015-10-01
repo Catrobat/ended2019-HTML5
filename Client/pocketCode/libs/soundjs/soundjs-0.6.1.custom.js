@@ -6768,7 +6768,7 @@ this.createjs = this.createjs || {};
 		 * @type {Number / String}
 		 * @protected
 		 */
-		this._panningModel = s._panningModel;;
+		this._panningModel = s._panningModel;
 
 		/**
 		 * The web audio context, which WebAudio uses to play audio. All nodes that interact with the WebAudioPlugin

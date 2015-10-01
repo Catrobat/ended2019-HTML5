@@ -34,22 +34,10 @@ PocketCode.Ui.Dialog = (function () {
         this._header.appendChild(this._captionTextNode);
 
         //define the body as inner container
-        this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogBody' });
-        this._content = new SmartJs.Ui.Control('div', { className: 'pc-dialogContent' });
+        this._container = new PocketCode.Ui.ScrollContainer({ className: 'pc-dialogBody' }, { className: 'pc-dialogContent' });
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter dialogFooterSingleButton' });
 
         this._createLayout();
-        var myScroll = new IScroll(this._container._dom, {
-            mouseWheel: true,
-            //scrollbars: true,
-            //fadeScrollbars: true,           //on mobile
-            interactiveScrollbars: true,  //on desktop ^^use this exclusive?
-            scrollbars: 'custom',
-            bounce: true,   //default
-            shrinkScrollbars: 'clip',
-            //invertWheelDirection: true,
-            preventDefault: true,
-        });
 
         this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
@@ -96,11 +84,10 @@ PocketCode.Ui.Dialog = (function () {
         },
         bodyInnerHTML: {
             get: function () {
-                return this._content._dom.innerHTML;
+                return this._container.innerHTML;
             },
             set: function (value) {
-                this._content._dom.innerHTML = value;
-                this._resizeHandler();  //validate layout 
+                this._container.innerHTML = value;
             },
         },
     });
@@ -136,7 +123,6 @@ PocketCode.Ui.Dialog = (function () {
             center.appendChild(dialog._dom);
 
             dialog.appendChild(this._header);
-            this._container.appendChild(this._content);
             dialog.appendChild(this._container);
             dialog.appendChild(this._footer);
             this._dialog = dialog;
@@ -157,7 +143,7 @@ PocketCode.Ui.Dialog = (function () {
                     buttons[i].style.width = '100%';
                 else
                     buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
-
+            this._container.verifyResize();
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))
