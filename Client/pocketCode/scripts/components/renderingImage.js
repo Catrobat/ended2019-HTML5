@@ -4,47 +4,7 @@ PocketCode.RenderingImage = (function () {
 
     function RenderingImage(imageProperties) {
         this.type = 'sprite';
-        this._fabricImage = fabric.util.createClass(fabric.Image, {
-            //type: 'sprite',
-
-            initialize: function (element, options) {
-                options || (options = {});
-
-                this.callSuper('initialize', element, options);
-
-                this.set({
-                    id: options.id,
-                    name: options.name,
-                    perPixelTargetFind: true, // only pixels inside item area trigger click
-                    selectable: false,
-                    hasControls: false,
-                    hasBorders: false,
-                    hasRotatingPoint: false,
-                    originX: "center",
-                    originY: "center",
-                    positionX: options.x,
-                    positionY: options.y,
-                    //flipX = flipH: false, //already a property and false (default)
-                    //flipy = flipV: false, //already a property and false (default)
-                    filters: [],
-                    opacity: 1.0
-                });
-
-                this.setAngle(options.angle);
-                this.setOpacity(options.opacity);
-            },
-
-            toObject: function () {
-                return fabric.util.object.extend(this.callSuper('toObject'), {
-                    id: this.get('id'),
-                    name: this.get('name')
-                });
-            },
-
-            _render: function (ctx) {
-                this.callSuper('_render', ctx);
-            },
-        });
+        this._fabricImage = new PocketCode.FImage(imageProperties.look);
 
         if (!imageProperties || !(typeof imageProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
@@ -61,47 +21,50 @@ PocketCode.RenderingImage = (function () {
         },
         id: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.id = value;
             },
         },
         positionX: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.left = value;
             },
         },
         positionY: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.top = value;
             },
         },
         direction: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.angle = value; // TODO angle conversion (+-90)?
             },
         },
         rotationStyle: {
             set: function (value) {
-                //return this._fabricImage;
+                // TODO check direction? if on edge bounce?
+                // this._fabricImage.flipX = PocketCode.RotationStyle.LEFT_TO_RIGHT === value;
             },
         },
         look: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.setElement(value);
             },
         },
         size: {
             set: function (value) {
-                //return this._fabricImage;
+                // TODO apply to with, height?
+                this._fabricImage.scaleX = value / 100.;
+                this._fabricImage.scaleY = value / 100.;
             },
         },
         visible: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.visible = value;
             },
         },
         transparency: {
             set: function (value) {
-                //return this._fabricImage;
+                this._fabricImage.opacity = (100 - value) / 100.;
             },
         },
         brightness: {
@@ -157,3 +120,44 @@ PocketCode.RenderingImage = (function () {
 
     return RenderingImage;
 })();
+
+PocketCode.FImage = fabric.util.createClass(fabric.Image, {
+    //type: 'sprite',
+
+    initialize: function (element, options) {
+        options || (options = {});
+
+        this.callSuper('initialize', element, options);
+        this.set({
+            id: options.id,
+            name: options.name,
+            perPixelTargetFind: true, // only pixels inside item area trigger click
+            selectable: false,
+            hasControls: false,
+            hasBorders: false,
+            hasRotatingPoint: false,
+            originX: "center",
+            originY: "center",
+            positionX: options.x,
+            positionY: options.y,
+            //flipX = flipH: false, //already a property and false (default)
+            //flipy = flipV: false, //already a property and false (default)
+            filters: [],
+            opacity: 1.0
+        });
+
+        this.setAngle(options.angle);
+        this.setOpacity(options.opacity);
+    },
+
+    toObject: function () {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+            id: this.get('id'),
+            name: this.get('name')
+        });
+    },
+
+    _render: function (ctx) {
+        this.callSuper('_render', ctx);
+    },
+});
