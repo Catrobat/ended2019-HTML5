@@ -73,10 +73,13 @@ PocketCode.PlayerViewportController = (function () {
         initRenderingImages: function(sprites) {
             var renderingImages = [];
             for (var i = 0, l = sprites.length; i < l; i++) {
+                console.log('creating sprite',i, sprites[i]);
                 var r = new PocketCode.RenderingImage(sprites[i]);
                 renderingImages.push(r);
             }
+
             this._view.renderingImages = renderingImages;
+            this._view.render();
         },
     });
 

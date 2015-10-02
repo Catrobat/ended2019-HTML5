@@ -4,7 +4,7 @@ PocketCode.RenderingImage = (function () {
 
     function RenderingImage(imageProperties) {
         this.type = 'sprite';
-        this._fabricImage = new PocketCode.FImage(imageProperties.look);
+        this._fabricImage = new PocketCode.FImage(imageProperties.look.canvas);
 
         if (!imageProperties || !(typeof imageProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
@@ -26,17 +26,17 @@ PocketCode.RenderingImage = (function () {
         },
         positionX: {
             set: function (value) {
-                this._fabricImage.left = value;
+                this._fabricImage.left = value + this._fabricImage.width/2.0;
             },
         },
         positionY: {
             set: function (value) {
-                this._fabricImage.top = value;
+                this._fabricImage.top = value + this._fabricImage.height/2.0;
             },
         },
         direction: {
             set: function (value) {
-                this._fabricImage.angle = value; // TODO angle conversion (+-90)?
+                this._fabricImage.angle = value - 90; // TODO angle conversion (+-90)?
             },
         },
         rotationStyle: {
@@ -47,7 +47,7 @@ PocketCode.RenderingImage = (function () {
         },
         look: {
             set: function (value) {
-                this._fabricImage.setElement(value);
+                // this._fabricImage.setElement(value);
             },
         },
         size: {
@@ -64,7 +64,7 @@ PocketCode.RenderingImage = (function () {
         },
         transparency: {
             set: function (value) {
-                this._fabricImage.opacity = (100 - value) / 100.;
+                // this._fabricImage.opacity = (100 - value) / 100.;
             },
         },
         brightness: {
@@ -128,6 +128,7 @@ PocketCode.FImage = fabric.util.createClass(fabric.Image, {
         options || (options = {});
 
         this.callSuper('initialize', element, options);
+        console.log('INIT',element.width, element.height);
         this.set({
             id: options.id,
             name: options.name,
@@ -138,10 +139,10 @@ PocketCode.FImage = fabric.util.createClass(fabric.Image, {
             hasRotatingPoint: false,
             originX: "center",
             originY: "center",
-            positionX: options.x,
-            positionY: options.y,
-            //flipX = flipH: false, //already a property and false (default)
-            //flipy = flipV: false, //already a property and false (default)
+            width: element.width,
+            height: element.height,
+            // flipX = flipH: false, //already a property and false (default)
+            // flipy = flipV: false, //already a property and false (default)
             filters: [],
             opacity: 1.0
         });

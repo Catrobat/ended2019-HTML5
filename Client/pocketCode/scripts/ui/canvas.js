@@ -42,6 +42,7 @@ PocketCode.Ui.Canvas = (function () {
             Object.defineProperties(FCAdapter.prototype, {
                 renderingObjects: {
                     set: function (list) {
+                        console.log('SETROBJECTS');
                         this._renderingObjects = list;  //TODO: exception handling, argument check
                     },
                 },
@@ -49,6 +50,17 @@ PocketCode.Ui.Canvas = (function () {
 
             //methods
             FCAdapter.prototype.merge({
+                findItemById: function(id) {
+                    var items = this._renderingObjects;
+                    if (items === undefined)
+                        return;
+
+                    for (var i = 0, l = items.length; i < l; i++) {
+                        if (items[i].object.id == id)
+                            return items[i];
+                    }
+                },
+
                 setDimensionsWr: function (width, height) {   //without rerendering
                     this._setBackstoreDimension('width', width);
                     this._setCssDimension('width', width + 'px');
@@ -74,42 +86,42 @@ PocketCode.Ui.Canvas = (function () {
 
                 //    return target;
                 //},
-                //renderAll: function (allOnTop) {
-                //    var canvasToDrawOn = this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
-                //        activeGroup = this.getActiveGroup();
+                renderAll: function (allOnTop) {
+                    var canvasToDrawOn = this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
+                        activeGroup = this.getActiveGroup();
 
-                //    if (this.contextTop && this.selection && !this._groupSelector) {
-                //        this.clearContext(this.contextTop);
-                //    }
+                    if (this.contextTop && this.selection && !this._groupSelector) {
+                        this.clearContext(this.contextTop);
+                    }
 
-                //    if (!allOnTop) {
-                //        this.clearContext(canvasToDrawOn);
-                //    }
+                    if (!allOnTop) {
+                        this.clearContext(canvasToDrawOn);
+                    }
 
-                //    this.fire('before:render');
+                    this.fire('before:render');
 
-                //    if (this.clipTo) {
-                //        fabric.util.clipContext(this, canvasToDrawOn);
-                //    }
+                    if (this.clipTo) {
+                        fabric.util.clipContext(this, canvasToDrawOn);
+                    }
 
-                //    this._renderBackground(canvasToDrawOn);
-                //    this._renderObjects(canvasToDrawOn, activeGroup);
-                //    this._renderActiveGroup(canvasToDrawOn, activeGroup);
+                    this._renderBackground(canvasToDrawOn);
+                    this._renderObjects(canvasToDrawOn, activeGroup);
+                    this._renderActiveGroup(canvasToDrawOn, activeGroup);
 
-                //    if (this.clipTo) {
-                //        canvasToDrawOn.restore();
-                //    }
+                    if (this.clipTo) {
+                        canvasToDrawOn.restore();
+                    }
 
-                //    this._renderOverlay(canvasToDrawOn);
+                    this._renderOverlay(canvasToDrawOn);
 
-                //    if (this.controlsAboveOverlay && this.interactive) {
-                //        this.drawControls(canvasToDrawOn);
-                //    }
+                    if (this.controlsAboveOverlay && this.interactive) {
+                        this.drawControls(canvasToDrawOn);
+                    }
 
-                //    this.fire('after:render');
+                    this.fire('after:render');
 
-                //    return this;
-                //},
+                    return this;
+                },
                 //_renderObjects: function (ctx, activeGroup) {
                 //    var i, length;
 
@@ -127,6 +139,27 @@ PocketCode.Ui.Canvas = (function () {
                 //        }
                 //    }
                 //},
+
+                _renderObjects: function (ctx, activeGroup) {
+                    var i, length;
+                    console.log('render');
+
+                    // fast path
+                    if (!activeGroup || this.preserveObjectStacking) {
+                        for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
+                            var obj = this._renderingObjects[i].object;
+                            this._draw(ctx, obj);
+                        }
+                    }
+                    else {
+                        for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
+                            if (this._renderingObjects[i].object && !activeGroup.contains(this._renderingObjects[i].object)) {
+                                this._draw(ctx, this._renderingObjects[i].object);
+                                console.log('B render', i);
+                            }
+                        }
+                    }
+                },
             });
 
             return FCAdapter;
@@ -178,11 +211,11 @@ PocketCode.Ui.Canvas = (function () {
                 return this._fcAdapter.getContext('2d');
             },
         },
-        //renderingObjects: {
-        //    set: function (list) {
-        //        this._fcAdapter.renderingObjects = list;
-        //    },
-        //},
+        renderingImages: {
+            set: function (list) {
+                this._fcAdapter.renderingObjects = list;
+            },
+        },
         //text: {
         //    get: function () {
         //        return this._textNode.text;
@@ -231,11 +264,14 @@ PocketCode.Ui.Canvas = (function () {
             this._fcAdapter.clear();    //TODO: make sure to clear the right context (only)
         },
         render: function (renderingObjectList) {    //TODO??     we will have to init the list first to achive click events on sprites
-
+            this._fcAdapter.renderAll();
         },
         toDataURL: function (scaling) {
             scaling = scaling || 1;
             return this._fcAdapter.toDataURL({ multiplier: 1 / scaling });
+        },
+        findItemById: function (id) {
+            return this._fcAdapter.findItemById(id);
         },
     });
 

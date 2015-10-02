@@ -136,6 +136,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             set: function (value) {
                 if (!(value instanceof Array))
                     throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
+
                 this._canvas.renderingImages = value;
             },
             get: function () {
@@ -314,7 +315,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
 
         handleSpriteChange: function (id, changes) {
-            console.log(id, changes);
+            var item = this._canvas.findItemById(id);
+            if (item) {
+                item.merge(changes);
+                this._canvas.render();
+            }
         },
     });
 
