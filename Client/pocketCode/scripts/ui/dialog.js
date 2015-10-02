@@ -416,4 +416,42 @@ PocketCode.Ui.merge({
         return UnsupportedSoundFileDialog;
     })(),
 
+    UnsupportedDeviceFeatureDialog: (function () {
+        UnsupportedDeviceFeatureDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function UnsupportedDeviceFeatureDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Device Feature');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this._btnContinue = new PocketCode.Ui.Button('Continue');
+            this.addButton(this._btnContinue);
+
+            this.bodyInnerHTML = 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br />You can run the project anyway- unsupported features will be ignored.<br />Details:<br />';
+        }
+
+        //events
+        Object.defineProperties(UnsupportedDeviceFeatureDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onContinue: {
+                get: function () {
+                    return this._btnContinue.onClick;
+                },
+            },
+        });
+
+        //methods
+        //UnsupportedDeviceFeatureDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onCancel.dispatchEvent();
+        //    },
+        //});
+
+        return UnsupportedDeviceFeatureDialog;
+    })(),
 });

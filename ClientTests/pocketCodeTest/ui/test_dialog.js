@@ -32,9 +32,9 @@ QUnit.test("Dialog (Base Class)", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
     var container = new SmartJs.Ui.ContainerControl();
+    dom.appendChild(container._dom);
 
-    dom.appendChild(container._dom);    //this should trigger a resize- code coverage
-    container.appendChild(d);
+    container.appendChild(d);    //this should trigger a resize- code coverage
     //container.removeChild(d);
     d.dispose();    //removed on dispose
 
@@ -91,6 +91,9 @@ QUnit.test("Various Dialogs", function (assert) {
     d = new PocketCode.Ui.UnsupportedSoundFileDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedSoundFileDialog, "UnsupportedSoundFileDialog: instance check");
     assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedSoundFileDialog: events");
-
+    
+    d = new PocketCode.Ui.UnsupportedDeviceFeatureDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedDeviceFeatureDialog, "UnsupportedDeviceFeatureDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedDeviceFeatureDialog: events");
 });
 

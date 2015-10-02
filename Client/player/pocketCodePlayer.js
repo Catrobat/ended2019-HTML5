@@ -907,6 +907,9 @@ PocketCode.Web = {
 				}
 			},
 			_reinitMobileHandler: function (e) {
+			    this._splashScreen.show();
+			    this._splashScreen.setProgress(0, 0);   //set pending
+
 				this._player.dispose();
 				this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
 				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
