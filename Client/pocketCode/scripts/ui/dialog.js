@@ -130,7 +130,8 @@ PocketCode.Ui.Dialog = (function () {
         /* override */
         verifyResize: function(caller) {
             SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, this);
-            this._container.verifyResize(this);
+            if (this._container)    //this method is typically called when setting a scc class and therefor before initialising the container element
+                this._container.verifyResize(this);
         },
         _resizeHandler: function (e) {
             var availableHeight = this.height - (this._header.height + this._footer.height + 2 * this._marginTopBottom);
