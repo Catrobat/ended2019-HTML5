@@ -69,6 +69,15 @@ PocketCode.PlayerViewportController = (function () {
             this._view.canvasNeedsRedraw = true;
             this._view.handleSpriteChange(e.id, e.properties);
         },
+
+        initRenderingImages: function(sprites) {
+            var renderingImages = [];
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                var r = new PocketCode.RenderingImage(sprites[i]);
+                renderingImages.push(r);
+            }
+            this._view.renderingImages = renderingImages;
+        },
     });
 
     return PlayerViewportController;

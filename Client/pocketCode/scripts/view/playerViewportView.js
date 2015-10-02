@@ -132,10 +132,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //    //enumerable: false,
         //    //configurable: true,
         //},
-        renderingObjects: {
+        renderingImages: {
             set: function (value) {
-                this._renderingObjects = value;
-                this.render();
+                if (!(value instanceof Array))
+                    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
+                this._canvas.renderingImages = value;
             },
             get: function () {
                 return this._renderingObjects;
@@ -301,11 +302,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
-            this._canvas.clear();
-            //for (var i = 0; i < this._renderingObjects.length; i++) {
-            //    this._fabricCanvas.add(this._renderingObjects[i]);
-            //}
-            //this._fabricCanvas.renderAll();
+            this._canvas.render();
         },
 
         clear: function () {
