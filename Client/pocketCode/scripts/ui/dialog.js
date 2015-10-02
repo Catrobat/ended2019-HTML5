@@ -219,7 +219,7 @@ PocketCode.Ui.merge({
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
-            this.bodyInnerHTML = 'This application makes use of many html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We’re sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
+            this.bodyInnerHTML = 'This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We are sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
         }
 
         //events
@@ -280,6 +280,45 @@ PocketCode.Ui.merge({
         //});
 
         return MobileRestrictionDialog;
+    })(),
+
+    ExitWarningDialog: (function () {
+        ExitWarningDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ExitWarningDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Exit Application');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this._btnExit = new PocketCode.Ui.Button('Exit');
+            this.addButton(this._btnExit);
+
+            this.bodyInnerHTML = 'Do you really want to exit?';
+        }
+
+        //events
+        Object.defineProperties(ExitWarningDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onExit: {
+                get: function () {
+                    return this._btnExit.onClick;
+                },
+            },
+        });
+
+        //methods
+        ExitWarningDialog.prototype.merge({
+            /* override */
+            handleHistoryBack: function () {
+                this.onExit.dispatchEvent();
+            },
+        });
+
+        return ExitWarningDialog;
     })(),
 
     ProjectNotFoundDialog: (function () {

@@ -97,7 +97,7 @@ PocketCode.merge({
                 return true;
             }(),
             pushState: function () {
-                if (!history.pushState) {
+                if (SmartJs.Device.isMobile && !history.pushState) {
                     _result = _full = false;
                     return false;
                 }

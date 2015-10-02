@@ -828,6 +828,8 @@ PocketCode.Web = {
 					alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
 					return;
 				}
+				this._redirected = !!document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0'); //on our index page
+
 				if (projectId)
 					this._projectId = projectId;    //undefined allowed and handled in application
 				this._rfc3066 = rfc3066;
@@ -848,7 +850,7 @@ PocketCode.Web = {
 				this._addDomListener(ol.closeButton, 'click', this._closeHandler);
 				this._addDomListener(ol.closeButton, 'touchend', this._closeHandler);
 				//var check = document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0');
-				if (document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0')) //on our index page
+				if (this._redirected)//document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0')) //on our index page
 					ol.closeButton.disabled = true;
 				this._addDomListener(ol.muteButton, 'click', this._muteHandler);
 				this._addDomListener(ol.muteButton, 'touchend', this._muteHandler);
@@ -971,6 +973,15 @@ PocketCode.Web = {
 					//this._player = undefined;
 				}
 				catch (e) { }   //silent catch: avoid errors onClose during init
+
+				if (this._redirected) {
+				    //this._viewport.hide();
+				    if (history.length > 0)
+				        history.back();
+				    else
+				        window.close();
+				    //return;
+				}
 			},
 		}
 		return PlayerInterface;

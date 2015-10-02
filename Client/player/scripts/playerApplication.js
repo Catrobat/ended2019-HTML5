@@ -130,7 +130,25 @@ PocketCode.PlayerApplication = (function () {
                 file = error.file || error.filename || error.fileName,
                 line = error.lineno;
 
-            alert('TODO: show a dialog (and log): global error: ' + msg + ' in ' + file + ' at line ' + line);
+            //alert('TODO: show a dialog (and log): global error: ' + JSON.stringify(e));//msg + ' in ' + file + ' at line ' + line);
+            var d = new PocketCode.Ui.GlobalErrorDialog();
+            try {
+                var json = {},
+                    parsed = false;
+                Object.getOwnPropertyNames(e).forEach(function (key) {
+                    json[key] = e[key];
+                    parsed = true;
+                }, this);
+            }
+            catch(exc) {}
+            if (parsed) {
+                d.bodyInnerHTML += 'Details: <br />';
+                d.bodyInnerHTML += JSON.stringify(json);
+            }
+
+            d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onClose.dispatchEvent(); }, this));
+            this._onInit.dispatchEvent();   //hide splash screen
+            this._showDialog(d, false);
         },
         _projectLoadingErrorHandler: function(e) {
             alert("loading failed: unsupported sound format");
@@ -157,8 +175,13 @@ PocketCode.PlayerApplication = (function () {
             if (this._disposing || this._disposed)
                 return;
             this._onInit.dispatchEvent();
-            this._viewport.show();
-            console.log('ERROR project details: ' + e);
+            //this._viewport.show();
+            var d = new PocketCode.Ui.ProjectNotFoundDialog();
+            d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onClose.dispatchEvent(); }, this));
+            this._onInit.dispatchEvent();   //hide splash screen
+            this._showDialog(d, false);
+
+            //console.log('ERROR project details: ' + e);
         },
         _requestProject: function(projectId) {
             var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });//, imgDataMax: 0 });
@@ -180,6 +203,7 @@ PocketCode.PlayerApplication = (function () {
             if (this._disposing || this._disposed)
                 return;
             console.log('ERROR project: ' + e);
+            //TODO: parse error and show dialog
         },
 
         //_popstateHandler: function (e) {
@@ -234,55 +258,79 @@ PocketCode.PlayerApplication = (function () {
         //        from.hide();
         //    to.showView();
         //},
-        _showMobileRestrictionDialog: function() {
-            var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
-            restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
-            restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
-            this._viewport.addDialog(restrictionDialog);
-            this._onInit.dispatchEvent();   //hide splash screen
+        _showDialog: function(dialog, createHistoryEntry) {
+            if (!(dialog instanceof PocketCode.Ui.Dialog))
+                throw new Error('invalid argument: dialog');
+
+            this._viewport.addDialog(dialog);   //test only
             this._viewport.show();
 
+            if (!SmartJs.Device.isMobile) { //desktop
+                //TODO: we do not create history entries here
+                //append the dialog to body?
+            }
+            else {  //mobile
+                //append the dialog to viewport: this._viewport.addDialog(restrictionDialog);
+            }
         },
-        _mobileCancelHandler: function(e) {
-            this._viewport.hide();
-        	if (history.length > 0)
-        		history.back();
-        	else
-        	    window.close();
-        },
-        _mobileConfirmHandler: function(e) {
-            this._viewport.hide();
-            this._onMobileInitRequired.dispatchEvent(e);
-        },
+        //_showMobileRestrictionDialog: function() {
+        //    var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
+        //    restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
+        //    restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
+        //    this._viewport.addDialog(restrictionDialog);
+        //    this._onInit.dispatchEvent();   //hide splash screen
+        //    this._viewport.show();
+
+        //},
+        //_exit: function(e) {
+        //    this._viewport.hide();
+        //	if (history.length > 0)
+        //		history.back();
+        //	else
+        //	    window.close();
+        //},
+        //_reinitMobile: function (e) {
+        //    this._viewport.hide();
+        //    this._onMobileInitRequired.dispatchEvent(e);
+        //},
         loadProject: function (projectId) {
             if (this._disposing || this._disposed)// || this._projectLoaded)    //prevent loading more than once
                 return;
-            //this._projectLoaded = true;
 
             //check browser compatibility
-            //TODO: show PocketCode.Ui.NotSupportedDialog()
-            var comp = true;
-            //if (!PocketCode.isPlayerCompatible)
-            //    comp = false;
+            //var compatible = true;
+            var pc = PocketCode.isPlayerCompatible();
+            var compatible = pc.result;
+            //if (!pc.result)
+            //    compatible = false;
 
-            if (comp) { //TODO: dispatch onError (defined in base class)
-                var bc = PocketCode.isPlayerCompatible();
-                if (!bc.result)
-                    comp = false;
-            }
-            if (!comp) {	//framework not loaded correctly or compatibility failed
-                //if (this._onError instanceof SmartJs.Event.Event)
-                //    this._onError.dispatchEvent();
-                //else
-                alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
-                this._onClose.dispatchEvent();
+            if (!compatible) {	//framework not loaded correctly or compatibility failed
+                if (!pc.tests.SmartJs) {
+                    alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
+                    this._onClose.dispatchEvent();
+                }
+                else {
+                    var d = new PocketCode.Ui.BrowserNotSupportedDialog();
+                    d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onClose.dispatchEvent(); }, this));
+                    this._onInit.dispatchEvent();   //hide splash screen
+                    this._showDialog(d, false);
+                }
                 return;
             }
 
             if (SmartJs.Device.isMobile && !this._mobileInitialized) {
-                this._showMobileRestrictionDialog();    //reinit app in the scope of an user event
+                //this._showMobileRestrictionDialog();    //reinit app in the scope of an user event
+                var d = new PocketCode.Ui.MobileRestrictionDialog();
+                d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onClose.dispatchEvent(e); }, this));
+                d.onConfirm.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    this._viewport.hide();
+                    this._onMobileInitRequired.dispatchEvent(e);
+                }, this));
+                this._onInit.dispatchEvent();   //hide splash screen
+                this._showDialog(d, false);
                 return;
-            }
+            }        
+
 
             this._currentProjectId = projectId;
             this._requestProjectDetails(projectId);

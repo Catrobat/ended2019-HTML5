@@ -60,6 +60,19 @@ QUnit.test("Various Dialogs", function (assert) {
     d.handleHistoryBack();
     assert.equal(historyBackCounter, 1, "button event dispatched: onOK");
 
+    d = new PocketCode.Ui.ExitWarningDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ExitWarningDialog, "ExitWarningDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onExit instanceof SmartJs.Event.Event, "ExitWarningDialog: events");
+
+    historyBackCounter = 0;
+    var exitHandler = function () {
+        historyBackCounter++;
+    };
+    d.onExit.addEventListener(new SmartJs.Event.EventListener(exitHandler, this));
+    d.handleHistoryBack();
+    assert.equal(historyBackCounter, 1, "button event dispatched: onExit");
+
+
     d = new PocketCode.Ui.GlobalErrorDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.GlobalErrorDialog, "GlobalErrorDialog: instance check");
     assert.ok(d.onOK instanceof SmartJs.Event.Event, "GlobalErrorDialog: events");
