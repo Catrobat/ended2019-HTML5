@@ -132,6 +132,7 @@ PocketCode.PlayerPageController = (function () {
             this._view.disabled = false;
             console.log('project loaded');// + JSON.stringify(e));
             // TODO create renderingImages from gameEngine.spritesAsPropertyList
+            this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
         },
         _projectStartHandler: function (e) {
             this._view.hideStartScreen();
