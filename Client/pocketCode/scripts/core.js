@@ -96,6 +96,13 @@ PocketCode.merge({
                 }
                 return true;
             }(),
+            operaMini: function() {
+                if (window.operamini) {//!!window.['operamini']) {
+                    _result = _full = false;
+                    return false;
+                }
+                return true;
+            },
             pushState: function () {
                 if (SmartJs.Device.isMobile && !history.pushState) {
                     _result = _full = false;

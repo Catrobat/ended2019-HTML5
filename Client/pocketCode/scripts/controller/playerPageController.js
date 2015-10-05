@@ -1,4 +1,5 @@
 ﻿/// <reference path="../core.js" />
+/// <reference path="../ui/dialog.js" />
 /// <reference path="../view/playerPageView.js" />
 'use strict';
 
@@ -56,7 +57,7 @@ PocketCode.PlayerPageController = (function () {
         //TODO:
         //SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this.doSomething like pause, this));
 
-        this._onNavigateBack = new SmartJs.Event.Event(this);
+        //this._onNavigateBack = new SmartJs.Event.Event(this);
         //this._escKeyHandlerRef = undefined;//this._addDomEventListener(document, 'keyup', this._escKeyHandler);
         //this._load();
     }
@@ -95,20 +96,33 @@ PocketCode.PlayerPageController = (function () {
         },
     });
 
-    //events
-    Object.defineProperties(PlayerPageController.prototype, {
-        onNavigateBack: {
-            get: function () { return this._onNavigateBack; },
-            //enumerable: false,
-            //configurable: true,
-        },
-    });
+    ////events
+    //Object.defineProperties(PlayerPageController.prototype, {
+    //    onNavigateBack: {
+    //        get: function () { return this._onNavigateBack; },
+    //        //enumerable: false,
+    //        //configurable: true,
+    //    },
+    //});
 
     //methods
     PlayerPageController.prototype.merge({
+        /* override */
+        loadViewState: function (viewState, dialogsLength) {
+            PocketCode.PageController.prototype.loadViewState.call(this, viewState, dialogsLength);   //to handle dialogs
+            //set UI based on viewState
+            if (viewState === PocketCode.ExecutionState.PAUSED) {
+                this._pauseProject();
+                this._view.executionState = PocketCode.ExecutionState.PAUSED;
+            }
+            else {  //if(viewState === PocketCode.ExecutionState.STOPPED)
+                this._gameEngine.stopProject();
+                this._view.executionState = PocketCode.ExecutionState.STOPPED;
+            }
+        },
         //view
         //_viewHideHandler: function () {
-            //onHide -> pause()
+        //onHide -> pause()
         //},
         //_escKeyHandler: function(e) {
         //    if (e.keyCode == 27) {
@@ -116,7 +130,7 @@ PocketCode.PlayerPageController = (function () {
         //    }
         //},
         //browser
-        _visibilityChangeHandler:function(e) {
+        _visibilityChangeHandler: function (e) {
             //console.log('pause: ' + Date.now()+' ' + e.visible);
             if (e.visible == false)
                 this._pauseProject();
@@ -134,13 +148,16 @@ PocketCode.PlayerPageController = (function () {
             // TODO create renderingImages from gameEngine.spritesAsPropertyList
             this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
         },
-        _projectStartHandler: function (e) {
+        _projectStartHandler: function (e) {    //on start event dispatched by gameEngine
             this._view.hideStartScreen();
-            console.log('project start: ');// + JSON.stringify(e));
+            //console.log('project start: ');// + JSON.stringify(e));
         },
         _projectExecutedHandler: function (e) {
+            if (SmartJs.Device.isMobile)
+                return history.back();
+
             this._view.executionState = PocketCode.ExecutionState.STOPPED;
-            console.log('project executed (detected)');
+            //console.log('project executed (detected)');
         },
         _uiUpdateHandler: function (e) {
             try {
@@ -151,16 +168,26 @@ PocketCode.PlayerPageController = (function () {
             }
         },
         //user
-        _buttonClickedHandler: function(e) {
+        _buttonClickedHandler: function (e) {
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
-                    this._onNavigateBack.dispatchEvent();
+                    history.back();//this._onNavigateBack.dispatchEvent();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.RESTART:
+                    if (SmartJs.Device.isMobile) {    //create history entry
+                        var state = history.state;
+                        history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
+                        history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
+                    }
                     this._gameEngine.restartProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PLAY:
+                    if (SmartJs.Device.isMobile) {    //create history entry
+                        var state = history.state;
+                        history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
+                        history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
+                    }
                     this._gameEngine.runProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     break;
@@ -191,7 +218,7 @@ PocketCode.PlayerPageController = (function () {
         //_startButtonClickedHandler: function(e){
         //    this._buttonClickedHandler(e.merge({command: PocketCode.Ui.PlayerBtnCommand.PLAY}));
         //},
-        _spriteClickedHandler: function(e) {
+        _spriteClickedHandler: function (e) {
             //TODO: get id + dispatch event in gameEngine
         },
         _pauseProject: function () {
@@ -211,7 +238,11 @@ PocketCode.PlayerPageController = (function () {
         //},
         _showScreenshotDialog: function (image) {
             this._pauseProject();
-            alert('todo: show screenshot dialog');
+            var state = history.state;
+            history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
+            var d = new PocketCode.Ui.ScreenshotDialog();
+            //add event listener
+            this._showDialog(d);
         },
         dispose: function () {
             //this._pauseProject();

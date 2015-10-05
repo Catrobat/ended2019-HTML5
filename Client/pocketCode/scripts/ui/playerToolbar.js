@@ -186,13 +186,13 @@ PocketCode.Ui.merge({
         PlayerToolbar.prototype.merge({
             _openMenuTabbedHandler: function (e) {
                 if (PocketCode.ExecutionState.RUNNING)
-                    this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
+                    this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK });
                 e.preventDefault();
             },
             _openMenuClickedHandler: function(e) {
                 if (PocketCode.ExecutionState.RUNNING) {
                     if (e.button == 0) { // left click
-                        this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE });
+                        this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK });
                         e.preventDefault();
                     }
                 }

@@ -838,8 +838,8 @@ PocketCode.Web = {
 
 				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
 				//redirect for mobile and browsers that do not support cross origin img loading
-				if ((this._isMobile && window.location.href !== expectedUrl) || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
-					window.location = expectedUrl;
+				//if ((this._isMobile && window.location.href !== expectedUrl) || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
+				//	window.location = expectedUrl;
 				if (this._isMobile) {
 					this._launchMobile();
 					return;
@@ -886,7 +886,7 @@ PocketCode.Web = {
 					this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
 					this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
-					this._player.onClose.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+					this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					this._player.loadProject(this._projectId);
 				//	var vp = new PocketCode.Ui.Viewport();
 				//	var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
@@ -904,7 +904,7 @@ PocketCode.Web = {
 					this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);
 					this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-					this._player.onClose.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+					this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					this._player.loadProject(this._projectId);
 				}
 			},
@@ -957,9 +957,6 @@ PocketCode.Web = {
 					btn.disabled = true;
 					this._projectId = undefined;
 					this._rfc3066 = undefined;
-
-					if (document.body.children.length <= 1 && history.length > 0)   //try navigate back if our index.php was called
-						history.back();
 				}
 				catch (e) { }   //silent catch: avoid errors onClose during init
 
@@ -968,7 +965,7 @@ PocketCode.Web = {
 				try {
 					this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-					this._player.onClose.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+					this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					this._player.dispose();
 					//this._player = undefined;
 				}

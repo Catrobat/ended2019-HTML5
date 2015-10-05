@@ -704,6 +704,9 @@ PocketCode.GameEngine = (function () {
 
         /* override */
         dispose: function () {
+            if (this._disposed)
+                return; //may occur when dispose on error
+
             this.stopProject();
 
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));

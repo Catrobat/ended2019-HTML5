@@ -146,15 +146,15 @@ PocketCode.Ui.merge({
             this._disableBrowserGestures();
         }
 
-        //properties
-        Object.defineProperties(Viewport.prototype, {
+        ////properties
+        //Object.defineProperties(Viewport.prototype, {
 
-        });
+        //});
 
-        //events
-        Object.defineProperties(Viewport.prototype, {
+        ////events
+        //Object.defineProperties(Viewport.prototype, {
 
-        });
+        //});
 
         //methods
         Viewport.prototype.merge({
@@ -179,14 +179,12 @@ PocketCode.Ui.merge({
             addDialog: function(dialog) {
                 if (!(dialog instanceof PocketCode.Ui.Dialog))
                     throw new Error('invalid parameter: dialog');
-                //TODO: register page in navigation
-                this._appendChild(dialog);
+                this._appendChild(dialog);  //TODO: tests
             },
-            loadPage: function(page) {
+            loadPageView: function (page) {
                 if (!(page instanceof PocketCode.Ui.PageView))
                     throw new Error('invalid parameter: page');
-                //TODO: register page in navigation
-                this._appendChild(page);
+                this._appendChild(page);    //TODO: check current page + viewState + tests (removing and readding existing pages)
             },
             /*override*/
             dispose: function () {

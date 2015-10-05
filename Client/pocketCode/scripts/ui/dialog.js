@@ -22,7 +22,7 @@ PocketCode.Ui.Dialog = (function () {
 
     //cntr
     function Dialog(type, caption) {
-        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay' });
+        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute' } });
 
         //settings
         this._minHeight = 200;
@@ -164,7 +164,11 @@ PocketCode.Ui.Dialog = (function () {
             //if (count == 1)
             //    this._footer.replaceClassName('dialogFooterSingleButton', 'dialogFooterTwoButtons');
         },
-        handleHistoryBack: function () {
+        execDefaultBtnAction: function() {
+            //_callHistoryBack: function () {
+            //    this.hide();
+            //    if (SmartJs.Device.isMobile)
+            //        history.back();
             //this method should be overridden to implement specific functionality on browser-back navigation
             //e.g. calling dispatch() on the default buttons click event
             if (this.onCancel)
@@ -187,7 +191,7 @@ PocketCode.Ui.merge({
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
-            this.bodyInnerHTML = 'We are sorry.<br/>. A global exception was detected. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
+            this.bodyInnerHTML = 'We are sorry. A global exception was detected.<br/>Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
         }
 
         //events
@@ -310,13 +314,13 @@ PocketCode.Ui.merge({
             },
         });
 
-        //methods
-        ExitWarningDialog.prototype.merge({
-            /* override */
-            handleHistoryBack: function () {
-                this.onExit.dispatchEvent();
-            },
-        });
+        ////methods
+        //ExitWarningDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onExit.dispatchEvent();
+        //    },
+        //});
 
         return ExitWarningDialog;
     })(),
@@ -417,6 +421,77 @@ PocketCode.Ui.merge({
         return ParserErrorDialog;
     })(),
 
+    InternalServerErrorDialog: (function () {
+        InternalServerErrorDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function InternalServerErrorDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Internal Server Error');
+            this._btnOK = new PocketCode.Ui.Button('OK');
+            this.addButton(this._btnOK);
+
+            this.bodyInnerHTML = 'We are sorry. The latest request caused an internal server error.<br/>';
+        }
+
+        //events
+        Object.defineProperties(InternalServerErrorDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //methods
+        //InternalServerErrorDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return InternalServerErrorDialog;
+    })(),
+
+    ServerConnectionErrorDialog: (function () {
+        ServerConnectionErrorDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ServerConnectionErrorDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Server Not Responding');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this._btnRetry = new PocketCode.Ui.Button('Retry');
+            this.addButton(this._btnRetry);
+
+            this.bodyInnerHTML = 'Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br />If your connection was temporarily unavailable please click "Retry" to resend the request';
+        }
+
+        //events
+        Object.defineProperties(ServerConnectionErrorDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onRetry: {
+                get: function () {
+                    return this._btnRetry.onClick;
+                },
+            },
+        });
+
+        //methods
+        //ServerConnectionErrorDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
+
+        return ServerConnectionErrorDialog;
+    })(),
+
     UnsupportedSoundFileDialog: (function () {
         UnsupportedSoundFileDialog.extends(PocketCode.Ui.Dialog, false);
 
@@ -494,4 +569,51 @@ PocketCode.Ui.merge({
 
         return UnsupportedDeviceFeatureDialog;
     })(),
+
+    ScreenshotDialog: (function () {
+        ScreenshotDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ScreenshotDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Screenshot');
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this.addButton(this._btnCancel);
+            this.bodyInnerHTML = 'TODO: show image<br />';
+
+            if (SmartJs.Device.isMobile) {
+                this.bodyInnerHTML += 'TODO: mobile';
+            }
+            else {
+                this._btnDownload = new PocketCode.Ui.Button('Download');
+                this.addButton(this._btnDownload);
+
+                this.bodyInnerHTML += 'TODO: desktop';
+            }
+        }
+
+        //events
+        Object.defineProperties(ScreenshotDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onDownload: {
+                get: function () {
+                    return this._btnDownload.onClick;
+                },
+            },
+        });
+
+        //methods
+        //ScreenshotDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onCancel.dispatchEvent();
+        //    },
+        //});
+
+        return ScreenshotDialog;
+    })(),
+
 });
