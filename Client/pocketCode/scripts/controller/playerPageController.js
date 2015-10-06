@@ -21,6 +21,7 @@ PocketCode.PlayerPageController = (function () {
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.PLAY })); }, this));
+        this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         //this._playerViewportController.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
         this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
         SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
@@ -236,13 +237,26 @@ PocketCode.PlayerPageController = (function () {
         //loadProject: function (jsonProject) {
         //    //this._gameEngine.loadProject(jsonProject);
         //},
-        _showScreenshotDialog: function (image) {
+        _showScreenshotDialog: function (dataUrl) {
             this._pauseProject();
+            //this._screenshotDataUrl = dataUrl;
             var state = history.state;
             history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
             var d = new PocketCode.Ui.ScreenshotDialog();
-            //add event listener
+            d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                e.target.dispose();
+                if (SmartJs.Device.isMobile)
+                    history.back();
+            }, this));
+            if (!SmartJs.Device.isMobile)
+                d.onDownload.addEventListener(new SmartJs.Event.EventListener(this._downloadScreenshot, this));
+
+            d.image = dataUrl;
             this._showDialog(d);
+        },
+        _downloadScreenshot: function(e) {
+            alert("TODO: download");
+            //download: this._screenshotDataUrl
         },
         dispose: function () {
             //this._pauseProject();

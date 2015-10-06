@@ -68,7 +68,7 @@ PocketCode.PageController = (function () {
         loadViewState: function (viewState, dialogsLength) {
             //should be overridden in any page that supports view states
             var dialogs = this._dialogs;
-            for (var i = dialogsLength, l = dialogs.length - 1; i < l; l--) {
+            for (var i = dialogsLength, l = dialogs.length - 1; i <= l; l--) {
                 dialogs[l].dispose();
                 dialogs.pop();
             }
@@ -78,8 +78,10 @@ PocketCode.PageController = (function () {
                 throw new Error('invalid argument: dialog');
 
             this._dialogs.push(dialog);
-            if (SmartJs.Device.isMobile)    //create history entry
+            if (SmartJs.Device.isMobile) {  //create history entry
+                var state = history.state;
                 history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
+            }
 
             this._view.appendChild(dialog);
         },

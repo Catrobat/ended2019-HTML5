@@ -502,6 +502,15 @@
 
 
 /* dialog */
+.pc-dialogOverlay {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: #555;
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+	filter: alpha(opacity = 60);
+}
 .pc-dialog {
 	max-width: 310px;
 	border-radius: 2px;

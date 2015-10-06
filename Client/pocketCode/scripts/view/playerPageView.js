@@ -11,7 +11,9 @@ PocketCode.Ui.PlayerPageView = (function () {
     function PlayerPageView() {//playerViewportView) {
         PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
         if (SmartJs.Device.isMobile) {
-            this._header._dom.appendChild((new PocketCode.Web.BackButton())._dom);
+            var exitBtnDom = (new PocketCode.Web.ExitButton()).dom;
+            this._addDomListener(exitBtnDom, 'click', function () { this._onExit.dispatchEvent(); }.bind(this));
+            this._header._dom.appendChild(exitBtnDom);
             this._header.style.padding = '8px';
         }
         else
@@ -38,6 +40,8 @@ PocketCode.Ui.PlayerPageView = (function () {
         this._startScreen.hide();
 
         this.disabled = true;
+
+        this._onExit = new SmartJs.Event.Event(this);
     }
 
     //properties
@@ -80,6 +84,11 @@ PocketCode.Ui.PlayerPageView = (function () {
         onStartClicked: {
             get: function () {
                 return this._startScreen.onStartClicked;
+            },
+        },
+        onExitClicked: {
+            get: function () {
+                return this._onExit;
             },
         },
     });

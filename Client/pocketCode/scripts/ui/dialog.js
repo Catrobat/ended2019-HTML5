@@ -96,7 +96,7 @@ PocketCode.Ui.Dialog = (function () {
     Dialog.prototype.merge({
         _createLayout: function () {
             var background = document.createElement('div');
-            background.className = 'pc-overlay';
+            background.className = 'pc-dialogOverlay';
             this._dom.appendChild(background);
 
             var layout = document.createElement('div');
@@ -292,19 +292,22 @@ PocketCode.Ui.merge({
         //cntr
         function ExitWarningDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Exit Application');
-            this._btnCancel = new PocketCode.Ui.Button('Cancel');
-            this.addButton(this._btnCancel);
             this._btnExit = new PocketCode.Ui.Button('Exit');
             this.addButton(this._btnExit);
+            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
+            this.addButton(this._btnCancel);
 
             this.bodyInnerHTML = 'Do you really want to exit?';
+
+            this._onCancel = new SmartJs.Event.Event(this);
         }
 
         //events
         Object.defineProperties(ExitWarningDialog.prototype, {
             onCancel: {
                 get: function () {
-                    return this._btnCancel.onClick;
+                    return this._onCancel;
                 },
             },
             onExit: {
@@ -576,7 +579,8 @@ PocketCode.Ui.merge({
         //cntr
         function ScreenshotDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Screenshot');
-            this._btnCancel = new PocketCode.Ui.Button('Cancel');
+            this._btnCancel = new PocketCode.Ui.Button('Close');
+            this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
             this.bodyInnerHTML = 'TODO: show image<br />';
 
@@ -585,26 +589,44 @@ PocketCode.Ui.merge({
             }
             else {
                 this._btnDownload = new PocketCode.Ui.Button('Download');
+                this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
                 this.addButton(this._btnDownload);
 
                 this.bodyInnerHTML += 'TODO: desktop';
             }
+
+            this._onCancel = new SmartJs.Event.Event(this);
+            this._onDownload = new SmartJs.Event.Event(this);
         }
 
         //events
         Object.defineProperties(ScreenshotDialog.prototype, {
             onCancel: {
                 get: function () {
-                    return this._btnCancel.onClick;
+                    return this._onCancel;
                 },
             },
             onDownload: {
                 get: function () {
-                    return this._btnDownload.onClick;
+                    return this._onDownload;
                 },
             },
         });
 
+        //properties
+        Object.defineProperties(ScreenshotDialog.prototype, {
+            image: {
+                set: function (dataUrl) {
+                    alert("TODO: show image- setting src + form if download is provided");
+                },
+            },
+            requestForm: {
+                get: function () {
+                    return; //TODO: getter for http request form (download)
+                },
+            },
+        });
+                
         //methods
         //ScreenshotDialog.prototype.merge({
         //    /* override */
