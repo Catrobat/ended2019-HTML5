@@ -3,11 +3,16 @@
 PocketCode.RenderingImage = (function () {
 
     function RenderingImage(imageProperties) {
+        console.log(imageProperties);
         this.type = 'sprite';
-        this._fabricImage = new PocketCode.FImage(imageProperties.look.canvas);
-
+        this._fabricImage = new PocketCode.FImage(imageProperties.look);
         if (!imageProperties || !(typeof imageProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
+
+
+        this._length = imageProperties.look.center.length;
+        this._angle = imageProperties.look.center.angle;
+        this._initialScaling = imageProperties.look.initialScaling;
 
         this.merge(imageProperties);
     }
@@ -26,17 +31,22 @@ PocketCode.RenderingImage = (function () {
         },
         positionX: {
             set: function (value) {
-                this._fabricImage.left = value + this._fabricImage.width/2.0;
+                this._fabricImage.left = value + this._length * Math.cos(this._angle);
+
+                //this._fabricImage.left = value + this._fabricImage.width/2.0;
+                //this._fabricImage.left = value + this._fabricImage.width/2.0;
             },
         },
         positionY: {
             set: function (value) {
-                this._fabricImage.top = value + this._fabricImage.height/2.0;
+                //this._fabricImage.top = value + this._fabricImage.height/2.0;
+                this._fabricImage.top = value + this._length * Math.sin(this._angle);
+
             },
         },
         direction: {
             set: function (value) {
-                this._fabricImage.angle = value - 90; // TODO angle conversion (+-90)?
+                this._fabricImage.angle = value - 90;
             },
         },
         rotationStyle: {
@@ -53,7 +63,8 @@ PocketCode.RenderingImage = (function () {
         size: {
             set: function (value) {
                 // TODO apply to with, height?
-                this._fabricImage.scaleX = value / 100.;
+
+                this._fabricImage.scaleX = value / 100;
                 this._fabricImage.scaleY = value / 100.;
             },
         },
@@ -64,6 +75,7 @@ PocketCode.RenderingImage = (function () {
         },
         transparency: {
             set: function (value) {
+                //todo opacity 250 to 100 convert apply filter in contructor
                 // this._fabricImage.opacity = (100 - value) / 100.;
             },
         },
@@ -127,8 +139,8 @@ PocketCode.FImage = fabric.util.createClass(fabric.Image, {
     initialize: function (element, options) {
         options || (options = {});
 
-        this.callSuper('initialize', element, options);
-        console.log('INIT',element.width, element.height);
+        this.callSuper('initialize', element.canvas, options);
+        console.log('INIT',element.canvas.width, element.canvas.height);
         this.set({
             id: options.id,
             name: options.name,
@@ -139,8 +151,8 @@ PocketCode.FImage = fabric.util.createClass(fabric.Image, {
             hasRotatingPoint: false,
             originX: "center",
             originY: "center",
-            width: element.width,
-            height: element.height,
+            width: element.canvas.width,
+            height: element.canvas.height,
             // flipX = flipH: false, //already a property and false (default)
             // flipy = flipV: false, //already a property and false (default)
             filters: [],
