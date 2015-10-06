@@ -153,10 +153,17 @@ PocketCode.merge({
                 this._project.dispose();
             },
             _projectLoadingErrorHandler: function (e) {
-                alert("loading failed: unsupported sound format");
-                //TODO: this._onExit.dispatchEvent();
-                //TODO: cross origin should be checkt during startup- listed in Jira already
+                files = e.files;
 
+                d = new PocketCode.Ui.UnsupportedSoundFileDialog();
+                d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
+                d.bodyInnerHTML += '<br />Details: [';
+                for (var i = 0, l = files.length - 1; i < l; i++)
+                    d.bodyInnerHTML += e.files[i] + ', ';
+                d.bodyInnerHTML += files[files.length-1] + ']';
+                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                this._showDialog(d, false);
             },
             _requestProjectDetails: function (projectId) {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
@@ -180,10 +187,9 @@ PocketCode.merge({
 
                 var d = new PocketCode.Ui.ProjectNotFoundDialog();
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
-
-                //console.log('ERROR project details: ' + e);
             },
             _requestProject: function (projectId) {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });
@@ -205,13 +211,37 @@ PocketCode.merge({
                 if (this._disposing || this._disposed)
                     return;
 
-                //TODO: check errors to show the right dialog
-                var d = new PocketCode.Ui.Pro.ProjectNotValidDialog();  //ParserErrorDialog, InternalServerErrorDialog, ServerConnectionErrorDialog
-                d.bodyInnerHTML += '<br /> TODO: could be another ERROR too<br />';
+                var d, type;
+                var errorStatus = e.statusCode,
+                    errorJson = e.responseJson;
+
+                if (errorStatus)  //gote response
+                    type = errorJson.type || 'InternalServerError';
+                else
+                    type = 'ServerConnectionError';
+
+                switch (type) {
+                    case 'ProjectNotFoundException':
+                        d = new PocketCode.Ui.ProjectNotFoundDialog();
+                        break;
+                    case 'InvalidProjectFileException':
+                        d = new PocketCode.Ui.ProjectNotValidDialog();
+                        break;
+                    case 'FileParserException':
+                        d = new PocketCode.Ui.ParserErrorDialog();
+                        break;
+                    case 'ServerConnectionError':
+                        d = new PocketCode.Ui.ServerConnectionErrorDialog();
+                        break;
+
+                    default:    //InternalServerError
+                        d = new PocketCode.Ui.InternalServerErrorDialog();
+                }
+
+                d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
-                //TODO: parse error and show dialog
             },
             //navigation
             _escKeyHandler: function (e) {
@@ -295,11 +325,10 @@ PocketCode.merge({
                 if (!(dialog instanceof PocketCode.Ui.Dialog))
                     throw new Error('invalid argument: dialog');
 
-                this._dialogs.push(dialog);
-
-                if (SmartJs.Device.isMobile && createHistoryEntry !== false)    //create history entry
+                if (SmartJs.Device.isMobile && createHistoryEntry !== false) {   //create history entry
+                    this._dialogs.push(dialog);
                     history.pushState(new PocketCode.HistoryEntry(this._currentHistoryIdx, this._dialogs.length, this._currentPage), document.title, '');   //TODO: add page viewState and Dialogs?
-
+                }
                 this._viewport.addDialog(dialog);
                 this._viewport.show();
             },
@@ -319,6 +348,7 @@ PocketCode.merge({
                     else {
                         var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                         d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                        d.bodyInnerHTML += '<br /><br />Application will be closed.';
                         this._onInit.dispatchEvent();   //hide splash screen
                         this._showDialog(d, false);
                     }
@@ -326,13 +356,14 @@ PocketCode.merge({
                 }
 
                 if (SmartJs.Device.isMobile && !this._mobileInitialized) {
-                    //this._showMobileRestrictionDialog();    //reinit app in the scope of an user event
+                    //to reinit app in the scope of an user event
                     var d = new PocketCode.Ui.MobileRestrictionDialog();
                     d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onExit.dispatchEvent(e); }, this));
                     d.onConfirm.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         this._viewport.hide();
                         this._onMobileInitRequired.dispatchEvent(e);
                     }, this));
+                    d.bodyInnerHTML += '<br /><br />Application will be closed.';
                     this._onInit.dispatchEvent();   //hide splash screen
                     this._showDialog(d, false);
                     return;

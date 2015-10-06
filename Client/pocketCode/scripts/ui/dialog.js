@@ -504,9 +504,12 @@ PocketCode.Ui.merge({
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
             this._btnContinue = new PocketCode.Ui.Button('Continue');
+            this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
             this.bodyInnerHTML = 'We have detected a sound file (or codec) that is not compatible with your current browser.<br />You can run the project anyway- unsupported sounds will be ignored.';
+
+            this._onContinue = new SmartJs.Event.Event(this);
         }
 
         //events
@@ -518,7 +521,7 @@ PocketCode.Ui.merge({
             },
             onContinue: {
                 get: function () {
-                    return this._btnContinue.onClick;
+                    return this._onContinue;
                 },
             },
         });

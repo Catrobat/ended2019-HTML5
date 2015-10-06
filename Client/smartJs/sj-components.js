@@ -17,9 +17,9 @@ SmartJs.Components = {
             this._onError = new SmartJs.Event.Event(this);
 
             this._online = navigator.onLine;
-            this._addDomListener(window, 'offline', this._offlineHandler);
-            this._addDomListener(window, 'online', this._onlineHandler);
-            this._addDomListener(window, 'error', this._errorHandler);
+            this._offlineListener = this._addDomListener(window, 'offline', this._offlineHandler);
+            this._onlineListener = this._addDomListener(window, 'online', this._onlineHandler);
+            this._errorListener = this._addDomListener(window, 'error', this._errorHandler);
         }
 
         //Object.defineProperties(Application.prototype, {  //the application object doesn't need any public properties or events
@@ -49,9 +49,9 @@ SmartJs.Components = {
                 this._onError.dispatchEvent({error: e});//{ error: error, file: fileName, lineNo: lineNo });
             },
             dispose: function () {
-                this._removeDomListener(window, 'offline', this._offlineHandler);
-                this._removeDomListener(window, 'online', this._onlineHandler);
-                this._removeDomListener(window, 'error', this._errorHandler);
+                this._removeDomListener(window, 'offline', this._offlineListener);
+                this._removeDomListener(window, 'online', this._onlineListener);
+                this._removeDomListener(window, 'error', this._errorListener);
                 //if (this._viewport)
                 //    this._viewport.dispose();
                 SmartJs.Core.EventTarget.prototype.dispose.call(this);
