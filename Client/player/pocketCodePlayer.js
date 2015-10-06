@@ -970,25 +970,26 @@ PocketCode.Web = {
 			            document.body.removeChild(this._exitButton.dom);
 			        if (this._webOverlay)
 			            this._webOverlay.hide();
-					var btn = this._webOverlay.muteButton;
-					btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
-					btn.disabled = true;
+			        if (this._webOverlay.muteButton) {
+			            var btn = this._webOverlay.muteButton;
+			            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+			            btn.disabled = true;
+			        }
 					this._projectId = undefined;
 					this._rfc3066 = undefined;
 				}
 				catch (e) { }   //silent catch: avoid errors onClose during init
 
-				if (!this._player)  //close before initialize
-					return;
-				try {
-					this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-					this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-					this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
-					this._player.dispose();
-					//this._player = undefined;
-				}
-				catch (e) { }   //silent catch: avoid errors onClose during init
-
+			    if (this._player) {  //handle close before initialize
+			        try {
+			            this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+			            this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+			            this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+			            this._player.dispose();
+			            //this._player = undefined;
+			        }
+			        catch (e) { }   //silent catch: avoid errors onClose during init
+			    }
 				if (this._redirected) {
 				    //this._viewport.hide();
 				    if (history.length > 0)
@@ -1078,28 +1079,8 @@ PocketCode.Web.resources = {
 
 if (!launchProject) {
 	var launchProject = function (projectId, rfc3066, containerElement) {
-
-		//if (PocketCode.Web.isTablet || PocketCode.Web.isMobile) {
-		//    window.location = "http://www.catrob.at/pocketcode/html5/" + projectId#player;
-		//    return;
-		//}
-
 		PocketCode.Web.PlayerInterface.launchProject(projectId, rfc3066, containerElement);
-		//open popup layer
-		//alert("coming so: project id= " + projectId);
-
-		//window.location.href = "../LayoutTests/startpageMockup.html";
-
-		//launch app
 	}
 }
 
-//test: running before dom ready
-//launchProject(123);
 
-//mockup test
-//window.addEventListener("load", function load(event){
-//    window.removeEventListener("load", load, false); //remove listener, no longer needed
-//    launchProject(123);  
-//},false);
-//mockup test end

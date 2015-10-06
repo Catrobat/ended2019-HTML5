@@ -7,11 +7,6 @@
 /// <reference path="../core.js" />
 'use strict';
 
-PocketCode.PlayerApplicationMode = {
-    OVERLAY: 1,     //showing the player in a web overlay
-    STANDALONE: 2,  //opening the player in our index.php
-    EMBEDDED: 3,    //embedding the player in a page (container)
-};
 
 PocketCode.merge({
 
@@ -20,12 +15,6 @@ PocketCode.merge({
             this.historyLength = history.length;    //browser history length at init 
             this.objClassName = '_InitialPopStateController';
         }
-
-        //_InitialPopStateController.prototype = {
-        //    handleExit: function () {
-
-        //    },
-        //};
 
         return _InitialPopStateController;
     })(),
@@ -52,39 +41,36 @@ PocketCode.merge({
         PlayerApplication.extends(SmartJs.Components.Application, false);
 
         function PlayerApplication(viewportContainer, rfc3066, mobileInitialized) {
-            //var vp;// = viewport;
-            //if (!vp) {
             var vp = new PocketCode.Ui.Viewport();
             vp.hide();
             this._dialogs = [];
 
-            //}
             SmartJs.Components.Application.call(this, vp);
             this._mobileInitialized = mobileInitialized;
             this._noPromtOnLeave = false;   //TODO: settings (do not show promt on leave again?)
             this._forwardNavigationAllowed = false;
 
             if (!vp.rendered)
-                vp.addToDom(viewportContainer || document.body);//this._viewportContainer);
+                vp.addToDom(viewportContainer || document.body);
             this._vp = vp;
 
             //events
-            this._onInit = new SmartJs.Event.Event(this);       //triggered when the loading screen is available
+            this._onInit = new SmartJs.Event.Event(this);               //triggered when the loading screen is available
             this._onMobileInitRequired = new SmartJs.Event.Event(this); //triggered on mobile devices to run the app in the scope of an user event
-            //this._onError = new SmartJs.Event.Event(this);		//defined in base class
-            this._onHWRatioChange = new SmartJs.Event.Event(this);    //triggered to notify weboverlay on device resolution change
-            this._onExit = new SmartJs.Event.Event(this);    //triggered to notify weboverlay to be closed & disposed
+            //this._onError = new SmartJs.Event.Event(this);		    //defined in base class
+            this._onHWRatioChange = new SmartJs.Event.Event(this);      //triggered to notify weboverlay on device resolution change
+            this._onExit = new SmartJs.Event.Event(this);               //triggered to notify weboverlay to be closed & disposed
 
             this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
 
             //init
-            if (SmartJs.Device.isMobile && !mobileInitialized) { //do not initialize the UI if app needs to be recreated for mobile 
+            if (SmartJs.Device.isMobile && !mobileInitialized) {    //do not initialize the UI if app needs to be recreated for mobile 
                 var state = history.state;
-                if (state !== null && state.historyIdx > 1)   //refresh pressed
-                    history.go(-state.historyIdx);    //not to init page but to start page
+                if (state !== null && state.historyIdx > 0) //refresh pressed
+                    history.go(-state.historyIdx);  //not to init page but to start page
                 return;
             }
-            //if (!SmartJs.Device.isMobile || mobileInitialized) { 
+
             this._pages = {
                 _InitialPopStateController: new PocketCode._InitialPopStateController(),
                 PlayerPageController: new PocketCode.PlayerPageController(),
@@ -110,23 +96,14 @@ PocketCode.merge({
                 if (historyIdx === undefined || historyIdx === 0) {
                     this._currentHistoryIdx = 0; //stores our current history position, > navigationIdx means the latest navigation was back(), < mease forward(), 
 
-                    //if (history.pushState) {  //we already set this as an requirement to run the app in core.js
-                    //history.replaceState/pushState
                     history.replaceState(new PocketCode.HistoryEntry(this._currentHistoryIdx, this._dialogs.length, this._pages._InitialPopStateController), document.title, '');    //initial push to save entry point and trigger 'playerClose' event
                     this._pages._InitialPopStateController.historyLength = history.length;    //make sure we got the right length as some browsers start with = 0
                 }
-                //else {  //browser refresh
-                //    var state = history.state;
-                //    this._currentHistoryIdx = state.historyIdx; //make sure no forward navigation is detected
-                //    history.go(-(state.historyIdx - 1));
-                //    //^^ on refresh we navigate to our 1st page (not _InitialPopStateController)
-                //}
                 this._popstateListener = this._addDomListener(window, 'popstate', this._popstateHandler);
             }
             else {  //desktop
                 this._escKeyListener = this._addDomListener(document, 'keyup', function (e) { if (e.keyCode == 27) this._escKeyHandler(e); });
             }
-            //}
         }
 
         //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
@@ -135,29 +112,21 @@ PocketCode.merge({
                 get: function () {
                     return this._onInit;
                 }
-                //enumerable: false,
-                //configurable: true,
             },
             onMobileInitRequired: {
                 get: function () {
                     return this._onMobileInitRequired;
                 }
-                //enumerable: false,
-                //configurable: true,
             },
             onHWRatioChange: {
                 get: function () {
                     return this._onHWRatioChange;
                 }
-                //enumerable: false,
-                //configurable: true,
             },
             onExit: {
                 get: function () {
                     return this._onExit;
                 }
-                //enumerable: false,
-                //configurable: true,
             }
         });
 
@@ -200,16 +169,15 @@ PocketCode.merge({
                     return;
                 var json = e.target.responseJson;
                 this._onInit.dispatchEvent();
-                this._pages.PlayerPageController.projectDetails = json;//showLoadingScreen(json.title, json.baseUrl + json.thumbnailUrl);
+                this._pages.PlayerPageController.projectDetails = json;
                 this._viewport.show();
                 this._requestProject(this._currentProjectId);
-                //test only: var X = Y;
             },
             _projectDetailsRequestErrorHandler: function (e) {
                 if (this._disposing || this._disposed)
                     return;
                 this._onInit.dispatchEvent();
-                //this._viewport.show();
+
                 var d = new PocketCode.Ui.ProjectNotFoundDialog();
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
@@ -218,7 +186,7 @@ PocketCode.merge({
                 //console.log('ERROR project details: ' + e);
             },
             _requestProject: function (projectId) {
-                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });//, imgDataMax: 0 });
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });
                 req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectRequestLoadHandler, this));
                 req.onError.addEventListener(new SmartJs.Event.EventListener(this._projectRequestErrorHandler, this));
                 PocketCode.Proxy.send(req);
@@ -236,7 +204,7 @@ PocketCode.merge({
             _projectRequestErrorHandler: function (e) {
                 if (this._disposing || this._disposed)
                     return;
-                //console.log('ERROR project: ' + e);
+
                 //TODO: check errors to show the right dialog
                 var d = new PocketCode.Ui.Pro.ProjectNotValidDialog();  //ParserErrorDialog, InternalServerErrorDialog, ServerConnectionErrorDialog
                 d.bodyInnerHTML += '<br /> TODO: could be another ERROR too<br />';
@@ -253,18 +221,13 @@ PocketCode.merge({
                 else
                     this._currentPage.execDialogDefaultOnEsc();
             },
-            //_cancelExit: function (e) {
-            //    this._forwardNavigationAllowed = true;
-            //    history.forward();
-            //},
             _popstateHandler: function (e) {
                 var hState = e.state;
                 if (hState == null)	//chrome initial call
                     return e.preventDefault();
-                if (!hState.page)//(hState instanceof PocketCode.HistoryEntry)) //it's a serilized object and does not have an instance
+                if (!hState.page)
                     throw new Error('invalid navigation entry');
 
-                //var pageEntry = hState.page;
                 var page = this._pages[hState.page.id];
 
                 if (this._currentHistoryIdx < hState.historyIdx && !this._forwardNavigationAllowed) {    //prevent forward navigation
@@ -273,11 +236,11 @@ PocketCode.merge({
                 }
 
                 this._currentHistoryIdx = hState.historyIdx;
-                if (page.objClassName === '_InitialPopStateController') { // instanceof PocketCode._InitialPopStateController) {    //navigation to our app history root
+                if (page.objClassName === '_InitialPopStateController') {
                     //        //TODO:
                     if (page.historyLength > 1) {    //there was a history when entering the app: stored in _InitialPopStateController
                         if (this._noPromtOnLeave || !this._project.projectLoaded)
-                            this._onExit.dispatchEvent();//history.back();
+                            this._onExit.dispatchEvent();
                         else {
                             var d = new PocketCode.Ui.ExitWarningDialog();
                             d.onExit.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
@@ -288,14 +251,6 @@ PocketCode.merge({
                             }, this));
                             this._onInit.dispatchEvent();   //hide splash screen
                             this._showDialog(d, false);
-
-                            //alert("leave? TODO");
-
-                            //            console.log('show exit dialog: ' + hState.historyLength);
-                            //TODO: show dialog
-                            //        //if (true) -> history.back().. use hState.historyLength
-                            //        //else: window.history.forward()
-
                         }
                     }
                     else {
@@ -315,10 +270,6 @@ PocketCode.merge({
                 }
                 this._showPage(page, hState);  //load page or viewstate
             },
-            //_globalErrorHandler: function(message, fileName, lineNo) {
-            //    this._onError.dispatchEvent();
-            //    return true; //exception handled- not reportet to the user using the browser
-            //},
             _showPage: function (page, historyState) {
                 if (!(page instanceof PocketCode.PageController))
                     throw new Error('invalid argument: page, expectet type: PocketCode.PageController');
@@ -335,48 +286,11 @@ PocketCode.merge({
 
                     }
                     page.currentHistoryIdx = this._currentHistoryIdx;   //make sure the pageCotroller knows the current historyIdx for internal navigation
-                    this._currentPage = page;
                 }
-                //viewState = viewState || {};
-                //if (this._currentPage !== page) {
-                
-                //page.currentHistoryIdx = this._currentHistoryIdx;   //make sure the pageCotroller knows the current historyIdx for internal navigation
-                //if (historyState) {
-                //    var pageState = historyState.page;
-                //    page.loadViewState(pageState.viewState, pageState.dialogsLength);
-                //}
-                //this._currentPage = page;//this._pages.PlayerPageController;
-                ////}
 
-                ////    if (!this._pageControllers[page]) {	//new
-                ////        var ctr = page.charAt(0).toUpperCase() + page.slice(1) + 'PageController';
-                ////        var pageCtr = new PocketCode[ctr]();
-                ////        this._pageControllers[page] = pageCtr;
-                ////    }
-
-                ////    var current = this._currentPage;
-                //if (!browserNavigation && SmartJs.Device.isMobile) {
-                //    history.pushState(new PocketCode.HistoryEntry(this._currentHistoryIdx + 1, this._dialogs.length, page), document.title, '');
-                //}
-                ////{ page: page, viewState: viewState, dialogsLength: this._dialogs.length/*, historyIdx: this._navigationIdx++*/ }
-
+                this._currentPage = page;
                 this._vp.loadPageView(page.view);   //even if its currently shown its deconnected from DOM and reconnected visible + an resize event is dispatched internaly
-                //    if (this._pageControllers[page] === current) {	//existing and currently active
-                //        //history.pushState({ page: page, viewState: viewState, historyIdx: this._navigationIdx++ }, document.title, '');
-                //        this._currentPage.updateViewState(viewState);
-                //    }
-                //    else {	//existing but currently NOT active
-                //        //history.pushState({ page: page, viewState: viewState, historyIdx: this._navigationIdx++ }, document.title, '');
-                //        this._currentPage = this._pageControllers[page];
-                //        this._navigateToPage(current, this._currentPage, viewState);
-                //    }
             },
-            //_navigateToPage: function (from, to, toViewState) {
-            //    //console.log('navigation from ' + from + ' to: ' + to + ', viewstate: ' + JSON.stringify(toViewState));
-            //    if (from)
-            //        from.hide();
-            //    to.showView();
-            //},
             _showDialog: function (dialog, createHistoryEntry) {
                 if (!(dialog instanceof PocketCode.Ui.Dialog))
                     throw new Error('invalid argument: dialog');
@@ -389,36 +303,13 @@ PocketCode.merge({
                 this._viewport.addDialog(dialog);
                 this._viewport.show();
             },
-            //_showMobileRestrictionDialog: function() {
-            //    var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
-            //    restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
-            //    restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
-            //    this._viewport.addDialog(restrictionDialog);
-            //    this._onInit.dispatchEvent();   //hide splash screen
-            //    this._viewport.show();
-
-            //},
-            //_exit: function(e) {
-            //    this._viewport.hide();
-            //	if (history.length > 0)
-            //		history.back();
-            //	else
-            //	    window.close();
-            //},
-            //_reinitMobile: function (e) {
-            //    this._viewport.hide();
-            //    this._onMobileInitRequired.dispatchEvent(e);
-            //},
             loadProject: function (projectId) {
                 if (this._disposing || this._disposed)// || this._projectLoaded)    //prevent loading more than once
                     return;
 
                 //check browser compatibility
-                //var compatible = true;
                 var pc = PocketCode.isPlayerCompatible();
                 var compatible = pc.result;
-                //if (!pc.result)
-                //    compatible = false;
 
                 if (!compatible) {	//framework not loaded correctly or compatibility failed
                     if (!pc.tests.SmartJs) {
@@ -447,47 +338,13 @@ PocketCode.merge({
                     return;
                 }
 
-
-                //add viewport to DOM
-                //this._viewport.addToDom(this._viewportContainer);
-
-                //download project details
-
-                //trigger ratio change
-                //this._onHWRatioChange.dispatchEvent({ ratio: 16 / 9 });
-
-                //create loading screen on playerPageView
-
                 //show
-                this._showPage(this._pages.PlayerPageController);//, {}, false);
+                this._showPage(this._pages.PlayerPageController);
                 //set project in page controller
                 this._currentPage.project = this._project;
 
                 this._currentProjectId = projectId;
                 this._requestProjectDetails(projectId);
-
-
-                //this._showPage('player');//, viewState: undefined }});	//load page
-                //trigger onInit to hide splash screen
-
-
-                //TODO: rethink splashScreen scaling: check on mobile device 
-                //console.log
-                //alert('PocketCode.PlayerApplication: loading project ' + projectId + ', mobile: ' + this._isMobilePage);
-                //this._onInit.dispatchEvent();
-
-
-                //test only
-                //this._onHWRatioChange.dispatchEvent({ ratio: 16 / 9 });
-                //this._onInit.dispatchEvent();
-
-                //var _self = this;
-                //window.setTimeout(_self._splashScreen.hide.bind(this._splashScreen), 3000);
-                //this._splashScreen.hide();
-
-                //test: set ratio
-                //if (this._webOverlay)
-                //    this._webOverlay.setHWRatio(16/9);
             },
             toggleMuteSounds: function () {
                 this._muted = this._muted ? false : true;
