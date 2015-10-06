@@ -42,7 +42,6 @@ PocketCode.Ui.Canvas = (function () {
             Object.defineProperties(FCAdapter.prototype, {
                 renderingObjects: {
                     set: function (list) {
-                        console.log('SETROBJECTS');
                         this._renderingObjects = list;  //TODO: exception handling, argument check
                     },
                 },
@@ -142,7 +141,6 @@ PocketCode.Ui.Canvas = (function () {
 
                 _renderObjects: function (ctx, activeGroup) {
                     var i, length;
-                    console.log('render');
 
                     // fast path
                     if (!activeGroup || this.preserveObjectStacking) {
@@ -182,6 +180,7 @@ PocketCode.Ui.Canvas = (function () {
         //events
         this._onMouseDown = new SmartJs.Event.Event(this);
         this._onAfterRender = new SmartJs.Event.Event(this);
+
         //this._onClick = new SmartJs.Event.Event(this);
         //this._addDomListener(this._dom, 'click', this._clickHandler);
     }
@@ -268,10 +267,30 @@ PocketCode.Ui.Canvas = (function () {
         },
         toDataURL: function (scaling) {
             scaling = scaling || 1;
-            return this._fcAdapter.toDataURL({ multiplier: 1 / scaling });
+            return this._fcAdapter.toDataURL({ multiplier: 1. / scaling });
         },
         findItemById: function (id) {
             return this._fcAdapter.findItemById(id);
+        },
+        handleChangedScaling: function(e){
+            var scaling = e.scaling;
+            var canv = this._fcAdapter;
+            for (var i = 0, l = canv._renderingObjects.length; i<l; i++) {
+                var obj = canv._renderingObjects[i];
+                this.applyScalingToObject(obj, scaling);
+            }
+
+            this.render();
+        },
+        applyScalingToObject: function(obj, scaling) {
+            var canvas = this._fcAdapter;
+            if (obj.object.id != undefined) {
+                obj.object.left = obj._positionX * scaling + canvas.width / 2.0;
+                obj.object.top = canvas.height - (obj._positionY * scaling + canvas.height / 2.0);
+                obj.object.scaleX = obj._size * scaling / obj._initialScaling;
+                obj.object.scaleY = obj._size * scaling / obj._initialScaling;
+                obj.object.setCoords();
+            }
         },
     });
 

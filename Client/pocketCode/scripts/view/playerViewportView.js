@@ -30,6 +30,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
         this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+        this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
         //this._drawAxes();
@@ -318,6 +319,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var item = this._canvas.findItemById(id);
             if (item) {
                 item.merge(changes);
+                this._canvas.applyScalingToObject(item, this._scaling);
                 this._canvas.render();
             }
         },
