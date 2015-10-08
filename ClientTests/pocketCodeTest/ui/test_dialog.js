@@ -39,6 +39,8 @@ QUnit.test("Dialog (Base Class)", function (assert) {
     d.dispose();    //removed on dispose
 
     d = new PocketCode.Ui.Dialog(PocketCode.Ui.DialogType.WARNING, "after dispose");
+    d.execDefaultBtnAction();   //just to make sure no error is thrown
+
     //^^ create a new one to make sure dispose() does not have effects on prototype structure
     d.addButton(btn1);
     container.appendChild(d);
@@ -48,7 +50,11 @@ QUnit.test("Dialog (Base Class)", function (assert) {
 
 QUnit.test("Various Dialogs", function (assert) {
 
-    var d = new PocketCode.Ui.BrowserNotSupportedDialog();
+    var d = new PocketCode.Ui.GlobalErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.GlobalErrorDialog, "GlobalErrorDialog: instance check");
+    assert.ok(d.onOK instanceof SmartJs.Event.Event, "GlobalErrorDialog: events");
+
+    d = new PocketCode.Ui.BrowserNotSupportedDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.BrowserNotSupportedDialog, "BrowserNotSupportedDialog: instance check");
     assert.ok(d.onOK instanceof SmartJs.Event.Event, "BrowserNotSupportedDialog: events");
 
@@ -57,25 +63,8 @@ QUnit.test("Various Dialogs", function (assert) {
         historyBackCounter++;
     };
     d.onOK.addEventListener(new SmartJs.Event.EventListener(okHandler, this));
-    d.handleHistoryBack();
+    d.execDefaultBtnAction();
     assert.equal(historyBackCounter, 1, "button event dispatched: onOK");
-
-    d = new PocketCode.Ui.ExitWarningDialog();
-    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ExitWarningDialog, "ExitWarningDialog: instance check");
-    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onExit instanceof SmartJs.Event.Event, "ExitWarningDialog: events");
-
-    historyBackCounter = 0;
-    var exitHandler = function () {
-        historyBackCounter++;
-    };
-    d.onExit.addEventListener(new SmartJs.Event.EventListener(exitHandler, this));
-    d.handleHistoryBack();
-    assert.equal(historyBackCounter, 1, "button event dispatched: onExit");
-
-
-    d = new PocketCode.Ui.GlobalErrorDialog();
-    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.GlobalErrorDialog, "GlobalErrorDialog: instance check");
-    assert.ok(d.onOK instanceof SmartJs.Event.Event, "GlobalErrorDialog: events");
 
     d = new PocketCode.Ui.MobileRestrictionDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.MobileRestrictionDialog, "MobileRestrictionDialog: instance check");
@@ -86,12 +75,20 @@ QUnit.test("Various Dialogs", function (assert) {
         historyBackCounter++;
     };
     d.onCancel.addEventListener(new SmartJs.Event.EventListener(cancelHandler, this));
-    d.handleHistoryBack();
+    d.execDefaultBtnAction();
     assert.equal(historyBackCounter, 1, "button event dispatched: onCancel");
 
-    d = new PocketCode.Ui.ParserErrorDialog();
-    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ParserErrorDialog, "ParserErrorDialog: instance check");
-    assert.ok(d.onOK instanceof SmartJs.Event.Event, "ParserErrorDialog: events");
+    d = new PocketCode.Ui.ExitWarningDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ExitWarningDialog, "ExitWarningDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onExit instanceof SmartJs.Event.Event, "ExitWarningDialog: events");
+
+    historyBackCounter = 0;
+    var exitHandler = function () {
+        historyBackCounter++;
+    };
+    d.onCancel.addEventListener(new SmartJs.Event.EventListener(exitHandler, this));
+    d.execDefaultBtnAction();
+    assert.equal(historyBackCounter, 1, "button event dispatched: onExit");
 
     d = new PocketCode.Ui.ProjectNotFoundDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ProjectNotFoundDialog, "ProjectNotFoundDialog: instance check");
@@ -101,6 +98,18 @@ QUnit.test("Various Dialogs", function (assert) {
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ProjectNotValidDialog, "ProjectNotValidDialog: instance check");
     assert.ok(d.onOK instanceof SmartJs.Event.Event, "ProjectNotValidDialog: events");
 
+    d = new PocketCode.Ui.ParserErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ParserErrorDialog, "ParserErrorDialog: instance check");
+    assert.ok(d.onOK instanceof SmartJs.Event.Event, "ParserErrorDialog: events");
+
+    d = new PocketCode.Ui.InternalServerErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.InternalServerErrorDialog, "InternalServerErrorDialog: instance check");
+    assert.ok(d.onOK instanceof SmartJs.Event.Event, "InternalServerErrorDialog: events");
+
+    d = new PocketCode.Ui.ServerConnectionErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ServerConnectionErrorDialog, "ServerConnectionErrorDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onRetry instanceof SmartJs.Event.Event, "ServerConnectionErrorDialog: events");
+
     d = new PocketCode.Ui.UnsupportedSoundFileDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedSoundFileDialog, "UnsupportedSoundFileDialog: instance check");
     assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedSoundFileDialog: events");
@@ -108,5 +117,10 @@ QUnit.test("Various Dialogs", function (assert) {
     d = new PocketCode.Ui.UnsupportedDeviceFeatureDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedDeviceFeatureDialog, "UnsupportedDeviceFeatureDialog: instance check");
     assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedDeviceFeatureDialog: events");
+
+    d = new PocketCode.Ui.ScreenshotDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ScreenshotDialog, "ScreenshotDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onDownload instanceof SmartJs.Event.Event, "ScreenshotDialog: events");
+
 });
 
