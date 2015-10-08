@@ -624,7 +624,7 @@ PocketCode.Model.Sprite = (function () {
             if (this._direction === nd)
                 return false;
 
-            this._direction = degree;
+            this._direction = nd;
             if (triggerEvent)
                 this._triggerRotationChange();//{ rotation: degree - 90.0 });
             return true;
