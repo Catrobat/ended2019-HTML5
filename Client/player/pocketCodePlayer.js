@@ -386,10 +386,10 @@ PocketCode.Web = {
 					w = aw;
 					h = aw * hwr;
 				}
-				//if (h < this.vpMinHeight) {
-				//	h = this.vpMinHeight;
-				//	w = ah / hwr;
-				//}
+				if (h < this.vpMinHeight) {
+					h = this.vpMinHeight;
+					w = h / hwr;
+				}
 
 				style.width = Math.ceil(w) + 'px';
 				style.height = Math.ceil(h) + 'px';
