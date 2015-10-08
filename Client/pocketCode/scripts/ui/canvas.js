@@ -35,6 +35,7 @@ PocketCode.Ui.Canvas = (function () {
             function FCAdapter(canvasElement) {
                 fabric.Canvas.call(this, canvasElement, config);
                 this._renderingObjects = [];
+                this.scaling = 1;   //initial
                 //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
             }
 
@@ -49,7 +50,7 @@ PocketCode.Ui.Canvas = (function () {
 
             //methods
             FCAdapter.prototype.merge({
-                findItemById: function(id) {
+                findItemById: function (id) {
                     var items = this._renderingObjects;
                     if (items === undefined)
                         return;
@@ -60,14 +61,18 @@ PocketCode.Ui.Canvas = (function () {
                     }
                 },
 
-                setDimensionsWr: function (width, height) {   //without rerendering
+                setDimensionsWr: function (width, height, scaling) {   //without rerendering
                     this._setBackstoreDimension('width', width);
                     this._setCssDimension('width', width + 'px');
                     this._setBackstoreDimension('height', height);
                     this._setCssDimension('height', height + 'px');
+                    this.scaling = scaling;
                     this.calcOffset();
                 },
                 //TODO: override rendering
+                clear: function () {
+                    this.clearContext(this.contextContainer);
+                },
                 //_searchPossibleTargets: function (e) {
 
                 //    // Cache all targets where their bounding box contains point.
@@ -85,79 +90,69 @@ PocketCode.Ui.Canvas = (function () {
 
                 //    return target;
                 //},
-                renderAll: function (allOnTop) {
-                    var canvasToDrawOn = this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
-                        activeGroup = this.getActiveGroup();
+                renderAll: function (viewportScaling) {//allOnTop) {
+                    var ctx = this.contextContainer;//,//this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
+                    this.clearContext(ctx);
+                    //activeGroup = this.getActiveGroup();
 
-                    if (this.contextTop && this.selection && !this._groupSelector) {
-                        this.clearContext(this.contextTop);
-                    }
+                    //if (this.contextTop && this.selection && !this._groupSelector) {
+                    //    this.clearContext(this.contextTop);
+                    //}
 
-                    if (!allOnTop) {
-                        this.clearContext(canvasToDrawOn);
-                    }
+                    //if (!allOnTop) {
+                    //    this.clearContext(context);
+                    //}
 
-                    this.fire('before:render');
+                    //this.fire('before:render');
 
-                    if (this.clipTo) {
-                        fabric.util.clipContext(this, canvasToDrawOn);
-                    }
+                    //if (this.clipTo) {
+                    //    fabric.util.clipContext(this, context);
+                    //}
 
-                    this._renderBackground(canvasToDrawOn);
-                    this._renderObjects(canvasToDrawOn, activeGroup);
-                    this._renderActiveGroup(canvasToDrawOn, activeGroup);
+                    this._renderBackground(ctx);
+                    //this._renderObjects(context, activeGroup);
+                    var ro = this._renderingObjects;
+                    for (var i = 0, l = ro.length; i < l; i++) //{
+                        //var obj = this._renderingObjects[i].object;
+                        //this._draw(ctx, ro[i].object);//obj);
+                        ro[i].draw(ctx, this.scaling);
 
-                    if (this.clipTo) {
-                        canvasToDrawOn.restore();
-                    }
+                    //this._renderActiveGroup(context, activeGroup);
 
-                    this._renderOverlay(canvasToDrawOn);
+                    //if (this.clipTo) {
+                    //    context.restore();
+                    //}
 
-                    if (this.controlsAboveOverlay && this.interactive) {
-                        this.drawControls(canvasToDrawOn);
-                    }
+                    //this._renderOverlay(context);
+
+                    //if (this.controlsAboveOverlay && this.interactive) {
+                    //    this.drawControls(context);
+                    //}
 
                     this.fire('after:render');
 
-                    return this;
+                    //return this;
                 },
                 //_renderObjects: function (ctx, activeGroup) {
-                //    var i, length;
+                //    //var i, length;
 
                 //    // fast path
-                //    if (!activeGroup || this.preserveObjectStacking) {
-                //        for (i = 0, length = this._objects.length; i < length; ++i) {
-                //            this._draw(ctx, this._objects[i]);
-                //        }
-                //    }
-                //    else {
-                //        for (i = 0, length = this._objects.length; i < length; ++i) {
-                //            if (this._objects[i] && !activeGroup.contains(this._objects[i])) {
-                //                this._draw(ctx, this._objects[i]);
-                //            }
-                //        }
-                //    }
+                //    //if (!activeGroup || this.preserveObjectStacking) {
+                //    var ro = this._renderingObjects;
+                //    for (var i = 0, l = ro.length; i < l; ++i) //{    //++i???
+                //        //var obj = this._renderingObjects[i].object;
+                //        this._draw(ctx, ro[i].object);//obj);
+                //    //}
+                //    //}
+                //    //else {
+                //    //    for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
+                //    //        if (this._renderingObjects[i].object && !activeGroup.contains(this._renderingObjects[i].object)) {
+                //    //            this._draw(ctx, this._renderingObjects[i].object);
+                //    //            console.log('B render', i);
+                //    //        }
+                //    //    }
+                //    //}
                 //},
-
-                _renderObjects: function (ctx, activeGroup) {
-                    var i, length;
-
-                    // fast path
-                    if (!activeGroup || this.preserveObjectStacking) {
-                        for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
-                            var obj = this._renderingObjects[i].object;
-                            this._draw(ctx, obj);
-                        }
-                    }
-                    else {
-                        for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
-                            if (this._renderingObjects[i].object && !activeGroup.contains(this._renderingObjects[i].object)) {
-                                this._draw(ctx, this._renderingObjects[i].object);
-                                console.log('B render', i);
-                            }
-                        }
-                    }
-                },
             });
 
             return FCAdapter;
@@ -206,8 +201,8 @@ PocketCode.Ui.Canvas = (function () {
             },
         },
         context: {
-            get: function() {
-                return this._fcAdapter.getContext('2d');
+            get: function () {
+                return this._fcAdapter.getContext();//'2d');
             },
         },
         renderingImages: {
@@ -256,42 +251,45 @@ PocketCode.Ui.Canvas = (function () {
         //_onResizeHandler: function(e) {
 
         //},
-        setDimensions: function(width, height) {
-            this._fcAdapter.setDimensionsWr(width, height);
+        setDimensions: function (width, height, scaling) {
+            this._fcAdapter.setDimensionsWr(width, height, scaling);
         },
         clear: function () {
-            this._fcAdapter.clear();    //TODO: make sure to clear the right context (only)
+            this._fcAdapter.clear();
         },
-        render: function (renderingObjectList) {    //TODO??     we will have to init the list first to achive click events on sprites
+        render: function () {
             this._fcAdapter.renderAll();
         },
-        toDataURL: function (scaling) {
-            scaling = scaling || 1;
-            return this._fcAdapter.toDataURL({ multiplier: 1. / scaling });
+        toDataURL: function () {
+            //scaling = scaling || 1;
+            this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');   //setting background temporarly without triggering a render
+            var dataUrl = this._fcAdapter.toDataURL({ multiplier: 1.0 / this._fcAdapter.scaling });
+            this._fcAdapter.setBackgroundColor('');
+            return dataUrl;
         },
-        findItemById: function (id) {
-            return this._fcAdapter.findItemById(id);
-        },
-        handleChangedScaling: function(e){
-            var scaling = e.scaling;
-            var canv = this._fcAdapter;
-            for (var i = 0, l = canv._renderingObjects.length; i<l; i++) {
-                var obj = canv._renderingObjects[i];
-                this.applyScalingToObject(obj, scaling);
-            }
+        //findItemById: function (id) {
+        //    return this._fcAdapter.findItemById(id);
+        //},
+        //handleChangedScaling: function(e){
+        //    var scaling = e.scaling;
+        //    var canv = this._fcAdapter;
+        //    for (var i = 0, l = canv._renderingObjects.length; i<l; i++) {
+        //        var obj = canv._renderingObjects[i];
+        //        this.applyScalingToObject(obj, scaling);
+        //    }
 
-            this.render();
-        },
-        applyScalingToObject: function(obj, scaling) {
-            var canvas = this._fcAdapter;
-            if (obj.object.id != undefined) {
-                obj.object.left = obj._positionX * scaling + canvas.width / 2.0;
-                obj.object.top = canvas.height - (obj._positionY * scaling + canvas.height / 2.0);
-                obj.object.scaleX = obj._size * scaling / obj._initialScaling;
-                obj.object.scaleY = obj._size * scaling / obj._initialScaling;
-                obj.object.setCoords();
-            }
-        },
+        //    this.render();
+        //},
+        //applyScalingToObject: function(obj, scaling) {
+        //    var canvas = this._fcAdapter;
+        //    if (obj.object.id != undefined) {
+        //        obj.object.left = obj._positionX * scaling + canvas.width / 2.0;
+        //        obj.object.top = canvas.height - (obj._positionY * scaling + canvas.height / 2.0);
+        //        obj.object.scaleX = obj._size * scaling / obj._initialScaling;
+        //        obj.object.scaleY = obj._size * scaling / obj._initialScaling;
+        //        obj.object.setCoords();
+        //    }
+        //},
     });
 
     return Canvas;

@@ -47,7 +47,7 @@ Object.prototype.merge = function (o) {
 
     for (var m in o) {
         if (o.hasOwnProperty(m)) {
-            if (typeof this[m] === 'object' && typeof o[m] === 'object')
+            if (typeof this[m] === 'object' && typeof o[m] === 'object' && !(o[m] instanceof Array ))
                 this[m].merge(o[m]);
             else
                 this[m] = o[m];

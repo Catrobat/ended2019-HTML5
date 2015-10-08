@@ -17,20 +17,20 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
         this._axesVisible = false;
-        this._scaling = 1;
-        this._canvasNeedsRedraw = false;
+        //this._scaling = 1;
+        //this._canvasNeedsRedraw = false;
 
 
         this._canvas = new PocketCode.Ui.Canvas();//{ className: 'pc-canvas' });
         this._appendChild(this._canvas);
 
         //events
-        this._onScalingChanged = new SmartJs.Event.Event(this);
+        //this._onScalingChanged = new SmartJs.Event.Event(this);
 
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
         this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
-        this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
+        //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
         //this._drawAxes();
@@ -94,11 +94,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //properties
     Object.defineProperties(PlayerViewportView.prototype, {
-        canvasNeedsRedraw: {
-          set: function (value) {
-              this._canvasNeedsRedraw = value;
-          }
-        },
+        //canvasNeedsRedraw: {
+        //  set: function (value) {
+        //      this._canvasNeedsRedraw = value;
+        //  }
+        //},
 
         axisVisible: {
             get: function () {
@@ -140,28 +140,28 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
                 this._canvas.renderingImages = value;
             },
-            get: function () {
-                return this._renderingObjects;
-            }
+            //get: function () {
+            //    return this._renderingObjects;
+            //}
             //enumerable: false,
             //configurable: true,
         },
-        fabricCanvas: {
-            get: function (value) {
-                return this._fabricCanvas;
-            }
-            //enumerable: false,
-            //configurable: true,
-        }
+        //fabricCanvas: {
+        //    get: function (value) {
+        //        return this._fabricCanvas;
+        //    }
+        //    //enumerable: false,
+        //    //configurable: true,
+        //}
     });
 
     // events
     Object.defineProperties(PlayerViewportView.prototype, {
-        onScalingChanged: {
-            get: function () {
-                return this._onScalingChanged;
-            },
-        },
+        //onScalingChanged: {
+        //    get: function () {
+        //        return this._onScalingChanged;
+        //    },
+        //},
         //onResize: {
         //    get: function () {
         //        return this._onResize;
@@ -196,17 +196,17 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 scaling = w / ow;   //aligned left/right
 
             //var scaling = Math.min(this.height / oh, this.width / oh);
-            this._scaling = scaling;
+            //this._scaling = scaling;
             var canvas = this._canvas;
             var cw = Math.ceil(ow * scaling),
                 ch = Math.ceil(oh * scaling);
             //canvas.width = cw;
             //canvas.height = ch;
-            canvas.setDimensions(cw, ch);
+            canvas.setDimensions(cw, ch, scaling);
             canvas.style.left = Math.floor((w - cw) / 2) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2) + 'px';
 
-            this._onScalingChanged.dispatchEvent({ scaling: scaling });
+            //this._onScalingChanged.dispatchEvent({ scaling: scaling });
 
             //this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
             //var factor = this._scalingFactor;
@@ -237,7 +237,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
-            //this.render();
+            this.render();
         },
         setOriginalViewportSize: function(width, height) {
             this._originalWidth = width;
@@ -299,12 +299,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 ctx.restore();
             }
         },
-        getCanvasDataURL: function (scaling) {
-            return this._canvas.toDataURL(scaling);
+        getCanvasDataURL: function () {
+            return this._canvas.toDataURL();//this._scaling);
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
-            this._canvas.render();
+            this._canvas.render();//this._scaling);
         },
 
         clear: function () {
@@ -315,14 +315,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //override: to make sure a view is disposed by it's controller
         },
 
-        handleSpriteChange: function (id, changes) {
-            var item = this._canvas.findItemById(id);
-            if (item) {
-                item.merge(changes);
-                this._canvas.applyScalingToObject(item, this._scaling);
-                this._canvas.render();
-            }
-        },
+        //handleSpriteChange: function (id, changes) {
+        //    var item = this._canvas.findItemById(id);
+        //    if (item) {
+        //        item.merge(changes);
+        //        this._canvas.applyScalingToObject(item, this._scaling);
+        //        this._canvas.render();
+        //    }
+        //},
     });
 
     return PlayerViewportView;
