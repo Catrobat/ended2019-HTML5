@@ -1,12 +1,12 @@
 <?php
 
-class SetSizeToBrickDto extends BaseBrickDto {
+class SetSizeBrickDto extends BaseBrickDto {
 
   public $percentage;	//FormulaDto
 
   
   public function __construct($percentage) {
-	parent::__construct("SetSizeTo");
+	parent::__construct("SetSize");
 	
 	$this->percentage = $percentage;
   }

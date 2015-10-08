@@ -58,7 +58,7 @@ QUnit.test("NextLookBrick", function (assert) {
 
 });
 
-QUnit.test("SetSizeToBrick", function (assert) {
+QUnit.test("SetSizeBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -67,11 +67,11 @@ QUnit.test("SetSizeToBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetSizeToBrick(device, sprite, { percentage: percentage });
+    var b = new PocketCode.Model.SetSizeBrick(device, sprite, { percentage: percentage });
 
     assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetSizeToBrick, "instance check");
-    assert.ok(b.objClassName === "SetSizeToBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetSizeBrick, "instance check");
+    assert.ok(b.objClassName === "SetSizeBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

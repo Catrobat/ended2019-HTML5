@@ -86,22 +86,22 @@ PocketCode.Model.merge({
     })(),
 
 
-    SetSizeToBrick: (function () {
-        SetSizeToBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetSizeBrick: (function () {
+        SetSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetSizeToBrick(device, sprite, propObject) {
+        function SetSizeBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
-        SetSizeToBrick.prototype._execute = function () {
+        SetSizeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
             this._return(this._sprite.setSize(this._percentage.calculate()));
         };
 
-        return SetSizeToBrick;
+        return SetSizeBrick;
     })(),
 
 

@@ -874,7 +874,7 @@ class ProjectFileParser
 
         case "SetSizeToBrick":
           $size = $script->size;
-          $brick = new SetSizeToBrickDto($this->parseFormula($size->formulaTree));
+          $brick = new SetSizeBrickDto($this->parseFormula($size->formulaTree));
           break;
 
         case "ChangeSizeByNBrick":

@@ -421,7 +421,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
           $fl = $script->formulaList;
           array_push($this->cpp, $fl);
           $size = $fl->formula;
-          $brick = new SetSizeToBrickDto($this->parseFormula($size));
+          $brick = new SetSizeBrickDto($this->parseFormula($size));
           array_pop($this->cpp);
           break;
 
