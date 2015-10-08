@@ -72,10 +72,18 @@ PocketCode.GameEngine = (function () {
         //rendering
         spritesAsPropertyList: {
             get: function () {
-                var props = [this._background.renderingProperties];
-                var sprites = this._sprites;
+                var prop,
+                    props = [this._background.renderingProperties],
+                    sprites = this._sprites;
+
                 for (var i = 0, l = sprites.length; i < l; i++)
                     props.push(sprites[i].renderingProperties);
+                //adjust positions including viewport width/height
+                for (var i = 0, l = props.length; i < l; i++) {
+                    prop = props[i];
+                    prop.x += this._originalScreenWidth / 2.0;
+                    prop.y += this._originalScreenHeight / 2.0;
+                }
                 return props;
             },
         },
@@ -439,7 +447,7 @@ PocketCode.GameEngine = (function () {
         },
         getLookImage: function (id) {
             //used by the sprite to access a look object when firing onSpriteUiChange (setLook, nextLook bricks)
-            return this._imageStore.getLook(id);    //TODO: the gameEngine Object has much too much public methods and properties (even events like onStart) that are used by sprites and bricks only: IMPORTANT
+            return this._imageStore.getLook(id);
         },
         setSpriteLayerBack: function (sprite, layers) {
             var sprites = this._sprites;
@@ -474,15 +482,15 @@ PocketCode.GameEngine = (function () {
             if (!sprite || !sprite.currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
-            var sh2 = this._originalScreenHeight / 2,
-                sw2 = this._originalScreenWidth / 2,
+            var sh2 = this._originalScreenHeight / 2.0,
+                sw2 = this._originalScreenWidth / 2.0,
                 dir = sprite.direction,
                 x = sprite.positionX,
                 y = sprite.positionY;
 
             var lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
                 scaling = sprite.size / 100,
-                rotation = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90 : 0,
+                rotation = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0,
                 //^^ sprite has a direction but is not rotated
                 flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0 ? true : false;
 

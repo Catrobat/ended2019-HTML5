@@ -96,60 +96,70 @@ PocketCode.RenderingImage = (function () {
             set: function (value) {
                 console.log('CHANGELOOK', value);
                 this._fabricImage.setElement(value.canvas);
-                this._length = value.center.length;
-                this._angle = value.center.angle;
-                //update positions
-                this.positionX = this._positionX;
-                this.positionY = this._positionY;
-                //size does not have to be updated as our initial scaling is used for all objects and does not change
+                //this._length = value.center.length;
+                //this._angle = value.center.angle;
+                ////update positions
+                //this.positionX = this._positionX;
+                //this.positionY = this._positionY;
+                ////size does not have to be updated as our initial scaling is used for all objects and does not change
             },
         },
-        positionX: {
+        x: {
             set: function (value) {
-                this._positionX = value;// + this._length * Math.cos(this._angle);
-                this._fabricImage.left = Math.floor(value + this._length * Math.cos(this._angle));// * this._viewportScaling);  //avoid sub-pixel rendering
+                //this._positionX = value;// + this._length * Math.cos(this._angle);
+                this._fabricImage.left = Math.floor(value);// + this._length * Math.cos(this._angle));// * this._viewportScaling);  //avoid sub-pixel rendering
             },
         },
-        positionY: {
+        y: {
             set: function (value) {
-                this._positionY = value;// + this._length * Math.sin(this._angle);
-                this._fabricImage.top = Math.floor(value + this._length * Math.sin(this._angle));// * this._viewportScaling);
+                //this._positionY = value;// + this._length * Math.sin(this._angle);
+                this._fabricImage.top = Math.floor(value);// + this._length * Math.sin(this._angle));// * this._viewportScaling);
             },
         },
-        size: {
+        scaling: {
             set: function (value) {
                 // TODO apply to with, height?
-                this._size = value;// / 100.0 / this._initialScaling;
-                this._fabricImage.scaleX = value / 100.0 / this._initialScaling;// * this._viewportScaling;
-                this._fabricImage.scaleY = value / 100.0 / this._initialScaling;// * this._viewportScaling;
+                //this._size = value;// / 100.0 / this._initialScaling;
+                this._fabricImage.scaleX = value;//value / 100.0 / this._initialScaling;// * this._viewportScaling;
+                this._fabricImage.scaleY = value;// / 100.0 / this._initialScaling;// * this._viewportScaling;
             },
         },
-        rotationStyle: {
+        //rotationStyle: {
+        //    set: function (value) {
+        //        if (value == this._rotationStyle)
+        //            return;
+        //        this._rotationStyle = value;
+        //        this.direction = this._direction;
+        //    },
+        //},
+        rotation: {
             set: function (value) {
-                if (value == this._rotationStyle)
-                    return;
-                this._rotationStyle = value;
-                this.direction = this._direction;
-            },
+                this._fabricImage.angle = value;
+            }
         },
-        direction: {
+        flipX: {
             set: function (value) {
-                console.log('CHANGE DIR', value);
-                this._direction = value;
-                switch (this.rotationStyle) {
-                    case PocketCode.RotationStyle.DO_NOT_ROTATE:
-                        this._fabricImage.angle = 0;
-                        break;
-                    case PocketCode.RotationStyle.LEFT_TO_RIGHT:
-                        this._fabricImage.angle = 0;
-                        this._fabricImage.flipX = (value < 0);
-                        break;
-                    case PocketCode.RotationStyle.ALL_AROUND:
-                        this._fabricImage.angle = value - 90;
-                        break;
-                }
-            },
+                this._fabricImage.flipX = value;
+            }
         },
+        //direction: {
+        //    set: function (value) {
+        //        console.log('CHANGE DIR', value);
+        //        this._direction = value;
+        //        switch (this.rotationStyle) {
+        //            case PocketCode.RotationStyle.DO_NOT_ROTATE:
+        //                this._fabricImage.angle = 0;
+        //                break;
+        //            case PocketCode.RotationStyle.LEFT_TO_RIGHT:
+        //                this._fabricImage.angle = 0;
+        //                this._fabricImage.flipX = (value < 0);
+        //                break;
+        //            case PocketCode.RotationStyle.ALL_AROUND:
+        //                this._fabricImage.angle = value - 90;
+        //                break;
+        //        }
+        //    },
+        //},
         visible: {
             set: function (value) {
                 this._fabricImage.visible = value;

@@ -19,6 +19,7 @@ QUnit.test("Sprite", function (assert) {
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
     var prog = new PocketCode.GameEngine();
+
     var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
@@ -238,12 +239,12 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setSize(50);
     assert.equal(sprite._size, 50, "set size");
     assert.ok(returnVal, "set size return val");
-    assert.ok(lastOnChangeArgs.size !== undefined, "set size event args");
+    assert.ok(lastOnChangeArgs.scaling !== undefined, "set size event args");
 
     returnVal = sprite.changeSize(-60);
     assert.equal(sprite._size, 0, "change size below 0");
     assert.ok(returnVal, "change size: changed");
-    assert.ok(lastOnChangeArgs.size !== undefined, "change size event args");
+    assert.ok(lastOnChangeArgs.scaling !== undefined, "change size event args");
 
     sprite.changeSize(20);
     assert.equal(sprite._size, 20, "change size upwards");
@@ -262,33 +263,33 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setPosition(10, 10);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 10, "set Position");
     assert.ok(returnVal, "set position: update");
-    assert.ok(lastOnChangeArgs.positionX !== undefined || lastOnChangeArgs.positionY !== undefined, "set position event args");
+    assert.ok(lastOnChangeArgs.x !== undefined || lastOnChangeArgs.y !== undefined, "set position event args");
     returnVal = sprite.setPosition(10, 10);
     assert.ok(returnVal == false, "set position: no change");
 
     returnVal = sprite.setPositionY(90);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 90, "set PositionY");
     assert.ok(returnVal, "set positionY: update");
-    assert.ok(lastOnChangeArgs.positionY !== undefined, "set positionY event args");
+    assert.ok(lastOnChangeArgs.y !== undefined, "set positionY event args");
     returnVal = sprite.setPositionY(90);
     assert.ok(returnVal == false, "set positionY: no change");
 
     returnVal = sprite.setPositionX(35);
     assert.ok(sprite._positionX == 35 && sprite._positionY == 90, "set PositionX");
     assert.ok(returnVal, "set positionX: update");
-    assert.ok(lastOnChangeArgs.positionX !== undefined, "set positionX event args");
+    assert.ok(lastOnChangeArgs.x !== undefined, "set positionX event args");
     returnVal = sprite.setPositionX(35);
     assert.ok(returnVal == false, "set positionX: no change");
 
     returnVal = sprite.changePositionX(50);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90, "change PositionX");
     assert.ok(returnVal, "change positionX: change");
-    assert.ok(lastOnChangeArgs.positionX !== undefined, "chagne positionX event args");
+    assert.ok(lastOnChangeArgs.x !== undefined, "chagne positionX event args");
     assert.ok(sprite.changePositionX(0) == false, "change positionX: no change");
     returnVal = sprite.changePositionY(-20);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90 - 20, "change PositionY");
     assert.ok(returnVal, "change positionY: change");
-    assert.ok(lastOnChangeArgs.positionY !== undefined, "change positionY event args");
+    assert.ok(lastOnChangeArgs.y !== undefined, "change positionY event args");
     assert.ok(sprite.changePositionY(0) == false, "change positionY: no change");
     // *************************************************************
 
@@ -306,14 +307,14 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.move(25);
     assert.ok(sprite._positionX == 15 && sprite._positionY == -10 && sprite._direction == 90, "move steps 90°");
     assert.ok(returnVal, "move return value: true on change");
-    assert.ok(lastOnChangeArgs.positionX !== undefined || lastOnChangeArgs.positionY !== undefined, "move event args");
+    assert.ok(lastOnChangeArgs.x !== undefined || lastOnChangeArgs.y !== undefined, "move event args");
     assert.ok(sprite.move(0) == false, "move return value: false if position did not change");
 
     var triggerEvent;   //undefined = true
     sprite.setDirection(0);
     returnVal = sprite.setDirection(-90, triggerEvent);
     assert.ok(returnVal, "setDirection return value");
-    assert.ok(lastOnChangeArgs.direction !== undefined, "set direction event args");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "set direction event args");
     returnVal = sprite.setDirection(-90, triggerEvent);
     assert.ok(!returnVal, "setDirection return value false (no change)");
     assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
@@ -353,7 +354,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._direction == -170, "turn right to 190°");
     returnVal = sprite.turnRight(180); //-170 --> 10
     assert.ok(returnVal, "turnRight returns true on update");
-    assert.ok(lastOnChangeArgs.direction !== undefined, "turn right event args");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "turn right event args");
     returnVal = sprite.turnRight(0); //-170 --> 10
     assert.ok(!returnVal, "turnRight returns false: no update");
     returnVal = sprite.turnRight(360);
@@ -407,7 +408,7 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(-90, triggerEvent);
     sprite.turnLeft(450); //350 --> 10
     assert.ok(sprite._direction == 180, "turn left to 180°");
-    assert.ok(lastOnChangeArgs.direction !== undefined, "turn left event args");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "turn left event args");
     sprite.setDirection(-90, triggerEvent);
     sprite.turnLeft(-450); //-350 --> -10
     assert.ok(sprite._direction == 0, "turn left to 0°");
@@ -442,13 +443,19 @@ QUnit.test("Sprite", function (assert) {
     var look1 = new Object();
     look1.name = "look1";
     look1.id = "first";
+    //look1.center = { length: 0, angle: 0 };
     var look2 = new Object();
     look2.name = "look2";
     look2.id = "second";
+    //look2.center = { length: 0, angle: 0 };
     var looks = [];
     looks[0] = look1;
     looks[1] = look2;
     sprite.looks = looks;
+    //apply center to internal looks to run these tests
+    //sprite._looks[0].center = { length: 0, angle: 0 };
+    //sprite._looks[1].center = { length: 0, angle: 0 };
+
     assert.ok(sprite._looks[0].imageId === looks[0].id && sprite._looks[1].imageId === looks[1].id, "looks setter");
     assert.equal(sprite._looks[1].name, "look2", "set looks1");
     assert.equal(sprite._currentLook.imageId, "first", "set looks2");
@@ -461,7 +468,7 @@ QUnit.test("Sprite", function (assert) {
     //game engine: getLookImage
     assert.ok(typeof prog.getLookImage === "function", "sprite-program interface: get look from store");
     prog.getLookImage = function (id) {
-        return { imgObject: new Image(), initialScaling: 0.5 };
+        return { canvas: new Image(), center: { length: 0, angle: 0 }, initialScaling: 0.5 };
     };
     returnVal = sprite.setLook("second");
     assert.ok(sprite._currentLook.name == "look2", "set current look with id");
@@ -469,11 +476,15 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(lastOnChangeArgs.look !== undefined, "set look event args");
     assert.throws(function () { sprite.setLook("non existing"); }, "ERROR: try to set undefined look");
 
-    sprite._looks = [];
+    sprite.looks = [];
     returnVal = sprite.nextLook();
     assert.ok(!returnVal, "next look on nonexisting look");
 
     sprite.looks = looks;
+    //apply center to internal looks to run these tests
+    //sprite._looks[0].center = { length: 0, angle: 0 };
+    //sprite._looks[1].center = { length: 0, angle: 0 };
+
     returnVal = sprite.setLook("second");
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look1", "next look");
@@ -493,6 +504,11 @@ QUnit.test("Sprite", function (assert) {
     look3.id = "third";
     looks[2] = look3;
     sprite.looks = looks;
+    //apply center to internal looks to run these tests
+    //sprite._looks[0].center = { length: 0, angle: 0 };
+    //sprite._looks[1].center = { length: 0, angle: 0 };
+    //sprite._looks[2].center = { length: 0, angle: 0 };
+
     assert.ok(sprite._currentLook.name == "look1", "current look set back to first after look setter");
     assert.equal(sprite._looks.length, 3, "looks count increased");
 
@@ -514,6 +530,9 @@ QUnit.test("Sprite", function (assert) {
     //var device = new PocketCode.Device();
     var programAsync = new PocketCode.GameEngine();
     programAsync._executionState = PocketCode.ExecutionState.RUNNING;
+    programAsync.getLookImage = function (id) { //override to test look center 
+        return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
+    };
 
     var brick1 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
     brick1.id = "first";
@@ -597,6 +616,9 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* come to front/go back *********************
     var program = new PocketCode.GameEngine();
+    program.getLookImage = function (id) { //override to test look center 
+        return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
+    };
 
     var newSprite = new PocketCode.Model.Sprite(program, { id: "newId", name: "myName" });
     program._sprites.push(newSprite);
@@ -645,7 +667,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.pointTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
     assert.ok(returnVal, "point to: value changed");
-    assert.ok(lastOnChangeArgs.direction !== undefined, "pointTo event args");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "pointTo event args");
     returnVal = sprite.pointTo("id2");
     assert.ok(!returnVal, "point to: value not changed");
     //returnVal = sprite.pointTo(sprite.id);
