@@ -137,7 +137,7 @@ PocketCode.Model.Sprite = (function () {
                     flipX: this._flipX,
                     //rotationStyle: this._rotationStyle,
                     //look: this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId) : undefined,
-                    scaling: 0,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
+                    scaling: 1,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
                     visible: this._visible, //this._currentLook ? this._visible : false,
                     graphicEffects: [
                         { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
@@ -150,8 +150,8 @@ PocketCode.Model.Sprite = (function () {
                         center = look.center;
 
                     obj.merge({
-                        look: look,
-                        scaling: this._size / 100.0 / this._currentLook.initialScaling,
+                        look: look.canvas,
+                        scaling: this._size / 100.0 / look.initialScaling,
                         x: this._positionX + center.length * Math.cos(center.angle),// * this._size / 100.0,
                         y: this._positionY + center.length * Math.sin(center.angle),// * this._size / 100.0,
                     });
@@ -703,7 +703,7 @@ PocketCode.Model.Sprite = (function () {
                 if (look.imageId === imageId) {
                     this._currentLook = look;
                     look = this._gameEngine.getLookImage(imageId);
-                    update = { look: look };
+                    update = { look: look.canvas };
                     center = look.center;
                     update.x = this._positionX + center.length * Math.cos(center.angle);
                     update.y = this._positionY + center.length * Math.sin(center.angle);
@@ -740,7 +740,7 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
             look = this._gameEngine.getLookImage(this._currentLook.imageId);
-            update = { look: look };
+            update = { look: look.canvas };
             center = look.center;
             update.x = this._positionX + center.length * Math.cos(center.angle);
             update.y = this._positionY + center.length * Math.sin(center.angle);
@@ -936,7 +936,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._brightness = percentage;
-            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: percentage - 100 }] });  //send +-100 instead of 0..200
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: percentage - 100.0 }] });  //send +-100 instead of 0..200
             return true;
         },
         /* set to private and called from set/change graphic effect*/
@@ -960,7 +960,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._brightness = value;
-            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100 }] }); //send +-100 instead of 0..200
+            this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100.0 }] }); //send +-100 instead of 0..200
             return true;
         },
         /**

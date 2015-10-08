@@ -90,7 +90,7 @@ PocketCode.Ui.Canvas = (function () {
 
                 //    return target;
                 //},
-                renderAll: function (viewportScaling) {//allOnTop) {
+                renderAll: function () {//viewportScaling) {//allOnTop) {
                     var ctx = this.contextContainer;//,//this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
                     this.clearContext(ctx);
                     //activeGroup = this.getActiveGroup();

@@ -81,7 +81,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                     this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
-                    this._gameEngine.onProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                    //this._gameEngine.onProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                     //this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
@@ -90,7 +90,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                 this._gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
-                this._gameEngine.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                //this._gameEngine.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 //this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
@@ -122,6 +122,10 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.stopProject();
                 this._view.executionState = PocketCode.ExecutionState.STOPPED;
             }
+        },
+        /* override */
+        actionOnGlobalError: function() {
+            this._view.disabled = true;
         },
         //view
         //_viewHideHandler: function () {
@@ -155,10 +159,10 @@ PocketCode.PlayerPageController = (function () {
             this._view.hideStartScreen();
             //console.log('project start: ');// + JSON.stringify(e));
         },
-        _projectStartHandler: function (e) {
-            //this._playerViewportController.render();    //initial rendering of all sprites
-            //^^ maybe the visual effect is better if we do not render on start? really necessary? -> remove handlers if so
-        },
+        //_projectStartHandler: function (e) {
+        //    this._playerViewportController.render();    //initial rendering of all sprites
+        //    //^^ maybe the visual effect is better if we do not render on start? really necessary? -> remove handlers if so: removed: rendered on initial resize anyway
+        //},
         _projectExecutedHandler: function (e) {
             if (SmartJs.Device.isMobile)
                 return history.back();
@@ -274,7 +278,8 @@ PocketCode.PlayerPageController = (function () {
                 //unbind existing project
                 this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                 this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
-                this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
+                this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
+                //this._gameEngine.onProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine = undefined;

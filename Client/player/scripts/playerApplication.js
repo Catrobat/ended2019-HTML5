@@ -142,6 +142,12 @@ PocketCode.merge({
                 if (error.error.stack)
                     stack = error.error.stack;
 
+                try {
+                    this._project.stopProject();
+                }
+                catch (e) { }
+                this._currentPage.actionOnGlobalError();
+
                 var d = new PocketCode.Ui.GlobalErrorDialog();
                 d.bodyInnerHTML += '<br /><br />Details: ';
                 d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';

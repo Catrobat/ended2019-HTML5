@@ -11,6 +11,9 @@ PocketCode.PlayerViewportController = (function () {
         this._renderingImages = [];
         this._redrawRequired = false;
 
+        //init default values
+        this._projectScreenWidth = 200;
+        this._projectScreenHeight = 380;
         //this._view.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
     }
 
@@ -67,7 +70,16 @@ PocketCode.PlayerViewportController = (function () {
         //},
         updateSprite: function (spriteId, properties) {
             var img,
-                imgs = this._renderingImages;
+                imgs = this._renderingImages;//,
+                //xOffset = this._projectScreenWidth / 2.0,
+                //yOffset = this._projectScreenHeight / 2.0;
+
+            //update positions: top/left positioning
+            if (properties.x)
+                properties.x += this._projectScreenWidth / 2.0;//xOffset;
+            if (properties.y)
+                properties.y = this._projectScreenHeight / 2.0 - properties.y;
+
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
                 if (img.id === spriteId) {
@@ -83,10 +95,16 @@ PocketCode.PlayerViewportController = (function () {
         },
         initRenderingImages: function (sprites) {
             //var renderingImages = [];
-            for (var i = 0, l = sprites.length; i < l; i++)// {
+            var sprite;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprite = sprites[i];
+                sprite.x += this._projectScreenWidth / 2.0;
+                sprite.y = this._projectScreenHeight / 2.0 - sprite.y;
+                //update positions: top/left positioning
                 //var r = new PocketCode.RenderingImage(sprites[i]);
-                this._renderingImages.push(new PocketCode.RenderingImage(sprites[i]));//r);
-            //}
+                if (sprite.look)    //there are sprites without look
+                    this._renderingImages.push(new PocketCode.RenderingImage(sprite));//r);
+            }
 
             //this._renderingImages = renderingImages;
             this._view.renderingImages = this._renderingImages;
@@ -96,7 +114,7 @@ PocketCode.PlayerViewportController = (function () {
 
         //},
         render: function() {
-            if (this._renderingImages.length == 0 || this._redrawRequired)
+            if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
                 return;
             this._redrawRequired = true;
             window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
@@ -107,6 +125,8 @@ PocketCode.PlayerViewportController = (function () {
             this._view.render();
         },
         setProjectScreenSize: function (width, height) {
+            this._projectScreenWidth = width;
+            this._projectScreenHeight = height;
             this._view.setOriginalViewportSize(width, height);
         },
         showAxes: function () {

@@ -30,7 +30,7 @@ PocketCode.BaseController = (function () {
         hideView: function () {
             this._view.hide();
         },
-        updateViewState: function (viewState) { },  //TODO: ???
+        updateViewState: function (viewState) { },
         dispose: function () {
             //use SmartJs.Ui.Control dispose to dispose view, as dispose() was overridden
             SmartJs.Ui.Control.prototype.dispose.call(this._view);
@@ -89,6 +89,9 @@ PocketCode.PageController = (function () {
             var l = this._dialogs.length;
             if (l > 0)
                 this._dialogs[l - 1].execDefaultBtnAction();
+        },
+        actionOnGlobalError: function () {
+            //to override
         },
         //showView: function () {
         //    this._view.show();

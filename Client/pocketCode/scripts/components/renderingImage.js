@@ -21,8 +21,8 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
             //originX: 'center',    //default
             //originY: 'center',    //default
             centeredScaling: true,  //TODO: I'm not sure we need this if the origin is center
-            width: element.canvas.width,
-            height: element.canvas.height,
+            width: element.width,//canvas.width,
+            height: element.height,//canvas.height,
             // flipX = flipH: false, //already a property and false (default)
             // flipy = flipV: false, //already a property and false (default)
             //filters: [],  //default
@@ -41,12 +41,46 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
     //    });
     //},
 
-    //_render: function (ctx) {   //TODO: in use?
-    //    this.callSuper('_render', ctx);
+    //_render: function (ctx, noTransform) {
+    //    var x, y, imageMargins = this._findMargins();//, elementToDraw;
+
+    //    x = (noTransform ? this.left : -this.width / 2);
+    //    //x *= this._viewportScaling;
+    //    y = (noTransform ? this.top : -this.height / 2);
+    //    //y *= this._viewportScaling;
+
+    //    //this.scaleX *= this._viewportScaling;
+    //    //this.scaleY *= this._viewportScaling;
+
+    //    //if (this.meetOrSlice === 'slice') {
+    //    //    ctx.beginPath();
+    //    //    ctx.rect(x, y, this.width, this.height);
+    //    //    ctx.clip();
+    //    //}
+
+    //    //if (this.isMoving === false && this.resizeFilters.length && this._needsResize()) {
+    //    //    this._lastScaleX = this.scaleX;
+    //    //    this._lastScaleY = this.scaleY;
+    //    //    elementToDraw = this.applyFilters(null, this.resizeFilters, this._filteredEl || this._originalElement, true);
+    //    //}
+    //    //else {
+    //    //    elementToDraw = this._element;
+    //    //}
+    //    //elementToDraw &&
+    //    ctx.drawImage(/*elementToDraw*/this._element,
+    //                                   x + imageMargins.marginX,
+    //                                   y + imageMargins.marginY,
+    //                                   imageMargins.width,
+    //                                   imageMargins.height
+    //                                  );
+
+    //    //        this._renderStroke(ctx);
     //},
-    render: function (ctx, scaling) {
-        alert('override scaling of fabric image');
-    },
+    //render: function (ctx) {//, scaling) {
+    //    //    //alert('override scaling of fabric image');
+    //    //this._viewportScaling = scaling;
+    //    this.callSuper('render', ctx);
+    //},
 });
 
 PocketCode.RenderingImage = (function () {
@@ -58,15 +92,19 @@ PocketCode.RenderingImage = (function () {
         this.type = 'sprite';
         this._fabricImage = new PocketCode.FabricImage(imageProperties.look);
         this._brightnesFilter = new fabric.Image.filters.Brightness({
-            brightness: 0
+            brightness: 0,
         });
         this._fabricImage.filters.push(this._brightnesFilter);
 
-        this._length = imageProperties.look.center.length;
-        this._angle = imageProperties.look.center.angle;
-        this._initialScaling = imageProperties.look.initialScaling;
+        //this._length = imageProperties.look.center.length;
+        //this._angle = imageProperties.look.center.angle;
+        //this._initialScaling = imageProperties.look.initialScaling;
         //this._viewportScaling = 1;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+        this._x = 0;
+        this._y = 0;
+        this._scaling = 1;
+        this._viewportScaling = 1;
 
         this.merge(imageProperties);
     }
@@ -82,9 +120,9 @@ PocketCode.RenderingImage = (function () {
             set: function (value) {
                 this._fabricImage.id = value;
             },
-            //get: function () {
-            //    return this._fabricImage.id;
-            //},
+            get: function () {
+                return this._fabricImage.id;
+            },
         },
         //viewportScaling: {
         //    set: function (value) {
@@ -95,7 +133,7 @@ PocketCode.RenderingImage = (function () {
         look: {
             set: function (value) {
                 console.log('CHANGELOOK', value);
-                this._fabricImage.setElement(value.canvas);
+                this._fabricImage.setElement(value);//.canvas);
                 //this._length = value.center.length;
                 //this._angle = value.center.angle;
                 ////update positions
@@ -106,22 +144,25 @@ PocketCode.RenderingImage = (function () {
         },
         x: {
             set: function (value) {
+                this._x = value;
                 //this._positionX = value;// + this._length * Math.cos(this._angle);
-                this._fabricImage.left = Math.floor(value);// + this._length * Math.cos(this._angle));// * this._viewportScaling);  //avoid sub-pixel rendering
+                this._fabricImage.left = value * this._viewportScaling;  //avoid sub-pixel rendering
             },
         },
         y: {
             set: function (value) {
+                this._y = value;
                 //this._positionY = value;// + this._length * Math.sin(this._angle);
-                this._fabricImage.top = Math.floor(value);// + this._length * Math.sin(this._angle));// * this._viewportScaling);
+                this._fabricImage.top = value * this._viewportScaling;
             },
         },
         scaling: {
             set: function (value) {
+                this._scaling = value;
                 // TODO apply to with, height?
                 //this._size = value;// / 100.0 / this._initialScaling;
-                this._fabricImage.scaleX = value;//value / 100.0 / this._initialScaling;// * this._viewportScaling;
-                this._fabricImage.scaleY = value;// / 100.0 / this._initialScaling;// * this._viewportScaling;
+                this._fabricImage.scaleX = value * this._viewportScaling;
+                this._fabricImage.scaleY = value * this._viewportScaling;
             },
         },
         //rotationStyle: {
@@ -189,7 +230,7 @@ PocketCode.RenderingImage = (function () {
                             this._brightnesFilter.brightness = effects[i].value * 2.55;
                             this._fabricImage.applyFilters();
                             break;
-                        //default:
+                            //default:
                             //throw? unknown effect? -> we ignore it as we have not implemented all scratch effects
                     }
             }
@@ -198,8 +239,17 @@ PocketCode.RenderingImage = (function () {
 
     //methods
     RenderingImage.prototype.merge({
-        draw: function (context, scaling) {
-            this._fabricImage.render(context, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
+        draw: function (context, viewportScaling) {
+            if (this._viewportScaling !== viewportScaling) {
+                this._viewportScaling = viewportScaling;
+                //apply viewport scaling
+                this._fabricImage.left = this._x * viewportScaling;
+                this._fabricImage.top = this._y * viewportScaling;
+                this._fabricImage.scaleX = this._scaling * viewportScaling;
+                this._fabricImage.scaleY = this._scaling * viewportScaling;
+            }
+            //render
+            this._fabricImage.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
         },
         //setAngle: function (direction) {
         //    this.angle = direction - 90;

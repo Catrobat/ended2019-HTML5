@@ -78,12 +78,12 @@ PocketCode.GameEngine = (function () {
 
                 for (var i = 0, l = sprites.length; i < l; i++)
                     props.push(sprites[i].renderingProperties);
-                //adjust positions including viewport width/height
-                for (var i = 0, l = props.length; i < l; i++) {
-                    prop = props[i];
-                    prop.x += this._originalScreenWidth / 2.0;
-                    prop.y += this._originalScreenHeight / 2.0;
-                }
+                //adjust positions including viewport width/height: 
+                //for (var i = 0, l = props.length; i < l; i++) {
+                //    prop = props[i];
+                //    prop.x += this._originalScreenWidth / 2.0;
+                //    prop.y = this._originalScreenHeight / 2.0 - prop.y;
+                //}
                 return props;
             },
         },
