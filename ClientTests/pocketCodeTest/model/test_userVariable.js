@@ -10,8 +10,12 @@ QUnit.module("userVariable.js");
 
 QUnit.test("UserVariableCollection", function (assert) {
 
+    //var done = assert.async();
+    //var done2 = assert.async();
+
     var uvc = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.SIMPLE, PocketCode.UserVariableScope.LOCAL);
     assert.ok(uvc instanceof PocketCode.Model.UserVariableCollection, "instance check");
+    assert.ok(uvc.onVariableChange instanceof SmartJs.Event.Event, "variable change event");
 
     assert.ok(uvc._scope === PocketCode.UserVariableScope.LOCAL && uvc._type == PocketCode.UserVariableType.SIMPLE, "created and properties set correctly");
     assert.throws(function () { var test = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.SIMPLE, "wrong"); }, Error, "ERROR: invalid scope property");
@@ -31,6 +35,17 @@ QUnit.test("UserVariableCollection", function (assert) {
 
     var first = uvc.getVariableById(1);
     assert.ok(first._id === 1 && first.name === "2" && first._value === 3 && first.value === 3, "getById check + value accessor");
+
+    var varChangeCalled = 0;
+    var varChangeHandler = function (e) {
+        varChangeCalled++;
+        assert.equal(e.target, first, "variable as event target");
+        assert.equal(e.id, 1, "variable setter/getter")
+        //done();
+    };
+    uvc.onVariableChange.addEventListener(new SmartJs.Event.EventListener(varChangeHandler, this));
+    first.value = 23;
+    assert.equal(varChangeCalled, 1, "var change: event handler called");
 
     uvc.initVariableList([]);
     assert.deepEqual(uvc.getVariables(), {}, "initVariableList: clear existing vars");

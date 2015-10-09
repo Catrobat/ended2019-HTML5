@@ -109,11 +109,59 @@ QUnit.test("UserVariableHost", function (assert) {
     uvhl._variables = varsl;
     uvhl._lists = listsl;
 
+    uvhl.getVariable("id1").value = "txt";
     v = uvhl.getAllVariables();
     compareAndAssert(v, "var: local and global: ", varsl, vars);
     l = uvhl.getAllLists();
     compareAndAssert(l, "list: local and global: ", listsl, lists);
 
-    var breakpoint = true;
+    //test ui rendering + updates
+    var renderingVars = uvhl.renderingVariables;
+    var r0 = renderingVars[0], r1 = renderingVars[1];
+    assert.ok(r0.id === "id1" && r0.text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
+    assert.ok(r1.id === "id2" && r1.text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
+
+    var varChangeCalled = 0;
+    var onVarChange = function (e) {
+        varChangeCalled++;
+        assert.equal(e.id, "id1", "event args: id");
+        assert.equal(e.properties.text, "new text", "event args: text");
+    };
+    uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
+    uvhl.getVariable("id1").value = "new text";
+
+    assert.equal(varChangeCalled, 1, "var change: event handler called");
+
+    uvhl._onVariableChange.removeEventListener(new SmartJs.Event.EventListener(onVarChange, this));
+    //show variable
+    varChangeCalled = 0;
+    var onVarChange = function (e) {
+        varChangeCalled++;
+        assert.equal(e.id, "id1", "event args: id (showVariableAt)");
+        var props = e.properties;
+        assert.ok(props.text = "new text" && props.x == 20 && props.y == 50 && props.visible == true, "event args: properties (showVariableAt)");
+    };
+    uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
+    assert.throws(function () { uvhl.showVariableAt("wrong id", 20, 50); }, Error, "ERRROR: id not found");
+    assert.throws(function () { uvhl.showVariableAt("id1", "NaN", 50); }, Error, "ERRROR: wrong parameter x");
+    assert.throws(function () { uvhl.showVariableAt("id1", 50, "NaN"); }, Error, "ERRROR: wrong parameter y");
+    uvhl.showVariableAt("id1", 20, 50);
+    assert.equal(varChangeCalled, 1, "var change: event handler called (showVariableAt)");
+
+    uvhl._onVariableChange.removeEventListener(new SmartJs.Event.EventListener(onVarChange, this));
+    //hide variable
+    varChangeCalled = 0;
+    var onVarChange = function (e) {
+        varChangeCalled++;
+        assert.equal(e.id, "id1", "event args: id (hideVariable)");
+        var props = e.properties;
+        assert.ok(props.visible == false, "event args: properties (hideVariable)");
+    };
+    uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
+    assert.throws(function () { uvhl.hideVariable("wrong id"); }, Error, "ERRROR: id not found");
+    uvhl.hideVariable("id1");
+    assert.equal(varChangeCalled, 1, "var change: event handler called (hideVariable)");
+
+    //var breakpoint = true;
 
 });

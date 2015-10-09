@@ -17,6 +17,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
         this._axesVisible = false;
+        this._renderingVariables = [];
         //this._scaling = 1;
         //this._canvasNeedsRedraw = false;
 
@@ -29,6 +30,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
+        this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
         this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
@@ -135,8 +137,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //},
         renderingImages: {
             set: function (value) {
-                if (!(value instanceof Array))
-                    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
+                //if (!(value instanceof Array))
+                //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
 
                 this._canvas.renderingImages = value;
             },
@@ -145,6 +147,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //}
             //enumerable: false,
             //configurable: true,
+        },
+        renderingVariables: {
+            set: function (value) {
+                //if (!(value instanceof Array))
+                //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
+
+                this._renderingVariables = value;
+            },
         },
         //fabricCanvas: {
         //    get: function (value) {
@@ -259,7 +269,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._axesVisible = false;
             this.render();
         },
-
+        _drawVariables: function() {
+            var vars = this._renderingVariables;
+            var ctx = this._canvas.context;
+            for (var i = 0, l = vars.length; i < l; i++)
+                vars[i].draw(ctx);
+        },
         _drawAxes: function () {
             //if (this._showGrid) {
             if (this._axesVisible) {

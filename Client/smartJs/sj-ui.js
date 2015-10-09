@@ -50,10 +50,10 @@ SmartJs.Ui.Window = (function () {  //static class
             visibilityChangeEventName = 'webkitvisibilitychange';
         }
 
-        if (this._visibilityChangeEventName !== '') 
+        if (visibilityChangeEventName !== '') 
             this._addDomListener(document, visibilityChangeEventName, this._visibilityChangeHandler);
 
-        if (this._visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
+        if (visibilityChangeEventName == '' || SmartJs.Device.isIOs) {    //attach for iOs as well
             // IE 9 and lower:
             if ('onfocusin' in document) {
                 //document.onfocusin = document.onfocusout = onchange;
@@ -832,7 +832,7 @@ SmartJs.Ui.merge({
             addToDom: function (parent) {
                 if (parent !== undefined && !(parent instanceof HTMLElement))
                     throw new Error('invalid argument: dom: expectet type HTMLElement');
-                var parent = parent || document.body;
+                parent = parent || document.body;
                 parent.appendChild(this._dom);
                 //this._parentContainer = parent;
                 this.onResize.dispatchEvent();

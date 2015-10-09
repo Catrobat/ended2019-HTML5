@@ -491,7 +491,8 @@ PocketCode.Web = {
 			},
 			hide: function () {
 				this._dom.style.display = 'none';
-				clearInterval(this._loadingTimer);
+				if (this._loadingTimer)
+				    clearInterval(this._loadingTimer);
 			},
 			setProgress: function (perc) {
 				this.hidePending();
@@ -521,7 +522,8 @@ PocketCode.Web = {
 				this._loadingTimer = setInterval(this._renderPending.bind(this), 400);
 			},
 			hidePending: function () {
-				clearInterval(this._loadingTimer);
+			    if (this._loadingTimer)
+			        clearInterval(this._loadingTimer);
 				this._pendingCount = 0;
 
 				var ch = this._progressItems.children;

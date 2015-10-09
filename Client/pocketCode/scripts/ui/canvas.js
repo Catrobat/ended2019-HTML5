@@ -117,6 +117,12 @@ PocketCode.Ui.Canvas = (function () {
                         //this._draw(ctx, ro[i].object);//obj);
                         ro[i].draw(ctx, this.scaling);
 
+                    //ro = this._renderingTexts
+                    //for (var i = 0, l = ro.length; i < l; i++) //{
+                    //    //var obj = this._renderingObjects[i].object;
+                    //    //this._draw(ctx, ro[i].object);//obj);
+                    //    ro[i].draw(ctx, this.scaling);
+
                     //this._renderActiveGroup(context, activeGroup);
 
                     //if (this.clipTo) {
@@ -210,6 +216,11 @@ PocketCode.Ui.Canvas = (function () {
                 this._fcAdapter.renderingObjects = list;
             },
         },
+        //renderingTexts: {
+        //    set: function (list) {
+        //        this._fcAdapter.renderingTexts = list;
+        //    },
+        //},
         //text: {
         //    get: function () {
         //        return this._textNode.text;

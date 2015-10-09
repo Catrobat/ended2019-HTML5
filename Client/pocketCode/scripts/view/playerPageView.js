@@ -24,7 +24,6 @@ PocketCode.Ui.PlayerPageView = (function () {
         //    throw new Error('invalid ctr argument: PlayerViewportView');
         //this.appendChild(playerViewportView);
 
-        this._toolbar;
         if (SmartJs.Device.isIOs || SmartJs.Device.isFirefoxOS) //devices with no hardware back button
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS);
         else if (SmartJs.Device.isMobile)

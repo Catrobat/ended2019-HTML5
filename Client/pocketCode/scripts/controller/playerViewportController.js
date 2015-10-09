@@ -9,7 +9,9 @@ PocketCode.PlayerViewportController = (function () {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
         //this._viewportScaling = 1;
         this._renderingImages = [];
+        this._renderingVariables = [];
         this._redrawRequired = false;
+        this._redrawInProgress = false;
 
         //init default values
         this._projectScreenWidth = 200;
@@ -93,7 +95,20 @@ PocketCode.PlayerViewportController = (function () {
             }
             this.render();
         },
+        updateVariable: function (varId, properties) {
+            var _var, _vars = this._renderingVariables;
+            for (var i = 0, l = _vars.length; i < l; i++) {
+                _var = _vars[i];
+                if (_var.id === varId) {
+                    _var.merge(properties);
+                    break;
+                }
+            }
+            this.render();
+        },
         initRenderingImages: function (sprites) {
+            if (!(sprites instanceof Array))
+                throw new Error('invalid argument: sprites');
             //var renderingImages = [];
             var sprite;
             for (var i = 0, l = sprites.length; i < l; i++) {
@@ -110,19 +125,38 @@ PocketCode.PlayerViewportController = (function () {
             this._view.renderingImages = this._renderingImages;
             //this._view.render();  //we do not need this.. setting the items will not cause a rerender, but render() has to called at start
         },
+        initRenderingVariables: function (variables) {
+            if (!(variables instanceof Array))
+                throw new Error('invalid argument: variables');
+            for (var i = 0, l = variables.length; i < l; i++)
+                this._renderingVariables.push(new PocketCode.RenderingText(spritevariables[i]));
+
+            this._view.renderingVariables = this._renderingVariables;
+        },
         //load: function (images, sprites) {
 
         //},
-        render: function() {
-            if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
-                return;
+        render: function () {
+            //TEST ONLY
+            return this._view.render();
+            //TEST ONLY
+
+            //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
+            //    return;
             this._redrawRequired = true;
-            window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+            if (this._redrawInProgress)
+                return;
+            else
+                window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
             //this._redrawCanvas();
         },
         _redrawCanvas: function() {
             this._redrawRequired = false;
+            this._redrawInProgress = true;
             this._view.render();
+            this._redrawInProgress = false;
+            if (this._redrawRequired)
+                this.render();
         },
         setProjectScreenSize: function (width, height) {
             this._projectScreenWidth = width;

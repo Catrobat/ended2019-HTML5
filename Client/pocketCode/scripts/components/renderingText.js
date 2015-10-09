@@ -1,53 +1,86 @@
 ﻿/// <reference path="../components/sprite.js" />
 
+//PocketCode.FabricText = fabric.util.createClass(fabric.Text, {
+//    //type: 'sprite',
+
+//    initialize: function (/*text, options*/) {
+//        //options || (options = {});
+
+//        this.callSuper('initialize', ''/*text*/, {}/*options*/);
+
+//        this.set({
+//            id: options.id,
+//            name: options.name,
+//            perPixelTargetFind: true, // only pixels inside item area trigger click
+//            selectable: false,
+//            hasControls: false,
+//            hasBorders: false,
+//            hasRotatingPoint: false,
+//            originX: "left",
+//            originY: "top",
+//            positionX: options.x,
+//            positionY: options.y,
+//            fontFamily: 'Arial',
+//            fontSize: 12,
+//            fontWeight: 'bold',
+//            fill: 'rgb(b,b,b)',
+//            visible: false,
+//            //flipX = flipH: false, //already a property and false (default)
+//            //flipy = flipV: false, //already a property and false (default)
+//            //filters: [],
+//            //opacity: 1.0
+//        });
+
+//        //this.setAngle(options.angle);
+//        //this.setOpacity(options.opacity);
+//    },
+
+//    //toObject: function () {
+//    //    return fabric.util.object.extend(this.callSuper('toObject'), {
+//    //        id: this.get('id'),
+//    //        name: this.get('name')
+//    //    });
+//    //},
+
+//    //_render: function (ctx) {
+//    //    this.callSuper('_render', ctx);
+//    //},
+//});
+
 PocketCode.RenderingText = (function () {
 
     function RenderingText(textProperties) {
-        this.type = 'variable';
-        this._fabricText = fabric.util.createClass(fabric.Text, {
-            //type: 'sprite',
-
-            initialize: function (element, options) {
-                options || (options = {});
-
-                this.callSuper('initialize', element, options);
-
-                this.set({
-                    id: options.id,
-                    name: options.name,
-                    perPixelTargetFind: true, // only pixels inside item area trigger click
-                    selectable: false,
-                    hasControls: false,
-                    hasBorders: false,
-                    hasRotatingPoint: false,
-                    originX: "left",
-                    originY: "top",
-                    positionX: options.x,
-                    positionY: options.y,
-                    //flipX = flipH: false, //already a property and false (default)
-                    //flipy = flipV: false, //already a property and false (default)
-                    filters: [],
-                    opacity: 1.0
-                });
-
-                //this.setAngle(options.angle);
-                //this.setOpacity(options.opacity);
-            },
-
-            toObject: function () {
-                return fabric.util.object.extend(this.callSuper('toObject'), {
-                    id: this.get('id'),
-                    name: this.get('name')
-                });
-            },
-
-            _render: function (ctx) {
-                this.callSuper('_render', ctx);
-            },
+        //this.type = 'variable';
+        this._fabricText = new fabric.Text();//PocketCode.FabricText();
+        this._fabricText.set({
+            id: options.id,
+            name: options.name,
+            perPixelTargetFind: true, // only pixels inside item area trigger click
+            selectable: false,
+            hasControls: false,
+            hasBorders: false,
+            hasRotatingPoint: false,
+            originX: "left",
+            originY: "top",
+            positionX: options.x,
+            positionY: options.y,
+            fontFamily: 'Arial',
+            fontSize: 12,
+            fontWeight: 'bold',
+            fill: 'rgb(b,b,b)',
+            visible: false,
+            //flipX = flipH: false, //already a property and false (default)
+            //flipy = flipV: false, //already a property and false (default)
+            //filters: [],
+            //opacity: 1.0
         });
 
         if (!textProperties || !(typeof textProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
+
+        this._x = 0;
+        this._y = 0;
+        this._viewportScaling = 1;
 
         this.merge(textProperties);
     }
@@ -59,21 +92,28 @@ PocketCode.RenderingText = (function () {
         //        return this._fabricImage;
         //    },
         //},
-        //id: {
-        //    set: function (value) {
-        //        //return this._fabricImage;
-        //    },
-        //},
-        //positionX: {
-        //    set: function (value) {
-        //        //return this._fabricImage;
-        //    },
-        //},
-        //positionY: {
-        //    set: function (value) {
-        //        //return this._fabricImage;
-        //    },
-        //},
+        id: {
+            set: function (value) {
+                this._id = value;   //this._fabricImage.id = value;
+            },
+            get: function () {
+                return this._id; //this._fabricImage.id;
+            },
+        },
+        x: {
+            set: function (value) {
+                this._x = value;
+                //this._positionX = value;// + this._length * Math.cos(this._angle);
+                this._fabricText.left = value * this._viewportScaling;  //avoid sub-pixel rendering
+            },
+        },
+        y: {
+            set: function (value) {
+                this._y = value;
+                //this._positionY = value;// + this._length * Math.sin(this._angle);
+                this._fabricText.top = value * this._viewportScaling;
+            },
+        },
         //direction: {
         //    set: function (value) {
         //        //return this._fabricImage;
@@ -94,11 +134,16 @@ PocketCode.RenderingText = (function () {
         //        //return this._fabricImage;
         //    },
         //},
-        //visible: {
-        //    set: function (value) {
-        //        //return this._fabricImage;
-        //    },
-        //},
+        text: {
+            set: function (value) {
+                _fabricText.setText(value);
+            },
+        },
+        visible: {
+            set: function (value) {
+                this._fabricText.visible = value;
+            },
+        },
         //transparency: {
         //    set: function (value) {
         //        //return this._fabricImage;
@@ -113,6 +158,18 @@ PocketCode.RenderingText = (function () {
 
     //methods
     RenderingText.prototype.merge({
+        draw: function (context, viewportScaling) {
+            if (this._viewportScaling !== viewportScaling) {
+                this._viewportScaling = viewportScaling;
+                //apply viewport scaling
+                this._fabricText.left = this._x * viewportScaling;
+                this._fabricText.top = this._y * viewportScaling;
+                this._fabricText.scaleX = viewportScaling;
+                this._fabricText.scaleY = viewportScaling;
+            }
+            //render
+            this._fabricImage.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
+        },
         //setAngle: function (direction) {
         //    this.angle = direction - 90;
         //},

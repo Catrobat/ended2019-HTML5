@@ -8,7 +8,7 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
             return;
         options || (options = {});
         //console.log('element',element);
-        this.callSuper('initialize', element.canvas, options);
+        this.callSuper('initialize', element/*.canvas*/, options);
 
         this.set({
             id: options.id,
@@ -18,8 +18,8 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
             hasControls: false,
             hasBorders: false,
             hasRotatingPoint: false,
-            //originX: 'center',    //default
-            //originY: 'center',    //default
+            originX: 'center',
+            originY: 'center',
             centeredScaling: true,  //TODO: I'm not sure we need this if the origin is center
             width: element.width,//canvas.width,
             height: element.height,//canvas.height,
@@ -89,7 +89,7 @@ PocketCode.RenderingImage = (function () {
         if (!imageProperties || !(typeof imageProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
 
-        this.type = 'sprite';
+        //this.type = 'sprite';
         this._fabricImage = new PocketCode.FabricImage(imageProperties.look);
         this._brightnesFilter = new fabric.Image.filters.Brightness({
             brightness: 0,
@@ -105,6 +105,7 @@ PocketCode.RenderingImage = (function () {
         this._y = 0;
         this._scaling = 1;
         this._viewportScaling = 1;
+        //this._id
 
         this.merge(imageProperties);
     }
@@ -118,10 +119,10 @@ PocketCode.RenderingImage = (function () {
         //},
         id: {
             set: function (value) {
-                this._fabricImage.id = value;
+                this._fabricImage.id = value; //this._id = value;   //internally needed to find sprite when clicked?
             },
             get: function () {
-                return this._fabricImage.id;
+                this._fabricImage.id; //return this._id; //this._fabricImage.id;
             },
         },
         //viewportScaling: {
@@ -221,7 +222,7 @@ PocketCode.RenderingImage = (function () {
             set: function (effects) {
                 if (!(effects instanceof Array))
                     throw new Error ('invalid argument: effects');
-                for (var i = 0, l = effects.length;i<l;i++)
+                for (var i = 0, l = effects.length; i < l; i++) {
                     switch (effects[i].effect) {
                         case PocketCode.GraphicEffect.GHOST:
                             this._fabricImage.opacity = 1 - effects[i].value / 100.0;
@@ -233,6 +234,7 @@ PocketCode.RenderingImage = (function () {
                             //default:
                             //throw? unknown effect? -> we ignore it as we have not implemented all scratch effects
                     }
+                }
             }
         },
     });

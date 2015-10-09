@@ -404,7 +404,7 @@ PocketCode.Model.Sprite = (function () {
             //}
             this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
         },
-        _triggerRotationChange: function () {
+        _triggerRotationChange: function (styleChanged) {
             var props = {};
             switch (this._rotationStyle) {
                 case PocketCode.RotationStyle.ALL_AROUND:
@@ -413,13 +413,17 @@ PocketCode.Model.Sprite = (function () {
                         props.flipX = false;
                     }
                     props.rotation = this._direction - 90.0;
+                    //TODO: recalculate x/y position and add them to props
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._flipX) {
                         this._flipX = false;
                         props.flipX = false;
                     }
-                    props.rotation = 0.0;
+                    if (styleChanged) {
+                        props.rotation = 0.0;
+                        //TODO: recalculate x/y position and add them to props
+                    }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
                     var flipX = (this._direction < 0.0);
@@ -427,7 +431,10 @@ PocketCode.Model.Sprite = (function () {
                         this._flipX = flipX;
                         props.flipX = flipX;
                     }
-                    props.rotation = 0.0;
+                    if (styleChanged) {
+                        props.rotation = 0.0;
+                        //TODO: recalculate x/y position and add them to props
+                    }
                     break;
             }
             this._onChange.dispatchEvent({ id: this._id, properties: props }, this);
@@ -683,7 +690,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._rotationStyle = value;
-            this._triggerRotationChange();//{ rotationStyle: this._rotationStyle });
+            this._triggerRotationChange(true);//{ rotationStyle: this._rotationStyle });
             return true;
         },
         //looks
@@ -762,7 +769,7 @@ PocketCode.Model.Sprite = (function () {
             if (size < 0)
                 size = 0;
             this._size = size;
-            var scaling = this._currentLook ? this._currentLook.initialScaling : 1;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1;
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: this._size });
             return true;
         },
@@ -785,7 +792,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._size = size;
-            var scaling = this._currentLook ? this._currentLook.initialScaling : 1;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1;
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: size });
             return true;
         },

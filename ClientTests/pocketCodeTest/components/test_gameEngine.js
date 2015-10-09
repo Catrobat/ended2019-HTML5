@@ -940,8 +940,59 @@ QUnit.test("GameEngine: ifOnEdgeBounce", function (assert) {
         overflowLeft = -spriteMock.positionX - boundary.left - sw2;
         assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from top/bottom: -135");
 
-
         done2();
     };
+
+});
+
+QUnit.test("GameEngine: variable UI updates", function (assert) {
+
+    var gameEngine = new PocketCode.GameEngine();
+    assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
+
+    var variables = gameEngine.getVariablesAsPropertyList();
+    assert.ok(variables instanceof Array && variables.length == 0, "empty variable array");
+
+    gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //gloable
+
+    var bg = new PocketCode.Model.Sprite(gameEngine, { id: "newId", name: "bg" });
+    bg._variables = [{ id: "id1", name: "var1", }, { id: "id2", name: "var2", }, ]; //background
+
+    gameEngine._background = bg;
+    var sp1 = new PocketCode.Model.Sprite(gameEngine, { id: "newId2", name: "sp1" });
+    sp1._variables = [{ id: "id3", name: "var1", }, { id: "id4", name: "var2", }, ];    //sprite 1
+    var sp2 = new PocketCode.Model.Sprite(gameEngine, { id: "newId3", name: "sp2" });
+    sp2._variables = [{ id: "id5", name: "var1", }, { id: "id6", name: "var2", }, ];    //sprite 2
+
+    gameEngine._sprites.push(sp1);
+    gameEngine._sprites.push(sp2);
+
+    variables = gameEngine.getVariablesAsPropertyList();
+
+    assert.equal(variables.length, 8, "array length (number of variables)");
+
+    //make sure we get all update events
+    var updates = 0,
+        lastArgs;
+    var onUpdate = function (e) {
+        updates++;
+        lastArgs = e;
+    };
+    gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(onUpdate, this));
+    //global
+    gameEngine.getVariable("g1").value = 1;
+    assert.ok(lastArgs.id == "g1" && lastArgs.properties.text == 1);
+    bg.getVariable("id1").value = 2;
+    assert.ok(lastArgs.id == "id1" && lastArgs.properties.text == 2);
+    bg.getVariable("g2").value = 3; //set global from sprite
+    assert.ok(lastArgs.id == "g2" && lastArgs.properties.text == 3);
+
+    sp1.getVariable("id3").value = 4;   
+    assert.ok(lastArgs.id == "id3" && lastArgs.properties.text == 4);
+
+    sp2.getVariable("id5").value = 5;
+    assert.ok(lastArgs.id == "id5" && lastArgs.properties.text == 5);
+
+    assert.equal(updates, 5, "all updates triggerd an event");
 
 });

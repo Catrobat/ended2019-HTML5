@@ -84,6 +84,7 @@ PocketCode.PlayerPageController = (function () {
                     //this._gameEngine.onProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                    this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
                     //this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
                 }
                 this._gameEngine = value;
@@ -93,6 +94,7 @@ PocketCode.PlayerPageController = (function () {
                 //this._gameEngine.onProgramStart.addEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
                 //this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
 
             },
@@ -154,6 +156,7 @@ PocketCode.PlayerPageController = (function () {
             console.log('project loaded');// + JSON.stringify(e));
             // TODO create renderingImages from gameEngine.spritesAsPropertyList
             this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
+            //TODO: this._playerViewportController.initRenderingVariables(this._gameEngine.getVariablesAsPropertyList());
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             this._view.hideStartScreen();
@@ -178,6 +181,9 @@ PocketCode.PlayerPageController = (function () {
         //    catch (e) {
         //        //just to make sure recursive parse will not throw an error -> //TODO:
         //    }
+        },
+        _varUpdateHandler: function(e) {
+            this._playerViewportController.updateVariable(e.id, e.properties);
         },
         //user
         _buttonClickedHandler: function (e) {
@@ -282,6 +288,7 @@ PocketCode.PlayerPageController = (function () {
                 //this._gameEngine.onProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._projectStartHandler, this));
                 this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
+                this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
                 this._gameEngine = undefined;
             }
             this._playerViewportController.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));

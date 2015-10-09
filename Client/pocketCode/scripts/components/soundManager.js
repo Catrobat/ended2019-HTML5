@@ -204,7 +204,7 @@ PocketCode.SoundManager = (function () {
                 this._fileLoadingErrorHandler(sound);   //false is returned if no loaded can be initialized (e.g. *.wav in IE) -> handle as error
         },
         _createSoundObject: function (url, id, size, playOnLoad) {
-            var url = url.split('/');
+            url = url.split('/');
             var idx = url.length - 1;
             url[idx] = (url[idx]).replace(/([^.?]+)(.*)/, function (match, p1, p2) {
                 return encodeURIComponent(p1) + p2;

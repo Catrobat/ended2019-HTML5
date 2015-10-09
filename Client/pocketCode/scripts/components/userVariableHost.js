@@ -35,13 +35,13 @@ PocketCode.UserVariableHost = (function () {
     Object.defineProperties(UserVariableHost.prototype, {
         renderingVariables: {
             get: function () {
-                var obj = {},
+                var list = [],
                     vars = this.__variablesSimple.getVariables();
                 for (var v in vars) {   //{[id]: {}}
                     if (vars.hasOwnProperty(v))
-                        obj[v] = { /*id: [v],*/ value: v.value, positionX: 0, positionY: 0, visible: false };
+                        list.push({ id: v, text: vars[v].value || '', x: 0, y: 0, visible: true }); //TEST ONLY: SET VISIBILITX TO FALSE (DEFAULT)
                 }
-                return obj;
+                return list;
             },
         },
         _variables: {
@@ -88,18 +88,20 @@ PocketCode.UserVariableHost = (function () {
             return tmp;
         },
         _valueChangeHandler: function(e) {
-            this._onVariableChange.dispatchEvent({ id: e.id, properties: { value: e.target.value} });
+            this._onVariableChange.dispatchEvent({ id: e.id, properties: { text: e.target.value } });
         },
         showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
             var tmp = this.getVariable(id);
-            if (!tmp)
-                throw new Error('show variable: variable with id = ' + id + 'could not be found');
-            this._onVariableChange.dispatchEvent({ id: id, properties: { value: tmp.value, visible: true, positionX: positionX, positionY: positionY } });
+            //if (!tmp)
+            //    throw new Error('show variable: variable with id = ' + id + 'could not be found');
+            if (isNaN(positionX) || isNaN(positionY))
+                throw new Error('show variable: invalid position');
+            this._onVariableChange.dispatchEvent({ id: id, properties: { text: tmp.value, visible: true, x: positionX, y: positionY } });
         },
         hideVariable: function (id) {    //called as sprite.hide.. from brick
             var tmp = this.getVariable(id);
-            if (!tmp)
-                throw new Error('hide variable: variable with id = ' + id + 'could not be found');
+            //if (!tmp)
+            //    throw new Error('hide variable: variable with id = ' + id + 'could not be found');
             this._onVariableChange.dispatchEvent({ id: id, properties: { visible: false } });
         },
         getList: function (id) {

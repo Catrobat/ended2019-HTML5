@@ -87,16 +87,6 @@ PocketCode.GameEngine = (function () {
                 return props;
             },
         },
-        variablesAsPropertyObject: {
-            get: function () {
-                var obj = this.renderingVariables;
-                obj.merge(this._background.renderingVariables);
-                var sprites = this._sprites;
-                for (var i = 0, l = sprites.length; i < l; i++)
-                    obj.merge(sprites[i].renderingVariables);
-                return obj;
-            },
-        },
         //project execution
         projectLoaded: {
             get: function () {
@@ -197,6 +187,15 @@ PocketCode.GameEngine = (function () {
 
     //methods
     GameEngine.prototype.merge({
+        getVariablesAsPropertyList: function () {
+            var obj = this.renderingVariables;  //global
+            if (this._background)
+                obj = obj.concat(this._background.renderingVariables);
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++)
+                obj = obj.concat(sprites[i].renderingVariables);
+            return obj;
+        },
 
         loadProject: function (jsonProject) {
             if (this._disposing || this._disposed)
