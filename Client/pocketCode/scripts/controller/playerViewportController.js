@@ -97,6 +97,12 @@ PocketCode.PlayerViewportController = (function () {
         },
         updateVariable: function (varId, properties) {
             var _var, _vars = this._renderingVariables;
+            //update positions: top/left positioning
+            if (properties.x)
+                properties.x += this._projectScreenWidth / 2.0;//xOffset;
+            if (properties.y)
+                properties.y = this._projectScreenHeight / 2.0 - properties.y;
+
             for (var i = 0, l = _vars.length; i < l; i++) {
                 _var = _vars[i];
                 if (_var.id === varId) {
@@ -128,9 +134,13 @@ PocketCode.PlayerViewportController = (function () {
         initRenderingVariables: function (variables) {
             if (!(variables instanceof Array))
                 throw new Error('invalid argument: variables');
-            for (var i = 0, l = variables.length; i < l; i++)
-                this._renderingVariables.push(new PocketCode.RenderingText(spritevariables[i]));
-
+            var _var;
+            for (var i = 0, l = variables.length; i < l; i++) {
+                _var = spritevariables[i];
+                _var.x += this._projectScreenWidth / 2.0;
+                _var.y = this._projectScreenHeight / 2.0 - _var.y;
+                this._renderingVariables.push(new PocketCode.RenderingText(_var));
+            }
             this._view.renderingVariables = this._renderingVariables;
         },
         //load: function (images, sprites) {
@@ -170,9 +180,10 @@ PocketCode.PlayerViewportController = (function () {
             this._view.hideAxes();
         },
         takeScreenshot: function () {
-            var img = new Image();
-            img.src = this._view.getCanvasDataURL();//this._viewportScaling);
-            return img;
+            return this._view.getCanvasDataURL();
+            //var img = new Image();
+            //img.src = this._view.getCanvasDataURL();//this._viewportScaling);
+            //return img;
         },
     });
 

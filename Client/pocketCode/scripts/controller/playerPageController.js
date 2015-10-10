@@ -156,7 +156,7 @@ PocketCode.PlayerPageController = (function () {
             console.log('project loaded');// + JSON.stringify(e));
             // TODO create renderingImages from gameEngine.spritesAsPropertyList
             this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
-            //TODO: this._playerViewportController.initRenderingVariables(this._gameEngine.getVariablesAsPropertyList());
+            this._playerViewportController.initRenderingVariables(this._gameEngine.getVariablesAsPropertyList());
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             this._view.hideStartScreen();
@@ -214,8 +214,8 @@ PocketCode.PlayerPageController = (function () {
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
                     this._view.hideStartScreen();
-                    var img = this._playerViewportController.takeScreenshot();
-                    this._showScreenshotDialog(img);
+                    var dataUrl = this._playerViewportController.takeScreenshot();
+                    this._showScreenshotDialog(dataUrl);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
@@ -254,7 +254,7 @@ PocketCode.PlayerPageController = (function () {
         //loadProject: function (jsonProject) {
         //    //this._gameEngine.loadProject(jsonProject);
         //},
-        _showScreenshotDialog: function (dataUrl) {
+        _showScreenshotDialog: function (imageSrc) {
             this._pauseProject();
 
             var d = new PocketCode.Ui.ScreenshotDialog();
@@ -270,7 +270,7 @@ PocketCode.PlayerPageController = (function () {
             else
                 d.onDownload.addEventListener(new SmartJs.Event.EventListener(this._downloadScreenshot, this));
 
-            d.image = dataUrl;
+            d.imageSrc = imageSrc;
             this._showDialog(d);
         },
         _downloadScreenshot: function(e) {

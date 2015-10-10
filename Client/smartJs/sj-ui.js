@@ -639,7 +639,8 @@ SmartJs.Ui.merge({
                 if (uiControl._disposed) return;
 
                 if (this._childs.remove(uiControl) > 0) {  //found in Array
-                    this._dom.removeChild(uiControl._dom);
+                    if (uiControl._dom.parentNode == this._dom)
+                        this._dom.removeChild(uiControl._dom);
                     if (!suppressResizeEvent)
                         this.onLayoutChange.dispatchEvent();
                 }
@@ -702,6 +703,59 @@ SmartJs.Ui.merge({
 });
 
 SmartJs.Ui.merge({
+    Image: (function () {
+        Image.extends(SmartJs.Ui.Control, false);
+
+        function Image(propObject) {
+            if (propObject && typeof propObject !== 'object')
+                throw new Error('invalid argument: expected: propObject typeof object');
+
+            SmartJs.Ui.Control.call(this, 'img', propObject);
+            this._addDomListener(this._dom, 'load', function (e) { this._onLoad.dispatchEvent() });
+
+            this._onLoad = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(Image.prototype, {
+            onLoad: {
+                get: function () {
+                    return this._onLoad;
+                },
+            },
+        });
+
+        //properties
+        Object.defineProperties(Image.prototype, {
+            src: {
+                get: function () {
+                    return this._dom.src;
+                },
+                set: function (value) {
+                    this._dom.src = value;
+                },
+            },
+            naturalWidth: {
+                get: function () {
+                    return this._dom.naturalWidth;
+                },
+            },
+            naturalHeight: {
+                get: function () {
+                    return this._dom.naturalHeight;
+                },
+            },
+            crossOrigin: {
+                set: function (crossOriginProperty) {
+                    if ('crossOrigin' in this._dom)
+                        this._dom.crossOrigin = crossOriginProperty;
+                },
+            },
+        });
+
+        return Image;
+    })(),
+
     ContainerControl: (function () {
         ContainerControl.extends(SmartJs.Ui.Control, false);
 
@@ -728,6 +782,8 @@ SmartJs.Ui.merge({
                     this.__container = value;
                 },
                 get: function () {
+                    //if (!this.__container)
+                    //    var breakpoint = true;
                     return this.__container;    //needed to add to parent control in inherited classes
                 },
             },
@@ -760,44 +816,67 @@ SmartJs.Ui.merge({
             //mapping the methods to the inner container and provide public access
             appendChild: function (uiControl) {
                 var cont = this.__container;
-                cont.__container._insertAt(cont._childs.length, uiControl);
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.appendChild(uiControl);
+                //else
+                    return cont._insertAt(cont._childs.length, uiControl);
             },
             insertAt: function(idx, uiControl) {
-                this.__container._insertAt(idx, uiControl);
+                var cont = this.__container;
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.insertAt(idx, uiControl);
+                //else
+                    return cont._insertAt(idx, uiControl);
             },
             insertBefore: function (existingUiC, newUiC) {
-                return this.__container._insertBefore(existingUiC, newUiC);
+                var cont = this.__container;
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.insertBefore(uiControl);
+                //else
+                    return cont._insertBefore(existingUiC, newUiC);
             },
             insertAfter: function (existingUiC, newUiC) {
-                return this.__container._insertAfter(existingUiC, newUiC);
+                var cont = this.__container;
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.insertAfter(uiControl);
+                //else
+                    return cont._insertAfter(existingUiC, newUiC);
             },
             replaceChild: function (existingUiC, newUiC) {
-                return this.__container._replaceChild(existingUiC, newUiC);
+                var cont = this.__container;
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.replaceChild(uiControl);
+                //else
+                    return cont._replaceChild(existingUiC, newUiC);
             },
             removeChild: function (uiControl) {
-                return this._removeChild(uiControl);
-            },
-            _removeChild: function (uiControl, suppressResizeEvent) {
-                if (this.__container && this.__container !== this)
-                    this.__container._removeChild(uiControl, suppressResizeEvent);
-                else
-                SmartJs.Ui.Control.prototype._removeChild.call(this, uiControl, suppressResizeEvent);
-            },
-            removeAll: function () {
                 var cont = this.__container;
-                for (var i = 0, l = cont._childs.length; i < l; i++)
-                    cont.removeChild(cont._childs[i]);
+                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                    return cont.removeChild(uiControl);
+                //else
+                    return cont._removeChild(uiControl);
             },
-            clearContents: function () {    //remove and dispose
-                var cont = this.__container;
-                for (var i = 0, l = cont._childs.length; i < l; i++)
-                    cont._childs[i].dispose();
-            },
-            dispose: function () {
-                if (this.__container && this.__container !== this)
-                    this.__container.dispose();
-                SmartJs.Ui.Control.prototype.dispose.call(this);
-            },
+            //_removeChild: function (uiControl, suppressResizeEvent) {
+            //    if (this.__container && this.__container !== this)
+            //        this.__container._removeChild(uiControl, suppressResizeEvent);
+            //    else
+            //    SmartJs.Ui.Control.prototype._removeChild.call(this, uiControl, suppressResizeEvent);
+            //},
+            //removeAll: function () {
+            //    var cont = this.__container;
+            //    for (var i = 0, l = cont._childs.length; i < l; i++)
+            //        cont.removeChild(cont._childs[i]);
+            //},
+            //clearContents: function () {    //remove and dispose
+            //    var cont = this.__container;
+            //    for (var i = 0, l = cont._childs.length; i < l; i++)
+            //        cont._childs[i].dispose();
+            //},
+            //dispose: function () {
+            //    if (this.__container && this.__container !== this)
+            //        this.__container.dispose();
+            //    SmartJs.Ui.Control.prototype.dispose.call(this);
+            //},
             //verifyResize: function () {
             //    if (this.__container && this.__container !== this)
             //        this.__container.verifyResize(this);

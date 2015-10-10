@@ -594,14 +594,17 @@
 		.pc-dialogFooter button:hover {
 			text-decoration: underline;
 		}
-
 		.pc-dialogFooter button:active {
 			text-decoration: underline;
 			background-color: #2F7D99;
 		}
-
 		.pc-dialogFooter button:focus {
 			outline: none;
+		}
+		.pc-dialogFooter button:disabled {
+			color: #484848;
+			cursor: default;
+			text-decoration: none;
 		}
 
 		.pc-dialogFooter button::-moz-focus-inner {

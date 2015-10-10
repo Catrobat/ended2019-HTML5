@@ -130,7 +130,7 @@ PocketCode.Ui.Dialog = (function () {
         /* override */
         verifyResize: function(caller) {
             SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, this);
-            if (this._container)    //this method is typically called when setting a scc class and therefor before initialising the container element
+            if (this._container)    //this method is typically called when setting a css class and therefor before initialising the container element
                 this._container.verifyResize(this);
         },
         _resizeHandler: function (e) {
@@ -537,6 +537,10 @@ PocketCode.Ui.merge({
         return UnsupportedSoundFileDialog;
     })(),
 
+    //UnsupportedBrickDialog
+
+    //DeviceFeatureInUseDialog
+
     UnsupportedDeviceFeatureDialog: (function () {
         UnsupportedDeviceFeatureDialog.extends(PocketCode.Ui.Dialog, false);
 
@@ -585,18 +589,30 @@ PocketCode.Ui.merge({
             this._btnCancel = new PocketCode.Ui.Button('Close');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
-            this.bodyInnerHTML = 'TODO: show image<br />';
+            
+            //var imageBorder = new SmartJs.Ui.ContainerControl({ className: 'pc-screenshotContainer' });
+            this._screenshotImage = new SmartJs.Ui.Image();
+            //var origin = PocketCode.crossOrigin;
+            //if (origin.initialized && origin.current && origin.supported)
+            //    this._screenshotImage.crossOrigin = 'anonymous';
+            this._screenshotImage.onLoad.addEventListener(new SmartJs.Event.EventListener(this._imageOnLoadHandler, this));
+
+            //imageBorder.appendChild(this._screenshotImage);
+            //this.appendChild(this._screenshotImage);//imageBorder);   //we have to add it onload
 
             if (SmartJs.Device.isMobile) {
                 this.bodyInnerHTML += 'TODO: mobile';
             }
             else {
                 this._btnDownload = new PocketCode.Ui.Button('Download');
+                this._btnDownload.disabled = true;
                 this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
                 this.addButton(this._btnDownload);
 
-                this.bodyInnerHTML += 'TODO: desktop';
+                //this.bodyInnerHTML += 'TODO: desktop';
             }
+
+            this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
 
             this._onCancel = new SmartJs.Event.Event(this);
             this._onDownload = new SmartJs.Event.Event(this);
@@ -618,9 +634,12 @@ PocketCode.Ui.merge({
 
         //properties
         Object.defineProperties(ScreenshotDialog.prototype, {
-            image: {
-                set: function (dataUrl) {
-                    alert("TODO: show image- setting src + form if download is provided");
+            imageSrc: {
+                set: function (src) {
+                    this._screenshotImage.src = src;//'https://web-test.catrob.at/html5/pocketCode/img/logo.png';//src;
+                    //alert("TODO: show image- setting src + form if download is provided");
+                    this.appendChild(this._screenshotImage);
+                    //^^ this is necessary to include the src prop in DOM and make the image visible (rerender image tag)
                 },
             },
             requestForm: {
@@ -631,12 +650,26 @@ PocketCode.Ui.merge({
         });
                 
         //methods
-        //ScreenshotDialog.prototype.merge({
+        ScreenshotDialog.prototype.merge({
+            _imageOnLoadHandler: function () {
+                var img = this._screenshotImage,//._dom,
+                    w = img.naturalWidth,
+                    h = img.naturalHeight;
+                //img.width = 250;
+                //img.height = 300;
+
+                if(this._btnDownload)
+                    this._btnDownload.disabled = false;
+            },
+            _onResizeHandler: function () {
+                this._screenshotImage.width = 200;    //TODO:
+                this._screenshotImage.height = 200;
+            },
         //    /* override */
         //    handleHistoryBack: function () {
         //        this.onCancel.dispatchEvent();
         //    },
-        //});
+        });
 
         return ScreenshotDialog;
     })(),

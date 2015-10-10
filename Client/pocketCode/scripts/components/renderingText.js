@@ -65,9 +65,9 @@ PocketCode.RenderingText = (function () {
             positionX: options.x,
             positionY: options.y,
             fontFamily: 'Arial',
-            fontSize: 12,
+            fontSize: 18,
             fontWeight: 'bold',
-            fill: 'rgb(b,b,b)',
+            //fill: 'rgb(b,b,b)',
             visible: false,
             //flipX = flipH: false, //already a property and false (default)
             //flipy = flipV: false, //already a property and false (default)
