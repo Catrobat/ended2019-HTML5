@@ -1047,6 +1047,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/renderingImage.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/renderingText.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
