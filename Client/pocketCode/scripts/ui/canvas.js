@@ -73,23 +73,6 @@ PocketCode.Ui.Canvas = (function () {
                 clear: function () {
                     this.clearContext(this.contextContainer);
                 },
-                //_searchPossibleTargets: function (e) {
-
-                //    // Cache all targets where their bounding box contains point.
-                //    var target,
-                //        pointer = this.getPointer(e, true),
-                //        i = this._objects.length;
-
-                //    while (i--) {
-                //        if (this._checkTarget(e, this._objects[i], pointer)) {
-                //            this.relatedTarget = this._objects[i];
-                //            target = this._objects[i];
-                //            break;
-                //        }
-                //    }
-
-                //    return target;
-                //},
                 renderAll: function () {//viewportScaling) {//allOnTop) {
                     var ctx = this.contextContainer;//,//this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
                     this.clearContext(ctx);
@@ -159,6 +142,25 @@ PocketCode.Ui.Canvas = (function () {
                 //    //    }
                 //    //}
                 //},
+                _searchPossibleTargets: function(e, skipGroup){
+
+                    // Cache all targets where their bounding box contains point.
+                    if (e.type != 'mousedown')
+                        return;
+                    var target,
+                        pointer = this.getPointer(e, true),
+                        i = this._renderingObjects.length;
+                    // Do not check for currently grouped objects, since we check the parent group itself.
+                    // untill we call this function specifically to search inside the activeGroup
+                    while (i--) {
+                        if (this._checkTarget(e, this._renderingObjects[i].object, pointer)){
+                            this.relatedTarget = this._renderingObjects[i].object;
+                            target = this._renderingObjects[i].object;
+                            break;
+                        }
+                    }
+                    return target;
+                },
             });
 
             return FCAdapter;
@@ -169,10 +171,8 @@ PocketCode.Ui.Canvas = (function () {
         //this.className = 'pc-canvas';
 
         this._fcAdapter.on('mouse:down', (function (e) {
-            if (e.target)// != 'undefined') {
-                //console.log('cl2');
+            if (e.target)
                 this._onMouseDown.dispatchEvent({ id: e.target.id });
-            //}
         }).bind(this));
         this._fcAdapter.on('after:render', (function (e) {
             this._onAfterRender.dispatchEvent();

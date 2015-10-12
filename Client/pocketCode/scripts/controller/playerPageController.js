@@ -85,7 +85,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                     this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
-                    //this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
+                    this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
                 }
                 this._gameEngine = value;
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
@@ -95,8 +95,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
-                //this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._playerViewportController.spriteChanged, this._playerViewportController));
-
+                this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
             },
         },
     });
@@ -238,6 +237,7 @@ PocketCode.PlayerPageController = (function () {
         //},
         _spriteClickedHandler: function (e) {
             //TODO: get id + dispatch event in gameEngine
+            this._gameEngine.handleSpriteTap(e.id);
         },
         _pauseProject: function () {
             if (this._gameEngine)   //may be undefined when triggered on onVisibilityChange

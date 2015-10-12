@@ -9,7 +9,6 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
         options || (options = {});
         //console.log('element',element);
         this.callSuper('initialize', element/*.canvas*/, options);
-
         this.set({
             id: options.id,
             name: options.name,
@@ -112,17 +111,17 @@ PocketCode.RenderingImage = (function () {
 
     //properties
     Object.defineProperties(RenderingImage.prototype, {
-        //object: {
-        //    get: function () {
-        //        return this._fabricImage;
-        //    },
-        //},
+        object: {
+            get: function () {
+                return this._fabricImage;
+            },
+        },
         id: {
             set: function (value) {
                 this._fabricImage.id = value; //this._id = value;   //internally needed to find sprite when clicked?
             },
             get: function () {
-                this._fabricImage.id; //return this._id; //this._fabricImage.id;
+                return this._fabricImage.id; //return this._id; //this._fabricImage.id;
             },
         },
         //viewportScaling: {
@@ -133,7 +132,6 @@ PocketCode.RenderingImage = (function () {
         //},
         look: {
             set: function (value) {
-                console.log('CHANGELOOK', value);
                 this._fabricImage.setElement(value);//.canvas);
                 //this._length = value.center.length;
                 //this._angle = value.center.angle;
@@ -187,7 +185,11 @@ PocketCode.RenderingImage = (function () {
         //direction: {
         //    set: function (value) {
         //        console.log('CHANGE DIR', value);
-        //        this._direction = value;
+        //        this._
+        //
+        //
+        //
+        // ction = value;
         //        switch (this.rotationStyle) {
         //            case PocketCode.RotationStyle.DO_NOT_ROTATE:
         //                this._fabricImage.angle = 0;
@@ -249,6 +251,7 @@ PocketCode.RenderingImage = (function () {
                 this._fabricImage.top = this._y * viewportScaling;
                 this._fabricImage.scaleX = this._scaling * viewportScaling;
                 this._fabricImage.scaleY = this._scaling * viewportScaling;
+                this._fabricImage.setCoords();
             }
             //render
             this._fabricImage.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()

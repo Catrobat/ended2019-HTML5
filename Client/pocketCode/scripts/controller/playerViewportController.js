@@ -76,6 +76,7 @@ PocketCode.PlayerViewportController = (function () {
                 //xOffset = this._projectScreenWidth / 2.0,
                 //yOffset = this._projectScreenHeight / 2.0;
 
+
             //update positions: top/left positioning
             if (properties.x)
                 properties.x += this._projectScreenWidth / 2.0;//xOffset;
@@ -136,7 +137,7 @@ PocketCode.PlayerViewportController = (function () {
                 throw new Error('invalid argument: variables');
             var _var;
             for (var i = 0, l = variables.length; i < l; i++) {
-                _var = spritevariables[i];
+                _var = variables[i];
                 _var.x += this._projectScreenWidth / 2.0;
                 _var.y = this._projectScreenHeight / 2.0 - _var.y;
                 this._renderingVariables.push(new PocketCode.RenderingText(_var));

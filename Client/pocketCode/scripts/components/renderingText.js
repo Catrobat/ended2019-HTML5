@@ -51,8 +51,8 @@ PocketCode.RenderingText = (function () {
 
     function RenderingText(textProperties) {
         //this.type = 'variable';
-        this._fabricText = new fabric.Text();//PocketCode.FabricText();
-        this._fabricText.set({
+        this._fabricText = new fabric.Text("");//PocketCode.FabricText();
+        /*this._fabricText.set({
             id: options.id,
             name: options.name,
             perPixelTargetFind: true, // only pixels inside item area trigger click
@@ -73,7 +73,7 @@ PocketCode.RenderingText = (function () {
             //flipy = flipV: false, //already a property and false (default)
             //filters: [],
             //opacity: 1.0
-        });
+        });*/
 
         if (!textProperties || !(typeof textProperties === 'object'))
             throw new Error('The rendering object has to be initialized using a sprite parameter object');
@@ -81,7 +81,6 @@ PocketCode.RenderingText = (function () {
         this._x = 0;
         this._y = 0;
         this._viewportScaling = 1;
-
         this.merge(textProperties);
     }
 
@@ -136,7 +135,7 @@ PocketCode.RenderingText = (function () {
         //},
         text: {
             set: function (value) {
-                _fabricText.setText(value);
+                this._fabricText.setText(value.toString());
             },
         },
         visible: {
@@ -168,7 +167,7 @@ PocketCode.RenderingText = (function () {
                 this._fabricText.scaleY = viewportScaling;
             }
             //render
-            this._fabricImage.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
+            this._fabricText.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
         },
         //setAngle: function (direction) {
         //    this.angle = direction - 90;
