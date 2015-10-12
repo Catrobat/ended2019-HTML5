@@ -430,10 +430,12 @@ PocketCode.GameEngine = (function () {
         getSpriteById: function (spriteId) {
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                console.log(spriteId, sprites[i].id);
                 if (sprites[i].id === spriteId)
                     return sprites[i];
             }
+
+            if (spriteId == this._background.id)
+                return this._background;
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
@@ -481,6 +483,7 @@ PocketCode.GameEngine = (function () {
             var sprite = this.getSpriteById(id);
             if (sprite)
                 this._onTabbedAction.dispatchEvent({sprite: sprite});
+
         },
         ifSpriteOnEdgeBounce: function (sprite) {
 
