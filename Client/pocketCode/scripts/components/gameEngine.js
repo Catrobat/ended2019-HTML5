@@ -348,11 +348,18 @@ PocketCode.GameEngine = (function () {
             this._broadcastMgr.stop();
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
-                if (this._background)
-                    this._background.init();
-                var sprites = this._sprites;
-                for (var i = 0, l = sprites.length; i < l; i++)
-                    sprites[i].init();
+                var bg = this._background;
+                if (bg) {
+                    bg.init();
+                    this._onSpriteUiChange.dispatchEvent({ id: bg.id, properties: bg.renderingProperties }, bg);
+                }
+                var sprites = this._sprites,
+                    sprite;
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    sprite = sprites[i];
+                    sprite.init();
+                    this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: sprite.renderingProperties }, sprite);
+                }
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated

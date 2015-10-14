@@ -137,7 +137,7 @@ PocketCode.Model.Sprite = (function () {
                     flipX: this._flipX,
                     //rotationStyle: this._rotationStyle,
                     //look: this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId) : undefined,
-                    scaling: 1,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
+                    scaling: 1 / this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
                     visible: this._visible, //this._currentLook ? this._visible : false,
                     graphicEffects: [
                         { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },

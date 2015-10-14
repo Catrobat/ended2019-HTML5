@@ -78,9 +78,9 @@ PocketCode.PlayerViewportController = (function () {
 
 
             //update positions: top/left positioning
-            if (properties.x)
+            if (properties.x !== undefined)
                 properties.x += this._projectScreenWidth / 2.0;//xOffset;
-            if (properties.y)
+            if (properties.y !== undefined)
                 properties.y = this._projectScreenHeight / 2.0 - properties.y;
 
             for (var i = 0, l = imgs.length; i < l; i++) {
@@ -99,9 +99,9 @@ PocketCode.PlayerViewportController = (function () {
         updateVariable: function (varId, properties) {
             var _var, _vars = this._renderingVariables;
             //update positions: top/left positioning
-            if (properties.x)
+            if (properties.x !== undefined)
                 properties.x += this._projectScreenWidth / 2.0;//xOffset;
-            if (properties.y)
+            if (properties.y !== undefined)
                 properties.y = this._projectScreenHeight / 2.0 - properties.y;
 
             for (var i = 0, l = _vars.length; i < l; i++) {

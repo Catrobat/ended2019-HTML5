@@ -113,7 +113,7 @@ PocketCode.ImageStore = (function () {
         },
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
             var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1 / this._initialScaling,
-                rotationRad = rotation ? rotation * Math.PI / 180 : 0,
+                rotationRad = rotation ? rotation * Math.PI / 180.0 : 0,
                 initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
             //{ canvas: canvas,                                 //minmized image (clipped + scaled initial) 
             //center: { length: undefined, angle: undefined },  //rotation point to look center
