@@ -94,9 +94,10 @@ PocketCode.BroadcastManager = (function () {
             if (pubListener)
                 this._handleBroadcastWait(bcId, pubListener, threadId);
             else {
-                var subs = this._subscriptions[bcId];
+                var subs = this._subscriptions[bcId],
+                    subListener;
                 for (var i = 0, l = subs.length; i < l; i++) {
-                    var subListener = subs[i];
+                    subListener = subs[i];
                     //delete disposed or missing objects
                     if (!subListener || !subListener.handler || (subListener.scope && subListener.scope._disposed)) {
                         subs.splice(i, 1);
@@ -105,7 +106,8 @@ PocketCode.BroadcastManager = (function () {
                         continue;
                     }
 
-                    subListener.handler.call(subListener.scope, {});
+                    //subListener.handler.call(subListener.scope, {});
+                    setTimeout(subListener.handler.bind(subListener.scope), 1);    //preventing the call stack from overflow
                 }
             }
         },
