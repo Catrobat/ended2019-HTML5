@@ -152,8 +152,8 @@ PocketCode.Model.Sprite = (function () {
                     obj.merge({
                         look: look.canvas,
                         scaling: this._size / 100.0 / look.initialScaling,
-                        x: this._positionX + center.length * Math.cos(center.angle),// * this._size / 100.0,
-                        y: this._positionY + center.length * Math.sin(center.angle),// * this._size / 100.0,
+                        x: this._positionX + center.length * Math.cos(center.angle),
+                        y: this._positionY + center.length * Math.sin(center.angle),
                     });
                 }
                 return obj;
@@ -413,16 +413,22 @@ PocketCode.Model.Sprite = (function () {
                         props.flipX = false;
                     }
                     props.rotation = this._direction - 90.0;
-                    //TODO: recalculate x/y position and add them to props
+                    //recalculate x/y position and add them to props
+                    var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                    props.x = this._positionX + center.length * Math.cos(center.angle - props.rotation * Math.PI / 180.0);
+                    props.y = this._positionY + center.length * Math.sin(center.angle - props.rotation * Math.PI / 180.0);
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._flipX) {
                         this._flipX = false;
                         props.flipX = false;
                     }
-                    if (styleChanged) {
+                    if (styleChanged && this._direction != 90.0) {
                         props.rotation = 0.0;
-                        //TODO: recalculate x/y position and add them to props
+                        //recalculate x/y position and add them to props
+                        var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                        props.x = this._positionX + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.y = this._positionY + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
@@ -433,7 +439,10 @@ PocketCode.Model.Sprite = (function () {
                     }
                     if (styleChanged) {
                         props.rotation = 0.0;
-                        //TODO: recalculate x/y position and add them to props
+                        //recalculate x/y position and add them to props
+                        var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                        props.x = this._positionX + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.y = this._positionY + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
                     break;
             }
@@ -459,14 +468,17 @@ PocketCode.Model.Sprite = (function () {
                 center = { length: 0, angle: 0 };
             if (this._currentLook)
                 center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var angle = center.angle;
+            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+                angle -= (this._direction - 90.0) * Math.PI / 180.0;
 
             if (this._positionX != x) {
                 this._positionX = x;
-                ops.x = x + center.length * Math.cos(center.angle);// * this._size / 100.0;
+                ops.x = x + center.length * Math.cos(angle);
             }
             if (this._positionY != y) {
                 this._positionY = y;
-                ops.y = y + center.length * Math.sin(center.angle);// * this._size / 100.0;
+                ops.y = y + center.length * Math.sin(angle);
             }
 
             if (ops.x !== undefined || ops.y !== undefined) {
@@ -491,8 +503,11 @@ PocketCode.Model.Sprite = (function () {
             var center = { length: 0, angle: 0 };
             if (this._currentLook)
                 center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var angle = center.angle;
+            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+                angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionX = x;
-            this._triggerOnChange({ x: x + center.length * Math.cos(center.angle) });// * this._size / 100.0 });
+            this._triggerOnChange({ x: x + center.length * Math.cos(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -508,9 +523,12 @@ PocketCode.Model.Sprite = (function () {
             var center = { length: 0, angle: 0 };
             if (this._currentLook)
                 center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var angle = center.angle;
+            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+                angle -= (this._direction - 90.0) * Math.PI / 180.0;
 
             this._positionX += value;
-            this._triggerOnChange({ x: this._positionX + center.length * Math.cos(center.angle) });// * this._size / 100.0 });
+            this._triggerOnChange({ x: this._positionX + center.length * Math.cos(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -527,8 +545,11 @@ PocketCode.Model.Sprite = (function () {
             var center = { length: 0, angle: 0 };
             if (this._currentLook)
                 center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var angle = center.angle;
+            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+                angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionY = y;
-            this._triggerOnChange({ y: y + center.length * Math.sin(center.angle) });// * this._size / 100.0 });
+            this._triggerOnChange({ y: y + center.length * Math.sin(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -545,8 +566,11 @@ PocketCode.Model.Sprite = (function () {
             var center = { length: 0, angle: 0 };
             if (this._currentLook)
                 center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var angle = center.angle;
+            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+                angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionY += value;
-            this._triggerOnChange({ y: this._positionY + center.length * Math.sin(center.angle) });// * this._size / 100.0 });
+            this._triggerOnChange({ y: this._positionY + center.length * Math.sin(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -567,8 +591,8 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             var rad = (90.0 - this._direction) * (Math.PI / 180.0);
-            var offsetX = Math.round(Math.cos(rad) * steps);
-            var offsetY = Math.round(Math.sin(rad) * steps);
+            var offsetX = Math.cos(rad) * steps;//Math.round(Math.cos(rad) * steps);
+            var offsetY = Math.sin(rad) * steps;//Math.round(Math.sin(rad) * steps);
             //var triggerEvent;
             return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);//, triggerEvent);
             //return true;
@@ -704,16 +728,17 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             var looks = this._looks;
-            var look, center, update;
+            var look, center, update, angle;
             for (var i = 0, l = looks.length; i < l; i++) {
                 look = looks[i];
                 if (look.imageId === imageId) {
                     this._currentLook = look;
                     look = this._gameEngine.getLookImage(imageId);
                     update = { look: look.canvas };
-                    center = look.center;
-                    update.x = this._positionX + center.length * Math.cos(center.angle);
-                    update.y = this._positionY + center.length * Math.sin(center.angle);
+                    center = look.center,
+                    angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle : center.angle - (this._direction - 90.0) * Math.PI / 180.0;
+                    update.x = this._positionX + center.length * Math.cos(angle);
+                    update.y = this._positionY + center.length * Math.sin(angle);
                     this._triggerOnChange(update);
                     return true;
                 }
@@ -733,7 +758,7 @@ PocketCode.Model.Sprite = (function () {
             var count = looks.length;
             if (count < 2)
                 return false;
-            var look, center, update;
+            //var look, center, update, angle;
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
                     if ((i + 1) < count) { //1+1=2 < 2    2<2
@@ -746,11 +771,12 @@ PocketCode.Model.Sprite = (function () {
                     break;
                 }
             }
-            look = this._gameEngine.getLookImage(this._currentLook.imageId);
-            update = { look: look.canvas };
-            center = look.center;
-            update.x = this._positionX + center.length * Math.cos(center.angle);
-            update.y = this._positionY + center.length * Math.sin(center.angle);
+            var look = this._gameEngine.getLookImage(this._currentLook.imageId),
+                update = { look: look.canvas },
+                center = look.center,
+                angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle : center.angle - (this._direction - 90.0) * Math.PI / 180.0;
+            update.x = this._positionX + center.length * Math.cos(angle);
+            update.y = this._positionY + center.length * Math.sin(angle);
             this._triggerOnChange(update);
             return true;
         },
