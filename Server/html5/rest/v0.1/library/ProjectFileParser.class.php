@@ -756,7 +756,7 @@ class ProjectFileParser
 
         case "MoveNStepsBrick":
           $steps = $this->parseFormula($script->steps->formulaTree);
-          $brick = new ChangeYBrickDto($steps);
+          $brick = new MoveNStepsBrickDto($steps);
           break;
 
         case "TurnLeftBrick":

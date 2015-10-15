@@ -412,7 +412,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
           array_push($this->cpp, $fl);
           $steps = $this->parseFormula($fl->formula);
           array_pop($this->cpp);
-          $brick = new ChangeYBrickDto($steps);
+          $brick = new MoveNStepsBrickDto($steps);
           break;
 
         case "TurnLeftBrick":
