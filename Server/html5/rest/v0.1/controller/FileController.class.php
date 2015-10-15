@@ -128,7 +128,7 @@ class FileController extends BaseController
   private function getParsedUrl()
   {
     $encoded = urlencode($this->text);
-    $url = self::GOOGLE_TTS_SERVICE . "tl={$this->language}&q={$encoded}&client=t";
+    $url = self::GOOGLE_TTS_SERVICE . "tl={$this->language}&q={$encoded}&client=t&tk=0|0";
     return $url;
   }
 
