@@ -490,7 +490,7 @@ PocketCode.Model.LoopBrick = (function () {
                     window.setTimeout(this._execute.bind(this, id), executionDelay);
                 }
                 else {
-                    window.setTimeout(this._execute.bind(this, id), 3);
+                    window.setTimeout(this._execute.bind(this, id), 1);
                 }
             }
             else
