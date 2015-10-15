@@ -159,14 +159,42 @@ PocketCode.Model.merge({
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
+
+            this._paused = false;
+            this._pendingOp = false;
+            //this._stopped = false;
         }
 
-        BroadcastBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
-            this._broadcastMgr.publish(this._broadcastMsgId);
-            this._return();
-        };
+        BroadcastBrick.prototype.merge({
+            _execute: function () {
+                if (this._disposed)
+                    return;
+                if (this._paused) {
+                    this._pendingOp = true;
+                    return;
+                }
+                //if (this._stopped) {
+                //    this._stopped = false;
+                //    return;
+                //}
+                this._broadcastMgr.publish(this._broadcastMsgId);
+                this._return();
+            },
+            pause: function () {
+                this._paused = true;
+            },
+            resume: function () {
+                this._paused = false;
+                if (this._pendingOp) {
+                    this._pendingOp = false;
+                    this._execute();
+                }
+            },
+            stop: function () {
+                this._paused = false;
+                //this._stopped = true;
+            },
+        });
 
         return BroadcastBrick;
     })(),
