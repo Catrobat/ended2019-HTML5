@@ -137,7 +137,7 @@ PocketCode.Model.Sprite = (function () {
                     flipX: this._flipX,
                     //rotationStyle: this._rotationStyle,
                     //look: this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId) : undefined,
-                    scaling: 1 / this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
+                    scaling: 1,// / this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling,//this._currentLook ? this._size / 100.0 / this._currentLook.initialScaling : 0,
                     visible: this._visible, //this._currentLook ? this._visible : false,
                     graphicEffects: [
                         { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
@@ -151,7 +151,7 @@ PocketCode.Model.Sprite = (function () {
 
                     obj.merge({
                         look: look.canvas,
-                        scaling: this._size / 100.0 / look.initialScaling,
+                        scaling: 1 / look.initialScaling,
                         x: this._positionX + center.length * Math.cos(center.angle),
                         y: this._positionY + center.length * Math.sin(center.angle),
                     });
@@ -736,7 +736,7 @@ PocketCode.Model.Sprite = (function () {
                     look = this._gameEngine.getLookImage(imageId);
                     update = { look: look.canvas };
                     center = look.center,
-                    angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle : center.angle - (this._direction - 90.0) * Math.PI / 180.0;
+                    angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
                     update.x = this._positionX + center.length * Math.cos(angle);
                     update.y = this._positionY + center.length * Math.sin(angle);
                     this._triggerOnChange(update);
@@ -774,7 +774,7 @@ PocketCode.Model.Sprite = (function () {
             var look = this._gameEngine.getLookImage(this._currentLook.imageId),
                 update = { look: look.canvas },
                 center = look.center,
-                angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle : center.angle - (this._direction - 90.0) * Math.PI / 180.0;
+                angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
             update.x = this._positionX + center.length * Math.cos(angle);
             update.y = this._positionY + center.length * Math.sin(angle);
             this._triggerOnChange(update);
