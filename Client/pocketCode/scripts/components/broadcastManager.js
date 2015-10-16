@@ -107,7 +107,7 @@ PocketCode.BroadcastManager = (function () {
                     }
 
                     //subListener.handler.call(subListener.scope, {});
-                    setTimeout(subListener.handler.bind(subListener.scope), 1);    //preventing the call stack from overflow
+                    setTimeout(subListener.handler.bind(subListener.scope, {}), 1);    //preventing the call stack from overflow
                 }
             }
         },

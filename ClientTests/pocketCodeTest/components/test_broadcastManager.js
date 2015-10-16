@@ -6,10 +6,10 @@
 QUnit.module("broadcastManager.js");
 
 
-QUnit.test("BroadcastManager", function (assert) {
+QUnit.test("BroadcastManager: broadcast (simple)", function (assert) {
 
     var done1 = assert.async();
-    //var done2 = assert.async();
+    var done2 = assert.async();
     //var done3 = assert.async();
 
     var b = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
@@ -26,6 +26,13 @@ QUnit.test("BroadcastManager", function (assert) {
         handler1Called = true;
         loopDelay = e.loopDelay;
         threadId = e.id;
+
+        assert.ok(handler1Called, "broadcast: single subscriber");
+        assert.equal(loopDelay, undefined, "loopDelay on empty subscription");
+        assert.equal(threadId, undefined, "threadId on empty subscription");
+
+        done1();
+        test_multipleSubscribers();
     };
 
     var handler2 = function (e) {
@@ -65,32 +72,73 @@ QUnit.test("BroadcastManager", function (assert) {
 
     b.subscribe("s12", l1);
     b.publish("s12");
-    assert.ok(handler1Called, "broadcast: single subscriber");
-    assert.equal(loopDelay, undefined, "loopDelay on empty subscription");
-    assert.equal(threadId, undefined, "threadId on empty subscription");
-    //reinit
-    handler1Called = false;
-    loopDelay = undefined;
-    threadId = undefined;
+    //assert.ok(handler1Called, "broadcast: single subscriber");
+    //assert.equal(loopDelay, undefined, "loopDelay on empty subscription");
+    //assert.equal(threadId, undefined, "threadId on empty subscription");
 
-    b.subscribe("s12", l2);
-    var l3 = new SmartJs.Event.EventListener(handler3, this);
-    b.subscribe("s13", l3);
-    b.publish("s12");
-    assert.ok(handler1Called && handler2Called && !handler3Called, "broadcast: multiple subscribers");
+    function test_multipleSubscribers() {
+        //reinit
+        handler1Called = false, handler2Called = false, handler3Called = false;
+        loopDelay = undefined;
+        threadId = undefined;
 
-    handler1Called = false;
-    handler2Called = false;
+        handler1 = function (e) {
+            handler1Called = true;
+            loopDelay = e.loopDelay;
+            threadId = e.id;
+
+            //assert.ok(handler1Called, "broadcast: single subscriber");
+            //assert.equal(loopDelay, undefined, "loopDelay on empty subscription");
+            //assert.equal(threadId, undefined, "threadId on empty subscription");
+
+            //done3();
+            //test_multipleSubscribers();
+        };
+        l1 = new SmartJs.Event.EventListener(handler1, this);
+
+        b = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }, { id: "s13", name: "test2" }]);
+        b.subscribe("s12", l1);
+        b.subscribe("s12", l2);
+        var l3 = new SmartJs.Event.EventListener(handler3, this);
+        b.subscribe("s13", l3);
+        b.publish("s12");
+
+        setTimeout(function () {
+            assert.ok(handler1Called && handler2Called && !handler3Called, "broadcast: multiple subscribers");
+            done2();
+        }, 20);
+        //handler1Called = false;
+        //handler2Called = false;
+    }
+
+});
 
 
-    //BROADCAST WAIT
+QUnit.test("BroadcastManager: broadcast & wait", function (assert) {
+
+    var done1 = assert.async();
+
+    var handler1Called = false;
+    var loopDelay, threadId;
+
+    var handler1 = function (e) {
+        handler1Called = true;
+        loopDelay = e.loopDelay;
+        threadId = e.id;
+
+        assert.ok(handler1Called, "broadcast wait: publisher feedback on empty subscription");
+        assert.equal(loopDelay, undefined, "broadcast wait: loopDelay on empty subscription");
+        assert.equal(threadId, "thread_id", "broadcast wait: threadId on empty subscription");
+
+    }
+
     var b = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
 
     //no subscribers
     b.publish("s12", new SmartJs.Event.EventListener(handler1, this), "thread_id");
-    assert.ok(handler1Called, "broadcast wait: publisher feedback on empty subscription");
-    assert.equal(loopDelay, undefined, "broadcast wait: loopDelay on empty subscription");
-    assert.equal(threadId, "thread_id", "broadcast wait: threadId on empty subscription");
+    //assert.ok(handler1Called, "broadcast wait: publisher feedback on empty subscription");
+    //assert.equal(loopDelay, undefined, "broadcast wait: loopDelay on empty subscription");
+    //assert.equal(threadId, "thread_id", "broadcast wait: threadId on empty subscription");
 
     b.init([{ id: "s12", name: "test" }, { id: "s13", name: "test" }]);
 
@@ -153,7 +201,7 @@ QUnit.test("BroadcastManager", function (assert) {
 });
 
 
-QUnit.test("BroadcastManager: multiple hierachies", function (assert) {
+QUnit.test("BroadcastManager: broadcast & wait: multiple hierachies", function (assert) {
 
     var done1 = assert.async();
     //BROADCAST WAIT COMPLEX: 2 hierachies
@@ -236,7 +284,7 @@ QUnit.test("BroadcastManager: multiple hierachies", function (assert) {
 });
 
 
-QUnit.test("BroadcastManager: recursive calls", function (assert) {
+QUnit.test("BroadcastManager: broadcast & wait: recursive calls", function (assert) {
 
     var done1 = assert.async();
     //BROADCAST WAIT COMPLEX: multiple self calls
