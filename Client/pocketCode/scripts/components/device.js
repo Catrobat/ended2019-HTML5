@@ -29,7 +29,12 @@ PocketCode.Device = (function () {
 		this._y = null;
 		this._z = null;
 
+		this._windowOrientation = 0;
 		this._rotationRate = null;
+		
+		//Event Handler for Initialisation
+		this._initDeviceOrientationHandler = null;
+		this._initDeviceMotionHandler = null;
 		
 		//sensor support
 		this._sensorSupport = {
@@ -48,25 +53,20 @@ PocketCode.Device = (function () {
 			COMPASS_DIRECTION: 0,
 			X_INCLINATION: 0,
 			Y_INCLINATION: 0,
+			X_ROTATION_RATE: 0,
+			Y_ROTATION_RATE: 0,
 			//LOUDNESS: 0
 		};
 
 		//bind events
 		if (window.DeviceOrientationEvent) {
-			this._addDomListener(window, 'deviceorientation', this._deviceorientationChangeHandler);
-			if (this._gamma != null || this._alpha != null || this._beta != null) { //checks if there is sensor data if not sensors are not supported
-				this._sensorSupport.COMPASS_DIRECTION = true;
-				this._sensorSupport.X_INCLINATION = true;
-				this._sensorSupport.Y_INCLINATION = true;
-			}
+			this._initDeviceOrientationHandler = this._addDomListener(window, 'deviceorientation', this._deviceorientationChangeHandler);
 		}
 		if (window.DeviceMotionEvent) {
-			this._addDomListener(window, 'devicemotion', this._devicemotionChangeHandler);
-			if (this._rotationRate != null){    //checks if there is sensor data to properly set sensors if no data sensors are not supported
-				this._sensorSupport.X_ACCELERATION = true;
-				this._sensorSupport.Y_ACCELERATION = true;
-				this._sensorSupport.Z_ACCELERATION = true;
-			}
+			this._initDeviceMotionHandler = this._addDomListener(window, 'devicemotion', this._devicemotionChangeHandler);
+		}
+		if(!isNaN(window.orientation)) {
+			this._addDomListener(window, 'orientationchange', this._orientationChangeHandler);
 		}
 	}
 
@@ -74,22 +74,44 @@ PocketCode.Device = (function () {
 	Object.defineProperties(Device.prototype, {
 		accelerationX: {
 			get: function () {
-				if (this._sensorSupport.X_ACCELERATION)
-					return this._x; //wrong: include window.orientation (0, 90, -90, -180) as we need sensor data related to our viewport and not device
+				if (this._sensorSupport.X_ACCELERATION) {
+					switch(this._windowOrientation)
+					{
+						case 0:
+							return this._x;
+						case -90:
+							return this._y;
+						case 180:
+							return this._x * -1;
+						case 90:
+							return this._y * -1;
+					}
+				}
 				return this._sensorEmulatedData.X_ACCELERATION;
 			},
 		},
 		accelerationY: {
 			get: function () {
-				if (this._sensorSupport.Y_ACCELERATION)
-				    return this._y; //wrong
+				if (this._sensorSupport.Y_ACCELERATION) {
+					switch(this._windowOrientation)
+					{
+						case 0:
+							return this._y;
+						case -90:
+							return this._x * -1;
+						case 180:
+							return this._y * -1;
+						case 90:
+							return this._x;
+					}
+				}
 				return this._sensorEmulatedData.Y_ACCELERATION;
 			},
 		},
 		accelerationZ: {
 			get: function () {
 				if (this._sensorSupport.Z_ACCELERATION)
-				    return this._z; //wrong
+				    return this._z; // z is orientation independent.
 				return this._sensorEmulatedData.Z_ACCELERATION;
 			},
 		},
@@ -102,16 +124,37 @@ PocketCode.Device = (function () {
 		},
 		inclinationX: {
 			get: function () {
-				if (this._sensorSupport.X_INCLINATION)
-					return this._inclinationX = 180 - this._gamma;  //wrong: this may change due to window.orientation != 0
+				if (this._sensorSupport.X_INCLINATION) {
+					return this._getInclinationX(this._beta, this._gamma);
+				}					
 				return this._sensorEmulatedData.X_INCLINATION;
 			},
 		},
 		inclinationY: {
 			get: function () {
-				if (this._sensorSupport.Y_INCLINATION)
-					return this._inclinationY = 180 - this._beta;   //wrong
+				if (this._sensorSupport.Y_INCLINATION) {
+					return this._getInclinationY(this._beta, this._gamma);
+				}
+				
 				return this._sensorEmulatedData.Y_INCLINATION;
+			},
+		},
+		rotationRateX: {
+			get: function () {
+				if (this._sensorSupport.X_INCLINATION && this._rotationRate) {
+					return this._getInclinationX(this._rotationRate.beta, this._rotationRate.gamma);
+				}
+				
+				return this._sensorEmulatedData.X_ROTATION_RATE;
+			},
+		},
+		rotationRateY: {
+			get: function () {
+				if (this._sensorSupport.Y_INCLINATION && this._rotationRate) {
+					return this._getInclinationY(this._rotationRate.beta, this._rotationRate.gamma);
+				}
+				
+				return this._sensorEmulatedData.Y_ROTATION_RATE;
 			},
 		},
 		loudness: {
@@ -169,6 +212,31 @@ PocketCode.Device = (function () {
 
 	//methods
 	Device.prototype.merge({
+		_getInclinationX: function(beta, gamma) {
+			var x;
+			if(this._windowOrientation == 0 || this._windowOrientation == -180) {
+				x = gamma;
+				if(beta > 90)
+					x = x * -1;
+			}
+			else {
+				x = beta;
+			}
+			if(this._windowOrientation < 0)
+				return x * -1;
+			return x;
+		},
+		_getInclinationY: function(beta, gamma) {
+			var y;
+			if(this._windowOrientation == 0 || this._windowOrientation == -180) {
+				y = beta;
+			}
+			else
+				y = gamma;
+			if(this._windowOrientation < 0)
+				return y * -1;
+			return y;
+		},
 		_deviceorientationChangeHandler: function (e) {
 			//check for iOS property
 			if (e.webkitCompassHeading) {
@@ -180,8 +248,29 @@ PocketCode.Device = (function () {
 			this._alpha = e.alpha;
 			this._beta = e.beta;
 			this._gamma = e.gamma;
+			
+			if(this._initDeviceOrientationHandler) {
+				if (this._gamma != null || this._alpha != null || this._beta != null) { //checks if there is sensor data if not sensors are not supported
+					this._sensorSupport.COMPASS_DIRECTION = true;
+					this._sensorSupport.X_INCLINATION = true;
+					this._sensorSupport.Y_INCLINATION = true;
+				}
+				this._removeDomListener(window, 'orientationchange', this._initDeviceOrientationHandler);
+				this._initDeviceOrientationHandler = null;
+			}
+		},
+		_orientationChangeHandler: function () {
+			this._windowOrientation = window.orientation;
 		},
 		_devicemotionChangeHandler: function (e) {
+			
+			if(this._initDeviceMotionHandler) {
+				this._removeDomListener(window, 'devicemotion', this._initDeviceMotionHandler);
+				this._initDeviceMotionHandler = null;
+				this._sensorSupport.X_ACCELERATION = true;
+				this._sensorSupport.Y_ACCELERATION = true;
+				this._sensorSupport.Z_ACCELERATION = true;
+			}
 			if (e.acceleration) {   //choose linear acceleration by default (conform andriod app)
 				this._x = e.acceleration.x;
 				this._y = e.acceleration.y;
@@ -192,6 +281,7 @@ PocketCode.Device = (function () {
 				this._y = e.accelerationIncludingGravity.y;
 				this._z = e.accelerationIncludingGravity.z;
 			}
+			
 			this._rotationRate = e.rotationRate;
 		},
 		setSensorInUse: function (sensor) {
