@@ -67,6 +67,14 @@
           <td>Direction [alpha]</td>
           <td id="doDirection"></td>
         </tr>
+		<tr>
+          <td>Inclination X</td>
+          <td id="doInclinationX"></td>
+        </tr>
+		<tr>
+          <td>Inclination Y</td>
+          <td id="doInclinationY"></td>
+        </tr>
       </table>
   </div>
   
@@ -95,6 +103,9 @@
       document.getElementById("doTiltFB").innerHTML = Math.round(device._beta);
       document.getElementById("doDirection").innerHTML = Math.round(device._alpha);
       
+	  document.getElementById("doInclinationX").innerHTML = Math.round(device.inclinationX);
+	  document.getElementById("doInclinationY").innerHTML = Math.round(device.inclinationY);
+	  
       // Apply the transform to the image
       var logo = document.getElementById("imgLogo");
       logo.style.webkitTransform = "rotate3d(0,1,0, "+ (device.inclinationX)+"deg)"; //"rotate("+ (device.inclinationX) +"deg)";

@@ -67,6 +67,10 @@ PocketCode.Device = (function () {
 		}
 		if(!isNaN(window.orientation)) {
 			this._addDomListener(window, 'orientationchange', this._orientationChangeHandler);
+			this._windowOrientation = window.orientation;
+		}
+		else {
+			console.log("window orientation not supported!");
 		}
 	}
 
@@ -216,13 +220,13 @@ PocketCode.Device = (function () {
 			var x;
 			if(this._windowOrientation == 0 || this._windowOrientation == -180) {
 				x = gamma;
-				if(beta > 90)
-					x = x * -1;
+				//if(beta > 90)
+				//	x = x * -1;
 			}
 			else {
 				x = beta;
 			}
-			if(this._windowOrientation < 0)
+			if(this._windowOrientation > 0)
 				return x * -1;
 			return x;
 		},
@@ -233,7 +237,7 @@ PocketCode.Device = (function () {
 			}
 			else
 				y = gamma;
-			if(this._windowOrientation < 0)
+			if(this._windowOrientation > 0)
 				return y * -1;
 			return y;
 		},
