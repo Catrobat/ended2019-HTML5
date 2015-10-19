@@ -418,7 +418,7 @@ class ProjectFileParser
     return $sp;
   }
 
-  protected function getBrickName($script)
+  protected function getBrickType($script)
   {
     return ucFirst($script->getName());
   }
@@ -435,7 +435,7 @@ class ProjectFileParser
     $innerBricks = [];
     while($idx < $length)
     {
-      $name = $this->getBrickName($brickList[$idx]);
+      $name = $this->getBrickType($brickList[$idx]);
       if($name === "ForeverBrick")
       {
         $nestedCounter++;
@@ -486,7 +486,7 @@ class ProjectFileParser
     $innerBricks = [];
     while($idx < $length)
     {
-      $name = $this->getBrickName($brickList[$idx]);
+      $name = $this->getBrickType($brickList[$idx]);
       if($name === "RepeatBrick")
       {
         $nestedCounter++;
@@ -541,7 +541,7 @@ class ProjectFileParser
 
     while($idx < $length)
     {
-      $name = $this->getBrickName($brickList[$idx]);
+      $name = $this->getBrickType($brickList[$idx]);
       if($name === "IfLogicBeginBrick")
       {
         $nestedCounter++;
@@ -613,7 +613,7 @@ class ProjectFileParser
         //special logic for loops: forever, repeat and if-then-else
         //to restructure the *.catrobat/code.xml document to our needs
         $script = $brickList[$idx];
-        switch($this->getBrickName($script))
+        switch($this->getBrickType($script))
         {
           case "ForeverBrick":
             $result = $this->parseForeverBrick($bricks, $idx, $length, $brickList);
@@ -662,9 +662,9 @@ class ProjectFileParser
     }
   }
 
-  protected function parseFirstLevelBricks($brickName, $script)
+  protected function parseFirstLevelBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "StartScript":
         $brick = new ProgramStartBrickDto();
@@ -718,9 +718,9 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseControlBricks($brickName, $script)
+  protected function parseControlBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "WaitBrick":
         $duration = $script->timeToWaitInSeconds;
@@ -769,9 +769,9 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseMotionBricks($brickName, $script)
+  protected function parseMotionBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "PlaceAtBrick":
         $x = $this->parseFormula($script->xPosition->formulaTree);
@@ -872,9 +872,9 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseSoundBricks($brickName, $script)
+  protected function parseSoundBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "PlaySoundBrick":
         $id = null;
@@ -918,9 +918,9 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseLookBricks($brickName, $script)
+  protected function parseLookBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "SetLookBrick":
         $look = $this->getObject($script->look, $this->cpp);
@@ -985,9 +985,9 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseDataBricks($brickName, $script)
+  protected function parseDataBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "SetVariableBrick":
         $var = $this->getObject($script->userVariable, $this->cpp);
@@ -1015,26 +1015,26 @@ class ProjectFileParser
     {
       array_push($this->cpp, $script);
 
-      $brickName = $this->getBrickName($script);
-      $brick = $this->parseFirstLevelBricks($brickName, $script);
+      $brickType = $this->getBrickType($script);
+      $brick = $this->parseFirstLevelBricks($brickType, $script);
 
       if(!$brick)
-        $brick = $this->parseControlBricks($brickName, $script);
+        $brick = $this->parseControlBricks($brickType, $script);
 
       if(!$brick)
-        $brick = $this->parseMotionBricks($brickName, $script);
+        $brick = $this->parseMotionBricks($brickType, $script);
 
       if(!$brick)
-        $brick = $this->parseSoundBricks($brickName, $script);
+        $brick = $this->parseSoundBricks($brickType, $script);
 
       if(!$brick)
-        $brick = $this->parseLookBricks($brickName, $script);
+        $brick = $this->parseLookBricks($brickType, $script);
 
       if(!$brick)
-        $brick = $this->parseDataBricks($brickName, $script);
+        $brick = $this->parseDataBricks($brickType, $script);
 
       if(!$brick)
-        $brick = new UnsupportedBrickDto($script->asXML(), (string)$script->name);
+        $brick = new UnsupportedBrickDto($script->asXML(), $brickType);
 
       array_pop($this->cpp);
 

@@ -82,9 +82,9 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     return $res->id;
   }
 
-  protected function parseDataBricks($brickName, $script)
+  protected function parseDataBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "SetVariableBrick":
         $var = $this->getObject($script->userVariable, $this->cpp);

@@ -14,7 +14,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return (string)$script["name"];
   }
 
-  protected function getBrickName($script)
+  protected function getBrickType($script)
   {
     return (string)$script["type"];
   }
@@ -53,9 +53,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseControlBricks($brickName, $script)
+  protected function parseControlBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "WaitBrick":
         $duration = $script->formulaList;
@@ -106,9 +106,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseMotionBricks($brickName, $script)
+  protected function parseMotionBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "PlaceAtBrick":
         $x = null;
@@ -289,9 +289,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseSoundBricks($brickName, $script)
+  protected function parseSoundBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "PlaySoundBrick":
         $id = null;
@@ -340,9 +340,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseLookBricks($brickName, $script)
+  protected function parseLookBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "SetLookBrick":
         $look = $this->getObject($script->look, $this->cpp);
@@ -433,9 +433,9 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseDataBricks($brickName, $script)
+  protected function parseDataBricks($brickType, $script)
   {
-    switch($brickName)
+    switch($brickType)
     {
       case "SetVariableBrick":
         $var = $this->getObject($script->userVariable, $this->cpp);
