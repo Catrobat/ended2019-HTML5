@@ -61,6 +61,10 @@ PocketCode.Device = (function () {
 		//bind events
 		if (window.DeviceOrientationEvent) {
 			this._initDeviceOrientationHandler = this._addDomListener(window, 'deviceorientation', this._deviceorientationChangeHandler);
+			console.log("add device orientation Handler");
+		}
+		else {
+			console.log("DeviceOrientationEvent not supported");
 		}
 		if (window.DeviceMotionEvent) {
 			this._initDeviceMotionHandler = this._addDomListener(window, 'devicemotion', this._devicemotionChangeHandler);
@@ -226,7 +230,7 @@ PocketCode.Device = (function () {
 			else {
 				x = beta;
 			}
-			if(this._windowOrientation > 0)
+			if(this._windowOrientation >= 0)  // = to be consistent with Catroid
 				return x * -1;
 			return x;
 		},
@@ -260,6 +264,7 @@ PocketCode.Device = (function () {
 					this._sensorSupport.Y_INCLINATION = true;
 				}
 				this._removeDomListener(window, 'orientationchange', this._initDeviceOrientationHandler);
+				console.log("remove device orientation Handler");
 				this._initDeviceOrientationHandler = null;
 			}
 		},
