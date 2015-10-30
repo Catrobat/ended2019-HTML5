@@ -11,7 +11,7 @@ class ProjectsController extends BaseController
   const TEST_API = "https://web-test.catrob.at/";
 
   public $SERVER_ROOT = "/var/www/";
-  public $API = self::DEPLOY_API;
+  public $API = self::TEST_API;
   public $BASE_URL = "";
 
   public function __construct($request)
@@ -81,59 +81,53 @@ class ProjectsController extends BaseController
     //include data urls if requested
     if(isset($this->request->imgDataMax))
     {
-      $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "html5/projects/v0.1/{$projectId}/automatic_screenshot.png");
+      $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/" . $project->ScreenshotBig);
       $res = $this->loadBase64Image($path, $this->request->imgDataMax);
       if($res !== false)
       {
         $details->thumbnailUrl = $res;
+        $details->baseUrl = ""; //delete base url to avoid error (wrong url) due to client side concatenation
       }
     }
 
     return $details;
   }
 
-  //zip file helper methods
-  private function extractFilenames(\ZipArchive $zipArchive)
-  {
-    $filenames = [];
-    $fileCount = $zipArchive->numFiles;
-    for($i = 0; $i < $fileCount; $i++)
+    //zip file helper methods
+    private function extractFilenames(\ZipArchive $zipArchive)
     {
-      if(($filename = $this->extractFilename($zipArchive, $i)) !== false)
-      {
-        $filenames[] = $filename;
-      }
+        $filenames = array();
+        $fileCount = $zipArchive->numFiles;
+        for ($i = 0; $i < $fileCount; $i++) {
+                if (($filename = $this->extractFilename($zipArchive, $i)) !== false) {
+                        $filenames[] = $filename;
+                }
+        }
+        return $filenames;
     }
-
-    return $filenames;
-  }
-
-  private function extractFilename(\ZipArchive $zipArchive, $fileIndex)
-  {
-    $entry = $zipArchive->statIndex($fileIndex);
-    // convert Windows directory separator to Unix style
-    $filename = str_replace('\\', '/', $entry['name']);
-    if($this->isValidPath($filename))
+    private function extractFilename(\ZipArchive $zipArchive, $fileIndex)
     {
-      return $filename;
+        $entry = $zipArchive->statIndex($fileIndex);
+        // convert Windows directory separator to Unix style
+        $filename  = str_replace('\\', '/', $entry['name']);
+        if ($this->isValidPath($filename)) {
+                return $filename;
+        }
+        throw new \Exception('Invalid filename path in zip archive');
     }
-    throw new \Exception('Invalid filename path in zip archive');
-  }
-
-  private function isValidPath($path)
-  {
-    $pathParts = explode('/', $path);
-    if(!strncmp($path, '/', 1)
-       || array_search('..', $pathParts) !== false
-       || strpos($path, ':') !== false
-    )
+    private function isValidPath($path)
     {
-      return false;
+        $pathParts = explode('/', $path);
+        if (!strncmp($path, '/', 1) ||
+                array_search('..', $pathParts) !== false ||
+                strpos($path, ':') !== false)
+        {
+                return false;
+        }
+        return true;
     }
-
-    return true;
-  }
-
+        
+    
   private function getProject($projectId)
   {
     $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/resources/programs/");
@@ -475,7 +469,7 @@ class ProjectsController extends BaseController
     if(isset($this->request->imgDataMax))
     {
       //include data urls
-      $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "catroid/");
+      $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/");
 
       foreach($projects->featured as $p)
       {
