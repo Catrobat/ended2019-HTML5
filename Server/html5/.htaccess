@@ -23,6 +23,8 @@ SetOutputFilter DEFLATE
 SetOutputFilter DEFLATE
 </files>
 
+RewriteRule ^rest/([^/]*)/file/tts.mp3$ rest/$1/file/tts [L,QSA]
+#^^ included to avoid errors due to a bug in soundJs: not recognizing sounds without file extensions correctly
 RewriteRule ^rest/([^/]*)/(.*)$ rest/$1/index.php?servicePath=$2&version=$1 [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !\.(gif|jpg|png|jpeg|css|js|ico|htm|html|php)$ [NC]
