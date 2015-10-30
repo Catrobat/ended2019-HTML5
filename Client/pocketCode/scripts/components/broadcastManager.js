@@ -132,7 +132,8 @@ PocketCode.BroadcastManager = (function () {
                 this._pendingBW[threadId] = { callId: callId, broadcastId: bcId, counter: subsCount, listener: pubListener, loopDelay: false };
                 for (var i = 0; i < subsCount; i++) {
                     var subListener = subs[i];
-                    subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
+                    //subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
+                    setTimeout(subListener.handler.bind(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) }), 1);
                 }
             }
             else
