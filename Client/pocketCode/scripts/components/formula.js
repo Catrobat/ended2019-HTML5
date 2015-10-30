@@ -43,7 +43,7 @@ PocketCode.Formula = (function () {
                     this.calculate = parsed.calculate;
                 }
                 this._uiString = undefined;
-                //this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
+                this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
             },
             //enumerable: false,
             //configurable: true,
@@ -83,14 +83,25 @@ PocketCode.Formula = (function () {
             var func = new Function('return ' + left + operator + right + ';');
             return func();
         },
-        //_validateFormula: function () {
-        //    try {
-        //        var test = this.calculate();
-        //    }
-        //    catch (e) {
-        //        throw new Error('Error parsing formula: ' + e.message);
-        //    }
-        //},
+        _validateFormula: function () {
+            try {
+                var formula = this;
+                formula._sprite = { //override sprite
+                    brightness: 100,
+                    transparency: 0,
+                    layer: 1,
+                    direction: 90,
+                    size: 100,
+                    positionX: 0,
+                    positionY: 0,
+                    getVariable: function() { return { value: 0 }; },
+                };
+                var test = formula.calculate();
+            }
+            catch (e) {
+                throw new Error('Error parsing formula: ' + e.message);
+            }
+        },
         dispose: function () {
             this._device = undefined;
             this._sprite = undefined;
