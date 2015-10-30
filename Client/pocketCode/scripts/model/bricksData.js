@@ -15,7 +15,7 @@ PocketCode.Model.merge({
             this._var = sprite.getVariable(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
             try {
-                if (this._var.value == undefined)
+                if (propObject.init)    //variable was defined here
                     this._var.value = this._value.calculate();  //try to initialize variables during loading
             }
             catch (e) { }
