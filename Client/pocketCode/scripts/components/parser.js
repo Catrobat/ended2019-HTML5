@@ -269,10 +269,10 @@ PocketCode.merge({
             },
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
-                if (uiString || !numeric)
+                //if (uiString || !numeric)
                     return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
-                return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                //return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
