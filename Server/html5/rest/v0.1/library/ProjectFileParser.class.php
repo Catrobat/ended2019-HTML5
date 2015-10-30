@@ -990,10 +990,14 @@ class ProjectFileParser
     switch($brickType)
     {
       case "SetVariableBrick":
+		if(isset($script->userVariable["reference"]))	//link to other definition
+			$init = false;
+		else
+			$init = true;
         $var = $this->getObject($script->userVariable, $this->cpp);
         $id = $this->getVariableId((string)$var->name);
         $formula = $script->variableFormula;
-        $brick = new SetVariableBrickDto($id, $this->parseFormula($formula->formulaTree));
+        $brick = new SetVariableBrickDto($id, $this->parseFormula($formula->formulaTree), $init);
         break;
 
       case "ChangeVariableBrick":
