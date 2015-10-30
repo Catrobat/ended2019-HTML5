@@ -550,9 +550,13 @@ PocketCode.Ui.merge({
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
             this._btnContinue = new PocketCode.Ui.Button('Continue');
+            this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
-            this.bodyInnerHTML = 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br />You can run the project anyway- unsupported features will be ignored.<br />Details:<br />';
+            this.bodyInnerHTML = 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br />You can run the project anyway- unsupported features will be ignored.';
+            //this.bodyInnerHTML += '<br />Details:<br />';
+
+            this._onContinue = new SmartJs.Event.Event(this);
         }
 
         //events
@@ -564,7 +568,7 @@ PocketCode.Ui.merge({
             },
             onContinue: {
                 get: function () {
-                    return this._btnContinue.onClick;
+                    return this._onContinue;
                 },
             },
         });
