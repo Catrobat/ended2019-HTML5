@@ -106,6 +106,49 @@ QUnit.test("TestRequestLimitedNrOfProjects", function(assert) {
   PocketCode.Proxy.send(srAllProjects);
 });
 
+
+
+QUnit.test("TestDefaultServiceSettings", function(assert) {
+    var defaultLimit = 20;
+    var defaultOffset = 0;
+    var defaultMaxFeaturedProjects = 3;
+    var defaultMask = "recent";
+
+
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET);
+    assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
+
+
+    var onLoadAllProjectsHandler = function(e)
+    {
+        var receivedAllProjects = e.responseJson;
+        assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
+        //console.log(receivedAllProjects);
+
+        var projectCount = receivedAllProjects.limit;
+        var projectOffset = receivedAllProjects.offset;
+        var featuredProjects = receivedAllProjects.featured;
+        var projectMask = receivedAllProjects.mask;
+
+        assert.ok(projectCount == defaultLimit, 'correct nr (' + defaultLimit + ') of projects');
+        assert.ok(projectOffset == defaultOffset, 'correct offset value (' + defaultOffset + ')');
+        assert.ok(featuredProjects.length <= defaultMaxFeaturedProjects, 'valid amount of featured projects (' + featuredProjects.length + ')');
+        assert.ok(projectMask == defaultMask, 'correct mask key word (' + defaultMask + ')');
+
+        var projects = receivedAllProjects.items;
+        assert.ok(projects instanceof Array, 'items is an array of projects');
+
+        var featured = receivedAllProjects.featured;
+        assert.ok(featured instanceof Array, 'featured is an array of projects');
+    };
+
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
+});
+
+
+
 QUnit.test("TestRequestInvalidProjectLimit", function(assert) {
 
   var url = PocketCode.Services.PROJECT_SEARCH;
@@ -116,12 +159,43 @@ QUnit.test("TestRequestInvalidProjectLimit", function(assert) {
   var onLoadAllProjectsHandler = function(e) {
 
       var projectCount = e.responseJson.items.length;
-      console.log('projectcount: ' + projectCount);
       assert.ok(projectCount == projectCount, 'correct nr (' + projectCount + ') of projects');
   };
 
   srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
   PocketCode.Proxy.send(srAllProjects);
+});
+
+QUnit.test("TestRequestInvalidMask", function(assert) {
+    var mask = 'invalid_value';
+
+    var defaultType = "ServiceNotImplementedException";
+    var defaultMessage = "mask '" + mask + "' not supported!";
+    var defaultCode = 0;
+
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {mask: mask});
+    assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
+
+
+    var onLoadAllProjectsHandler = function(e)
+    {
+        var receivedAllProjects = e.responseJson;
+        assert.ok(receivedAllProjects instanceof Object, 'received object is valid');
+        console.log(receivedAllProjects);
+
+        var requestType = receivedAllProjects.type;
+        var requestMessage = receivedAllProjects.message;
+        var requestCode = receivedAllProjects.code;
+
+        assert.ok(defaultType == requestType, 'correct type (' + defaultType + ')');
+        assert.ok(defaultMessage == requestMessage, 'correct message (' + defaultMessage + ')');
+        assert.ok(defaultCode == requestCode, 'correct code (' + defaultCode + ')');
+    };
+
+
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
 });
 
 
