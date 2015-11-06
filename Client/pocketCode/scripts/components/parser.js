@@ -252,7 +252,11 @@ PocketCode.merge({
                         return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
 
                     case 'USER_LIST':
-                        return '';  //TODO:
+                        if(uiString)
+                            return jsonFormula.value;
+
+                        this._isStatic = false;
+                        return 'this._sprite.getList(\'' + jsonFormula.value + '\').value';
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
@@ -507,13 +511,29 @@ PocketCode.merge({
 
                         //list functions
                     case 'NUMBER_OF_ITEMS':
-                        //TODO: 
+                        if (uiString)
+                            return 'number_of_items(*' + this._parseJsonType(jsonFormula.left, uiString) + '*)';
+
+                        this._isStatic = false;
+                        //return this._parseJsonType(jsonFormula.left) + '.length';
+                        break;
 
                     case 'LIST_ITEM':
-                        //TODO: 
+                        if (uiString)
+                            return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', *' + this._parseJsonType(jsonFormula.right, uiString) + '*)';
+
+                        this._isStatic = false;
+                        var list_idx = this._parseJsonType(jsonFormula.left) - 1;
+                        //return this._parseJsonType(jsonFormula.right) + '[' + list_idx + ']';
+                        break;
 
                     case 'CONTAINS':
-                        //TODO:
+                        if (uiString)
+                            return 'contains(*' + this._parseJsonType(jsonFormula.left, uiString) + '*, ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+
+                        this._isStatic = false;
+                        //return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
+                        break;
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?

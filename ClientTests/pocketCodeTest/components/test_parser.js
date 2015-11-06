@@ -283,6 +283,21 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.isStatic, true, "string join: including formula: isStatic");
     assert.equal(f.uiString, "join('hello', 3 x 6 + 2)", "string join: including formula: toString");
 
+    f.json = numberOfItems;
+    assert.equal(f.calculate(), 1, "number of list elements");
+    assert.equal(f.isStatic, false, "number of elements: isStatic");
+    assert.equal(f.uiString, "number_of_items(*listName*)", "get number elements of list: toString");
+
+    f.json = listItem;
+    assert.equal(f.calculate(), 1.0, "get list element at position");
+    assert.equal(f.isStatic, false, "get list element: isStatic");
+    assert.equal(f.uiString, "element(1, *listName*)", "get list element at position: toString");
+
+    f.json = contains;
+    assert.equal(f.calculate(), true, "check if list contains element");
+    assert.equal(f.isStatic, false, "list contains: isStatic");
+    assert.equal(f.uiString, "contains(*listName*, 1)", "check if list contains element: toString");
+
 });
 
 QUnit.test("FormulaParser: object (sprite)", function (assert) {
