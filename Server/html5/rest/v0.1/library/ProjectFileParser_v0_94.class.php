@@ -169,4 +169,34 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
 
     return $brick;
   }
+
+  protected function parseFormula($formula)
+  {
+    $type = (string)$formula->type;
+    if($type === "USER_VARIABLE")
+    {
+      $value = $this->getVariableId((string)$formula->value);
+    }
+    else if($type === "USER_LIST")
+    {
+      $value = $this->getListId((string)$formula->value);
+    }
+    else
+    {
+      $value = (string)$this->getProperty($formula, "value");
+    }
+
+    $f = new FormulaDto($type, $value);
+
+    if(property_exists($formula, "leftChild"))
+    {
+      $f->left = $this->parseFormula($formula->leftChild);
+    }
+    if(property_exists($formula, "rightChild"))
+    {
+      $f->right = $this->parseFormula($formula->rightChild);
+    }
+
+    return $f;
+  }
 }
