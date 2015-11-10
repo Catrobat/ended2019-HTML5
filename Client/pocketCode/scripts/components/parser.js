@@ -199,10 +199,13 @@ PocketCode.merge({
         }
 
         FormulaParser.prototype.merge({
-            getUiString: function (jsonFormula, variableNames) {
+            getUiString: function (jsonFormula, variableNames, listNames) {
                 if (!variableNames)
                     throw new Error('invalid argument: variableNames (lookup dictionary required)');
+                if (!listNames)
+                    throw new Error('invalid argument: listNames (lookup dictionary required)');
                 this._variableNames = variableNames;
+                this._listNames = listNames;
 
                 return this._parseJsonType(jsonFormula, true);
             },
@@ -243,20 +246,24 @@ PocketCode.merge({
                         return this._parseJsonSensor(jsonFormula, uiString);
 
                     case 'USER_VARIABLE':
-                        if (uiString) {
-                            var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.gloabl[jsonFormula.value];
+                        if (uiString)
+                        {
+                            var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.global[jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getVariable(\'' + jsonFormula.value + '\').value';
+                        return 'this._sprite.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
-                        if(uiString)
-                            return jsonFormula.value;
+                        if (uiString)
+                        {
+                            var list = this._listNames.local[jsonFormula.value] || this._listNames.global[jsonFormula.value];
+                            return '*' + list.name + '*';
+                        }
 
                         this._isStatic = false;
-                        return 'this._sprite.getList(\'' + jsonFormula.value + '\').value';
+                        return 'this._sprite.getList("' + jsonFormula.value + '").value';
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
@@ -507,33 +514,29 @@ PocketCode.merge({
                             return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
-                        //break;
 
                         //list functions
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
-                            return 'number_of_items(*' + this._parseJsonType(jsonFormula.left, uiString) + '*)';
+                            return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         this._isStatic = false;
-                        //return this._parseJsonType(jsonFormula.left) + '.length';
-                        break;
+                        return this._parseJsonType(jsonFormula.left) + '.length';
 
                     case 'LIST_ITEM':
                         if (uiString)
-                            return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', *' + this._parseJsonType(jsonFormula.right, uiString) + '*)';
+                            return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         this._isStatic = false;
                         var list_idx = this._parseJsonType(jsonFormula.left) - 1;
-                        //return this._parseJsonType(jsonFormula.right) + '[' + list_idx + ']';
-                        break;
+                        return this._parseJsonType(jsonFormula.right) + '[' + list_idx + ']';
 
                     case 'CONTAINS':
                         if (uiString)
-                            return 'contains(*' + this._parseJsonType(jsonFormula.left, uiString) + '*, ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                            return 'contains(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         this._isStatic = false;
-                        //return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
-                        break;
+                        return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?

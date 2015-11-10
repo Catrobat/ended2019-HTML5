@@ -43,7 +43,7 @@ PocketCode.Formula = (function () {
                     this.calculate = parsed.calculate;
                 }
                 this._uiString = undefined;
-                this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
+                //this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
             },
             //enumerable: false,
             //configurable: true,
@@ -51,7 +51,7 @@ PocketCode.Formula = (function () {
         uiString: {
             get: function () {
                 if (!this._uiString)
-                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getAllVariables());
+                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getAllVariables(), this._sprite.getAllLists());
                 return this._uiString;
             },
         },

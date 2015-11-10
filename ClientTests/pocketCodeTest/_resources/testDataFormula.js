@@ -37,6 +37,7 @@ var max = { "type": "FUNCTION", "value": "MAX", "right": { "type": "NUMBER", "va
 var exp = { "type": "FUNCTION", "value": "EXP", "right": null, "left": { "type": "NUMBER", "value": "0.5", "right": null, "left": null } };
 var exp2 = { "type": "FUNCTION", "value": "EXP", "right": null, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
 var min = { "type": "FUNCTION", "value": "MIN", "right": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": null } } }, "left": { "type": "NUMBER", "value": "0", "right": null, "left": null } };
+
 var string = { "type": "STRING", "value": "test length operation", "right": null, "left": null };
 var length = { "type": "FUNCTION", "value": "LENGTH", "right": null, "left": { "type": "STRING", "value": "hello world", "right": null, "left": null } };
 var length2 = { "type": "FUNCTION", "value": "LENGTH", "right": null, "left": { "type": "USER_VARIABLE", "value": "s11", "right": null, "left": null } };
@@ -45,9 +46,11 @@ var letter = { "type": "FUNCTION", "value": "LETTER", "right": { "type": "STRING
 var letter2 = { "type": "FUNCTION", "value": "LETTER", "right": { "type": "USER_VARIABLE", "value": "s11", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "10", "right": null, "left": null } };
 var stringJoin = { "type": "FUNCTION", "value": "JOIN", "right": { "type": "STRING", "value": "-work", "right": null, "left": null }, "left": { "type": "STRING", "value": "hello", "right": null, "left": null } };
 var stringJoin2 = { "type": "FUNCTION", "value": "JOIN", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "MULT", "right": { "type": "NUMBER", "value": "6", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "3", "right": null, "left": null } } }, "left": { "type": "STRING", "value": "hello", "right": null, "left": null } };
-var numberOfItems = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "listName", "left": null, "right": null }, "right": null };
-var listItem = { "type": "FUNCTION", "value": "LIST_ITEM", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": {"type": "USER_LIST", "value": "listName", "left": null, "right": null } };
-var contains = { "type": "FUNCTION", "value": "CONTAINS", "left": { "type": "USER_LIST", "value": "listName", "left": null, "right": null }, "right": { "type": "NUMBER", "value": "1", "left": null, "right": null } };
+
+var number = { "type": "NUMBER", "value": "1.0", "right": null, "left": null };
+var numberOfItems = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": null };
+var listItem = { "type": "FUNCTION", "value": "LIST_ITEM", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": {"type": "USER_LIST", "value": "s22", "left": null, "right": null } };
+var contains = { "type": "FUNCTION", "value": "CONTAINS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": { "type": "NUMBER", "value": "1", "left": null, "right": null } };
 
 var object_x = { "type": "OPERATOR", "value": "MULT", "right": { "type": "BRACKET", "value": "", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "1.00", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } }, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_X", "right": null, "left": null } };
 var object_y = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_Y", "right": null, "left": null } };
