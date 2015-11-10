@@ -274,8 +274,7 @@ PocketCode.PlayerPageController = (function () {
             this._showDialog(d);
         },
         _downloadScreenshot: function(e) {
-            alert("TODO: download");
-            //download: this._screenshotDataUrl
+            // TODO Download screenshot (as in screenshotdialog.download() or by setting window.location.href?)
         },
         dispose: function () {
             //this._pauseProject();

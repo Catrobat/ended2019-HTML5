@@ -91,7 +91,6 @@ PocketCode.Ui.Canvas = (function () {
                     //if (this.clipTo) {
                     //    fabric.util.clipContext(this, context);
                     //}
-
                     this._renderBackground(ctx);
                     //this._renderObjects(context, activeGroup);
                     var ro = this._renderingObjects;
@@ -160,6 +159,32 @@ PocketCode.Ui.Canvas = (function () {
                         }
                     }
                     return target;
+                },
+
+                __toDataURL: function(format, quality, cropping) {
+
+                    this.renderAll(true);
+
+                    var canvasEl = this.lowerCanvasEl,
+                        croppedCanvasEl = this.__getCroppedCanvas(canvasEl, cropping);
+
+                    // to avoid common confusion https://github.com/kangax/fabric.js/issues/806
+                    if (format === 'jpg') {
+                        format = 'jpeg';
+                    }
+
+                    var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
+                        ? (croppedCanvasEl || canvasEl).toDataURL('image/' + format, quality)
+                        : (croppedCanvasEl || canvasEl).toDataURL('image/' + format);
+
+                    this.contextTop && this.clearContext(this.contextTop);
+                    this.renderAll();
+
+                    if (croppedCanvasEl) {
+                        croppedCanvasEl = null;
+                    }
+
+                    return data;
                 },
             });
 
@@ -273,8 +298,8 @@ PocketCode.Ui.Canvas = (function () {
         },
         toDataURL: function () {
             //scaling = scaling || 1;
-            this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL({ multiplier: 1.0 / this._fcAdapter.scaling });
+            this._fcAdapter.setBackgroundColor('rgba(100, 100, 100, 1)');   //setting background temporarly without triggering a render
+            var dataUrl = this._fcAdapter.toDataURL();//{ multiplier: 1.0 / this._fcAdapter.scaling });
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
         },

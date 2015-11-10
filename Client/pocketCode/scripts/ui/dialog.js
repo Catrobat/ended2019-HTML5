@@ -666,9 +666,20 @@ PocketCode.Ui.merge({
                     this._btnDownload.disabled = false;
             },
             _onResizeHandler: function () {
-                this._screenshotImage.width = 200;    //TODO:
-                this._screenshotImage.height = 200;
+                var img = this._screenshotImage;
+                var scale = Math.min(this._container.width/img.naturalWidth, this._container.height/img.naturalHeight);
+                this._screenshotImage.width = img.naturalWidth * scale * 0.75;    //TODO:
+                this._screenshotImage.height = img.naturalHeight * scale * 0.75;
             },
+
+            download: function () {
+                var link = document.createElement('a');
+                link.href =  this._screenshotImage.src;
+                link.download = 'Screenshot.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         //    /* override */
         //    handleHistoryBack: function () {
         //        this.onCancel.dispatchEvent();
