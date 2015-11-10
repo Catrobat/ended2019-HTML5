@@ -298,7 +298,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         toDataURL: function () {
             //scaling = scaling || 1;
-            this._fcAdapter.setBackgroundColor('rgba(100, 100, 100, 1)');   //setting background temporarly without triggering a render
+            this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');   //setting background temporarly without triggering a render
             var dataUrl = this._fcAdapter.toDataURL();//{ multiplier: 1.0 / this._fcAdapter.scaling });
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
