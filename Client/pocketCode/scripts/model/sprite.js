@@ -338,6 +338,7 @@ PocketCode.Model.Sprite = (function () {
             this._visible = true;
             this._transparency = 0.0;
             this._brightness = 100.0;
+            this._recalculateLookOffsets();
         },
         ///**
         // * calls execute() on every brick as long as method is available
@@ -404,6 +405,19 @@ PocketCode.Model.Sprite = (function () {
             //}
             this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
         },
+
+        _recalculateLookOffsets: function() {
+            if (!this._currentLook) {
+                this._lookOffsetX = 0.0;
+                this._lookOffsetY = 0.0;
+                return;
+            }
+            var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            var rotationAngle = this._direction - 90.0;
+            this._lookOffsetX = center.length * Math.cos(center.angle - rotationAngle * Math.PI / 180.0);
+            this._lookOffsetY = center.length * Math.sin(center.angle - rotationAngle * Math.PI / 180.0);
+        },
+
         _triggerRotationChange: function (styleChanged) {
             var props = {};
             switch (this._rotationStyle) {
@@ -413,17 +427,12 @@ PocketCode.Model.Sprite = (function () {
                         props.flipX = false;
                     }
                     props.rotation = this._direction - 90.0;
-                    //recalculate x/y position and add them to props
 
-                    var center = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).center : undefined;
-                    if (center){
-                        props.x = this._positionX + center.length * Math.cos(center.angle - props.rotation * Math.PI / 180.0);
-                        props.y = this._positionY + center.length * Math.sin(center.angle - props.rotation * Math.PI / 180.0);
-                    }else{
-                        props.x = this._positionX;
-                        props.y = this._positionY;
-                    }
-
+                    // recalculate x/y position and add them to props
+                    // var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                    this._recalculateLookOffsets();
+                    props.x = this._positionX + this._lookOffsetX;
+                    props.y = this._positionY + this._lookOffsetY;
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._flipX) {
@@ -434,8 +443,8 @@ PocketCode.Model.Sprite = (function () {
                         props.rotation = 0.0;
                         //recalculate x/y position and add them to props
                         var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-                        props.x = this._positionX + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
-                        props.y = this._positionY + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.x = this._positionX + this._lookOffsetX; // + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.y = this._positionY + this._lookOffsetY; // + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
@@ -448,8 +457,8 @@ PocketCode.Model.Sprite = (function () {
                         props.rotation = 0.0;
                         //recalculate x/y position and add them to props
                         var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-                        props.x = this._positionX + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
-                        props.y = this._positionY + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.x = this._positionX + this._lookOffsetX; // + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
+                        props.y = this._positionY + this._lookOffsetY; // + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
                     break;
             }
@@ -473,19 +482,19 @@ PocketCode.Model.Sprite = (function () {
 
             var ops = {},
                 center = { length: 0, angle: 0 };
-            if (this._currentLook)
-                center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var angle = center.angle;
-            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle -= (this._direction - 90.0) * Math.PI / 180.0;
+            //if (this._currentLook)
+            //    center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            //var angle = center.angle;
+            //if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+            //    angle -= (this._direction - 90.0) * Math.PI / 180.0;
 
             if (this._positionX != x) {
                 this._positionX = x;
-                ops.x = x + center.length * Math.cos(angle);
+                ops.x = x + this._lookOffsetX; //center.length * Math.cos(angle);
             }
             if (this._positionY != y) {
                 this._positionY = y;
-                ops.y = y + center.length * Math.sin(angle);
+                ops.y = y + this._lookOffsetY; //center.length * Math.sin(angle);
             }
 
             if (ops.x !== undefined || ops.y !== undefined) {
@@ -507,14 +516,14 @@ PocketCode.Model.Sprite = (function () {
             if (this._positionX === x)
                 return false;
 
-            var center = { length: 0, angle: 0 };
-            if (this._currentLook)
-                center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var angle = center.angle;
-            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle -= (this._direction - 90.0) * Math.PI / 180.0;
+            //var center = { length: 0, angle: 0 };
+            //if (this._currentLook)
+            //    center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            //var angle = center.angle;
+            //if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+            //    angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionX = x;
-            this._triggerOnChange({ x: x + center.length * Math.cos(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
+            this._triggerOnChange({ x: x + this._lookOffsetX });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -527,15 +536,15 @@ PocketCode.Model.Sprite = (function () {
                 throw new Error('invalid argument: position');
             if (!value)// || value === 0)
                 return false;
-            var center = { length: 0, angle: 0 };
-            if (this._currentLook)
-                center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var angle = center.angle;
-            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle -= (this._direction - 90.0) * Math.PI / 180.0;
+            //var center = { length: 0, angle: 0 };
+            //if (this._currentLook)
+            //    center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            //var angle = center.angle;
+            //if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+            //    angle -= (this._direction - 90.0) * Math.PI / 180.0;
 
             this._positionX += value;
-            this._triggerOnChange({ x: this._positionX + center.length * Math.cos(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
+            this._triggerOnChange({ x: this._positionX + this._lookOffsetX });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -550,13 +559,13 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             var center = { length: 0, angle: 0 };
-            if (this._currentLook)
-                center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var angle = center.angle;
-            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle -= (this._direction - 90.0) * Math.PI / 180.0;
+            //if (this._currentLook)
+            //    center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            //var angle = center.angle;
+            //if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+            //    angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionY = y;
-            this._triggerOnChange({ y: y + center.length * Math.sin(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
+            this._triggerOnChange({ y: y + this._lookOffsetY });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -572,13 +581,13 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             var center = { length: 0, angle: 0 };
-            if (this._currentLook)
-                center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var angle = center.angle;
-            if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
-                angle -= (this._direction - 90.0) * Math.PI / 180.0;
+            //if (this._currentLook)
+            //    center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+            //var angle = center.angle;
+            //if (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND)
+            //    angle -= (this._direction - 90.0) * Math.PI / 180.0;
             this._positionY += value;
-            this._triggerOnChange({ y: this._positionY + center.length * Math.sin(angle) });//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
+            this._triggerOnChange({ y: this._positionY + this._lookOffsetY});//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
         },
         /**
@@ -722,6 +731,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._rotationStyle = value;
+            this._recalculateLookOffsets();
             this._triggerRotationChange(true);//{ rotationStyle: this._rotationStyle });
             return true;
         },
@@ -743,10 +753,11 @@ PocketCode.Model.Sprite = (function () {
                     this._currentLook = look;
                     look = this._gameEngine.getLookImage(imageId);
                     update = { look: look.canvas };
-                    center = look.center,
-                    angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
-                    update.x = this._positionX + center.length * Math.cos(angle);
-                    update.y = this._positionY + center.length * Math.sin(angle);
+                    center = look.center;
+                    this._recalculateLookOffsets();
+                    // angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
+                    update.x = this._positionX + this._lookOffsetX;
+                    update.y = this._positionY + this._lookOffsetY;
                     this._triggerOnChange(update);
                     return true;
                 }
@@ -780,11 +791,12 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
             var look = this._gameEngine.getLookImage(this._currentLook.imageId),
-                update = { look: look.canvas },
-                center = look.center,
-                angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
-            update.x = this._positionX + center.length * Math.cos(angle);
-            update.y = this._positionY + center.length * Math.sin(angle);
+                update = { look: look.canvas };
+            this._recalculateLookOffsets();
+            //center = look.center,
+            //angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
+            update.x = this._positionX + this._lookOffsetX;
+            update.y = this._positionY + this._lookOffsetY;
             this._triggerOnChange(update);
             return true;
         },
@@ -894,11 +906,11 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._changeTransparency(value);
-                    //break;
+                //break;
 
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._changeBrightness(value);
-                    //break;
+                //break;
                 case PocketCode.GraphicEffect.COLOR:
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
@@ -1032,11 +1044,11 @@ PocketCode.Model.Sprite = (function () {
         /* override */
         dispose: function () {
             this.stopScripts();
-            
+
             this._gameEngine = undefined;   //make sure the game engine is not disposed
             var bricks = this._bricks;
             for (var i = 0, l = bricks.length; i < l; i++) {  //remove handlers
-                var brick = bricks[i];    
+                var brick = bricks[i];
                 if (brick.onExecuted)  //supported by all root container bricks
                     brick.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
             }
