@@ -146,14 +146,13 @@ PocketCode.Model.Sprite = (function () {
                     ],
                 };
                 if (this._currentLook) {
-                    var look = this._gameEngine.getLookImage(this._currentLook.imageId),
-                        center = look.center;
+                    var look = this._gameEngine.getLookImage(this._currentLook.imageId);
 
                     obj.merge({
                         look: look.canvas,
                         scaling: 1 / look.initialScaling,
-                        x: this._positionX + center.length * Math.cos(center.angle),
-                        y: this._positionY + center.length * Math.sin(center.angle),
+                        x: this._positionX + this._lookOffsetX,//center.length * Math.cos(center.angle),
+                        y: this._positionY + this._lookOffsetY,//center.length * Math.sin(center.angle),
                     });
                 }
                 return obj;
