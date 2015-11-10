@@ -394,7 +394,7 @@ PocketCode.Model.Sprite = (function () {
         },
         /**
          * @event helper
-         * @param propertyCollection
+         * @param properties
          * @private
          */
         _triggerOnChange: function (properties) {
@@ -414,9 +414,16 @@ PocketCode.Model.Sprite = (function () {
                     }
                     props.rotation = this._direction - 90.0;
                     //recalculate x/y position and add them to props
-                    var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-                    props.x = this._positionX + center.length * Math.cos(center.angle - props.rotation * Math.PI / 180.0);
-                    props.y = this._positionY + center.length * Math.sin(center.angle - props.rotation * Math.PI / 180.0);
+
+                    var center = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).center : undefined;
+                    if (center){
+                        props.x = this._positionX + center.length * Math.cos(center.angle - props.rotation * Math.PI / 180.0);
+                        props.y = this._positionY + center.length * Math.sin(center.angle - props.rotation * Math.PI / 180.0);
+                    }else{
+                        props.x = this._positionX;
+                        props.y = this._positionY;
+                    }
+
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._flipX) {
@@ -558,6 +565,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         changePositionY: function (value) {
+
             if (isNaN(value))
                 throw new Error('invalid argument: position');
             if (!value)// || value === 0)
