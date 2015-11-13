@@ -7,6 +7,7 @@ PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
     function Device(soundManager) {
+		console.log("Device constructor");
         this._soundMgr = soundManager;
 
         this._flashlightOn = false;
@@ -16,7 +17,6 @@ PocketCode.Device = (function () {
         this.isTouch = SmartJs.Device.isTouch;
 
         //events
-        //this._onKeypress = new SmartJs.Event.Event(this);
         //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
 
         //init state variables: http://www.html5rocks.com/en/tutorials/device/orientation/
@@ -235,18 +235,6 @@ PocketCode.Device = (function () {
     });
 
     //events
-    //Object.defineProperties(Device.prototype, {
-    //	onKeypress: {
-    //		get: function () { return this._onKeypress; },
-    //		//enumerable: false,
-    //		//configurable: true,
-    //	},
-    //	onSupportChange: {
-    //		get: function () { return this._onSupportChange; },
-    //		//enumerable: false,
-    //		//configurable: true,
-    //	},
-    //});
 
     //methods
     Device.prototype.merge({
@@ -317,7 +305,7 @@ PocketCode.Device = (function () {
             }
             else if (e.accelerationIncludingGravity) {
                 this._x = e.accelerationIncludingGravity.x;
-                this._y = e.accelerationIncludingGravity.y;
+                this._y = e.accelerationIncludingGravity.y;0
                 this._z = e.accelerationIncludingGravity.z;
             }
 
@@ -342,4 +330,144 @@ PocketCode.Device = (function () {
     });
 
     return Device;
+})();
+
+PocketCode.DeviceEmulatior = (function() {
+	DeviceEmulatior.extends(PocketCode.Device);
+	
+	function DeviceEmulatior(soundManager) {
+		this._defaultInclination = {
+			X: 0,
+			Y: 0
+		};
+		this._inclinationLimits = {
+			X_MIN: -90,
+			X_MAX: 90,
+			Y_MIN: -90,
+			Y_MAX: 90
+		};
+		this._inclinationIncr = {
+			X: 15,
+			Y: 15
+		};
+		this.inclinationTimer = 100;
+		
+		// Arrow Keys 
+		this._keyCode = {
+			LEFT: 37,
+			RIGHT: 39,
+			UP: 38,
+			DOWN: 40
+		};
+		
+		/* Alternative Keys
+		this._keyCode = {
+			LEFT: 188, // ,
+			RIGHT: 189, // -
+			UP: 192,  // .
+			DOWN: 190 // ö
+		};*/
+		
+		//key down
+        this._keyPress = {
+            LEFT: false,
+            RIGHT: false,
+            UP: false,
+			DOWN: false
+		};
+		
+		this._resetInclinationX();
+		this._resetInclinationY();
+        this._addDomListener(window, 'keydown', this._keyDown);
+		this._addDomListener(window, 'keyup', this._keyUp);
+		
+		setInterval(
+			(function(self) {         //Self-executing func which takes 'this' as self
+				return function() {   //Return a function in the context of 'self'
+					self._inclinationTimerTick(); //Thing you wanted to run as non-window 'this'
+				}
+			})(this), this.inclinationTimer     //normal interval, 'this' scope not impacted here.
+		); 
+	}
+	//properties
+	
+	//methods
+    DeviceEmulatior.prototype.merge({
+        _keyDown: function (e) {
+			switch(e.keyCode)
+			{
+				case this._keyCode.LEFT:
+					this._keyPress.LEFT = true;
+					break;
+				case this._keyCode.RIGHT:
+					this._keyPress.RIGHT = true;
+					break;
+				case this._keyCode.UP:
+					this._keyPress.UP = true;
+					break;
+				case this._keyCode.DOWN:
+					this._keyPress.DOWN = true;
+					break;
+			}
+        },
+		_keyUp: function (e) {
+			switch(e.keyCode)
+			{
+				case this._keyCode.LEFT:
+					this._keyPress.LEFT = false;
+					if(!this._keyPress.RIGHT)
+						this._resetInclinationX();
+					break;
+				case this._keyCode.RIGHT:
+					this._keyPress.RIGHT = false;
+					if(!this._keyPress.LEFT)
+						this._resetInclinationX();
+					break;
+				case this._keyCode.UP:
+					this._keyPress.UP = false;
+					if(!this._keyPress.DOWN)
+						this._resetInclinationY();
+					break;
+				case this._keyCode.DOWN:
+					this._keyPress.DOWN = false;
+					if(!this._keyPress.UP)
+						this._resetInclinationY();
+					break;
+			}
+        },
+		_resetInclinationX: function() {
+			this._sensorEmulatedData.X_INCLINATION = this._defaultInclination.X;
+		},
+		_resetInclinationY: function() {
+			this._sensorEmulatedData.Y_INCLINATION = this._defaultInclination.Y;
+		},
+		_inclinationTimerTick: function() {
+			if(this._keyPress.LEFT && !this._keyPress.RIGHT) {
+				// left
+				this._sensorEmulatedData.X_INCLINATION += this._inclinationIncr.X;
+				if(this._sensorEmulatedData.X_INCLINATION > this._inclinationLimits.X_MAX)
+					this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MAX;
+			}
+			else if(this._keyPress.RIGHT && !this._keyPress.LEFT) {
+				// right
+				this._sensorEmulatedData.X_INCLINATION -= this._inclinationIncr.X;
+				if(this._sensorEmulatedData.X_INCLINATION < this._inclinationLimits.X_MIN)
+					this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MIN;
+			}
+			if(this._keyPress.UP && !this._keyPress.DOWN) {
+				// up
+				this._sensorEmulatedData.Y_INCLINATION += this._inclinationIncr.Y;
+				if(this._sensorEmulatedData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
+					this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
+
+			}
+			else if(!this._keyPress.UP && this._keyPress.DOWN) {
+				// down
+				this._sensorEmulatedData.Y_INCLINATION -= this._inclinationIncr.Y;
+					if(this._sensorEmulatedData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
+				this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
+			}
+		}
+	});
+	return DeviceEmulatior;
 })();

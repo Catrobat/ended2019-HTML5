@@ -76,7 +76,6 @@
 	  device = new PocketCode.Device();
       if ((window.DeviceMotionEvent) || ('listenForDeviceMovement' in window)) {
         window.addEventListener('devicemotion', deviceMotionHandler, false);
-		
       } else {
         document.getElementById("dmEvent").innerHTML = "Not supported on your device or browser.  Sorry."
       }
