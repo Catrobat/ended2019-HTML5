@@ -7,7 +7,6 @@ PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
     function Device(soundManager) {
-		console.log("Device constructor");
         this._soundMgr = soundManager;
 
         this._flashlightOn = false;
@@ -360,13 +359,13 @@ PocketCode.DeviceEmulatior = (function() {
 			DOWN: 40
 		};
 		
-		/* Alternative Keys
-		this._keyCode = {
+		// Alternative Keys
+		this._alternativeKeyCode = {
 			LEFT: 188, // ,
 			RIGHT: 189, // -
 			UP: 192,  // .
 			DOWN: 190 // ö
-		};*/
+		};
 		
 		//key down
         this._keyPress = {
@@ -396,15 +395,19 @@ PocketCode.DeviceEmulatior = (function() {
         _keyDown: function (e) {
 			switch(e.keyCode)
 			{
+				case this._alternativeKeyCode.LEFT:
 				case this._keyCode.LEFT:
 					this._keyPress.LEFT = true;
 					break;
+				case this._alternativeKeyCode.RIGHT:
 				case this._keyCode.RIGHT:
 					this._keyPress.RIGHT = true;
 					break;
+				case this._alternativeKeyCode.UP:
 				case this._keyCode.UP:
 					this._keyPress.UP = true;
 					break;
+				case this._alternativeKeyCode.DOWN:
 				case this._keyCode.DOWN:
 					this._keyPress.DOWN = true;
 					break;
@@ -413,21 +416,25 @@ PocketCode.DeviceEmulatior = (function() {
 		_keyUp: function (e) {
 			switch(e.keyCode)
 			{
+				case this._alternativeKeyCode.LEFT:
 				case this._keyCode.LEFT:
 					this._keyPress.LEFT = false;
 					if(!this._keyPress.RIGHT)
 						this._resetInclinationX();
 					break;
+				case this._alternativeKeyCode.RIGHT:
 				case this._keyCode.RIGHT:
 					this._keyPress.RIGHT = false;
 					if(!this._keyPress.LEFT)
 						this._resetInclinationX();
 					break;
+				case this._alternativeKeyCode.UP:
 				case this._keyCode.UP:
 					this._keyPress.UP = false;
 					if(!this._keyPress.DOWN)
 						this._resetInclinationY();
 					break;
+				case this._alternativeKeyCode.DOWN:
 				case this._keyCode.DOWN:
 					this._keyPress.DOWN = false;
 					if(!this._keyPress.UP)
