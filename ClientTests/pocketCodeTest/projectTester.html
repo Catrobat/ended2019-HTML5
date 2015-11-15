@@ -1,0 +1,183 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Michael Pittner
+ * Date: 13.11.2015
+ * Time: 21:18
+ */
+?>
+
+<script src="./../../Client/player/pocketCodePlayer.js"></script>
+
+<!-- smart js -->
+
+<script src="../../Client/smartJs/sj.js"></script>
+<script src="../../Client/smartJs/sj-core.js"></script>
+<script src="../../Client/smartJs/sj-event.js"></script>
+<script src="../../Client/smartJs/sj-components.js"></script>
+<script src="../../Client/smartJs/sj-animation.js"></script>
+<script src="../../Client/smartJs/sj-communication.js"></script>
+<script src="../../Client/smartJs/sj-ui.js"></script>
+
+<script src="./../../Client/pocketCode/scripts/components/proxy.js"></script>
+
+
+<style type="text/css">
+  .error_element:nth-child(odd){
+  background:#ccc;
+  }
+</style>
+
+<script type="text/javascript">
+
+  var success;
+  var failure;
+  var allProjectsCount = 0;
+  var errorTypes = [];
+  var detailErrorTypes = [];
+
+  function incrSuccess() {
+    success++;
+    document.getElementById( 'succes' ).innerHTML = success;
+
+    if( ( success + failure ) == allProjectsCount )
+      printError();
+  }
+
+  function incrFailure() {
+    failure++;
+    document.getElementById( 'failure' ).innerHTML = failure;
+
+    if( ( success + failure ) == allProjectsCount )
+      printError();
+  }
+
+  function getTestProjects() {
+    // Set Button to disable 2 tests running
+    document.getElementById( 'startButton' ).disabled = true;
+    document.getElementById( 'startButton' ).value = "testing...";
+
+    // init vars
+    document.getElementById('errors').innerHTML = "";
+    success = 0;
+    failure = 0;
+    errorTypes = [];
+    detailErrorTypes = [];
+
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    // get limit of text-input
+    var limit = document.getElementById( 'maxTestProjects').value;
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit});
+
+    var onSuccessProjectsHandler = function(e)
+    {
+
+      var receivedObject = e.responseJson;
+      allProjectsCount = receivedObject.items.length;
+      document.getElementById( 'sumOfAllProjects1' ).innerHTML = allProjectsCount;
+      document.getElementById( 'sumOfAllProjects2' ).innerHTML = allProjectsCount;
+
+      var i = 0;
+      for( i; i < allProjectsCount; i++ ) {
+        getSingleTestProject( receivedObject.items[i].id );
+      }
+    };
+
+    var onErrorProjectsHandler = function(e)
+    {
+      console.log("---- ERROR ----");
+      console.log( e );
+    };
+
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
+  }
+
+  function getSingleTestProject( id ) {
+    var url = PocketCode.Services.PROJECT;
+    sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: id });
+
+    var onSuccessProjectsHandler = function()
+    {
+      incrSuccess();
+    };
+
+    var onErrorProjectsHandler = function(e)
+    {
+      var receivedObject = e.responseJson;
+      var type = "";
+      if((receivedObject instanceof Object)) {
+        type = receivedObject.type; // e.g. ProjectNotFoundException
+      } else {
+        type = "NO EXCEPTION DETECTED!";
+      }
+
+      var detailError = [];
+      detailError[0] = id;
+      detailError[1] = type;
+
+      detailErrorTypes.push( detailError );
+
+      errorTypes.push( type );
+      incrFailure();
+    };
+
+    sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+    sr._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    PocketCode.Proxy.send(sr);
+  }
+
+  function printError() {
+
+    errorTypes.sort();
+
+    var current = null;
+    var cnt = 0;
+    var i;
+
+    for (i = 0; i < errorTypes.length; i++) {
+      if (errorTypes[i] != current) {
+        if (cnt > 0) {
+          document.getElementById('errors').innerHTML += "<div class='error_element'>" + "<b>" + cnt + "</b>" + "x " + current + '</div>';
+        }
+        current = errorTypes[i];
+        cnt = 1;
+      } else {
+        cnt++;
+      }
+    }
+    // print last error
+    if (cnt > 0) {
+      document.getElementById('errors').innerHTML += "<div class='error_element'>" + "<b>" + cnt + "</b>" + "x " + current + '</div>';
+    }
+
+    // Print empty Line + headline details
+    document.getElementById('errors').innerHTML += "<div class='error_element'>" + "&nbsp;" + "</div>";
+    document.getElementById('errors').innerHTML += "<div class='error_element'>" + "Details:" + "</div>";
+
+
+    // Print Detailed Error (which ID has which error)
+    for( i = 0; i < detailErrorTypes.length; i++ ) {
+      document.getElementById('errors').innerHTML += "<div class='error_element'>" + "<b>" + detailErrorTypes[i][0] + "</b>" + ": " + detailErrorTypes[i][1] + '</div>';
+    }
+
+    // Reset Test Start Button
+    document.getElementById( 'startButton' ).value = "Start Test";
+    document.getElementById( 'startButton' ).disabled = false;
+
+  }
+
+</script>
+
+
+
+
+Project Limit:
+<input id='maxTestProjects' title='Limit of Projects which will be fetched' style='width:50px;' type='text' onkeydown='if (event.keyCode == 13) { getTestProjects(); }' value='100000'/>&nbsp;
+<input type='button' id='startButton' value='Start Test' onclick='getTestProjects()'/><br/><br/>
+Results:<br/>
+<div style='color:#46b221;' id='successresult'><b><a id='succes'>0</a></b> of <a id='sumOfAllProjects1'>0</a> Projects loaded correctly.</div>
+<div style='color:#d21c0d;' id='failureresult'><b><a id='failure'>0</a></b> of <a id='sumOfAllProjects2'>0</a> Projects loaded with an Error.</div>
+<br/><div id='errors' style='width:300px'></div>
+
