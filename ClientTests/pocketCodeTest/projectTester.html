@@ -38,7 +38,7 @@
 
   function incrSuccess() {
     success++;
-    document.getElementById( 'succes' ).innerHTML = success;
+    document.getElementById( 'success' ).innerHTML = success;
 
     if( ( success + failure ) == allProjectsCount )
       printError();
@@ -53,9 +53,13 @@
   }
 
   function getTestProjects() {
+
     // Set Button to disable 2 tests running
     document.getElementById( 'startButton' ).disabled = true;
-    document.getElementById( 'startButton' ).value = "testing...";
+    document.getElementById( 'startButton' ).value = "Testing...";
+
+    document.getElementById( 'testAll' ).disabled = true;
+    document.getElementById( 'testAll' ).value = "Testing...";
 
     // init vars
     document.getElementById('errors').innerHTML = "";
@@ -68,6 +72,7 @@
     // get limit of text-input
     var limit = document.getElementById( 'maxTestProjects').value;
     var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit});
+
 
     var onSuccessProjectsHandler = function(e)
     {
@@ -110,7 +115,7 @@
       if((receivedObject instanceof Object)) {
         type = receivedObject.type; // e.g. ProjectNotFoundException
       } else {
-        type = "NO EXCEPTION DETECTED!";
+        type = "Unknown Error (no Json Exception)";
       }
 
       var detailError = [];
@@ -126,6 +131,50 @@
     sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
     sr._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
     PocketCode.Proxy.send(sr);
+  }
+
+  function testAll() {
+
+    document.getElementById( 'startButton' ).disabled = true;
+    document.getElementById( 'startButton' ).value = "Testing...";
+
+    document.getElementById( 'testAll' ).disabled = true;
+    document.getElementById( 'testAll' ).value = "Testing...";
+
+    // init vars
+    document.getElementById('errors').innerHTML = "";
+    success = 0;
+    failure = 0;
+    errorTypes = [];
+    detailErrorTypes = [];
+
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    // get limit of text-input
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: 5000});
+
+    var onSuccessProjectsHandler = function(e)
+    {
+
+      var receivedObject = e.responseJson;
+      allProjectsCount = receivedObject.items.length;
+      document.getElementById( 'sumOfAllProjects1' ).innerHTML = allProjectsCount;
+      document.getElementById( 'sumOfAllProjects2' ).innerHTML = allProjectsCount;
+
+      var i = 0;
+      for( i; i < allProjectsCount; i++ ) {
+        getSingleTestProject( receivedObject.items[i].id );
+      }
+    };
+
+    var onErrorProjectsHandler = function(e)
+    {
+      console.log("---- ERROR ----");
+      console.log( e );
+    };
+
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
   }
 
   function printError() {
@@ -174,10 +223,11 @@
 
 
 Project Limit:
-<input id='maxTestProjects' title='Limit of Projects which will be fetched' style='width:50px;' type='text' onkeydown='if (event.keyCode == 13) { getTestProjects(); }' value='100000'/>&nbsp;
+<input id='maxTestProjects' title='Limit of Projects which will be fetched' style='width:50px;' type='text' onkeydown='if (event.keyCode == 13) { getTestProjects(); }' value=''/>&nbsp;
 <input type='button' id='startButton' value='Start Test' onclick='getTestProjects()'/><br/><br/>
+<input type='button' value='Test All' id="testAll" onclick='testAll()'/><br/><br/>
 Results:<br/>
-<div style='color:#46b221;' id='successresult'><b><a id='succes'>0</a></b> of <a id='sumOfAllProjects1'>0</a> Projects loaded correctly.</div>
+<div style='color:#46b221;' id='successresult'><b><a id='success'>0</a></b> of <a id='sumOfAllProjects1'>0</a> Projects loaded correctly.</div>
 <div style='color:#d21c0d;' id='failureresult'><b><a id='failure'>0</a></b> of <a id='sumOfAllProjects2'>0</a> Projects loaded with an Error.</div>
 <br/><div id='errors' style='width:300px'></div>
 
