@@ -33,6 +33,7 @@
   var success;
   var failure;
   var allProjectsCount = 0;
+  var totalProjectNumber = 0;
   var errorTypes = [];
   var detailErrorTypes = [];
 
@@ -133,6 +134,30 @@
     PocketCode.Proxy.send(sr);
   }
 
+  window.onload = function() {
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    // get limit of text-input
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: 0});
+
+    var onSuccessProjectsHandler = function(e)
+    {
+      var receivedObject = e.responseJson;
+      totalProjectNumber = receivedObject.totalProjects;
+      document.getElementById( 'testAll').disabled = false;
+      console.log( totalProjectNumber );
+    };
+
+    var onErrorProjectsHandler = function(e)
+    {
+      console.log("---- ERROR ----");
+      console.log( e );
+    };
+
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
+  };
+
   function testAll() {
 
     document.getElementById( 'startButton' ).disabled = true;
@@ -150,7 +175,7 @@
 
     var url = PocketCode.Services.PROJECT_SEARCH;
     // get limit of text-input
-    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: 5000});
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: totalProjectNumber});
 
     var onSuccessProjectsHandler = function(e)
     {
@@ -215,6 +240,10 @@
     document.getElementById( 'startButton' ).value = "Start Test";
     document.getElementById( 'startButton' ).disabled = false;
 
+    document.getElementById( 'testAll' ).value = "Test All";
+    document.getElementById( 'testAll' ).disabled = false;
+
+
   }
 
 </script>
@@ -225,7 +254,7 @@
 Project Limit:
 <input id='maxTestProjects' title='Limit of Projects which will be fetched' style='width:50px;' type='text' onkeydown='if (event.keyCode == 13) { getTestProjects(); }' value=''/>&nbsp;
 <input type='button' id='startButton' value='Start Test' onclick='getTestProjects()'/><br/><br/>
-<input type='button' value='Test All' id="testAll" onclick='testAll()'/><br/><br/>
+<input type='button' value='Test All' id="testAll" onclick='testAll()' disabled/><br/><br/>
 Results:<br/>
 <div style='color:#46b221;' id='successresult'><b><a id='success'>0</a></b> of <a id='sumOfAllProjects1'>0</a> Projects loaded correctly.</div>
 <div style='color:#d21c0d;' id='failureresult'><b><a id='failure'>0</a></b> of <a id='sumOfAllProjects2'>0</a> Projects loaded with an Error.</div>
