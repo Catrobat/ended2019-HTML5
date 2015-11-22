@@ -75,9 +75,22 @@ PocketCode.Device = (function () {
         else {
             //console.log("window orientation not supported!");
         }
+		
+		//events
+		this._onSpaceKeyDown = new SmartJs.Event.Event(this);
     }
 
-    //properties
+    //events
+    Object.defineProperties(Device.prototype, {
+        onSpaceKeyDown: {
+			get: function() {
+				return this._onSpaceKeyDown;
+			},
+		},
+	});
+	//^^ this._onSpaceKeyDown.dispatch();
+
+	//properties
     Object.defineProperties(Device.prototype, {
         unsupportedFeatureDetected: {
             value: false,
@@ -346,8 +359,8 @@ PocketCode.DeviceEmulatior = (function() {
 			Y_MAX: 90
 		};
 		this._inclinationIncr = {
-			X: 15,
-			Y: 15
+			X: 10,
+			Y: 10
 		};
 		this.inclinationTimer = 100;
 		
@@ -356,7 +369,8 @@ PocketCode.DeviceEmulatior = (function() {
 			LEFT: 37,
 			RIGHT: 39,
 			UP: 38,
-			DOWN: 40
+			DOWN: 40,
+			SPACE: 32
 		};
 		
 		// Alternative Keys
@@ -364,7 +378,8 @@ PocketCode.DeviceEmulatior = (function() {
 			LEFT: 188, // ,
 			RIGHT: 189, // -
 			UP: 192,  // .
-			DOWN: 190 // ö
+			DOWN: 190, // oe
+			SPACE: 32
 		};
 		
 		//key down
@@ -372,8 +387,19 @@ PocketCode.DeviceEmulatior = (function() {
             LEFT: false,
             RIGHT: false,
             UP: false,
-			DOWN: false
+			DOWN: false,
+			SPACE: false
 		};
+		
+		//key down time
+        this._keyDownTime = {
+            LEFT: 0,
+            RIGHT: 0,
+            UP: 0,
+			DOWN: 0
+		};
+		
+		this._keyDownTimeDefault = 3;
 		
 		this._resetInclinationX();
 		this._resetInclinationY();
@@ -397,19 +423,28 @@ PocketCode.DeviceEmulatior = (function() {
 			{
 				case this._alternativeKeyCode.LEFT:
 				case this._keyCode.LEFT:
+					this._keyDownTime.LEFT = this._keyDownTimeDefault;
 					this._keyPress.LEFT = true;
 					break;
 				case this._alternativeKeyCode.RIGHT:
 				case this._keyCode.RIGHT:
+					this._keyDownTime.RIGHT = this._keyDownTimeDefault;
 					this._keyPress.RIGHT = true;
 					break;
 				case this._alternativeKeyCode.UP:
 				case this._keyCode.UP:
+					this._keyDownTime.UP = this._keyDownTimeDefault;
 					this._keyPress.UP = true;
 					break;
 				case this._alternativeKeyCode.DOWN:
 				case this._keyCode.DOWN:
+					this._keyDownTime.DOWN = this._keyDownTimeDefault;
 					this._keyPress.DOWN = true;
+					break;
+				case this._alternativeKeyCode.SPACE:
+				case this._keyCode.SPACE:
+					this._keyPress.SPACE = true;
+					this._onSpaceKeyDown.dispatchEvent();
 					break;
 			}
         },
@@ -440,6 +475,10 @@ PocketCode.DeviceEmulatior = (function() {
 					if(!this._keyPress.UP)
 						this._resetInclinationY();
 					break;
+				case this._alternativeKeyCode.SPACE:
+				case this._keyCode.SPACE:
+					this._keyPress.SPACE = false;
+					break;
 			}
         },
 		_resetInclinationX: function() {
@@ -451,18 +490,21 @@ PocketCode.DeviceEmulatior = (function() {
 		_inclinationTimerTick: function() {
 			if(this._keyPress.LEFT && !this._keyPress.RIGHT) {
 				// left
-				this._sensorEmulatedData.X_INCLINATION += this._inclinationIncr.X;
+				this._keyDownTime.LEFT += 2;
+				this._sensorEmulatedData.X_INCLINATION += this._inclinationIncr.X + this._keyDownTime.LEFT;
 				if(this._sensorEmulatedData.X_INCLINATION > this._inclinationLimits.X_MAX)
 					this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MAX;
 			}
 			else if(this._keyPress.RIGHT && !this._keyPress.LEFT) {
 				// right
+				this._keyDownTime.RIGHT += 1;
 				this._sensorEmulatedData.X_INCLINATION -= this._inclinationIncr.X;
 				if(this._sensorEmulatedData.X_INCLINATION < this._inclinationLimits.X_MIN)
 					this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MIN;
 			}
 			if(this._keyPress.UP && !this._keyPress.DOWN) {
 				// up
+				this._keyDownTime.UP += 1;
 				this._sensorEmulatedData.Y_INCLINATION += this._inclinationIncr.Y;
 				if(this._sensorEmulatedData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
 					this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
@@ -470,6 +512,7 @@ PocketCode.DeviceEmulatior = (function() {
 			}
 			else if(!this._keyPress.UP && this._keyPress.DOWN) {
 				// down
+				this._keyDownTime.DOWN += 1;
 				this._sensorEmulatedData.Y_INCLINATION -= this._inclinationIncr.Y;
 					if(this._sensorEmulatedData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
 				this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MIN;

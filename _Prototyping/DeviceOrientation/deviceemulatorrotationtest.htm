@@ -87,9 +87,14 @@
 
     var count = 0;
     init();
-    function init() {
+	
+	function init() {
+		var handler = function(e) {
+			console.log('space pressed');
+		}
+    
 	 device = new PocketCode.DeviceEmulatior();
-	 
+	 device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(handler, this));
 	 setInterval(function(){ this.deviceOrientationHandler(); }, 100);
     }
   
