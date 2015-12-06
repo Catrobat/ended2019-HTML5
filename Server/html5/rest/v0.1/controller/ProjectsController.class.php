@@ -324,9 +324,9 @@ class ProjectsController extends BaseController
       //fwrite($fp, $objData);
       //fclose($fp);
 
-              return $project;
-            }
-            
+        return $project;
+      }
+
       //save for caching
       $objData = serialize($project);
       $filePath = $cacheDir . "code.cache";

@@ -17,4 +17,4 @@ class JsonView extends BaseView
              print_r($outputObject);
          }
    }
-} 
+}

@@ -298,18 +298,17 @@ class ProjectFileParser
 
           //get the i-th entry with the current name from a mixed child list
           $found = false;
-          foreach($c->children() as $i)
-          {
-            if($i->getName() === $ref)
-            {
-              if($idx === 0)
-              {
+
+          if( !is_object( $c ) )
+            throw new Exception( "No Object" );
+
+          foreach ($c->children() as $i) {
+            if ($i->getName() === $ref) {
+              if ($idx === 0) {
                 $found = true;
                 $c = $i;
                 break;
-              }
-              else
-              {
+              } else {
                 $idx--;
               }
               //increment the counter to get the item we're searching for

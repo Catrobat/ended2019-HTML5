@@ -13,6 +13,8 @@ PocketCode.merge({
     _serviceEndpoint: function () {
         switch (window.location.hostname) {
             case "localhost":
+                // To test with local projects
+                //return 'http://localhost/html5/rest/v0.1/';
             case "web-test.catrob.at":
                 return 'https://web-test.catrob.at/html5/rest/v0.1/';
             default:
