@@ -301,6 +301,7 @@ class ProjectsController extends BaseController
           case 0.94:
           case 0.95:
           case 0.96:
+          case 0.97:
             $parser = new ProjectFileParser_v0_94($projectId, $resourceRoot, $cacheDir, $xml);
             break;
           default:
