@@ -70,13 +70,12 @@ class ProjectsController extends BaseController
     {
       $info = $data->CatrobatInformation;
       $project = $data->CatrobatProjects[0];
-    }
-    catch(Exception $e)
+    } catch(Exception $e)
     {
       throw new ProjectNotFoundException($e);
     }
     $details = new ProjectDetailsDto($projectId, $project->ProjectName, $project->Description, $info->BaseUrl,
-                                     $project->ScreenshotBig, $project->Author);
+      $project->ScreenshotBig, $project->Author);
 
     //include data urls if requested
     if(isset($this->request->imgDataMax))
@@ -89,45 +88,52 @@ class ProjectsController extends BaseController
         $details->baseUrl = ""; //delete base url to avoid error (wrong url) due to client side concatenation
       }
     }
+    print_r($details);
 
     return $details;
   }
 
-    //zip file helper methods
-    private function extractFilenames(\ZipArchive $zipArchive)
+  //zip file helper methods
+  private function extractFilenames(\ZipArchive $zipArchive)
+  {
+    $filenames = array();
+    $fileCount = $zipArchive->numFiles;
+    for($i = 0; $i < $fileCount; $i++)
     {
-        $filenames = array();
-        $fileCount = $zipArchive->numFiles;
-        for ($i = 0; $i < $fileCount; $i++) {
-                if (($filename = $this->extractFilename($zipArchive, $i)) !== false) {
-                        $filenames[] = $filename;
-                }
-        }
-        return $filenames;
+      if(($filename = $this->extractFilename($zipArchive, $i)) !== false)
+      {
+        $filenames[] = $filename;
+      }
     }
-    private function extractFilename(\ZipArchive $zipArchive, $fileIndex)
+    return $filenames;
+  }
+
+  private function extractFilename(\ZipArchive $zipArchive, $fileIndex)
+  {
+    $entry = $zipArchive->statIndex($fileIndex);
+    // convert Windows directory separator to Unix style
+    $filename = str_replace('\\', '/', $entry['name']);
+    if($this->isValidPath($filename))
     {
-        $entry = $zipArchive->statIndex($fileIndex);
-        // convert Windows directory separator to Unix style
-        $filename  = str_replace('\\', '/', $entry['name']);
-        if ($this->isValidPath($filename)) {
-                return $filename;
-        }
-        throw new \Exception('Invalid filename path in zip archive');
+      return $filename;
     }
-    private function isValidPath($path)
+    throw new \Exception('Invalid filename path in zip archive');
+  }
+
+  private function isValidPath($path)
+  {
+    $pathParts = explode('/', $path);
+    if(!strncmp($path, '/', 1) ||
+      array_search('..', $pathParts) !== false ||
+      strpos($path, ':') !== false
+    )
     {
-        $pathParts = explode('/', $path);
-        if (!strncmp($path, '/', 1) ||
-                array_search('..', $pathParts) !== false ||
-                strpos($path, ':') !== false)
-        {
-                return false;
-        }
-        return true;
+      return false;
     }
-        
-    
+    return true;
+  }
+
+
   private function getProject($projectId)
   {
     $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/resources/programs/");
@@ -227,9 +233,10 @@ class ProjectsController extends BaseController
         //    throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
         //  }
         //}
-        if($res === true) {
-            //extract file names
-            $fileNames = $this->extractFilenames($zip);
+        if($res === true)
+        {
+          //extract file names
+          $fileNames = $this->extractFilenames($zip);
 
           // extract it to the path we determined above
           $success = $zip->extractTo($cacheDir, $fileNames);
@@ -243,8 +250,7 @@ class ProjectsController extends BaseController
         {
           throw new InvalidProjectFileException("invalid project archive or server setup");
         }
-      }
-      catch(Exception $e)
+      } catch(Exception $e)
       {
         throw new Exception("error extracting project (zip) file: " . $e);
       }
@@ -266,8 +272,7 @@ class ProjectsController extends BaseController
       {
         //get catrobat file version
         $fileVersion = floatval($xml->header->catrobatLanguageVersion);
-      }
-      catch(Exception $e)
+      } catch(Exception $e)
       {
         throw new FileParserException("catrobat language version not found or parsed correctly");
       }
@@ -311,19 +316,21 @@ class ProjectsController extends BaseController
       }
 
       $project = $parser->getProject();
-      if ($project instanceof Exception) {
+      if($project instanceof Exception)
+      {
         //delete our cache
-        try {
-            FileHelper::deleteDirectory($cacheDir);
+        try
+        {
+          FileHelper::deleteDirectory($cacheDir);
+        } catch(Exception $e)
+        {
+          //silent catch: an unhandled exception might be thown if the zip archive was not valid
         }
-        catch(Exception $e) {
-            //silent catch: an unhandled exception might be thown if the zip archive was not valid
-        }
-      //$objData = serialize(new ExceptionDto("Exception", $project->getMessage(), $project->getCode(), $project->getFile(), $project->getLine()));
-      //$filePath = $cacheDir . "code.cache";
-      //$fp = fopen($filePath, "w");
-      //fwrite($fp, $objData);
-      //fclose($fp);
+        //$objData = serialize(new ExceptionDto("Exception", $project->getMessage(), $project->getCode(), $project->getFile(), $project->getLine()));
+        //$filePath = $cacheDir . "code.cache";
+        //$fp = fopen($filePath, "w");
+        //fwrite($fp, $objData);
+        //fclose($fp);
 
         return $project;
       }
@@ -425,7 +432,7 @@ class ProjectsController extends BaseController
       foreach($data->CatrobatProjects as $project)
       {
         array_push($featured, new ProjectDetailsDto($project->ProjectId, $project->ProjectName, "", $baseUrl,
-                                                    $project->FeaturedImage, $project->Author));
+          $project->FeaturedImage, $project->Author));
       }
     }
 
@@ -461,8 +468,8 @@ class ProjectsController extends BaseController
     foreach($data->CatrobatProjects as $project)
     {
       array_push($projects->items,
-                 new ProjectDetailsDto($project->ProjectId, $project->ProjectName, $project->Description, $baseUrl,
-                                       $project->ScreenshotSmall, $project->Author));
+        new ProjectDetailsDto($project->ProjectId, $project->ProjectName, $project->Description, $baseUrl,
+          $project->ScreenshotSmall, $project->Author));
     }
     $projects->featured = $featured;
 

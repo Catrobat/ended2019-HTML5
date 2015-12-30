@@ -87,6 +87,7 @@ catch(Exception $e)
 }
 
 $view_name = ucfirst(explode('/', $request->responseType)[1]) . 'View';
+//print_r($view_name);
 if(class_exists($view_name))
 {
   $view = new $view_name($request);
