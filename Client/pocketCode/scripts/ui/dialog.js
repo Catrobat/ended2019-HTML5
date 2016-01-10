@@ -188,9 +188,11 @@ PocketCode.Ui.merge({
         //cntr
         function GlobalErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Global Error');
+            // i18n-constants: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: global
             this.bodyInnerHTML = 'We are sorry. A global exception was detected.<br/>Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
         }
 
@@ -220,9 +222,11 @@ PocketCode.Ui.merge({
         //cntr
         function BrowserNotSupportedDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Framework Not Supported');
+            // i18n-constant: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: browser-not-supported
             this.bodyInnerHTML = 'This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br />We are sorry, but your browser does not meet the minimal requirements to run this application.<br />Please try again using another browser.';
         }
 
@@ -252,11 +256,14 @@ PocketCode.Ui.merge({
         //cntr
         function MobileRestrictionDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Please Confirm');
+            // i18n-constant: cancel
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
+            // i18n-constant: confirm
             this._btnConfirm = new PocketCode.Ui.Button('Confirm');
             this.addButton(this._btnConfirm);
 
+            // i18n-error: mobile-restriction
             this.bodyInnerHTML = 'Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.<br /><br />';
             this.bodyInnerHTML += 'There is currently NO official support for mobile devices- this is an experimental preview only! So please do NOT file bugs until there is an official release available.';
         }
@@ -292,12 +299,15 @@ PocketCode.Ui.merge({
         //cntr
         function ExitWarningDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Exit Application');
+            // i18n-constant: exit
             this._btnExit = new PocketCode.Ui.Button('Exit');
             this.addButton(this._btnExit);
+            // i18n-constant: cancel
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
 
+            // i18n-warning: exit
             this.bodyInnerHTML = 'Do you really want to exit?';
 
             this._onCancel = new SmartJs.Event.Event(this);
@@ -334,9 +344,11 @@ PocketCode.Ui.merge({
         //cntr
         function ProjectNotFoundDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Found');
+            // i18n-constant: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: project-not-found
             this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting could not be found on our server. Plese make sure you are using a valid Project ID.';
         }
 
@@ -366,9 +378,11 @@ PocketCode.Ui.merge({
         //cntr
         function ProjectNotValidDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Valid');
+            // i18n-constant: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: project-not-valid
             this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting has an invalid file structure or missing resources.<br/>Details:<br/>';
         }
 
@@ -398,9 +412,11 @@ PocketCode.Ui.merge({
         //cntr
         function ParserErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Error Parsing Project');
+            // i18n-constant: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: parser
             this.bodyInnerHTML = 'We are sorry.<br/>The project you are requesting could not be parsed correctly on our server. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.';
         }
 
@@ -430,9 +446,11 @@ PocketCode.Ui.merge({
         //cntr
         function InternalServerErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Internal Server Error');
+            // i18n-constant: ok
             this._btnOK = new PocketCode.Ui.Button('OK');
             this.addButton(this._btnOK);
 
+            // i18n-error: internal-server
             this.bodyInnerHTML = 'We are sorry. The latest request caused an internal server error.<br/>';
         }
 
@@ -462,11 +480,14 @@ PocketCode.Ui.merge({
         //cntr
         function ServerConnectionErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Server Not Responding');
+            // i18n-constant: cancel
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
+            // i18n-constant: retry
             this._btnRetry = new PocketCode.Ui.Button('Retry');
             this.addButton(this._btnRetry);
 
+            // i18n-error: server-connection
             this.bodyInnerHTML = 'Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br />If your connection was temporarily unavailable please click "Retry" to resend the request';
         }
 
@@ -501,12 +522,15 @@ PocketCode.Ui.merge({
         //cntr
         function UnsupportedSoundFileDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Sound File');
+            // i18n-constant: cancel
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
+            // i18n-constant: continue
             this._btnContinue = new PocketCode.Ui.Button('Continue');
             this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
+            // i18n-error: unsupported-sound
             this.bodyInnerHTML = 'We have detected a sound file (or codec) that is not compatible with your current browser.<br />You can run the project anyway- unsupported sounds will be ignored.';
 
             this._onContinue = new SmartJs.Event.Event(this);
@@ -547,12 +571,15 @@ PocketCode.Ui.merge({
         //cntr
         function UnsupportedDeviceFeatureDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Device Feature');
+            // i18n-constant: cancel
             this._btnCancel = new PocketCode.Ui.Button('Cancel');
             this.addButton(this._btnCancel);
+            // i18n-constant: continue
             this._btnContinue = new PocketCode.Ui.Button('Continue');
             this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
+            // i18n-error: unsupported-device
             this.bodyInnerHTML = 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br />You can run the project anyway- unsupported features will be ignored.';
             //this.bodyInnerHTML += '<br />Details:<br />';
 
@@ -590,6 +617,7 @@ PocketCode.Ui.merge({
         //cntr
         function ScreenshotDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Screenshot');
+            // i18n-constant: close
             this._btnCancel = new PocketCode.Ui.Button('Close');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
@@ -608,6 +636,7 @@ PocketCode.Ui.merge({
                 this.bodyInnerHTML += 'TODO: mobile';
             }
             else {
+                // i18n-constant: download
                 this._btnDownload = new PocketCode.Ui.Button('Download');
                 this._btnDownload.disabled = true;
                 this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
