@@ -37,6 +37,14 @@ PocketCode.I18nProvider = (function (propObject) {
             "close": "Close",
             "download": "Download"
           },
+          "button": {
+            "back": "Back",
+            "restart": "Restart",
+            "play": "Play",
+            "pause": "Pause",
+            "screenshot": "Screenshot",
+            "axes": "Axes"
+          },
           "warning": {
             "exit": "Do you really want to exit?"
           },
@@ -100,6 +108,9 @@ PocketCode.I18nProvider = (function (propObject) {
     I18nProvider.prototype.merge({
         getValue: function(key) {
             //TODO: dict lookup including fallback
+        },
+        getDict: function() {
+            return this._dictionary;
         },
         changeI18n: function (value) {
             //TODO: error handling: array length?

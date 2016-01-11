@@ -9,6 +9,14 @@
     "close": "Close",
     "download": "Download"
   },
+  "button": {
+    "back": "Back",
+    "restart": "Restart",
+    "play": "Play",
+    "pause": "Pause",
+    "screenshot": "Screenshot",
+    "axes": "Axes"
+  },
   "warning": {
     "exit": "Do you really want to exit?"
   },

@@ -69,23 +69,29 @@ PocketCode.Ui.merge({
             this._menuContainer.appendChild(this._menuContainerAlign);
 
             //buttons
+            // i18n-button: back
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'Back');
             this._backButtonDisabled = false;
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
             this._menuContainerAlign.appendChild(this._backButton);
+            // i18n-button: restart
             this._restartButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.RESTART, 'Restart');
             this._restartButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.RESTART }); }, this));
             this._menuContainerAlign.appendChild(this._restartButton);
+            // i18n-button: play
             this._playButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PLAY, 'Play', true);
             this._playButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PLAY }); }, this));
             this._menuContainerAlign.appendChild(this._playButton);
+            // i18n-button: pause
             this._pauseButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PAUSE, 'Pause', true);
             this._pauseButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PAUSE }); }, this));
             this._menuContainerAlign.appendChild(this._pauseButton);
+            // i18n-button: screenshot
             this._screenshotButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.SCREENSHOT, 'Screenshot');
             this._screenshotButtonDisabled = false;
             this._screenshotButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.SCREENSHOT }); }, this));
             this._menuContainerAlign.appendChild(this._screenshotButton);
+            // i18n-button: axes
             this._axesButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.AXES, 'Axes');
             this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
             this._menuContainerAlign.appendChild(this._axesButton);

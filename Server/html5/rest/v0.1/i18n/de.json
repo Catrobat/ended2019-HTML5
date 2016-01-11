@@ -9,6 +9,14 @@
     "close": "Schließen",
     "download": "Download"
   },
+  "button": {
+    "back": "Zurück",
+    "restart": "Neu starten",
+    "play": "Spielen",
+    "pause": "Pause",
+    "screenshot": "Bildschirmfoto",
+    "axes": "Achsen"
+  },
   "warning": {
     "exit": "Do you really want to exit?"
   },
