@@ -66,7 +66,6 @@ PocketCode.Model.Sprite = (function () {
      */
     function Sprite(gameEngine, propObject) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
-
         this._gameEngine = gameEngine;
         this._onChange = gameEngine.onSpriteUiChange;    //mapping event (defined in gameEngine)
         //this._onVariableChange = gameEngine._onVariableChange;
@@ -607,9 +606,10 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             var rad = (90.0 - this._direction) * (Math.PI / 180.0);
-            var offsetX = Math.cos(rad) * steps;//Math.round(Math.cos(rad) * steps);
-            var offsetY = Math.sin(rad) * steps;//Math.round(Math.sin(rad) * steps);
+            var offsetX = +(Math.cos(rad) * steps).toFixed(4);//Math.round(Math.cos(rad) * steps);
+            var offsetY = +(Math.sin(rad) * steps).toFixed(4);//Math.round(Math.sin(rad) * steps);
             //var triggerEvent;
+
             return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);//, triggerEvent);
             //return true;
         },
