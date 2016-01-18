@@ -19,19 +19,30 @@ PocketCode.PlayerViewportController = (function () {
         //this._view.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
     }
 
-    ////properties
-    //Object.defineProperties(PlayerViewportController.prototype, {
-    //    //view: {
-    //    //    get: function () {
-    //    //        return this._view;
-    //    //    },
-    //    //},
+    //properties
+    Object.defineProperties(PlayerViewportController.prototype, {
+        renderingImages: {
+            get: function () {
+                return this._renderingImages;
+            },
+        },
+        renderingVariables: {
+            get: function () {
+                return this._renderingVariables;
+            },
+        },
+        dimensions: {
+            get: function () {
+                return {width: this._projectScreenWidth,
+                        height: this._projectScreenHeight}
+            }
+        }
     //    viewportScaling: {
     //        get: function () {
     //            return this._viewportScaling;
     //        },
     //    },
-    //});
+    });
 
     //events
     Object.defineProperties(PlayerViewportController.prototype, {
@@ -76,7 +87,6 @@ PocketCode.PlayerViewportController = (function () {
                 //xOffset = this._projectScreenWidth / 2.0,
                 //yOffset = this._projectScreenHeight / 2.0;
 
-
             //update positions: top/left positioning
             if (properties.x !== undefined)
                 properties.x += this._projectScreenWidth / 2.0;//xOffset;
@@ -87,7 +97,8 @@ PocketCode.PlayerViewportController = (function () {
                 img = imgs[i];
                 if (img.id === spriteId) {
                     img.merge(properties);
-                    if (properties.layer) {
+
+                    if (properties.layer !== undefined) {
                         imgs.remove(img);
                         imgs.insert(properties.layer, img);
                     }
