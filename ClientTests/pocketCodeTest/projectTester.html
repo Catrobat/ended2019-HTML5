@@ -7,9 +7,10 @@
  */
 ?>
 
-<script src="./../../Client/player/pocketCodePlayer.js"></script>
+<html>
+<head>
 
-<!-- smart js -->
+<script src="./../../Client/player/pocketCodePlayer.js"></script>
 
 <script src="../../Client/smartJs/sj.js"></script>
 <script src="../../Client/smartJs/sj-core.js"></script>
@@ -19,12 +20,67 @@
 <script src="../../Client/smartJs/sj-communication.js"></script>
 <script src="../../Client/smartJs/sj-ui.js"></script>
 
-<script src="./../../Client/pocketCode/scripts/components/proxy.js"></script>
+<script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
+<script src="../../Client/pocketCode/libs/fabric/fabric-1.6.0-rc.1.js"></script>
+<script src="../../Client/pocketCode/libs/iscroll/iscroll-5.3.1.js"></script>
+
+<script src="../../Client/pocketCode/scripts/core.js"></script>
+<script src="../../Client/pocketCode/scripts/ui.js"></script>
+
+<script src="../../Client/pocketCode/scripts/components/broadcastManager.js"></script>
+<script src="../../Client/pocketCode/scripts/components/device.js"></script>
+<script src="../../Client/pocketCode/scripts/components/formula.js"></script>
+<script src="../../Client/pocketCode/scripts/components/imageHelper.js"></script>
+<script src="../../Client/pocketCode/scripts/components/imageStore.js"></script>
+<script src="../../Client/pocketCode/scripts/components/userVariableHost.js"></script>
+<script src="../../Client/pocketCode/scripts/components/gameEngine.js"></script>    //make sure includes are in the right order (inheritance)
+<script src="../../Client/pocketCode/scripts/components/i18nProvider.js"></script>
+<script src="../../Client/pocketCode/scripts/components/parser.js"></script>
+<script src="../../Client/pocketCode/scripts/components/proxy.js"></script>
+<script src="../../Client/pocketCode/scripts/components/renderingImage.js"></script>
+<script src="../../Client/pocketCode/scripts/components/renderingText.js"></script>
+<script src="../../Client/pocketCode/scripts/components/soundManager.js"></script>
+
+<script src="../../Client/pocketCode/scripts/model/bricksCore.js"></script>
+<script src="../../Client/pocketCode/scripts/model/bricksControl.js"></script>
+<script src="../../Client/pocketCode/scripts/model/bricksLook.js"></script>
+<script src="../../Client/pocketCode/scripts/model/bricksMotion.js"></script>
+<script src="../../Client/pocketCode/scripts/model/bricksSound.js"></script>
+<script src="../../Client/pocketCode/scripts/model/bricksData.js"></script>
+<script src="../../Client/pocketCode/scripts/model/sprite.js"></script>
+<script src="../../Client/pocketCode/scripts/model/userVariable.js"></script>
+
+<script src="../../Client/pocketCode/scripts/ui/button.js"></script>
+<script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+<script src="../../Client/pocketCode/scripts/ui/dialog.js"></script>
+<script src="../../Client/pocketCode/scripts/ui/playerStartScreen.js"></script>
+<script src="../../Client/pocketCode/scripts/ui/playerToolbar.js"></script>
+<script src="../../Client/pocketCode/scripts/ui/scrollContainer.js"></script>
+
+<script src="../../Client/pocketCode/scripts/view/pageView.js"></script>
+<script src="../../Client/pocketCode/scripts/view/playerPageView.js"></script>
+<script src="../../Client/pocketCode/scripts/view/playerViewportView.js"></script>
+
+<script src="../../Client/pocketCode/scripts/controller/controllerCore.js"></script>
+<script src="../../Client/pocketCode/scripts/controller/playerPageController.js"></script>
+<script src="../../Client/pocketCode/scripts/controller/playerViewportController.js"></script>
+
+<script src="../../Client/player/scripts/playerApplication.js"></script>
 
 
 <style type="text/css">
   .error_element:nth-child(odd){
   background:#ccc;
+  }
+
+  .inactive {
+    color: #666;
+    background-color: #aaa;
+  }
+
+  .activ {
+    color: #000;
+    background-color: #fff;
   }
 </style>
 
@@ -33,13 +89,29 @@
   var success;
   var failure;
   var allProjectsCount = 0;
+  var JSsuccess = 0;
+  var JSfailure = 0;
+  var JSUncatchedfailure = 0;
+  var JSallProjectsCount = 0;
   var totalProjectNumber = 0;
   var errorTypes = [];
   var detailErrorTypes = [];
+  var JSerrorTypes = [];
+  var JSdetailErrorTypes = [];
+
+
+
 
   function incrSuccess() {
     success++;
     document.getElementById( 'success' ).innerHTML = success;
+
+    if( document.getElementById( 'jsTest').checked ) {
+      JSallProjectsCount = success;
+      document.getElementById('JSsumOfAllProjects1').innerHTML = JSallProjectsCount;
+      document.getElementById('JSsumOfAllProjects2').innerHTML = JSallProjectsCount;
+      document.getElementById('JSsumOfAllProjects3').innerHTML = JSallProjectsCount;
+    }
 
     if( ( success + failure ) == allProjectsCount )
       printError();
@@ -53,6 +125,34 @@
       printError();
   }
 
+  function JSincrSuccess() {
+    JSsuccess++;
+    document.getElementById( 'JSsuccess' ).innerHTML = JSsuccess;
+
+
+    //if( ( ( success + failure ) == allProjectsCount ) && ( ( JSsuccess + JSfailure ) == JSallProjectsCount ) )
+    //  printJSError();
+  }
+
+  function JSincrFailure() {
+    JSfailure++;
+    document.getElementById( 'JSfailure' ).innerHTML = JSfailure;
+
+
+    //if( ( ( success + failure ) == allProjectsCount ) && ( ( JSsuccess + JSfailure ) == JSallProjectsCount ) )
+    //  printJSError();
+  }
+
+  function JSincrUncatchedFailure() {
+    JSUncatchedfailure++;
+    document.getElementById( 'JSUncatchedfailure' ).innerHTML = JSUncatchedfailure;
+
+
+    //if( ( ( success + failure ) == allProjectsCount ) && ( ( JSsuccess + JSfailure ) == JSallProjectsCount ) )
+    //  printJSError();
+  }
+
+  // Start to Test Projects (only the number of projects typed in text field)
   function getTestProjects() {
 
     // Set Button to disable 2 tests running
@@ -66,8 +166,14 @@
     document.getElementById('errors').innerHTML = "";
     success = 0;
     failure = 0;
+    JSsuccess = 0;
+    JSfailure = 0;
+    JSUncatchedfailure = 0;
     errorTypes = [];
     detailErrorTypes = [];
+
+    JSerrorTypes = [];
+    JSdetailErrorTypes = [];
 
     var url = PocketCode.Services.PROJECT_SEARCH;
     // get limit of text-input
@@ -98,15 +204,107 @@
     srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
     srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
     PocketCode.Proxy.send(srAllProjects);
+
+
   }
 
+  // Start to test a single Project
   function getSingleTestProject( id ) {
     var url = PocketCode.Services.PROJECT;
     sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: id });
 
-    var onSuccessProjectsHandler = function()
+    var onSuccessProjectsHandler = function(e)
     {
       incrSuccess();
+      if( document.getElementById( 'jsTest').checked ) {
+
+        var json = e.responseJson;
+
+        // Test Loading Project Errors
+        var gameEngine = new PocketCode.GameEngine();
+
+        var onLoadedHandler = function(e)
+        {
+
+          //console.log( "GREAT!!!" );
+          JSincrSuccess();
+
+          // Free Memory
+          e = null;
+          gameEngine = null;
+        };
+
+        var onLoadingErrorHandler = function(e)
+        {
+          //console.log("---- ERROR ----");
+          var receivedObject = e;
+          var type = "";
+          if((receivedObject instanceof Object)) {
+            type = "catched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
+          } else {
+            type = "Unknown target";
+          }
+
+          /*
+          var detailError = [];
+          detailError[0] = id;
+          detailError[1] = type;
+          */
+          var detailError = null;
+
+          JSdetailErrorTypes.push( detailError );
+
+          JSerrorTypes.push( type );
+
+          console.log( e );
+          JSincrFailure();
+
+          // Free Memory
+          receivedObject = null;
+          e = null;
+        };
+
+
+        // define 2 EventListener
+        gameEngine._onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadedHandler, this));
+        gameEngine._onLoadingError.addEventListener(new SmartJs.Event.EventListener(onLoadingErrorHandler, this));
+
+        // load Project with json data
+        try {
+          gameEngine.loadProject(json);
+          gameEngine = null;
+        } catch(error) {
+          JSincrUncatchedFailure();
+
+          var receivedObject = error;
+          var type = "";
+          if((receivedObject instanceof Object)) {
+            type = "uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
+          } else {
+            type = "Unknown target";
+          }
+
+          /*
+          var detailError = [];
+          detailError[0] = id;
+          detailError[1] = type;
+          */
+          // Free Memory
+          var detailError = null;
+
+          JSdetailErrorTypes.push( detailError );
+
+          JSerrorTypes.push( type );
+
+          console.log( e );
+
+          // Free Memory
+          receivedObject = null;
+          e = null;
+        }
+
+      }
+
     };
 
     var onErrorProjectsHandler = function(e)
@@ -132,6 +330,8 @@
     sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
     sr._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
     PocketCode.Proxy.send(sr);
+
+    e = null;
   }
 
   window.onload = function() {
@@ -246,17 +446,113 @@
 
   }
 
+  function printJSError() {
+
+    document.getElementById("JSerrors").innerHTML = "";
+    JSerrorTypes.sort();
+
+    var current = null;
+    var cnt = 0;
+    var i;
+
+    for (i = 0; i < JSerrorTypes.length; i++) {
+      if (JSerrorTypes[i] != current) {
+        if (cnt > 0) {
+          document.getElementById('JSerrors').innerHTML += "<div class='error_element'>" + "<b>" + cnt + "</b>" + "x " + current + '</div>';
+        }
+        current = JSerrorTypes[i];
+
+        cnt = 1;
+      } else {
+        cnt++;
+      }
+    }
+    // print last error
+    if (cnt > 0) {
+      document.getElementById('JSerrors').innerHTML += "<div class='error_element'>" + "<b>" + cnt + "</b>" + "x " + current + '</div>';
+    }
+
+    // Print empty Line + headline details
+    document.getElementById('JSerrors').innerHTML += "<div class='error_element'>" + "&nbsp;" + "</div>";
+    document.getElementById('JSerrors').innerHTML += "<div class='error_element'>" + "Details:" + "</div>";
+
+
+    // Print Detailed Error (which ID has which error)
+    for( i = 0; i < JSdetailErrorTypes.length; i++ ) {
+      var output = '';
+      var error = JSdetailErrorTypes[i][1];
+      for (var property in error) {
+        output += property + ': ' + error[property]+'; ';
+      }
+      output = "See log or uncomment this line";
+
+      document.getElementById('JSerrors').innerHTML += "<div class='error_element'>" + "<b>" + JSdetailErrorTypes[i][0] + "</b>" + ": " + output + '</div>';
+    }
+
+    // Reset Test Start Button
+    document.getElementById( 'startButton' ).value = "Start Test";
+    document.getElementById( 'startButton' ).disabled = false;
+
+    document.getElementById( 'testAll' ).value = "Test All";
+    document.getElementById( 'testAll' ).disabled = false;
+
+
+  }
+
+  function testJS( el ) {
+    if( el.checked === true ) {
+      document.getElementById("jsTestName").className = "active";
+      document.getElementById("jsTestCol").className = "active";
+    } else {
+      document.getElementById("jsTestName").className = "inactive";
+      document.getElementById("jsTestCol").className = "inactive";
+      //document.getElementById("jsTestCol").innerHTML = "";
+    }
+  }
+
+
 </script>
 
+</head>
 
-
+<body>
+<!-- HTML CONTENT -->
 
 Project Limit:
 <input id='maxTestProjects' title='Limit of Projects which will be fetched' style='width:50px;' type='text' onkeydown='if (event.keyCode == 13) { getTestProjects(); }' value=''/>&nbsp;
 <input type='button' id='startButton' value='Start Test' onclick='getTestProjects()'/><br/><br/>
+<label><input type='checkbox' id='jsTest' onchange='testJS(this)'/>Click to test if loading project works</label></br></br>
 <input type='button' value='Test All' id="testAll" onclick='testAll()' disabled/><br/><br/>
-Results:<br/>
+<table border="1">
+  <tr>
+    <td colspan="2">
+      Results:
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Server Response Test
+    </td>
+    <td class="inactive" id="jsTestName">
+      Loading Project Test
+    </td>
+  </tr>
+  <tr>
+    <td>
 <div style='color:#46b221;' id='successresult'><b><a id='success'>0</a></b> of <a id='sumOfAllProjects1'>0</a> Projects loaded correctly.</div>
 <div style='color:#d21c0d;' id='failureresult'><b><a id='failure'>0</a></b> of <a id='sumOfAllProjects2'>0</a> Projects loaded with an Error.</div>
 <br/><div id='errors' style='width:300px'></div>
+    </td>
+    <td class="inactive" valign="top" id="jsTestCol">
+      <div style='color:#46b221;' id='JSsuccessresult'><b><a id='JSsuccess'>0</a></b> of <a id='JSsumOfAllProjects1'>0</a> Projects loaded completely.</div>
+      <div style='color:#d21c0d;' id='JSfailureresult'><b><a id='JSfailure'>0</a></b> of <a id='JSsumOfAllProjects2'>0</a> Projects loaded with an Error.</div>
+      <div style='color:#d21c0d;' id='JSUncatchedfailureresult'><b><a id='JSUncatchedfailure'>0</a></b> of <a id='JSsumOfAllProjects3'>0</a> Projects loaded with an uncatched Error.</div>
+      <!--<input type='button' id='resultButton' value='Show Result' onclick='printJSError()'/>-->
+      </br>See console for results
+      <br/><div id='JSerrors' style='width:300px'></div>
+    </td>
+  </tr>
+</table>
 
+</body>
+</html>
