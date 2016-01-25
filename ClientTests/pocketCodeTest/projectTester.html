@@ -152,6 +152,9 @@
     //  printJSError();
   }
 
+  var receivedObject;
+  var currentProjectIdx = 0;
+
   // Start to Test Projects (only the number of projects typed in text field)
   function getTestProjects() {
 
@@ -178,21 +181,20 @@
     var url = PocketCode.Services.PROJECT_SEARCH;
     // get limit of text-input
     var limit = document.getElementById( 'maxTestProjects').value;
-    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit});
-
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit, mask: "downloads"});
 
     var onSuccessProjectsHandler = function(e)
     {
 
-      var receivedObject = e.responseJson;
+      receivedObject = e.responseJson;
       allProjectsCount = receivedObject.items.length;
       document.getElementById( 'sumOfAllProjects1' ).innerHTML = allProjectsCount;
       document.getElementById( 'sumOfAllProjects2' ).innerHTML = allProjectsCount;
 
-      var i = 0;
-      for( i; i < allProjectsCount; i++ ) {
-        getSingleTestProject( receivedObject.items[i].id );
-      }
+      //var i = 0;
+      //for( i; i < allProjectsCount; i++ ) {
+        getSingleTestProject();// receivedObject.items[i].id );
+      //}
     };
 
     var onErrorProjectsHandler = function(e)
@@ -202,15 +204,75 @@
     };
 
     srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
-    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    srAllProjects.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
     PocketCode.Proxy.send(srAllProjects);
 
 
   }
 
+
+
+  var gameEngineOnLoad = function(e)
+  {
+
+    //console.log( "GREAT!!!" );
+    JSincrSuccess();
+
+    // Free Memory
+    e = null;
+    //gameEngine.dispose();
+
+    getSingleTestProject();
+  };
+
+  var gameEngineOnLoadError = function(e)
+  {
+    //console.log("---- ERROR ----");
+    var receivedObject = e;
+    var type = "";
+    if((receivedObject instanceof Object)) {
+      type = "catched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
+    } else {
+      type = "Unknown target";
+    }
+
+    /*
+     var detailError = [];
+     detailError[0] = id;
+     detailError[1] = type;
+     */
+    var detailError = null;
+
+    JSdetailErrorTypes.push( detailError );
+
+    JSerrorTypes.push( type );
+
+    console.log( e );
+    JSincrFailure();
+
+    // Free Memory
+    receivedObject = null;
+    e = null;
+    //gameEngine.dispose();
+
+    getSingleTestProject();
+  };
+
+
+
+  var gameEngine;
+  var onLoadListener = new SmartJs.Event.EventListener(gameEngineOnLoad, this);
+  var onLoadErrorListener = new SmartJs.Event.EventListener(gameEngineOnLoadError, this);
+  //var gaOnLoadListener =
   // Start to test a single Project
-  function getSingleTestProject( id ) {
+  function getSingleTestProject(/* id*/ ) {
+    if (receivedObject.items.length == currentProjectIdx)
+            return;
+    console.log( "start getSingleTestProject!" );
+
     var url = PocketCode.Services.PROJECT;
+    var id = receivedObject.items[currentProjectIdx].id;
+    currentProjectIdx++;
     sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: id });
 
     var onSuccessProjectsHandler = function(e)
@@ -220,59 +282,27 @@
 
         var json = e.responseJson;
 
+
+
+
+
         // Test Loading Project Errors
-        var gameEngine = new PocketCode.GameEngine();
-
-        var onLoadedHandler = function(e)
-        {
-
-          //console.log( "GREAT!!!" );
-          JSincrSuccess();
-
-          // Free Memory
-          e = null;
-          gameEngine = null;
-        };
-
-        var onLoadingErrorHandler = function(e)
-        {
-          //console.log("---- ERROR ----");
-          var receivedObject = e;
-          var type = "";
-          if((receivedObject instanceof Object)) {
-            type = "catched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
-          } else {
-            type = "Unknown target";
-          }
-
-          /*
-          var detailError = [];
-          detailError[0] = id;
-          detailError[1] = type;
-          */
-          var detailError = null;
-
-          JSdetailErrorTypes.push( detailError );
-
-          JSerrorTypes.push( type );
-
-          console.log( e );
-          JSincrFailure();
-
-          // Free Memory
-          receivedObject = null;
-          e = null;
-        };
-
-
+        if (gameEngine) {
+          gameEngine.onLoad.removeEventListener( onLoadListener );
+          gameEngine.onLoadingError.removeEventListener( onLoadErrorListener );
+          gameEngine = undefined;
+        }
+        gameEngine = new PocketCode.GameEngine();
         // define 2 EventListener
-        gameEngine._onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadedHandler, this));
-        gameEngine._onLoadingError.addEventListener(new SmartJs.Event.EventListener(onLoadingErrorHandler, this));
+        gameEngine.onLoad.addEventListener(onLoadListener);
+        gameEngine.onLoadingError.addEventListener(onLoadErrorListener);
+
+
+
 
         // load Project with json data
         try {
           gameEngine.loadProject(json);
-          gameEngine = null;
         } catch(error) {
           JSincrUncatchedFailure();
 
@@ -301,6 +331,8 @@
           // Free Memory
           receivedObject = null;
           e = null;
+          //gameEngine.dispose();
+          getSingleTestProject();
         }
 
       }
@@ -325,13 +357,16 @@
 
       errorTypes.push( type );
       incrFailure();
+
+      getSingleTestProject();
     };
 
     sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
-    sr._onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+    sr.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
     PocketCode.Proxy.send(sr);
 
     e = null;
+    console.log( "End of getSingleTestProject!" );
   }
 
   window.onload = function() {
