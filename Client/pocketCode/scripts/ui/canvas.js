@@ -142,13 +142,13 @@ PocketCode.Ui.Canvas = (function () {
                 //    //}
                 //},
                 _searchPossibleTargets: function(e, skipGroup){
-
                     // Cache all targets where their bounding box contains point.
                     if (e.type != 'mousedown')
                         return;
                     var target,
                         pointer = this.getPointer(e, true),
                         i = this._renderingObjects.length;
+
                     // Do not check for currently grouped objects, since we check the parent group itself.
                     // untill we call this function specifically to search inside the activeGroup
                     while (i--) {
@@ -298,6 +298,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         toDataURL: function (backgroundColor) {
             //scaling = scaling || 1;
+            // TODO Check alpha channel value range
             backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
             this._fcAdapter.setBackgroundColor(backgroundColor);   //setting background temporarly without triggering a render
             var dataUrl = this._fcAdapter.toDataURL();//{ multiplier: 1.0 / this._fcAdapter.scaling });
