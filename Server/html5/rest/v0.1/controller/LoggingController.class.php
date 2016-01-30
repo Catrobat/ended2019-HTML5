@@ -1,6 +1,7 @@
 <?php
 require(str_replace("/", DIRECTORY_SEPARATOR, "../../libraries/phpmailer/class.phpmailer.php"));
 require(str_replace("/", DIRECTORY_SEPARATOR, "../../libraries/phpmailer/class.smtp.php"));
+
 class LoggingController extends BaseController
 {
    public function __construct($request)
@@ -9,10 +10,12 @@ class LoggingController extends BaseController
       if (session_id() == "")
          session_start();
    }
+   
    public function post()
    {
       return $this->sendMail();
    }
+   
    private function sendMail()
    {
       $id        = "";
@@ -21,6 +24,7 @@ class LoggingController extends BaseController
       $projectId = "";
       $subject   = "[PocketCodeHTML5Log]";
       $mailbody  = "";
+      
       if (isset($this->request->requestParameters['id'])) {
          $id = utf8_decode($this->request->requestParameters['id']);
          if (isset($_SESSION["LoggingId"]) && $_SESSION["LoggingId"] == $id) {
@@ -28,22 +32,25 @@ class LoggingController extends BaseController
          } else {
             return new SuccessDto(false);
          }
-      } else {
+      } 
+      else {
          return new SuccessDto(false);
       }
+      
       $jsonError = utf8_decode($this->request->requestParameters['jsonError']);
       $mailbody  = $jsonError;
       $type      = utf8_decode($this->request->requestParameters['type']);
       $projectId = utf8_decode($this->request->requestParameters['projectId']);
-      $subject   = $subject . " Type: " . $type . " projectId: " . $projectId;
+      $subject   = $subject . " " . $type . ": ProjectId: " . $projectId;
       $mail      = new PHPMailer(true);
       $mail->IsSMTP(); // telling the class to use SMTP
-      $mail->SMTPAuth   = true; // enable SMTP authentication
-      $mail->SMTPSecure = "ssl"; // sets the prefix to the servier
-      $mail->Host       = EMAIL_SMTP; // sets GMAIL as the SMTP server
+      //$mail->SMTPDebug = 4;
+      $mail->SMTPAuth   = true;     // enable SMTP authentication
+      $mail->SMTPSecure = "tls";    // sets the prefix to the servier
+      $mail->Host       = EMAIL_SMTP;   // sets GMAIL as the SMTP server
       $mail->Port       = EMAIL_SMTP_PORT; // set the SMTP port for the GMAIL server
-      $mail->Username   = EMAIL_USER; // GMAIL username
-      $mail->Password   = EMAIL_PWD; // GMAIL password
+      $mail->Username   = EMAIL_USER;   // GMAIL username
+      $mail->Password   = EMAIL_PWD;    // GMAIL password
       $mail->AddAddress(EMAIL_TO, EMAIL_NAME_TO);
       $mail->SetFrom(EMAIL_FROM, EMAIL_NAME_FROM);
       $mail->Subject = $subject;
@@ -54,9 +61,10 @@ class LoggingController extends BaseController
       }
       catch (Exception $e) {
          //Something went bad
-         return new ExceptionDto($e . type, $e . message, $e . code, $e . file, $e . line);
+         return new ExceptionDto("phpmailerException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
       }
    }
+   
    public function get()
    {
       if (count($this->request->serviceSubInfo) == 0) {

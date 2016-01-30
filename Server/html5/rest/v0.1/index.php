@@ -1,4 +1,5 @@
 <?php
+require("config.php");
 
 //auto load includes when they are used
 spl_autoload_register(function ($className)

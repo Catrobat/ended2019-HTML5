@@ -1,9 +1,11 @@
 <?php
+
+//logging email settings
 define("EMAIL_SMTP", "smtp.gmail.com");
-define("EMAIL_SMTP_PORT", 465);
-define("EMAIL_FROM", "email@gmail.com");
-define("EMAIL_NAME_FROM", "Marc Schober");
-define("EMAIL_TO", "email@gmail.com");
-define("EMAIL_NAME_TO", "Marc Schober");
-define("EMAIL_USER", "email@gmail.com");
-define("EMAIL_PWD", "password");
+define("EMAIL_SMTP_PORT", 587);
+define("EMAIL_FROM", "pocketcode.html@gmail.com");
+define("EMAIL_NAME_FROM", "PocketCode HTML5");
+define("EMAIL_TO", "pocketcode.html@gmail.com");
+define("EMAIL_NAME_TO", "PocketCode HTML5");
+define("EMAIL_USER", "pocketcode.html@gmail.com");
+define("EMAIL_PWD", "*****");
