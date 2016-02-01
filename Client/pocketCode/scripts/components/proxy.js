@@ -26,9 +26,11 @@ PocketCode.merge({
         PROJECT_SEARCH: 'projects',
         PROJECT: 'projects/{id}',
         PROJECT_DETAILS: 'projects/{id}/details',
-        //I18N: 'i18n/{language}',
+        I18N: 'i18n/{language}',
         TTS: 'file/tts?text={text}',    ///{string}',
-        SCREENSHOT: 'file/screenshot'
+        SCREENSHOT: 'file/screenshot',
+        LOGGING: 'logging',
+        LOGGING_ID: 'logging/id',
         //TODO:
     },
 
