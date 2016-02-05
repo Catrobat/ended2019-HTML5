@@ -12,7 +12,8 @@ PocketCode.Ui.Button = (function () {
     //cntr
     function Button(text, args) {
         PocketCode.Ui.I18nControl.call(this, 'button', args);
-
+        //this._key = asdf
+        //PocketCode.I18nProvider.getValue(key);
         this._textNode = new SmartJs.Ui.TextNode(text);
         this._dom.appendChild(this._textNode._dom);
         //events

@@ -70,6 +70,7 @@ PocketCode.Ui.merge({
 
             //buttons
             // i18n-button: back
+            // this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, PocketCode.I18nProvider.getDict().constant.back);
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'Back');
             this._backButtonDisabled = false;
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));

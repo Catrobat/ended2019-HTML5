@@ -4,9 +4,11 @@ require_once("BaseController.class.php");
 
 class I18nController extends BaseController
 {
-  public $language = "";
-  public $supportedLanguages = ["en", "de"];
-  public $region = "";
+  public $langCode = "";
+  public $dir = "";
+  public $supportedLanguages = ["en", "en-US", "en-GB",
+                                "de", "de-AT", "de-DE", "de-CH"];
+  public $isRTL = [];
 
   public function __construct($request)
   {
@@ -18,45 +20,54 @@ class I18nController extends BaseController
     $len = count($this->request->serviceSubInfo);
     $servicePathViolation = ": " . implode("/", $this->request->serviceSubInfo);
 
-    if($len < 1 || $len > 2)
+    if($len > 1)
     {
       return new ServicePathViolationException($this->request->serviceName . $servicePathViolation);
     }
-
-    $this->language = $this->request->serviceSubInfo[0];
-
-    if(! in_array($this->language, $this->supportedLanguages))
+    else if($len == 0)
     {
-      return new ServiceNotImplementedException($this->request->serviceName . $servicePathViolation);
+      // fallback
+      $this->langCode = "en";
+    }
+    else
+    {
+      $this->langCode = $this->request->serviceSubInfo[0];
+
+      if($this->langCode == "supported")
+      {
+        $file = getcwd() . "/i18n/supported.json";
+        if(! file_exists($file))
+        {
+          return new ServiceNotImplementedException($this->request->serviceName . $servicePathViolation);
+        }
+
+        $string = file_get_contents($file);
+        $supported = json_decode($string);
+        return new SupportedLanguagesDto($supported);
+      }
     }
 
-    if(isset($this->request->serviceSubInfo[1]))
+    if(! in_array($this->langCode, $this->supportedLanguages))
     {
-      $this->region = strtolower($this->request->serviceSubInfo[1]);
+      // fallback
+      $this->langCode = "en";
     }
 
-    $file = getcwd() . "/i18n/" . $this->language . ".json";
+    $this->dir = "LTR";
+    if(in_array($this->langCode, $this->isRTL))
+    {
+      $this->dir = "RTL";
+    }
+
+    $file = getcwd() . "/i18n/" . $this->langCode . ".json";
     if(! file_exists($file))
     {
       return new ServiceNotImplementedException($this->request->serviceName . $servicePathViolation);
     }
 
     $string = file_get_contents($file);
-    $json = json_decode($string);
+    $dict = json_decode($string);
 
-    switch($this->language)
-    {
-      case "en":
-        //return new I18nEnDto($this->region);
-        return $json;
-        break;
-      case "de":
-        //return new I18nDeDto($this->region);
-        return $json;
-        break;
-
-      default:
-        return new ServiceMethodNotImplementedException($this->request->serviceName . $servicePathViolation);
-    }
+    return new I18nDto($this->langCode, $this->dir, $dict);
   }
 }
