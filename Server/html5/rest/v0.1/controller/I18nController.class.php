@@ -27,7 +27,9 @@ class I18nController extends BaseController
     else if($len == 0)
     {
       // fallback
-      $this->langCode = "en";
+      $requestLang = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
+      $requestLang = substr($requestLang, 0, 5);
+      $this->langCode = $requestLang;
     }
     else
     {
