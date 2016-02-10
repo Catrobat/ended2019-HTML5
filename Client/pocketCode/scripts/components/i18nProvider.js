@@ -4,8 +4,6 @@
 PocketCode.I18nProvider = (function (propObject) {
     I18nProvider.extends(SmartJs.Core.Component, false);
 
-
-
     function I18nProvider(propObject) {
         SmartJs.Core.Component.call(this, propObject);
 
@@ -74,13 +72,13 @@ PocketCode.I18nProvider = (function (propObject) {
         languageCode: {
             get: function () {
                 return this._languageCode;
-            }
+            },
         },
         countryCode: {
             get: function () {
                 return this._countryCode;
-            }
-        }
+            },
+        },
     });
 
     //events
@@ -88,13 +86,13 @@ PocketCode.I18nProvider = (function (propObject) {
         onLanguageChange: {
             get: function () {
                 return this._onLanguageChange;
-            }
+            },
         },
         onDirectionChange: {
             get: function () {
                 return this._onDirectionChange;
-            }
-        }
+            },
+        },
     });
 
     //methods
