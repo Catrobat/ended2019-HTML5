@@ -81,13 +81,13 @@ PocketCode.I18nProvider = (function (propObject) {
         languageCode: {
             get: function () {
                 return this._languageCode;
-            },
+            }
         },
         countryCode: {
             get: function () {
                 return this._countryCode;
-            },
-        },
+            }
+        }
     });
 
     //events
@@ -95,19 +95,19 @@ PocketCode.I18nProvider = (function (propObject) {
         onLanguageChange: {
             get: function () {
                 return this._onLanguageChange;
-            },
+            }
         },
         onDirectionChange: {
             get: function () {
                 return this._onDirectionChange;
-            },
-        },
+            }
+        }
     });
 
     //methods
     I18nProvider.prototype.merge({
-        getValue: function(key) {
-            //TODO: dict lookup including fallback
+        translate: function(key) {
+          return this._dictionary[key];
         },
         getDict: function() {
             return this._dictionary;
