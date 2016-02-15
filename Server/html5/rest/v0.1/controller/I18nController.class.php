@@ -10,6 +10,16 @@ class I18nController extends BaseController
                                 "de", "de-AT", "de-DE", "de-CH"];
   public $isRTL = [];
 
+  public $api = "https://api.crowdin.com/api/project/catrobat/download/";
+  public $apiKey = "?key=6c9a3f10bd747ea3198c0bb9b651d9ab";
+
+  // https://api.crowdin.com/api/project/catrobat/download/de.zip?key=6c9a3f10bd747ea3198c0bb9b651d9ab
+  // https://api.crowdin.com/api/project/catrobat/download/en-GB.zip?key=6c9a3f10bd747ea3198c0bb9b651d9ab
+
+  // yaml_parse_file($filename) ==> array
+  // json_encode(array) ==> json
+
+
   public function __construct($request)
   {
     parent::__construct($request);
@@ -47,6 +57,15 @@ class I18nController extends BaseController
         $supported = json_decode($string);
         return new SupportedLanguagesDto($supported);
       }
+
+      if($this->langCode == "update")
+      {
+        if(! $this->updateTranslations())
+        {
+          return new I18nDto($this->langCode, "", "error updating languages...");
+        }
+        return new I18nDto($this->langCode, "", "all languages successfully updated");
+      }
     }
 
     if(! in_array($this->langCode, $this->supportedLanguages))
@@ -71,5 +90,90 @@ class I18nController extends BaseController
     $dict = json_decode($string);
 
     return new I18nDto($this->langCode, $this->dir, $dict);
+  }
+
+  private function updateTranslations()
+  {
+    // german
+    $url = $this->api . "de.zip" . $this->apiKey;
+    $zipDe = file_get_contents($url);
+    $file = getcwd() . "/i18n/de.zip";
+    file_put_contents($file, $zipDe);
+
+    $zip = new ZipArchive;
+    if ($zip->open($file) === TRUE)
+    {
+      $dir = getcwd() . "/i18n/zips/";
+      $zip->extractTo($dir);
+      $zip->close();
+    }
+    else
+    {
+      return false;
+    }
+
+    $dir = getcwd() . "/i18n/zips/html5/player/de-DE.json";
+    $file = getcwd() . "/i18n/de-DE.json";
+    rename($dir, $file);
+
+    $newFile = getcwd() . "/i18n/de-AT.json";
+    if (!copy($file, $newFile))
+    {
+      return false;
+    }
+
+    $newFile = getcwd() . "/i18n/de-CH.json";
+    if (!copy($file, $newFile))
+    {
+      return false;
+    }
+
+    $newFile = getcwd() . "/i18n/de.json";
+    if (!copy($file, $newFile))
+    {
+      return false;
+    }
+
+    $file = getcwd() . "/i18n/de.zip";
+    unlink($file);
+
+    // english
+    $url = $this->api . "en-GB.zip" . $this->apiKey;
+    $zipDe = file_get_contents($url);
+    $file = getcwd() . "/i18n/en.zip";
+    file_put_contents($file, $zipDe);
+
+    $zip = new ZipArchive;
+    if ($zip->open($file) === TRUE)
+    {
+      $dir = getcwd() . "/i18n/zips/";
+      $zip->extractTo($dir);
+      $zip->close();
+    }
+    else
+    {
+      return false;
+    }
+
+    $dir = getcwd() . "/i18n/zips/html5/player/en-GB.json";
+    $file = getcwd() . "/i18n/en-GB.json";
+    rename($dir, $file);
+
+    $newFile = getcwd() . "/i18n/en-US.json";
+    if (!copy($file, $newFile))
+    {
+      return false;
+    }
+
+    $newFile = getcwd() . "/i18n/en.json";
+    if (!copy($file, $newFile))
+    {
+      return false;
+    }
+
+    $file = getcwd() . "/i18n/en.zip";
+    unlink($file);
+
+    return true;
   }
 }
