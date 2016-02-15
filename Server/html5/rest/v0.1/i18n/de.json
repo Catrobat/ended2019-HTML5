@@ -7,6 +7,9 @@
   "lblContinue": "Fortsetzen",
   "lblClose": "Schließen",
   "lblDownload": "Download",
+  "lblLoading": "Lädt...",
+  "lblInitialising": "Initialisierung...",
+  "lblLoadingRes": "Lädt Ressourcen...",
   "btnBack": "Zurück",
   "btnRestart": "Neu starten",
   "btnPlay": "Play",
@@ -23,5 +26,6 @@
   "msgInternalServer": "Entschuldigung. Die letzte Anfrage hat einen internen Serverfehler verursacht. <br/>",
   "msgServerConnection": "Fehler beim Verbinden mit unserer Server oder Server antwortet nicht. <br/> Bitte stellen Sie sicher, dass Sie mit dem Internet verbunden sind. <br/> Wenn Ihre Verbindung vorübergehend nicht verfügbar war, klicken Sie bitte 'Wiederholen', um die Anfrage erneut zu senden.",
   "msgUnsupportedSound": "Eine Datei (oder Codec) wurde derkannt, der nicht mit Ihrem aktuellen Browser kompatibel ist. <br/> Sie können das Projekt trotzdem ausführen - nicht unterstützte Töne werden ignoriert.",
-  "msgUnsupportedDevice": "Das angeforderte Projekt verwendet Features die derzeit nicht von unserem Player und/oder Ihrem Gerät/Browser unterstützt werden. <br/> Sie können das Projekt trotzdem ausführen - nicht unterstützte Features werden ignoriert."
+  "msgUnsupportedDevice": "Das angeforderte Projekt verwendet Features die derzeit nicht von unserem Player und/oder Ihrem Gerät/Browser unterstützt werden. <br/> Sie können das Projekt trotzdem ausführen - nicht unterstützte Features werden ignoriert.",
+  "msgErrorLoading": "Fehler beim Laden"
 }

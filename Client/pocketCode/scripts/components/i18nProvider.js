@@ -33,6 +33,9 @@ PocketCode.I18nProvider = (function (propObject) {
           "lblContinue": "Continue",
           "lblClose": "Close",
           "lblDownload": "Download",
+          "lblLoading": "Loading...",
+          "lblInitialising": "Initialising...",
+          "lblLoadingRes": "Loading resources...",
           "btnBack": "Back",
           "btnRestart": "Restart",
           "btnPlay": "Play",
@@ -49,7 +52,8 @@ PocketCode.I18nProvider = (function (propObject) {
           "msgInternalServer": "We are sorry. The latest request caused an internal server error.<br/>",
           "msgServerConnection": "Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br/>If your connection was temporarily unavailable please click 'Retry' to resend the request.",
           "msgUnsupportedSound": "We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.",
-          "msgUnsupportedDevice": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored."
+          "msgUnsupportedDevice": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
+          "msgErrorLoading": "Error: loading failed"
         };
       
         this._supportedLanguages = {
