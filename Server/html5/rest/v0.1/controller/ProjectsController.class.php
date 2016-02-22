@@ -88,7 +88,6 @@ class ProjectsController extends BaseController
         $details->baseUrl = ""; //delete base url to avoid error (wrong url) due to client side concatenation
       }
     }
-    print_r($details);
 
     return $details;
   }
@@ -482,7 +481,7 @@ class ProjectsController extends BaseController
       foreach($projects->featured as $p)
       {
         $path = $localPath . $p->thumbnailUrl;
-        echo $path . ", \n";
+        //echo $path . ", \n";
         $res = $this->loadBase64Image($path, $this->request->imgDataMax);
         if($res !== false)
         {
