@@ -293,6 +293,7 @@ PocketCode.GameEngine = (function () {
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                     this._onLoad.dispatchEvent();
+                    this._initSprites();
                 }
             }
             else {
@@ -306,6 +307,15 @@ PocketCode.GameEngine = (function () {
             //TODO: make unsupported bricks and resource loading errors (files) public to check on onLoad?
             //TODO: formula is not validated during loaded (sprites not ready): how to check on device features like sensors?
         },
+
+        _initSprites: function() {
+            // init sprites after all looks were loaded (important for look offsets)
+            var sprites = this._sprites;
+            for (var i = 0,l=sprites.length;i<l;i++) {
+              sprites[i].init();
+          }
+        },
+
         _resourceProgressChangeHandler: function (e) {
             if (e.progress === 0)
                 return;
@@ -327,6 +337,7 @@ PocketCode.GameEngine = (function () {
             if (this._spritesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                 this._onLoad.dispatchEvent();
+                this._initSprites();
             }
         },
         _resourceLoadingErrorHandler: function (e) {
