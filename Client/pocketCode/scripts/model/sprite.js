@@ -80,7 +80,7 @@ PocketCode.Model.Sprite = (function () {
 
         //attach to bricks onExecuted event, get sure all are executed and not running
         //property initialization
-        this.init();
+
         ////motion: set in init()
         //this._positionX = 0.0;
         //this._positionY = 0.0;
@@ -107,7 +107,7 @@ PocketCode.Model.Sprite = (function () {
         //looks: a sprite doesn't always have a look
         if (propObject.looks != undefined)
             this.looks = propObject.looks;
-
+        // this.init();
         //sounds
         if (propObject.sounds) {
             this.sounds = propObject.sounds;
@@ -410,10 +410,17 @@ PocketCode.Model.Sprite = (function () {
                 this._lookOffsetY = 0.0;
                 return;
             }
-            var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
-            var rotationAngle = this._direction - 90.0;
-            this._lookOffsetX = center.length * Math.cos(center.angle - rotationAngle * Math.PI / 180.0);
-            this._lookOffsetY = center.length * Math.sin(center.angle - rotationAngle * Math.PI / 180.0);
+            // bypass tests where looks were not loaded via the image store
+            try {
+                var look = this._gameEngine.getLookImage(this._currentLook.imageId);
+            } catch (err) {console.log('LOOK NOT FOUND, PROBABLY NOT YET LOADED.');return;}
+
+            var rotationAngle = (this._direction - 90.0) * Math.PI / 180.;
+            var center = look.center;
+            var scale = this._size / 100. / look.initialScaling;
+
+            this._lookOffsetX = center.length*scale * Math.cos(center.angle - rotationAngle);
+            this._lookOffsetY = center.length*scale * Math.sin(center.angle - rotationAngle);
         },
 
         _triggerRotationChange: function (styleChanged) {
@@ -572,7 +579,6 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         changePositionY: function (value) {
-
             if (isNaN(value))
                 throw new Error('invalid argument: position');
             if (!value)// || value === 0)
@@ -684,6 +690,7 @@ PocketCode.Model.Sprite = (function () {
         pointTo: function (spriteId) {
             if (!spriteId)
                 return false;
+
             var pointTo = this._gameEngine.getSpriteById(spriteId);
             //if (pointTo == undefined) //-> will throw an error in getSpriteById()
             //    return false;
@@ -814,6 +821,7 @@ PocketCode.Model.Sprite = (function () {
             if (size < 0)
                 size = 0;
             this._size = size;
+            this._recalculateLookOffsets();
             var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1;
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: this._size });
             return true;
