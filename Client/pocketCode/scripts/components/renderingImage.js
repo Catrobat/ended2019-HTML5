@@ -107,6 +107,7 @@ PocketCode.RenderingImage = (function () {
         //this._id
 
         this.merge(imageProperties);
+        this._fabricImage.scaleX = this._fabricImage.scaleY =  this._scaling * this._viewportScaling;
     }
 
     //properties
@@ -147,6 +148,9 @@ PocketCode.RenderingImage = (function () {
                 //this._positionX = value;// + this._length * Math.cos(this._angle);
                 this._fabricImage.left = value * this._viewportScaling;  //avoid sub-pixel rendering
             },
+            get: function () {
+                return this._x;
+            }
         },
         y: {
             set: function (value) {
@@ -154,6 +158,10 @@ PocketCode.RenderingImage = (function () {
                 //this._positionY = value;// + this._length * Math.sin(this._angle);
                 this._fabricImage.top = value * this._viewportScaling;
             },
+
+            get: function () {
+                return this._y;
+            }
         },
         scaling: {
             set: function (value) {
