@@ -81,17 +81,34 @@ PocketCode.PlayerViewportController = (function () {
         //    this._view.canvasNeedsRedraw = true;
         //    this._view.handleSpriteChange(e.id, e.properties);
         //},
+
+        _transformXCoordinate : function(wx) {
+            var wxleft = -this._projectScreenWidth / 2.0;
+            var wxright = this._projectScreenWidth / 2.0;
+            var vxleft = 0;
+            var vxright = this._projectScreenWidth;
+
+            return vxleft + (wx - wxleft) * (vxright - vxleft) / (wxright - wxleft);
+        },
+
+        _transformYCoordinate : function(wy) {
+            var wybottom = -this._projectScreenHeight / 2.0;
+            var wytop = this._projectScreenHeight / 2.0;
+            var vybottom = this._projectScreenHeight;
+            var vytop = 0;
+            return vybottom + (wy - wybottom) * (vytop - vybottom) / (wytop - wybottom);
+        },
+
         updateSprite: function (spriteId, properties) {
             var img,
                 imgs = this._renderingImages;//,
-                //xOffset = this._projectScreenWidth / 2.0,
-                //yOffset = this._projectScreenHeight / 2.0;
 
             //update positions: top/left positioning
             if (properties.x !== undefined)
-                properties.x += this._projectScreenWidth / 2.0;//xOffset;
-            if (properties.y !== undefined)
-                properties.y = this._projectScreenHeight / 2.0 - properties.y;
+                properties.x = this._transformXCoordinate(properties.x);
+            if (properties.y !== undefined){
+                properties.y = this._transformYCoordinate(properties.y);
+            }
 
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
@@ -111,9 +128,9 @@ PocketCode.PlayerViewportController = (function () {
             var _var, _vars = this._renderingVariables;
             //update positions: top/left positioning
             if (properties.x !== undefined)
-                properties.x += this._projectScreenWidth / 2.0;//xOffset;
+                properties.x = this._transformXCoordinate(properties.x);
             if (properties.y !== undefined)
-                properties.y = this._projectScreenHeight / 2.0 - properties.y;
+                properties.y = this._transformYCoordinate(sprite.y);
 
             for (var i = 0, l = _vars.length; i < l; i++) {
                 _var = _vars[i];
@@ -131,10 +148,10 @@ PocketCode.PlayerViewportController = (function () {
             var sprite;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprite = sprites[i];
-                sprite.x += this._projectScreenWidth / 2.0;
-                sprite.y = this._projectScreenHeight / 2.0 - sprite.y;
+                sprite.x = this._transformXCoordinate(sprite.x);
+                sprite.y = this._transformYCoordinate(sprite.y);
+
                 //update positions: top/left positioning
-                //var r = new PocketCode.RenderingImage(sprites[i]);
                 if (sprite.look)    //there are sprites without look
                     this._renderingImages.push(new PocketCode.RenderingImage(sprite));//r);
             }
@@ -149,8 +166,8 @@ PocketCode.PlayerViewportController = (function () {
             var _var;
             for (var i = 0, l = variables.length; i < l; i++) {
                 _var = variables[i];
-                _var.x += this._projectScreenWidth / 2.0;
-                _var.y = this._projectScreenHeight / 2.0 - _var.y;
+                _var.x = this._transformXCoordinate(_var.x);
+                _var.y = this._transformYCoordinate(_var.y);
                 this._renderingVariables.push(new PocketCode.RenderingText(_var));
             }
             this._view.renderingVariables = this._renderingVariables;
