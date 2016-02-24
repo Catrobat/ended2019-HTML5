@@ -83,20 +83,22 @@ PocketCode.PlayerViewportController = (function () {
         //},
 
         _transformXCoordinate : function(wx) {
-            var wxleft = -this._projectScreenWidth / 2.0;
+            /*var wxleft = -this._projectScreenWidth / 2.0;
             var wxright = this._projectScreenWidth / 2.0;
             var vxleft = 0;
             var vxright = this._projectScreenWidth;
-
-            return vxleft + (wx - wxleft) * (vxright - vxleft) / (wxright - wxleft);
+            return vxleft + (wx - wxleft) * (vxright - vxleft) / (wxright - wxleft);*/
+            return wx + this._projectScreenWidth / 2.;
         },
 
         _transformYCoordinate : function(wy) {
-            var wybottom = -this._projectScreenHeight / 2.0;
+            /*var wybottom = -this._projectScreenHeight / 2.0;
             var wytop = this._projectScreenHeight / 2.0;
             var vybottom = this._projectScreenHeight;
             var vytop = 0;
-            return vybottom + (wy - wybottom) * (vytop - vybottom) / (wytop - wybottom);
+            return vybottom + (wy - wybottom) * (vytop - vybottom) / (wytop - wybottom);*/
+            return this._projectScreenHeight / 2. - wy;
+
         },
 
         updateSprite: function (spriteId, properties) {
