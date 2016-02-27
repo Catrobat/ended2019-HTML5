@@ -292,8 +292,8 @@ PocketCode.GameEngine = (function () {
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                    this._onLoad.dispatchEvent();
                     this._initSprites();
+                    this._onLoad.dispatchEvent();
                 }
             }
             else {
@@ -314,6 +314,7 @@ PocketCode.GameEngine = (function () {
             for (var i = 0,l=sprites.length;i<l;i++) {
               sprites[i].init();
           }
+            console.log(sprites);
         },
 
         _resourceProgressChangeHandler: function (e) {
@@ -336,8 +337,8 @@ PocketCode.GameEngine = (function () {
             this._resourcesLoaded = true;
             if (this._spritesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                this._onLoad.dispatchEvent();
                 this._initSprites();
+                this._onLoad.dispatchEvent();
             }
         },
         _resourceLoadingErrorHandler: function (e) {
