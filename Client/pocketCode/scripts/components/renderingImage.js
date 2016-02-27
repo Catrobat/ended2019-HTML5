@@ -107,7 +107,6 @@ PocketCode.RenderingImage = (function () {
         //this._id
 
         this.merge(imageProperties);
-        this._fabricImage.scaleX = this._fabricImage.scaleY =  this._scaling * this._viewportScaling;
     }
 
     //properties
@@ -259,8 +258,8 @@ PocketCode.RenderingImage = (function () {
                 this._fabricImage.top = this._y * viewportScaling;
                 this._fabricImage.scaleX = this._scaling * viewportScaling;
                 this._fabricImage.scaleY = this._scaling * viewportScaling;
-                this._fabricImage.setCoords();
             }
+            this._fabricImage.setCoords();
             //render
             this._fabricImage.render(context);//, scaling); //TODO: maybe a good idea if we move that logic here-  from canvas.renderAll()
         },
