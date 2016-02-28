@@ -392,7 +392,7 @@ PocketCode.merge({
                     this._removeDomListener(window, 'popstate', this._popstateListener);
                 if (this._escKeyListener)
                     this._removeDomListener(document, 'keyup', this._escKeyListener);
-                if (this._project)
+                if (this._project && this._project.onLoadingError)
                     this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
                 //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
                 for (var page in this._pages)   //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
