@@ -629,18 +629,29 @@ PocketCode.Ui.merge({
 
             if (SmartJs.Device.isMobile) {
                 this.bodyInnerHTML += 'TODO: mobile';
+
+                this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
             }
             else {
+                //add download form
+                this._downloadForm = document.createElement('form');
+                this._downloadForm.style = 'margin: 0; padding: 0;';
+                this._downloadForm.method = 'POST';
+                this._downloadForm.action = 'https://web-test.catrob.at/html5/rest/v0.1/file/screenshot/';
+                this._downloadInput = document.createElement('input');
+                this._downloadInput.type = 'hidden';
+                this._downloadInput.name = /*this._downloadInput.id =*/ 'base64string';
+
+                this._downloadForm.appendChild(this._downloadInput);
+                this._dom.appendChild(this._downloadForm);
+
                 // i18n: lblDownload
                 this._btnDownload = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblDownload'));
                 this._btnDownload.disabled = true;
                 this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
                 this.addButton(this._btnDownload);
 
-                //this.bodyInnerHTML += 'TODO: desktop';
             }
-
-            this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
 
             this._onCancel = new SmartJs.Event.Event(this);
             this._onDownload = new SmartJs.Event.Event(this);
@@ -664,45 +675,52 @@ PocketCode.Ui.merge({
         Object.defineProperties(ScreenshotDialog.prototype, {
             imageSrc: {
                 set: function (src) {
-                    this._screenshotImage.src = src;//'https://web-test.catrob.at/html5/pocketCode/img/logo.png';//src;
-                    //alert("TODO: show image- setting src + form if download is provided");
+                    if (this._downloadInput)
+                        this._downloadInput.value = src;
+                    this._screenshotImage.src = src;
                     this.appendChild(this._screenshotImage);
                     //^^ this is necessary to include the src prop in DOM and make the image visible (rerender image tag)
                 },
             },
-            requestForm: {
-                get: function () {
-                    return; //TODO: getter for http request form (download)
-                },
-            },
+            //requestForm: {
+            //    get: function () {
+            //        return; //TODO: getter for http request form (download)
+            //    },
+            //},
         });
                 
         //methods
         ScreenshotDialog.prototype.merge({
             _imageOnLoadHandler: function () {
-                var img = this._screenshotImage,//._dom,
-                    w = img.naturalWidth,
-                    h = img.naturalHeight;
+                //var img = this._screenshotImage,//._dom,    //TODO: move this to resize?
+                //    w = img.naturalWidth,
+                //    h = img.naturalHeight;
                 //img.width = 250;
                 //img.height = 300;
+                //this._onResizeHandler();
 
                 if(this._btnDownload)
                     this._btnDownload.disabled = false;
             },
             _onResizeHandler: function () {
-                var img = this._screenshotImage;
-                var scale = Math.min(this._container.width/img.naturalWidth, this._container.height/img.naturalHeight);
-                this._screenshotImage.width = img.naturalWidth * scale * 0.75;    //TODO:
-                this._screenshotImage.height = img.naturalHeight * scale * 0.75;
+                //this handler is called only once in desktop app by _imageOnLoadHandler
+                if (SmartJs.Device.isMobile) {
+                    //TODO: screenshot without scroll container on mobile devices to enable long-tab download 
+                }
+                //var img = this._screenshotImage;
+                //var scale = Math.min(this._container.width/img.naturalWidth, this._container.height/img.naturalHeight);
+                //this._screenshotImage.width = img.naturalWidth * scale * 0.75;    //TODO:
+                //this._screenshotImage.height = img.naturalHeight * scale * 0.75;
             },
 
             download: function () {
-                var link = document.createElement('a');
-                link.href =  this._screenshotImage.src;
-                link.download = 'Screenshot.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                this._downloadForm.submit();
+                //var link = document.createElement('a');
+                //link.href =  this._screenshotImage.src;
+                //link.download = 'Screenshot.png';
+                //document.body.appendChild(link);
+                //link.click();
+                //document.body.removeChild(link);
             }
         //    /* override */
         //    handleHistoryBack: function () {
