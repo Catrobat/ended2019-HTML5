@@ -157,7 +157,7 @@ window.onload = function () {
     sm4.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm4ErrorHandler, this));
     sm4.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(sm4FinishedPlayingHandler, this));
     sm4.loadSounds(resourceBaseUrl3, sounds3);
-    sm4.loadSound('https://web-test.catrob.at/html5/projects/v0.1/968/sounds/590e4930d1a4d647da8b5d43919fd2ab_g#', 'newId', 'mp3');//, undefined);
+    sm4.loadSound('https://web-test.catrob.at/html5/projects/v0.1/968/sounds/590e4930d1a4d647da8b5d43919fd2ab_g#.mp3', 'newId', 'mp3');//, undefined);
     //sm4.loadSound('https://web-test.catrob.at/html5/rest/v0.1/file/tts?text=sound has successfully finished', 'newId', 'mp3');//, undefined);
 
     //window.setTimeout(sm4.startSound('newId'), 2000);
