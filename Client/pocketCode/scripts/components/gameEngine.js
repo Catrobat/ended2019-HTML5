@@ -314,7 +314,7 @@ PocketCode.GameEngine = (function () {
             for (var i = 0,l=sprites.length;i<l;i++) {
               sprites[i].init();
           }
-            console.log(sprites);
+            //console.log(sprites);
         },
 
         _resourceProgressChangeHandler: function (e) {

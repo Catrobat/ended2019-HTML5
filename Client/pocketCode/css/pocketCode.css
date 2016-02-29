@@ -366,6 +366,7 @@
 
 .pc-playerMenuV .pc-playerMenuOutside {
 	left: -7.3em;
+	width: 6.8em;
 }
 
 .pc-playerMenuV .pc-alignedCell {
@@ -418,6 +419,12 @@
 	height: 10.8em;
 }
 
+.pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
+	width: 6.7em;
+	margin-left: 0em;
+	height: 10.8em;
+}
+
 .pc-playerButton svg {
 	position: absolute;
 	width: 3.2em;
@@ -428,11 +435,13 @@
 	left: 0;
 	bottom: 3.4em;
 }
-
 .pc-menuBigButton svg {
 	width: 6.4em;
 	height: 6.4em;
 	margin-left: 1.4em;
+}
+.pc-playerMenuOutside .pc-menuBigButton svg {
+	margin-left: 0.15em;
 }
 
 .pc-playerButton span {
@@ -484,7 +493,7 @@
 	height: 100%;
 	position: relative;
 	overflow: hidden;
-	background-color: #EEE;
+	/*background-color: #EEE;*/
 }
 
 

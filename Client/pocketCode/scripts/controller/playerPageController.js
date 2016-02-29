@@ -258,6 +258,9 @@ PocketCode.PlayerPageController = (function () {
             this._pauseProject();
 
             var d = new PocketCode.Ui.ScreenshotDialog();
+            if (this._screenshotDialog && !this._screenshotDialog.disposed)
+                this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)
+            this._screenshotDialog = d;
             d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 e.target.dispose();
                 if (SmartJs.Device.isMobile)
@@ -274,7 +277,8 @@ PocketCode.PlayerPageController = (function () {
             this._showDialog(d);
         },
         _downloadScreenshot: function(e) {
-            // TODO Download screenshot (as in screenshotdialog.download() or by setting window.location.href?)
+            //download screenshot (as in screenshotdialog.download() or by setting window.location.href?)
+            e.target.download();
         },
         dispose: function () {
             //this._pauseProject();
