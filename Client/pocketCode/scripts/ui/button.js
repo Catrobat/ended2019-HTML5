@@ -10,12 +10,12 @@ PocketCode.Ui.Button = (function () {
     Button.extends(PocketCode.Ui.I18nControl, false);
 
     //cntr
-    function Button(text, args) {
-        PocketCode.Ui.I18nControl.call(this, 'button', args);
-        //this._key = asdf
-        //PocketCode.I18nProvider.getValue(key);
-        this._textNode = new SmartJs.Ui.TextNode(text);
+    function Button(text, args, i18nKey) {
+        SmartJs.Ui.Control.call(this, 'button', args);
+
+        this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
         this._dom.appendChild(this._textNode._dom);
+
         //events
         this._onClick = new SmartJs.Event.Event(this);
         this._addDomListener(this._dom, 'click', this._clickHandler);
@@ -67,8 +67,8 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.Button, false);
 
     //cntr
-    function PlayerSvgButton(icon, text, big) {
-        PocketCode.Ui.Button.call(this, text, { className: 'pc-playerButton' });
+    function PlayerSvgButton(icon, text, big, i18nKey) {
+        PocketCode.Ui.Button.call(this, text, { className: 'pc-playerButton' }, i18nKey);
 
         //this.className = 'pc-playerButton';
         if (big)
@@ -77,7 +77,6 @@ PocketCode.Ui.PlayerSvgButton = (function () {
         if (!icon)
             throw new Error('invalid argument: icon');
 
-        this._textNode = new SmartJs.Ui.TextNode(text);
         var span = document.createElement('span');
         span.appendChild(this._textNode._dom);
         this._dom.innerHTML = icon;

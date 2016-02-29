@@ -70,11 +70,14 @@ PocketCode.Ui.merge({
         I18nTextNode.extends(SmartJs.Ui.TextNode, false);
 
         //cntr
-        function I18nTextNode(text) {
-            SmartJs.Ui.TextNode.call(this, text);
+        function I18nTextNode(i18nKey) {
+            SmartJs.Ui.TextNode.call(this);
+
+            this._i18nKey = i18nKey;
 
             this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
             PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+            this._updateUiStrings();
         }
 
         ////properties
@@ -90,7 +93,7 @@ PocketCode.Ui.merge({
         //methods
         I18nTextNode.prototype.merge({
             _updateUiStrings: function () {
-                //TODO: override this in the individual controls
+                this.text = PocketCode.I18nProvider.translate(this._i18nKey);
             },
             dispose: function () {
                 //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);

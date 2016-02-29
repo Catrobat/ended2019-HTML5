@@ -12,17 +12,6 @@ PocketCode.I18nProvider = (function (propObject) {
         this._languageCode = 'en';
         this._countryCode = 'US';
 
-        /*
-        jQuery.ajax( {
-            url: '//freegeoip.net/json/',
-            type: 'POST',
-            dataType: 'jsonp',
-            success: function(location) {
-                this.countryCode = location.region_code;
-            }
-        } );
-        */
-
         this._dictionary = {};  //storage
         this._dictionary = {
           "lblOk": "OK",
@@ -91,6 +80,14 @@ PocketCode.I18nProvider = (function (propObject) {
             get: function () {
                 return this._countryCode;
             }
+        },
+        dictionary: {
+            set: function (dict) {
+              //if loaded lang != current lang {
+                this._dictionary = dict;
+                this._onLanguageChange.dispatchEvent();
+              //}
+          }
         }
     });
 
@@ -111,10 +108,10 @@ PocketCode.I18nProvider = (function (propObject) {
     //methods
     I18nProvider.prototype.merge({
         translate: function(key) {
+          if(! this._dictionary[key])
+            return "[ " + key + " ]";
+
           return this._dictionary[key];
-        },
-        getDict: function() {
-            return this._dictionary;
         },
         changeI18n: function (value) {
             //TODO: error handling: array length?
