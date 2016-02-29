@@ -9,7 +9,49 @@
 
 QUnit.module("sprite.js");
 
+QUnit.test("Sprite offsets", function (assert) {
+    var testsDone = assert.async();
 
+    var onLoadHandler = function () {
+        var looks = [{id:"s1", name:"look1"}, {id:"s2", name:"look2"}];
+        var sprite = new PocketCode.Model.Sprite(gameEngine, {id: "id", name: "sprite", looks: looks });
+        sprite.init();
+
+        var rotationAngle = 180;
+        sprite.setDirection(rotationAngle);
+        assert.equal(sprite._lookOffsetX.toFixed(2), 3, "lookOffsetX calculated correctly after setting direction to 180 degrees");
+        assert.equal(sprite._lookOffsetY.toFixed(2), 0, "lookOffsetY calculated correctly after setting direction to 180 degrees");
+
+        var center,convertedAngle;
+        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
+            sprite.setDirection(rotationAngle);
+            center = is.getLook(sprite._currentLook.imageId).center;
+            convertedAngle = (sprite._direction - 90.0) * Math.PI / 180.;
+            assert.equal(sprite._lookOffsetX.toFixed(2), (center.length * Math.cos(center.angle - convertedAngle)).toFixed(2) , "lookOffsetX calculated correctly after setting direction to " + rotationAngle + " degrees");
+            assert.equal(sprite._lookOffsetY.toFixed(2), (center.length * Math.sin(center.angle - convertedAngle)).toFixed(2), "lookOffsetY calculated correctly after setting direction to " + rotationAngle + " degrees");
+        }
+        sprite.setLook("s2");
+        center = is.getLook(sprite._currentLook.imageId).center;
+        convertedAngle = (sprite._direction - 90.0) * Math.PI / 180.;
+        assert.equal(sprite._lookOffsetX.toFixed(2), (center.length * Math.cos(center.angle - convertedAngle)).toFixed(2) , "lookOffsetX calculated correctly after look change");
+        assert.equal(sprite._lookOffsetY.toFixed(2), (center.length * Math.sin(center.angle - convertedAngle)).toFixed(2), "lookOffsetY calculated correctly after look change");
+
+        testsDone();
+    };
+
+    var is = new PocketCode.ImageStore(),
+        baseUrl = "_resources/images/",
+        images = [
+            { id: "s1", url: "imgHelper17.png", size: 1 },
+            { id: "s2", url: "imgHelper18.png", size: 1 }
+        ];
+
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._imageStore = is;
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
+    is.loadImages(baseUrl, images, 1);
+
+});
 
 QUnit.test("Sprite", function (assert) {
 
