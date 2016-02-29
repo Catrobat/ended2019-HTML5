@@ -251,7 +251,7 @@ PocketCode.RenderingImage = (function () {
     //methods
     RenderingImage.prototype.merge({
         draw: function (context, viewportScaling) {
-            if (this._viewportScaling !== viewportScaling) {
+            if (viewportScaling !== undefined && this._viewportScaling !== viewportScaling) {
                 this._viewportScaling = viewportScaling;
                 //apply viewport scaling
                 this._fabricImage.left = this._x * viewportScaling;
