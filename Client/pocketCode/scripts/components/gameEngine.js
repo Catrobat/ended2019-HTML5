@@ -707,8 +707,8 @@ PocketCode.GameEngine = (function () {
             if (updateBoundary) {
                 boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //recalculate
                 //adjust/keep the area center during rotate
-                newX += center.x - (boundary.right + boundary.left) / 2;
-                newY += center.y - (boundary.top + boundary.bottom) / 2;
+                newX = center.x - (boundary.right + boundary.left) / 2;
+                newY = center.y - (boundary.top + boundary.bottom) / 2;
                 //update overflows
                 vpEdges.top.overflow = newY + boundary.top - sh2;
                 vpEdges.right.overflow = newX + boundary.right - sw2;
