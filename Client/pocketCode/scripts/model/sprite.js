@@ -82,17 +82,18 @@ PocketCode.Model.Sprite = (function () {
         //property initialization
 
         ////motion: set in init()
-        //this._positionX = 0.0;
-        //this._positionY = 0.0;
-        //this._direction = 90.0; //pointing to right: 0 means up
+        this._positionX = 0.0;
+        this._positionY = 0.0;
+        this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+        this._direction = 0.0; //pointing to right: 0 means up
 
         ////sounds: currently not in use but defined: in future: change name + serialization required
         ////looks
-        //this._currentLook = undefined;
-        //this._size = 100.0;
-        //this._visible = true;
-        //this._transparency = 0.0;
-        //this._brightness = 100.0;
+        this._currentLook = undefined;
+        this._size = 100.0;
+        this._visible = true;
+        this._transparency = 0.0;
+        this._brightness = 100.0;
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
