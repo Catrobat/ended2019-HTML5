@@ -178,7 +178,9 @@ PocketCode.Model.merge({
                 //    return;
                 //}
                 this._broadcastMgr.publish(this._broadcastMsgId);
-                this._return();
+
+                setTimeout(this._return.bind(this), 1);
+                //this._return();
             },
             pause: function () {
                 this._paused = true;
