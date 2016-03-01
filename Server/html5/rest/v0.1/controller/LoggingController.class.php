@@ -20,6 +20,15 @@ class LoggingController extends BaseController
    {
       $id        = "";
       $jsonError = "";
+      $navigator = "";
+      $ip = "";
+      if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+      } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+      } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+      }
       $type      = "";
       $projectId = "";
       $subject   = "[PocketCodeHTML5Log]";
@@ -38,7 +47,9 @@ class LoggingController extends BaseController
       }
       
       $jsonError = utf8_decode($this->request->requestParameters['jsonError']);
-      $mailbody  = $jsonError;
+      $navigator = utf8_decode($this->request->requestParameters['navigator']);
+
+      $mailbody  = "error: " . $jsonError . "\r\nnavigator: " . $navigator . "\r\nip: " . $ip;
       $type      = utf8_decode($this->request->requestParameters['type']);
       $projectId = utf8_decode($this->request->requestParameters['projectId']);
       $subject   = $subject . " " . $type . ": ProjectId: " . $projectId;
