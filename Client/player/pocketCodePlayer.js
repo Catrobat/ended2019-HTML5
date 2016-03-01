@@ -10,6 +10,7 @@ PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
 PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
+PocketCode.mobileUrlRfc3066 = PocketCode.domain + 'html5/player/{projectId}/{rfc3066}';
 PocketCode.logoUrl = PocketCode.domain + 'html5/pocketCode/img/logo.png';
 
 PocketCode.crossOrigin = new ((function () {
@@ -823,7 +824,7 @@ PocketCode.Web = {
 				this._loader.onProgress = this._loaderOnProgress.bind(this);
 
 				if (this._projectId)
-					this.launchProject(this._projectId);
+				    this.launchProject(this._projectId, this._rfc3066);
 			},
 			launchProject: function (projectId, rfc3066, containerElement) {
 				if (!window.addEventListener) {
@@ -837,8 +838,14 @@ PocketCode.Web = {
 				this._rfc3066 = rfc3066;
 				if (!this._domLoaded)
 					return;
-
-				var expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
+				
+				var expectedUrl = '';
+				if (rfc3066) {
+				    expectedUrl = PocketCode.mobileUrlRfc3066.replace('{projectId}', this._projectId);
+				    expectedUrl = expectedUrl.replace('{rfc3066}', rfc3066);
+				}
+				else
+				    expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
 				//redirect for mobile and browsers that do not support cross origin img loading
 				if ((this._isMobile && window.location.href !== expectedUrl) || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
 					window.location = expectedUrl;
@@ -1012,7 +1019,7 @@ PocketCode.Web = {
 PocketCode.Web.resources = {
 	root: function () {
 		var hn = window.location.hostname;
-		if (hn === 'localhost' || hn === '' || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
+		if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
 			return '../';
 
 		return PocketCode.domain + 'html5/';
