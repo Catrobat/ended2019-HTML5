@@ -429,7 +429,7 @@ PocketCode.DeviceEmulator = (function () {
             X: 6, //10,
             Y: 6, //10
         };
-        this._inclinationTimerDuration = 100;
+        this._inclinationTimerDuration = 200;
 
         // Arrow Keys 
         this._keyCode = {
