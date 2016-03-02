@@ -25,6 +25,13 @@ PocketCode.ImageHelper = (function () {
             else
                 throw new Error('The static image helper class uses the DOM and cannot be used until loading completed');
         },
+        setImageSmoothing: function (ctx, bool) {
+            ctx.imageSmoothingEnabled = bool;
+            ctx.webkitImageSmoothingEnabled = bool;
+            ctx.mozImageSmoothingEnabled = bool;
+            ctx.msImageSmoothingEnabled = bool;
+            ctx.oImageSmoothingEnabled = bool;
+        },
         scale: function (element, scalingFactor) {
             this._checkInitialized();
             var h, w;
