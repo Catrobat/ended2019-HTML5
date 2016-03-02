@@ -338,6 +338,8 @@ PocketCode.Model.Sprite = (function () {
             this._transparency = 0.0;
             this._brightness = 100.0;
             this._recalculateLookOffsets();
+            //variables
+            this._resetVariables();
         },
         ///**
         // * calls execute() on every brick as long as method is available

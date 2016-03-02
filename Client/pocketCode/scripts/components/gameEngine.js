@@ -16,7 +16,7 @@ PocketCode.GameEngine = (function () {
     function GameEngine(minLoopCycleTime) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
-        this._executionState = PocketCode.ExecutionState.STOPPED;
+        this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
         this._resourceLoadedSize = 0;
@@ -32,6 +32,7 @@ PocketCode.GameEngine = (function () {
 
         this._background = undefined;
         this._sprites = [];
+        this._originalSpriteOrder = []; //neede to reinit layers on stop/restart
 
         this.resourceBaseUrl = "";
 
@@ -285,6 +286,7 @@ PocketCode.GameEngine = (function () {
                 sprite = this._spriteFactory.create(sp[i]);
                 sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
                 this._sprites.push(sprite);
+                this._originalSpriteOrder.push(sprite);
             }
         },
         //loading handler
@@ -364,12 +366,14 @@ PocketCode.GameEngine = (function () {
                 return this.resumeProject();
 
             //if reinit: all sprites properties have to be set to their default values: default true
-            if (reinitSprites !== false) {
+            if (reinitSprites !== false && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 var bg = this._background;
                 if (bg) {
                     bg.init();
                     this._onSpriteUiChange.dispatchEvent({ id: bg.id, properties: bg.renderingProperties }, bg);
                 }
+
+                this._sprites = this._originalSpriteOrder;  //reset sprite order
                 var sprites = this._sprites,
                     sprite;
                 for (var i = 0, l = sprites.length; i < l; i++) {
@@ -377,6 +381,8 @@ PocketCode.GameEngine = (function () {
                     sprite.init();
                     this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: sprite.renderingProperties }, sprite);
                 }
+
+                this._resetVariables();  //global
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
@@ -421,14 +427,12 @@ PocketCode.GameEngine = (function () {
             this._soundManager.stopAllSounds();
             if (this._background) {
                 this._background.stopScripts();
-                this._background.resetVariables();
             }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].stopScripts();
-                sprites[i].resetVariables();
             }
-            this.resetVariables();  //global
+
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 

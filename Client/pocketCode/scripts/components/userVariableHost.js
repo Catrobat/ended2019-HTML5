@@ -123,7 +123,7 @@ PocketCode.UserVariableHost = (function () {
             }
             return tmp;
         },
-        resetVariables: function () {
+        _resetVariables: function () {
             this.__variablesSimple.reset();
             this.__variablesList.reset();
         },

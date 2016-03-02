@@ -72,7 +72,7 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine._broadcastMgr.initCalled, "Called BroadcastManagers init function");
     assert.equal(gameEngine._broadcasts, broadcasts, "broadcasts set correctly");
 
-    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.STOPPED, "Created gameEngine not started");
+    assert.equal(gameEngine._executionState, PocketCode.ExecutionState.INITIALIZED, "Created gameEngine: status initialized");
     gameEngine._resourcesLoaded = false;
     assert.throws(function () { gameEngine.runProject() }, Error, "ERROR: Program not ready");
     gameEngine._resourcesLoaded = true; //project loaded
@@ -109,6 +109,9 @@ QUnit.test("GameEngine", function (assert) {
                 this.status = PocketCode.ExecutionState.STOPPED;
                 this.timesStopped++;
             },
+            init: function () {
+                return true;    //required to test stop/restart
+            },
         });
 
         return TestSprite;
@@ -133,6 +136,9 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId2", name: "spriteName2" }));
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId3", name: "spriteName3" }));
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId4", name: "spriteName4" }));
+
+    for (var sprite in gameEngine._sprites)
+        gameEngine._originalSpriteOrder.push(sprite);      //TODO: add tests for reinit -> make sure order is correct after stop()
 
     //onExecutedEvent
     assert.ok(gameEngine.onProgramExecuted instanceof SmartJs.Event.Event, "onExecuted accessor check");
