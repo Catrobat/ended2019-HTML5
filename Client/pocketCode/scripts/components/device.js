@@ -470,8 +470,8 @@ PocketCode.DeviceEmulator = (function () {
 
         this._resetInclinationX();
         this._resetInclinationY();
-        this._addDomListener(window, 'keydown', this._keyDown);
-        this._addDomListener(window, 'keyup', this._keyUp);
+        this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+        this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
         window.setInterval(this._inclinationTimerTick.bind(this), this.inclinationTimer);
     }
@@ -576,7 +576,14 @@ PocketCode.DeviceEmulator = (function () {
                 if (this._sensorEmulatedData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
                     this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
             }
-        }
+        },
+        /* override */
+        dispose: function () {
+            this._removeDomListener(document, 'keydown', this._keyUpListener);
+            this._removeDomListener(document, 'keyup', this._keyDownListener);
+
+            PocketCode.Device.prototype.dispose.call(this);    //call super()
+        },
     });
     return DeviceEmulator;
 })();

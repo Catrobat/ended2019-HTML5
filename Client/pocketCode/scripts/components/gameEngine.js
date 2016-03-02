@@ -263,13 +263,15 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            var device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
+            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
+            this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
+            
             var bricksCount = jsonProject.header.bricksCount;
             if (bricksCount <= 0)   //TODO: necessary? - add test case
                 this._spritesLoaded = true;
 
             this._spritesLoadingProgress = 0;
-            this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
+            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
@@ -346,6 +348,10 @@ PocketCode.GameEngine = (function () {
                 this._invalidSoundFiles.push(e.file);
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
+        },
+
+        _deviceOnSpaceKeyDownHandler: function(e) {
+            this._onTabbedAction.dispatchEvent({ sprite: this._background });
         },
         //project interaction
         runProject: function (reinitSprites) {
@@ -743,6 +749,8 @@ PocketCode.GameEngine = (function () {
                 return; //may occur when dispose on error
 
             this.stopProject();
+
+            this._device.onSpaceKeyDown.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
 
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
