@@ -263,7 +263,7 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            var device = new PocketCode.Device(this._soundManager); //TODO: used desktop device (future)
+            var device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             var bricksCount = jsonProject.header.bricksCount;
             if (bricksCount <= 0)   //TODO: necessary? - add test case
                 this._spritesLoaded = true;
