@@ -163,12 +163,18 @@ PocketCode.Model.merge({
             this._paused = false;
             this._pendingOp = false;
             //this._stopped = false;
+
+            this._recursiveBroadcasts = false;
+            this._recursiveTimeout = undefined;
         }
 
         BroadcastBrick.prototype.merge({
-            _execute: function () {
+            _execute: function (usingTimeout) {
                 if (this._disposed)
                     return;
+                if (usingTimeout && this._stopped)
+                    return;
+                this._stopped = false;
                 if (this._paused) {
                     this._pendingOp = true;
                     return;
@@ -177,10 +183,19 @@ PocketCode.Model.merge({
                 //    this._stopped = false;
                 //    return;
                 //}
-                this._broadcastMgr.publish(this._broadcastMsgId);
+                var brId = this._broadcastMsgId;
+                //var broadcasts = this._broadcasts;
 
-                setTimeout(this._return.bind(this), 1);
-                //this._return();
+                if (this._recursiveBroadcasts) {
+                    setTimeout(this._execute.bind(this, true), 0);
+                }
+                else {
+                    this._recursiveBroadcasts = true;
+                    this._broadcastMgr.publish(brId);
+                    this._recursiveBroadcasts = false;
+                }
+                //setTimeout(this._return.bind(this), 1);
+                this._return();
             },
             pause: function () {
                 this._paused = true;
@@ -193,7 +208,10 @@ PocketCode.Model.merge({
                 }
             },
             stop: function () {
+                clearTimeout(this._recursiveTimeout);
                 this._paused = false;
+                this._stopped = true;
+                //this._pendingOp = false;    //TODO: TEST
                 //this._stopped = true;
             },
         });
