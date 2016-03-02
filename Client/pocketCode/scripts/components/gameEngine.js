@@ -363,7 +363,6 @@ PocketCode.GameEngine = (function () {
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
-            this._broadcastMgr.stop();
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites !== false) {
                 var bg = this._background;
@@ -418,14 +417,18 @@ PocketCode.GameEngine = (function () {
         stopProject: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
+            this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
-            if (this._background)
+            if (this._background) {
                 this._background.stopScripts();
-
+                this._background.resetVariables();
+            }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].stopScripts();
+                sprites[i].resetVariables();
             }
+            this.resetVariables();  //global
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 
