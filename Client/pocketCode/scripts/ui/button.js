@@ -19,7 +19,7 @@ PocketCode.Ui.Button = (function () {
         //events
         this._onClick = new SmartJs.Event.Event(this);
         this._addDomListener(this._dom, 'click', this._clickHandler);
-        this._addDomListener(this._dom, 'touchend', function (e) { this._dom.click(); this._dom.blur(); });
+        this._addDomListener(this._dom, 'touchend', function (e) { this._dom.click(); });
     }
 
     //properties
@@ -54,6 +54,7 @@ PocketCode.Ui.Button = (function () {
     //methods
     Button.prototype.merge({
         _clickHandler: function (e) {
+            this._dom.blur();
             this._onClick.dispatchEvent();
             //e.target.blur();//preventDefault(); //stop event so the button dowsn't get focus
         },
