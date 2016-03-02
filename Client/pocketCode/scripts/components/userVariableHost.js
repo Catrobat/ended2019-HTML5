@@ -123,6 +123,10 @@ PocketCode.UserVariableHost = (function () {
             }
             return tmp;
         },
+        resetVariables: function () {
+            this.__variablesSimple.reset();
+            this.__variablesList.reset();
+        },
         /* override */
         dispose: function () {
             this.__variableLookupHost = undefined;  //prevent gameEngine from getting disposed as well during background or sprite dispose
