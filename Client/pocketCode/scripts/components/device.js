@@ -429,7 +429,7 @@ PocketCode.DeviceEmulator = (function () {
             X: 6, //10,
             Y: 6, //10
         };
-        this.inclinationTimer = 100;
+        this._inclinationTimerDuration = 100;
 
         // Arrow Keys 
         this._keyCode = {
@@ -473,7 +473,7 @@ PocketCode.DeviceEmulator = (function () {
         this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
         this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-        window.setInterval(this._inclinationTimerTick.bind(this), this.inclinationTimer);
+        this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
     }
 
     //methods
@@ -548,6 +548,8 @@ PocketCode.DeviceEmulator = (function () {
             this._sensorEmulatedData.Y_INCLINATION = this._defaultInclination.Y;
         },
         _inclinationTimerTick: function () {
+            if (this._disposed)
+                return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
                 this._keyDownTime.LEFT += 1;
@@ -579,6 +581,7 @@ PocketCode.DeviceEmulator = (function () {
         },
         /* override */
         dispose: function () {
+            window.clearInterval(this._inclinationTimer);
             this._removeDomListener(document, 'keydown', this._keyUpListener);
             this._removeDomListener(document, 'keyup', this._keyDownListener);
 
