@@ -235,7 +235,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     f.json = stringPlus;    //TODO: catrobat does not allow a string cocatenation using a + operator showing an error but allowing to save this
     //unless this isn't changes we allow this operation on strings too
-    assert.equal(f.calculate(), 0, "string concat using + operator: return 0");
+    assert.equal(f.calculate(), 'fghfghw', "string concat using + operator: allowed");
     assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
     assert.equal(f.uiString, "'fgh' + 'fghw'", "string concat using + operator: toString");
 
