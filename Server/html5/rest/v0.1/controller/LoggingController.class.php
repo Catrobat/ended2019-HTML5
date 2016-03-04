@@ -7,13 +7,42 @@ class LoggingController extends BaseController
    public function __construct($request)
    {
       parent::__construct($request);
-      if (session_id() == "")
-         session_start();
    }
    
    public function post()
    {
+      if (!$this->initSession())
+         return new ExceptionDto("AuthenticationException", "invalid service call");
       return $this->sendMail();
+   }
+   
+   public function get()
+   {
+      if (count($this->request->serviceSubInfo) == 0) {
+         if (!$this->initSession())
+            return new ExceptionDto("AuthenticationException", "invalid service call");
+         return $this->sendMail();
+      }
+      else if ($this->request->serviceSubInfo[0] != "id") {
+         return new ServicePathViolationException("Parameter id is not set");
+      }
+      
+      if (session_id() == "")
+         session_start();
+      $uuid                  = uniqid();
+      $_SESSION["LoggingId"] = $uuid;
+      return new UuidDto(session_id(), $uuid);
+   }
+
+   private function initSession()
+   {
+      if (session_id() == "" && isset($this->request->requestParameters["sid"])) {
+            session_id($this->request->requestParameters["sid"]);
+            session_start();
+            return true;
+      }
+      
+      return false;
    }
    
    private function sendMail()
@@ -22,20 +51,20 @@ class LoggingController extends BaseController
       $jsonError = "";
       $navigator = "";
       $ip = "";
-      if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-      } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+      if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+        $ip = $_SERVER["HTTP_CLIENT_IP"];
+      } elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+        $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
       } else {
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = $_SERVER["REMOTE_ADDR"];
       }
       $type      = "";
       $projectId = "";
       $subject   = "[PocketCodeHTML5Log]";
       $mailbody  = "";
       
-      if (isset($this->request->requestParameters['id'])) {
-         $id = utf8_decode($this->request->requestParameters['id']);
+      if (isset($this->request->requestParameters["id"])) {
+         $id = utf8_decode($this->request->requestParameters["id"]);
          if (isset($_SESSION["LoggingId"]) && $_SESSION["LoggingId"] == $id) {
             $_SESSION["LoggingId"] = "";
          } else {
@@ -46,12 +75,12 @@ class LoggingController extends BaseController
          return new SuccessDto(false);
       }
       
-      $jsonError = utf8_decode($this->request->requestParameters['jsonError']);
-      $navigator = utf8_decode($this->request->requestParameters['navigator']);
+      $jsonError = utf8_decode($this->request->requestParameters["jsonError"]);
+      $navigator = utf8_decode($this->request->requestParameters["navigator"]);
 
-      $mailbody  = "error: " . $jsonError . "\r\nnavigator: " . $navigator . "\r\nip: " . $ip;
-      $type      = utf8_decode($this->request->requestParameters['type']);
-      $projectId = utf8_decode($this->request->requestParameters['projectId']);
+      $mailbody  = "LOG MESSAGE:\r\n" . $jsonError . "\r\nNAVIGATOR:\r\n" . $navigator . "\r\nIP: " . $ip;
+      $type      = utf8_decode($this->request->requestParameters["type"]);
+      $projectId = utf8_decode($this->request->requestParameters["projectId"]);
       $subject   = $subject . " " . $type . ": ProjectId: " . $projectId;
       $mail      = new PHPMailer(true);
       $mail->IsSMTP(); // telling the class to use SMTP
@@ -76,15 +105,4 @@ class LoggingController extends BaseController
       }
    }
    
-   public function get()
-   {
-      if (count($this->request->serviceSubInfo) == 0) {
-         return $this->sendMail();
-      } else if ($this->request->serviceSubInfo[0] != "id") {
-         return new ServicePathViolationException("Parameter id is not set");
-      }
-      $uuid                  = uniqid();
-      $_SESSION["LoggingId"] = $uuid;
-      return new UuidDto($uuid);
-   }
 }
