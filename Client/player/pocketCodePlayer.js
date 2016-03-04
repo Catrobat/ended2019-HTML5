@@ -1051,6 +1051,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/userVariableHost.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },    //make sure includes are in the right order (inheritance)
 		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/loggingProvider.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/parser.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/renderingImage.js', type: 'js' },

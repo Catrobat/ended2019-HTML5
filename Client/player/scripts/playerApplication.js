@@ -156,6 +156,8 @@ PocketCode.merge({
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
+                PocketCode.LoggingProvider.sendMessage(error, this._currentProjectId);
+
                 //stop gameEngine + loading
                 this._project.dispose();
             },
@@ -247,6 +249,7 @@ PocketCode.merge({
                     default:    //InternalServerError
                         d = new PocketCode.Ui.InternalServerErrorDialog();
                 }
+                PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
 
                 d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
