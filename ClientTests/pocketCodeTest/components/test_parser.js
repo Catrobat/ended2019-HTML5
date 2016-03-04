@@ -28,7 +28,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
 
-    //disposing without efect on the object
+    //disposing without effect on the object
     var isStatic = PocketCode.FormulaParser._isStatic;
     PocketCode.FormulaParser.dispose()
     assert.ok(PocketCode.FormulaParser._isStatic != undefined && PocketCode.FormulaParser._isStatic === isStatic, "dispose: no effect");

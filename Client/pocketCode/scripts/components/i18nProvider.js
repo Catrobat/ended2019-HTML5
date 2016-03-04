@@ -102,7 +102,7 @@ PocketCode.I18nProvider = (function (propObject) {
         },
         supportedLanguages: {
             get: function () {
-                this._supportedLanguages;
+                return this._supportedLanguages;
             },
         },
     });
@@ -172,6 +172,7 @@ PocketCode.I18nProvider = (function (propObject) {
             }
             //this._dictionary = json.dictionary;
             this._dictionary.merge(json.dictionary); //temp: merge: so we can add strings client side that are currently not available on our server
+            this._currentLanguage = json.languageCode;
             this._onLanguageChange.dispatchEvent();
         },
         _loadErrorHandler: function (e) {
