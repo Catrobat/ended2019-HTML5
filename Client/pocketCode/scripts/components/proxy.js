@@ -354,8 +354,9 @@ PocketCode.merge({
                 req.sendData(request.data, method || request.method);
                 return true;
             },
+            /* override */
             dispose: function () {
-                //override as a static class cannot be disposed
+                //static class: cannot be disposed
             },
         });
 

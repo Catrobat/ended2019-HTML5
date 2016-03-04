@@ -309,10 +309,14 @@ PocketCode.ImageHelper = (function () {
 
             return { height: newH * scaling, width: newW * scaling };
         },
-
+        /* override */
+        dispose: function () {
+            //static class: cannot be disposed
+        },
     });
 
     return ImageHelper;
 })();
+
 //static class: constructor override (keeping code coverage enabled)
 PocketCode.ImageHelper = new PocketCode.ImageHelper();
