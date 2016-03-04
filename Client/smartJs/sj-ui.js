@@ -685,8 +685,8 @@ SmartJs.Ui.merge({
                 defaultArgs.merge(propObject);
             SmartJs.Ui.Control.call(this, 'img', defaultArgs);
             this._addDomListener(this._dom, 'load', function (e) {
-                if ('complete' in e.target && !e.target.complete)
-                    return;
+                //if ('complete' in e.target && !e.target.complete)
+                //    return;
                 this._onLoad.dispatchEvent();
             });
 
@@ -722,7 +722,7 @@ SmartJs.Ui.merge({
                     return this._dom.naturalHeight;
                 },
             },
-            crossOrigin: {
+            crossOrigin: {  //setting the crossOrigin property may trigger a new request even if the image was aleady loaded (NN)
                 set: function (crossOriginProperty) {
                     if ('crossOrigin' in this._dom)
                         this._dom.crossOrigin = crossOriginProperty;

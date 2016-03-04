@@ -7,10 +7,10 @@
 'use strict';
 
 PocketCode.Ui.Button = (function () {
-    Button.extends(PocketCode.Ui.I18nControl, false);
+    Button.extends(SmartJs.Ui.Control, false);
 
     //cntr
-    function Button(text, args, i18nKey) {
+    function Button(i18nKey, args) {
         SmartJs.Ui.Control.call(this, 'button', args);
 
         this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
@@ -28,8 +28,13 @@ PocketCode.Ui.Button = (function () {
             get: function () {
                 return this._textNode.text;
             },
-            set: function (value) {
-                this._textNode.text = value;
+            //set: function (value) {
+            //    this._textNode.text = value;
+            //},
+        },
+        i18nKey: {
+            set: function (i18nKey) {
+                this._textNode.i18nKey = i18nKey;
             },
         },
         disabled: {
@@ -68,8 +73,8 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.Button, false);
 
     //cntr
-    function PlayerSvgButton(icon, text, big, i18nKey) {
-        PocketCode.Ui.Button.call(this, text, { className: 'pc-playerButton' }, i18nKey);
+    function PlayerSvgButton(icon, i18nKey, big) {
+        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-playerButton' });
 
         //this.className = 'pc-playerButton';
         if (big)

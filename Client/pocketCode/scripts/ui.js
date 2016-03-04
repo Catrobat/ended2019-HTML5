@@ -75,30 +75,30 @@ PocketCode.Ui.merge({
 
             this._i18nKey = i18nKey;
 
-            this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
             this._updateUiStrings();
         }
 
-        ////properties
-        //Object.defineProperties(I18nTextNode.prototype, {
-
-        //});
-
-        ////events
-        //Object.defineProperties(I18nTextNode.prototype, {
-
-        //});
+        //properties
+        Object.defineProperties(I18nTextNode.prototype, {
+            i18nKey: {
+                set: function(i18nKey){
+                    this._i18nKey = i18nKey;
+                    this._updateUiStrings();
+                },
+            },
+        });
 
         //methods
         I18nTextNode.prototype.merge({
             _updateUiStrings: function () {
-                this.text = PocketCode.I18nProvider.translate(this._i18nKey);
+                //if (!this._i18nKey)
+                //    return;
+                if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
+                    this.text = 'invalid i18nProvider';
+                this.text = PocketCode.I18nProvider.getLocString(this._i18nKey);
             },
-            dispose: function () {
-                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.TextNode.prototype.dispose.call(this);
-            }
         });
 
         return I18nTextNode;
@@ -111,29 +111,15 @@ PocketCode.Ui.merge({
         function I18nControl(element, propObject) {
             SmartJs.Ui.Control.call(this, element, propObject);
 
-            this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
         }
-
-        ////properties
-        //Object.defineProperties(I18nControl.prototype, {
-
-        //});
-
-        ////events
-        //Object.defineProperties(I18nControl.prototype, {
-
-        //});
 
         //methods
         I18nControl.prototype.merge({
             _updateUiStrings: function () {
                 //TODO: override this in the individual controls
             },
-            dispose: function () {
-                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.Control.prototype.dispose.call(this);
-            }
         });
 
         return I18nControl;
