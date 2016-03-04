@@ -1,6 +1,6 @@
 <?php
 
-class SupportedLanguagesDto
+class I18nSupportedLanguagesDto
 {
   public $supportedLanguages;
 

@@ -1,9 +1,9 @@
 {
   "languages" : [
-    { "langCode" : "en-GB", "uiString" : "English (UK)" },
-    { "langCode" : "en-US", "uiString" : "English (US)" },
-    { "langCode" : "de-AT", "uiString" : "Deutsch (Österreich)" },
-    { "langCode" : "de-CH", "uiString" : "Deutsch (Schweiz)" },
-    { "langCode" : "de-DE", "uiString" : "Deutsch (Deutschland)" }
+    { "languageCode" : "en-GB", "uiString" : "English (UK)" },
+    { "languageCode" : "en-US", "uiString" : "English (US)" },
+    { "languageCode" : "de-AT", "uiString" : "Deutsch (Österreich)" },
+    { "languageCode" : "de-CH", "uiString" : "Deutsch (Schweiz)" },
+    { "languageCode" : "de-DE", "uiString" : "Deutsch (Deutschland)" }
   ]
 }

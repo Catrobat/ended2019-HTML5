@@ -1,6 +1,6 @@
 <?php
 
-class I18nDto
+class I18nDictionaryDto
 {
   public $languageCode;
   public $direction;

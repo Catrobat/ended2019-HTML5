@@ -55,16 +55,16 @@ class I18nController extends BaseController
 
         $string = file_get_contents($file);
         $supported = json_decode($string);
-        return new SupportedLanguagesDto($supported->languages);
+        return new I18nSupportedLanguagesDto($supported->languages);
       }
 
       if($this->langCode == "update")
       {
         if(! $this->updateTranslations())
         {
-          return new I18nDto($this->langCode, "", "error updating languages...");
+          return new I18nDictionaryDto($this->langCode, "", "error updating languages...");
         }
-        return new I18nDto($this->langCode, "", "all languages successfully updated");
+        return new I18nDictionaryDto($this->langCode, "", "all languages successfully updated");
       }
     }
 
@@ -89,7 +89,7 @@ class I18nController extends BaseController
     $string = file_get_contents($file);
     $dict = json_decode($string);
 
-    return new I18nDto($this->langCode, $this->dir, $dict);
+    return new I18nDictionaryDto($this->langCode, $this->dir, $dict);
   }
 
   private function updateTranslations()
