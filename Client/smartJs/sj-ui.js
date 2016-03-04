@@ -173,13 +173,11 @@ SmartJs.Ui.Window = new SmartJs.Ui.Window();
 
 SmartJs.Ui.merge({
     TextNode: (function () {
-        TextNode.extends(SmartJs.Core.Component);//, false);
+        TextNode.extends(SmartJs.Core.Component);
 
         function TextNode(text) {//, propObject) {
             this._text = text || '';
             this._dom = document.createTextNode(this._text);
-
-            //SmartJs.Core.EventTarget.call(this);//, propObject);
         }
 
         //properties
@@ -192,8 +190,6 @@ SmartJs.Ui.merge({
                     this._text = value;
                     this._dom.textContent = value;
                 },
-                //enumerable: false,
-                //configurable: true,
             },
         });
 
@@ -205,7 +201,7 @@ SmartJs.Ui.merge({
             show: function () {
                 this._dom.textContent = this._text;
             },
-            verifyResize: function () { //interface suport only
+            verifyResize: function () { //interface support only
             },
             dispose: function () {
                 if (this._parent)
@@ -223,6 +219,9 @@ SmartJs.Ui.merge({
         Control.extends(SmartJs.Core.EventTarget, false);
 
         function Control(element, propObject) {
+            if (propObject && typeof propObject !== 'object')
+                throw new Error('invalid argument: expected: propObject typeof object');
+
             this._id = SmartJs.getNewId();
 
             if (element instanceof HTMLElement)
@@ -285,8 +284,6 @@ SmartJs.Ui.merge({
                 get: function () {
                     return this._id;
                 },
-                //enumerable: false,
-                //configurable: true,
             },
             rendered: {
                 get: function () {
@@ -297,8 +294,6 @@ SmartJs.Ui.merge({
                     return document.body.contains(this._dom);
                     //return false;
                 },
-                //enumerable: false,
-                //configurable: true,
             },
             style: {
                 get: function () {
@@ -317,8 +312,6 @@ SmartJs.Ui.merge({
                     }
                     this.verifyResize();
                 },
-                //enumerable: false,
-                //configurable: true,
             },
             className: {
                 get: function () {
@@ -328,8 +321,6 @@ SmartJs.Ui.merge({
                     this._dom.className = value;
                     this.verifyResize();
                 },
-                //enumerable: false,
-                //configurable: true,
             },
             height: {
                 get: function () {
@@ -363,13 +354,9 @@ SmartJs.Ui.merge({
                         this.verifyResize();
                     }
                 },
-                //enumerable: true,
-                //configurable: true,
             },
             _innerHeight: {
                 get: function () {
-                    if (this.__container && this.__container !== this)
-                        return this.__container._innerHeight;
                     if (!this.rendered)
                         return 0;
                     var _style = window.getComputedStyle(this._dom);
@@ -378,14 +365,11 @@ SmartJs.Ui.merge({
                     height -= parseInt(_style.paddingBottom) || 0;
                     return height;
                 },
-                //enumerable: true,
-                //configurable: true,
             },
             width: {
                 get: function () {
                     if (!this.rendered)
                         return 0;
-
                     var _style = window.getComputedStyle(this._dom);
                     var width = this._dom.offsetWidth;
                     width += parseInt(_style.marginLeft) || 0;
@@ -413,13 +397,9 @@ SmartJs.Ui.merge({
                         this.verifyResize();
                     }
                 },
-                //enumerable: true,
-                //configurable: true,
             },
             _innerWidth: {
                 get: function () {
-                    if (this.__container && this.__container !== this)
-                        return this.__container._innerWidth;
                     if (!this.rendered)
                         return 0;
 
@@ -429,8 +409,6 @@ SmartJs.Ui.merge({
                     width -= parseInt(_style.paddingRight) || 0;
                     return width;
                 },
-                //enumerable: true,
-                //configurable: true,
             },
             hidden: {
                 get: function () {
@@ -439,22 +417,20 @@ SmartJs.Ui.merge({
                         return false;
                     return true;
                 },
-                //enumerable: false,
-                //configurable: true,
             },
         });
 
         //events
         Object.defineProperties(Control.prototype, {
             onResize: {
-                get: function () { return this._onResize; },
-                //enumerable: false,
-                //configurable: true,
+                get: function () {
+                    return this._onResize;
+                },
             },
             onLayoutChange: {
-                get: function () { return this._onLayoutChange; },
-                //enumerable: false,
-                //configurable: true,
+                get: function () {
+                    return this._onLayoutChange;
+                },
             },
         });
 
@@ -545,6 +521,9 @@ SmartJs.Ui.merge({
                 this.__addClassName(classString, newClass);
                 this.verifyResize(this);
             },
+            _appendChild: function (uiControl) {
+                this._insertAt(this._childs.length, uiControl);
+            },
             _insertAt: function (idx, uiControl) {
                 if (!(uiControl instanceof SmartJs.Ui.Control) && !(uiControl instanceof SmartJs.Ui.TextNode))
                     throw new Error('invalid argument: uiControl, expected: instance of SmartJs.Ui.Control or SmartJs.Ui.TextNode');
@@ -557,8 +536,8 @@ SmartJs.Ui.merge({
                     throw new Error('insertion point index out of range');
 
                 var currentIdx = this._childs.indexOf(uiControl);
-                if (currentIdx === idx)    //already on this position
-                    return;
+                //if (currentIdx === idx)    //already on this position
+                //    return;
 
                 var currentParent = uiControl._parent;
                 currentIdx = -1;
@@ -588,11 +567,8 @@ SmartJs.Ui.merge({
                 uiControl.verifyResize(this);
                 this.onLayoutChange.dispatchEvent({}, uiControl);
             },
-            _appendChild: function (uiControl) {
-                this._insertAt(this._childs.length, uiControl);
-            },
             _insertBefore: function (newUiC, existingUiC) {
-                if (!(newUiC instanceof SmartJs.Ui.Control) && !(existingUiC instanceof SmartJs.Ui.Control))
+                if (!(newUiC instanceof SmartJs.Ui.Control) && !(existingUiC instanceof SmartJs.Ui.TextNode))
                     throw new Error('invalid argument: uiControl, expected: instance of SmartJs.Ui.Control or SmartJs.Ui.TextNode');
 
                 var idx = this._childs.indexOf(existingUiC);
@@ -622,13 +598,7 @@ SmartJs.Ui.merge({
                     throw new Error('reference control could not be found');
 
                 this._removeChild(existingUiC, true);
-                try {
-                    this._insertAt(idx + 1, newUiC);
-                }
-                catch (e) {
-                    this._insertAt(idx, existingUiC);  //no changes on error
-                    throw e;
-                }
+                this._insertAt(idx, newUiC);
             },
             _removeChild: function (uiControl, suppressResizeEvent) {
                 if (!(uiControl instanceof SmartJs.Ui.Control) && !(uiControl instanceof SmartJs.Ui.TextNode))
@@ -710,8 +680,15 @@ SmartJs.Ui.merge({
             if (propObject && typeof propObject !== 'object')
                 throw new Error('invalid argument: expected: propObject typeof object');
 
-            SmartJs.Ui.Control.call(this, 'img', propObject);
-            this._addDomListener(this._dom, 'load', function (e) { this._onLoad.dispatchEvent() });
+            var defaultArgs = { style: { width: 'auto', height: 'auto' } };
+            if (propObject)
+                defaultArgs.merge(propObject);
+            SmartJs.Ui.Control.call(this, 'img', defaultArgs);
+            this._addDomListener(this._dom, 'load', function (e) {
+                if ('complete' in e.target && !e.target.complete)
+                    return;
+                this._onLoad.dispatchEvent();
+            });
 
             this._onLoad = new SmartJs.Event.Event(this);
         }
@@ -764,124 +741,90 @@ SmartJs.Ui.merge({
                 throw new Error('invalid argument: expected: propObject typeof object');
 
             SmartJs.Ui.Control.call(this, 'div', propObject);
-
             this.__container = this;   //the inner container gets stored here
-            //this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
-            //this._container = this; //override this property to ensure child elements are added inside the container tag and not inside the _dom tag
         }
 
         Object.defineProperties(ContainerControl.prototype, {
-            //__container: {
-            //    value: this,
-            //    writable: true,
-            //},
             _container: {
-                set: function (value) {
-                    if (!(value instanceof SmartJs.Ui.Control))
-                        throw new Error('invalid argument: inner container has to be of instance SmartJs.Ui.Control');
-                    this.__container = value;
+                set: function (control) {
+                    if (!(control instanceof SmartJs.Ui.ContainerControl))
+                        throw new Error('invalid argument: inner container has to be of instance SmartJs.Ui.ContainerControl');
+
+                    this.__container = control;
                 },
                 get: function () {
-                    //if (!this.__container)
-                    //    var breakpoint = true;
                     return this.__container;    //needed to add to parent control in inherited classes
                 },
             },
             /* override */
-            //_innerWidth: {
-            //    get: function () { 
-            //        if (this.__container !== this)
-            //            return this.__container._innerWidth;
-            //        return SmartJs.Ui.Control.prototype._innerWidth.call(this);
-            //    },
-            //},
-            //_innerHeight: {
-            //    get: function () {
-            //        if (this.__container !== this)
-            //            return this.__container._innerHeight;
-            //        return SmartJs.Ui.Control.prototype._innerHeight.call(this);
-            //    },
-            //},
+            _innerHeight: {
+                get: function () {
+                    if (this.__container !== this)
+                        return this.__container._innerHeight;
+
+                    if (!this.rendered)
+                        return 0;
+                    var _style = window.getComputedStyle(this._dom);
+                    var height = this._dom.clientHeight;
+                    height -= parseInt(_style.paddingTop) || 0;
+                    height -= parseInt(_style.paddingBottom) || 0;
+                    return height;
+                },
+            },
+            _innerWidth: {
+                get: function () {
+                    if (this.__container !== this)
+                        return this.__container._innerWidth;
+
+                    if (!this.rendered)
+                        return 0;
+                    var _style = window.getComputedStyle(this._dom);
+                    var width = this._dom.clientWidth;
+                    width -= parseInt(_style.paddingLeft) || 0;
+                    width -= parseInt(_style.paddingRight) || 0;
+                    return width;
+                },
+            },
         });
 
         ContainerControl.prototype.merge({
             /* override */
-            //verifyResize: function(caller) {
-            //    SmartJs.Ui.Control.prototype.verifyResize.call(this, this);
-            //    this.__container.verifyResize(this);
-            //},
-            //_resizeHandler: function(e) {
-            //    this.__container.verifyResize(this);
-            //},
-            //mapping the methods to the inner container and provide public access
             appendChild: function (uiControl) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                if (cont !== this)
                     return cont.appendChild(uiControl);
-                //else
-                    return cont._insertAt(cont._childs.length, uiControl);
+                return this._appendChild(uiControl);
             },
             insertAt: function(idx, uiControl) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                if (cont !== this)
                     return cont.insertAt(idx, uiControl);
-                //else
-                    return cont._insertAt(idx, uiControl);
+                return this._insertAt(idx, uiControl);
             },
-            insertBefore: function (existingUiC, newUiC) {
+            insertBefore: function (newUiC, existingUiC) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
-                    return cont.insertBefore(uiControl);
-                //else
-                    return cont._insertBefore(existingUiC, newUiC);
+                if (cont !== this)
+                    return cont.insertBefore(newUiC, existingUiC);
+                return this._insertBefore(newUiC, existingUiC);
             },
-            insertAfter: function (existingUiC, newUiC) {
+            insertAfter: function (newUiC, existingUiC) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
-                    return cont.insertAfter(uiControl);
-                //else
-                    return cont._insertAfter(existingUiC, newUiC);
+                if (cont !== this)
+                    return cont.insertAfter(newUiC, existingUiC);
+                return this._insertAfter(newUiC, existingUiC);
             },
-            replaceChild: function (existingUiC, newUiC) {
+            replaceChild: function (newUiC, existingUiC) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
-                    return cont.replaceChild(uiControl);
-                //else
-                    return cont._replaceChild(existingUiC, newUiC);
+                if (cont !== this)
+                    return cont.replaceChild(newUiC, existingUiC);
+                return this._replaceChild(newUiC, existingUiC);
             },
             removeChild: function (uiControl) {
                 var cont = this.__container;
-                if (cont !== this && cont instanceof SmartJs.Ui.ContainerControl)
+                if (cont !== this)
                     return cont.removeChild(uiControl);
-                //else
-                    return cont._removeChild(uiControl);
+                return this._removeChild(uiControl);
             },
-            //_removeChild: function (uiControl, suppressResizeEvent) {
-            //    if (this.__container && this.__container !== this)
-            //        this.__container._removeChild(uiControl, suppressResizeEvent);
-            //    else
-            //    SmartJs.Ui.Control.prototype._removeChild.call(this, uiControl, suppressResizeEvent);
-            //},
-            //removeAll: function () {
-            //    var cont = this.__container;
-            //    for (var i = 0, l = cont._childs.length; i < l; i++)
-            //        cont.removeChild(cont._childs[i]);
-            //},
-            //clearContents: function () {    //remove and dispose
-            //    var cont = this.__container;
-            //    for (var i = 0, l = cont._childs.length; i < l; i++)
-            //        cont._childs[i].dispose();
-            //},
-            //dispose: function () {
-            //    if (this.__container && this.__container !== this)
-            //        this.__container.dispose();
-            //    SmartJs.Ui.Control.prototype.dispose.call(this);
-            //},
-            //verifyResize: function () {
-            //    if (this.__container && this.__container !== this)
-            //        this.__container.verifyResize(this);
-            //    SmartJs.Ui.Control.prototype.verifyResize.call(this);
-            //}
         });
 
         return ContainerControl;
@@ -891,29 +834,24 @@ SmartJs.Ui.merge({
         Viewport.extends(SmartJs.Ui.Control, false);
 
         function Viewport(propObject) {
-            SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });//, }.merge(propObject));
+            SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });
 
             this._window = SmartJs.Ui.Window;
-            //this._parentContainer;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);
         }
-
-        //Object.defineProperties(Viewport.prototype, {
-        //    //domElement: {
-        //    //    get: function () { return this._dom; },
-        //    //    //enumerable: false,
-        //    //    //configurable: true,
-        //    //},
-        //});
 
         Viewport.prototype.merge({
             addToDom: function (parent) {
                 if (parent !== undefined && !(parent instanceof HTMLElement))
                     throw new Error('invalid argument: dom: expectet type HTMLElement');
                 parent = parent || document.body;
+                if (this._parentHtmlElement === parent)
+                    return;
+                if (this._parentHtmlElement)
+                    this._parentHtmlElement.removeChild(this._dom);
                 parent.appendChild(this._dom);
-                //this._parentContainer = parent;
+                this._parentHtmlElement = parent; //save
                 this.onResize.dispatchEvent();
             },
             dispose: function () {
@@ -922,17 +860,6 @@ SmartJs.Ui.merge({
                 this._window.onResize.removeEventListener(this._resizeListener);
                 SmartJs.Ui.Control.prototype.dispose.call(this);  //super.dispose();
             },
-
-            //verifyResize: function (caller) {
-            //    if (this.hidden || !this.rendered) return;
-            //    var size = this._cachedSize;
-
-            //    // console.log('VP:', this.height, size.height);
-            //    if (size.height !== this.height || size.width !== this.width)
-            //        this.onResize.dispatchEvent({ caller: caller });
-
-            //},
-
         });
 
         return Viewport;

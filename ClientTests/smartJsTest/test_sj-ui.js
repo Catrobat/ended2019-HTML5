@@ -51,6 +51,7 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
 
     var tn = new SmartJs.Ui.TextNode();
     assert.ok(tn instanceof SmartJs.Ui.TextNode && tn instanceof SmartJs.Core.Component && tn instanceof Object, "instance check");
+    assert.equal(tn.objClassName, "TextNode", "objClassName check");
 
     tn.text = "NEW TEXT NODE";
     assert.equal(tn.text, "NEW TEXT NODE", "textnode: get/set text");
@@ -87,6 +88,15 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
     vp._appendChild(tn6);
 
     assert.equal(vp._dom.innerHTML, " A  B  C  D  E  F ", "textnode: several appended");
+
+    tn2.hide();
+    tn4.hide();
+    assert.equal(vp._dom.innerHTML, " A  C  E  F ", "textnode: hide");
+
+    tn2.show();
+    tn4.show();
+    assert.equal(vp._dom.innerHTML, " A  B  C  D  E  F ", "textnode: show");
+
     tn2.dispose();
     tn4.dispose();
     tn5.dispose();
@@ -117,7 +127,8 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
     assert.equal(cp._dom.id, cp._id, "Control id = dom element id");
 
     assert.throws(function () { var x = new SmartJs.Ui.Control(); }, Error, "ERROR: empty constructor call");
-    //assert.throws(function () { var x = new SmartJs.Ui.Control("div2"); }, Error, "ERROR: invalid constructor call: string");
+    assert.throws(function () { var x = new SmartJs.Ui.Control("div", "invalid"); }, Error, "ERROR: invalid propObject argument");
+    //assert.throws(function () { var x = new SmartJs.Ui.Control("div2"); }, Error, "ERROR: invalid constructor call: args");
     //div = document.createElement("div2");
     //assert.throws(function () { var x = new SmartJs.Ui.Control(div); }, Error, "ERROR: invalid constructor call: HTMLElement");
 
@@ -148,8 +159,27 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
     assert.ok(!cp.hidden, "hidden: false on unset control");
     cp.hide();
     assert.ok(cp.hidden, "hidden: true after control.hide()");
+
+    var testParent = {
+        onLayoutChange: new SmartJs.Event.Event(this),
+    }
+    cp._parent = testParent;
+    var onLayoutChangeCalled = 0;
+    var onLayoutChangeHandler = function (e) {
+        onLayoutChangeCalled++;
+    }
+    testParent.onLayoutChange.addEventListener(new SmartJs.Event.EventListener(onLayoutChangeHandler, this));
+    cp.hide();  //called twice: code coverage shows that no event is triggered 
+    assert.equal(onLayoutChangeCalled, 0, "no onLayoutChange event triggerd if already hidden");
+
+    cp._parent = undefined;
     cp.show();
     assert.ok(!cp.hidden, "hidden: false after control.show()");
+
+    cp._parent = testParent;
+    cp.show();  //called twice: code coverage shows that no event is triggered 
+    assert.equal(onLayoutChangeCalled, 0, "no onLayoutChange event triggerd if already visible");
+    cp._parent = undefined;
 
     //dispose (+childs)
     cp.dispose();
@@ -184,13 +214,17 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
 });
 
 
-QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (assert) {
+QUnit.test("SmartJs.Ui.Control: add, insert, ..., remove, dispose (embedded ui)", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
 
     var root = new SmartJs.Ui.Control('div');   //control container to test with
     var root2 = new SmartJs.Ui.Control('div');
     //dom.appendChild(root._dom);
+
+    var disposedBtn = new SmartJs.Ui.Control("button");
+    disposedBtn.dispose();
+    assert.throws(function () { root._appendChild(disposedBtn); }, Error, "ERROR: adding disposed control");
 
     var button = new SmartJs.Ui.Control('button', { height: 20, width: 60 });
 
@@ -245,16 +279,28 @@ QUnit.test("SmartJs.Ui.Control: add, remove, dispose (embedded ui)", function (a
     assert.equal(root._childs[2], button2, "move: insert on correct position");
     assert.equal(root._childs[1], img, "move: item (after) moved to next position");
 
+    assert.throws(function () { root._insertAt("invalidIndex", button); }, Error, "ERROR: _insertAt: invalid index");
     root._insertAt(root._childs.length, button);
     assert.equal(root._childs[root._childs.length - 1], button, "move: item moved to end- index calculated correctly");
     root._insertAt(0, button);
     assert.equal(root._childs[0], button, "move: item moved to first- index calculated correctly");
 
+    assert.throws(function () { root._insertBefore("invalid", button); }, Error, "ERROR: insertBefore: invlaid argument: new control");
     root._insertBefore(button2, button);
     assert.equal(root._childs[0], button2, "_insertBefore: item moved to first- index calculated correctly");
 
+    assert.throws(function () { root._insertAfter("invalid", button); }, Error, "ERROR: insertAfter: invlaid argument: new control");
+    assert.throws(function () { root._insertAfter(button2, new SmartJs.Ui.Control("div")); }, Error, "ERROR: insertAfter: reference control not found");
     root._insertAfter(button2, button);
     assert.equal(root._childs[1], button2, "_insertAfter: item moved to first- index calculated correctly");
+
+    assert.throws(function () { root._replaceChild("invalid", button); }, Error, "ERROR: replaceChild: invlaid argument: new control");
+    assert.throws(function () { root._replaceChild(button2, new SmartJs.Ui.Control("div")); }, Error, "ERROR: replaceChild: reference control not found");
+    var tn = new SmartJs.Ui.TextNode();
+    root._replaceChild(tn, button);
+    assert.equal(root._childs[0], tn, "_replaceChild: 1st item replaced");
+    assert.equal(root._childs[1], button2, "_replaceChild: 2nd item not moved");
+    root._replaceChild(button, tn); //switch back to continue existing tests without error
 
     //handle controls using dom ctr
     var divElement = document.createElement('div');
@@ -388,12 +434,11 @@ QUnit.test("SmartJs.Ui.Control: height & width", function (assert) {
     hw.height = 20;
     hw.width = 40;
 
-    assert.equal(hw.height, 20, "height set (including border) & element in document");
+    assert.equal(hw.height, 20, "height set (including border) & element in document: NOTICE: this and other tests may fail if your browsers zoom <> 100%");
     assert.equal(hw.width, 40, "width set & (including border) element in document");
     //check css width, height
     assert.equal(hw.style.height, "6px", "height setter: css check (including border) & element in document");
     assert.equal(hw.style.width, "26px", "width setter: css check & (including border) element in document");
-
 
     hw.style.boxSizing = "border-box";
     hw.height = 20;
@@ -437,6 +482,7 @@ QUnit.test("SmartJs.Ui.Control: css & styles", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
     var div = document.createElement("div");
+
     dom.appendChild(div);
     var cp = new SmartJs.Ui.Control(div);   //id is applied
     var el = document.getElementById(cp.id);
@@ -511,6 +557,9 @@ QUnit.test("SmartJs.Ui.Control: css & styles", function (assert) {
 
     assert.throws(function () { cp.removeClassName(23); }, Error, "ERROR: invalid argument (remove): not a string");
 
+    cp.className = "   ";   //empty
+    cp.removeClassName("css2   css1");
+    assert.equal(cp.className, "", "cleanup during remove");
 
     cp.className = "css1";
     cp.replaceClassName("css1", "css3 css2");
@@ -556,6 +605,7 @@ QUnit.test("SmartJs.Ui.Control: resize & layoutChange events", function (assert)
 
     var dom = document.getElementById("qunit-fixture");
     var div = document.createElement("div");
+
     dom.appendChild(div);
     var vp = new SmartJs.Ui.Control(div);   //if you make dom a UiControl in UnitTests the ID will change and cause errors on other test cases
     
@@ -605,6 +655,7 @@ QUnit.test("SmartJs.Ui.Control: resize & layoutChange events", function (assert)
     assert.equal(countLayoutChange2, 0, "layoutChange: no change on append");
     assert.equal(countLayoutChange1, 1, "parent layoutChange: change on parent");   //called twice due to dynamic child size -> fixed!
 
+    assert.throws(function () { ctr1._removeChild("invalid"); }, Error, "ERROR: removeChild: invlaid argument: control");
     ctr1._removeChild(ctr2);
     assert.equal(countResize2, 1, "resize: no resize on 2nd level remove");
     assert.equal(countLayoutChange2, 0, "layoutChange: no change on remove");
@@ -675,10 +726,49 @@ QUnit.test("SmartJs.Ui.Control: resize & layoutChange events", function (assert)
 });
 
 
-QUnit.test("SmartJs.Ui.Viewport", function (assert) {
+QUnit.test("SmartJs.Ui.Image", function (assert) {
 
-    var vp = new SmartJs.Ui.Viewport();
-    assert.ok(vp instanceof SmartJs.Ui.Viewport && vp instanceof SmartJs.Ui.Control && vp instanceof Object, "instance check");
+    var done1 = assert.async();
+
+    var testSrc = "data:image/png;base64,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";
+
+    var dom = document.getElementById("qunit-fixture");
+    //var div = document.createElement("div");
+    //dom.appendChild(div);
+
+    var img = new SmartJs.Ui.Image({ style: { maxWidth: '100px' } });
+    assert.ok(img instanceof SmartJs.Ui.Image && img instanceof SmartJs.Core.Component && img instanceof Object, "instance check");
+    assert.equal(img.objClassName, "Image", "objClassName check");
+    assert.ok(img._dom instanceof HTMLImageElement, "image html element created");
+    assert.ok(img.style.maxWidth === "100px" && img.style.width === "auto" && img.style.height === "auto", "constuctor with default style parameters");
+
+    assert.throws(function () { var imgErr = new SmartJs.Ui.Image("invalid"); }, Error, "ERROR: invalid propObject argument");
+
+    assert.ok(img.onLoad instanceof SmartJs.Event.Event, "onLoad event type and getter");
+
+    var htmlImg = img._dom;
+    var onLoadHandlerCalled = 0;
+
+    var onLoadHandler = function (e) {
+        onLoadHandlerCalled++;
+        onLoadTests();
+    };
+    img.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
+    if ('crossOrigin' in htmlImg) { //make sure to set this before loading as this will trigger a new request (in FF)
+        img.crossOrigin = "anonymous";
+        assert.equal(htmlImg.crossOrigin, "anonymous", "cross origin setter");
+    }
+    img.src = testSrc;
+
+    function onLoadTests() {
+        assert.equal(img.src, testSrc, "src getter/setter");
+        assert.equal(onLoadHandlerCalled, 1, "onLoad called only once");
+
+        assert.equal(img.naturalWidth, 58, "natural with getter");
+        assert.equal(img.naturalHeight, 70, "natural height getter");
+
+        done1();
+    }
 
 });
 
@@ -695,11 +785,151 @@ QUnit.test("SmartJs.Ui.ContainerControl", function (assert) {
     cp.dispose();
     assert.ok(cp._disposed === true && this.id === undefined && this.objClassName === undefined, "recursive dispose");
 
-    //assert.throws(function () { cp.clearContents(); }, SmartJs.Error.NotImplementedException, "clearContents() not implemented: CHANGE AND EXTEND THIS");
+    cp = new SmartJs.Ui.ContainerControl();
+    dom.appendChild(cp._dom);
 
-    //merging objects in constructor
-    //assert.ok(false, "missing tests on _mergeProperties");
+    assert.equal(cp._container, cp.__container, "container internal getter = this (default)");
+    assert.throws(function () { cp._container = document.createElement("div"); }, Error, "ERROR: invalid container");
+    assert.throws(function () { var x = new SmartJs.Ui.ContainerControl("invalid"); }, Error, "ERROR: invalid propObject argument");
 
-    //clear dom: cleanup is handled by QUnit
+    var tn1 = new SmartJs.Ui.TextNode("1");
+    var tn2 = new SmartJs.Ui.TextNode("2");
+    var div1 = new SmartJs.Ui.Control("div", { style: { width: "20px", height: "40px" } });
+
+    //appendChild
+    cp.appendChild(tn1);
+    assert.equal(cp._childs[0], tn1, "container control: append simple");
+
+    //insertAt
+    cp.insertAt(0, tn2);
+    assert.ok(cp._childs[0] === tn2 && cp._childs[1] === tn1, "container control: insert at simple + current item moved");
+
+    //insertBefore
+    cp.insertBefore(div1, tn1);
+    assert.ok(cp._childs[0] === tn2 && cp._childs[1] === div1 && cp._childs[2] === tn1, "container control: insert before simple + current item moved");
+
+    //insertAfter
+    cp.insertAfter(tn2, div1);
+    assert.ok(cp._childs[0] === div1 && cp._childs[1] === tn2 && cp._childs[2] === tn1, "container control: insert after simple + current item moved");
+
+    //removeChild
+    cp.removeChild(tn2);
+    assert.ok(cp._childs[0] === div1 && cp._childs[1] === tn1, "container control: remove child simple + current item moved");
+
+    //replaceChild
+    cp.replaceChild(tn2, div1);
+    assert.ok(cp._childs[0] === tn2 && cp._childs[1] === tn1, "container control: replace child simple");
+
+    //resize
+    //cp.hide();
+    //cp.width = 100;
+
+
+    //init test infrastructure
+    var TestControl = (function () {
+        TestControl.extends(SmartJs.Ui.ContainerControl, false);
+
+        function TestControl(propObject) {
+            SmartJs.Ui.ContainerControl.call(this, propObject);
+        }
+
+        Object.defineProperties(TestControl.prototype, {
+            container: {
+                set: function (value) {
+                    this._container = value;
+                },
+                get: function () {
+                    return this._container;
+                },
+            },
+        });
+
+        return TestControl;
+    })();
+
+
+    //create TestControl
+    cp.dispose();
+
+    cp = new SmartJs.Ui.ContainerControl({ style: { width: "20px", height: "40px" } });
+    dom.appendChild(cp._dom);
+
+    //recreate after dispose
+    tn1 = new SmartJs.Ui.TextNode("1");
+    tn2 = new SmartJs.Ui.Control("div", { style: { visibility: "hidden" } });
+    div1 = new SmartJs.Ui.Control("div", { style: { width: "20px", height: "40px" } });
+
+    //resize
+    cp.width = 100;
+
+    var tc = new TestControl();
+    cp.appendChild(tc);
+    cp._container = tc;
+    assert.equal(cp.__container, tc, "container internal setter");
+    assert.equal(cp._childs[0], tc, "init setup correctly: container tests");
+
+    var containerRef = cp.__container;  //the inner container that will be used for insert,... operations
+
+    //appendChild
+    cp.appendChild(tn1);
+    assert.equal(containerRef._childs[0], tn1, "container control: append simple");
+
+    //insertAt
+    cp.insertAt(0, tn2);
+    assert.ok(containerRef._childs[0] === tn2 && containerRef._childs[1] === tn1, "container control: insert at simple + current item moved");
+
+    //insertBefore
+    cp.insertBefore(div1, tn1);
+    assert.ok(containerRef._childs[0] === tn2 && containerRef._childs[1] === div1 && containerRef._childs[2] === tn1, "container control: insert before simple + current item moved");
+
+    //insertAfter
+    cp.insertAfter(tn2, div1);
+    assert.ok(containerRef._childs[0] === div1 && containerRef._childs[1] === tn2 && containerRef._childs[2] === tn1, "container control: insert after simple + current item moved");
+
+    //removeChild
+    cp.removeChild(tn2);
+    assert.ok(containerRef._childs[0] === div1 && containerRef._childs[1] === tn1, "container control: remove child simple + current item moved");
+
+    //replaceChild
+    cp.replaceChild(tn2, div1);
+    assert.ok(containerRef._childs[0] === tn2 && containerRef._childs[1] === tn1, "container control: replace child simple");
+
+    //resize
+    cp.width = 100;
+
+});
+
+
+QUnit.test("SmartJs.Ui.Viewport", function (assert) {
+
+    var dom = document.getElementById("qunit-fixture");
+    var div = document.createElement("div");
+    dom.appendChild(div);
+
+    var vp = new SmartJs.Ui.Viewport();
+    assert.ok(vp instanceof SmartJs.Ui.Viewport && vp instanceof SmartJs.Ui.Control && vp instanceof Object, "instance check");
+    assert.equal(vp.objClassName, "Viewport", "objClassName check");
+
+    assert.throws(function () { vp.addToDom("not an element"); }, Error, "ERROR: invalid parent param");
+
+    var resizeCount = 0;
+    var resizeHandler = function (e) {
+        resizeCount++;
+    };
+    vp.onResize.addEventListener(new SmartJs.Event.EventListener(resizeHandler));
+    vp.addToDom(dom);
+    assert.equal(resizeCount, 1, "resize dispatched on addToDom");
+
+    vp.addToDom(dom);
+    assert.equal(resizeCount, 1, "resize not dispatched if addToDom called twice (same parent element)");
+
+    vp.addToDom(div);
+    assert.equal(resizeCount, 2, "resize dispatched if addToDom called twice (other parent element)");
+    assert.equal(vp._parentHtmlElement, div, "removed automatically when adding to other parent element: instance");
+    assert.notEqual(div.innerHTML, "", "removed automatically when adding to other parent element: DOM");
+
+    vp.dispose();
+    assert.ok(vp._disposed, "");
+    assert.equal(div.innerHTML, "", "removed from DOM an dispose");
 });
 

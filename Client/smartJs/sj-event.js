@@ -76,7 +76,7 @@ SmartJs.Event = {
                 }
                 return -1;
             },
-            dispatchEvent: function (args, target, bubbles, async) {
+            dispatchEvent: function (args, target, bubbles) {
                 if (typeof args !== 'undefined' && typeof args !== 'object')
                     throw new Error('invalid argument: expected optional argument (args) type: object');
                 if (typeof target !== 'undefined' && typeof target !== 'object')
@@ -105,11 +105,11 @@ SmartJs.Event = {
                         continue;
                     }
 
-                    if (async) {    //item instanceof SmartJs.Event.AsyncEventListener) {
+                    if (item instanceof SmartJs.Event.AsyncEventListener) {
                         if (item.scope)
-                            setTimeout(item.handler.bind(item.scope, a), 1);
+                            setTimeout(item.handler.bind(item.scope, a), 0);
                         else
-                            setTimeout(function () { item.handler(a); }, 1);
+                            setTimeout(function () { item.handler(a); }, 0);
                     }
                     else {  //SmartJs.Event.EventListener
                         if (item.scope)
@@ -159,7 +159,7 @@ SmartJs.Event.AsyncEventListener = (function () {
     AsyncEventListener.extends(SmartJs.Event.EventListener, false);
 
     function AsyncEventListener(handler, scope) {
-        SmartJs.Event.EventListener.call(handler, scope);
+        SmartJs.Event.EventListener.call(this, handler, scope);
     }
 
     return AsyncEventListener;

@@ -178,7 +178,7 @@ QUnit.test("SmartJs.Core.Component", function (assert) {
 	//assert.equal(a._disposed, true, "(merging) set property");    //this is the only property
 	//^^ property was removed -> this test is done using a uiComponent (have a look at the UiComponents unit tests)
 
-	//assert.throws(function () { a = new SmartJs.Core.Component(true); }, Error, "ERROR: (merging) no object");
+	assert.throws(function () { a = new SmartJs.Core.Component(true); }, Error, "ERROR: (merging) no object");
 
 	assert.throws(function () { a = new SmartJs.Core.Component({ undefined: 23 }); }, Error, "ERROR: (merging) undefined property");
 

@@ -30,6 +30,15 @@ QUnit.test("SmartJs.Components.Application", function (assert) {
 	//assert.equal(app._online, true, "check online");
 	//assert.equal(lastEvent.online, true, "check event argument: online");
 
+	try {
+		app.dispose();
+	}
+	catch(e) {
+		assert.ok(false, "calling dispose");
+		return;
+	}
+	assert.ok(true, "calling dispose");
+	assert.equal(app._disposed, true, "disposed correctly");
 });
 
 

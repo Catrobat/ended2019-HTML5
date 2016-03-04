@@ -7,29 +7,6 @@
 
 QUnit.module("sj-event.js");
 
-QUnit.test("SmartJs.Event.EventListener", function (assert) {
-
-	var hdl = function (e) { clicked = true; count++; eventArgs = e; };
-	var x = new SmartJs.Event.EventListener(hdl, this);
-	assert.ok(x.handler === hdl && x.scope === this, "handler created and properties set correctly");
-
-	assert.ok(x instanceof SmartJs.Event.EventListener, "instance check");
-
-	assert.throws(function () { x = new SmartJs.Event.EventListener(); },
-		Error,
-		"ERROR missing arguments");
-
-	assert.throws(function () { x = new SmartJs.Event.EventListener("asd"); },
-		Error,
-		"ERROR invalid handler argument");
-
-	assert.throws(function () { x = new SmartJs.Event.EventListener(hdl, "asd"); },
-		Error,
-		"ERROR invalid scope argument");
-
-});
-
-
 QUnit.test("SmartJs.Event.Event", function (assert) {
 	
 	var e = new SmartJs.Event.Event(new SmartJs.Core.Component());
@@ -75,14 +52,24 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	var x2 = new SmartJs.Event.EventListener(hdl, this);
 
 	var y = new ns.Y();
+
+	assert.ok(!y.divClicked.listenersAttached, 'listeners attached: init');
 	var result = y.divClicked.addEventListener(new SmartJs.Event.EventListener(hdl));
 	assert.ok(result, "listener added: return value");
+	assert.ok(y.divClicked.listenersAttached, 'listeners attached: added');
 	y.divClicked.dispatchEvent();
 	assert.ok(clicked, "listener added and dispatched- minimal parameter");
 
 	var clicked = false;
+	//simulate disposed
+	y.divClicked._disposed = true;
+	result = y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl));
+	assert.ok(!result, "listener removed: disposed event");
+	y.divClicked._disposed = undefined;
+
 	result = y.divClicked.removeEventListener(new SmartJs.Event.EventListener(hdl));
 	assert.ok(result, "listener removed: return value");
+	assert.ok(!y.divClicked.listenersAttached, 'listeners attached: removed');
 	y.divClicked.dispatchEvent();
 	assert.equal(clicked, false, "listener removed correctly");
 
@@ -202,4 +189,53 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	assert.ok(h1called === 1 && h2called === 0 && h3called === 0 && h4called === 1, h1called + ", " + h2called + ", " + h3called + ", " + h4called + ", " + "only valid handler called once");
 });
 
+
+QUnit.test("SmartJs.Event.EventListener", function (assert) {
+
+	var hdl = function (e) { clicked = true; count++; eventArgs = e; };
+	var x = new SmartJs.Event.EventListener(hdl, this);
+	assert.ok(x.handler === hdl && x.scope === this, "handler created and properties set correctly");
+
+	assert.ok(x instanceof SmartJs.Event.EventListener, "instance check");
+
+	assert.throws(function () { x = new SmartJs.Event.EventListener(); },
+		Error,
+		"ERROR missing arguments");
+
+	assert.throws(function () { x = new SmartJs.Event.EventListener("asd"); },
+		Error,
+		"ERROR invalid handler argument");
+
+	assert.throws(function () { x = new SmartJs.Event.EventListener(hdl, "asd"); },
+		Error,
+		"ERROR invalid scope argument");
+
+});
+
+
+QUnit.test("SmartJs.Event.AsyncEventListener", function (assert) {
+
+	assert.expect(5);   //init async asserts (to wait for)
+	var done1 = assert.async();
+	var done2 = assert.async();
+
+	var hdl = function (e) {
+		assert.ok(true, "async handler 1 called");
+		done1();
+	};
+	var hdl2 = function (e) {
+		assert.ok(true, "async handler 2 called");
+		done2();
+	};
+	var x = new SmartJs.Event.AsyncEventListener(hdl, this);
+	assert.ok(x.handler === hdl && x.scope === this, "handler created and properties set correctly");
+
+	assert.ok(x instanceof SmartJs.Event.AsyncEventListener, "instance check");
+	assert.ok(x instanceof SmartJs.Event.EventListener, "instance inheritance check");
+
+	var e = new SmartJs.Event.Event(this);
+	e.addEventListener(x);
+	e.addEventListener(new SmartJs.Event.AsyncEventListener(hdl2));
+	e.dispatchEvent();
+});
 

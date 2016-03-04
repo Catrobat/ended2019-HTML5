@@ -681,7 +681,7 @@ SmartJs.Communication.merge({
                 }
             },
             dispose: function () {
-                this.abortLoading();
+                //this.abortLoading();
                 SmartJs.Core.EventTarget.prototype.dispose.call(this);
             },
         });
