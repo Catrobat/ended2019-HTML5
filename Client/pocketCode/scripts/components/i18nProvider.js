@@ -9,86 +9,102 @@ PocketCode.I18nProvider = (function (propObject) {
 
         //default settings
         this._direction = PocketCode.Ui.Direction.LTR;
-        this._languageCode = 'en';
-        this._countryCode = 'US';
+        //this._currentLanguage = undefined;
 
         this._dictionary = {};  //storage
         this._dictionary = {
-          "lblOk": "OK",
-          "lblCancel": "Cancel",
-          "lblConfirm": "Confirm",
-          "lblExit": "Exit",
-          "lblRetry": "Retry",
-          "lblContinue": "Continue",
-          "lblClose": "Close",
-          "lblDownload": "Download",
-          "lblLoading": "Loading...",
-          "lblInitialising": "Initialising...",
-          "lblLoadingRes": "Loading resources...",
-          "btnBack": "Back",
-          "btnRestart": "Restart",
-          "btnPlay": "Play",
-          "btnPause": "Pause",
-          "btnScreenshot": "Screenshot",
-          "btnAxes": "Axes",
-          "msgExit": "Do you really want to exit?",
-          "msgGlobal": "We are sorry. A global exception was detected.<br/>Please open an issue on either Github or JIRA providing the projects ID - we will have a look asap.",
-          "msgBrowserNotSupported": "This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br/>We are sorry, but your browser does not meet the minimal requirements to run this application.<br/>Please try again using another browser.",
-          "msgMobileRestrictions": "Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.<br/><br/>There is currently NO official support for mobile devices - this is an experimental preview only! So please do NOT file bugs until there is an official release available.",
-          "msgProjectNotFound": "We are sorry.<br/>The project you are requesting could not be found on our server. Please make sure you are using a valid Project ID.",
-          "msgProjectNotValid": "We are sorry.<br/>The project you are requesting has an invalid file structure or missing resources.<br/>Details:<br/>",
-          "msgParser": "We are sorry.<br/>The project you are requesting could not be parsed correctly on our server. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
-          "msgInternalServer": "We are sorry. The latest request caused an internal server error.<br/>",
-          "msgServerConnection": "Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br/>If your connection was temporarily unavailable please click 'Retry' to resend the request.",
-          "msgUnsupportedSound": "We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.",
-          "msgUnsupportedDevice": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
-          "msgErrorLoading": "Error: loading failed"
+            lblOk: 'OK',
+            lblCancel: 'Cancel',
+            lblConfirm: 'Confirm',
+            lblExit: 'Exit',
+            lblRetry: 'Retry',
+            lblContinue: 'Continue',
+            lblClose: 'Close',
+            lblDownload: 'Download',
+            lblLoading: 'Loading...',
+            lblInitialising: 'Initialising...',
+            lblLoadingRes: 'Loading resources...',
+            btnBack: 'Back',
+            btnRestart: 'Restart',
+            btnPlay: 'Play',
+            btnPause: 'Pause',
+            btnScreenshot: 'Screenshot',
+            btnAxes: 'Axes',
+
+            //changed [key only]
+            //msgExit: 'Do you really want to exit?',
+            //msgGlobal: 'We are sorry. A global exception was detected.<br/>Please open an issue on either Github or JIRA providing the projects ID - we will have a look asap.',
+            //msgBrowserNotSupported: 'This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br/>We are sorry, but your browser does not meet the minimal requirements to run this application.<br/>Please try again using another browser.',
+            //msgMobileRestrictions: 'Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.<br/><br/>There is currently NO official support for mobile devices - this is an experimental preview only! So please do NOT file bugs until there is an official release available.',
+            //msgProjectNotFound: 'We are sorry.<br/>The project you are requesting could not be found on our server. Please make sure you are using a valid Project ID.',
+            //msgProjectNotValid: 'We are sorry.<br/>The project you are requesting has an invalid file structure or missing resources.<br/>Details:<br/>',
+            //msgParser: 'We are sorry.<br/>The project you are requesting could not be parsed correctly on our server. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.',
+            //msgInternalServer: 'We are sorry. The latest request caused an internal server error.<br/>',
+            //msgServerConnection: 'Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br/>If your connection was temporarily unavailable please click \'Retry\' to resend the request.',
+            //msgUnsupportedSound: 'We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.',
+            //msgUnsupportedDevice: 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.',
+            //msgErrorLoading: 'Error: loading failed',
+
+            msgExitDialog: 'Do you really want to exit?',
+            msgBrowserNotSupportedError: 'This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br/>We are sorry, but your browser does not meet the minimal requirements to run this application.<br/>Please try again using another browser.',
+            msgMobileRestrictionsWarning: 'Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.<br/><br/>There is currently NO official support for mobile devices - this is an experimental preview only! So please do NOT file bugs until there is an official release available.',
+            msgProjectNotFoundError: 'We are sorry.<br/>The project you are requesting could not be found on our server. Please make sure you are using a valid Project ID.',
+            msgProjectNotValidError: 'We are sorry.<br/>The project you are requesting has an invalid file structure or missing resources.<br/>Details:<br/>',
+            msgParserError: 'We are sorry.<br/>The project you are requesting could not be parsed correctly on our server. Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.',
+            msgInternalServerError: 'We are sorry. The latest request caused an internal server error.<br/>',
+            msgServerConnectionError: 'Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br/>If your connection was temporarily unavailable please click \'Retry\' to resend the request.',
+            msgUnsupportedSoundWarning: 'We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.',
+            msgUnsupportedDeviceFeatureWarning: 'The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.',
+            msgErrorLoadingError: 'Error: loading failed',
+
+            //changed [msg only]
+
+            //changed [key + msg]
+            msgGlobalError: 'We are sorry. A global exception was detected.',
+
+            //new
+            lblGlobalErrorCaption: 'Global Error',
+            lblBrowserNotSupportedErrorCaption: 'Framework Not Supported',
+            lblMobileRestrictionsWarningCaption: 'Please Confirm',
+            lblExitDialogCaption: 'Exit Application',
+            lblProjectNotFoundErrorCaption: 'Project Not Found',
+            lblProjectNotValidErrorCaption: 'Project Not Valid',
+            lblParserErrorCaption: 'Error Parsing Project',
+            lblInternalServerErrorCaption: 'Internal Server Error',
+            lblServerConnectionErrorCaption: 'Server Not Responding',
+            lblUnsupportedSoundWarningCaption: 'Unsupported Sound File',
+            lblUnsupportedDeviceFeatureWarningCaption: 'Unsupported Device Feature',
+            msgScreenshotMobile: 'Please use the long-press event of your browser to download/save the screenshot',
+            lblScreenshotCaption: 'Screenshot',
+            lblErrorReportGenerated: '<br/>An anonymous error report was generated and sent to our developer team - we will have a look asap.',
         };
-      
-        this._supportedLanguages = {
-            en: {
-                US: 'English (US)',   //TODO: load from server?
-                UK: 'English (UK)'
-            },
-            de: {
-                AT: 'Deutsch (Österreich)',
-                DE: 'Deutsch'
-            }
-        };
-        this._supportedLanguages = {
-          "languages" : [
-            { "langCode" : "en-GB", "uiString" : "English (UK)" },
-            { "langCode" : "en-US", "uiString" : "English (US)" },
-            { "langCode" : "de-AT", "uiString" : "Deutsch (Österreich)" },
-            { "langCode" : "de-CH", "uiString" : "Deutsch (Schweiz)" },
-            { "langCode" : "de-DE", "uiString" : "Deutsch (Deutschland)" }
-          ]
-        };
+
+        this._supportedLanguages = [];
+        //this._supportedLanguages = [   //TODO: load from server?
+        //    { 'languageCode': 'en-GB', 'uiString': 'English (UK)' },
+        //    { 'languageCode': 'en-US', 'uiString': 'English (US)' },
+        //    { 'languageCode': 'de-AT', 'uiString': 'Deutsch (Österreich)' },
+        //    { 'languageCode': 'de-CH', 'uiString': 'Deutsch (Schweiz)' },
+        //    { 'languageCode': 'de-DE', 'uiString': 'Deutsch (Deutschland)' }
+        //];
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
+        this._onError = new SmartJs.Event.Event(this);
     }
 
     //properties
     Object.defineProperties(I18nProvider.prototype, {
-        languageCode: {
+        currentLanguage: {
             get: function () {
-                return this._languageCode;
-            }
+                return this._currentLanguage;
+            },
         },
-        countryCode: {
+        supportedLanguages: {
             get: function () {
-                return this._countryCode;
-            }
+                this._supportedLanguages;
+            },
         },
-        dictionary: {
-            set: function (dict) {
-              //if loaded lang != current lang {
-                this._dictionary = dict;
-                this._onLanguageChange.dispatchEvent();
-              //}
-          }
-        }
     });
 
     //events
@@ -102,35 +118,75 @@ PocketCode.I18nProvider = (function (propObject) {
             get: function () {
                 return this._onDirectionChange;
             }
-        }
+        },
+        onError: {
+            get: function () {
+                return this._onError;
+            }
+        },
     });
 
     //methods
     I18nProvider.prototype.merge({
-        translate: function(key) {
-          if(! this._dictionary[key])
-            return "[ " + key + " ]";
+        loadSuppordetLanguages: function () {
+            var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
+            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
+            req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
+            PocketCode.Proxy.send(req);
+        },
+        _loadSuppordetLanguagesLoadHandler: function (e) {
+            var languages = e.responseJson.supportedLanguages;
+            if (!(languages instanceof Array))
+                throw new Error('invalid language file');
 
-          return this._dictionary[key];
+            var lang;
+            for (var i = 0, l = languages.length; i < l; i++) {
+                lang = languages[i];
+                if (!lang.languageCode || !lang.uiString)
+                    throw new Error('invalid language file');
+            }
+            this._supportedLanguages = languages;
         },
-        changeI18n: function (value) {
-            //TODO: error handling: array length?
-            var codes = value.split('-');
-            this._languageCode = codes[0].toLowerCase();    //TODO: check if changed
-            this._countryCode = codes[1].toUpperCase();
-            this._handleChange();   //call on change and support only
+        loadDictionary: function (rfc3066) {
+            if (rfc3066)
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N, SmartJs.RequestMethod.GET, { rfc3066: rfc3066 });
+            else
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_AUTO, SmartJs.RequestMethod.GET);
+
+            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadDictionaryLoadHandler, this));
+            req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
+            PocketCode.Proxy.send(req);
         },
-        _handleChange: function () {
-            //TODO: check if changed
-            //load resources if necessary and supported
-            //trigger events if needed:
-            //this._onLanguageChange.dispatch({languageCode: this._languageCode, countryCode: this._countryCode, name: 'clear name from dict'});
-            //this._onDirectionChange.dispatch({direction: PocketCode.Ui.Direction.LTR OR PocketCode.Ui.Direction.RTL});
+        _loadDictionaryLoadHandler: function (e) {
+            var json = e.responseJson;
+            if (typeof json !== 'object')
+                throw new Error('invalid argument dictionary expected type object');
+            if (!json.languageCode || !json.direction || typeof json.dictionary !== 'object')
+                throw new Error('invalid argument dictionary');
+
+            if (json.languageCode === this._currentLanguage)
+                return;
+            if (json.direction !== this._direction) {
+                this._direction = json.direction;
+                this._onDirectionChange.dispatchEvent({ direction: this._direction });
+            }
+            //this._dictionary = json.dictionary;
+            this._dictionary.merge(json.dictionary); //temp: merge: so we can add strings client side that are currently not available on our server
+            this._onLanguageChange.dispatchEvent();
+        },
+        _loadErrorHandler: function (e) {
+            this.onError.dispatchEvent(e);
+        },
+        getLocString: function (key) {
+            if (!this._dictionary[key])
+                return '[' + key + ']';
+
+            return this._dictionary[key];
         },
         /* override */
         dispose: function () {
             //static class: cannot be disposed
-        }
+        },
     });
 
     return I18nProvider;

@@ -80,10 +80,10 @@ PocketCode.merge({
             this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             this._currentProjectId = undefined;
 
-            if (rfc3066)  //TODO:
-                this._rfc3066 = rfc3066;
-            //else
-            //    this._initI18nProvider;
+            //init i18n
+            PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
+            PocketCode.I18nProvider.loadSuppordetLanguages();
+            PocketCode.I18nProvider.loadDictionary(rfc3066);
 
             //webOverlay is undefined if running in mobile page, no viewport defined
             this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
@@ -146,7 +146,8 @@ PocketCode.merge({
                     this._project.stopProject();
                 }
                 catch (e) { }
-                this._currentPage.actionOnGlobalError();
+                if (this._currentPage)
+                    this._currentPage.actionOnGlobalError();
 
                 var d = new PocketCode.Ui.GlobalErrorDialog();
                 d.bodyInnerHTML += '<br /><br />Details: ';
@@ -157,6 +158,10 @@ PocketCode.merge({
                 this._showDialog(d, false);
                 //stop gameEngine + loading
                 this._project.dispose();
+            },
+            _i18nControllerErrorHandler: function (e) {
+                PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
+                throw new Error('i18nControllerError: ' + e.responseText);
             },
             _projectLoadingErrorHandler: function (e) {
                 var files = e.files;
@@ -313,12 +318,10 @@ PocketCode.merge({
                     if (historyState) { //navigated by browser back
                         var pageState = historyState.page;
                         page.loadViewState(pageState.viewState, pageState.dialogsLength);
-
                     }
                     else {
                         this._currentHistoryIdx++;
                         history.pushState(new PocketCode.HistoryEntry(this._currentHistoryIdx, this._dialogs.length, page), document.title, '');
-
                     }
                     page.currentHistoryIdx = this._currentHistoryIdx;   //make sure the pageCotroller knows the current historyIdx for internal navigation
                 }
