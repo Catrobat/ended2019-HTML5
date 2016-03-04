@@ -4,8 +4,8 @@
 PocketCode.I18nProvider = (function (propObject) {
     I18nProvider.extends(SmartJs.Core.Component, false);
 
-    function I18nProvider(propObject) {
-        SmartJs.Core.Component.call(this, propObject);
+    function I18nProvider() {//propObject) {
+        //SmartJs.Core.Component.call(this, propObject);
 
         //default settings
         this._direction = PocketCode.Ui.Direction.LTR;
