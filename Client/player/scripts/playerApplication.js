@@ -16,6 +16,12 @@ PocketCode.merge({
             this.objClassName = '_InitialPopStateController';
         }
 
+        _InitialPopStateController.prototype.dispose = function () {
+            delete this.historyLength;
+            delete this.objClassName;
+            this._disposed = true;
+        };
+
         return _InitialPopStateController;
     })(),
 
