@@ -2,17 +2,13 @@
 
 //RFC 3066 implementation: as singleton
 PocketCode.I18nProvider = (function (propObject) {
-    I18nProvider.extends(SmartJs.Core.Component, false);
 
-    function I18nProvider() {//propObject) {
-        //SmartJs.Core.Component.call(this, propObject);
+    function I18nProvider() {
 
-        //default settings
         this._direction = PocketCode.Ui.Direction.LTR;
-        //this._currentLanguage = undefined;
 
         this._dictionary = {};  //storage
-        this._dictionary = {
+        this._dictionary = {    
             lblOk: 'OK',
             lblCancel: 'Cancel',
             lblConfirm: 'Confirm',
