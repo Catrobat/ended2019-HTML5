@@ -773,6 +773,8 @@ PocketCode.GameEngine = (function () {
 
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+
+            delete this._originalSpriteOrder;
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
