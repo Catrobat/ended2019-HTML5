@@ -148,13 +148,15 @@ PocketCode.Ui.merge({
         //methods
         Viewport.prototype.merge({
             _disableBrowserGestures: function () {
-                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); }, false);
-                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); }, false);
-                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) { e.preventDefault(); }, false);
-                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); }, false);
-                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); }, false);
-                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); }, false);
-                //this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); }, false);
+                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); });
+                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
+                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
+                    e.preventDefault();
+                });
+                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); });
+                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); });
+                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); });
+                //this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
             },
             _enableBrowserGestures: function () {
                 this._removeDomListener(this._dom, 'click', this._clickHandler);
