@@ -982,12 +982,13 @@ PocketCode.Web = {
 					this._splashScreen.hide();
 					if (this._exitButton)
 						document.body.removeChild(this._exitButton.dom);
-					if (this._webOverlay)
-						this._webOverlay.hide();
-					if (this._webOverlay.muteButton) {
-						var btn = this._webOverlay.muteButton;
-						btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
-						btn.disabled = true;
+					if (this._webOverlay) {
+					    this._webOverlay.hide();
+					    if (this._webOverlay.muteButton) {
+					        var btn = this._webOverlay.muteButton;
+					        btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+					        btn.disabled = true;
+					    }
 					}
 					this._projectId = undefined;
 					this._rfc3066 = undefined;
