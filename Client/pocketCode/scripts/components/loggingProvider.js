@@ -1,19 +1,32 @@
 ﻿'use strict';
 
 PocketCode.LoggingProvider = (function (propObject) {
-    LoggingProvider.extends(SmartJs.Core.Component, false);
 
-    function LoggingProvider() {//propObject) {
-        //SmartJs.Core.Component.call(this, propObject);
+    function LoggingProvider() {
+        this._disabled = true;
 
-        this._onLoggingMsgSent = new SmartJs.Event.Event(this);
+        this._onLogMessageSent = new SmartJs.Event.Event(this);
     }
+
+    //properties
+    Object.defineProperties(LoggingProvider.prototype, {
+        disabled: {
+            get: function () {
+                return this._disabled;
+            },
+            set: function (bool) {
+                if (typeof bool !== 'boolean')
+                    throw new Error('invalid parameter: expected type \'boolean\'');
+                this._disabled = bool;
+            },
+        },
+    });
 
     //events
     Object.defineProperties(LoggingProvider.prototype, {
-        onLoggingMsgSent: {
+        onLogMessageSent: {
             get: function () {
-                return this._onLoggingMsgSent;
+                return this._onLogMessageSent;
             },
         },
     });
@@ -21,6 +34,9 @@ PocketCode.LoggingProvider = (function (propObject) {
     //methods
     LoggingProvider.prototype.merge({
         sendMessage: function (jsonError, projectId, type) {
+            if (this._disabled)
+                return;
+
             this._type = type || 'ERROR';
             this._projectId = projectId || '0';
             if (typeof (jsonError) == 'object') {
@@ -40,12 +56,12 @@ PocketCode.LoggingProvider = (function (propObject) {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.LOGGING_ID, SmartJs.RequestMethod.GET);
                 req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._newIdReceivedHandler, this));
                 req.onError.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                    this._onLoggingMsgSent.dispatchEvent({ success: false });
+                    this._onLogMessageSent.dispatchEvent({ success: false });
                 }, this));
                 PocketCode.Proxy.send(req);
             }
             catch (e) {
-                this._onLoggingMsgSent.dispatchEvent({ success: false }); //make sure an error does not trigger recursive calls
+                this._onLogMessageSent.dispatchEvent({ success: false }); //make sure an error does not trigger recursive calls
             }
         },
         _newIdReceivedHandler: function (e) {
@@ -63,15 +79,15 @@ PocketCode.LoggingProvider = (function (propObject) {
                     jsonError: decodeURIComponent(this._message),
                 });
                 req.onLoad.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                    this._onLoggingMsgSent.dispatchEvent(e.responseJson);
+                    this._onLogMessageSent.dispatchEvent(e.responseJson);
                 }, this));
                 req.onError.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                    this._onLoggingMsgSent.dispatchEvent({ success: false });
+                    this._onLogMessageSent.dispatchEvent({ success: false });
                 }, this));
                 PocketCode.Proxy.send(req);
             }
             catch (e) {
-                this._onLoggingMsgSent.dispatchEvent({ success: false }); //make sure an error does not trigger recursive calls
+                this._onLogMessageSent.dispatchEvent({ success: false }); //make sure an error does not trigger recursive calls
             }
         },
         /* override */
