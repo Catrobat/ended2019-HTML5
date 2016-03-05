@@ -33,22 +33,22 @@ PocketCode.crossOrigin = new ((function () {
 		}
 		else {
 			//this._current = true;
-		    var oImg = new Image();
-		    if (!('crossOrigin' in oImg)) {
+			var oImg = new Image();
+			if (!('crossOrigin' in oImg)) {
 				this._initialized = true;
 				return;
 			}
-		    oImg.crossOrigin = 'anonymous';
-		    oImg.onload = function () {
+			oImg.crossOrigin = 'anonymous';
+			oImg.onload = function () {
 				this._supported = true;
 				this._initialized = true;
 			}.bind(this);
-		    oImg.onerror = function () {
+			oImg.onerror = function () {
 				this._supported = false;
 				this._initialized = true;
 				//throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
 			}.bind(this);
-		    oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
+			oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
 		}
 	}
 
@@ -226,14 +226,14 @@ PocketCode.Web = {
 		return FullscreenApi;
 	})())(),
 
-	ExitButton:  (function () {
+	ExitButton: (function () {
 		function ExitButton() {
 			var btn = document.createElement('button');
 			btn.className = 'pc-webButton pc-backButton';
 			btn.innerHTML = '<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">' +
 				'<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z"></path>' +
 				'<polygon points="27.583,32 39.629,44.395 35.001,49 18.371,32 35.001,15 39.629,19.605" class="pc-svgPlayerIcon"></polygon>' +
-			'</svg>' + 
+			'</svg>' +
 			'<span>Exit</span>';
 			this.dom = btn;
 			//btn.addEventListener('click', function (e) { if (history.length > 0) history.back(); else window.close(); }, false);
@@ -335,7 +335,7 @@ PocketCode.Web = {
 			//this._addDomListener(this.closeButton, 'click', this._close);
 			this._addDomListener(this.fullscreenButton, 'click', this._toggleFullscreenHandler);
 			this._addDomListener(this.fullscreenButton, 'touchend', this._toggleFullscreenHandler);
-			
+
 			//this._addDomListener(this.muteButton, 'click', this._toggleMuteHandler);
 			//if (window.addEventListener) {
 			//	window.addEventListener('resize', this._onResizeHandler.bind(this), false);
@@ -493,7 +493,7 @@ PocketCode.Web = {
 			hide: function () {
 				this._dom.style.display = 'none';
 				if (this._loadingTimer)
-				    clearInterval(this._loadingTimer);
+					clearInterval(this._loadingTimer);
 			},
 			setProgress: function (perc) {
 				this.hidePending();
@@ -523,8 +523,8 @@ PocketCode.Web = {
 				this._loadingTimer = setInterval(this._renderPending.bind(this), 400);
 			},
 			hidePending: function () {
-			    if (this._loadingTimer)
-			        clearInterval(this._loadingTimer);
+				if (this._loadingTimer)
+					clearInterval(this._loadingTimer);
 				this._pendingCount = 0;
 
 				var ch = this._progressItems.children;
@@ -824,7 +824,7 @@ PocketCode.Web = {
 				this._loader.onProgress = this._loaderOnProgress.bind(this);
 
 				if (this._projectId)
-				    this.launchProject(this._projectId, this._rfc3066);
+					this.launchProject(this._projectId, this._rfc3066);
 			},
 			launchProject: function (projectId, rfc3066, containerElement) {
 				if (!window.addEventListener) {
@@ -838,15 +838,20 @@ PocketCode.Web = {
 				this._rfc3066 = rfc3066;
 				if (!this._domLoaded)
 					return;
-				
+
 				var expectedUrl = '';
 				if (rfc3066) {
-				    expectedUrl = PocketCode.mobileUrlRfc3066.replace('{projectId}', this._projectId);
-				    expectedUrl = expectedUrl.replace('{rfc3066}', rfc3066);
+					expectedUrl = PocketCode.mobileUrlRfc3066.replace('{projectId}', this._projectId);
+					expectedUrl = expectedUrl.replace('{rfc3066}', rfc3066);
 				}
 				else
-				    expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
+					expectedUrl = PocketCode.mobileUrl.replace('{projectId}', this._projectId);
 				//redirect for mobile and browsers that do not support cross origin img loading
+				if (!PocketCode.crossOrigin.initialized) {
+					//IE needs some more time
+					window.setTimeout(this.launchProject.bind(this, projectId, rfc3066, containerElement), 100);
+					return;
+				}
 				if ((this._isMobile && window.location.href !== expectedUrl) || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
 					window.location = expectedUrl;
 				if (this._isMobile) {
@@ -895,27 +900,27 @@ PocketCode.Web = {
 				this._loader.startLoading();
 			},
 			_initApplication: function (mobileInitialized) {
-			    if (this._webOverlay && this._webOverlay.hidden)
-			        return;
+				if (this._webOverlay && this._webOverlay.hidden)
+					return;
 
-			    var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-			    this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066, mobileInitialized);
-			    this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-			    this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+				var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
+				this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066, mobileInitialized);
+				this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+				this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 
-			    if (this._isMobile) {
+				if (this._isMobile) {
 					//this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
 					//this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 					this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
 					//this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					//this._player.loadProject(this._projectId);
-				//	var vp = new PocketCode.Ui.Viewport();
-				//	var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
-				//	restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
-				//	restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
-				//	vp.appendChild(restrictionDialog);
-				//	this._splashScreen.hide();
-				//	vp.addToDom();
+					//	var vp = new PocketCode.Ui.Viewport();
+					//	var restrictionDialog = new PocketCode.Ui.MobileRestrictionDialog();
+					//	restrictionDialog.onCancel.addEventListener(new SmartJs.Event.EventListener(this._mobileCancelHandler, this));
+					//	restrictionDialog.onConfirm.addEventListener(new SmartJs.Event.EventListener(this._mobileConfirmHandler, this));
+					//	vp.appendChild(restrictionDialog);
+					//	this._splashScreen.hide();
+					//	vp.addToDom();
 				}
 				else {
 					//if (this._webOverlay && this._webOverlay.hidden)
@@ -928,14 +933,14 @@ PocketCode.Web = {
 					//this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 					//this._player.loadProject(this._projectId);
 				}
-			    this._player.loadProject(this._projectId);
+				this._player.loadProject(this._projectId);
 			},
 			_reinitMobileHandler: function (e) {
-			    this._splashScreen.show();
-			    this._splashScreen.setProgress(0, 0);   //set pending
+				this._splashScreen.show();
+				this._splashScreen.setProgress(0, 0);   //set pending
 
-			    this._player.dispose();
-			    this._initApplication(true);
+				this._player.dispose();
+				this._initApplication(true);
 				//this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
 				//this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 				//this._player.loadProject(this._projectId);
@@ -973,39 +978,39 @@ PocketCode.Web = {
 			},
 			_closeHandler: function () {
 				this._loader.abortLoading();
-			    try {
-			        this._splashScreen.hide();
-			        if (this._exitButton)
-			            document.body.removeChild(this._exitButton.dom);
-			        if (this._webOverlay)
-			            this._webOverlay.hide();
-			        if (this._webOverlay.muteButton) {
-			            var btn = this._webOverlay.muteButton;
-			            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
-			            btn.disabled = true;
-			        }
+				try {
+					this._splashScreen.hide();
+					if (this._exitButton)
+						document.body.removeChild(this._exitButton.dom);
+					if (this._webOverlay)
+						this._webOverlay.hide();
+					if (this._webOverlay.muteButton) {
+						var btn = this._webOverlay.muteButton;
+						btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+						btn.disabled = true;
+					}
 					this._projectId = undefined;
 					this._rfc3066 = undefined;
 				}
 				catch (e) { }   //silent catch: avoid errors onClose during init
 
-			    if (this._player) {  //handle close before initialize
-			        try {
-			            this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
-			            this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
-			            this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
-			            this._player.dispose();
-			            //this._player = undefined;
-			        }
-			        catch (e) { }   //silent catch: avoid errors onClose during init
-			    }
+				if (this._player) {  //handle close before initialize
+					try {
+						this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+						this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
+						this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+						this._player.dispose();
+						//this._player = undefined;
+					}
+					catch (e) { }   //silent catch: avoid errors onClose during init
+				}
 				if (this._redirected) {
-				    //this._viewport.hide();
-				    if (history.length > 0)
-				        history.back();
-				    else
-				        window.close();
-				    //return;
+					//this._viewport.hide();
+					if (history.length > 0)
+						history.back();
+					else
+						window.close();
+					//return;
 				}
 			},
 		}
