@@ -133,6 +133,11 @@ if(class_exists($view_name))
                                    $result->getLine());
         break;
 
+      case "AuthenticationException":
+        $result = new ExceptionDto("AuthenticationException", $result->getMessage(), $result->getCode(), $result->getFile(),
+                                   $result->getLine());
+        break;
+
       default:    //exception
         $result = new ExceptionDto("UnhandledException", $result->getMessage(), $result->getCode(), $result->getFile(),
                                    $result->getLine());

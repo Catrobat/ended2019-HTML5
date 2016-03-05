@@ -12,7 +12,7 @@ class LoggingController extends BaseController
    public function post()
    {
       if (!$this->initSession())
-         return new ExceptionDto("AuthenticationException", "invalid service call");
+         throw new AuthenticationException("invalid service call: logging post()");
       return $this->sendMail();
    }
    
@@ -20,11 +20,11 @@ class LoggingController extends BaseController
    {
       if (count($this->request->serviceSubInfo) == 0) {
          if (!$this->initSession())
-            return new ExceptionDto("AuthenticationException", "invalid service call");
+            throw new AuthenticationException("invalid service call: logging get()");
          return $this->sendMail();
       }
       else if ($this->request->serviceSubInfo[0] != "id") {
-         return new ServicePathViolationException("Parameter id is not set");
+         throw new AuthenticationException("logging token not set");
       }
       
       if (session_id() == "")
@@ -33,16 +33,21 @@ class LoggingController extends BaseController
       $_SESSION["LoggingId"] = $uuid;
       return new UuidDto(session_id(), $uuid);
    }
-
+   
    private function initSession()
    {
-      if (session_id() == "" && isset($this->request->requestParameters["sid"])) {
-            session_id($this->request->requestParameters["sid"]);
-            session_start();
-            return true;
+      if (!isset($this->request->requestParameters["sid"])) //cannot validate
+         return false;
+      
+      if (session_id() == $this->request->requestParameters["sid"])   //we've already started our session
+         return true;
+      elseif (session_id() == "") { // && isset($this->request->requestParameters["sid"])) {  //start session
+         session_id($this->request->requestParameters["sid"]);
+         session_start();
+         return true;
       }
       
-      return false;
+      return false; //other session
    }
    
    private function sendMail()
@@ -100,8 +105,7 @@ class LoggingController extends BaseController
          return new SuccessDto(true);
       }
       catch (Exception $e) {
-         //Something went bad
-         return new ExceptionDto("phpmailerException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
+         return new ExceptionDto("PhpMailerException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
       }
    }
    
