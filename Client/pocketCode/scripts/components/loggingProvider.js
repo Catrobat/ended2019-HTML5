@@ -37,11 +37,11 @@ PocketCode.LoggingProvider = (function (propObject) {
             if (this._disabled)
                 return;
 
-            this._type = type || 'ERROR';
+            this._message = '';
             this._projectId = projectId || '0';
-            if (typeof (jsonError) == 'object') {
-                //this._message = JSON.stringify(jsonError);
-                for (var prop in jsonError) {    //Json.stringify does/may not work here
+            this._type = type || 'ERROR';
+            if (typeof jsonError == 'object') {
+                for (var prop in jsonError) {    //JSON.stringify does not work here due to object dependencies
                     this._message += prop + ': ' + jsonError[prop] + ', \n';
                 }
             }
