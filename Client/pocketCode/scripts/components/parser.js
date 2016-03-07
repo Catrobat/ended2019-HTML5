@@ -448,7 +448,7 @@ PocketCode.merge({
                     case 'MOD':
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return this._concatOperatorFormula(jsonFormula, ' % ', true);
+                        return this._concatOperatorFormula(jsonFormula, ' % ');
 
                     case 'ARCSIN':
                         if (uiString)
@@ -681,8 +681,9 @@ PocketCode.merge({
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);      //TODO: do we need an onError event? -> new and unsupported operators? PHIRO?
                 }
             },
+            /* override */
             dispose: function () {
-                //override as a static class cannot be disposed
+                //static class: cannot be disposed
             },
         });
 

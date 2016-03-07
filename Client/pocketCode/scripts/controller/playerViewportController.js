@@ -132,7 +132,7 @@ PocketCode.PlayerViewportController = (function () {
             if (properties.x !== undefined)
                 properties.x = this._transformXCoordinate(properties.x);
             if (properties.y !== undefined)
-                properties.y = this._transformYCoordinate(sprite.y);
+                properties.y = this._transformYCoordinate(properties.y);
 
             for (var i = 0, l = _vars.length; i < l; i++) {
                 _var = _vars[i];

@@ -1,9 +1,9 @@
 <?php
-$project_id = 0;
+if( !empty( $_GET["projectId"]) )
+  $projectId = $_GET["projectId"];
 
-if( isset( $_GET["projectId"]) ) {
-  $project_id = $_GET["projectId"];
-}
+if( !empty( $_GET["lang"]) )
+  $lang = $_GET["lang"];
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
@@ -14,12 +14,17 @@ if( isset( $_GET["projectId"]) ) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-touch-fullscreen" content="yes" />
-  <link href="../pocketCode/img/favicon.png" rel="shortcut icon" />
+  <link href="/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
 
-  <link href="pocketCodePlayer.css" rel="stylesheet" />
-  <script src="pocketCodePlayer.js"></script>
+  <link href="/html5/player/pocketCodePlayer.css" rel="stylesheet" />
+  <script src="/html5/player/pocketCodePlayer.js"></script>
   <script type="text/javascript">
-    launchProject(<?php echo $project_id; ?>);
+    launchProject(<?php if (isset($projectId)) 
+                            echo $projectId; 
+                        else
+                            echo "0";
+                        if (isset($lang))
+                            echo ", '" . $lang . "'";?>);
   </script>
   <title>PocketCode HTML5 Player</title>
 </head>

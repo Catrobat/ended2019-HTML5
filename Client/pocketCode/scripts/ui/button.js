@@ -7,19 +7,19 @@
 'use strict';
 
 PocketCode.Ui.Button = (function () {
-    Button.extends(PocketCode.Ui.I18nControl, false);
+    Button.extends(SmartJs.Ui.Control, false);
 
     //cntr
-    function Button(text, args) {
-        PocketCode.Ui.I18nControl.call(this, 'button', args);
-        //this._key = asdf
-        //PocketCode.I18nProvider.getValue(key);
-        this._textNode = new SmartJs.Ui.TextNode(text);
+    function Button(i18nKey, args) {
+        SmartJs.Ui.Control.call(this, 'button', args);
+
+        this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
         this._dom.appendChild(this._textNode._dom);
+
         //events
         this._onClick = new SmartJs.Event.Event(this);
         this._addDomListener(this._dom, 'click', this._clickHandler);
-        this._addDomListener(this._dom, 'touchend', function (e) { this._dom.click(); this._dom.blur(); });
+        this._addDomListener(this._dom, 'touchend', function (e) { this._dom.click(); });
     }
 
     //properties
@@ -28,8 +28,13 @@ PocketCode.Ui.Button = (function () {
             get: function () {
                 return this._textNode.text;
             },
-            set: function (value) {
-                this._textNode.text = value;
+            //set: function (value) {
+            //    this._textNode.text = value;
+            //},
+        },
+        i18nKey: {
+            set: function (i18nKey) {
+                this._textNode.i18nKey = i18nKey;
             },
         },
         disabled: {
@@ -54,6 +59,7 @@ PocketCode.Ui.Button = (function () {
     //methods
     Button.prototype.merge({
         _clickHandler: function (e) {
+            this._dom.blur();
             this._onClick.dispatchEvent();
             //e.target.blur();//preventDefault(); //stop event so the button dowsn't get focus
         },
@@ -67,8 +73,8 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.Button, false);
 
     //cntr
-    function PlayerSvgButton(icon, text, big) {
-        PocketCode.Ui.Button.call(this, text, { className: 'pc-playerButton' });
+    function PlayerSvgButton(icon, i18nKey, big) {
+        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-playerButton' });
 
         //this.className = 'pc-playerButton';
         if (big)
@@ -77,7 +83,6 @@ PocketCode.Ui.PlayerSvgButton = (function () {
         if (!icon)
             throw new Error('invalid argument: icon');
 
-        this._textNode = new SmartJs.Ui.TextNode(text);
         var span = document.createElement('span');
         span.appendChild(this._textNode._dom);
         this._dom.innerHTML = icon;

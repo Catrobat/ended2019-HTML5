@@ -1,9 +1,9 @@
-/// <reference path="../../../smartJs/sj.js" />
-/// <reference path="../../../smartJs/sj-core.js" />
-/// <reference path="../../../smartJs/sj-event.js" />
-/// <reference path="../../../smartJs/sj-ui.js" />
-/// <reference path="../core.js" />
-/// <reference path="../ui.js" />
+/// <reference path='../../../smartJs/sj.js' />
+/// <reference path='../../../smartJs/sj-core.js' />
+/// <reference path='../../../smartJs/sj-event.js' />
+/// <reference path='../../../smartJs/sj-ui.js' />
+/// <reference path='../core.js' />
+/// <reference path='../ui.js' />
 'use strict';
 
 
@@ -21,7 +21,7 @@ PocketCode.Ui.Dialog = (function () {
     Dialog.extends(SmartJs.Ui.ContainerControl, false);
 
     //cntr
-    function Dialog(type, caption) {
+    function Dialog(type, captionI18nKey, msgKey) {
         SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute' } });
 
         //settings
@@ -30,7 +30,8 @@ PocketCode.Ui.Dialog = (function () {
 
         //private controls
         this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogHeader' });
-        this._captionTextNode = new SmartJs.Ui.TextNode();
+        // !!!
+        this._captionTextNode = new PocketCode.Ui.I18nTextNode(captionI18nKey);
         this._header.appendChild(this._captionTextNode);
 
         //define the body as inner container
@@ -42,11 +43,14 @@ PocketCode.Ui.Dialog = (function () {
         this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
 
-        if (caption) {
-            this.caption = caption;
+        if (msgKey) {   //TODO: do not use innerHTML, add a textNode instead
+            this._msgKey = msgKey;
+            //this._updateUiStrings();
+            this.bodyInnerHTML = PocketCode.I18nProvider.getLocString(this._msgKey);
         }
-
         this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+        this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+        PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
     }
 
     //properties
@@ -72,14 +76,14 @@ PocketCode.Ui.Dialog = (function () {
                 this._type = value;
             },
         },
-        caption: {
+        captionI18nKey: {
             get: function () {
                 return this._captionTextNode.text;
             },
-            set: function (value) {
-                if (typeof value !== 'string')
+            set: function (i18nKey) {
+                if (typeof i18nKey !== 'string')
                     throw new error('invalid argument: caption: expected type = string');
-                this._captionTextNode.text = value;
+                this._captionTextNode.i18nKey = i18nKey;
             },
         },
         bodyInnerHTML: {
@@ -94,6 +98,9 @@ PocketCode.Ui.Dialog = (function () {
 
     //methods
     Dialog.prototype.merge({
+        _updateUiStrings: function () {
+            //TODO: override this in the individual controls
+        },
         _createLayout: function () {
             var background = document.createElement('div');
             background.className = 'pc-dialogOverlay';
@@ -187,13 +194,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function GlobalErrorDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Global Error');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblGlobalErrorCaption', 'msgGlobalError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgGlobal
-            this.innerHTML = PocketCode.I18nProvider.translate('msgGlobal');
+            // ??
+            //this.innerHTML = PocketCode.I18nProvider.getLocString('msgGlobal');
         }
 
         //events
@@ -221,13 +229,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function BrowserNotSupportedDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Framework Not Supported');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblBrowserNotSupportedErrorCaption', 'msgBrowserNotSupportedError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgBrowserNotSupported
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgBrowserNotSupported');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgBrowserNotSupported');
         }
 
         //events
@@ -255,16 +264,17 @@ PocketCode.Ui.merge({
 
         //cntr
         function MobileRestrictionDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Please Confirm');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'lblMobileRestrictionsWarningCaption', 'msgMobileRestrictionsWarning');
             // i18n: lblCancel
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblCancel'));
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
             // i18n: lblConfirm
-            this._btnConfirm = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblConfirm'));
+            this._btnConfirm = new PocketCode.Ui.Button('lblConfirm');
             this.addButton(this._btnConfirm);
 
             // i18n: msgMobileRestrictions
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgMobileRestrictions');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgMobileRestrictions');
         }
 
         //events
@@ -297,17 +307,18 @@ PocketCode.Ui.merge({
 
         //cntr
         function ExitWarningDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Exit Application');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'lblExitDialogCaption', 'msgExitDialog');
             // i18n: lblExit
-            this._btnExit = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblExit'));
+            this._btnExit = new PocketCode.Ui.Button('lblExit');
             this.addButton(this._btnExit);
             // i18n: lblCancel
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblCancel'));
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
 
             // i18n: msgExit
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgExit');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgExit');
             this._onCancel = new SmartJs.Event.Event(this);
         }
 
@@ -341,13 +352,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function ProjectNotFoundDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Found');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblProjectNotFoundErrorCaption', 'msgProjectNotFoundError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgProjectNotFound
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgProjectNotFound');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgProjectNotFound');
         }
 
         //events
@@ -375,13 +387,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function ProjectNotValidDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Project Not Valid');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblProjectNotValidErrorCaption', 'msgProjectNotValidError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgProjectNotValid
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgProjectNotValid');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgProjectNotValid');
         }
 
         //events
@@ -409,13 +422,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function ParserErrorDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Error Parsing Project');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblParserErrorCaption', 'msgParserError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgParser
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgParser');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgParser');
         }
 
         //events
@@ -443,13 +457,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function InternalServerErrorDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Internal Server Error');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblInternalServerErrorCaption', 'msgInternalServerError');
             // i18n: lblOk
-            this._btnOK = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblOk'));
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
             this.addButton(this._btnOK);
 
             // i18n: msgInternalServer
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgInternalServer');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgInternalServer');
         }
 
         //events
@@ -477,16 +492,17 @@ PocketCode.Ui.merge({
 
         //cntr
         function ServerConnectionErrorDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'Server Not Responding');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblServerConnectionErrorCaption', 'msgServerConnectionError');
             // i18n: lblCancel
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblCancel'));
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
             // i18n: lblRetry
-            this._btnRetry = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblRetry'));
+            this._btnRetry = new PocketCode.Ui.Button('lblRetry');
             this.addButton(this._btnRetry);
 
             // i18n: msgServerConnection
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgServerConnection');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgServerConnection');
         }
 
         //events
@@ -519,17 +535,18 @@ PocketCode.Ui.merge({
 
         //cntr
         function UnsupportedSoundFileDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Sound File');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'lblUnsupportedSoundWarningCaption', 'msgUnsupportedSoundWarning');
             // i18n: lblCancel
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblCancel'));
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
             // i18n: lblContinue
-            this._btnContinue = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblContinue'));
+            this._btnContinue = new PocketCode.Ui.Button('lblContinue');
             this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
             // i18n: msgUnsupportedSound
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgUnsupportedSound');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgUnsupportedSound');
             this._onContinue = new SmartJs.Event.Event(this);
         }
 
@@ -567,17 +584,18 @@ PocketCode.Ui.merge({
 
         //cntr
         function UnsupportedDeviceFeatureDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'Unsupported Device Feature');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'lblUnsupportedDeviceFeatureWarningCaption', 'msgUnsupportedDeviceFeatureWarning');
             // i18n: lblCancel
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblCancel'));
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
             // i18n: lblContinue
-            this._btnContinue = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblContinue'));
+            this._btnContinue = new PocketCode.Ui.Button('lblContinue');
             this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
             // i18n: msgUnsupportedDevice
-            this.bodyInnerHTML = PocketCode.I18nProvider.translate('msgUnsupportedDevice');
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgUnsupportedDevice');
             this._onContinue = new SmartJs.Event.Event(this);
         }
 
@@ -611,14 +629,14 @@ PocketCode.Ui.merge({
 
         //cntr
         function ScreenshotDialog() {
-            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'Screenshot');
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'lblScreenshotCaption');
             // i18n: lblClose
-            this._btnCancel = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblClose'));
+            this._btnCancel = new PocketCode.Ui.Button('lblClose');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
             
             //var imageBorder = new SmartJs.Ui.ContainerControl({ className: 'pc-screenshotContainer' });
-            this._screenshotImage = new SmartJs.Ui.Image();
+            this._screenshotImage = new SmartJs.Ui.Image({ style: { width: '100%' } });
             //var origin = PocketCode.crossOrigin;
             //if (origin.initialized && origin.current && origin.supported)
             //    this._screenshotImage.crossOrigin = 'anonymous';
@@ -641,13 +659,13 @@ PocketCode.Ui.merge({
                 this._downloadForm.action = 'https://web-test.catrob.at/html5/rest/v0.1/file/screenshot/';
                 this._downloadInput = document.createElement('input');
                 this._downloadInput.type = 'hidden';
-                this._downloadInput.name = /*this._downloadInput.id =*/ 'base64string';
+                this._downloadInput.name = 'base64string';
 
                 this._downloadForm.appendChild(this._downloadInput);
                 this._dom.appendChild(this._downloadForm);
 
                 // i18n: lblDownload
-                this._btnDownload = new PocketCode.Ui.Button(PocketCode.I18nProvider.translate('lblDownload'));
+                this._btnDownload = new PocketCode.Ui.Button('lblDownload');
                 this._btnDownload.disabled = true;
                 this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
                 this.addButton(this._btnDownload);
@@ -716,12 +734,6 @@ PocketCode.Ui.merge({
 
             download: function () {
                 this._downloadForm.submit();
-                //var link = document.createElement('a');
-                //link.href =  this._screenshotImage.src;
-                //link.download = 'Screenshot.png';
-                //document.body.appendChild(link);
-                //link.click();
-                //document.body.removeChild(link);
             }
         //    /* override */
         //    handleHistoryBack: function () {

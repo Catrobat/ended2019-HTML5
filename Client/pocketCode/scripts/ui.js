@@ -70,32 +70,35 @@ PocketCode.Ui.merge({
         I18nTextNode.extends(SmartJs.Ui.TextNode, false);
 
         //cntr
-        function I18nTextNode(text) {
-            SmartJs.Ui.TextNode.call(this, text);
+        function I18nTextNode(i18nKey) {
+            SmartJs.Ui.TextNode.call(this);
 
-            this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+            this._i18nKey = i18nKey;
+
+            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
+            this._updateUiStrings();
         }
 
-        ////properties
-        //Object.defineProperties(I18nTextNode.prototype, {
-
-        //});
-
-        ////events
-        //Object.defineProperties(I18nTextNode.prototype, {
-
-        //});
+        //properties
+        Object.defineProperties(I18nTextNode.prototype, {
+            i18nKey: {
+                set: function(i18nKey){
+                    this._i18nKey = i18nKey;
+                    this._updateUiStrings();
+                },
+            },
+        });
 
         //methods
         I18nTextNode.prototype.merge({
             _updateUiStrings: function () {
-                //TODO: override this in the individual controls
+                //if (!this._i18nKey)
+                //    return;
+                if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
+                    this.text = 'invalid i18nProvider';
+                this.text = PocketCode.I18nProvider.getLocString(this._i18nKey);
             },
-            dispose: function () {
-                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.TextNode.prototype.dispose.call(this);
-            }
         });
 
         return I18nTextNode;
@@ -108,29 +111,15 @@ PocketCode.Ui.merge({
         function I18nControl(element, propObject) {
             SmartJs.Ui.Control.call(this, element, propObject);
 
-            this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
+            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
+            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
         }
-
-        ////properties
-        //Object.defineProperties(I18nControl.prototype, {
-
-        //});
-
-        ////events
-        //Object.defineProperties(I18nControl.prototype, {
-
-        //});
 
         //methods
         I18nControl.prototype.merge({
             _updateUiStrings: function () {
                 //TODO: override this in the individual controls
             },
-            dispose: function () {
-                //PocketCode.I18nProvider.onLanguageChange.removeEventListener(this._languageChangeListener);
-                SmartJs.Ui.Control.prototype.dispose.call(this);
-            }
         });
 
         return I18nControl;
@@ -159,13 +148,15 @@ PocketCode.Ui.merge({
         //methods
         Viewport.prototype.merge({
             _disableBrowserGestures: function () {
-                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); }, false);
-                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); }, false);
-                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) { e.preventDefault(); }, false);
-                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); }, false);
-                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); }, false);
-                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); }, false);
-                //this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); }, false);
+                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); });
+                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
+                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
+                    e.preventDefault();
+                });
+                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); });
+                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); });
+                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); });
+                //this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
             },
             _enableBrowserGestures: function () {
                 this._removeDomListener(this._dom, 'click', this._clickHandler);

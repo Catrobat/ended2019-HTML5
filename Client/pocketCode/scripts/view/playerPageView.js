@@ -12,7 +12,9 @@ PocketCode.Ui.PlayerPageView = (function () {
         PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
         if (SmartJs.Device.isMobile) {
             var exitBtnDom = (new PocketCode.Web.ExitButton()).dom;
-            this._addDomListener(exitBtnDom, 'click', function () { this._onExit.dispatchEvent(); }.bind(this));
+            this._addDomListener(exitBtnDom, 'touchend', function (e) {
+                this._onExit.dispatchEvent();
+            }.bind(this));
             this._header._dom.appendChild(exitBtnDom);
             this._header.style.padding = '8px';
         }

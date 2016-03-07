@@ -43,7 +43,7 @@ PocketCode.Formula = (function () {
                     this.calculate = parsed.calculate;
                 }
                 this._uiString = undefined;
-                //this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
+                this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
             },
             //enumerable: false,
             //configurable: true,
@@ -85,8 +85,8 @@ PocketCode.Formula = (function () {
         },
         _validateFormula: function () {
             try {
-                var formula = this;
-                formula._sprite = { //override sprite
+                var formula = new PocketCode.Formula(this._device, this._sprite);
+                formula._sprite = { //override sprite to enable validation during parsing
                     brightness: 100,
                     transparency: 0,
                     layer: 1,
@@ -94,9 +94,10 @@ PocketCode.Formula = (function () {
                     size: 100,
                     positionX: 0,
                     positionY: 0,
-                    getVariable: function() { return { value: 0 }; },
+                    getVariable: function () { return { value: 0 }; },
+                    getList: function() { return { value: [] }; },
                 };
-                var test = formula.calculate();
+                var test = this.calculate.call(formula);    //execute generated calculate method in testFormula
             }
             catch (e) {
                 throw new Error('Error parsing formula: ' + e.message);

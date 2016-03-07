@@ -146,13 +146,13 @@ PocketCode.PlayerPageController = (function () {
         //project handler
         _projectLoadingProgressHandler: function (e) {
             this._view.updateLoadingProgress(e.progress);
-            console.log('project loading progress: ' + e.progress);//JSON.stringify(e.progress) + ', ' + JSON.stringify(e.file));
+            //console.log('project loading progress: ' + e.progress);//JSON.stringify(e.progress) + ', ' + JSON.stringify(e.file));
         },
         _projectLoadHandler: function (e) {
             var screenSize = this._gameEngine.projectScreenSize;
             this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
             this._view.disabled = false;
-            console.log('project loaded');// + JSON.stringify(e));
+            //console.log('project loaded');// + JSON.stringify(e));
             // TODO create renderingImages from gameEngine.spritesAsPropertyList
             this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
             this._playerViewportController.initRenderingVariables(this._gameEngine.getVariablesAsPropertyList());

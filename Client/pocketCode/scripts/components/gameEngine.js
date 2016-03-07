@@ -16,7 +16,7 @@ PocketCode.GameEngine = (function () {
     function GameEngine(minLoopCycleTime) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
-        this._executionState = PocketCode.ExecutionState.STOPPED;
+        this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
         this._resourceLoadedSize = 0;
@@ -32,6 +32,7 @@ PocketCode.GameEngine = (function () {
 
         this._background = undefined;
         this._sprites = [];
+        this._originalSpriteOrder = []; //neede to reinit layers on stop/restart
 
         this.resourceBaseUrl = "";
 
@@ -263,13 +264,15 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            var device = new PocketCode.Device(this._soundManager); //TODO: used desktop device (future)
+            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
+            this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
+            
             var bricksCount = jsonProject.header.bricksCount;
             if (bricksCount <= 0)   //TODO: necessary? - add test case
                 this._spritesLoaded = true;
 
             this._spritesLoadingProgress = 0;
-            this._spriteFactory = new PocketCode.SpriteFactory(device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
+            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
@@ -283,6 +286,7 @@ PocketCode.GameEngine = (function () {
                 sprite = this._spriteFactory.create(sp[i]);
                 sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
                 this._sprites.push(sprite);
+                this._originalSpriteOrder.push(sprite);
             }
         },
         //loading handler
@@ -347,6 +351,10 @@ PocketCode.GameEngine = (function () {
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
+
+        _deviceOnSpaceKeyDownHandler: function(e) {
+            this._onTabbedAction.dispatchEvent({ sprite: this._background });
+        },
         //project interaction
         runProject: function (reinitSprites) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
@@ -357,14 +365,15 @@ PocketCode.GameEngine = (function () {
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
-            this._broadcastMgr.stop();
             //if reinit: all sprites properties have to be set to their default values: default true
-            if (reinitSprites !== false) {
+            if (reinitSprites !== false && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 var bg = this._background;
                 if (bg) {
                     bg.init();
                     this._onSpriteUiChange.dispatchEvent({ id: bg.id, properties: bg.renderingProperties }, bg);
                 }
+
+                this._sprites = this._originalSpriteOrder;  //reset sprite order
                 var sprites = this._sprites,
                     sprite;
                 for (var i = 0, l = sprites.length; i < l; i++) {
@@ -372,6 +381,8 @@ PocketCode.GameEngine = (function () {
                     sprite.init();
                     this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: sprite.renderingProperties }, sprite);
                 }
+
+                this._resetVariables();  //global
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
@@ -412,14 +423,16 @@ PocketCode.GameEngine = (function () {
         stopProject: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
+            this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
-            if (this._background)
+            if (this._background) {
                 this._background.stopScripts();
-
+            }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].stopScripts();
             }
+
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 
@@ -707,8 +720,8 @@ PocketCode.GameEngine = (function () {
             if (updateBoundary) {
                 boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //recalculate
                 //adjust/keep the area center during rotate
-                newX += center.x - (boundary.right + boundary.left) / 2;
-                newY += center.y - (boundary.top + boundary.bottom) / 2;
+                newX = center.x - (boundary.right + boundary.left) / 2;
+                newY = center.y - (boundary.top + boundary.bottom) / 2;
                 //update overflows
                 vpEdges.top.overflow = newY + boundary.top - sh2;
                 vpEdges.right.overflow = newX + boundary.right - sw2;
@@ -744,6 +757,9 @@ PocketCode.GameEngine = (function () {
 
             this.stopProject();
 
+            if (this._device)
+                this._device.onSpaceKeyDown.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
+
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
             this._imageStore.abortLoading();
@@ -757,6 +773,8 @@ PocketCode.GameEngine = (function () {
 
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+
+            delete this._originalSpriteOrder;
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));

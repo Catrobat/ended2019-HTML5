@@ -39,7 +39,7 @@ PocketCode.UserVariableHost = (function () {
                     vars = this.__variablesSimple.getVariables();
                 for (var v in vars) {   //{[id]: {}}
                     if (vars.hasOwnProperty(v))
-                        list.push({ id: v, text: vars[v].value || '', x: 0, y: 0, visible: true }); //TEST ONLY: SET VISIBILITX TO FALSE (DEFAULT)
+                        list.push({ id: v, text: vars[v].value || '', x: 0, y: 0, visible: false });
                 }
                 return list;
             },
@@ -122,6 +122,10 @@ PocketCode.UserVariableHost = (function () {
                     tmp.merge(this.__variableLookupHost.getAllLists());
             }
             return tmp;
+        },
+        _resetVariables: function () {
+            this.__variablesSimple.reset();
+            this.__variablesList.reset();
         },
         /* override */
         dispose: function () {

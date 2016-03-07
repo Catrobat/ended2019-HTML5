@@ -6,7 +6,7 @@ PocketCode.Ui.ScrollContainer = (function () {
     function ScrollContainer(propObject, innerPropObject) {
         SmartJs.Ui.ContainerControl.call(this, propObject);
 
-        this._container = new SmartJs.Ui.Control('div', innerPropObject);//{ className: 'pc-scrollContent' });
+        this._container = new SmartJs.Ui.ContainerControl(innerPropObject);//{ className: 'pc-scrollContent' });
         this._appendChild(this._container);
         if (!propObject)
             this._dom.style.overflow = 'hidden';

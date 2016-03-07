@@ -1,11 +1,14 @@
 <?php
 
-class UuidDto {
+class UuidDto extends SessionIdDto {
 
   public $uuid;
   
-  public function __construct($uuid) {
-    $this->uuid = $uuid;
+  
+  public function __construct($sid, $uuid) {
+     parent::__construct($sid);
+     
+     $this->uuid = $uuid;
   }
     
 }

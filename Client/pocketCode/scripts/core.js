@@ -78,6 +78,7 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 PocketCode.merge({
 
     ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
+        INITIALIZED: -1,
         STOPPED: 0,
         RUNNING: 1,
         PAUSED: 3,  //and running

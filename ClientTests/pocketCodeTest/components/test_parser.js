@@ -28,7 +28,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
 
-    //disposing without efect on the object
+    //disposing without effect on the object
     var isStatic = PocketCode.FormulaParser._isStatic;
     PocketCode.FormulaParser.dispose()
     assert.ok(PocketCode.FormulaParser._isStatic != undefined && PocketCode.FormulaParser._isStatic === isStatic, "dispose: no effect");
@@ -235,7 +235,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     f.json = stringPlus;    //TODO: catrobat does not allow a string cocatenation using a + operator showing an error but allowing to save this
     //unless this isn't changes we allow this operation on strings too
-    assert.equal(f.calculate(), 0, "string concat using + operator: return 0");
+    assert.equal(f.calculate(), 'fghfghw', "string concat using + operator: allowed");
     assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
     assert.equal(f.uiString, "'fgh' + 'fghw'", "string concat using + operator: toString");
 

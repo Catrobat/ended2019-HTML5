@@ -88,7 +88,6 @@ class ProjectsController extends BaseController
         $details->baseUrl = ""; //delete base url to avoid error (wrong url) due to client side concatenation
       }
     }
-    print_r($details);
 
     return $details;
   }
@@ -307,6 +306,7 @@ class ProjectsController extends BaseController
           case 0.95:
           case 0.96:
           case 0.97:
+          case 0.98:
             $parser = new ProjectFileParser_v0_94($projectId, $resourceRoot, $cacheDir, $xml);
             break;
           default:
@@ -423,7 +423,7 @@ class ProjectsController extends BaseController
 
     //request projects + set $total
     $featured = [];
-    if($offset === 0)
+    /*if($offset === 0)
     {
       $data = file_get_contents($this->API . "api/projects/featured.json?limit=3");
       $data = json_decode($data, false);
@@ -434,7 +434,7 @@ class ProjectsController extends BaseController
         array_push($featured, new ProjectDetailsDto($project->ProjectId, $project->ProjectName, "", $baseUrl,
           $project->FeaturedImage, $project->Author));
       }
-    }
+    }*/
 
     $url = $this->API . "api/projects/";
 
@@ -482,7 +482,7 @@ class ProjectsController extends BaseController
       foreach($projects->featured as $p)
       {
         $path = $localPath . $p->thumbnailUrl;
-        echo $path . ", \n";
+        //echo $path . ", \n";
         $res = $this->loadBase64Image($path, $this->request->imgDataMax);
         if($res !== false)
         {

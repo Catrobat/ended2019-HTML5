@@ -7,26 +7,69 @@ class LoggingController extends BaseController
    public function __construct($request)
    {
       parent::__construct($request);
-      if (session_id() == "")
-         session_start();
    }
    
    public function post()
    {
+      if (!$this->initSession())
+         throw new AuthenticationException("invalid service call: logging post()");
       return $this->sendMail();
+   }
+   
+   public function get()
+   {
+      if (count($this->request->serviceSubInfo) == 0) {
+         if (!$this->initSession())
+            throw new AuthenticationException("invalid service call: logging get()");
+         return $this->sendMail();
+      }
+      else if ($this->request->serviceSubInfo[0] != "id") {
+         throw new AuthenticationException("logging token not set");
+      }
+      
+      if (session_id() == "")
+         session_start();
+      $uuid                  = uniqid();
+      $_SESSION["LoggingId"] = $uuid;
+      return new UuidDto(session_id(), $uuid);
+   }
+   
+   private function initSession()
+   {
+      if (!isset($this->request->requestParameters["sid"])) //cannot validate
+         return false;
+      
+      if (session_id() == $this->request->requestParameters["sid"])   //we've already started our session
+         return true;
+      elseif (session_id() == "") { // && isset($this->request->requestParameters["sid"])) {  //start session
+         session_id($this->request->requestParameters["sid"]);
+         session_start();
+         return true;
+      }
+      
+      return false; //other session
    }
    
    private function sendMail()
    {
       $id        = "";
       $jsonError = "";
+      $navigator = "";
+      $ip = "";
+      if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
+        $ip = $_SERVER["HTTP_CLIENT_IP"];
+      } elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
+        $ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+      } else {
+        $ip = $_SERVER["REMOTE_ADDR"];
+      }
       $type      = "";
       $projectId = "";
       $subject   = "[PocketCodeHTML5Log]";
       $mailbody  = "";
       
-      if (isset($this->request->requestParameters['id'])) {
-         $id = utf8_decode($this->request->requestParameters['id']);
+      if (isset($this->request->requestParameters["id"])) {
+         $id = utf8_decode($this->request->requestParameters["id"]);
          if (isset($_SESSION["LoggingId"]) && $_SESSION["LoggingId"] == $id) {
             $_SESSION["LoggingId"] = "";
          } else {
@@ -37,10 +80,12 @@ class LoggingController extends BaseController
          return new SuccessDto(false);
       }
       
-      $jsonError = utf8_decode($this->request->requestParameters['jsonError']);
-      $mailbody  = $jsonError;
-      $type      = utf8_decode($this->request->requestParameters['type']);
-      $projectId = utf8_decode($this->request->requestParameters['projectId']);
+      $jsonError = utf8_decode($this->request->requestParameters["jsonError"]);
+      $navigator = utf8_decode($this->request->requestParameters["navigator"]);
+
+      $mailbody  = "LOG MESSAGE:\r\n" . $jsonError . "\r\nNAVIGATOR:\r\n" . $navigator . "\r\nIP: " . $ip;
+      $type      = utf8_decode($this->request->requestParameters["type"]);
+      $projectId = utf8_decode($this->request->requestParameters["projectId"]);
       $subject   = $subject . " " . $type . ": ProjectId: " . $projectId;
       $mail      = new PHPMailer(true);
       $mail->IsSMTP(); // telling the class to use SMTP
@@ -60,20 +105,8 @@ class LoggingController extends BaseController
          return new SuccessDto(true);
       }
       catch (Exception $e) {
-         //Something went bad
-         return new ExceptionDto("phpmailerException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
+         return new ExceptionDto("PhpMailerException", $e->getMessage(), $e->getCode(), $e->getFile(), $e->getLine());
       }
    }
    
-   public function get()
-   {
-      if (count($this->request->serviceSubInfo) == 0) {
-         return $this->sendMail();
-      } else if ($this->request->serviceSubInfo[0] != "id") {
-         return new ServicePathViolationException("Parameter id is not set");
-      }
-      $uuid                  = uniqid();
-      $_SESSION["LoggingId"] = $uuid;
-      return new UuidDto($uuid);
-   }
 }

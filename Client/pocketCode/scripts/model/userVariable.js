@@ -78,6 +78,10 @@ PocketCode.Model.merge({
             getVariables: function () {
                 return this._variables;
             },
+            reset: function () {
+                for (var v in this._variables)
+                    if (v.reset) v.reset();
+            },
         });
 
         return UserVariableCollection;
@@ -145,6 +149,9 @@ PocketCode.Model.merge({
                 if (this._value)
                     return this._value.toString();
                 return '';
+            },
+            reset: function () {
+                this.value = undefined;
             },
         });
 
@@ -243,6 +250,10 @@ PocketCode.Model.merge({
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
                     return true;
                 return false;
+            },
+            reset: function () {
+                this._value = [];
+                this._onChange.dispatchEvent({ id: this._id });
             },
         });
 

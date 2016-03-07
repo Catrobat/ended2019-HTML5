@@ -531,6 +531,12 @@ QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
 	var rl = new SmartJs.Communication.ResourceLoader();
 	assert.equal(rl.useSizeForProgressCalculation, false, "ctr without url + getter");
 	assert.ok(rl instanceof SmartJs.Communication.ResourceLoader && rl instanceof SmartJs.Core.EventTarget, "instance check");
+	assert.equal(rl.objClassName, "ResourceLoader", "objClassName check");
+
+	assert.equal(rl._crossOriginProperty, undefined, "cross origin not set");
+	rl.crossOriginProperty = "anonymous";
+	assert.equal(rl._crossOriginProperty, "anonymous", "cross origin setter");
+	//rl.crossOriginProperty = undefined;
 
 	assert.throws(function () { rl.useSizeForProgressCalculation = "false"; }, Error, "ERROR: useSizeForProgressCalculation setter");
 	rl.useSizeForProgressCalculation = true;
@@ -753,5 +759,10 @@ QUnit.test("SmartJs.Communication: ResourceLoader", function (assert) {
 		rl.load(files);
 	};
 
+	//dispose
+	var rl_d = new SmartJs.Communication.ResourceLoader();
+	rl_d.dispose();
+	assert.equal(rl_d._disposed, true, "disposed correctly");
+	
 });
 

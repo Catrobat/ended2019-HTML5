@@ -106,8 +106,8 @@ PocketCode.BroadcastManager = (function () {
                         continue;
                     }
 
-                    //subListener.handler.call(subListener.scope, {});
-                    setTimeout(subListener.handler.bind(subListener.scope, {}), 1);    //preventing the call stack from overflow
+                    subListener.handler.call(subListener.scope, {});
+                    //setTimeout(subListener.handler.bind(subListener.scope, {}), 0);    //preventing the call stack from overflow
                 }
             }
         },
@@ -133,7 +133,7 @@ PocketCode.BroadcastManager = (function () {
                 for (var i = 0; i < subsCount; i++) {
                     var subListener = subs[i];
                     //subListener.handler.call(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) });
-                    setTimeout(subListener.handler.bind(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) }), 1);
+                    setTimeout(subListener.handler.bind(subListener.scope, { id: threadId, listener: new SmartJs.Event.EventListener(this._brickExecutedHandler, this) }), 0);
                 }
             }
             else
