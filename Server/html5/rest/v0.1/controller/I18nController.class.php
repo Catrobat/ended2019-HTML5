@@ -13,13 +13,6 @@ class I18nController extends BaseController
   public $api = "https://api.crowdin.com/api/project/catrobat/download/";
   public $apiKey = "?key=6c9a3f10bd747ea3198c0bb9b651d9ab";
 
-  // https://api.crowdin.com/api/project/catrobat/download/de.zip?key=6c9a3f10bd747ea3198c0bb9b651d9ab
-  // https://api.crowdin.com/api/project/catrobat/download/en-GB.zip?key=6c9a3f10bd747ea3198c0bb9b651d9ab
-
-  // yaml_parse_file($filename) ==> array
-  // json_encode(array) ==> json
-
-
   public function __construct($request)
   {
     parent::__construct($request);
