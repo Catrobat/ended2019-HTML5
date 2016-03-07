@@ -48,7 +48,7 @@ QUnit.test("LoggingProvider", function (assert) {
 
     function Test2() {
         var sentHandler = function (e) {
-            assert.equal(lp._message, "string as message", "message parsed correctly: string");
+            assert.equal(lp._message, "string as message \n", "message parsed correctly: string");
 
             lp.onLogMessageSent.removeEventListener(new SmartJs.Event.EventListener(sentHandler, this));
             done2();
