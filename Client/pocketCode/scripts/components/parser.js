@@ -448,7 +448,7 @@ PocketCode.merge({
                     case 'MOD':
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return this._concatOperatorFormula(jsonFormula, ' % ', true);
+                        return this._concatOperatorFormula(jsonFormula, ' % ');
 
                     case 'ARCSIN':
                         if (uiString)
