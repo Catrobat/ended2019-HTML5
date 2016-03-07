@@ -43,10 +43,11 @@ PocketCode.Ui.Dialog = (function () {
         this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
 
-        this._msgKey = msgKey;
-        //this._updateUiStrings();
-        this.bodyInnerHTML = PocketCode.I18nProvider.getLocString(this._msgKey);
-
+        if (msgKey) {   //TODO: do not use innerHTML, add a textNode instead
+            this._msgKey = msgKey;
+            //this._updateUiStrings();
+            this.bodyInnerHTML = PocketCode.I18nProvider.getLocString(this._msgKey);
+        }
         this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
         this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
         PocketCode.I18nProvider.onLanguageChange.addEventListener(this._languageChangeListener);
@@ -635,7 +636,7 @@ PocketCode.Ui.merge({
             this.addButton(this._btnCancel);
             
             //var imageBorder = new SmartJs.Ui.ContainerControl({ className: 'pc-screenshotContainer' });
-            this._screenshotImage = new SmartJs.Ui.Image();//{ style: { maxWidth: '100%' } });
+            this._screenshotImage = new SmartJs.Ui.Image({ style: { width: '100%' } });
             //var origin = PocketCode.crossOrigin;
             //if (origin.initialized && origin.current && origin.supported)
             //    this._screenshotImage.crossOrigin = 'anonymous';
