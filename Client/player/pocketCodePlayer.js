@@ -404,13 +404,13 @@ PocketCode.Web = {
 			},
 			show: function () {
 				this.hidden = false;
-				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
-				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
-				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
-				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
-				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
+				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
+				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
+				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
+				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
 				var fapi = PocketCode.Web.FullscreenApi;
 				if (fapi.supported && !fapi.isBrowserFullscreen())
@@ -605,13 +605,13 @@ PocketCode.Web = {
 				this._dom.style.fontSize = fs + 'px';
 			},
 			show: function () {
-				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); }, false);
-				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); }, false);
-				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }, false); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); }, false);
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); }, false);
-				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); }, false);
-				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); }, false);
+				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
+				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
+				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
+				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
 				this._loadingIndicator.show();
 				this._dom.style.display = '';
@@ -1044,7 +1044,7 @@ PocketCode.Web.resources = {
 
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.js', type: 'js' },
 		{ url: 'pocketCode/libs/fabric/fabric-1.6.0-rc.1.js', type: 'js' },
-		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
 
