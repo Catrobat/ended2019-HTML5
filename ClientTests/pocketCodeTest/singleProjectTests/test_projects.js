@@ -13,16 +13,22 @@ QUnit.test("[missing]", function (assert) {
 
   // CONFIG
   // if 0, fetch all
-  var limit = 20;
+  var limit = 0;
+  // if true, gameEngine will test project
   var JsonToGameEngine = true;
+  // timeout in ms to cancel current projecttest
+  var timeout_time = 40000;
 
 
   // init
   var i = 0;
   var done = {};
+  // define number of projects, which will be tested in Listener
   for (i = 0; i < limit; i++) {
     done[i+1] = assert.async();
   }
+  // add "last" test, to see if its finished and
+  // to prevent early finishing on testing all projects
   done[0] = assert.async();
   var receivedObject;
   var currentProjectIdx = 1;
@@ -33,6 +39,7 @@ QUnit.test("[missing]", function (assert) {
     limit_txt = limit;
   else
     limit_txt = "all";
+  var timeout_timer;
 
   assert.ok( true, "Try to test " + limit_txt + " projects" );
 
@@ -78,20 +85,19 @@ QUnit.test("[missing]", function (assert) {
 
   // GAME ENGINE TESTS
   var gameEngineOnLoad = function (e) {
-    console.log("---- G:OK ----");
+    stopTimeOut();
     assert.ok(true, "Project " + id + " valid");
     done[currentProjectIdx - 1]();
 
     // Free Memory
-    console.log( "start to free" );
     gameEngine.dispose();
-    console.log( "finished to free" );
     gameEngine = new PocketCode.GameEngine();
 
     getSingleTestProject();
   };
 
 
+  /*
   var gameEngineOnLoadError = function (e) {
     //console.log("---- G:ERROR ----");
     receivedResult = e;
@@ -112,13 +118,33 @@ QUnit.test("[missing]", function (assert) {
     gameEngine = new PocketCode.GameEngine();
 
     getSingleTestProject();
-  };
+  };*/
 
   var gameEngine;
   var gameEngineOnLoadListener = new SmartJs.Event.EventListener(gameEngineOnLoad, this);
-  var gameEngineOnLoadErrorListener = new SmartJs.Event.EventListener(gameEngineOnLoadError, this);
+  //var gameEngineOnLoadErrorListener = new SmartJs.Event.EventListener(gameEngineOnLoadError, this);
   // ---
 
+
+
+  function startTimeOut() {
+    timeout_timer = setTimeout(function(){ startNextTest() }, timeout_time);
+  }
+
+  function stopTimeOut() {
+    clearTimeout(timeout_timer);
+  }
+
+  function startNextTest() {
+    assert.ok(false, "Project " + id + " timeout");
+    done[currentProjectIdx - 1]();
+
+    // Free Memory
+    gameEngine.dispose();
+    gameEngine = new PocketCode.GameEngine();
+
+    getSingleTestProject();
+  }
 
   // Test function
   function getSingleTestProject() {
@@ -151,17 +177,18 @@ QUnit.test("[missing]", function (assert) {
         // Test Loading Project Errors
         if (gameEngine) {
           gameEngine.onLoad.removeEventListener(gameEngineOnLoadListener);
-          gameEngine.onLoadingError.removeEventListener(gameEngineOnLoadErrorListener);
+          //gameEngine.onLoadingError.removeEventListener(gameEngineOnLoadErrorListener);
           gameEngine = undefined;
         }
         gameEngine = new PocketCode.GameEngine();
         // define 2 EventListener
         gameEngine.onLoad.addEventListener(gameEngineOnLoadListener);
-        gameEngine.onLoadingError.addEventListener(gameEngineOnLoadErrorListener);
+        //gameEngine.onLoadingError.addEventListener(gameEngineOnLoadErrorListener);
 
 
         // load Project with json data
         try {
+          startTimeOut();
           gameEngine.loadProject(json);
         } catch (error) {
 
