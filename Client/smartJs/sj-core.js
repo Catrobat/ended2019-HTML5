@@ -121,8 +121,11 @@ SmartJs.Core.EventTarget = (function () {
             var _self = this;
             var handler = function (e) {
                 e = e || {};
-                e.stopPropagation();
-                e.merge(args);
+                if (args) {
+                    if (args.stopPropagation !== false)
+                        e.stopPropagation();
+                    e.merge(args);
+                }
                 return eventHandler.call(_self, e);
             };
             if (target.addEventListener)
