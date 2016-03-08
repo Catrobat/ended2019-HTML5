@@ -702,7 +702,7 @@ PocketCode.Ui.merge({
             _imageOnLoadHandler: function () {
                 if(this._btnDownload)
                     this._btnDownload.disabled = false;
-                this._onResize.dispatchEvent();
+                window.setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 10);
             },
             download: function () {
                 if (this._downloadForm)
