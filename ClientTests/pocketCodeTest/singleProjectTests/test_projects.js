@@ -13,7 +13,7 @@ QUnit.test("[missing]", function (assert) {
 
   // CONFIG
   // if 0, fetch all
-  var limit = 0;
+  var limit = 10;
   // if true, gameEngine will test project
   var JsonToGameEngine = true;
   // timeout in ms to cancel current projecttest
