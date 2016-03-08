@@ -142,11 +142,21 @@
             };
         };
 
-        me.preventDefaultException = function (el, exceptions) {
-            for (var i in exceptions) {
-                if (exceptions[i].test(el[i])) {
+        //me.preventDefaultException = function (el, exceptions) {
+        //    for (var i in exceptions) {
+        //        if (exceptions[i].test(el[i])) {
+        //            return true;
+        //        }
+        //    }
+
+        //    return false;
+        //};
+        me.preventDefaultException = function (event, exceptions) {
+            var el = event.target;
+
+            for (var i = 0, l = exceptions.length; i < l; i++) {
+                if ((exceptions[i].tagNames).test(el.tagName) && (exceptions[i].eventNames).test(event.type))
                     return true;
-                }
             }
 
             return false;
@@ -271,7 +281,15 @@
             bounceEasing: '',
 
             preventDefault: true,
-            preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/ },
+            preventDefaultExceptions: [
+                {
+                    tagNames: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/,
+                    eventNames: undefined,
+                }, {
+                    tagNames: /^(IMG)$/,
+                    eventNames: /^(touchstart)$/,
+                }],
+            //preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/ },
 
             HWCompositing: true,
             useTransition: true,
@@ -387,7 +405,10 @@
                 return;
             }
 
-            if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
+            //if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
+            //    e.preventDefault();
+            //}
+            if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e, this.options.preventDefaultExceptions)) {
                 e.preventDefault();
             }
 
@@ -528,7 +549,10 @@
                 return;
             }
 
-            if (this.options.preventDefault && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
+            //if (this.options.preventDefault && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
+            //    e.preventDefault();
+            //}
+            if (this.options.preventDefault && !utils.preventDefaultException(e, this.options.preventDefaultExceptions)) {
                 e.preventDefault();
             }
 
