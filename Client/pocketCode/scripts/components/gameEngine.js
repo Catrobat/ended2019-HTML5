@@ -223,6 +223,7 @@ PocketCode.GameEngine = (function () {
             if (this._background)
                 this._background.dispose();// = undefined;
             this._sprites.dispose();
+            this._originalSpriteOrder = [];
 
             //resource sizes
             this._resourceTotalSize = 0;
