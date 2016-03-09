@@ -85,7 +85,7 @@ PocketCode.Model.Sprite = (function () {
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
-        this._direction = 0.0; //pointing to right: 0 means up
+        this._direction = 90.0; //pointing to right: 0 means up
 
         ////sounds: currently not in use but defined: in future: change name + serialization required
         ////looks
