@@ -390,7 +390,7 @@ PocketCode.GameEngine = (function () {
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
-            this.runProject(reinitSprites);
+            window.setTimeout(this.runProject.bind(this, reinitSprites), 10);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
@@ -549,8 +549,8 @@ PocketCode.GameEngine = (function () {
             if (!boundary.pixelAccuracy) {  //quick check
                 if (y + boundary.top > sh2 ||
                     x + boundary.right > sw2 ||
-                    y - boundary.bottom < -sh2 ||
-                    x - boundary.left < -sw2) {
+                    y + boundary.bottom < -sh2 ||
+                    x + boundary.left < -sw2) {
 
                     boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
                 }
@@ -720,8 +720,8 @@ PocketCode.GameEngine = (function () {
             if (updateBoundary) {
                 boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //recalculate
                 //adjust/keep the area center during rotate
-                newX = center.x - (boundary.right + boundary.left) / 2;
-                newY = center.y - (boundary.top + boundary.bottom) / 2;
+                newX += center.x - x - (boundary.right + boundary.left) / 2;
+                newY += center.y - y - (boundary.top + boundary.bottom) / 2;
                 //update overflows
                 vpEdges.top.overflow = newY + boundary.top - sh2;
                 vpEdges.right.overflow = newX + boundary.right - sw2;
