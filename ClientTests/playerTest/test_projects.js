@@ -11,13 +11,47 @@ QUnit.module("projectTester.js");
 
 QUnit.test("[missing]", function (assert) {
 
-  // CONFIG
-  // if 0, fetch all
-  var limit = 10;
-  // if true, gameEngine will test project
+  /* ************************************************************************* */
+  /* ******************************* CONFIG ********************************** */
+  /* ************************************************************************* */
+
+  /*                          1. Limit of tests                                */
+  /* if 0, fetch all */
+  var limit = 15;
+  //
+
+  /*              2. just test JSON or also test uf object works               */
+  /* if true, gameEngine will test project */
   var JsonToGameEngine = true;
+  //
+
+  /*          3. timeout when project will be canceled in game Engine          */
   // timeout in ms to cancel current projecttest
   var timeout_time = 40000;
+  //
+
+  /* 4. Only test listed porgrams in server_known_errors (and don't skip them) */
+  /* Works only, if JsonToGameEngine = false! */
+  var test_only_listed_programs = false;
+  //
+
+  /*                          known server errors                              */
+  /* will be skipped if test_only_listed_programs = false */
+  var server_known_errors = {
+    2779:"image file is null"
+  };
+  //
+
+  /*                          known client errors                              */
+  /* will be skipped if test_only_listed_programs = false */
+  var client_known_errors = {
+    821:"bleibt hängen, bitte testen"
+  };
+  //
+
+  /* ************************************************************************* */
+  /* ************************************************************************* */
+  /* ************************************************************************* */
 
 
   // init
