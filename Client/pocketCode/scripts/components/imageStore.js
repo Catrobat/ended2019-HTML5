@@ -95,12 +95,11 @@ PocketCode.ImageStore = (function () {
         _initLook: function (lookId, rotationCenterX, rotationCenterY) {
             var look = this._looks[lookId];//.look;
             var canvas = look.canvas;
-            var ih = PocketCode.ImageHelper;
 
             if (rotationCenterX === undefined && rotationCenterY === undefined)
-                return ih.adjustCenterAndTrim(canvas, undefined, undefined, true);
+                return PocketCode.ImageHelper.adjustCenterAndTrim(canvas, undefined, undefined, true);
             else if (typeof rotationCenterX === 'number' && typeof rotationCenterY === 'number')
-                return ih.adjustCenterAndTrim(canvas, rotationCenterX * this._initialScaling, rotationCenterY * this._initialScaling, true);
+                return PocketCode.ImageHelper.adjustCenterAndTrim(canvas, rotationCenterX * this._initialScaling, rotationCenterY * this._initialScaling, true);
             throw new Error('both rotation center arguments are required (typeof number)');
         },
         getLook: function (lookId) {
@@ -184,7 +183,7 @@ PocketCode.ImageStore = (function () {
             return boundary;
         },
         getLookBoundary: function (spriteId, lookId, scaling, rotation, flipX, pixelAccuracy) {
-            /* returns the looks offsets depending on the looks rotation centre = image center */
+            /* returns the looks offsets based on the looks rotation centre = image center */
 
             /*  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
             /*  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
