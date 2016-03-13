@@ -391,7 +391,7 @@ PocketCode.GameEngine = (function () {
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
-            window.setTimeout(this.runProject.bind(this, reinitSprites), 10);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
+            window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
@@ -530,10 +530,10 @@ PocketCode.GameEngine = (function () {
                 y = sprite.positionY;
 
             var lookId = sprite.currentLook.imageId,    //TODO: this may change to lookId (next version)
-                scaling = sprite.size / 100,
-                rotation = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0,
+                scaling = sprite.size / 100.0,
+                rotation = sprite.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
                 //^^ sprite has a direction but is not rotated
-                flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0 ? true : false;
+                flipX = sprite.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
 
 
             var imgStore = this._imageStore;
@@ -547,50 +547,53 @@ PocketCode.GameEngine = (function () {
             var boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, false);
             //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
-            if (!boundary.pixelAccuracy) {  //quick check
-                if (y + boundary.top > sh2 ||
-                    x + boundary.right > sw2 ||
-                    y + boundary.bottom < -sh2 ||
-                    x + boundary.left < -sw2) {
+            //quick check
+            if (!boundary.pixelAccuracy &&
+                y + boundary.top < sh2 &&
+                x + boundary.right < sw2 &&
+                y + boundary.bottom > -sh2 &&
+                x + boundary.left > -sw2)
+                    return false;
 
-                    boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
-                }
-                else
-                    return false;   //no collision: calculated boundary
-            }
+            boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
+            if (y + boundary.top < sh2 &&
+                x + boundary.right < sw2 &&
+                y + boundary.bottom > -sh2 &&
+                x + boundary.left > -sw2)
+                return false;
 
-            //retesting with exact bounding (pixelAccuracy = true)
-            var center = {  //store the center position of the current area
-                x: x + (boundary.right + boundary.left) / 2,
-                y: y + (boundary.top + boundary.bottom) / 2,
+            //handle bounce
+            var centerOffset = {  //store the center position of the current area
+                x: (boundary.right + boundary.left) / 2.0,
+                y: (boundary.top + boundary.bottom) / 2.0,
             };
 
             var vpEdges = { //viewport edges
                 top: {
                     overflow: y + boundary.top - sh2,
                     ignore: false,
-                    inDirection: Math.abs(dir) <= 90,
-                    calcDirection: function (dir) { return dir >= 0 ? 180 - dir : -180 - dir; },    // //make sure we do not get an angle within +-180
+                    inDirection: Math.abs(dir) <= 90.0,
+                    calcDirection: function (dir) { return dir >= 0.0 ? 180.0 - dir : -180.0 - dir; },    // //make sure we do not get an angle within +-180
                 },
                 right: {
                     overflow: x + boundary.right - sw2,
                     ignore: false,
-                    inDirection: dir >= 0,
-                    calcDirection: function (dir) { return dir == 180 ? dir : -dir; },
+                    inDirection: dir >= 0.0,
+                    calcDirection: function (dir) { return dir == 180.0 ? dir : -dir; },
                 },
                 bottom: {
                     overflow: -y - boundary.bottom - sh2,
                     ignore: false,
-                    inDirection: Math.abs(dir) > 90,
-                    calcDirection: function (dir) { return dir > 0 ? 180 - dir : -180 - dir; },
+                    inDirection: Math.abs(dir) > 90.0,
+                    calcDirection: function (dir) { return dir > 0.0 ? 180.0 - dir : -180.0 - dir; },
                 },
                 left: {
                     overflow: -x - boundary.left - sw2,
                     ignore: false,
-                    inDirection: dir < 0,
+                    inDirection: dir < 0.0,
                     calcDirection: function (dir) { return -dir; },
                 },
-                getXCorrection: function () {
+                getXCorrection: function () {   //TODO: !!!!!!!!!!!!!!!   move in direction!!!!!!!!!!!!
                     var c,
                         l = vpEdges.left,
                         r = vpEdges.right;
@@ -599,20 +602,20 @@ PocketCode.GameEngine = (function () {
                         return l.ignore ? -r.overflow : l.overflow; //overflows can be negativ as well (after rotation)- we also have to take care of this 
                     }
                     //after rotation there can be a an overflow that didn't exist before
-                    if (l.overflow > 0 && r.overflow > 0 || l.overflow + r.overflow > 0) {  //check as well, if the rotated area still fits in the viewport
+                    if (l.overflow > 0.0 && r.overflow > 0.0 || l.overflow + r.overflow > 0.0) {  //check as well, if the rotated area still fits in the viewport
                         //move from original direction
-                        if (dir >= 0)
+                        if (dir >= 0.0)
                             return -r.overflow;
                         else
                             return l.overflow;
                     }
-                    else if (l.overflow > 0)
+                    else if (l.overflow > 0.0)
                         return l.overflow;  //check if lo+ro < 0 -> else: include direction
-                    else if (r.overflow > 0)
+                    else if (r.overflow > 0.0)
                         return -r.overflow;
-                    return 0;   //move to center already applied
+                    return 0.0;   //move to center already applied
                 },
-                getYCorrection: function () {       //TODO: abhängig von dir  (nicht newDir)- falls beide nicht ignored
+                getYCorrection: function () {       //TODO: abhängig von dir  (nicht newDir)- falls beide nicht ignored !!!!!!!!!!!!!!!   move in direction!!!!!!!!!!!!
                     var c,
                         t = vpEdges.top,
                         b = vpEdges.bottom;
@@ -620,37 +623,37 @@ PocketCode.GameEngine = (function () {
                         return t.ignore ? b.overflow : -t.overflow;
                     }
                     //after rotation
-                    if (t.overflow > 0 && b.overflow > 0) {
+                    if (t.overflow > 0.0 && b.overflow > 0.0) {
                         //move from original direction
-                        if (Math.abs(dir) <= 90)
+                        if (Math.abs(dir) <= 90.0)
                             return -t.overflow;
                         else
                             return b.overflow;
                     }
-                    else if (t.overflow > 0)
+                    else if (t.overflow > 0.0)
                         return -t.overflow;
-                    else if (b.overflow > 0)
+                    else if (b.overflow > 0.0)
                         return b.overflow;
-                    return 0;   //move to center already applied
+                    return 0.0;   //move to center already applied
                 },
             };
 
             //check if overflow
-            if (vpEdges.top.overflow <= 0 &&
-                vpEdges.right.overflow <= 0 &&
-                vpEdges.bottom.overflow <= 0 &&
-                vpEdges.left.overflow <= 0)
-                return false;   //no collision: pixel exact calculation
+            //if (vpEdges.top.overflow <= 0.0 &&
+            //    vpEdges.right.overflow <= 0.0 &&
+            //    vpEdges.bottom.overflow <= 0.0 &&
+            //    vpEdges.left.overflow <= 0.0)
+            //    return false;   //no collision: pixel exact calculation
 
             //handle conflics: if there is an overflow on both sides we always bounce from the side the sprites points to
-            if (vpEdges.top.overflow > 0 && vpEdges.bottom.overflow > 0) {
-                if (Math.abs(dir) <= 90)
+            if (vpEdges.top.overflow > 0.0 && vpEdges.bottom.overflow > 0.0) {
+                if (Math.abs(dir) <= 90.0)
                     vpEdges.bottom.ignore = true;
                 else
                     vpEdges.top.ignore = true;
             }
-            if (vpEdges.left.overflow > 0 && vpEdges.right.overflow > 0) {
-                if (dir < 0)
+            if (vpEdges.left.overflow > 0.0 && vpEdges.right.overflow > 0.0) {
+                if (dir < 0.0)
                     vpEdges.right.ignore = true;
                 else
                     vpEdges.left.ignore = true;
@@ -659,16 +662,16 @@ PocketCode.GameEngine = (function () {
             //calc new positions and direction: we need this to compare new with existing properties to trigger the update event correctly
             var newDir = dir,
                 newX = x,
-                newY = y,
-                bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
-            var edgesToHandle;
+                newY = y;//,
+                //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
+            //var edgesToHandle;
 
             //up to now, there are only 2 neigboured edges left at max (not ignored): let's call them p(rimus) and s(ecundus), where p (at least) is always inDirection (if one of them is)
             var p, s;
-            if (vpEdges.top.overflow > 0 && !vpEdges.top.ignore) {
+            if (vpEdges.top.overflow > 0.0 && !vpEdges.top.ignore) {
                 p = vpEdges.top;
             }
-            if (vpEdges.right.overflow > 0 && !vpEdges.right.ignore) {
+            if (vpEdges.right.overflow > 0.0 && !vpEdges.right.ignore) {
                 if (!p)
                     p = vpEdges.right;
                 else if (p && vpEdges.right.inDirection) {
@@ -678,7 +681,7 @@ PocketCode.GameEngine = (function () {
                 else
                     s = vpEdges.right;
             }
-            if (vpEdges.bottom.overflow > 0 && !vpEdges.bottom.ignore) {
+            if (vpEdges.bottom.overflow > 0.0 && !vpEdges.bottom.ignore) {
                 if (!p)
                     p = vpEdges.bottom;
                 else if (p && vpEdges.bottom.inDirection) {
@@ -688,7 +691,7 @@ PocketCode.GameEngine = (function () {
                 else
                     s = vpEdges.bottom;
             }
-            if (vpEdges.left.overflow > 0 && !vpEdges.left.ignore) {
+            if (vpEdges.left.overflow > 0.0 && !vpEdges.left.ignore) {
                 if (!p)
                     p = vpEdges.left;
                 else if (p && vpEdges.left.inDirection) {
@@ -707,12 +710,12 @@ PocketCode.GameEngine = (function () {
 
             var updateBoundary = false;
             if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
-                rotation = newDir - 90;
+                rotation = newDir - 90.0;
                 updateBoundary = true;
             }
             else if (newDir != dir && sprite.rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
-                rotation = 0;
-                if ((newDir >= 0 && dir < 0) || (newDir < 0 && dir >= 0)) { //flipX changed
+                rotation = 0.0;
+                if ((newDir >= 0.0 && dir < 0.0) || (newDir < 0.0 && dir >= 0.0)) { //flipX changed
                     flipX = !flipX;
                     updateBoundary = true;
                 }
@@ -720,9 +723,13 @@ PocketCode.GameEngine = (function () {
 
             if (updateBoundary) {
                 boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //recalculate
-                //adjust/keep the area center during rotate
-                newX += center.x - x - (boundary.right + boundary.left) / 2;
-                newY += center.y - y - (boundary.top + boundary.bottom) / 2;
+                //center = {  //update center position of the current area
+                //    x: x + (boundary.right + boundary.left) / 2.0,
+                //    y: y + (boundary.top + boundary.bottom) / 2.0,
+                //};
+                //adjust: keep the area center during rotate
+                newX += centerOffset.x - (boundary.right + boundary.left) / 2.0;
+                newY += centerOffset.y - (boundary.top + boundary.bottom) / 2.0;
                 //update overflows
                 vpEdges.top.overflow = newY + boundary.top - sh2;
                 vpEdges.right.overflow = newX + boundary.right - sw2;
@@ -737,7 +744,7 @@ PocketCode.GameEngine = (function () {
             var props = {};
             if (sprite.direction !== newDir) {
                 sprite.setDirection(newDir, false);
-                props.direction = newDir;
+                props.rotation = newDir - 90.0;
             }
             if (sprite.positionX !== newX) {
                 props.positionX = newX;
