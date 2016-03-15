@@ -88,15 +88,14 @@ PocketCode.UserVariableHost = (function () {
             return tmp;
         },
         _valueChangeHandler: function(e) {
-            this._onVariableChange.dispatchEvent({ id: e.id, properties: { text: e.target.value } });
+            this._onVariableChange.dispatchEvent({ id: e.id, properties: { text: e.target.toString() } });
         },
         showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
             var tmp = this.getVariable(id);
-            //if (!tmp)
-            //    throw new Error('show variable: variable with id = ' + id + 'could not be found');
+
             if (isNaN(positionX) || isNaN(positionY))
                 throw new Error('show variable: invalid position');
-            this._onVariableChange.dispatchEvent({ id: id, properties: { text: tmp.value, visible: true, x: positionX, y: positionY } });
+            this._onVariableChange.dispatchEvent({ id: id, properties: { text: tmp.toString(), visible: true, x: positionX, y: positionY } });
         },
         hideVariable: function (id) {    //called as sprite.hide.. from brick
             var tmp = this.getVariable(id);
