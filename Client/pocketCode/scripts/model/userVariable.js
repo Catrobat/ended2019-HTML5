@@ -152,6 +152,7 @@ PocketCode.Model.merge({
             },
             reset: function () {
                 this.value = undefined;
+                this._onChange.dispatchEvent({ id: this._id });
             },
         });
 
