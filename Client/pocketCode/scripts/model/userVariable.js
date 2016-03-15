@@ -80,7 +80,7 @@ PocketCode.Model.merge({
             },
             reset: function () {
                 for (var v in this._variables)
-                    if (v.reset) v.reset();
+                    if (this._variables[v].reset) this._variables[v].reset();
             },
         });
 
