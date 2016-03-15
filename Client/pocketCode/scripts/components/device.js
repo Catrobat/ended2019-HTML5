@@ -278,6 +278,7 @@ PocketCode.Device = (function () {
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
         },
+        /*override*/
     });
 
     //methods
@@ -582,11 +583,12 @@ PocketCode.DeviceEmulator = (function () {
         /* override */
         dispose: function () {
             window.clearInterval(this._inclinationTimer);
-            this._removeDomListener(document, 'keydown', this._keyUpListener);
-            this._removeDomListener(document, 'keyup', this._keyDownListener);
+            this._removeDomListener(document, 'keydown', this._keyDownListener);
+            this._removeDomListener(document, 'keyup', this._keyUpListener);
 
             PocketCode.Device.prototype.dispose.call(this);    //call super()
         },
     });
+
     return DeviceEmulator;
 })();
