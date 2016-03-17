@@ -19,7 +19,7 @@ QUnit.test("GameEngine", function (assert) {
         gameEngine.dispose();
         assert.ok(gameEngine._disposed, "disposed correctly");
         assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variablesSimple == undefined && gameEngine.__variablesList == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
-        console.log("dispose handled");
+        //console.log("dispose handled");
         disposedHandled();
     };
 
@@ -327,7 +327,7 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(function (e) {
         // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
         assert.ok(gameEngine.projectLoaded, "Program ready set to true after loading is done");
-        console.log("loading handled");
+        //console.log("loading handled");
         loadingHandled();
 
         window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get disposed before all tests were finished
