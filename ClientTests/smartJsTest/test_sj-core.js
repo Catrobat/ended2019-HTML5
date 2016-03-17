@@ -22,6 +22,28 @@ QUnit.test("SmartJs.Core", function (assert) {
 });
 
 
+QUnit.test("SmartJs.Core.String", function (assert) {
+
+	var s = new SmartJs.Core.String("test1: {0}", "x");
+	assert.equal(s.toString(), "test1: x", "single replacement");
+	var s = new SmartJs.Core.String("test1: {0}", "x", 1, 123);
+	assert.equal(s.toString(), "test1: x", "single replacement, multiple arguments");
+	var s = new SmartJs.Core.String("test1: ", "x", 1, 123);
+	assert.equal(s.toString(), "test1: ", "no replacement, multiple arguments");
+	var s = new SmartJs.Core.String("test1: ");
+	assert.equal(s.toString(), "test1: ", "no replacement, no arguments");
+	var s = new SmartJs.Core.String("test1: {0}, test2: {1}, test3: {2}", "x", 1, 123);
+	assert.equal(s.toString(), "test1: x, test2: 1, test3: 123", "multiple replacements");
+	var s = new SmartJs.Core.String("test1: {0}, test1: {0}, test3: {2}", "x", 1, 123);
+	assert.equal(s.toString(), "test1: x, test1: x, test3: 123", "multiple replacements with same argument");
+
+	assert.throws(function () { var x = new SmartJs.Core.String(); }, "ERROR: invalid constructor: missing");
+	assert.throws(function () { var x = new SmartJs.Core.String(1); }, "ERROR: invalid constructor: !string");
+	var s = new SmartJs.Core.String("test1: {0}, test2: {1}, test3: {2}", "x", 1);
+	assert.throws(function () { s.toString(); }, "ERROR: missing argument");
+});
+
+
 QUnit.test("SmartJs.Core.Component", function (assert) {
 
 	//objClassName
