@@ -151,12 +151,13 @@ PocketCode.Ui.merge({
                 this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); });
                 this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
                 this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
-                    e.preventDefault();
+                    if (!e.systemAllowed)
+                        e.preventDefault();
                 });
                 //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); });
                 this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); });
                 this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); });
-                //this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
+                this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
             },
             _enableBrowserGestures: function () {
                 this._removeDomListener(this._dom, 'click', this._clickHandler);
@@ -165,7 +166,7 @@ PocketCode.Ui.merge({
                 //this._removeDomListener(this._dom, 'touchend', this._touchEndHandler);
                 this._removeDomListener(this._dom, 'touchcancel', this._touchCancelHandler);
                 this._removeDomListener(this._dom, 'touchleave', this._touchLeaveandler);
-                //this._removeDomListener(this._dom, 'touchmove', this._touchMoveHandler);
+                this._removeDomListener(this._dom, 'touchmove', this._touchMoveHandler);
             },
             addDialog: function(dialog) {
                 if (!(dialog instanceof PocketCode.Ui.Dialog))

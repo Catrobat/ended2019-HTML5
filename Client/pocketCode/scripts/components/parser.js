@@ -212,11 +212,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                //console.log(formulaString);
-                //formulaString = (typeof formulaString === 'string') ? '"' + formulaString + '"' : formulaString;
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
-
-                //return new Function('return ' + formulaString + ';');
             },
 
             _parseJsonType: function (jsonFormula, uiString) {
@@ -272,7 +268,9 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        return '\'' + jsonFormula.value + '\'';
+                        if (uiString)
+                            return '\'' + jsonFormula.value + '\'';
+                        return '"' + jsonFormula.value + '"';
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?

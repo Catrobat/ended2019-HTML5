@@ -7,6 +7,7 @@
  */
 if (!PocketCode) {
     var PocketCode = {};
+
     PocketCode.crossOrigin = new ((function () {
 
         function CrossOrigin() {
@@ -97,7 +98,7 @@ PocketCode.merge({
                 }
                 return true;
             }(),
-            operaMini: function() {
+            operaMini: function () {
                 if (window.operamini) {//!!window.['operamini']) {
                     _result = _full = false;
                     return false;
@@ -158,3 +159,45 @@ PocketCode.merge({
         return { result: _result, full: _full, tests: _tests };
     },
 });
+
+PocketCode.Core = {
+    I18nString: (function () {
+        I18nString.extends(SmartJs.Core.String, false);
+
+        //cntr
+        function I18nString(i18nKey /*, arguments*/) {
+            SmartJs.Core.String.call(this, '');
+
+            if (typeof i18nKey !== 'string')
+                throw new Error('invalid argument: i18nKey');
+            this._i18nKey = i18nKey;
+            this._format = arguments;
+        }
+
+        //properties
+        Object.defineProperties(I18nString.prototype, {
+            i18nKey: {
+                set: function (i18nKey) {
+                    if (typeof i18nKey != 'string')
+                        throw new Error('invalid argument: i18nKey');
+
+                    this._i18n = i18nKey;
+                },
+            },
+        });
+        
+        //methods
+        I18nString.prototype.merge({
+            toString: function () {
+                if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
+                    this._string = '[' + this._i18nKey + ']';
+                else
+                    this._string = PocketCode.I18nProvider.getLocString(this._i18nKey);
+
+                return SmartJs.Core.String.prototype.toString();    //call super
+            },
+        });
+
+        return I18nString;
+    })(),
+};

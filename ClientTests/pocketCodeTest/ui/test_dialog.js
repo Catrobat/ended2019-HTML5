@@ -28,7 +28,7 @@ QUnit.test("Dialog (Base Class)", function (assert) {
     assert.throws(function () { d.addButton(""); }, Error, "ERROR: invalid button control");
     d.addButton(btn1);
     d.addButton(btn2);
-    assert.throws(function () { d.addButton(btn3); }, Error, "ERRORO: more than 2 buttons");
+    assert.throws(function () { d.addButton(btn3); }, Error, "ERROR: more than 2 buttons");
 
     var dom = document.getElementById("qunit-fixture");
     var container = new SmartJs.Ui.ContainerControl();

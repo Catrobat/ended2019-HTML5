@@ -19,7 +19,7 @@ QUnit.test("GameEngine", function (assert) {
         gameEngine.dispose();
         assert.ok(gameEngine._disposed, "disposed correctly");
         assert.ok(gameEngine.__images == undefined && gameEngine.__sounds == undefined && gameEngine.__variablesSimple == undefined && gameEngine.__variablesList == undefined && gameEngine._sprites == undefined, "dispose: resources disposed");
-        console.log("dispose handled");
+        //console.log("dispose handled");
         disposedHandled();
     };
 
@@ -137,8 +137,10 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId3", name: "spriteName3" }));
     gameEngine._sprites.push(new TestSprite(gameEngine, { id: "mockId4", name: "spriteName4" }));
 
-    for (var sprite in gameEngine._sprites)
-        gameEngine._originalSpriteOrder.push(sprite);      //TODO: add tests for reinit -> make sure order is correct after stop()
+
+    for (i = 0, l = gameEngine._sprites.length; i < l; i++) {
+        gameEngine._originalSpriteOrder.push(gameEngine._sprites[i]);      //TODO: add tests for reinit -> make sure order is correct after stop()
+    }
 
     //onExecutedEvent
     assert.ok(gameEngine.onProgramExecuted instanceof SmartJs.Event.Event, "onExecuted accessor check");
@@ -236,10 +238,12 @@ QUnit.test("GameEngine", function (assert) {
     var bgStarted = gameEngine._background.timesStarted;
     var bgStopped = gameEngine._background.timesStopped;
 
-    gameEngine.restartProject();
+    gameEngine.stopProject();
+    gameEngine.runProject();
     assert.ok(gameEngine._sprites[0].timesStopped === spritesStopped && gameEngine._background.timesStopped === bgStopped, "do not call stop on already stopped: all sprites when restarting");
     gameEngine.runProject();
-    gameEngine.restartProject();
+    gameEngine.stopProject();
+    gameEngine.runProject();
     assert.ok(gameEngine._sprites[0].timesStopped === spritesStopped + 1 && gameEngine._background.timesStopped === bgStopped + 1, "Stopped all sprites when restarting");
     //assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting");
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
@@ -323,7 +327,7 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(function (e) {
         // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
         assert.ok(gameEngine.projectLoaded, "Program ready set to true after loading is done");
-        console.log("loading handled");
+        //console.log("loading handled");
         loadingHandled();
 
         window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get disposed before all tests were finished

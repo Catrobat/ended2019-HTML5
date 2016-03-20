@@ -30,9 +30,9 @@ QUnit.test("I18nProvider", function (assert) {
 
     //test dictionary
     i18n._dictionary = {};
-    assert.equal(i18n.getLocString("not found"), "[not found]", "add brackets on locStrings not available in dictionary"),
+    assert.equal(i18n.getLocString("not found"), "[not found]", "add brackets on locStrings not available in dictionary");
     i18n._dictionary.found = "valid key";
-    assert.equal(i18n.getLocString("found"), "valid key", "get locString available in dictionary"),
+    assert.equal(i18n.getLocString("found"), "valid key", "get locString available in dictionary");
 
 
     //loading

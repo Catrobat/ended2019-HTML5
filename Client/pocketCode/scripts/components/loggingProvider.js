@@ -46,7 +46,7 @@ PocketCode.LoggingProvider = (function (propObject) {
                 }
             }
             else {
-                this._message = jsonError;
+                this._message = jsonError + ' \n';
             }
 
             this._requestNewId();

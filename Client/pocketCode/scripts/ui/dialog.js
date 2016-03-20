@@ -21,7 +21,7 @@ PocketCode.Ui.Dialog = (function () {
     Dialog.extends(SmartJs.Ui.ContainerControl, false);
 
     //cntr
-    function Dialog(type, captionI18nKey, msgKey) {
+    function Dialog(type, i18nCaptionKey, i18nMsgKey) {
         SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute' } });
 
         //settings
@@ -31,10 +31,11 @@ PocketCode.Ui.Dialog = (function () {
         //private controls
         this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogHeader' });
         // !!!
-        this._captionTextNode = new PocketCode.Ui.I18nTextNode(captionI18nKey);
+        this._captionTextNode = new PocketCode.Ui.I18nTextNode(i18nCaptionKey);
         this._header.appendChild(this._captionTextNode);
 
         //define the body as inner container
+        this._dialog = new SmartJs.Ui.ContainerControl({ className: 'pc-dialog' });
         this._container = new PocketCode.Ui.ScrollContainer({ className: 'pc-dialogBody' }, { className: 'pc-dialogContent' });
         this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter' });// dialogFooterSingleButton' });
 
@@ -43,10 +44,11 @@ PocketCode.Ui.Dialog = (function () {
         this._type = type || PocketCode.Ui.DialogType.DEFAULT;
         this.type = this._type;
 
-        if (msgKey) {   //TODO: do not use innerHTML, add a textNode instead
-            this._msgKey = msgKey;
-            //this._updateUiStrings();
-            this.bodyInnerHTML = PocketCode.I18nProvider.getLocString(this._msgKey);
+        if (i18nMsgKey) {
+            this._container.appendChild(new PocketCode.Ui.I18nTextNode(i18nMsgKey));
+            //this._i18nMsgKey = i18nMsgKey;
+            ////this._updateUiStrings();
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString(this._i18nMsgKey);
         }
         this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
         this._languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
@@ -76,7 +78,7 @@ PocketCode.Ui.Dialog = (function () {
                 this._type = value;
             },
         },
-        captionI18nKey: {
+        i18nCaptionKey: {
             get: function () {
                 return this._captionTextNode.text;
             },
@@ -126,13 +128,12 @@ PocketCode.Ui.Dialog = (function () {
             col.className = 'pc-dialogCol';
             layoutRow.appendChild(col);
 
-            var dialog = new SmartJs.Ui.ContainerControl({ className: 'pc-dialog' });
+            var dialog = this._dialog;//new SmartJs.Ui.ContainerControl({ className: 'pc-dialog' });
             center.appendChild(dialog._dom);
 
             dialog.appendChild(this._header);
             dialog.appendChild(this._container);
             dialog.appendChild(this._footer);
-            this._dialog = dialog;
         },
         /* override */
         verifyResize: function(caller) {
@@ -630,25 +631,19 @@ PocketCode.Ui.merge({
         //cntr
         function ScreenshotDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'lblScreenshotCaption');
-            // i18n: lblClose
             this._btnCancel = new PocketCode.Ui.Button('lblClose');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
             
-            //var imageBorder = new SmartJs.Ui.ContainerControl({ className: 'pc-screenshotContainer' });
             this._screenshotImage = new SmartJs.Ui.Image({ style: { width: '100%' } });
-            //var origin = PocketCode.crossOrigin;
-            //if (origin.initialized && origin.current && origin.supported)
-            //    this._screenshotImage.crossOrigin = 'anonymous';
             this._screenshotImage.onLoad.addEventListener(new SmartJs.Event.EventListener(this._imageOnLoadHandler, this));
 
-            //imageBorder.appendChild(this._screenshotImage);
-            //this.appendChild(this._screenshotImage);//imageBorder);   //we have to add it onload
-
             if (SmartJs.Device.isMobile) {
-                this.bodyInnerHTML += 'TODO: mobile';
-
-                this.onResize.addEventListener(new SmartJs.Event.EventListener(this._onResizeHandler, this));
+                this._addDomListener(this._screenshotImage._dom, 'touchstart', function (e) {
+                    //make sure event is bubbled to enable image download
+                }, { stopPropagation: false, systemAllowed: true });
+                
+                this._container.appendChild(new PocketCode.Ui.I18nTextNode('msgScreenshotMobile'));
             }
             else {
                 //add download form
@@ -664,7 +659,6 @@ PocketCode.Ui.merge({
                 this._downloadForm.appendChild(this._downloadInput);
                 this._dom.appendChild(this._downloadForm);
 
-                // i18n: lblDownload
                 this._btnDownload = new PocketCode.Ui.Button('lblDownload');
                 this._btnDownload.disabled = true;
                 this._btnDownload.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onDownload.dispatchEvent(); }, this));
@@ -701,44 +695,19 @@ PocketCode.Ui.merge({
                     //^^ this is necessary to include the src prop in DOM and make the image visible (rerender image tag)
                 },
             },
-            //requestForm: {
-            //    get: function () {
-            //        return; //TODO: getter for http request form (download)
-            //    },
-            //},
         });
                 
         //methods
         ScreenshotDialog.prototype.merge({
             _imageOnLoadHandler: function () {
-                //var img = this._screenshotImage,//._dom,    //TODO: move this to resize?
-                //    w = img.naturalWidth,
-                //    h = img.naturalHeight;
-                //img.width = 250;
-                //img.height = 300;
-                //this._onResizeHandler();
-
                 if(this._btnDownload)
                     this._btnDownload.disabled = false;
+                window.setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 10);
             },
-            _onResizeHandler: function () {
-                //this handler is called only once in desktop app by _imageOnLoadHandler
-                if (SmartJs.Device.isMobile) {
-                    //TODO: screenshot without scroll container on mobile devices to enable long-tab download 
-                }
-                //var img = this._screenshotImage;
-                //var scale = Math.min(this._container.width/img.naturalWidth, this._container.height/img.naturalHeight);
-                //this._screenshotImage.width = img.naturalWidth * scale * 0.75;    //TODO:
-                //this._screenshotImage.height = img.naturalHeight * scale * 0.75;
-            },
-
             download: function () {
-                this._downloadForm.submit();
+                if (this._downloadForm)
+                    this._downloadForm.submit();
             }
-        //    /* override */
-        //    handleHistoryBack: function () {
-        //        this.onCancel.dispatchEvent();
-        //    },
         });
 
         return ScreenshotDialog;

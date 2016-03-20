@@ -25,19 +25,6 @@ PocketCode.Ui.ScrollContainer = (function () {
         this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
     }
 
-    //properties
-    Object.defineProperties(ScrollContainer.prototype, {
-        innerHTML: {
-            get: function () {
-                return this._container._dom.innerHTML;
-            },
-            set: function (value) {
-                this._container._dom.innerHTML = value;
-                this.verifyResize(this);//_resizeHandler();  //validate layout
-            },
-        },
-    });
-
     //methods
     ScrollContainer.prototype.merge({
         _resizeHandler: function (e) {
