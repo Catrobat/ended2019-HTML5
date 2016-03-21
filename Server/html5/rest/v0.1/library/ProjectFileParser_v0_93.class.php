@@ -300,8 +300,18 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
           //play sound brick is initial set to "New.." and has no child tags per default
           $sound = $this->getObject($script->sound, $this->cpp);
           $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+
+          if(! $res)
+          {
+            $brick = new PlaySoundBrickDto("");
+            break;
+          }
+
+          /*
           if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
+          */
+
           $id = $res->id;
         }
         $brick = new PlaySoundBrickDto($id);
@@ -345,10 +355,26 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
+        // when no look set, look => empty
+        if(! $script->look)
+        {
+          $brick = new SetLookBrickDto("");
+          break;
+        }
+
         $look = $this->getObject($script->look, $this->cpp);
         $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+
+        if(! $res)
+        {
+          $brick = new SetLookBrickDto("");
+          break;
+        }
+
+        /*
         if($res === false)	//will only return false on invalid projects, as resources are registered already
           throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+        */
 
         //the image has already been included in the resources
         $id = $res->id;

@@ -300,7 +300,10 @@ class ProjectFileParser
           $found = false;
 
           if( !is_object( $c ) )
+          {
+            throw new InvalidProjectFileException();
             throw new Exception( "No Object" );
+          }
 
           foreach ($c->children() as $i) {
             if ($i->getName() === $ref) {
@@ -316,7 +319,8 @@ class ProjectFileParser
           }
           if($found == false)
           {
-            throw new Exception("path not found");
+            continue;
+            // throw new Exception("path not found");
           }
         }
       }
@@ -353,7 +357,8 @@ class ProjectFileParser
         }
         else
         {
-          throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
+          continue;
+          // throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
         }
 
         array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
@@ -386,7 +391,8 @@ class ProjectFileParser
         }
         else
         {
-          throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
+          continue;
+          // throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
         }
 
         array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
@@ -612,6 +618,12 @@ class ProjectFileParser
         //special logic for loops: forever, repeat and if-then-else
         //to restructure the *.catrobat/code.xml document to our needs
         $script = $brickList[$idx];
+
+        if(! $script)
+        {
+          throw new InvalidProjectFileException();
+        }
+
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
@@ -630,6 +642,13 @@ class ProjectFileParser
             break;
 
           case "IfLogicBeginBrick":
+
+            if(! $script->ifCondition || ! $script->ifCondition->formulaTree)
+            {
+              throw new InvalidProjectFileException();
+              break;
+            }
+
             $brick = $this->IfLogicBeginBrickScript($script);
             $result = $this->parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick);
             $bricks = $result["bricks"];
@@ -883,8 +902,18 @@ class ProjectFileParser
           $sound = $this->getObject($script->sound, $this->cpp);
 
           $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+
+          if(! $res)
+          {
+            $brick = new PlaySoundBrickDto("");
+            break;
+          }
+
+          /*
           if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
+          */
+
           $id = $res->id;
         }
         $brick = new PlaySoundBrickDto($id);
@@ -924,8 +953,17 @@ class ProjectFileParser
       case "SetLookBrick":
         $look = $this->getObject($script->look, $this->cpp);
         $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+
+        if(! $res)
+        {
+          $brick = new SetLookBrickDto("");
+          break;
+        }
+
+        /*
         if($res === false)	//will only return false on invalid projects, as resources are registered already
           throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+        */
 
         //the image has already been included in the resources
         $id = $res->id;
@@ -1061,6 +1099,11 @@ class ProjectFileParser
   // $formula = formulaTree
   protected function parseFormula($formula)
   {
+    if(! $formula)
+    {
+      throw new InvalidProjectFileException();
+    }
+
     $type = (string)$formula->type;
     if($type === "USER_VARIABLE")
     {

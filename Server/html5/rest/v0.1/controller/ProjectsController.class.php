@@ -368,7 +368,7 @@ class ProjectsController extends BaseController
       foreach($project->images as $img)
       {
         $path = $cacheDir . $img->url;
-        $res = $this->loadBase64Image($path, $this->request->imgDataMax);
+        $res = $this->loadBase64Image($path, $this->request->imgDataMax, 0, 0);
         if($res !== false)
         {
           $img->url = $res;
@@ -380,7 +380,7 @@ class ProjectsController extends BaseController
       foreach($project->sounds as $audio)
       {
         $path = $cacheDir . $audio->url;
-        $res = $this->loadBase64Audio($path, $this->request->audioDataMax);
+        $res = $this->loadBase64Audio($path, $this->request->audioDataMax, 0, 0);
         if($res !== false)
         {
           $audio->url = $res;
@@ -493,7 +493,7 @@ class ProjectsController extends BaseController
       foreach($projects->items as $p)
       {
         $path = $localPath . $p->thumbnailUrl;
-        $res = $this->loadBase64Image($path, $this->request->imgDataMax);
+        $res = $this->loadBase64Image($path, $this->request->imgDataMax, 0, 0);
         if($res !== false)
         {
           $p->thumbnailUrl = $res;
@@ -505,7 +505,7 @@ class ProjectsController extends BaseController
   }
 
   //returns the resource as base64 encoded data url or false if the size limit (kB) was reached
-  private function loadBase64Image($path, $maxSize)
+  private function loadBase64Image($path, $maxSize, $zipPath, $id)
   {
     if(file_exists($path))
     {
@@ -513,6 +513,43 @@ class ProjectsController extends BaseController
       if($this->request->imgDataMax === 0 || $bytes <= (int)($maxSize * 1024 * 0.65))
       {
         $imageData = base64_encode(file_get_contents($path));
+
+        //no support for finfo_... & mime_content_type is deprecated: pathInfo meets my requirements
+        return "data:image/" . pathinfo($path, PATHINFO_EXTENSION) . ";base64," . $imageData;
+      }
+    }
+    elseif(file_exists("screenshots/screenshot-" . $id . ".png"))
+    {
+      $path = "screenshots/screenshot-" . $id . ".png";
+      $bytes = filesize($path);
+      if($this->request->imgDataMax === 0 || $bytes <= (int)($maxSize * 1024 * 0.65))
+      {
+        $imageData = base64_encode(file_get_contents($path));
+        //no support for finfo_... & mime_content_type is deprecated: pathInfo meets my requirements
+        return "data:image/" . pathinfo($path, PATHINFO_EXTENSION) . ";base64," . $imageData;
+      }
+    }
+    elseif(file_exists($zipPath))
+    {
+      $zip = new ZipArchive;
+      $img_string = false;
+      if($zip->open($zipPath) === true)
+      {
+        $img_string = $zip->getFromName('automatic_screenshot.png');
+        $zip->close();
+      }
+
+      if($img_string == false)
+        return false;
+
+      if($this->request->imgDataMax === 0)
+      {
+        $im = imagecreatefromstring($img_string);
+        $img_name = "screenshot-" . $id . ".png";
+        imagepng($im, $img_name);
+        rename($img_name, "screenshots/" . $img_name);
+
+        $imageData = base64_encode(file_get_contents("screenshots/" . $img_name));
 
         //no support for finfo_... & mime_content_type is deprecated: pathInfo meets my requirements
         return "data:image/" . pathinfo($path, PATHINFO_EXTENSION) . ";base64," . $imageData;
