@@ -212,6 +212,7 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
+                var testString = 'return ' + formulaString + ';';
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
             },
 
@@ -270,8 +271,9 @@ PocketCode.merge({
                     case 'STRING':
                         if (uiString)
                             return '\'' + jsonFormula.value + '\'';
-                        return '"' + jsonFormula.value + '"';
-
+                        var test = '"' + jsonFormula.value.replace(/"/g, '').replace(/[|&;$%@"<>()+,]“”/g, '') + '"';
+                        return test;
+                        //return '"' + jsonFormula.value + '"';
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
                 }
@@ -358,7 +360,7 @@ PocketCode.merge({
 
             _parseJsonFunction: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Functions
-                *  SIN, COS, TAN, LN, LOG, SQRT, RAND, ROUND, ABS, PI, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
+                *  SIN, COS, TAN, LN, LOG, PI, SQRT, RAND, ABS, ROUND, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, FLOOR, CEIL, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
                 */
                 switch (jsonFormula.value) {
                     case 'SIN':
@@ -385,6 +387,11 @@ PocketCode.merge({
                         if (uiString)
                             return 'log(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'PI':
+                        if (uiString)
+                            return 'pi';
+                        return 'Math.PI';
 
                     case 'SQRT':
                         if (uiString)
@@ -428,20 +435,15 @@ PocketCode.merge({
                         ////return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
                         ////return 'Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
-                    case 'ROUND':
-                        if (uiString)
-                            return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
-
                     case 'ABS':
                         if (uiString)
                             return 'abs(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
 
-                    case 'PI':
+                    case 'ROUND':
                         if (uiString)
-                            return 'pi';
-                        return 'Math.PI';
+                            return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MOD':
                         if (uiString)
@@ -467,6 +469,16 @@ PocketCode.merge({
                         if (uiString)
                             return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'FLOOR':
+                        if (uiString)
+                            return 'floor(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.floor(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'CEIL':
+                        if (uiString)
+                            return 'ceil(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.ceil(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MAX':
                         if (uiString)
@@ -535,6 +547,18 @@ PocketCode.merge({
 
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
+
+                    case 'ARDUINOANALOG':
+                        if (uiString)
+                            return 'arduino_analog_pin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+
+                        return 'this._device.getArduinoAnalogPin(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'ARDUINODIGITAL':
+                        if (uiString)
+                            return 'arduino_digital_pin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+
+                        return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?
@@ -674,6 +698,66 @@ PocketCode.merge({
 
                         //this._isStatic = false;
                         return 'this._sprite.positionY';
+
+                    case 'NXT_SENSOR_1':
+                        if (uiString)
+                            return 'NXT_sensor_1';
+
+                        return 'this._device.nxt1';
+
+                    case 'NXT_SENSOR_2':
+                        if (uiString)
+                            return 'NXT_sensor_2';
+
+                        return 'this._device.nxt2';
+
+                    case 'NXT_SENSOR_3':
+                        if (uiString)
+                            return 'NXT_sensor_3';
+
+                        return 'this._device.nxt3';
+
+                    case 'NXT_SENSOR_4':
+                        if (uiString)
+                            return 'NXT_sensor_4';
+
+                        return 'this._device.nxt4';
+
+                    case 'PHIRO_FRONT_LEFT':
+                        if (uiString)
+                            return 'phiro_front_left_sensor';
+
+                        return 'this._device.phiroFrontLeft';
+
+                    case 'PHIRO_FRONT_RIGHT':
+                        if (uiString)
+                            return 'phiro_front_right_sensor';
+
+                        return 'this._device.phiroFrontRight';
+
+                    case 'PHIRO_SIDE_LEFT':
+                        if (uiString)
+                            return 'phiro_side_left_sensor';
+
+                        return 'this._device.phiroSideLeft';
+
+                    case 'PHIRO_SIDE_RIGHT':
+                        if (uiString)
+                            return 'phiro_side_right_sensor';
+
+                        return 'this._device.phiroSideRight';
+
+                    case 'PHIRO_BOTTOM_LEFT':
+                        if (uiString)
+                            return 'phiro_bottom_left_sensor';
+
+                        return 'this._device.phiroBottomLeft';
+
+                    case 'PHIRO_BOTTOM_RIGHT':
+                        if (uiString)
+                            return 'phiro_bottom_right_sensor';
+
+                        return 'this._device.phiroBottomRight';
 
                     default:
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);      //TODO: do we need an onError event? -> new and unsupported operators? PHIRO?

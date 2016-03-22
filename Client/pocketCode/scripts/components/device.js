@@ -233,6 +233,7 @@ PocketCode.Device = (function () {
                 return this._soundMgr.volume;
             },
         },
+        //camera
         faceDetected: {
             get: function () {
                 this.unsupportedFeatureDetected = true;
@@ -261,6 +262,7 @@ PocketCode.Device = (function () {
                 return 0; //TODO: 
             },
         },
+        //flash: stae not shown but stored
         flashlightOn: {
             get: function () {
                 this.unsupportedFeatureDetected = true;
@@ -278,7 +280,58 @@ PocketCode.Device = (function () {
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
         },
-        /*override*/
+        //lego nxt
+        nxt1: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        nxt2: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        nxt3: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        nxt4: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        //phiro
+        phiroFrontLeft: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        phiroFrontRight: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        phiroSideLeft: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        phiroSideRight: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        phiroBottomLeft: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
+        phiroBottomRight: {
+            get: function () {
+                return 0.0; //not supported
+            },
+        },
     });
 
     //methods
@@ -382,6 +435,14 @@ PocketCode.Device = (function () {
             return true;
             //TODO:
         },
+        //arduino
+        getArduinoAnalogPin: function (pin) {
+            return 0.0; //not supported
+        },
+        getArduinoDigitalPin: function(pin) {
+            return 0.0; //not supported
+        },
+
         /* override */
         dispose: function () {
             if (this._initDeviceOrientationListener) {
