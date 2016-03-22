@@ -193,10 +193,9 @@ QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 		assert.equal(b.pixelAccuracy, false, "pixelAccuracy not set for rotated objects");
 
 	    //pixelAccuracy: rotated
-		var breakpoint = true;
 		b = is.getLookBoundary(spriteId, "i1", 1, 90, false, true);
 		assert.equal(b.pixelAccuracy, true, "pixelAccuracy set when requested (loaded init boundary from cache)");
-		assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "boundary not changes: 0, 90, 180, -90 will always return exact boundaries (even we search them)");
+		assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "boundary not changed: 0, 90, 180, -90 will always return exact boundaries (even we search them)");
 
 	    //pixelAccuracy: flipped look
 		//is._lookCache[spriteId]["i1"] = {}; //clear cache
