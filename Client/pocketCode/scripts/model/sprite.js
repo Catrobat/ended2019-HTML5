@@ -98,12 +98,12 @@ PocketCode.Model.Sprite = (function () {
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
-        if (!propObject || !propObject.id || !propObject.name)
+        if (!propObject || !propObject.id)// || !propObject.name)
             throw new Error('missing ctr arguments: id and/or name in sprite');
 
         //this._mergeProperties(propObject);
         this._id = propObject.id;
-        this.name = propObject.name;
+        this.name = propObject.name || '';
 
         //looks: a sprite doesn't always have a look
         if (propObject.looks != undefined)
