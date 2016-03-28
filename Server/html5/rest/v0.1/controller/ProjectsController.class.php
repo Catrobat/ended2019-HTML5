@@ -368,7 +368,7 @@ class ProjectsController extends BaseController
       foreach($project->images as $img)
       {
         $path = $cacheDir . $img->url;
-        $res = $this->loadBase64Image($path, $this->request->imgDataMax, 0, 0);
+        $res = $this->loadBase64Image($path, $this->request->imgDataMax);//, 0, 0);
         if($res !== false)
         {
           $img->url = $res;
@@ -380,7 +380,7 @@ class ProjectsController extends BaseController
       foreach($project->sounds as $audio)
       {
         $path = $cacheDir . $audio->url;
-        $res = $this->loadBase64Audio($path, $this->request->audioDataMax, 0, 0);
+        $res = $this->loadBase64Audio($path, $this->request->audioDataMax);//, 0, 0);
         if($res !== false)
         {
           $audio->url = $res;
@@ -493,7 +493,7 @@ class ProjectsController extends BaseController
       foreach($projects->items as $p)
       {
         $path = $localPath . $p->thumbnailUrl;
-        $res = $this->loadBase64Image($path, $this->request->imgDataMax, 0, 0);
+        $res = $this->loadBase64Image($path, $this->request->imgDataMax);//, 0, 0);
         if($res !== false)
         {
           $p->thumbnailUrl = $res;
@@ -505,7 +505,7 @@ class ProjectsController extends BaseController
   }
 
   //returns the resource as base64 encoded data url or false if the size limit (kB) was reached
-  private function loadBase64Image($path, $maxSize, $zipPath, $id)
+  private function loadBase64Image($path, $maxSize, $zipPath = "", $id = "")
   {
     if(file_exists($path))
     {
