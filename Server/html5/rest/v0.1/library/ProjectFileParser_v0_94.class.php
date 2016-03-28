@@ -87,8 +87,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     switch($brickType)
     {
       case "SetVariableBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula));
@@ -96,8 +100,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "ChangeVariableBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new ChangeVariableBrickDto($id, $this->parseFormula($fl->formula));
@@ -105,8 +113,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "AddItemToUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new AppendToListBrickDto($id, $this->parseFormula($fl->formula));
@@ -114,8 +126,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "DeleteItemOfUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new DeleteAtListBrickDto($id, $this->parseFormula($fl->formula));
@@ -123,8 +139,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "InsertItemIntoUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new InsertAtListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
@@ -132,8 +152,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "ReplaceItemInUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]),
