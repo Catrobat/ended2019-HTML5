@@ -944,7 +944,7 @@ class ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
-        if(!property_exists($script, "look"))
+        if(!property_exists($script, "look")
         {
             //handle unset look = "New..:" = null
             $brick = new SetLookBrickDto(null);
