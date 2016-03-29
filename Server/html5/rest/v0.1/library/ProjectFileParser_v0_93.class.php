@@ -302,7 +302,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         }
         
         $sound = $this->getObject($script->sound, $this->cpp);
-        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
 
         if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
@@ -357,7 +357,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         }
 
         $look = $this->getObject($script->look, $this->cpp);
-        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
 
         if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
