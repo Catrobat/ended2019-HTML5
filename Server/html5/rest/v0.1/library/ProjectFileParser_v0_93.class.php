@@ -349,7 +349,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
-        if(!property_exists($script, "look")
+        if(!property_exists($script, "look"))
         {
             // when no look set, look => empty
             $brick = new SetLookBrickDto(null);
