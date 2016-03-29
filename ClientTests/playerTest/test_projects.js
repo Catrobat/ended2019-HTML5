@@ -17,13 +17,13 @@ QUnit.test("[missing]", function (assert) {
 
     /*                          1. Limit of tests                                */
     /* if 0, fetch all */
-    var limit = 100,
+    var limit = 0,
         skip = 750; //TODO: retest this
     //
 
     /*              2. just test JSON or also test uf object works               */
     /* if true, gameEngine will test project */
-    var JsonToGameEngine = true;
+    var JsonToGameEngine = false;
     //
 
     /*          3. timeout when project will be canceled in game Engine          */
@@ -31,7 +31,7 @@ QUnit.test("[missing]", function (assert) {
     var timeout_time = 120000;
     //
 
-    /* 4. Only test listed porgrams in server_known_errors (and don't skip them) */
+    /* 4. Only test listed programs in server_known_errors (and don't skip them) */
     /* Works only, if JsonToGameEngine = false! */
     var test_only_listed_programs = false;//true;//
     //
@@ -118,8 +118,16 @@ QUnit.test("[missing]", function (assert) {
         5216: "",
         5568: "",
         5860: "",
-        3329: "",
+        3329: ""
+    };
 
+    server_known_errors = {
+      // pointToBricks
+      1987: "pointTo error",
+      2633: "pointTo error",
+      6168: "pointTo error",
+      7063: "pointTo error",
+      5098: "pointTo error"
     };
     //
 
