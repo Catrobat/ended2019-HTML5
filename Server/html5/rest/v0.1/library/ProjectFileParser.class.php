@@ -22,6 +22,7 @@ class ProjectFileParser
   protected $bricksCount = 0;
   protected $images = [];
   protected $sounds = [];
+  protected $resUsed = [];
   protected $variables = [];
   protected $lists = [];
   protected $broadcasts = [];
@@ -151,9 +152,11 @@ class ProjectFileParser
       $project->header->bricksCount = $this->bricksCount;
 
       //resources
+      $this->checkResUsed();
       $project->images = $this->images;
       $project->sounds = $this->sounds;
       $project->broadcasts = $this->broadcasts;
+      //$project->resUsed = $this->resUsed;
 
       return $project;
     }
@@ -204,12 +207,17 @@ class ProjectFileParser
   }
 
   //resource already registered
-  protected function findItemInArrayByUrl($url, $array)
+  protected function findItemInArrayByUrl($url, $array, $check)
   {
     foreach($array as $item)
     {
       if($item->url === $url)
       {
+        if($check)
+        {
+          $this->resUsed[$url] = true;
+        }
+
         return $item;
       }
     }
@@ -229,6 +237,29 @@ class ProjectFileParser
     }
 
     return false;
+  }
+
+  protected function checkResUsed()
+  {
+    $tmp = [];
+    foreach($this->images as $image)
+    {
+      if($this->resUsed[$image->url])
+      {
+        array_push($tmp, $image);
+      }
+    }
+    $this->images = $tmp;
+
+    $tmp = [];
+    foreach($this->sounds as $sound)
+    {
+      if($this->resUsed[$sound->url])
+      {
+        array_push($tmp, $sound);
+      }
+    }
+    $this->sounds = $tmp;
   }
 
   //search global and local variable by name and add local variable if not found
@@ -346,7 +377,7 @@ class ProjectFileParser
     {
       $look = $this->getObject($look, $this->cpp);
 
-      $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+      $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
       if($res === false)
       {
         $id = $this->getNewId();
@@ -362,6 +393,8 @@ class ProjectFileParser
         }
 
         array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
+        $used = $look == $sprite->lookList->children()[0] ? true : false;
+        $this->resUsed["images/" . (string)$look->fileName] = $used;
       }
       else
       {
@@ -380,7 +413,7 @@ class ProjectFileParser
       $sound = $this->getObject($sound, $this->cpp);
 
       //= false, if not found
-      $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+      $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
       if($res === false)
       {
         $id = $this->getNewId();
@@ -396,6 +429,7 @@ class ProjectFileParser
         }
 
         array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
+        $this->resUsed["sounds/" . (string)$sound->fileName] = false;
       }
       else
       {
@@ -903,7 +937,7 @@ class ProjectFileParser
         }
 
         $sound = $this->getObject($script->sound, $this->cpp);
-        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
 
         if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
@@ -944,7 +978,7 @@ class ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
-        if(!property_exists($script, "look")
+        if(!property_exists($script, "look"))
         {
             //handle unset look = "New..:" = null
             $brick = new SetLookBrickDto(null);
@@ -952,7 +986,7 @@ class ProjectFileParser
         }
 
         $look = $this->getObject($script->look, $this->cpp);
-        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
         if($res === false)	//will only return false on invalid projects, as resources are registered already
             throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
 
