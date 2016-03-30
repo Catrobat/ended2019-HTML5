@@ -10,7 +10,7 @@ class JsonView extends BaseView
    public function writeResponseString($outputObject)
    {
          try {
-             echo json_encode($outputObject);
+             echo json_encode($outputObject, JSON_UNESCAPED_UNICODE);
          }
          catch (Exception $e) {
              echo 'Exception: ',  $e->getMessage(), "\n";
