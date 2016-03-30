@@ -74,7 +74,7 @@ PocketCode.GameEngine = (function () {
         spritesAsPropertyList: {
             get: function () {
                 var prop,
-                    props = [this._background.renderingProperties],
+                    props = this._background ? [this._background.renderingProperties] : [],
                     sprites = this._sprites;
 
                 for (var i = 0, l = sprites.length; i < l; i++)
