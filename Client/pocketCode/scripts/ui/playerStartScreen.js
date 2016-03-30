@@ -25,7 +25,7 @@ PocketCode.Ui.merge({
             if (base64peviewImage)
                 this.previewImage = base64peviewImage;
             else
-                this.previewImage = PocketCode.domain + 'html5/pocketCode/img/screenshotNotAvailable.png';
+                this.previewImage = PocketCode.domain + '/images/default/screenshot.png';
 
             this._progressLayout = new SmartJs.Ui.Control('div');
             this._progressTextNode = new SmartJs.Ui.TextNode(PocketCode.I18nProvider.getLocString('lblLoadingRes'));

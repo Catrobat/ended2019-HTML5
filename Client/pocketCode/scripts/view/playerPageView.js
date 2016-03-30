@@ -99,7 +99,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         showStartScreen: function (title, thumbnailUrl) {
             this._startScreen.title = title;
             if (thumbnailUrl == "null")
-                this._startScreen.previewImage = PocketCode.domain + 'html5/pocketCode/img/screenshotNotAvailable.png';
+                this._startScreen.previewImage = PocketCode.domain + '/images/default/screenshot.png';
             else if (thumbnailUrl)
                 this._startScreen.previewImage = thumbnailUrl;
 
