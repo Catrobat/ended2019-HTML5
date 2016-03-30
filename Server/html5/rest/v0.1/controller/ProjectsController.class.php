@@ -4,7 +4,7 @@ require_once("BaseController.class.php");
 
 class ProjectsController extends BaseController
 {
-  const CACHING_ENABLED = true;//false;
+  const CACHING_ENABLED = false;    //true;//
   const INCREMENT_PROJECT_VIEW_COUNTER = false;
 
   const DEPLOY_API = "https://share.catrob.at/";

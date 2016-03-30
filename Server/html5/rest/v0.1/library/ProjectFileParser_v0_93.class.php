@@ -44,7 +44,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function IfLogicBeginBrickScript($script)
+  protected function parseIfLogicBeginBrickScript($script)
   {
     $condition = $script->formulaList;
     array_push($this->cpp, $condition);

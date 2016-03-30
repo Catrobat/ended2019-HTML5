@@ -85,7 +85,7 @@ class ProjectFileParser
       //global variables
       $this->includeGlobalData();
       $project->variables = $this->variables;
-			$project->lists = $this->lists;
+      $project->lists = $this->lists;
 
       //sprites
       array_push($this->cpp, $this->simpleXml->objectList);
@@ -112,10 +112,14 @@ class ProjectFileParser
       //parse sprites
       //1st entry = background
       $bg = true;
+      $cppSaved = array_merge([], $this->cpp); //store path to reset after parsing
+    
       foreach($this->simpleXml->objectList->children() as $sprite)
       {
+        $this->cpp = $cppSaved; //restore path
+
         //take care: this can be a referenced object as well
-        $sprite = $this->getObject($sprite, $this->cpp);
+        $sprite = $this->getObject($sprite, $this->cpp, true);
 
         if($bg === true)
         {
@@ -143,6 +147,7 @@ class ProjectFileParser
           $this->sprites[$idx] = $this->parseSprite($sprite, $id);
         }
       }
+      $this->cpp = $cppSaved; //restore path
 
       array_pop($this->cpp);
 
@@ -176,6 +181,11 @@ class ProjectFileParser
 
   //method included to override it in v0.93
   protected function getName($script)
+  {
+    return (string)$script->name;
+  }
+
+  protected function getSoundName($script)
   {
     return (string)$script->name;
   }
@@ -241,6 +251,8 @@ class ProjectFileParser
 
   protected function checkResUsed()
   {
+  //TODO
+  return;
     $tmp = [];
     foreach($this->images as $image)
     {
@@ -294,15 +306,14 @@ class ProjectFileParser
 
   //returns a simpleXml object of an original object handling references
   //returns the object itself if there is no reference attribute set, else: resolve object by reference
-  protected function getObject($object, $cpp)
+  //followCpp: indicates, if $this->cpp should be modified- needed for sprite references
+  protected function getObject($object, $cpp, $followCpp = false)
   {
     $c = $object;   //current object in tree
 
     if(isset($c["reference"]))
     {
       $path = explode("/", $c["reference"]);
-
-      //$cp represents a local clone of cpp to not effect the parser when following references
       $lcp = array_merge([], $cpp);
 
       foreach($path as $ref)
@@ -317,7 +328,7 @@ class ProjectFileParser
           array_push($lcp, $c);
           //resolve current path, e.g. object[2]
           //more than one xml tag of the same type (->getName()) can occur in one parent tag,
-          //these tags are name as "name" meaning name[0] and "name[2..n]" which should have the indices [1..(n-1)]
+          //these tags are named as "name" meaning name[0] and "name[2..n]" which should have the indices [1..(n-1)]
           $idx = 0;
           $regex = "/([^\[]+)(\[)(\d+)(\])/";
           if(preg_match($regex, $ref))
@@ -332,8 +343,8 @@ class ProjectFileParser
 
           if( !is_object( $c ) )
           {
-            throw new InvalidProjectFileException();
-            throw new Exception( "No Object" );
+            throw new InvalidProjectFileException("invalid reference: ".$object["reference"]);
+            //throw new Exception( "No Object" );
           }
 
           foreach ($c->children() as $i) {
@@ -356,17 +367,19 @@ class ProjectFileParser
         }
       }
       //recursive recall to get ref of ref of .. or object
-      return $this->getObject($c, $lcp);
+      return $this->getObject($c, $lcp, $followCpp);
     }
     else
     {
+      if ($followCpp)
+        $this->cpp = $cpp;    //update global path to ensure we parse internal references correctly
       return $object;
     }
   }
 
   protected function parseSprite($sprite, $spriteId)
   {
-    $sprite = $this->getObject($sprite, $this->cpp);
+    //$sprite = $this->getObject($sprite, $this->cpp, true);
     $sp = new SpriteDto($spriteId, $this->getName($sprite));
     $this->currentSprite = $sp;
 
@@ -385,16 +398,17 @@ class ProjectFileParser
         if(is_file($path))
         {
           $size = filesize($path);
-        }
-        else
-        {
-          continue;
-          // throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
-        }
+        //}
+        //else
+        //{
+        //  continue;
+        //  // throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
+        //}
 
-        array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
-        $used = $look == $sprite->lookList->children()[0] ? true : false;
-        $this->resUsed["images/" . (string)$look->fileName] = $used;
+          array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
+        //$used = $look == $sprite->lookList->children()[0] ? true : false;
+        //$this->resUsed["images/" . (string)$look->fileName] = $used;
+        }
       }
       else
       {
@@ -421,22 +435,24 @@ class ProjectFileParser
         if(is_file($path))
         {
           $size = filesize($path);
+        //}
+        //else
+        //{
+        //  continue;
+        //  // throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
+        //}
+
+          array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
+        //$this->resUsed["sounds/" . (string)$sound->fileName] = false;
         }
         else
-        {
-          continue;
-          // throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
-        }
-
-        array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
-        $this->resUsed["sounds/" . (string)$sound->fileName] = false;
+            continue;
       }
       else
       {
         $id = $res->id;
       }
-
-      array_push($sp->sounds, new ResourceReferenceDto($id, $this->getName($sound)));
+      array_push($sp->sounds, new ResourceReferenceDto($id, $this->getSoundName($sound)));
     }
     array_pop($this->cpp);
 
@@ -560,7 +576,7 @@ class ProjectFileParser
     return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
   }
 
-  protected function IfLogicBeginBrickScript($script)
+  protected function parseIfLogicBeginBrickScript($script)
   {
     $condition = $script->ifCondition;
     $brick = new IfThenElseBrickDto($this->parseFormula($condition->formulaTree));
@@ -652,10 +668,10 @@ class ProjectFileParser
         //special logic for loops: forever, repeat and if-then-else
         //to restructure the *.catrobat/code.xml document to our needs
         $script = $brickList[$idx];
-
-        if(! $script)
+        if(isset($script["reference"]))
         {
-          throw new InvalidProjectFileException();
+            $brick = $this->getBrickType($script);
+            throw new InvalidProjectFileException($brick.": referenced brick");
         }
 
         switch($this->getBrickType($script))
@@ -676,14 +692,7 @@ class ProjectFileParser
             break;
 
           case "IfLogicBeginBrick":
-
-            if(! $script->ifCondition || ! $script->ifCondition->formulaTree)
-            {
-              throw new InvalidProjectFileException();
-              break;
-            }
-
-            $brick = $this->IfLogicBeginBrickScript($script);
+            $brick = $this->parseIfLogicBeginBrickScript($script);
             $result = $this->parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick);
             $bricks = $result["bricks"];
             $idx = $result["idx"];
@@ -1084,8 +1093,10 @@ class ProjectFileParser
     try
     {
       array_push($this->cpp, $script);
-
       $brickType = $this->getBrickType($script);
+      if(isset($script["reference"]))
+        throw new InvalidProjectFileException($brickType.": referenced brick");
+
       $brick = $this->parseFirstLevelBricks($brickType, $script);
 
       if(!$brick)
@@ -1128,10 +1139,10 @@ class ProjectFileParser
   // $formula = formulaTree
   protected function parseFormula($formula)
   {
-    if(! $formula)
-    {
-      throw new InvalidProjectFileException();
-    }
+    //if(! $formula)
+    //{
+    //  throw new InvalidProjectFileException();
+    //}
 
     $type = (string)$formula->type;
     if($type === "USER_VARIABLE")
