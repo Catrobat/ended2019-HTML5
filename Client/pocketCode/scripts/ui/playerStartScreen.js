@@ -24,6 +24,8 @@ PocketCode.Ui.merge({
             this._previewImage = new Image();
             if (base64peviewImage)
                 this.previewImage = base64peviewImage;
+            else
+                this.previewImage = PocketCode.domain + 'html5/pocketCode/img/screenshotNotAvailable.png';
 
             this._progressLayout = new SmartJs.Ui.Control('div');
             this._progressTextNode = new SmartJs.Ui.TextNode(PocketCode.I18nProvider.getLocString('lblLoadingRes'));
@@ -57,8 +59,8 @@ PocketCode.Ui.merge({
                 //get: function () {
 
                 //},
-                set: function (value) {
-                    this._previewImage.src = value;
+                set: function (src) {
+                    this._previewImage.src = src;
                 },
             },
             progressText: {
@@ -136,7 +138,7 @@ PocketCode.Ui.merge({
                 tmp.appendChild(span);
                 tmp.appendChild(this._progressBar._dom);
 
-                this._startButton.innerHTML =   '<svg preserveAspectRatio="xMidYMid meet" viewBox="0,0,64,64">' +
+                this._startButton.innerHTML = '<svg preserveAspectRatio="xMidYMid meet" viewBox="0,0,64,64">' +
                                                     '<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />' +
                                                     '<polygon points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />' +
                                                 '</svg>';
