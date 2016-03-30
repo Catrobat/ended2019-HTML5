@@ -270,10 +270,10 @@ PocketCode.merge({
 
                     case 'STRING':
                         if (uiString)
-                            return '\'' + jsonFormula.value + '\'';
-                        var test = '"' + jsonFormula.value.replace(/"/g, '').replace(/[|&;$%@"<>()+,]“”/g, '') + '"';
-                        return test;
-                        //return '"' + jsonFormula.value + '"';
+                            return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+
+                        return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
                 }
@@ -505,7 +505,7 @@ PocketCode.merge({
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         if (jsonFormula.left)
-                            return (jsonFormula.left.type === 'STRING') ? (this._parseJsonType(jsonFormula.left)).length - 2 : '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').length';
+                            return '(' + this._parseJsonType(jsonFormula.left) + ' + \'\').length';
                         return 0;
 
                     case 'LETTER':  //string
@@ -513,10 +513,6 @@ PocketCode.merge({
                             return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
-                        //if (idx < 0 || idx >= jsonFormula.left.length)
-                        //    return '';
-                        //return jsonFormula.right.substr(idx, 1);
-                        //break;
                         return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
 
                     case 'JOIN':    //string

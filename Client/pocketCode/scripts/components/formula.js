@@ -35,18 +35,16 @@ PocketCode.Formula = (function () {
                     this.isStatic = true;
                     this.calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
                     var val = this.calculate();
-                    val = (typeof val === 'string') ? '"' + val + '"' : val;
-                    this.calculate = new Function('return ' + val + ';');//'return ' + val + ';');
+                    val = (typeof val === 'string') ? '\'' + val.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'' : val;
+                    this.calculate = new Function('return ' + val + ';');
                 }
                 else {
                     this.isStatic = false;
                     this.calculate = parsed.calculate;
                 }
                 this._uiString = undefined;
-                this._validateFormula();  //validation during loading will throw an error as not all objects may be loaded at this time
+                this._validateFormula();
             },
-            //enumerable: false,
-            //configurable: true,
         },
         uiString: {
             get: function () {
