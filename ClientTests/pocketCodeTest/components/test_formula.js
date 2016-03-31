@@ -57,5 +57,14 @@ QUnit.test("Formula", function (assert) {
     */
     assert.throws(function () { f.json = JSON.parse('{"type":"NUMBER","value":"X","right":null,"left":null}'); }, Error, "setter validation check");
 
+    //dispose
+    f.dispose();
+    assert.equal(f._disposed, true, "disposed");
+
+    //isStatic = false
+    json = NXT_4;
+    f = new PocketCode.Formula(device, sprite, json);
+    assert.equal(f.calculate(), 0, "recreated after dispose using a non static function");
+
 });
 

@@ -25,6 +25,11 @@ QUnit.module("parser.js");
 QUnit.test("FormulaParser: operators", function (assert) {
 
     assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
+
+    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}); }, Error, "ERROR: accessing uiString without providing list names");
+    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}, ""); }, Error, "ERROR: accessing uiString without providing list names as object");
+
     assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");
 
@@ -201,15 +206,25 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.isStatic, true, "calc mod: isStatic");
     assert.equal(f.uiString, "mod(9, 2.2)", "string mod");
 
-    f.json = max;
-    assert.equal(f.calculate(), 18, "calc max");
-    assert.equal(f.isStatic, true, "calc max: isStatic");
-    assert.equal(f.uiString, "max(2 x (1 + 8), 17)", "string max");
-
     f.json = exp;
     assert.equal(Math.round(f.calculate() * 100) / 100, 1.65, "calc exp");
     assert.equal(f.isStatic, true, "calc exp: isStatic");
     assert.equal(f.uiString, "exp(0.5)", "string exp");
+
+    f.json = floor;
+    assert.equal(f.calculate(), -4, "calc floor");
+    assert.equal(f.isStatic, true, "calc floor: isStatic");
+    assert.equal(f.uiString, "floor(-3.025)", "string floor");
+
+    f.json = ceil;
+    assert.equal(f.calculate(), -3, "calc ceil");
+    assert.equal(f.isStatic, true, "calc ceil: isStatic");
+    assert.equal(f.uiString, "ceil(-3.825)", "string ceil");
+
+    f.json = max;
+    assert.equal(f.calculate(), 18, "calc max");
+    assert.equal(f.isStatic, true, "calc max: isStatic");
+    assert.equal(f.uiString, "max(2 x (1 + 8), 17)", "string max");
 
     //f.json = exp2;
     //assert.equal(f.calculate(), 1, "calc exp");
@@ -220,6 +235,16 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.calculate(), -1, "calc min");
     assert.equal(f.isStatic, true, "calc min: isStatic");
     assert.equal(f.uiString, "min(0, -1 + 1 - 1)", "string min");
+
+    f.json = arduino_analog_pin;
+    assert.equal(f.calculate(), 0, "calc arduino_analog_pin");
+    assert.equal(f.isStatic, false, "calc arduino_analog_pin: isStatic");
+    assert.equal(f.uiString, "arduino_analog_pin( 1 )", "string arduino_analog_pin");
+
+    f.json = arduino_digital_pin;
+    assert.equal(f.calculate(), 0, "calc arduino_digital_pin");
+    assert.equal(f.isStatic, false, "calc arduino_digital_pin: isStatic");
+    assert.equal(f.uiString, "arduino_digital_pin( 2 )", "string arduino_digital_pin");
 
 });
 
@@ -435,6 +460,58 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     assert.ok(typeof f.calculate() === 'number', "FACE_Y_POSITION: formula return type");
     assert.equal(f.isStatic, false, "FACE_Y_POSITION: isStatic");
     assert.equal(f.uiString, "face_y_position + (3 x 3 - 9)", "FACE_Y_POSITION: toString");
+
+    //nxt, phiro
+    f.json = NXT_1;
+    assert.equal(f.calculate(), 0, "NXT_1: formula return type");
+    assert.equal(f.isStatic, false, "NXT_1: isStatic");
+    assert.equal(f.uiString, "NXT_sensor_1", "NXT_1: toString");
+
+    f.json = NXT_2;
+    assert.equal(f.calculate(), 0, "NXT_2: formula return type");
+    assert.equal(f.isStatic, false, "NXT_2: isStatic");
+    assert.equal(f.uiString, "NXT_sensor_2", "NXT_2: toString");
+
+    f.json = NXT_3;
+    assert.equal(f.calculate(), 0, "NXT_3: formula return type");
+    assert.equal(f.isStatic, false, "NXT_3: isStatic");
+    assert.equal(f.uiString, "NXT_sensor_3", "NXT_3: toString");
+
+    f.json = NXT_4;
+    assert.equal(f.calculate(), 0, "NXT_4: formula return type");
+    assert.equal(f.isStatic, false, "NXT_4: isStatic");
+    assert.equal(f.uiString, "NXT_sensor_4", "NXT_4: toString");
+
+    f.json = phiro_front_left;
+    assert.equal(f.calculate(), 0, "phiro_front_left: formula return type");
+    assert.equal(f.isStatic, false, "phiro_front_left: isStatic");
+    assert.equal(f.uiString, "phiro_front_left_sensor", "phiro_front_left: toString");
+
+    f.json = phiro_front_right;
+    assert.equal(f.calculate(), 0, "phiro_front_right: formula return type");
+    assert.equal(f.isStatic, false, "phiro_front_right: isStatic");
+    assert.equal(f.uiString, "phiro_front_right_sensor", "phiro_front_right: toString");
+
+    f.json = phiro_side_left;
+    assert.equal(f.calculate(), 0, "phiro_side_left: formula return type");
+    assert.equal(f.isStatic, false, "phiro_side_left: isStatic");
+    assert.equal(f.uiString, "phiro_side_left_sensor", "phiro_side_left: toString");
+
+    f.json = phiro_side_right;
+    assert.equal(f.calculate(), 0, "phiro_side_right: formula return type");
+    assert.equal(f.isStatic, false, "phiro_side_right: isStatic");
+    assert.equal(f.uiString, "phiro_side_right_sensor", "phiro_side_right: toString");
+
+    f.json = phiro_bottom_left;
+    assert.equal(f.calculate(), 0, "phiro_bottom_left: formula return type");
+    assert.equal(f.isStatic, false, "phiro_bottom_left: isStatic");
+    assert.equal(f.uiString, "phiro_bottom_left_sensor", "phiro_bottom_left: toString");
+
+    f.json = phiro_bottom_right;
+    assert.equal(f.calculate(), 0, "phiro_bottom_right: formula return type");
+    assert.equal(f.isStatic, false, "phiro_bottom_right: isStatic");
+    assert.equal(f.uiString, "phiro_bottom_right_sensor", "phiro_bottom_right: toString");
+
 
     //TODO: assert.ok(false, "MISSING: led on/of + vibration?");
     //TODO: recheck sensor strings
@@ -710,7 +787,19 @@ QUnit.test("SpriteFactory", function (assert) {
     assert.equal(sf.onProgressChange, sf._brickFactory.onProgressChange, "onProgressChange event mapped");
     assert.equal(sf.onUnsupportedBricksFound, sf._brickFactory.onUnsupportedBricksFound, "onUnsupportedBricksFound event mapped");
 
-    assert.throws(function () { sf.create([]); }, Error, "ERROR: invalid argument");
+    assert.throws(function () { sf.create([]); }, Error, "ERROR: invalid argument: array");
+    assert.throws(function () { sf.create(""); }, Error, "ERROR: invalid argument: no object");
+
+    sf.dispose();
+    assert.equal(sf.onProgressChange, undefined, "dispose: properties removed");
+    assert.equal(sf._disposed, true, "disposed: true");
+
+    //recreate after dispose
+    sf = new PocketCode.SpriteFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
+    
+    var sprite2 = sf.create(spriteTest2);
+    assert.ok(sprite2 instanceof PocketCode.Model.Sprite, "Sprite successfully created");
+
 });
 
 
