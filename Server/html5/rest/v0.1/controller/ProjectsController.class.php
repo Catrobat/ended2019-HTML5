@@ -444,12 +444,16 @@ class ProjectsController extends BaseController
         $url .= "mostDownloaded.json";
         break;
 
-      case "viewed":
+      case "views":
         $url .= "mostViewed.json";
         break;
 
       case "recent":
         $url .= "recent.json";
+        break;
+
+      case "random":
+        $url .= "randomPrograms.json";
         break;
 
       default:
