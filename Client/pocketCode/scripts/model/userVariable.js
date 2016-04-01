@@ -106,12 +106,13 @@ PocketCode.Model.merge({
         Object.defineProperties(UserVariableSimple.prototype, {
             value: {
                 get: function () {
-                    //if (this._value !== undefined)
-                        return this._value;
-                    //return this._defaultValue;
+                    return this._value;
                 },
                 set: function (value) {
-                    this._value = this._toTypedValue(value);
+                    value = this._toTypedValue(value);
+                    if (this._value == value)
+                        return;
+                    this._value = value;
                     this._onChange.dispatchEvent({ id: this._id });
                 },
             },
@@ -151,8 +152,9 @@ PocketCode.Model.merge({
                 return '';
             },
             reset: function () {
+                if (this.value === undefined)
+                    return;
                 this.value = undefined;
-                this._onChange.dispatchEvent({ id: this._id });
             },
         });
 
@@ -231,21 +233,24 @@ PocketCode.Model.merge({
                 return 0;
             },
             insertAt: function (idx, value) {
-                if (this._validIndex(idx))
+                if (this._validIndex(idx)) {
                     this._value.insert(idx - 1, this._toTypedValue(value));
+                    this._onChange.dispatchEvent({ id: this._id });
+                }
                 else if (idx == this._value.length + 1)
                     this.append(this._toTypedValue(value));
-                this._onChange.dispatchEvent({ id: this._id });
             },
             replaceAt: function (idx, value) {
-                if (this._validIndex(idx))
+                if (this._validIndex(idx)) {
                     this._value[idx - 1] = this._toTypedValue(value);
-                this._onChange.dispatchEvent({ id: this._id });
+                    this._onChange.dispatchEvent({ id: this._id });
+                }
             },
             deleteAt: function (idx) {
-                if (this._validIndex(idx))
+                if (this._validIndex(idx)) {
                     this._value.splice(idx - 1, 1);
-                this._onChange.dispatchEvent({ id: this._id });
+                    this._onChange.dispatchEvent({ id: this._id });
+                }
             },
             contains: function (value) {
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
@@ -253,6 +258,8 @@ PocketCode.Model.merge({
                 return false;
             },
             reset: function () {
+                if (this._value.length === 0)
+                    return;
                 this._value = [];
                 this._onChange.dispatchEvent({ id: this._id });
             },
