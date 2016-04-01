@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />

@@ -2,7 +2,7 @@
 /// <reference path="../../client/smartJs/sj-error.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
-/// <reference path="../qunit/qunit-1.16.0.js" />
+/// <reference path="../qunit/qunit-1.23.0.js" />
 'use strict';
 
 QUnit.module("sj-event.js");

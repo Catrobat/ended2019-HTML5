@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';

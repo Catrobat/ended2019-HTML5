@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -65,6 +65,38 @@ QUnit.test("Formula", function (assert) {
     json = NXT_4;
     f = new PocketCode.Formula(device, sprite, json);
     assert.equal(f.calculate(), 0, "recreated after dispose using a non static function");
+
+});
+
+
+QUnit.test("Formula: string encoding", function (assert) {
+    //using: _resources/testDataFormula.js
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite, encoding1);
+    assert.equal(f.calculate(), "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding2);
+    assert.equal(f.calculate(), "Nacen. Todos los seres vivos proceden de otros seres vivos.", "encoding2 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding3);
+    assert.equal(f.calculate(), "Se alimentan. Todos los seres vivos necesitan tomar alimentos para crecer y desarrollarse, aunque cada uno tome un tipo de alimento diferente.", "encoding3 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding4);
+    assert.equal(f.calculate(), "Crecen. Los seres vivos aumentan de tamaño a lo largo de su vida y a veces, cambian de aspecto.", "encoding4 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding5);
+    assert.equal(f.calculate(), "Se relacionan. Los seres vivos son capaces de captar lo que ocurre a su alrededor y reaccionar como corresponda.", "encoding5 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding6);
+    assert.equal(f.calculate(), "Se reproducen. Los seres vivos pueden producir otros seres vivos parecidos a ellos.", "encoding6 output");
+
+    f = new PocketCode.Formula(device, sprite, encoding7);
+    assert.equal(f.calculate(), "Envejecen y mueren. Todos los seres vivos dejan de funcionar en algún momento y dejan, por tanto, de estar vivos.", "encoding7 output");
 
 });
 
