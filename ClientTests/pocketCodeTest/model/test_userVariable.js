@@ -22,25 +22,32 @@ QUnit.test("UserVariableCollection", function (assert) {
     assert.throws(function () { var test = new PocketCode.Model.UserVariableCollection("wrong", PocketCode.UserVariableScope.GLOBAL); }, Error, "ERROR: invalid type property");
 
     var testVars = [
-        { id: 1, name: "2", value: 3 },
-        { id: 4, name: "5", value: 6 },
-        { id: 7, name: "8" }];
+        { id: "1", name: "2", value: 3 },
+        { id: "4", name: "5", value: 6 },
+        { id: "7", name: "8" }];
 
     assert.throws(function () { uvc.initVariableList("error"); }, Error, "ERROR: initVariableList() argument");
     uvc.initVariableList(testVars);
 
-    assert.ok(uvc.getVariables()[1] instanceof PocketCode.Model.UserVariableSimple && uvc.getVariables()[4] instanceof PocketCode.Model.UserVariableSimple && uvc.getVariables()[7] instanceof PocketCode.Model.UserVariableSimple, "sdimple: variable getter: instance check");
-    assert.ok(uvc.getVariables()[4]._id === 4 && uvc.getVariables()[4].name === "5" && uvc.getVariables()[4]._value === 6, "simple: variable created correctly");
-    assert.ok(uvc.getVariables()[7]._id === 7 && uvc.getVariables()[7].name === "8" && uvc.getVariables()[7]._value === undefined, "simple: variable created correctly (init value)");
+    //reset: simple
+    uvc.reset();
+    assert.equal(uvc.getVariableById("1").value, undefined, "var 1 undefined after reset");
+    assert.equal(uvc.getVariableById("4").value, undefined, "var 4 undefined after reset");
+    assert.equal(uvc.getVariableById("7").value, undefined, "var 7 undefined after reset");
 
-    var first = uvc.getVariableById(1);
-    assert.ok(first._id === 1 && first.name === "2" && first._value === 3 && first.value === 3, "getById check + value accessor");
+    uvc.initVariableList(testVars);
+    assert.ok(uvc.getVariableById("1") instanceof PocketCode.Model.UserVariableSimple && uvc.getVariableById("4") instanceof PocketCode.Model.UserVariableSimple && uvc.getVariableById("7") instanceof PocketCode.Model.UserVariableSimple, "sdimple: variable getter: instance check");
+    assert.ok(uvc.getVariableById("4")._id === "4" && uvc.getVariableById("4").name === "5" && uvc.getVariableById("4")._value === 6, "simple: variable created correctly");
+    assert.ok(uvc.getVariables()["7"]._id === "7" && uvc.getVariables()["7"].name === "8" && uvc.getVariables()["7"]._value === undefined, "simple: variable created correctly (init value)");
+
+    var first = uvc.getVariableById("1");
+    assert.ok(first._id === "1" && first.name === "2" && first._value === 3 && first.value === 3, "getById check + value accessor");
 
     var varChangeCalled = 0;
     var varChangeHandler = function (e) {
         varChangeCalled++;
         assert.equal(e.target, first, "variable as event target");
-        assert.equal(e.id, 1, "variable setter/getter")
+        assert.equal(e.id, 1, "variable setter/getter");
         //done();
     };
     uvc.onVariableChange.addEventListener(new SmartJs.Event.EventListener(varChangeHandler, this));
@@ -50,7 +57,7 @@ QUnit.test("UserVariableCollection", function (assert) {
     uvc.initVariableList([]);
     assert.deepEqual(uvc.getVariables(), {}, "initVariableList: clear existing vars");
 
-    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableSimple, "get a new instance (simple): based on a pocketcode bug")
+    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableSimple, "get a new instance (simple): based on a pocketcode bug");
 
     //using lists
     uvc = new PocketCode.Model.UserVariableCollection(PocketCode.UserVariableType.LIST, PocketCode.UserVariableScope.GLOBAL);
@@ -66,7 +73,13 @@ QUnit.test("UserVariableCollection", function (assert) {
     assert.ok(uvc.getVariables()[7]._id === 7 && uvc.getVariables()[7].name === "8" && uvc.getVariables()[7].length === 0, "lists: variable created correctly (init value) + length");
 
     assert.equal(uvc.getVariableById(4).name, 5, "get list var by id");
-    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableList, "get a new instance (list): based on a pocketcode bug")
+    assert.ok(uvc.getVariableById(null) instanceof PocketCode.Model.UserVariableList, "get a new instance (list): based on a pocketcode bug");
+
+    //reset: list
+    uvc.reset();
+    assert.equal(uvc.getVariableById(1).length, 0, "var 1: empty list after reset");
+    assert.equal(uvc.getVariableById(4).length, 0, "var 4: empty list after reset");
+    assert.equal(uvc.getVariableById(7).length, 0, "var 7: empty list after reset");
 
 });
 
@@ -106,11 +119,13 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.equal(uv2.value, "3.4 3.5 3.6", "list is added as string");
     assert.equal(uv2.valueAsNumber, 0, "list string to number");
 
-    var uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4]);
+    uvl = new PocketCode.Model.UserVariableList(1, "2", [3.4]);
     uv2.value = uvl;
     assert.equal(uv2.value, 3.4, "list is added as string- single item casted");
     assert.equal(uv2.valueAsNumber, 3.4, "list string to number- single item casted");
 
+    uv2.reset();
+    assert.equal(uv2.value, undefined, "rest: to undefined");
 });
 
 QUnit.test("UserVariableList", function (assert) {
@@ -224,5 +239,7 @@ QUnit.test("UserVariableList", function (assert) {
     //^^ please notice.. as a compare between string and number in qunit will/may assert TRUE even if the types are different the check below is needed
     assert.equal(uv.valueAsNumberAt(uv.length), 3.4, "append: user list: added and casted: type check internal");
 
+    //reset
+    uv2.reset();
+    assert.equal(uv2.length, 0, "reset: empty list[]");
 });
-
