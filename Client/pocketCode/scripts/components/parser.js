@@ -28,20 +28,16 @@ PocketCode.merge({
         Object.defineProperties(SpriteFactory.prototype, {
             onProgressChange: {
                 get: function () { return this._onProgressChange; },
-                //enumerable: false,
-                //configurable: true,
             },
             onUnsupportedBricksFound: {
                 get: function () { return this._onUnsupportedBricksFound; },
-                //enumerable: false,
-                //configurable: true,
             },
         });
 
         //methods
         SpriteFactory.prototype.merge({
             create: function (jsonSprite) {
-                if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)
+                if(typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
             
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
@@ -200,9 +196,9 @@ PocketCode.merge({
 
         FormulaParser.prototype.merge({
             getUiString: function (jsonFormula, variableNames, listNames) {
-                if (!variableNames)
+                if (typeof variableNames !== 'object')
                     throw new Error('invalid argument: variableNames (lookup dictionary required)');
-                if (!listNames)
+                if (typeof listNames !== 'object')
                     throw new Error('invalid argument: listNames (lookup dictionary required)');
                 this._variableNames = variableNames;
                 this._listNames = listNames;
@@ -212,7 +208,6 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                var testString = 'return ' + formulaString + ';';
                 return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
             },
 
@@ -269,9 +264,7 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        if (uiString)
-                            return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
-
+                        //if (uiString)
                         return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
 
                     default:
@@ -546,14 +539,16 @@ PocketCode.merge({
 
                     case 'ARDUINOANALOG':
                         if (uiString)
-                            return 'arduino_analog_pin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                            return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
+                        this._isStatic = false;
                         return 'this._device.getArduinoAnalogPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'ARDUINODIGITAL':
                         if (uiString)
-                            return 'arduino_digital_pin(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
 
+                        this._isStatic = false;
                         return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     default:
