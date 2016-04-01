@@ -18,22 +18,22 @@ QUnit.test("[missing]", function (assert) {
     /*                          1. Limit of tests                                */
     /* if 0, fetch all */
     var limit = 0,
-        skip = 750; //TODO: retest this
+        offset = 0; //TODO: retest this
     //
 
     /*              2. just test JSON or also test uf object works               */
     /* if true, gameEngine will test project */
-    var JsonToGameEngine = false;
+    var JsonToGameEngine = false;   //true;//
     //
 
     /*          3. timeout when project will be canceled in game Engine          */
     // timeout in ms to cancel current projecttest
-    var timeout_time = 120000;
+    var timeout_time = 20000;
     //
 
-    /* 4. Only test listed programs in server_known_errors (and don't skip them) */
+    /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
     /* Works only, if JsonToGameEngine = false! */
-    var test_only_listed_programs = false;//true;//
+    var test_only_listed_programs = false;   //"server", "client", false;
     //
 
     /*                          known server errors                              */
@@ -121,339 +121,326 @@ QUnit.test("[missing]", function (assert) {
         3329: ""
     };
 
-    server_known_errors = {
-      // pointToBricks
-      1987: "pointTo error",
-      2633: "pointTo error",
-      6168: "pointTo error",
-      7063: "pointTo error",
-      5098: "pointTo error"
+    server_known_errors = { //empty: do not skip any tests
+    //  // pointToBricks
+    //  1987: "pointTo error",
+    //  2633: "pointTo error",
+    //  6168: "pointTo error",
+    //  7063: "pointTo error",
+    //  5098: "pointTo error"
     };
     //
 
     /*                          known client errors                              */
     /* will be skipped if test_only_listed_programs = false */
     var client_known_errors = {
-        821:"bleibt hängen, bitte testen",
-        916: "retest required",
-        881: "timeout 120s",
+        821: "sound issue",
+        916: "soundjs-0.6.1.custom.js:1189 Uncaught Error: Type not recognized.",
+        881: "sound issue",
         3926: "timeout 120s",
         1811: "timeout 120s",
         2732: "(uncatched Error)",
         6038: "timeout 120s",
         3406: "timeout 120s",
-        1806: "timeout 120s",
         2578: "timeout 120s",
-        2102: "(uncatched Error)",
-        5293: "(uncatched Error)",
-        3263: "(uncatched Error)",
-        3313: "(uncatched Error)",
-        873: "timeout 120s",
-        957: "timeout 120s",
-        3284: "timeout 120s",
+        873: "sound issue",
+        957: "?",
+        3284: "sound issue",
         2733: "timeout 120s",
         1868: "timeout 120s",
         3469: "timeout 120s",
         3738: "timeout 120s",
         1799: "timeout 120s",
         1808: "timeout 120s",
-        3249: "timeout 120s",
+        3249: "sound issue",
         1792: "timeout 120s",
-        6461: "timeout 120s",
         5286: "timeout 120s",
         3270: "timeout 120s",
-        3163: "timeout 120s",
+        3163: "internal server error: InvalidProjectFileException",
         3923: "timeout 120s",
-        3300: "(uncatched Error)",
-        3189: "(uncatched Error)",
-        5494: "(uncatched Error)",
         1803: "timeout 120s",
         2376: "timeout 120s",
-        3662: "timeout 120s",
-        5431: "timeout 120s",
         3172: "(uncatched Error)",
-        5261: "timeout 120s",
-        2525: "timeout 120s",
         1801: "timeout 120s",
         3853: "timeout 120s",
-        4206: "timeout 120s",
         2689: "timeout 120s",
         6275: "timeout 120s",
-        3240: "timeout 120s",
+        3240: "sound issue",
         6067: "(uncatched Error)",
         4049: "timeout 120s",
         6878: "timeout 120s",
-        1819: "timeout 120s",
         3381: "timeout 120s",
-        4794: "timeout 120s",
-        1981: "timeout 120s",
         1823: "timeout 120s",
-        2673: "(uncatched Error)",
+        2673: "sound issue? FF: encoding issue in formula/parser",
         5237: "timeout 120s",
-        2443: "timeout 120s",
         3230: "timeout 120s",
-        1952: "timeout 120s",
         1793: "timeout 120s",
         2105: "timeout 120s",
-        3146: "timeout 120s",
         5708: "timeout 120s",
         1704: "timeout 120s",
         2226: "timeout 120s",
         4028: "timeout 120s",
         1958: "timeout 120s",
-        3038: "timeout 120s",
         4579: "timeout 120s",
-        1011: "timeout 120s",
-        5228: "timeout 120s",
-        3707: "timeout 120s",
-        2371: "timeout 120s",
-        1919: "timeout 120s",
-        1925: "timeout 120s",
-        5783: "timeout 120s",
         1985: "timeout 120s",
         1791: "timeout 120s",
         1474: "(uncatched Error)",
-        4569: "timeout 120s",
-        3106: "timeout 120s",
 
+        1445: "sound issue",
+        2196: "sound issue",
+        980: "sound issue",
+        965: "sound issuee",
+        3147: "sound issue",
+        1578: "sound issue",
+        4142: "timeout 120s: loading stopped",
     };
-//
+    //
 
-/* ************************************************************************* */
-/* ************************************************************************* */
-/* ************************************************************************* */
+    /* ************************************************************************* */
+    /* ************************************************************************* */
+    /* ************************************************************************* */
 
-if( test_only_listed_programs == true ) {
-    limit = Object.keys(server_known_errors).length;
-}
+    if (test_only_listed_programs !== false) {
+        if (test_only_listed_programs == "server")
+            limit = Object.keys(server_known_errors).length;
+        else if (test_only_listed_programs == "client")
+            limit = Object.keys(client_known_errors).length;
+    }
 
-// init
-var i = 0;
-var done = {};
-// define number of projects, which will be tested in Listener
-for (i = 0; i < limit; i++) {
-    done[i+1] = assert.async();
-}
-// add "last" test, to see if its finished and
-// to prevent early finishing on testing all projects
-done[0] = assert.async();
-var receivedObject;
-var currentProjectIdx = 1;
-var id = 0;
-var limit_txt;
-var receivedResult;
-if( limit != 0 )
-    limit_txt = limit;
-else
-    limit_txt = "all";
-var timeout_timer;
+    // init
+    var i = 0;
+    var done = {};
+    // define number of projects, which will be tested in Listener
+    for (i = 0; i < limit; i++) {
+        done[i + 1] = assert.async();
+    }
+    // add "last" test, to see if its finished and
+    // to prevent early finishing on testing all projects
+    done[0] = assert.async();
+    var receivedObject;
+    var currentProjectIdx = 1;
+    var id = 0;
+    var limit_txt;
+    var receivedResult;
+    if (limit != 0)
+        limit_txt = limit;
+    else
+        limit_txt = "all";
+    var timeout_timer;
 
-assert.ok( true, "Try to test " + limit_txt + " projects" );
-
-
-if( test_only_listed_programs == false ) {
-    // Fetch a list of Projects and save them to "receivedObject"
-    var url = PocketCode.Services.PROJECT_SEARCH;
-    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {
-        limit: limit,
-        mask: "downloads"
-    });
+    assert.ok(true, "Try to test " + limit_txt + " projects");
 
 
-    var onSuccessProjectsHandler = function (e) {
-        receivedObject = e.responseJson;
-        //var allProjectsCount = receivedObject.items.length;
-        var allProjectsCount = receivedObject.totalProjects;
+    if (test_only_listed_programs == false) {
+        // Fetch a list of Projects and save them to "receivedObject"
+        var url = PocketCode.Services.PROJECT_SEARCH;
+        var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {
+            limit: limit,
+            mask: "downloads"
+        });
 
-        if (limit == 0) {
-            // resend request to test all Projects
-            limit = allProjectsCount;
-            for (i = 0; i < limit; i++) {
-                done[i + 1] = assert.async();
+
+        var onSuccessProjectsHandler = function (e) {
+            receivedObject = e.responseJson;
+            //var allProjectsCount = receivedObject.items.length;
+            var allProjectsCount = receivedObject.totalProjects;
+
+            if (limit == 0) {
+                // resend request to test all Projects
+                limit = allProjectsCount;
+                for (i = 0; i < limit; i++) {
+                    done[i + 1] = assert.async();
+                }
+                console.log(limit);
+                srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {
+                    limit: limit,
+                    offset: offset,
+                    mask: "downloads" //downloads/views/recent/random
+                });
+                srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+                srAllProjects.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+                PocketCode.Proxy.send(srAllProjects);
+            } else {
+                assert.ok(true, "get List of " + limit + " projects (total Projects: " + allProjectsCount + " / test " + limit + " projects)");
+                getSingleTestProject();
             }
-            console.log(limit);
-            srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {
-                limit: limit,
-                offset: skip,
-                mask: "downloads" //downloads/viewed/recent
-            });
-            srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
-            srAllProjects.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
-            PocketCode.Proxy.send(srAllProjects);
-        } else {
-            assert.ok(true, "get List of " + limit + " projects (total Projects: " + allProjectsCount + " / test " + limit + " projects)");
-            getSingleTestProject();
+        };
+
+        var onErrorProjectsHandler = function (e) {
+            console.log("---- ERROR ----");
+            console.log(e);
+            assert.ok(true, "Fetch of all projects failed");
+        };
+
+        srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
+        srAllProjects.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
+        PocketCode.Proxy.send(srAllProjects);
+        // ---
+    }
+    else {
+        //receivedObject = {"items":[
+        var item_arr = [];
+        var errors = {};
+        if (test_only_listed_programs == "server")
+            errors = server_known_errors;
+        else if (test_only_listed_programs == "client")
+            errors = client_known_errors;
+
+
+        for (var key in errors) {
+            // skip loop if the property is from prototype
+            if (!errors.hasOwnProperty(key)) continue;
+
+            var el = {};
+            el.id = key;
+            item_arr.push(el);
         }
+        receivedObject = {};
+        receivedObject.items = item_arr;
+
+        console.log(receivedObject);
+
+        assert.ok(true, "only test " + limit + " projects from list.");
+        getSingleTestProject();
+    }
+
+
+    // GAME ENGINE TESTS
+    var gameEngineOnLoad = function (e) {
+        stopTimeOut();
+        assert.ok(true, "Project " + id + " valid");
+        done[currentProjectIdx - 1]();
+
+        // Free Memory
+        gameEngine.dispose();
+        gameEngine = new PocketCode.GameEngine();
+
+        getSingleTestProject();
     };
 
-    var onErrorProjectsHandler = function (e) {
-        console.log("---- ERROR ----");
-        console.log(e);
-        assert.ok(true, "Fetch of all projects failed");
-    };
 
-    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
-    srAllProjects.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectsHandler, this));
-    PocketCode.Proxy.send(srAllProjects);
+    var gameEngine;
+    var gameEngineOnLoadListener = new SmartJs.Event.EventListener(gameEngineOnLoad, this);
     // ---
-} else {
-    //receivedObject = {"items":[
-    var item_arr = [];
-    for ( var key in server_known_errors)
-    {
-        // skip loop if the property is from prototype
-        if (!server_known_errors.hasOwnProperty(key)) continue;
 
-        var el = {};
-        el.id = key;
-        item_arr.push( el );
-    }
-    receivedObject = {};
-    receivedObject.items = item_arr;
-
-    console.log( receivedObject );
-
-    assert.ok(true, "only test " + limit + " projects from list.");
-    getSingleTestProject();
-}
-
-
-// GAME ENGINE TESTS
-var gameEngineOnLoad = function (e) {
-    stopTimeOut();
-    assert.ok(true, "Project " + id + " valid");
-    done[currentProjectIdx - 1]();
-
-    // Free Memory
-    gameEngine.dispose();
-    gameEngine = new PocketCode.GameEngine();
-
-    getSingleTestProject();
-};
-
-
-var gameEngine;
-var gameEngineOnLoadListener = new SmartJs.Event.EventListener(gameEngineOnLoad, this);
-// ---
-
-function startTimeOut() {
-    timeout_timer = setTimeout(function(){ startNextTest() }, timeout_time);
-}
-
-function stopTimeOut() {
-    clearTimeout(timeout_timer);
-}
-
-function startNextTest() {
-    assert.ok(false, "Project " + id + " timeout");
-    done[currentProjectIdx - 1]();
-
-    // Free Memory
-    gameEngine.dispose();
-    gameEngine = new PocketCode.GameEngine();
-
-    getSingleTestProject();
-}
-
-// Test function
-function getSingleTestProject() {
-
-    // termination condition
-    if (receivedObject.items.length+1 == currentProjectIdx) {
-        // Last assert (to prevent early finish)
-        assert.ok(true, "finished all");
-        done[0]();
-        return;
+    function startTimeOut() {
+        timeout_timer = setTimeout(function () { startNextTest() }, timeout_time);
     }
 
-    var url = PocketCode.Services.PROJECT;
-    id = receivedObject.items[currentProjectIdx-1].id;
+    function stopTimeOut() {
+        clearTimeout(timeout_timer);
+    }
 
-    console.log( "start to test " + id + " (Nr." + currentProjectIdx + ")" );
-    currentProjectIdx++;
+    function startNextTest() {
+        assert.ok(false, "Project " + id + " timeout");
+        done[currentProjectIdx - 1]();
 
-    if( test_only_listed_programs == false ) {
-        if (id in server_known_errors) {
-            assert.ok(true, "Project " + id + " skipped (" + server_known_errors[id] + ")");
-            done[currentProjectIdx - 1]();
-            getSingleTestProject();
+        // Free Memory
+        gameEngine.dispose();
+        gameEngine = new PocketCode.GameEngine();
+
+        getSingleTestProject();
+    }
+
+    // Test function
+    function getSingleTestProject() {
+
+        // termination condition
+        if (receivedObject.items.length + 1 == currentProjectIdx) {
+            // Last assert (to prevent early finish)
+            assert.ok(true, "finished all");
+            done[0]();
             return;
         }
-    }
 
-    var sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {id: id});
-    var onSuccessProjectHandler = function (e) {
+        var url = PocketCode.Services.PROJECT;
+        id = receivedObject.items[currentProjectIdx - 1].id;
 
-        if (JsonToGameEngine == true) {
+        console.log("start to test " + id + " (Nr." + currentProjectIdx + ")");
+        currentProjectIdx++;
 
-            if (id in client_known_errors) {
-                assert.ok(true, "Project " + id + " skipped (" + client_known_errors[id] + ")");
+        if (test_only_listed_programs == false) {
+            if (id in server_known_errors) {
+                assert.ok(true, "Project " + id + " skipped (" + server_known_errors[id] + ")");
                 done[currentProjectIdx - 1]();
                 getSingleTestProject();
                 return;
             }
+        }
 
-            var json = e.responseJson;
+        var sr = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: id });
+        var onSuccessProjectHandler = function (e) {
 
-            // Test Loading Project Errors
-            if (gameEngine) {
-                gameEngine.onLoad.removeEventListener(gameEngineOnLoadListener);
-                gameEngine = undefined;
-            }
-            gameEngine = new PocketCode.GameEngine();
-            // define 2 EventListener
-            gameEngine.onLoad.addEventListener(gameEngineOnLoadListener);
+            if (JsonToGameEngine == true) {
 
-            // load Project with json data
-            try {
-                startTimeOut();
-                gameEngine.loadProject(json);
-            } catch (error) {
-
-                var receivedObject = error;
-                var type = "";
-                if ((receivedObject instanceof Object)) {
-                    type = "uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
-                } else {
-                    type = "Unknown target";
+                if (id in client_known_errors && test_only_listed_programs !== "client") {
+                    assert.ok(true, "Project " + id + " skipped (" + client_known_errors[id] + ")");
+                    done[currentProjectIdx - 1]();
+                    getSingleTestProject();
+                    return;
                 }
 
-                assert.ok(false, "Project ERROR " + id + " (" + type + ")");
-                done[currentProjectIdx - 1]();
+                var json = e.responseJson;
 
-                // Free Memory
-                receivedObject = null;
-                e = null;
-                //gameEngine.dispose();
+                // Test Loading Project Errors
+                if (gameEngine) {
+                    gameEngine.onLoad.removeEventListener(gameEngineOnLoadListener);
+                    gameEngine = undefined;
+                }
+                gameEngine = new PocketCode.GameEngine();
+                // define 2 EventListener
+                gameEngine.onLoad.addEventListener(gameEngineOnLoadListener);
+
+                // load Project with json data
+                try {
+                    startTimeOut();
+                    gameEngine.loadProject(json);
+                } catch (error) {
+
+                    var receivedObject = error;
+                    var type = "";
+                    if ((receivedObject instanceof Object)) {
+                        type = "uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
+                    } else {
+                        type = "Unknown target";
+                    }
+
+                    assert.ok(false, "Project ERROR " + id + " (" + type + ")");
+                    done[currentProjectIdx - 1]();
+
+                    // Free Memory
+                    receivedObject = null;
+                    e = null;
+                    //gameEngine.dispose();
+                    getSingleTestProject();
+                }
+            } else {
+                assert.ok(true, "Project " + id + " valid");
+                done[currentProjectIdx - 1]();
                 getSingleTestProject();
             }
-        } else {
-            assert.ok(true, "Project " + id + " valid");
+        };
+
+        var onErrorProjectHandler = function (e) {
+            var receivedObject = e.responseJson;
+            var type = "", msg = "";
+            if ((receivedObject instanceof Object)) {
+                type = receivedObject.type; // e.g. ProjectNotFoundException
+                msg = receivedObject.message;
+            } else {
+                type = "Unknown Error (no Json Exception)";
+            }
+            assert.ok(false, "Project " + id + " not valid (" + type + "): " + msg);
             done[currentProjectIdx - 1]();
+
             getSingleTestProject();
-        }
-    };
 
-    var onErrorProjectHandler = function (e) {
-        var receivedObject = e.responseJson;
-        var type = "", msg = "";
-        if ((receivedObject instanceof Object)) {
-            type = receivedObject.type; // e.g. ProjectNotFoundException
-            msg = receivedObject.message;
-        } else {
-            type = "Unknown Error (no Json Exception)";
-        }
-        assert.ok(false, "Project " + id + " not valid (" + type + "): " + msg);
-        done[currentProjectIdx - 1]();
-
-        getSingleTestProject();
-
-    };
-    sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectHandler, this));
-    sr.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectHandler, this));
-    PocketCode.Proxy.send(sr);
-}
-// ---
+        };
+        sr.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectHandler, this));
+        sr.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectHandler, this));
+        PocketCode.Proxy.send(sr);
+    }
+    // ---
 
 
 });
