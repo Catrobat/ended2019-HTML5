@@ -195,6 +195,11 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.isStatic, false, "calc random (float): isStatic");
     assert.equal(f.uiString, "random(1.0, 1.01)", "string random (float)");
 
+    f.json = randomCombined;
+    val = f.calculate();
+    assert.ok(val === 1 || val === 3 || val === 7 || val === 9, "val=" + val + ", multiple random values added together");
+    assert.equal(f.uiString, "2 x random(0, 1) + 1 + 6 x random(0, 1)");
+
     f.json = abs;
     assert.equal(f.calculate(), 3.2, "calc abs");
     assert.equal(f.isStatic, true, "calc abs: isStatic");
