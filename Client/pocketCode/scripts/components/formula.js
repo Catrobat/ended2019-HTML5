@@ -4,7 +4,7 @@
 'use strict';
 
 PocketCode.Formula = (function () {
-    //Formula.extends(SmartJs.Core.Component);
+    Formula.extends(SmartJs.Core.Component);
 
     function Formula(device, sprite, jsonFormula) {
 
@@ -36,7 +36,8 @@ PocketCode.Formula = (function () {
                     this.calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
                     var val = this.calculate();
                     val = (typeof val === 'string') ? '\'' + val.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'' : val;
-                    this.calculate = new Function('return ' + val + ';');
+                    val = 'return ' + val + ';';
+                    this.calculate = new Function(val);
                 }
                 else {
                     this.isStatic = false;
@@ -66,21 +67,21 @@ PocketCode.Formula = (function () {
         _log10: function (val) {
             return Math.log(val) / Math.LN10;
         },
-        _validateNumeric: function (left, operator, right) {
-            if (isNaN(left))
-                left = 0;
-            if (isNaN(right)) {
-                right = 0;
-                if (operator == ' / ')  //handle division by zero
-                    return 0;
-                else if (operator == ' % ') {   //modulo
-                    var func = new Function('return ' + left + ';');
-                    return func();
-                }
-        }
-            var func = new Function('return ' + left + operator + right + ';');
-            return func();
-        },
+        //_validateNumeric: function (left, operator, right) {
+        //    if (isNaN(left))
+        //        left = 0;
+        //    if (isNaN(right)) {
+        //        right = 0;
+        //        if (operator == ' / ')  //handle division by zero
+        //            return 0;
+        //        else if (operator == ' % ') {   //modulo
+        //            var func = new Function('return ' + left + ';');
+        //            return func();
+        //        }
+        //    }
+        //    var func = new Function('return ' + left + operator + right + ';');
+        //    return func();
+        //},
         _validateFormula: function () {
             try {
                 var formula = new PocketCode.Formula(this._device, this._sprite);
@@ -93,7 +94,7 @@ PocketCode.Formula = (function () {
                     positionX: 0,
                     positionY: 0,
                     getVariable: function () { return { value: 0 }; },
-                    getList: function() { return { value: [] }; },
+                    getList: function () { return { value: [] }; },
                 };
                 var test = this.calculate.call(formula);    //execute generated calculate method in testFormula
             }
@@ -104,6 +105,7 @@ PocketCode.Formula = (function () {
         dispose: function () {
             this._device = undefined;
             this._sprite = undefined;
+            SmartJs.Core.Component.prototype.dispose.call(this);
         },
     });
 
