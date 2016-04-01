@@ -59,7 +59,11 @@ QUnit.test("FormulaParser: operators", function (assert) {
     assert.ok(device.accelerationX !== undefined && device.accelerationY !== undefined && device.accelerationZ !== undefined && device.compassDirection !== undefined && device.inclinationX !== undefined && device.inclinationY !== undefined && device.loudness !== undefined && device.faceDetected !== undefined && device.faceSize !== undefined && device.facePositionX !== undefined && device.facePositionY !== undefined, "interface: device");
     assert.ok(sprite.brightness !== undefined && sprite.transparency !== undefined && sprite.layer !== undefined && sprite.direction !== undefined && sprite.size !== undefined && sprite.positionX !== undefined && sprite.positionY !== undefined, "interface: sprite");
 
+    //string to number conversion
+    f.json = number2;
+    assert.equal(f.calculate(), 5, "test with invalid number: string to number conversion");
 
+    //operators
     f.json = plus;
     assert.deepEqual(f.json, plus, "json getter using property setter");
 

@@ -226,12 +226,13 @@ PocketCode.merge({
                         return this._parseJsonFunction(jsonFormula, uiString);
 
                     case 'NUMBER':
-                        //if (uiString)
-                        return jsonFormula.value;
-                        //var num = Number(jsonFormula.value);
-                        //if (isNaN(num))
-                        //    throw new Error('invalid operator/type \'number\': string to number conversion failed');
-                        //return Number(jsonFormula.value);// + '';  //as string?
+                        if (uiString)
+                            return jsonFormula.value;
+
+                        var num = Number(jsonFormula.value);
+                        if (isNaN(num))
+                            throw new Error('invalid operator/type \'number\': string to number conversion failed');
+                        return num;
 
                     case 'SENSOR':
                         this._isStatic = false;

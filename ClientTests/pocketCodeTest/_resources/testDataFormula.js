@@ -52,6 +52,7 @@ var stringJoin = { "type": "FUNCTION", "value": "JOIN", "right": { "type": "STRI
 var stringJoin2 = { "type": "FUNCTION", "value": "JOIN", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "MULT", "right": { "type": "NUMBER", "value": "6", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "3", "right": null, "left": null } } }, "left": { "type": "STRING", "value": "hello", "right": null, "left": null } };
 
 var number = { "type": "NUMBER", "value": "1.0", "right": null, "left": null };
+var number2 = { type: "NUMBER", value: "05.0", left: null, right: null };
 var numberOfItems = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": null };
 var listItem = { "type": "FUNCTION", "value": "LIST_ITEM", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": {"type": "USER_LIST", "value": "s22", "left": null, "right": null } };
 var contains = { "type": "FUNCTION", "value": "CONTAINS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": { "type": "NUMBER", "value": "1", "left": null, "right": null } };
