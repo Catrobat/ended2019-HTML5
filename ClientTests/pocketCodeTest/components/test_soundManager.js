@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 "use strict";
 
@@ -15,7 +15,7 @@ QUnit.test("SoundManager", function (assert) {
     var sm2 = new PocketCode.SoundManager();
 
     assert.ok(sm1 instanceof PocketCode.SoundManager, "instance check");
-    assert.ok(sm1.onLoadingProgress instanceof SmartJs.Event.Event && sm1.onLoad instanceof SmartJs.Event.Event && 
+    assert.ok(sm1.onLoadingProgress instanceof SmartJs.Event.Event && sm1.onLoad instanceof SmartJs.Event.Event &&
         sm1.onFinishedPlaying instanceof SmartJs.Event.Event && sm1.onLoadingError instanceof SmartJs.Event.Event, "events: accessors");
 
     //initial
@@ -62,7 +62,7 @@ QUnit.test("SoundManager", function (assert) {
         onLoadCount++;
     };
 
-    var runLoadingTestsUnsupported = function () {
+    function runLoadingTestsUnsupported() {
         var resourceBaseUrl2 = "_resources/";
         var sounds2 = JSON.parse('[{"id":"s32","url":"sounds\/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3","size":3712},{"id":"s37","url":"sounds\/e47dbee99c20968043bcf8b5858c33e1_record.mp3","size":16192},{"id":"s114","url":"sounds\/5952a60f91ed000cf2c46f645698c018_record.mp3","size":12544}]');
 
@@ -93,15 +93,15 @@ QUnit.test("SoundManager", function (assert) {
         assert.equal(success, false, "unsupprted: sound not started");
         success = sm1.startSoundFromUrl("url");
         assert.equal(success, false, "unsupprted: start sound from url: not started");
-        
-        assert.ok(true, "WARNING: not all tests (alternative tests) were executed due to missing browser support");
+
+        assert.ok(false, "WARNING: not all tests (alternative tests) were executed due to missing browser support");
         done1();
         done2();
         done3();
     }
 
     //SUPPORTED
-    var runLoadingTests = function () {
+    function runLoadingTests() {
         sm1.dispose();
         sm1 = new PocketCode.SoundManager();
 
@@ -136,7 +136,7 @@ QUnit.test("SoundManager", function (assert) {
     };
 
     //loading unsupported file formats
-    var runLoadingTests2 = function () {
+    function runLoadingTests2() {
         var resourceBaseUrl2 = "_resources/";
         var sounds2 = JSON.parse('[{"id":"s32","url":"sounds\/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3","size":3712},{"id":"s37","url":"sounds\/e47dbee99c20968043bcf8b5858c33e1_record.mp3","size":16192},{"id":"s114","url":"sounds\/5952a60f91ed000cf2c46f645698c018_record.mp3","size":12544}]');
 
@@ -193,7 +193,7 @@ QUnit.test("SoundManager", function (assert) {
     var resourceBaseUrl1 = "_resources/";
     var sounds1 = JSON.parse('[{"id":"s16","url":"sounds\/3ec79f9addcf5055e069ec794db954e8_c.mp3","size":11140},{"id":"s17","url":"sounds\/778fc114464dcf4b368c7d2841863beb_d.mp3","size":11140},{"id":"s18","url":"sounds\/152badadc1a428c7a89b46cf6d82a43b_e.mp3","size":11140},{"id":"s19","url":"sounds\/dbdd35220c46b04c7ace3f04af185702_f.mp3","size":11140},{"id":"s20","url":"sounds\/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3","size":11140}]');//,{"id":"s21","url":"sounds\/ba454104796ff54154552e6501870d10_a.mp3","size":11140},{"id":"s22","url":"sounds\/9cfb811c257d934d69671369ac15e88e_H.mp3","size":139142},{"id":"s25","url":"sounds\/8586959b14c74023b91e2c17da40cab4_c#.mp3","size":141755},{"id":"s26","url":"sounds\/3bdf92aad67a35e1d67f8b9c304cc732_d#.mp3","size":94734},{"id":"s27","url":"sounds\/7511b8919dadb9d098d77ab228d41ca5_e#.mp3","size":159518},{"id":"s28","url":"sounds\/459ab4eb37f698e3cee4a7f773870a79_f#.mp3","size":23159},{"id":"s29","url":"sounds\/590e4930d1a4d647da8b5d43919fd2ab_g#.mp3","size":56595}]');
 
-    var runSuccessfulLoadingTests = function () {
+    function runSuccessfulLoadingTests() {
         sm1 = new PocketCode.SoundManager();
         var sm1Progress = [],
             sm1Load,
@@ -231,7 +231,7 @@ QUnit.test("SoundManager", function (assert) {
         //done3();
     };
 
-    var runStopTests = function () {
+    function runStopTests() {
 
         var instanceCount = 0;
         var sm1StartPlayingHandler = function () {
