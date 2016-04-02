@@ -101,9 +101,13 @@ PocketCode.Model.merge({
 
             if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
                 this._soundId = SmartJs.getNewId();
-                this._text = this._text.calculate().replace(/\n,\r/g, '');
+                var text = this._text.calculate().replace(/\n,\r/g, '');
+                if (text == '') {
+                    this._soundId = undefined;
+                    return;
+                }
                 //caching
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: this._text });
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
                 this._soundManager.loadSound(request.url, this._soundId, 'mp3');
             }
         }
@@ -116,9 +120,11 @@ PocketCode.Model.merge({
             }
             else {
                 var text = this._text.calculate().replace(/\n,\r/g, '');
-                //we use a request object here to generate an url
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-                this._soundManager.startSoundFromUrl(request.url);
+                if (text !== '') {
+                    //we use a request object here to generate an url
+                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+                    this._soundManager.startSoundFromUrl(request.url);
+                }
             }
             this._return();
         };
