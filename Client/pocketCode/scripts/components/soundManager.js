@@ -199,7 +199,14 @@ PocketCode.SoundManager = (function () {
         },
         _requestFile: function (fileIndex) {
             var sound = this._filesToLoad[fileIndex];
-            var success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
+            var success = false;
+            try {
+                success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
+            }
+            catch(e) {
+                //even if an url is provided there are sounds with missing file extension
+                //that will cause an exception in soundJs
+            }
             if (!success)
                 this._fileLoadingErrorHandler(sound);   //false is returned if no loaded can be initialized (e.g. *.wav in IE) -> handle as error
         },
