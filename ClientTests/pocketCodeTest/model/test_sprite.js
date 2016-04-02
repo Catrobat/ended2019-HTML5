@@ -628,9 +628,7 @@ QUnit.test("Sprite", function (assert) {
         for (var p in testBrick._pendingOps) {
             if (testBrick._pendingOps.hasOwnProperty(p)) {
                 var po = testBrick._pendingOps[p];
-                if (po.timer._paused == true)
-                    ;//paused = true;
-                else 
+                if (po.timer._paused !== true)
                     return false;
             }
         }
