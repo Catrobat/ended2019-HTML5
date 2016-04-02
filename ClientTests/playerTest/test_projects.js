@@ -9,7 +9,7 @@
 QUnit.module("projectTester.js");
 
 
-QUnit.test("[missing]", function (assert) {
+QUnit.test("*", function (assert) {
 
     /* ************************************************************************* */
     /* ******************************* CONFIG ********************************** */
@@ -23,7 +23,7 @@ QUnit.test("[missing]", function (assert) {
 
     /*              2. just test JSON or also test uf object works               */
     /* if true, gameEngine will test project */
-    var JsonToGameEngine = false;   //true;//
+    var JsonToGameEngine = true;//false;   //
     //
 
     /*          3. timeout when project will be canceled in game Engine          */
@@ -33,7 +33,7 @@ QUnit.test("[missing]", function (assert) {
 
     /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
     /* Works only, if JsonToGameEngine = false! */
-    var test_only_listed_programs = false;   //"server", "client", false;
+    var test_only_listed_programs = "client";   //"server", "client", false;
     //
 
     /*                          known server errors                              */
@@ -118,7 +118,8 @@ QUnit.test("[missing]", function (assert) {
         5216: "",
         5568: "",
         5860: "",
-        3329: ""
+        3329: "",
+        3163: "",
     };
 
     server_known_errors = { //empty: do not skip any tests
@@ -135,8 +136,7 @@ QUnit.test("[missing]", function (assert) {
     /* will be skipped if test_only_listed_programs = false */
     var client_known_errors = {
         821: "sound issue",
-        916: "soundjs-0.6.1.custom.js:1189 Uncaught Error: Type not recognized.",
-        881: "sound issue",
+        881: "sound issue: chrome, valid in firefox",
         3926: "timeout 120s: 67 mb project, may also have missing bricks",
         1811: "timeout 120s",
         2732: "(uncatched Error) ILLEGAL TOKEN within parser problem in the speak brick, possibly because of a spanish text",
@@ -156,42 +156,30 @@ QUnit.test("[missing]", function (assert) {
         1792: "timeout 120s",
         5286: "timeout 120s",
         3270: "timeout 120s",
-        3163: "internal server error: InvalidProjectFileException",
         3923: "timeout 120s",
-        1803: "timeout 120s",
         2376: "timeout 120s",
-        //3172: "(uncatched Error) FIXED",
         1801: "timeout 120s",
         3853: "timeout 120s",
         2689: "timeout 120s",
-        6275: "timeout 120s",
         3240: "sound issue",
-        6067: "(uncatched Error) Problem parsing the value '05.0' in a set volume brick: Uncaught SyntaxError: Unexpected number",
+        //6067: "(uncatched Error) Problem parsing the value '05.0' in a set volume brick: Uncaught SyntaxError: Unexpected number",    //LOADING FIXED BUT NOT RUNNING YET
         4049: "timeout 120s",
-        6878: "timeout 120s",
         3381: "timeout 120s",
         1823: "timeout 120s",
         2673: "sound issue? FF: encoding issue in formula/parser",
         5237: "timeout 120s",
         3230: "timeout 120s",
         1793: "timeout 120s",
-        2105: "timeout 120s",
-        5708: "timeout 120s",
-        1704: "timeout 120s",
         2226: "timeout 120s",
         4028: "timeout 120s",
         1958: "timeout 120s",
-        4579: "timeout 120s",
-        1985: "timeout 120s",
         1791: "timeout 120s",
-        1474: "This TTS testapp also crashes pocket code on android: (uncatched Error) missing required service property 'text' in property collection",
-
-        1445: "sound issue",
-        2196: "sound issue",
-        980: "sound issue",
-        965: "sound issuee",
-        3147: "sound issue",
-        1578: "sound issue",
+        1445: "sound issue: chrome, valid in firefox",
+        2196: "sound issue: chrome, valid in firefox",
+        980: "sound issue: chrome, valid in firefox",
+        965: "sound issuee: chrome, valid in firefox",
+        3147: "sound issue: chrome, valid in firefox",
+        1578: "sound issue: chrome, valid in firefox",
         4142: "timeout 120s: loading stopped",
     };
     //
