@@ -20,7 +20,8 @@ PocketCode.Model.merge({
         PlaySoundBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.startSound(this._soundId);
+            if (this._soundId)  //can be null
+                this._soundManager.startSound(this._soundId);
             this._return();
         };
 

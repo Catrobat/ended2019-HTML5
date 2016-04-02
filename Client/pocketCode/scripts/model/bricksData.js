@@ -12,14 +12,16 @@ PocketCode.Model.merge({
         function SetVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._var = sprite.getVariable(propObject.referenceId);
+            if (propObject.referenceId) //can be null
+                this._var = sprite.getVariable(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         SetVariableBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._var.value = this._value.calculate();
+            if (this._var)  //can be undefined
+                this._var.value = this._value.calculate();
             this._return();
         };
 
@@ -32,7 +34,8 @@ PocketCode.Model.merge({
         function ChangeVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._var = sprite.getVariable(propObject.referenceId);
+            if (propObject.referenceId) //can be null
+                this._var = sprite.getVariable(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -40,7 +43,7 @@ PocketCode.Model.merge({
             if (this._disposed)
                 return;
             var value = this._value.calculate();
-            if (!isNaN(value)) {
+            if (this._var && !isNaN(value)) {   //this._var can be undefined
                 if (!isNaN(this._var.value))
                     this._var.value += value;
                 else
@@ -52,10 +55,10 @@ PocketCode.Model.merge({
         return ChangeVariableBrick;
     })(),
 
-    ShowTextBrick: (function() {
-        ShowTextBrick.extends(PocketCode.Model.BaseBrick, false);
+    ShowVariableBrick: (function() {
+        ShowVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ShowTextBrick(device, sprite, propObject) {
+        function ShowVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
              
             this._varId = propObject.referenceId;
@@ -63,33 +66,35 @@ PocketCode.Model.merge({
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
 
-        ShowTextBrick.prototype._execute = function () {
+        ShowVariableBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
+            if (this._varId)    //can be null
+                this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
             this._return();
         };
 
-        return ShowTextBrick;
+        return ShowVariableBrick;
     })(),
 
-    HideTextBrick: (function() {
-        HideTextBrick.extends(PocketCode.Model.BaseBrick, false);
+    HideVariableBrickDto: (function() {
+        HideVariableBrickDto.extends(PocketCode.Model.BaseBrick, false);
 
-        function HideTextBrick(device, sprite, propObject) {
+        function HideVariableBrickDto(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
         }
 
-        HideTextBrick.prototype._execute = function () {
+        HideVariableBrickDto.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._sprite.hideVariable(this._varId);
+            if (this._varId)    //can be null
+                this._sprite.hideVariable(this._varId);
             this._return();
         };
 
-        return HideTextBrick;
+        return HideVariableBrickDto;
     })(),
 
     AppendToListBrick: (function () {
@@ -98,14 +103,16 @@ PocketCode.Model.merge({
         function AppendToListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._list = sprite.getList(propObject.referenceId);
+            if (propObject.referenceId)    //can be null
+                this._list = sprite.getList(propObject.referenceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         AppendToListBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._list.append(this._value.calculate());
+            if (this._list) //can be null
+                this._list.append(this._value.calculate());
             this._return();
         };
 
@@ -119,15 +126,18 @@ PocketCode.Model.merge({
         function InsertAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._list = sprite.getList(propObject.referenceId);
-            this._idx = propObject.index;
+            if (propObject.referenceId)    //can be null
+                this._list = sprite.getList(propObject.referenceId);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         InsertAtListBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._list.insertAt(this._idx, this._value.calculate());
+            var idx = this._idx.calculate();
+            if (this._list && !isNaN(idx))
+                this._list.insertAt(idx, this._value.calculate());
             this._return();
         };
 
@@ -141,15 +151,18 @@ PocketCode.Model.merge({
         function ReplaceAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._list = sprite.getList(propObject.referenceId);
-            this._idx = propObject.index;
+            if (propObject.referenceId)    //can be null
+                this._list = sprite.getList(propObject.referenceId);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         ReplaceAtListBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._list.replaceAt(this._idx, this._value.calculate());
+            var idx = this._idx.calculate();
+            if (this._list && !isNaN(idx))
+                this._list.replaceAt(idx, this._value.calculate());
             this._return();
         };
 
@@ -163,14 +176,17 @@ PocketCode.Model.merge({
         function DeleteAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._list = sprite.getList(propObject.referenceId);
-            this._idx = propObject.index;
+            if (propObject.referenceId)    //can be null
+                this._list = sprite.getList(propObject.referenceId);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
         }
 
         DeleteAtListBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._list.deleteAt(this._idx);
+            var idx = this._idx.calculate();
+            if (this._list && !isNaN(idx))
+                this._list.deleteAt(idx);
             this._return();
         };
 
