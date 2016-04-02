@@ -30,9 +30,9 @@ class FileController extends BaseController
   {
     // Variable Initialization
     $text = "";
-    if(isset($this->request->requestParameters['text']))
+    //if(isset($this->request->requestParameters['text']))
     {
-      $text = utf8_decode($this->request->requestParameters['text']);
+      $text = $this->request->requestParameters['text'];    //do not use utf8_decode()
     }
     if(isset($this->request->requestParameters['lang']))
     {

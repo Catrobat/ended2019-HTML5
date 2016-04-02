@@ -101,7 +101,7 @@ PocketCode.Model.merge({
 
             if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
                 this._soundId = SmartJs.getNewId();
-                this._text = this._text.calculate();
+                this._text = this._text.calculate().replace(/\n,\r/g, '');
                 //caching
                 var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: this._text });
                 this._soundManager.loadSound(request.url, this._soundId, 'mp3');
@@ -115,7 +115,7 @@ PocketCode.Model.merge({
                 this._soundManager.startSound(this._soundId);
             }
             else {
-                var text = this._text.calculate();
+                var text = this._text.calculate().replace(/\n,\r/g, '');
                 //we use a request object here to generate an url
                 var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
                 this._soundManager.startSoundFromUrl(request.url);
