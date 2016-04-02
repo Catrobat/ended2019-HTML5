@@ -3,7 +3,7 @@
 class InsertAtListBrickDto extends BaseBrickDto
 {
   public $referenceId;
-  public $index;
+  public $index;  //type of FormulaDto
   public $value;  //type of FormulaDto
 
   public function __construct($referenceId, $index, $value)

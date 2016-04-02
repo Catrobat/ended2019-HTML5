@@ -2,7 +2,7 @@
 
 class SetLookBrickDto extends BaseBrickDto {
 
-  public $id;
+  public $imageId;
   
   
   public function __construct($imageId) {

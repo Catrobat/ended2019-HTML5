@@ -148,6 +148,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new InsertAtListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
+        //TODO: use formula category property: INSERT_ITEM_INTO_USERLIST_INDEX, INSERT_ITEM_INTO_USERLIST_VALUE
         array_pop($this->cpp);
         break;
 
@@ -160,27 +161,34 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]),
-                                           $this->parseFormula($fl->formula[0]));
+        $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
+        //TODO: use formula category property: REPLACE_ITEM_IN_USERLIST_INDEX, REPLACE_ITEM_IN_USERLIST_VALUE
         array_pop($this->cpp);
         break;
 
       case "ShowTextBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ShowTextBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
+        $brick = new ShowVariableBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
+        //TODO: use formula category property: X_POSITION, Y_POSITION
         array_pop($this->cpp);
         break;
 
       case "HideTextBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $brick = new HideTextBrickDto($id);
-        array_pop($this->cpp);
+        $brick = new HideVariableBrickDto($id);
         break;
 
       default:
