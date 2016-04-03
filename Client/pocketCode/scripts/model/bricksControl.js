@@ -170,7 +170,7 @@ PocketCode.Model.merge({
             //this._stopped = false;
 
             this._recursiveBroadcasts = false;
-            this._recursiveTimeout = undefined;
+            this._timeout = undefined;
         }
 
         BroadcastBrick.prototype.merge({
@@ -192,11 +192,12 @@ PocketCode.Model.merge({
                 //var broadcasts = this._broadcasts;
 
                 if (this._recursiveBroadcasts) {
-                    setTimeout(this._execute.bind(this, true), 1);
+                    this._timeout = setTimeout(this._execute.bind(this, true), 1);
                 }
                 else {
                     this._recursiveBroadcasts = true;
-                    this._broadcastMgr.publish(brId);
+                    //this._broadcastMgr.publish(brId);
+                    this._timeout = setTimeout(this._broadcastMgr.publish.bind(this._broadcastMgr, brId), 0);
                     this._recursiveBroadcasts = false;
                 }
                 //setTimeout(this._return.bind(this), 1);
@@ -213,7 +214,7 @@ PocketCode.Model.merge({
                 }
             },
             stop: function () {
-                clearTimeout(this._recursiveTimeout);
+                clearTimeout(this._timeout);
                 this._paused = false;
                 this._stopped = true;
                 //this._pendingOp = false;    //TODO: TEST
