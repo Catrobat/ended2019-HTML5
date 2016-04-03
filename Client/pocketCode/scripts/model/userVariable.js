@@ -217,7 +217,7 @@ PocketCode.Model.merge({
                 this._onChange.dispatchEvent({ id: this._id });
             },
             _validIndex: function (idx) {
-                if (idx < 1 || idx > this._value.length)
+                if (parseInt(idx) !== idx || idx < 1 || idx > this._value.length)
                     return false;
                 return true;
             },

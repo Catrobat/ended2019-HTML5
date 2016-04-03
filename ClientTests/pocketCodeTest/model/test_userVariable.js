@@ -176,6 +176,8 @@ QUnit.test("UserVariableList", function (assert) {
     assert.equal(uv.valueAt(0), undefined, "value at: 0");
     assert.equal(uv.valueAt(-1), undefined, "value at: < 0");
     assert.equal(uv.valueAt(uv.length + 1), undefined, "value at: length + 1");
+    assert.equal(uv.valueAt(2.0), 3.5, "value at: valid float index");
+    assert.equal(uv.valueAt(2.1), undefined, "value at: invalid float index");
 
     //value as number
     assert.equal(uv.valueAsNumberAt(3), 3.6, "value as number at: 3");
