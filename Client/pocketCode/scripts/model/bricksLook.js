@@ -107,7 +107,7 @@ PocketCode.Model.merge({
         SetSizeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            var val = this._value.calculate();
+            var val = this._percentage.calculate();
             if (isNaN(val))
                 this._return(false);
             else
