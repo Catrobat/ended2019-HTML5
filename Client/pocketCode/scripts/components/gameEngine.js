@@ -323,7 +323,7 @@ PocketCode.GameEngine = (function () {
         },
 
         _resourceProgressChangeHandler: function (e) {
-            if (e.progress === 0)
+            if (!e.file || !e.file.size)
                 return;
 
             var size = e.file.size;
