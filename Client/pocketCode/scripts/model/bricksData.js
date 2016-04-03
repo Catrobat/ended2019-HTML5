@@ -77,16 +77,16 @@ PocketCode.Model.merge({
         return ShowVariableBrick;
     })(),
 
-    HideVariableBrickDto: (function() {
-        HideVariableBrickDto.extends(PocketCode.Model.BaseBrick, false);
+    HideVariableBrick: (function() {
+        HideVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function HideVariableBrickDto(device, sprite, propObject) {
+        function HideVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._varId = propObject.referenceId;
         }
 
-        HideVariableBrickDto.prototype._execute = function () {
+        HideVariableBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
             if (this._varId)    //can be null
@@ -94,7 +94,7 @@ PocketCode.Model.merge({
             this._return();
         };
 
-        return HideVariableBrickDto;
+        return HideVariableBrick;
     })(),
 
     AppendToListBrick: (function () {

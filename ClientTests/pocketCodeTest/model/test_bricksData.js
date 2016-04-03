@@ -97,7 +97,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });
 
-QUnit.test("ShowTextBrick", function (assert) {
+QUnit.test("ShowVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
@@ -107,11 +107,11 @@ QUnit.test("ShowTextBrick", function (assert) {
     var x = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}'),
         y = JSON.parse('{"type":"NUMBER","value":"2.0","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ShowTextBrick("device", sprite, { referenceId: "var1", x: x, y: y });
+    var b = new PocketCode.Model.ShowVariableBrick("device", sprite, { referenceId: "var1", x: x, y: y });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.BaseBrick && b instanceof PocketCode.Model.ShowTextBrick, "instance check");
-    assert.ok(b.objClassName === "ShowTextBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.BaseBrick && b instanceof PocketCode.Model.ShowVariableBrick, "instance check");
+    assert.ok(b.objClassName === "ShowVariableBrick", "objClassName check");
 
     //check and override sprite interface
     assert.ok(typeof sprite.showVariableAt === "function", "brick sprite interface checked");
@@ -132,18 +132,18 @@ QUnit.test("ShowTextBrick", function (assert) {
     assert.equal(methodCalled.y, 2, "sprite interface called: positionY checked");
 });
 
-QUnit.test("HideTextBrick", function (assert) {
+QUnit.test("HideVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
 
-    var b = new PocketCode.Model.HideTextBrick("device", sprite, { referenceId: "var1" });
+    var b = new PocketCode.Model.HideVariableBrick("device", sprite, { referenceId: "var1" });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.BaseBrick && b instanceof PocketCode.Model.HideTextBrick, "instance check");
-    assert.ok(b.objClassName === "HideTextBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.BaseBrick && b instanceof PocketCode.Model.HideVariableBrick, "instance check");
+    assert.ok(b.objClassName === "HideVariableBrick", "objClassName check");
 
     //check and override sprite interface
     assert.ok(typeof sprite.hideVariable === "function", "brick sprite interface checked");
@@ -207,9 +207,10 @@ QUnit.test("InsertAtListBrick", function (assert) {
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
-    var b = new PocketCode.Model.InsertAtListBrick("device", sprite, { referenceId: "var1", index: 2, value: value });
+    var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
+    var b = new PocketCode.Model.InsertAtListBrick("device", sprite, { referenceId: "var1", index: idx, value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx == 2 && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.InsertAtListBrick, "instance check");
     assert.ok(b.objClassName === "InsertAtListBrick", "objClassName check");
@@ -242,9 +243,10 @@ QUnit.test("ReplaceAtListBrick", function (assert) {
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
-    var b = new PocketCode.Model.ReplaceAtListBrick("device", sprite, { referenceId: "var1", index: 3, value: value });
+    var idx = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
+    var b = new PocketCode.Model.ReplaceAtListBrick("device", sprite, { referenceId: "var1", index: idx, value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx == 3 && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.ReplaceAtListBrick, "instance check");
     assert.ok(b.objClassName === "ReplaceAtListBrick", "objClassName check");
@@ -276,9 +278,10 @@ QUnit.test("DeleteAtListBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
-    var b = new PocketCode.Model.DeleteAtListBrick("device", sprite, { referenceId: "var1", index: 2 });
+    var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
+    var b = new PocketCode.Model.DeleteAtListBrick("device", sprite, { referenceId: "var1", index: idx });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx == 2, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.DeleteAtListBrick, "instance check");
     assert.ok(b.objClassName === "DeleteAtListBrick", "objClassName check");

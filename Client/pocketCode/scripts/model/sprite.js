@@ -75,6 +75,8 @@ PocketCode.Model.Sprite = (function () {
         this.name = '';
 
         this._looks = [];
+        this._lookOffsetX = 0.0;
+        this._lookOffsetY = 0.0;
         this._sounds = [];
         this._bricks = [];
 

@@ -21,7 +21,12 @@ PocketCode.Model.merge({
 		PlaceAtBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.setPosition(this._x.calculate(), this._y.calculate()));
+			var x = this._x.calculate(),
+				y = this._y.calculate();
+			if (isNaN(x) || isNaN(y))
+				this._return(false);
+			else
+				this._return(this._sprite.setPosition(x, y));
 		};
 
 		return PlaceAtBrick;
@@ -40,7 +45,11 @@ PocketCode.Model.merge({
 		SetXBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.setPositionX(this._x.calculate()));
+			var x = this._x.calculate();
+			if (isNaN(x))
+				this._return(false);
+			else
+				this._return(this._sprite.setPositionX(x));
 		};
 
 		return SetXBrick;
@@ -59,7 +68,11 @@ PocketCode.Model.merge({
 		SetYBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.setPositionY(this._y.calculate()));
+			var y = this._y.calculate();
+			if (isNaN(y))
+				this._return(false);
+			else
+				this._return(this._sprite.setPositionY(y));
 		};
 
 		return SetYBrick;
@@ -78,7 +91,11 @@ PocketCode.Model.merge({
 		ChangeXBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.changePositionX(this._x.calculate()));
+			var x = this._x.calculate();
+			if (isNaN(x))
+				this._return(false);
+			else
+				this._return(this._sprite.changePositionX(x));
 		};
 
 		return ChangeXBrick;
@@ -97,7 +114,11 @@ PocketCode.Model.merge({
 		ChangeYBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.changePositionY(this._y.calculate()));
+			var y = this._y.calculate();
+			if (isNaN(y))
+				this._return(false);
+			else
+				this._return(this._sprite.changePositionY(y));
 		};
 
 		return ChangeYBrick;
@@ -134,7 +155,11 @@ PocketCode.Model.merge({
 		MoveNStepsBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.move(this._steps.calculate()));
+			var val = this._steps.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._sprite.move(val));
 		};
 
 		return MoveNStepsBrick;
@@ -153,7 +178,11 @@ PocketCode.Model.merge({
 		TurnLeftBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.turnLeft(this._degrees.calculate()));
+			var val = this._degrees.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._sprite.turnLeft(val));
 		};
 
 		return TurnLeftBrick;
@@ -172,7 +201,11 @@ PocketCode.Model.merge({
 		TurnRightBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.turnRight(this._degrees.calculate()));
+			var val = this._degrees.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._sprite.turnRight(val));
 		};
 
 		return TurnRightBrick;
@@ -191,7 +224,11 @@ PocketCode.Model.merge({
 		PointInDirectionBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.setDirection(this._degrees.calculate()));
+			var val = this._degrees.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._sprite.setDirection(val));
 		};
 
 		return PointInDirectionBrick;
@@ -230,7 +267,7 @@ PocketCode.Model.merge({
 		}
 
 		GlideToBrick.prototype.merge({
-			_updatePositionHandler: function(e) {
+			_updatePositionHandler: function (e) {
 				this._sprite.setPosition(e.value.x, e.value.y);
 			},
 			_returnHandler: function (e) {
@@ -243,7 +280,17 @@ PocketCode.Model.merge({
 				var sprite = this._sprite;
 				var po = this._pendingOps[callId];
 				po.paused = this._paused;
-				var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: this._x.calculate(), y: this._y.calculate() }, Math.round(this._duration.calculate() * 1000), SmartJs.Animation.Type.LINEAR2D);
+				var duration = this._duration.calculate(),
+					x = this._x.calculate(),
+					y = this._y.calculate();
+				if (isNaN(duration)) {
+					if (!isNaN(x) && !isNaN(y))
+						this._updatePositionHandler({ value: { x: x, y: y } });
+					this._returnHandler({ callId: callId });
+					return;
+				}
+
+				var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
 				animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
 				animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
 				po.animation = animation;
@@ -307,7 +354,11 @@ PocketCode.Model.merge({
 		GoBackBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._sprite.goBack(this._layers.calculate()));
+			var val = this._layers.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._sprite.goBack(val));
 		};
 
 		return GoBackBrick;
@@ -336,18 +387,22 @@ PocketCode.Model.merge({
 
 		function VibrationBrick(device, sprite, propObject) {
 			PocketCode.Model.BaseBrick.call(this, device, sprite);
-			
+
 			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
 		}
 
 		VibrationBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
-			this._return(this._device.vibrate(this._duration.calculate()));
+			var val = this._duration.calculate();
+			if (isNaN(val))
+				this._return(false);
+			else
+				this._return(this._device.vibrate(val));
 		};
 
 		return VibrationBrick;
 	})(),
-	
+
 });
 

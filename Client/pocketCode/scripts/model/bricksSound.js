@@ -62,8 +62,13 @@ PocketCode.Model.merge({
         SetVolumeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.volume = this._percentage.calculate();
-            this._return();
+            var val = this._percentage.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else {
+                this._soundManager.volume = val;
+                this._return();
+            }
         };
 
         return SetVolumeBrick;
@@ -83,8 +88,13 @@ PocketCode.Model.merge({
         ChangeVolumeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.volume += this._value.calculate();   //changeVolume(this._value.calculate());
-            this._return();
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else {
+                this._soundManager.volume += val;   //changeVolume(this._value.calculate());
+                this._return();
+            }
         };
 
         return ChangeVolumeBrick;
