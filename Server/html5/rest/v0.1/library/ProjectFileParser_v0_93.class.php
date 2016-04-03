@@ -396,6 +396,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         break;
 
       case "SetGhostEffectBrick":
+      case "SetTransparencyBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -404,6 +405,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         break;
 
       case "ChangeGhostEffectByNBrick":
+      case "ChangeTransparencyByNBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
