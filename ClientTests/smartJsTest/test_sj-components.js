@@ -74,6 +74,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 
 	var t = new SmartJs.Components.Timer(800, new SmartJs.Event.EventListener(testHandler1, this), true);
 	assert.ok(t instanceof SmartJs.Components.Timer, "instance check");
+	assert.throws(function () { t = new SmartJs.Components.Timer(800.1, new SmartJs.Event.EventListener(testHandler1, this), true); }, Error, "ERROR: invalid argument: ctr");
 
 	t = new SmartJs.Components.Timer(500, new SmartJs.Event.EventListener(testHandler2, this), true);
 

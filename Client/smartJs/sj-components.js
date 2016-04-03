@@ -64,6 +64,8 @@ SmartJs.Components = {
     Timer: (function () {
 
         function Timer(delay, listener, startOnInit, callbackArgs) {
+            if (isNaN(delay) || parseInt(delay) !== delay)
+                throw new Error('invalid argument delay: expected type: int');
             this._delay = delay;
             //this._remainingTime = delay;  //init on start()
             this._callBackArgs = callbackArgs;  //introduced to enable threaded timer identification
