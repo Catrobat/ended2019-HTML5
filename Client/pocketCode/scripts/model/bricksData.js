@@ -43,10 +43,10 @@ PocketCode.Model.merge({
             if (this._disposed)
                 return;
             var value = this._value.calculate();
-            if (this._var && !isNaN(value)) {   //this._var can be undefined
-                if (!isNaN(this._var.value))
+            if (this._var) {   //this._var can be undefined
+                if (!isNaN(this._var.value) && !isNaN(value))
                     this._var.value += value;
-                else
+                else //overwrite existing if values not numeric
                     this._var.value = value;
             }
             this._return();

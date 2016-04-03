@@ -85,7 +85,7 @@ PocketCode.Model.merge({
                 }
                 var po = this._pendingOps[callId];
                 po.paused = this._paused;
-                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
                 if (this._paused)
                     po.timer.pause();
             },
