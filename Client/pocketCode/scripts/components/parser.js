@@ -37,9 +37,9 @@ PocketCode.merge({
         //methods
         SpriteFactory.prototype.merge({
             create: function (jsonSprite) {
-                if(typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
+                if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
-            
+
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
                 var bricks = [];
                 for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
@@ -239,8 +239,7 @@ PocketCode.merge({
                         return this._parseJsonSensor(jsonFormula, uiString);
 
                     case 'USER_VARIABLE':
-                        if (uiString)
-                        {
+                        if (uiString) {
                             var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.global[jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
@@ -249,8 +248,7 @@ PocketCode.merge({
                         return 'this._sprite.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
-                        if (uiString)
-                        {
+                        if (uiString) {
                             var list = this._listNames.local[jsonFormula.value] || this._listNames.global[jsonFormula.value];
                             return '*' + list.name + '*';
                         }
@@ -275,7 +273,7 @@ PocketCode.merge({
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
                 //if (uiString || !numeric)
-                    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+                return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
                 //return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
@@ -322,7 +320,7 @@ PocketCode.merge({
                         return this._concatOperatorFormula(jsonFormula, ' + ', uiString, true);
 
                     case 'MINUS':
-                        if (uiString && jsonFormula.left === null)    //singed number
+                        if (jsonFormula.left === null)    //singed number
                             return this._concatOperatorFormula(jsonFormula, '-', uiString);
                         return this._concatOperatorFormula(jsonFormula, ' - ', uiString, jsonFormula.left !== null);
 
@@ -335,9 +333,6 @@ PocketCode.merge({
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
                         return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
-
-                        //case 'MOD':
-                        //    return this._concatOperatorFormula(jsonFormula, ' % ');
 
                         //case 'POW':
                         //    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
@@ -494,7 +489,8 @@ PocketCode.merge({
                             return 'FALSE';
                         return 'false';
 
-                    case 'LENGTH':  //string
+                    //string
+                    case 'LENGTH':
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
@@ -502,20 +498,20 @@ PocketCode.merge({
                             return '(' + this._parseJsonType(jsonFormula.left) + ' + \'\').length';
                         return 0;
 
-                    case 'LETTER':  //string
+                    case 'LETTER':
                         if (uiString)
                             return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
                         return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
 
-                    case 'JOIN':    //string
+                    case 'JOIN':
                         if (uiString)
                             return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                        //list functions
+                    //list functions
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -568,77 +564,66 @@ PocketCode.merge({
                         if (uiString)
                             return 'acceleration_x';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationX';
 
                     case 'Y_ACCELERATION':
                         if (uiString)
                             return 'acceleration_y';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationY';
 
                     case 'Z_ACCELERATION':
                         if (uiString)
                             return 'acceleration_z';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationZ';
 
                     case 'COMPASS_DIRECTION':
                         if (uiString)
                             return 'compass_direction';
 
-                        //this._isStatic = false;
                         return 'this._device.compassDirection';
 
                     case 'X_INCLINATION':
                         if (uiString)
                             return 'inclination_x';
 
-                        //this._isStatic = false;
                         return 'this._device.inclinationX';
 
                     case 'Y_INCLINATION':
                         if (uiString)
                             return 'inclination_y';
 
-                        //this._isStatic = false;
                         return 'this._device.inclinationY';
 
                     case 'LOUDNESS':
                         if (uiString)
                             return 'loudness';
 
-                        //this._isStatic = false;
                         return 'this._device.loudness';
 
                     case 'FACE_DETECTED':
                         if (uiString)
                             return 'is_face_detected';
 
-                        //this._isStatic = false;
                         return 'this._device.faceDetected';
 
                     case 'FACE_SIZE':
                         if (uiString)
                             return 'face_size';
 
-                        //this._isStatic = false;
                         return 'this._device.faceSize';
 
                     case 'FACE_X_POSITION':
                         if (uiString)
                             return 'face_x_position';
 
-                        //this._isStatic = false;
                         return 'this._device.facePositionX';
 
                     case 'FACE_Y_POSITION':
                         if (uiString)
                             return 'face_y_position';
 
-                        //this._isStatic = false;
                         return 'this._device.facePositionY';
 
                         //sprite
@@ -646,49 +631,42 @@ PocketCode.merge({
                         if (uiString)
                             return 'brightness';
 
-                        //this._isStatic = false;
                         return 'this._sprite.brightness';
 
                     case 'OBJECT_GHOSTEFFECT':
                         if (uiString)
                             return 'transparency';
 
-                        //this._isStatic = false;
                         return 'this._sprite.transparency';
 
                     case 'OBJECT_LAYER':
                         if (uiString)
                             return 'layer';
 
-                        //this._isStatic = false;
                         return 'this._sprite.layer';
 
                     case 'OBJECT_ROTATION': //=direction
                         if (uiString)
                             return 'direction';
 
-                        //this._isStatic = false;
                         return 'this._sprite.direction';
 
                     case 'OBJECT_SIZE':
                         if (uiString)
                             return 'size';
 
-                        //this._isStatic = false;
                         return 'this._sprite.size';
 
                     case 'OBJECT_X':
                         if (uiString)
                             return 'position_x';
 
-                        //this._isStatic = false;
                         return 'this._sprite.positionX';
 
                     case 'OBJECT_Y':
                         if (uiString)
                             return 'position_y';
 
-                        //this._isStatic = false;
                         return 'this._sprite.positionY';
 
                     case 'NXT_SENSOR_1':

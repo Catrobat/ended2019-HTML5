@@ -108,6 +108,9 @@ var logicalOr = { "type": "OPERATOR", "value": "LOGICAL_OR", "right": { "type": 
 var not = { "type": "OPERATOR", "value": "NOT_EQUAL", "right": { "type": "OPERATOR", "value": "LOGICAL_NOT", "right": { "type": "FUNCTION", "value": "TRUE", "right": null, "left": null }, "left": null }, "left": { "type": "FUNCTION", "value": "TRUE", "right": null, "left": null } };
 var greaterOrEqual = { "type": "OPERATOR", "value": "GREATER_OR_EQUAL", "right": { "type": "NUMBER", "value": "3", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "6", "right": null, "left": null } };
 
+//bool to number conversion
+bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"NUMBER","value":"1","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"2","left":null,"right":null}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"2","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"3","left":null,"right":null}}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"4","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"4","left":null,"right":null}}}}};
+
 //formula: encoding tests (take from project 2673)
 var encoding1 = {
     "type": "STRING",
