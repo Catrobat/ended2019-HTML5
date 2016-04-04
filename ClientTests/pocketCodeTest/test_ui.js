@@ -64,11 +64,37 @@ QUnit.test("I18nTextNode", function (assert) {
     assert.equal(tn.text, "test1: NOW", "i18nKey set with I18nString + insertBefore & after = object supporting toString()");
     assert.equal(tn._dom.textContent, "->test1: NOWtest1: x, test1: x, test3: NOW", "rendered correctly: insertBefore and after = object supporting toString()");
 
+    var dom = document.getElementById("qunit-fixture");
+    var div = document.createElement("div");
+    dom.appendChild(div);
+    var vp = new SmartJs.Ui.Control(div);   //if you make dom a Control in UnitTests the ID will change and cause errors on other test cases
+    var layoutChangeCounter = 0;
+    var layoutChangeHandler = function (e) {
+        layoutChangeCounter++;
+    };
+    vp.onLayoutChange.addEventListener(new SmartJs.Event.EventListener(layoutChangeHandler, this));
+
+    vp._appendChild(tn);
+    assert.equal(layoutChangeCounter, 1, "parent layout change was triggered: parent logic");
+
     tn.hide();
+    assert.equal(layoutChangeCounter, 2, "parent layout change was triggered: on hide");
     assert.equal(tn.text, "test1: NOW", "i18nKey set with I18nString + insertBefore & after = object supporting toString()");
     assert.equal(tn._dom.textContent, "", "hidden: text set but not shown");
     tn.show();
+    assert.equal(layoutChangeCounter, 3, "parent layout change was triggered: on show");
     assert.equal(tn._dom.textContent, "->test1: NOWtest1: x, test1: x, test3: NOW", "show(): sets ui text including insertBefore, insertAfter");
+
+    tn.i18n = "test1";
+    assert.equal(layoutChangeCounter, 4, "parent layout change was triggered: i18n setter");
+
+    i18nProvider._dictionary.test1 = "neuer text in anderer sprache";
+    i18nProvider.onLanguageChange.dispatchEvent();
+    assert.equal(layoutChangeCounter, 5, "parent layout change was triggered: on languageChange");
+    assert.equal(tn._dom.textContent, "->neuer text in anderer sprachetest1: x, test1: x, test3: NOW", "show(): sets ui text including insertBefore, insertAfter, new language");
+
+    tn.dispose();
+    assert.equal(tn._disposed, true, "disposed");
 
 });
 

@@ -65,8 +65,16 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
 
     tn = new SmartJs.Ui.TextNode("ANOTHER TEXT");
     assert.equal(tn.text, "ANOTHER TEXT", "textnode: constructor text");
+    var layoutChangeCounter = 0;
+    var layoutChangeHandler = function (e) {
+        layoutChangeCounter++;
+    };
+    vp.onLayoutChange.addEventListener(new SmartJs.Event.EventListener(layoutChangeHandler, this));
     vp._appendChild(tn);
     assert.equal(div.innerHTML, tn.text, "textnode: append (constructor text)");
+    assert.equal(layoutChangeCounter, 1, "parent layout change was triggered: parent logic");
+    tn.text = "new text.. longer than the original";
+    assert.equal(layoutChangeCounter, 2, "parent layout change was triggered: on resize");
 
     tn.dispose();
     assert.notEqual(vp._dom, undefined, "textnode: parent still in DOM");

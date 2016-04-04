@@ -176,9 +176,17 @@ SmartJs.Ui.merge({
     TextNode: (function () {
         TextNode.extends(SmartJs.Core.Component);
 
-        function TextNode(text) {//, propObject) {
+        function TextNode(text) {
             this._text = text || '';
             this._dom = document.createTextNode(this._text);
+
+            //events
+            this._onResize = new SmartJs.Event.Event(this);
+            this._onResize.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                var parent = this._parent;
+                if (parent && parent !== e.caller)
+                    this._parent.onLayoutChange.dispatchEvent({ caller: this });
+            }, this));
         }
 
         //properties
@@ -190,6 +198,7 @@ SmartJs.Ui.merge({
                 set: function (value) {
                     this._text = value;
                     this._dom.textContent = value;
+                    this._onResize.dispatchEvent();
                 },
             },
         });
@@ -198,9 +207,11 @@ SmartJs.Ui.merge({
         TextNode.prototype.merge({
             hide: function () {
                 this._dom.textContent = '';
+                this._onResize.dispatchEvent();
             },
             show: function () {
                 this._dom.textContent = this._text;
+                this._onResize.dispatchEvent();
             },
             verifyResize: function () { //interface support only
             },

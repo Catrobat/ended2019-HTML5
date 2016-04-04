@@ -119,6 +119,7 @@ PocketCode.Ui.merge({
             /* override */
             show: function () {
                 this._dom.textContent = this._insertBefore.toString() + this._text + this._insertAfter.toString();
+                this._onResize.dispatchEvent();
             },
         });
 
