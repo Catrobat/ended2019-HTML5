@@ -95,6 +95,7 @@ QUnit.test("I18nTextNode", function (assert) {
 
     tn.dispose();
     assert.equal(tn._disposed, true, "disposed");
+    assert.equal(vp._childs.length, 0, "removed from parent during dispose");
 
 });
 

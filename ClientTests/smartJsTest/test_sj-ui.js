@@ -114,6 +114,7 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
     tn = new SmartJs.Ui.TextNode("ANOTHER TEXT");
     dom.appendChild(tn._dom);
     tn.dispose();
+    assert.equal(tn._disposed, true, "disposed");
     assert.equal(document.body.contains(tn._dom), false, "textnode: delete from dom during dispose");
 
 });
