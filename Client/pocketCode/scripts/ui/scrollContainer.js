@@ -14,19 +14,23 @@ PocketCode.Ui.ScrollContainer = (function () {
         this._iScroll = new IScroll(this._dom, {
             mouseWheel: true,
             //scrollbars: true,
-            //fadeScrollbars: true,           //on mobile
-            interactiveScrollbars: true,  //on desktop ^^use this exclusive?
+            //fadeScrollbars: true,         //on mobile
+            interactiveScrollbars: true,    //on desktop ^^use this exclusive?
             scrollbars: 'custom',
             bounce: true,   //default
             shrinkScrollbars: 'clip',
             //invertWheelDirection: true,
             preventDefault: true,
         });
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+        this._container.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
     }
 
     //methods
     ScrollContainer.prototype.merge({
+        //verifyResize: function (caller) {
+        //    this._iScroll.refresh();
+        //    SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, caller);
+        //},
         _resizeHandler: function (e) {
             this._iScroll.refresh();
         },
