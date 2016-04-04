@@ -156,9 +156,9 @@ PocketCode.merge({
                     this._currentPage.actionOnGlobalError();
 
                 var d = new PocketCode.Ui.GlobalErrorDialog();
-                d.bodyInnerHTML += '<br /><br />Details: ';
-                d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Details: ';
+                //d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
@@ -177,9 +177,9 @@ PocketCode.merge({
                 var d = new PocketCode.Ui.UnsupportedSoundFileDialog();
                 d.onCancel.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
-                d.bodyInnerHTML += '<br /><br />Details: [';
-                for (var i = 0, l = files.length - 1; i < l; i++)
-                    d.bodyInnerHTML += e.files[i].src.replace(new RegExp('/', 'g'), '/&shy;') + ', ';
+                //d.bodyInnerHTML += '<br /><br />Details: [';
+                //for (var i = 0, l = files.length - 1; i < l; i++)
+                //    d.bodyInnerHTML += e.files[i].src.replace(new RegExp('/', 'g'), '/&shy;') + ', ';
                 //d.bodyInnerHTML += files[files.length-1].src + ']';
                 this._showDialog(d, false);
             },
@@ -205,7 +205,7 @@ PocketCode.merge({
 
                 var d = new PocketCode.Ui.ProjectNotFoundDialog();
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
             },
@@ -257,7 +257,7 @@ PocketCode.merge({
                 }
                 PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
 
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
@@ -365,7 +365,7 @@ PocketCode.merge({
                     else {
                         var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                         d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                        d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                        //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                         this._onInit.dispatchEvent();   //hide splash screen
                         this._showDialog(d, false);
                     }
