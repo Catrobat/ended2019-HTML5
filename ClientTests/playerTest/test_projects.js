@@ -23,7 +23,7 @@ QUnit.test("*", function (assert) {
 
     /*              2. just test JSON or also test uf object works               */
     /* if true, gameEngine will test project */
-    var JsonToGameEngine = true;//false;   //
+    var JsonToGameEngine = false;   //true;//
     //
 
     /*          3. timeout when project will be canceled in game Engine          */
@@ -33,7 +33,7 @@ QUnit.test("*", function (assert) {
 
     /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
     /* Works only, if JsonToGameEngine = false! */
-    var test_only_listed_programs = "client";   //"server", "client", false;
+    var test_only_listed_programs = false;   //"server", "client", false;
     //
 
     /*                          known server errors                              */

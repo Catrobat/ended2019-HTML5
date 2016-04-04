@@ -216,7 +216,7 @@ class ProjectFileParser
   }
 
   //resource already registered
-  protected function findItemInArrayByUrl($url, $array, $checkInUse)
+  protected function findItemInArrayByUrl($url, $array, $checkInUse = false)
   {
     foreach($array as $item)
     {
@@ -448,18 +448,20 @@ class ProjectFileParser
     return ucFirst($script->getName());
   }
 
-  protected function parseForeverBrick($bricks, $idx, $length, $brickList)
+  protected function parseForeverBrick($brickList, $idx)
   {
     $brick = new ForeverBrickDto();
-    //use a counter ob nested elements with same name as comparison of objects using equal
+    //use a counter to compare nested elements with same names, as objects using equal
     // or operator (===) is not available in simpleXML
     $nestedCounter = 0;
-    $idx++;
+    $parsed = false;
 
     //search for associated end brick
     $innerBricks = [];
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "ForeverBrick")
       {
@@ -472,7 +474,7 @@ class ProjectFileParser
         {
           //parse recursive
           $brick->bricks = $this->parseInnerBricks($innerBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 1;
           break;
         }
@@ -488,11 +490,12 @@ class ProjectFileParser
         //add sub bricks
         array_push($innerBricks, $brickList[$idx]);
       }
-
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if (!$parsed)
+      throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
   protected function parseRepeatBrickScript($script)
@@ -502,15 +505,18 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseRepeatBrick($bricks, $idx, $length, $brickList, $brick)
+  protected function parseRepeatBrick($brickList, $idx)
   {
+    $brick = $this->parseRepeatBrickScript($brickList[$idx]);
     $nestedCounter = 0;
-    $idx++;
-
+    $parsed = false;
+    
     //search for associated end brick
     $innerBricks = [];
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "RepeatBrick")
       {
@@ -523,7 +529,7 @@ class ProjectFileParser
         {
           //parse recursive
           $brick->bricks = $this->parseInnerBricks($innerBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 1;
           break;
         }
@@ -539,11 +545,12 @@ class ProjectFileParser
         //add sub bricks
         array_push($innerBricks, $brickList[$idx]);
       }
-
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if (!$parsed)
+      throw new InvalidProjectFileException("RepeatBrick: missing LoopEndBrick");
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
   protected function parseIfLogicBeginBrickScript($script)
@@ -553,19 +560,21 @@ class ProjectFileParser
     return $brick;
   }
 
-  private function parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick)
+  private function parseIfLogicBeginBrick($brickList, $idx)
   {
+    $brick = $this->parseIfLogicBeginBrickScript($brickList[$idx]);
     $nestedCounter = 0;
-    //skip begin brick
-    $idx++;
-
+    $parsed = false;
+    
     //search for associated end brick
     $innerIfBricks = [];
     $innerElseBricks = [];
     $inElse = false;
-
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      //skip begin brick
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "IfLogicBeginBrick")
       {
@@ -575,7 +584,6 @@ class ProjectFileParser
       if($name === "IfLogicElseBrick" && $nestedCounter === 0)
       {
         $inElse = true;
-        $idx++;
         continue;
       }
 
@@ -586,7 +594,7 @@ class ProjectFileParser
           //parse recursive
           $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
           $brick->elseBricks = $this->parseInnerBricks($innerElseBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 2;
           break;
         }
@@ -616,10 +624,12 @@ class ProjectFileParser
           array_push($innerElseBricks, $brickList[$idx]);
         }
       }
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if (!$parsed)
+      throw new InvalidProjectFileException("IfLogicBeginBrick: missing IfLogicEndBrick");
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
   //this method is used to handle bricks like if-then-else, which are a single container brick according to our definition 
@@ -631,9 +641,8 @@ class ProjectFileParser
       $bricks = [];
 
       $idx = 0;
-      $length = count($brickList);
 
-      while($idx < $length)
+      while($idx < count($brickList))
       {
         //special logic for loops: forever, repeat and if-then-else
         //to restructure the *.catrobat/code.xml document to our needs
@@ -647,26 +656,21 @@ class ProjectFileParser
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
-            $result = $this->parseForeverBrick($bricks, $idx, $length, $brickList);
-            $bricks = $result["bricks"];
+            $result = $this->parseForeverBrick($brickList, $idx);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           case "RepeatBrick":
-            $brick = $this->parseRepeatBrickScript($script);
-            $result = $this->parseRepeatBrick($bricks, $idx, $length, $brickList, $brick);
-            $bricks = $result["bricks"];
+            $result = $this->parseRepeatBrick($brickList, $idx);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           case "IfLogicBeginBrick":
-            $brick = $this->parseIfLogicBeginBrickScript($script);
-            $result = $this->parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick);
-            $bricks = $result["bricks"];
+            $result = $this->parseIfLogicBeginBrick($brickList, $idx);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           default:
