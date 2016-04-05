@@ -124,7 +124,7 @@ QUnit.test("SpeakBrick", function (assert) {
     var b = new PocketCode.Model.SpeakBrick(device, sprite, program._soundManager, { text: text });
 
     assert.ok(b._device === device && b._sprite === sprite && b._soundManager === program._soundManager, "brick created and properties set correctly");
-    assert.ok(b._soundId === undefined && b._text instanceof PocketCode.Formula || typeof b._soundId === "string" && typeof b._text === "string", "sound file parameters set");
+    assert.ok(b._text instanceof PocketCode.Formula, "sound file: formula parameter set");
     assert.ok(b instanceof PocketCode.Model.SpeakBrick, "instance check");
     assert.ok(b.objClassName === "SpeakBrick", "objClassName check");
 
