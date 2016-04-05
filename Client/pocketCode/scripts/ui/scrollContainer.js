@@ -6,7 +6,7 @@ PocketCode.Ui.ScrollContainer = (function () {
     function ScrollContainer(propObject, innerPropObject) {
         SmartJs.Ui.ContainerControl.call(this, propObject);
 
-        this._container = new SmartJs.Ui.ContainerControl(innerPropObject);//{ className: 'pc-scrollContent' });
+        this._container = new SmartJs.Ui.ContainerControl(innerPropObject);
         this._appendChild(this._container);
         if (!propObject)
             this._dom.style.overflow = 'hidden';
@@ -27,10 +27,6 @@ PocketCode.Ui.ScrollContainer = (function () {
 
     //methods
     ScrollContainer.prototype.merge({
-        //verifyResize: function (caller) {
-        //    this._iScroll.refresh();
-        //    SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this, caller);
-        //},
         _resizeHandler: function (e) {
             this._iScroll.refresh();
         },
