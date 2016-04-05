@@ -35,7 +35,6 @@ QUnit.test("*", function(assert)
   /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
   /* Works only, if JsonToGameEngine = false! */
   var test_only_listed_programs = false;   //"server", "client", false;
-  var consider_known_errors = true;
 
   /*                          known server errors                              */
   /* will be skipped if test_only_listed_programs = false */
@@ -503,7 +502,13 @@ QUnit.test("*", function(assert)
     7237 : ": referenced brick",
     7242 : ": referenced brick"
   };
-  //
+
+  var known_invalid_projects = {
+    4824 : "RepeatBrick: missing LoopEndBrick [forever { repeat { endForever } endRepeat }]",
+    6236 : "RepeatBrick: missing LoopEndBrick [forever { repeat { endForever } endRepeat }]",
+    6241 : "RepeatBrick: missing LoopEndBrick [forever { repeat { endForever } endRepeat }]",
+    6966 : "RepeatBrick: missing LoopEndBrick [forever { repeat { endForever } endRepeat }]"
+  };
 
   /*                          known client errors                              */
   /* will be skipped if test_only_listed_programs = false */
@@ -739,9 +744,17 @@ QUnit.test("*", function(assert)
 
     if(test_only_listed_programs == false)
     {
+      if(id in server_known_errors && id in known_invalid_projects)
+      {
+        assert.ok(true, "Project " + id + " passed, error in project: \"" + known_invalid_projects[id] + "\"");
+        done[currentProjectIdx - 1]();
+        getSingleTestProject();
+        return;
+      }
+
       if(id in server_known_errors)
       {
-        assert.ok(true, "[EXPECTED ERROR] " + id + " FAILED \"" + server_known_errors[id] + "\"");
+        assert.ok(true, "[KNOWN ERROR] " + id + " FAILED \"" + server_known_errors[id] + "\"");
         done[currentProjectIdx - 1]();
         getSingleTestProject();
         return;
@@ -829,6 +842,14 @@ QUnit.test("*", function(assert)
 
       if(msg.indexOf(filter) > -1)
         console.log( id + " : " + "\"[" + type + "] " + msg + "\",");
+
+      if(id in server_known_errors && id in known_invalid_projects)
+      {
+        assert.ok(true, "Project " + id + " passed, error in project: \"" + known_invalid_projects[id] + "\"");
+        done[currentProjectIdx - 1]();
+        getSingleTestProject();
+        return;
+      }
 
       assert.ok(false, "Project " + id + " not valid (" + type + "): " + msg);
 
