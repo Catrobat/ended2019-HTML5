@@ -468,6 +468,7 @@ class ProjectFileParser
         $nestedCounter++;
       }
 
+      //if($name === "LoopEndlessBrick" || $name === "LoopEndBrick")
       if($name === "LoopEndlessBrick")
       {
         if($nestedCounter === 0)
@@ -650,7 +651,7 @@ class ProjectFileParser
         if(isset($script["reference"]))
         {
             $brick = $this->getBrickType($script);
-            throw new InvalidProjectFileException($brick.": referenced brick");
+            throw new InvalidProjectFileException($brick . ": referenced brick");
         }
 
         switch($this->getBrickType($script))
@@ -1069,7 +1070,7 @@ class ProjectFileParser
       array_push($this->cpp, $script);
       $brickType = $this->getBrickType($script);
       if(isset($script["reference"]))
-        throw new InvalidProjectFileException($brickType.": referenced brick");
+        throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
 
       $brick = $this->parseFirstLevelBricks($brickType, $script);
 
