@@ -2,7 +2,7 @@
 /// <reference path="../../Client/smartJs/sj-core.js" />
 /// <reference path="../../Client/smartJs/sj-event.js" />
 
-/// <reference path="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.combined.js" />
+/// <reference path="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js" />
 /// <reference path="../../Client/pocketCode/scripts/components/soundManager.js" />
 'use strict';
 
