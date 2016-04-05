@@ -293,6 +293,10 @@ PocketCode.GameEngine = (function () {
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
+                if (this._device.unsupportedFeatureDetected)
+                    this._onLoadingError.dispatchEvent({ deviceFeatures: this._device.unsupportedFeatures });
+                if (this._device.emulationInUser)
+                    this._onLoadingError.dispatchEvent({ deviceEmulation: true });
                 this._spritesLoaded = true;
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
@@ -308,11 +312,8 @@ PocketCode.GameEngine = (function () {
             }
         },
         _spriteFactoryUnsupportedBricksHandler: function (e) {
-            var bricks = e.unsupportedBricks;
-            //TODO: make unsupported bricks and resource loading errors (files) public to check on onLoad?
-            //TODO: formula is not validated during loaded (sprites not ready): how to check on device features like sensors?
+            this._onLoadingError.dispatchEvent({ bricks: e.unsupportedBricks });
         },
-
         _initSprites: function() {
             // init sprites after all looks were loaded (important for look offsets)
             var sprites = this._sprites;
@@ -321,7 +322,6 @@ PocketCode.GameEngine = (function () {
           }
             //console.log(sprites);
         },
-
         _resourceProgressChangeHandler: function (e) {
             if (!e.file || !e.file.size)
                 return;
