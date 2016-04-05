@@ -58,7 +58,8 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
+    sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
+    sprite.__variablesSimple._variables.varUnset = new PocketCode.Model.UserVariableSimple("varUnset", "name");
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { referenceId: "var1", value: value });
@@ -80,6 +81,14 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "changeVar");
+
+    //change with not numeric
+    value = JSON.parse('{ "type": "FUNCTION", "value": "TRUE", "right": null, "left": null }');
+    b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { referenceId: "varUnset", value: value });
+    var executedHandlerBool = function (e) {
+        assert.equal(sprite.getVariable("varUnset").value, true, "variable set correctly: change with not numeric");
+    };
+    b.execute(new SmartJs.Event.EventListener(executedHandlerBool, this), "id");
 
     //global
     sprite._variables = [];
