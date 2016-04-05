@@ -349,6 +349,8 @@ QUnit.test("BroadcastReceiveBrick", function (assert) {
 
 QUnit.test("BroadcastBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
     var b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastMsgId: "s12" });
 
@@ -365,6 +367,8 @@ QUnit.test("BroadcastBrick", function (assert) {
     var count = 0;
     var h2 = function () { //for broadcastMrg listener
         count++;
+        assert.equal(count, 1, "broadcast was handled by broadcast manager");
+        done1();
     };
 
     broadcastMgr.subscribe("s12", new SmartJs.Event.EventListener(h2, this));
@@ -372,8 +376,7 @@ QUnit.test("BroadcastBrick", function (assert) {
 
     assert.equal(id, "sdf", "return handler dispatched and id set correctly");
     assert.equal(loopDelay, undefined, "loop delay set correctly");
-
-    assert.equal(count, 1, "broadcast was handled by broadcast manager");
+    
 });
 
 
