@@ -58,6 +58,8 @@ QUnit.test("Device", function (assert) {
 
     assert.equal(dev.vibrate(), true, "vibrate call");
 
+    assert.equal(dev.emulationInUser, false, "emulationInUse getter: should always return false");
+
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected");
     assert.equal(dev.unsupportedFeatures.length, 9, "unsupported features: all");
     for (var i = 0, l = dev.unsupportedFeatures.length; i < l; i++) {
@@ -91,8 +93,10 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
     dev = new PocketCode.DeviceEmulator();  //recreate to check if there are any side effects
+    assert.equal(dev.emulationInUser, false, "emulationInUse getter: false on init");
     assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
     assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");
+    assert.equal(dev.emulationInUser, true, "emulationInUse getter: true after inclination in use");
 
     assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: inclination emulation = false");
     assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: inclination emulation = []");
@@ -101,6 +105,6 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected: acceleration");
     assert.equal(dev.unsupportedFeatures.length, 1, "unsupported features: acceleration");
     dev.unsupportedFeatures[0].i18nKey == "deviceFeatureAccelerationNEW";
-    assert.ok(dev.unsupportedFeatures[0].i18nKey == "deviceFeatureAcceleration" && dev.unsupportedFeatures[0].inUse == true && dev.unsupportedFeatures[0].supported == false, "property and access check");
+    assert.ok(dev.unsupportedFeatures[0].i18nKey == "lblDevFeatureAcceleration" && dev.unsupportedFeatures[0].inUse == true && dev.unsupportedFeatures[0].supported == false, "property and access check");
 
 });

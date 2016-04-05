@@ -25,47 +25,47 @@ PocketCode.Device = (function () {
         //sensor support
         this._features = {
             ACCELERATION: {
-                i18nKey: 'deviceFeatureAcceleration',
+                i18nKey: 'lblDevFeatureAcceleration',
                 inUse: false,
                 supported: false,
             },
             COMPASS: {
-                i18nKey: 'deviceFeatureCompass',
+                i18nKey: 'lblDevCompass',
                 inUse: false,
                 supported: false,
             },
             INCLINATION: {
-                i18nKey: 'deviceFeatureInclination',
+                i18nKey: 'lblDevInclination',
                 inUse: false,
                 supported: false,
             },
             CAMERA: {
-                i18nKey: 'deviceFeatureCamera',
+                i18nKey: 'lblDevCamera',
                 inUse: false,
                 supported: false,
             },
             FLASHLITE: {
-                i18nKey: 'deviceFeatureFlashlight',
+                i18nKey: 'lblDevFlashlight',
                 inUse: false,
                 supported: false,
             },
             VIBRATE: {
-                i18nKey: 'deviceFeatureVibrate',
+                i18nKey: 'lblDevVibrate',
                 inUse: false,
                 supported: false,
             },
             LEGO_NXT: {
-                i18nKey: 'deviceFeatureLegoNXT',
+                i18nKey: 'lblDevLegoNXT',
                 inUse: false,
                 supported: false,
             },
             PHIRO: {
-                i18nKey: 'deviceFeaturePhiro',
+                i18nKey: 'lblDevPhiro',
                 inUse: false,
                 supported: false,
             },
             ARDUINO: {
-                i18nKey: 'deviceFeatureArduino',
+                i18nKey: 'lblDevArduino',
                 inUse: false,
                 supported: false,
             },
@@ -116,6 +116,13 @@ PocketCode.Device = (function () {
         },
         isTouch: {
             value: SmartJs.Device.isTouch,
+        },
+        emulationInUser: {
+            get: function () {
+                if (this instanceof PocketCode.DeviceEmulator && this._features.INCLINATION.inUse)
+                    return true;
+                return false;
+            },
         },
         unsupportedFeatureDetected: {
             get: function () {
