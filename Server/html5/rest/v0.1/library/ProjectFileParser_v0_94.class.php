@@ -147,8 +147,26 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new InsertAtListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
-        //TODO: use formula category property: INSERT_ITEM_INTO_USERLIST_INDEX, INSERT_ITEM_INTO_USERLIST_VALUE
+
+        $index = null;
+        $value = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_INDEX")
+          {
+            $index = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_VALUE")
+          {
+            $value = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $index || ! $value)
+          throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
+
+        $brick = new InsertAtListBrickDto($id, $index, $value);
         array_pop($this->cpp);
         break;
 
@@ -161,8 +179,26 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
-        //TODO: use formula category property: REPLACE_ITEM_IN_USERLIST_INDEX, REPLACE_ITEM_IN_USERLIST_VALUE
+
+        $index = null;
+        $value = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_INDEX")
+          {
+            $index = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_VALUE")
+          {
+            $value = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $index || ! $value)
+          throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
+
+        $brick = new ReplaceAtListBrickDto($id, $index, $value);
         array_pop($this->cpp);
         break;
 
@@ -175,8 +211,26 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ShowVariableBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
-        //TODO: use formula category property: X_POSITION, Y_POSITION
+
+        $x = null;
+        $y = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "X_POSITION")
+          {
+            $x = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "Y_POSITION")
+          {
+            $y = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $x || ! $y)
+          throw new InvalidProjectFileException("ShowTextBrick: invalid properties");
+
+        $brick = new ShowVariableBrickDto($id, $x, $y);
         array_pop($this->cpp);
         break;
 

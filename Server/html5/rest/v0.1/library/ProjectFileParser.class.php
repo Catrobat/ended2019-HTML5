@@ -448,7 +448,7 @@ class ProjectFileParser
     return ucFirst($script->getName());
   }
 
-  protected function parseForeverBrick($brickList, $idx)
+  protected function parseForeverBrick($brickList, $idx, $endless)
   {
     $brick = new ForeverBrickDto();
     //use a counter to compare nested elements with same names, as objects using equal
@@ -468,7 +468,8 @@ class ProjectFileParser
         $nestedCounter++;
       }
 
-      if($name === "LoopEndlessBrick")
+      // if($name === "LoopEndlessBrick")
+      if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
       {
         if($nestedCounter === 0)
         {
@@ -492,8 +493,14 @@ class ProjectFileParser
       }
     }
 
-    if (!$parsed)
+    if(! $parsed && $endless)
+    {
       throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
+    }
+    else if(! $parsed && ! $endless)
+    {
+      throw new InvalidProjectFileException("ForeverBrick: missing LoopEndBrick");
+    }
       
     return array("brick" => $brick, "idx" => $idx);
   }
@@ -650,13 +657,15 @@ class ProjectFileParser
         if(isset($script["reference"]))
         {
             $brick = $this->getBrickType($script);
-            throw new InvalidProjectFileException($brick.": referenced brick");
+            throw new InvalidProjectFileException($brick . ": referenced brick");
         }
 
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
-            $result = $this->parseForeverBrick($brickList, $idx);
+            $loopEndType = $script->loopEndBrick;
+            $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            $result = $this->parseForeverBrick($brickList, $idx, $endless);
             array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
             break;
@@ -1069,7 +1078,7 @@ class ProjectFileParser
       array_push($this->cpp, $script);
       $brickType = $this->getBrickType($script);
       if(isset($script["reference"]))
-        throw new InvalidProjectFileException($brickType.": referenced brick");
+        throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
 
       $brick = $this->parseFirstLevelBricks($brickType, $script);
 
