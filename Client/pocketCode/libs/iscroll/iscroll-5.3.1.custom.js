@@ -151,11 +151,13 @@
 
         //    return false;
         //};
+
+        //^^changed to allow individual event handling, e.g. a long-touch event to download an image included in iScroll
         me.preventDefaultException = function (event, exceptions) {
             var el = event.target;
 
             for (var i = 0, l = exceptions.length; i < l; i++) {
-                if ((exceptions[i].tagNames).test(el.tagName) && (exceptions[i].eventNames).test(event.type))
+                if ((exceptions[i].tagNames).test(el.tagName) && exceptions[i].eventNames && (exceptions[i].eventNames).test(event.type))
                     return true;
             }
 
