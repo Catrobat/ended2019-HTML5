@@ -78,9 +78,14 @@ PocketCode.Model.merge({
             _execute: function (callId) {
                 if (this._disposed)
                     return;
+                var duration = this._duration.calculate();
+                if (isNaN(duration)) {
+                    this._return(callId);
+                    return
+                }
                 var po = this._pendingOps[callId];
                 po.paused = this._paused;
-                po.timer = new SmartJs.Components.Timer(this._duration.calculate() * 1000, new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
                 if (this._paused)
                     po.timer.pause();
             },
@@ -165,7 +170,7 @@ PocketCode.Model.merge({
             //this._stopped = false;
 
             this._recursiveBroadcasts = false;
-            this._recursiveTimeout = undefined;
+            this._timeout = undefined;
         }
 
         BroadcastBrick.prototype.merge({
@@ -187,11 +192,12 @@ PocketCode.Model.merge({
                 //var broadcasts = this._broadcasts;
 
                 if (this._recursiveBroadcasts) {
-                    setTimeout(this._execute.bind(this, true), 0);
+                    this._timeout = setTimeout(this._execute.bind(this, true), 1);
                 }
                 else {
                     this._recursiveBroadcasts = true;
-                    this._broadcastMgr.publish(brId);
+                    //this._broadcastMgr.publish(brId);
+                    this._timeout = setTimeout(this._broadcastMgr.publish.bind(this._broadcastMgr, brId), 0);
                     this._recursiveBroadcasts = false;
                 }
                 //setTimeout(this._return.bind(this), 1);
@@ -208,7 +214,7 @@ PocketCode.Model.merge({
                 }
             },
             stop: function () {
-                clearTimeout(this._recursiveTimeout);
+                clearTimeout(this._timeout);
                 this._paused = false;
                 this._stopped = true;
                 //this._pendingOp = false;    //TODO: TEST
@@ -359,8 +365,13 @@ PocketCode.Model.merge({
                 if (!po)
                     return false;
 
-                if (po.loopCounter === undefined) //init counter
-                    po.loopCounter = Math.round(this._timesToRepeat.calculate());
+                if (po.loopCounter === undefined) { //init counter
+                    var count = this._timesToRepeat.calculate();
+                    if (!isNaN(count))
+                        po.loopCounter = Math.round(count);
+                    else
+                        po.loopCounter = 0;
+                }
                 else
                     po.loopCounter--;
 

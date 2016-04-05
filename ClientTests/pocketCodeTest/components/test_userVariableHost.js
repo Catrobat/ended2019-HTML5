@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.18.0.js" />
+﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -7,7 +7,6 @@
 'use strict';
 
 QUnit.module("userVariableHost.js");
-
 
 
 QUnit.test("UserVariableHost", function (assert) {
@@ -49,6 +48,14 @@ QUnit.test("UserVariableHost", function (assert) {
     uvhl._lists = lists;
     assert.equal(uvhl.getVariable("id1").name, "var1local", "getter: variable (with same ids: this should not happen in our app as ids are uniquely generated server-side)");
     assert.equal(uvhl.getList("id1").name, "list1local", "getter: list: local and global same ids");
+
+    //reset
+    uvhl.getVariable("id1").value = "new text";
+    uvhl.getList("id1").append("list test");
+    assert.ok(uvhl.getVariable("id1").value == "new text" && uvhl.getList("id1").length == 1, "init reset test");
+    uvhl._resetVariables();
+    assert.equal(uvhl.getVariable("id1").value, undefined, "reset variable");
+    assert.equal(uvhl.getList("id1").length, 0, "reset list");
 
     uvhl.dispose();
     assert.ok(uvhl._disposed, "dispose");
@@ -161,7 +168,5 @@ QUnit.test("UserVariableHost", function (assert) {
     assert.throws(function () { uvhl.hideVariable("wrong id"); }, Error, "ERRROR: id not found");
     uvhl.hideVariable("id1");
     assert.equal(varChangeCalled, 1, "var change: event handler called (hideVariable)");
-
-    //var breakpoint = true;
 
 });

@@ -22,6 +22,7 @@ class ProjectFileParser
   protected $bricksCount = 0;
   protected $images = [];
   protected $sounds = [];
+  protected $soundInUse = [];
   protected $variables = [];
   protected $lists = [];
   protected $broadcasts = [];
@@ -84,7 +85,7 @@ class ProjectFileParser
       //global variables
       $this->includeGlobalData();
       $project->variables = $this->variables;
-			$project->lists = $this->lists;
+      $project->lists = $this->lists;
 
       //sprites
       array_push($this->cpp, $this->simpleXml->objectList);
@@ -111,10 +112,14 @@ class ProjectFileParser
       //parse sprites
       //1st entry = background
       $bg = true;
+      $cppSaved = array_merge([], $this->cpp); //store path to reset after parsing
+    
       foreach($this->simpleXml->objectList->children() as $sprite)
       {
+        $this->cpp = $cppSaved; //restore path
+
         //take care: this can be a referenced object as well
-        $sprite = $this->getObject($sprite, $this->cpp);
+        $sprite = $this->getObject($sprite, $this->cpp, true);
 
         if($bg === true)
         {
@@ -142,6 +147,7 @@ class ProjectFileParser
           $this->sprites[$idx] = $this->parseSprite($sprite, $id);
         }
       }
+      $this->cpp = $cppSaved; //restore path
 
       array_pop($this->cpp);
 
@@ -151,6 +157,7 @@ class ProjectFileParser
       $project->header->bricksCount = $this->bricksCount;
 
       //resources
+      $this->checkSoundInUse();
       $project->images = $this->images;
       $project->sounds = $this->sounds;
       $project->broadcasts = $this->broadcasts;
@@ -173,6 +180,11 @@ class ProjectFileParser
 
   //method included to override it in v0.93
   protected function getName($script)
+  {
+    return (string)$script->name;
+  }
+
+  protected function getSoundName($script)
   {
     return (string)$script->name;
   }
@@ -204,16 +216,17 @@ class ProjectFileParser
   }
 
   //resource already registered
-  protected function findItemInArrayByUrl($url, $array)
+  protected function findItemInArrayByUrl($url, $array, $checkInUse = false)
   {
     foreach($array as $item)
     {
       if($item->url === $url)
       {
+        if($checkInUse && !in_array($url, $this->soundInUse))
+          array_push($this->soundInUse, $url);
         return $item;
       }
     }
-
     return false;
   }
 
@@ -229,6 +242,19 @@ class ProjectFileParser
     }
 
     return false;
+  }
+
+  protected function checkSoundInUse()
+  {
+    $tmp = [];
+    foreach($this->sounds as $sound)
+    {
+      if(in_array($sound->url, $this->soundInUse))
+      {
+        array_push($tmp, $sound);
+      }
+    }
+    $this->sounds = $tmp;
   }
 
   //search global and local variable by name and add local variable if not found
@@ -263,15 +289,14 @@ class ProjectFileParser
 
   //returns a simpleXml object of an original object handling references
   //returns the object itself if there is no reference attribute set, else: resolve object by reference
-  protected function getObject($object, $cpp)
+  //followCpp: indicates, if $this->cpp should be modified- needed for sprite references
+  protected function getObject($object, $cpp, $followCpp = false)
   {
     $c = $object;   //current object in tree
 
     if(isset($c["reference"]))
     {
       $path = explode("/", $c["reference"]);
-
-      //$cp represents a local clone of cpp to not effect the parser when following references
       $lcp = array_merge([], $cpp);
 
       foreach($path as $ref)
@@ -286,7 +311,7 @@ class ProjectFileParser
           array_push($lcp, $c);
           //resolve current path, e.g. object[2]
           //more than one xml tag of the same type (->getName()) can occur in one parent tag,
-          //these tags are name as "name" meaning name[0] and "name[2..n]" which should have the indices [1..(n-1)]
+          //these tags are named as "name" meaning name[0] and "name[2..n]" which should have the indices [1..(n-1)]
           $idx = 0;
           $regex = "/([^\[]+)(\[)(\d+)(\])/";
           if(preg_match($regex, $ref))
@@ -300,7 +325,10 @@ class ProjectFileParser
           $found = false;
 
           if( !is_object( $c ) )
-            throw new Exception( "No Object" );
+          {
+            throw new InvalidProjectFileException("invalid reference: ".$object["reference"]);
+            //throw new Exception( "No Object" );
+          }
 
           foreach ($c->children() as $i) {
             if ($i->getName() === $ref) {
@@ -316,22 +344,25 @@ class ProjectFileParser
           }
           if($found == false)
           {
-            throw new Exception("path not found");
+            continue;
+            // throw new Exception("path not found");
           }
         }
       }
       //recursive recall to get ref of ref of .. or object
-      return $this->getObject($c, $lcp);
+      return $this->getObject($c, $lcp, $followCpp);
     }
     else
     {
+      if ($followCpp)
+        $this->cpp = $cpp;    //update global path to ensure we parse internal references correctly
       return $object;
     }
   }
 
   protected function parseSprite($sprite, $spriteId)
   {
-    $sprite = $this->getObject($sprite, $this->cpp);
+    //$sprite = $this->getObject($sprite, $this->cpp, true);
     $sp = new SpriteDto($spriteId, $this->getName($sprite));
     $this->currentSprite = $sp;
 
@@ -342,7 +373,8 @@ class ProjectFileParser
     {
       $look = $this->getObject($look, $this->cpp);
 
-      $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+      $url = "images/" . (string)$look->fileName;
+      $res = $this->findItemInArrayByUrl($url, $this->images);
       if($res === false)
       {
         $id = $this->getNewId();
@@ -352,11 +384,8 @@ class ProjectFileParser
           $size = filesize($path);
         }
         else
-        {
-          throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
-        }
-
-        array_push($this->images, new ResourceDto($id, "images/" . (string)$look->fileName, $size));
+          throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+        array_push($this->images, new ResourceDto($id, $url, $size));
       }
       else
       {
@@ -375,7 +404,8 @@ class ProjectFileParser
       $sound = $this->getObject($sound, $this->cpp);
 
       //= false, if not found
-      $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
+      $url = "sounds/" . (string)$sound->fileName;
+      $res = $this->findItemInArrayByUrl($url, $this->sounds, true);
       if($res === false)
       {
         $id = $this->getNewId();
@@ -383,20 +413,16 @@ class ProjectFileParser
         if(is_file($path))
         {
           $size = filesize($path);
+          array_push($this->sounds, new ResourceDto($id, $url, $size));
         }
         else
-        {
-          throw new InvalidProjectFileException("sound file '" . $path . "' does not exist");
-        }
-
-        array_push($this->sounds, new ResourceDto($id, "sounds/" . (string)$sound->fileName, $size));
+            continue;
       }
       else
       {
         $id = $res->id;
       }
-
-      array_push($sp->sounds, new ResourceReferenceDto($id, $this->getName($sound)));
+      array_push($sp->sounds, new ResourceReferenceDto($id, $this->getSoundName($sound)));
     }
     array_pop($this->cpp);
 
@@ -422,31 +448,34 @@ class ProjectFileParser
     return ucFirst($script->getName());
   }
 
-  protected function parseForeverBrick($bricks, $idx, $length, $brickList)
+  protected function parseForeverBrick($brickList, $idx, $endless)
   {
     $brick = new ForeverBrickDto();
-    //use a counter ob nested elements with same name as comparison of objects using equal
+    //use a counter to compare nested elements with same names, as objects using equal
     // or operator (===) is not available in simpleXML
     $nestedCounter = 0;
-    $idx++;
+    $parsed = false;
 
     //search for associated end brick
     $innerBricks = [];
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "ForeverBrick")
       {
         $nestedCounter++;
       }
 
-      if($name === "LoopEndlessBrick")
+      // if($name === "LoopEndlessBrick")
+      if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
       {
         if($nestedCounter === 0)
         {
           //parse recursive
           $brick->bricks = $this->parseInnerBricks($innerBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 1;
           break;
         }
@@ -462,11 +491,18 @@ class ProjectFileParser
         //add sub bricks
         array_push($innerBricks, $brickList[$idx]);
       }
-
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if(! $parsed && $endless)
+    {
+      throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
+    }
+    else if(! $parsed && ! $endless)
+    {
+      throw new InvalidProjectFileException("ForeverBrick: missing LoopEndBrick");
+    }
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
   protected function parseRepeatBrickScript($script)
@@ -476,15 +512,18 @@ class ProjectFileParser
     return $brick;
   }
 
-  protected function parseRepeatBrick($bricks, $idx, $length, $brickList, $brick)
+  protected function parseRepeatBrick($brickList, $idx)
   {
+    $brick = $this->parseRepeatBrickScript($brickList[$idx]);
     $nestedCounter = 0;
-    $idx++;
-
+    $parsed = false;
+    
     //search for associated end brick
     $innerBricks = [];
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "RepeatBrick")
       {
@@ -497,7 +536,7 @@ class ProjectFileParser
         {
           //parse recursive
           $brick->bricks = $this->parseInnerBricks($innerBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 1;
           break;
         }
@@ -513,33 +552,36 @@ class ProjectFileParser
         //add sub bricks
         array_push($innerBricks, $brickList[$idx]);
       }
-
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if (!$parsed)
+      throw new InvalidProjectFileException("RepeatBrick: missing LoopEndBrick");
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
-  protected function IfLogicBeginBrickScript($script)
+  protected function parseIfLogicBeginBrickScript($script)
   {
     $condition = $script->ifCondition;
     $brick = new IfThenElseBrickDto($this->parseFormula($condition->formulaTree));
     return $brick;
   }
 
-  private function parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick)
+  private function parseIfLogicBeginBrick($brickList, $idx)
   {
+    $brick = $this->parseIfLogicBeginBrickScript($brickList[$idx]);
     $nestedCounter = 0;
-    //skip begin brick
-    $idx++;
-
+    $parsed = false;
+    
     //search for associated end brick
     $innerIfBricks = [];
     $innerElseBricks = [];
     $inElse = false;
-
-    while($idx < $length)
+    while($idx < count($brickList) - 1)
     {
+      //skip begin brick
+      $idx++;
+      
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "IfLogicBeginBrick")
       {
@@ -549,7 +591,6 @@ class ProjectFileParser
       if($name === "IfLogicElseBrick" && $nestedCounter === 0)
       {
         $inElse = true;
-        $idx++;
         continue;
       }
 
@@ -560,7 +601,7 @@ class ProjectFileParser
           //parse recursive
           $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
           $brick->elseBricks = $this->parseInnerBricks($innerElseBricks);
-          array_push($bricks, $brick);
+          $parsed = true;
           $this->bricksCount -= 2;
           break;
         }
@@ -590,10 +631,12 @@ class ProjectFileParser
           array_push($innerElseBricks, $brickList[$idx]);
         }
       }
-      $idx++;
     }
 
-    return array("bricks" => $bricks, "idx" => $idx, "brickList" => $brickList);
+    if (!$parsed)
+      throw new InvalidProjectFileException("IfLogicBeginBrick: missing IfLogicEndBrick");
+      
+    return array("brick" => $brick, "idx" => $idx);
   }
 
   //this method is used to handle bricks like if-then-else, which are a single container brick according to our definition 
@@ -605,36 +648,38 @@ class ProjectFileParser
       $bricks = [];
 
       $idx = 0;
-      $length = count($brickList);
 
-      while($idx < $length)
+      while($idx < count($brickList))
       {
         //special logic for loops: forever, repeat and if-then-else
         //to restructure the *.catrobat/code.xml document to our needs
         $script = $brickList[$idx];
+        if(isset($script["reference"]))
+        {
+            $brick = $this->getBrickType($script);
+            throw new InvalidProjectFileException($brick . ": referenced brick");
+        }
+
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
-            $result = $this->parseForeverBrick($bricks, $idx, $length, $brickList);
-            $bricks = $result["bricks"];
+            $loopEndType = $script->loopEndBrick;
+            $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            $result = $this->parseForeverBrick($brickList, $idx, $endless);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           case "RepeatBrick":
-            $brick = $this->parseRepeatBrickScript($script);
-            $result = $this->parseRepeatBrick($bricks, $idx, $length, $brickList, $brick);
-            $bricks = $result["bricks"];
+            $result = $this->parseRepeatBrick($brickList, $idx);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           case "IfLogicBeginBrick":
-            $brick = $this->IfLogicBeginBrickScript($script);
-            $result = $this->parseIfLogicBeginBrick($bricks, $idx, $length, $brickList, $brick);
-            $bricks = $result["bricks"];
+            $result = $this->parseIfLogicBeginBrick($brickList, $idx);
+            array_push($bricks, $result["brick"]);
             $idx = $result["idx"];
-            $brickList = $result["brickList"];
             break;
 
           default:
@@ -876,17 +921,20 @@ class ProjectFileParser
     switch($brickType)
     {
       case "PlaySoundBrick":
-        $id = null;
-        if(property_exists($script, "sound"))
+        if(!property_exists($script, "sound"))
         {
-          //play sound brick is initial set to "New.." and has no child tags per default
-          $sound = $this->getObject($script->sound, $this->cpp);
-
-          $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
-          if($res === false)	//will only return false on invalid projects, as resources are registered already
-            throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
-          $id = $res->id;
+            //play sound brick is initial set to "New.." and has no child tags per default
+            $brick = new PlaySoundBrickDto(null);
+            break;
         }
+
+        $sound = $this->getObject($script->sound, $this->cpp);
+        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
+
+        if($res === false)	//will only return false on invalid projects, as resources are registered already
+            throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
+
+        $id = $res->id;
         $brick = new PlaySoundBrickDto($id);
         break;
 
@@ -922,10 +970,17 @@ class ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
+        if(!property_exists($script, "look"))
+        {
+            //handle unset look = "New..:" = null
+            $brick = new SetLookBrickDto(null);
+            break;
+        }
+
         $look = $this->getObject($script->look, $this->cpp);
         $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
         if($res === false)	//will only return false on invalid projects, as resources are registered already
-          throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+            throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
 
         //the image has already been included in the resources
         $id = $res->id;
@@ -989,19 +1044,23 @@ class ProjectFileParser
     switch($brickType)
     {
       case "SetVariableBrick":
-		if(isset($script->userVariable["reference"]))	//link to other definition
-			$init = false;
-		else
-			$init = true;
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var->name);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var->name);
+        }
         $formula = $script->variableFormula;
-        $brick = new SetVariableBrickDto($id, $this->parseFormula($formula->formulaTree), $init);
+        $brick = new SetVariableBrickDto($id, $this->parseFormula($formula->formulaTree));
         break;
 
       case "ChangeVariableBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var->name);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var->name);
+        }
         $formula = $script->variableFormula;
         $brick = new ChangeVariableBrickDto($id, $this->parseFormula($formula->formulaTree));
         break;
@@ -1017,8 +1076,10 @@ class ProjectFileParser
     try
     {
       array_push($this->cpp, $script);
-
       $brickType = $this->getBrickType($script);
+      if(isset($script["reference"]))
+        throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
+
       $brick = $this->parseFirstLevelBricks($brickType, $script);
 
       if(!$brick)
@@ -1061,6 +1122,11 @@ class ProjectFileParser
   // $formula = formulaTree
   protected function parseFormula($formula)
   {
+    //if(! $formula)
+    //{
+    //  throw new InvalidProjectFileException();
+    //}
+
     $type = (string)$formula->type;
     if($type === "USER_VARIABLE")
     {

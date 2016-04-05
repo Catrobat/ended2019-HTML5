@@ -20,7 +20,8 @@ PocketCode.Model.merge({
         PlaySoundBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.startSound(this._soundId);
+            if (this._soundId)  //can be null
+                this._soundManager.startSound(this._soundId);
             this._return();
         };
 
@@ -61,8 +62,13 @@ PocketCode.Model.merge({
         SetVolumeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.volume = this._percentage.calculate();
-            this._return();
+            var val = this._percentage.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else {
+                this._soundManager.volume = val;
+                this._return();
+            }
         };
 
         return SetVolumeBrick;
@@ -82,8 +88,13 @@ PocketCode.Model.merge({
         ChangeVolumeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._soundManager.volume += this._value.calculate();   //changeVolume(this._value.calculate());
-            this._return();
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else {
+                this._soundManager.volume += val;   //changeVolume(this._value.calculate());
+                this._return();
+            }
         };
 
         return ChangeVolumeBrick;
@@ -101,9 +112,13 @@ PocketCode.Model.merge({
 
             if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
                 this._soundId = SmartJs.getNewId();
-                this._text = this._text.calculate();
+                var text = this._text.calculate().replace(/\n,\r/g, '');
+                if (text == '') {
+                    this._soundId = undefined;
+                    return;
+                }
                 //caching
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: this._text });
+                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
                 this._soundManager.loadSound(request.url, this._soundId, 'mp3');
             }
         }
@@ -115,10 +130,12 @@ PocketCode.Model.merge({
                 this._soundManager.startSound(this._soundId);
             }
             else {
-                var text = this._text.calculate();
-                //we use a request object here to generate an url
-                var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-                this._soundManager.startSoundFromUrl(request.url);
+                var text = this._text.calculate().replace(/\n,\r/g, '');
+                if (text !== '') {
+                    //we use a request object here to generate an url
+                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+                    this._soundManager.startSoundFromUrl(request.url);
+                }
             }
             this._return();
         };

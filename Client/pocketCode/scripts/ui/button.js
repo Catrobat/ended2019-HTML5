@@ -34,8 +34,8 @@ PocketCode.Ui.Button = (function () {
             //},
         },
         i18nKey: {
-            set: function (i18nKey) {
-                this._textNode.i18nKey = i18nKey;
+            set: function (i18n) {
+                this._textNode.i18n = i18n;
             },
         },
         disabled: {

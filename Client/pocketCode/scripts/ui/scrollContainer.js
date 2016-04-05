@@ -6,7 +6,7 @@ PocketCode.Ui.ScrollContainer = (function () {
     function ScrollContainer(propObject, innerPropObject) {
         SmartJs.Ui.ContainerControl.call(this, propObject);
 
-        this._container = new SmartJs.Ui.ContainerControl(innerPropObject);//{ className: 'pc-scrollContent' });
+        this._container = new SmartJs.Ui.ContainerControl(innerPropObject);
         this._appendChild(this._container);
         if (!propObject)
             this._dom.style.overflow = 'hidden';
@@ -14,15 +14,15 @@ PocketCode.Ui.ScrollContainer = (function () {
         this._iScroll = new IScroll(this._dom, {
             mouseWheel: true,
             //scrollbars: true,
-            //fadeScrollbars: true,           //on mobile
-            interactiveScrollbars: true,  //on desktop ^^use this exclusive?
+            //fadeScrollbars: true,         //on mobile
+            interactiveScrollbars: true,    //on desktop ^^use this exclusive?
             scrollbars: 'custom',
             bounce: true,   //default
             shrinkScrollbars: 'clip',
             //invertWheelDirection: true,
             preventDefault: true,
         });
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
+        this._container.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
     }
 
     //methods

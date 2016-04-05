@@ -28,22 +28,18 @@ PocketCode.merge({
         Object.defineProperties(SpriteFactory.prototype, {
             onProgressChange: {
                 get: function () { return this._onProgressChange; },
-                //enumerable: false,
-                //configurable: true,
             },
             onUnsupportedBricksFound: {
                 get: function () { return this._onUnsupportedBricksFound; },
-                //enumerable: false,
-                //configurable: true,
             },
         });
 
         //methods
         SpriteFactory.prototype.merge({
             create: function (jsonSprite) {
-                if(typeof jsonSprite == 'object' && jsonSprite instanceof Array)
+                if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
-            
+
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
                 var bricks = [];
                 for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
@@ -200,9 +196,9 @@ PocketCode.merge({
 
         FormulaParser.prototype.merge({
             getUiString: function (jsonFormula, variableNames, listNames) {
-                if (!variableNames)
+                if (typeof variableNames !== 'object')
                     throw new Error('invalid argument: variableNames (lookup dictionary required)');
-                if (!listNames)
+                if (typeof listNames !== 'object')
                     throw new Error('invalid argument: listNames (lookup dictionary required)');
                 this._variableNames = variableNames;
                 this._listNames = listNames;
@@ -230,20 +226,20 @@ PocketCode.merge({
                         return this._parseJsonFunction(jsonFormula, uiString);
 
                     case 'NUMBER':
-                        //if (uiString)
-                        return jsonFormula.value;
-                        //var num = Number(jsonFormula.value);
-                        //if (isNaN(num))
-                        //    throw new Error('invalid operator/type \'number\': string to number conversion failed');
-                        //return Number(jsonFormula.value);// + '';  //as string?
+                        if (uiString)
+                            return jsonFormula.value;
+
+                        var num = Number(jsonFormula.value);
+                        if (isNaN(num))
+                            throw new Error('invalid operator/type \'number\': string to number conversion failed');
+                        return num;
 
                     case 'SENSOR':
                         this._isStatic = false;
                         return this._parseJsonSensor(jsonFormula, uiString);
 
                     case 'USER_VARIABLE':
-                        if (uiString)
-                        {
+                        if (uiString) {
                             var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.global[jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
@@ -252,8 +248,7 @@ PocketCode.merge({
                         return 'this._sprite.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
-                        if (uiString)
-                        {
+                        if (uiString) {
                             var list = this._listNames.local[jsonFormula.value] || this._listNames.global[jsonFormula.value];
                             return '*' + list.name + '*';
                         }
@@ -268,9 +263,8 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        if (uiString)
-                            return '\'' + jsonFormula.value + '\'';
-                        return '"' + jsonFormula.value + '"';
+                        //if (uiString)
+                        return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
@@ -279,7 +273,7 @@ PocketCode.merge({
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
                 //if (uiString || !numeric)
-                    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+                return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
                 //return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
@@ -326,7 +320,7 @@ PocketCode.merge({
                         return this._concatOperatorFormula(jsonFormula, ' + ', uiString, true);
 
                     case 'MINUS':
-                        if (uiString && jsonFormula.left === null)    //singed number
+                        if (jsonFormula.left === null)    //singed number
                             return this._concatOperatorFormula(jsonFormula, '-', uiString);
                         return this._concatOperatorFormula(jsonFormula, ' - ', uiString, jsonFormula.left !== null);
 
@@ -339,9 +333,6 @@ PocketCode.merge({
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
                         return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
-
-                        //case 'MOD':
-                        //    return this._concatOperatorFormula(jsonFormula, ' % ');
 
                         //case 'POW':
                         //    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
@@ -358,7 +349,7 @@ PocketCode.merge({
 
             _parseJsonFunction: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Functions
-                *  SIN, COS, TAN, LN, LOG, SQRT, RAND, ROUND, ABS, PI, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
+                *  SIN, COS, TAN, LN, LOG, PI, SQRT, RAND, ABS, ROUND, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, FLOOR, CEIL, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
                 */
                 switch (jsonFormula.value) {
                     case 'SIN':
@@ -386,6 +377,11 @@ PocketCode.merge({
                             return 'log(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
 
+                    case 'PI':
+                        if (uiString)
+                            return 'pi';
+                        return 'Math.PI';
+
                     case 'SQRT':
                         if (uiString)
                             return 'sqrt(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -403,9 +399,9 @@ PocketCode.merge({
                         var lString = '(' + this._parseJsonType(jsonFormula.left) + ')';
                         var rString = '(' + this._parseJsonType(jsonFormula.right) + ')';
 
-                        var stmt = '(' + lString + ' <= ' + rString + ') ? ';
+                        var stmt = '((' + lString + ' <= ' + rString + ') ? ';
                         stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + rString + '+ 1 -' + lString + ') + ' + lString + ')) : (Math.random() * (' + rString + '-' + lString + ') + ' + lString + ')) : ';
-                        stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + lString + '+ 1 -' + rString + ') + ' + rString + ')) : (Math.random() * (' + lString + '-' + rString + ') + ' + rString + '))';
+                        stmt += '((' + lString + ' % 1 === 0 && ' + rString + ' % 1 === 0) ? (Math.floor(Math.random() * (' + lString + '+ 1 -' + rString + ') + ' + rString + ')) : (Math.random() * (' + lString + '-' + rString + ') + ' + rString + ')))';
                         //var test = ((1.0) <= (1.01)) ? (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.01) - (1.0)) + (1.0))) : (Math.random() * ((1.01) - (1.0)) + (1.0))) : (((1.0) % 1 === 0 && (1.01) % 1 === 0) ? (Math.floor(Math.random() * ((1.0) - (1.01)) + (1.01))) : (Math.random() * ((1.0) - (1.01)) + (1.01)));
 
                         return stmt;
@@ -428,25 +424,20 @@ PocketCode.merge({
                         ////return 'Math.floor((Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
                         ////return 'Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
-                    case 'ROUND':
-                        if (uiString)
-                            return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
-                        return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
-
                     case 'ABS':
                         if (uiString)
                             return 'abs(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
 
-                    case 'PI':
+                    case 'ROUND':
                         if (uiString)
-                            return 'pi';
-                        return 'Math.PI';
+                            return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MOD':
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return this._concatOperatorFormula(jsonFormula, ' % ');
+                        return '(' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'ARCSIN':
                         if (uiString)
@@ -468,6 +459,16 @@ PocketCode.merge({
                             return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
 
+                    case 'FLOOR':
+                        if (uiString)
+                            return 'floor(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.floor(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'CEIL':
+                        if (uiString)
+                            return 'ceil(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.ceil(' + this._parseJsonType(jsonFormula.left) + ')';
+
                     case 'MAX':
                         if (uiString)
                             return 'max(' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ')';
@@ -488,32 +489,29 @@ PocketCode.merge({
                             return 'FALSE';
                         return 'false';
 
-                    case 'LENGTH':  //string
+                    //string
+                    case 'LENGTH':
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
                         if (jsonFormula.left)
-                            return (jsonFormula.left.type === 'STRING') ? (this._parseJsonType(jsonFormula.left)).length - 2 : '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').length';
+                            return '(' + this._parseJsonType(jsonFormula.left) + ' + \'\').length';
                         return 0;
 
-                    case 'LETTER':  //string
+                    case 'LETTER':
                         if (uiString)
                             return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
-                        //if (idx < 0 || idx >= jsonFormula.left.length)
-                        //    return '';
-                        //return jsonFormula.right.substr(idx, 1);
-                        //break;
                         return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
 
-                    case 'JOIN':    //string
+                    case 'JOIN':
                         if (uiString)
                             return 'join(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                        //list functions
+                    //list functions
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -536,6 +534,20 @@ PocketCode.merge({
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
 
+                    case 'ARDUINOANALOG':
+                        if (uiString)
+                            return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getArduinoAnalogPin(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'ARDUINODIGITAL':
+                        if (uiString)
+                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
+
                     default:
                         throw new Error('formula parser: unknown function: ' + jsonFormula.value);    //TODO: do we need an onError event? -> new and unsupported operators?
 
@@ -552,77 +564,66 @@ PocketCode.merge({
                         if (uiString)
                             return 'acceleration_x';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationX';
 
                     case 'Y_ACCELERATION':
                         if (uiString)
                             return 'acceleration_y';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationY';
 
                     case 'Z_ACCELERATION':
                         if (uiString)
                             return 'acceleration_z';
 
-                        //this._isStatic = false;
                         return 'this._device.accelerationZ';
 
                     case 'COMPASS_DIRECTION':
                         if (uiString)
                             return 'compass_direction';
 
-                        //this._isStatic = false;
                         return 'this._device.compassDirection';
 
                     case 'X_INCLINATION':
                         if (uiString)
                             return 'inclination_x';
 
-                        //this._isStatic = false;
                         return 'this._device.inclinationX';
 
                     case 'Y_INCLINATION':
                         if (uiString)
                             return 'inclination_y';
 
-                        //this._isStatic = false;
                         return 'this._device.inclinationY';
 
                     case 'LOUDNESS':
                         if (uiString)
                             return 'loudness';
 
-                        //this._isStatic = false;
                         return 'this._device.loudness';
 
                     case 'FACE_DETECTED':
                         if (uiString)
                             return 'is_face_detected';
 
-                        //this._isStatic = false;
                         return 'this._device.faceDetected';
 
                     case 'FACE_SIZE':
                         if (uiString)
                             return 'face_size';
 
-                        //this._isStatic = false;
                         return 'this._device.faceSize';
 
                     case 'FACE_X_POSITION':
                         if (uiString)
                             return 'face_x_position';
 
-                        //this._isStatic = false;
                         return 'this._device.facePositionX';
 
                     case 'FACE_Y_POSITION':
                         if (uiString)
                             return 'face_y_position';
 
-                        //this._isStatic = false;
                         return 'this._device.facePositionY';
 
                         //sprite
@@ -630,50 +631,103 @@ PocketCode.merge({
                         if (uiString)
                             return 'brightness';
 
-                        //this._isStatic = false;
                         return 'this._sprite.brightness';
 
                     case 'OBJECT_GHOSTEFFECT':
                         if (uiString)
                             return 'transparency';
 
-                        //this._isStatic = false;
                         return 'this._sprite.transparency';
 
                     case 'OBJECT_LAYER':
                         if (uiString)
                             return 'layer';
 
-                        //this._isStatic = false;
                         return 'this._sprite.layer';
 
                     case 'OBJECT_ROTATION': //=direction
                         if (uiString)
                             return 'direction';
 
-                        //this._isStatic = false;
                         return 'this._sprite.direction';
 
                     case 'OBJECT_SIZE':
                         if (uiString)
                             return 'size';
 
-                        //this._isStatic = false;
                         return 'this._sprite.size';
 
                     case 'OBJECT_X':
                         if (uiString)
                             return 'position_x';
 
-                        //this._isStatic = false;
                         return 'this._sprite.positionX';
 
                     case 'OBJECT_Y':
                         if (uiString)
                             return 'position_y';
 
-                        //this._isStatic = false;
                         return 'this._sprite.positionY';
+
+                    case 'NXT_SENSOR_1':
+                        if (uiString)
+                            return 'NXT_sensor_1';
+
+                        return 'this._device.nxt1';
+
+                    case 'NXT_SENSOR_2':
+                        if (uiString)
+                            return 'NXT_sensor_2';
+
+                        return 'this._device.nxt2';
+
+                    case 'NXT_SENSOR_3':
+                        if (uiString)
+                            return 'NXT_sensor_3';
+
+                        return 'this._device.nxt3';
+
+                    case 'NXT_SENSOR_4':
+                        if (uiString)
+                            return 'NXT_sensor_4';
+
+                        return 'this._device.nxt4';
+
+                    case 'PHIRO_FRONT_LEFT':
+                        if (uiString)
+                            return 'phiro_front_left_sensor';
+
+                        return 'this._device.phiroFrontLeft';
+
+                    case 'PHIRO_FRONT_RIGHT':
+                        if (uiString)
+                            return 'phiro_front_right_sensor';
+
+                        return 'this._device.phiroFrontRight';
+
+                    case 'PHIRO_SIDE_LEFT':
+                        if (uiString)
+                            return 'phiro_side_left_sensor';
+
+                        return 'this._device.phiroSideLeft';
+
+                    case 'PHIRO_SIDE_RIGHT':
+                        if (uiString)
+                            return 'phiro_side_right_sensor';
+
+                        return 'this._device.phiroSideRight';
+
+                    case 'PHIRO_BOTTOM_LEFT':
+                        if (uiString)
+                            return 'phiro_bottom_left_sensor';
+
+                        return 'this._device.phiroBottomLeft';
+
+                    case 'PHIRO_BOTTOM_RIGHT':
+                        if (uiString)
+                            return 'phiro_bottom_right_sensor';
+
+                        return 'this._device.phiroBottomRight';
 
                     default:
                         throw new Error('formula parser: unknown sensor: ' + jsonFormula.value);      //TODO: do we need an onError event? -> new and unsupported operators? PHIRO?

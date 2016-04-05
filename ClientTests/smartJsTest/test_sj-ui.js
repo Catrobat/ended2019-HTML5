@@ -3,7 +3,7 @@
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
 /// <reference path="../../client/smartJs/sj-ui.js" />
-/// <reference path="../qunit/qunit-1.16.0.js" />
+/// <reference path="../qunit/qunit-1.23.0.js" />
 'use strict';
 
 QUnit.module("sj-ui.js");
@@ -65,8 +65,16 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
 
     tn = new SmartJs.Ui.TextNode("ANOTHER TEXT");
     assert.equal(tn.text, "ANOTHER TEXT", "textnode: constructor text");
+    var layoutChangeCounter = 0;
+    var layoutChangeHandler = function (e) {
+        layoutChangeCounter++;
+    };
+    vp.onLayoutChange.addEventListener(new SmartJs.Event.EventListener(layoutChangeHandler, this));
     vp._appendChild(tn);
     assert.equal(div.innerHTML, tn.text, "textnode: append (constructor text)");
+    assert.equal(layoutChangeCounter, 1, "parent layout change was triggered: parent logic");
+    tn.text = "new text.. longer than the original";
+    assert.equal(layoutChangeCounter, 2, "parent layout change was triggered: on resize");
 
     tn.dispose();
     assert.notEqual(vp._dom, undefined, "textnode: parent still in DOM");
@@ -106,6 +114,7 @@ QUnit.test("SmartJs.Ui.TextNode", function (assert) {
     tn = new SmartJs.Ui.TextNode("ANOTHER TEXT");
     dom.appendChild(tn._dom);
     tn.dispose();
+    assert.equal(tn._disposed, true, "disposed");
     assert.equal(document.body.contains(tn._dom), false, "textnode: delete from dom during dispose");
 
 });

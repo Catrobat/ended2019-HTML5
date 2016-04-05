@@ -65,26 +65,36 @@ PocketCode.Ui.merge({
         }(),
     },
 
-    /* this is a placeholder and used in the future to support/implement business logic and events like: onInternationalizationChange */
     I18nTextNode: (function () {
         I18nTextNode.extends(SmartJs.Ui.TextNode, false);
 
         //cntr
-        function I18nTextNode(i18nKey) {
+        function I18nTextNode(i18n, insertBefore, insertAfter) {
             SmartJs.Ui.TextNode.call(this);
 
-            this._i18nKey = i18nKey;
+            if (i18n && typeof i18n != 'string' && !(i18n instanceof PocketCode.Core.I18nString))
+                throw new Error('invalid argument: i18nKey or i18nString');
 
-            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
+            this._i18n = i18n || 'undefined';
+            this._insertBefore = insertBefore || '';
+            this._insertAfter = insertAfter || '';
+
+            if (PocketCode.I18nProvider)
+                PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._updateUiStrings, this));
             this._updateUiStrings();
         }
 
         //properties
         Object.defineProperties(I18nTextNode.prototype, {
-            i18nKey: {
-                set: function(i18nKey){
-                    this._i18nKey = i18nKey;
+            i18n: {
+                set: function (i18n) {
+                    if (typeof i18n != 'string' && !(i18n instanceof PocketCode.Core.I18nString))
+                        throw new Error('invalid argument: i18nKey or i18nString');
+
+                    if (this._i18n instanceof PocketCode.Core.I18nString && typeof i18n == 'string')
+                        this._i18n.i18nKey = i18n;  //set new key internal
+                    else
+                        this._i18n = i18n;
                     this._updateUiStrings();
                 },
             },
@@ -93,11 +103,23 @@ PocketCode.Ui.merge({
         //methods
         I18nTextNode.prototype.merge({
             _updateUiStrings: function () {
-                //if (!this._i18nKey)
-                //    return;
-                if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
-                    this.text = 'invalid i18nProvider';
-                this.text = PocketCode.I18nProvider.getLocString(this._i18nKey);
+                var text = '';
+                if (this._i18n instanceof PocketCode.Core.I18nString)
+                    text = this._i18n.toString();
+                else {
+                    if (!PocketCode.I18nProvider || !PocketCode.I18nProvider.getLocString)
+                        text = '[' + this._i18n + ']';
+                    else
+                        text = PocketCode.I18nProvider.getLocString(this._i18n);
+                }
+
+                this.text = this._insertBefore.toString() + text + this._insertAfter.toString();
+                this._text = text;  //make sure only the text is returned when calling the derived text getter
+            },
+            /* override */
+            show: function () {
+                this._dom.textContent = this._insertBefore.toString() + this._text + this._insertAfter.toString();
+                this._onResize.dispatchEvent();
             },
         });
 
@@ -129,7 +151,7 @@ PocketCode.Ui.merge({
         Viewport.extends(SmartJs.Ui.Viewport, false);
 
         //cntr
-        function Viewport(propObject) {
+        function Viewport() {
             SmartJs.Ui.Viewport.call(this, {className: 'pc-playerViewport'});
 
             this._disableBrowserGestures();
@@ -171,7 +193,7 @@ PocketCode.Ui.merge({
             addDialog: function(dialog) {
                 if (!(dialog instanceof PocketCode.Ui.Dialog))
                     throw new Error('invalid parameter: dialog');
-                this._appendChild(dialog);  //TODO: tests
+                this._appendChild(dialog);
             },
             loadPageView: function (page) {
                 if (!(page instanceof PocketCode.Ui.PageView))

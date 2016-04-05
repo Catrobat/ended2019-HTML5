@@ -78,8 +78,8 @@ PocketCode.Ui.merge({
             this._restartButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.RESTART, 'btnRestart');
             this._restartButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.RESTART }); }, this));
             this._menuContainerAlign.appendChild(this._restartButton);
-            // i18n: btnPlay
-            this._playButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PLAY, 'btnPlay', true);
+            // i18n: btnStart
+            this._playButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PLAY, 'btnStart', true);
             this._playButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.PLAY }); }, this));
             this._menuContainerAlign.appendChild(this._playButton);
             // i18n: btnPause
@@ -117,8 +117,15 @@ PocketCode.Ui.merge({
                             this._pauseButton.show();
                             this._hideOverlay();
                             break;
+                        case PocketCode.ExecutionState.PAUSED:
+                            this._pauseButton.hide();
+                            this._playButton.i18nKey = 'btnResume';
+                            this._playButton.show();
+                            this._showOverlay();
+                            break;
                         default:
                             this._pauseButton.hide();
+                            this._playButton.i18nKey = 'btnStart';
                             this._playButton.show();
                             this._showOverlay();
                             break;

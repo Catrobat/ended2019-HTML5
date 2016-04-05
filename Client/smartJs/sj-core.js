@@ -10,7 +10,7 @@ SmartJs.Core = {};
 SmartJs.Core = {
     String: (function () {
         //ctr
-        function String(string /*, arguments*/) {
+        function Strg(string /*, arguments*/) {
             if (typeof string !== 'string')
                 throw new Error('invalid argument: string');
 
@@ -18,10 +18,10 @@ SmartJs.Core = {
             this._format = arguments;
         }
 
-        //Object.defineProperties(String.prototype, {
+        //Object.defineProperties(Strg.prototype, {
         //});
 
-        String.prototype.merge({
+        Strg.prototype.merge({
             toString: function () {
                 return this._string.replace(/({)(\d+)(})/gi,
                         function ($1, $2, idx) {
@@ -30,12 +30,12 @@ SmartJs.Core = {
                                 throw new Error('invalid string format: missing argument ' + idx);
                             }
 
-                            return this._format[currentIdx];
+                            return this._format[currentIdx].toString();
                         }.bind(this));
             },
         });
 
-        return String;
+        return Strg;
     })(),
 
     Component: (function () {

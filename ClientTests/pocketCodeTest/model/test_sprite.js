@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.18.0.js" />
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
@@ -628,9 +628,7 @@ QUnit.test("Sprite", function (assert) {
         for (var p in testBrick._pendingOps) {
             if (testBrick._pendingOps.hasOwnProperty(p)) {
                 var po = testBrick._pendingOps[p];
-                if (po.timer._paused == true)
-                    ;//paused = true;
-                else 
+                if (po.timer._paused !== true)
                     return false;
             }
         }

@@ -66,7 +66,8 @@ PocketCode.LoggingProvider = (function (propObject) {
         },
         _newIdReceivedHandler: function (e) {
             try {
-                var navigatorString = 'isMobile: ' + SmartJs.Device.isMobile + ', \n';
+                var navigatorString = 'location: ' + window.location + ', \n';
+                navigatorString += 'isMobile: ' + SmartJs.Device.isMobile + ', \n';
                 for (var prop in window.navigator) {    //Json.stringify does/may not work here
                     navigatorString += prop + ': ' + window.navigator[prop] + ', \n';
                 }

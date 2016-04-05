@@ -98,11 +98,15 @@ PocketCode.Ui.PlayerPageView = (function () {
     PlayerPageView.prototype.merge({
         showStartScreen: function (title, thumbnailUrl) {
             this._startScreen.title = title;
-            this._startScreen.previewImage = thumbnailUrl;
+            if (thumbnailUrl == "null")
+                this._startScreen.previewImage = PocketCode.domain + '/images/default/screenshot.png';
+            else if (thumbnailUrl)
+                this._startScreen.previewImage = thumbnailUrl;
+
             this._startScreen.setProgress(0);
             this._startScreen.show();
         },
-        hideStartScreen:function() {
+        hideStartScreen: function () {
             this._startScreen.hide();
             this.hideHeader();
         },

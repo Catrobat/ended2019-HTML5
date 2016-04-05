@@ -19,7 +19,11 @@ PocketCode.Model.merge({
         SetGraphicEffectBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._return(this._sprite.setGraphicEffect(this._effect, this._value.calculate()));
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else
+                this._return(this._sprite.setGraphicEffect(this._effect, val));
         };
 
         return SetGraphicEffectBrick;
@@ -39,7 +43,11 @@ PocketCode.Model.merge({
         ChangeGraphicEffectBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._return(this._sprite.changeGraphicEffect(this._effect, this._value.calculate()));
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else
+                this._return(this._sprite.changeGraphicEffect(this._effect, val));
         };
 
         return ChangeGraphicEffectBrick;
@@ -61,7 +69,8 @@ PocketCode.Model.merge({
         SetLookBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._return(this._sprite.setLook(this._imageId));
+            if (this._imageId)  //can be null
+                this._return(this._sprite.setLook(this._imageId));
         };
 
         return SetLookBrick;
@@ -98,7 +107,11 @@ PocketCode.Model.merge({
         SetSizeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._return(this._sprite.setSize(this._percentage.calculate()));
+            var val = this._percentage.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else
+                this._return(this._sprite.setSize(val));
         };
 
         return SetSizeBrick;
@@ -117,7 +130,11 @@ PocketCode.Model.merge({
         ChangeSizeBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._return(this._sprite.changeSize(this._value.calculate()));
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else
+                this._return(this._sprite.changeSize(val));
         };
 
         return ChangeSizeBrick;

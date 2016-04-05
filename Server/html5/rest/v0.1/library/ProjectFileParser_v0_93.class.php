@@ -44,7 +44,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function IfLogicBeginBrickScript($script)
+  protected function parseIfLogicBeginBrickScript($script)
   {
     $condition = $script->formulaList;
     array_push($this->cpp, $condition);
@@ -294,16 +294,20 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     switch($brickType)
     {
       case "PlaySoundBrick":
-        $id = null;
-        if(property_exists($script, "sound"))
+        if(!property_exists($script, "sound"))
         {
-          //play sound brick is initial set to "New.." and has no child tags per default
-          $sound = $this->getObject($script->sound, $this->cpp);
-          $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds);
-          if($res === false)	//will only return false on invalid projects, as resources are registered already
-            throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
-          $id = $res->id;
+            //play sound brick is initial set to "New.." and has no child tags per default
+            $brick = new PlaySoundBrickDto(null);
+            break;
         }
+        
+        $sound = $this->getObject($script->sound, $this->cpp);
+        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
+
+        if($res === false)	//will only return false on invalid projects, as resources are registered already
+            throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
+
+        $id = $res->id;
         $brick = new PlaySoundBrickDto($id);
         break;
 
@@ -345,10 +349,18 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     switch($brickType)
     {
       case "SetLookBrick":
+        if(!property_exists($script, "look"))
+        {
+            // when no look set, look => empty
+            $brick = new SetLookBrickDto(null);
+            break;
+        }
+
         $look = $this->getObject($script->look, $this->cpp);
-        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
+        $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
+
         if($res === false)	//will only return false on invalid projects, as resources are registered already
-          throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+            throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
 
         //the image has already been included in the resources
         $id = $res->id;
@@ -384,6 +396,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         break;
 
       case "SetGhostEffectBrick":
+      case "SetTransparencyBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -392,6 +405,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         break;
 
       case "ChangeGhostEffectByNBrick":
+      case "ChangeTransparencyByNBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -438,21 +452,25 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     switch($brickType)
     {
       case "SetVariableBrick":
-		if(isset($script->userVariable["reference"]))	//link to other definition
-			$init = false;
-		else
-			$init = true;
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula), $init);
+        $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula));
         array_pop($this->cpp);
         break;
 
       case "ChangeVariableBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new ChangeVariableBrickDto($id, $this->parseFormula($fl->formula));

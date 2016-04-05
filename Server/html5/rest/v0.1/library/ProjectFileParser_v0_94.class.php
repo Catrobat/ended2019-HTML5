@@ -87,21 +87,25 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     switch($brickType)
     {
       case "SetVariableBrick":
-		if(isset($script->userVariable["reference"]))	//link to other definition
-			$init = false;
-		else
-			$init = true;
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula), $init);
+        $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula));
         array_pop($this->cpp);
         break;
 
       case "ChangeVariableBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new ChangeVariableBrickDto($id, $this->parseFormula($fl->formula));
@@ -109,8 +113,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "AddItemToUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new AppendToListBrickDto($id, $this->parseFormula($fl->formula));
@@ -118,8 +126,12 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "DeleteItemOfUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brick = new DeleteAtListBrickDto($id, $this->parseFormula($fl->formula));
@@ -127,40 +139,110 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
         break;
 
       case "InsertItemIntoUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new InsertAtListBrickDto($id, $this->parseFormula($fl->formula[0]), $this->parseFormula($fl->formula[1]));
+
+        $index = null;
+        $value = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_INDEX")
+          {
+            $index = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_VALUE")
+          {
+            $value = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $index || ! $value)
+          throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
+
+        $brick = new InsertAtListBrickDto($id, $index, $value);
         array_pop($this->cpp);
         break;
 
       case "ReplaceItemInUserListBrick":
-        $lst = $this->getList($script->userList);
-        $id = $this->getListId((string)$lst);
+        $id = null;
+        if(property_exists($script, "userList"))
+        {
+            $lst = $this->getList($script->userList);
+            $id = $this->getListId((string)$lst);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ReplaceAtListBrickDto($id, $this->parseFormula($fl->formula[1]),
-                                           $this->parseFormula($fl->formula[0]));
+
+        $index = null;
+        $value = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_INDEX")
+          {
+            $index = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_VALUE")
+          {
+            $value = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $index || ! $value)
+          throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
+
+        $brick = new ReplaceAtListBrickDto($id, $index, $value);
         array_pop($this->cpp);
         break;
 
       case "ShowTextBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
-        $brick = new ShowTextBrickDto($id, $this->parseFormula($fl->formula[1]), $this->parseFormula($fl->formula[0]));
+
+        $x = null;
+        $y = null;
+
+        foreach($fl->children() as $formula)
+        {
+          if($formula["category"] == "X_POSITION")
+          {
+            $x = $this->parseFormula($formula);
+          }
+          if($formula["category"] == "Y_POSITION")
+          {
+            $y = $this->parseFormula($formula);
+          }
+        }
+
+        if(! $x || ! $y)
+          throw new InvalidProjectFileException("ShowTextBrick: invalid properties");
+
+        $brick = new ShowVariableBrickDto($id, $x, $y);
         array_pop($this->cpp);
         break;
 
       case "HideTextBrick":
-        $var = $this->getObject($script->userVariable, $this->cpp);
-        $id = $this->getVariableId((string)$var);
+        $id = null;
+        if(property_exists($script, "userVariable"))
+        {
+            $var = $this->getObject($script->userVariable, $this->cpp);
+            $id = $this->getVariableId((string)$var);
+        }
         $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $brick = new HideTextBrickDto($id);
-        array_pop($this->cpp);
+        $brick = new HideVariableBrickDto($id);
         break;
 
       default:

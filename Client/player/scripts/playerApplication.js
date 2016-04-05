@@ -83,7 +83,14 @@ PocketCode.merge({
             };
 
             this._project = new PocketCode.GameEngine();
+            this._loadingAlerts = {
+                files: [],
+                bricks: [],
+                deviceFeatures: [],
+                deviceEmulation: false,
+            };
             this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+            this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
 
             //init i18n
@@ -156,9 +163,9 @@ PocketCode.merge({
                     this._currentPage.actionOnGlobalError();
 
                 var d = new PocketCode.Ui.GlobalErrorDialog();
-                d.bodyInnerHTML += '<br /><br />Details: ';
-                d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Details: ';
+                //d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
@@ -172,16 +179,32 @@ PocketCode.merge({
                 throw new Error('i18nControllerError: ' + e.responseText);
             },
             _projectLoadingErrorHandler: function (e) {
-                var files = e.files;
+                if (e.files)
+                    this._loadingAlerts.files = this._loadingAlerts.files.concat(e.files);
+                else if (e.bricks)
+                    this._loadingAlerts.bricks = e.bricks;
+                else if (e.deviceFeatures)
+                    this._loadingAlerts.deviceFeatures = e.deviceFeatures;
+                else if (e.deviceEmulation)
+                    this._loadingAlerts.deviceEmulation = e.deviceEmulation;
+            },
+            _projectLoadHandler: function (e) {
+                if (this._loadingAlerts.files.length == 0 && this._loadingAlerts.bricks.length == 0 && this._loadingAlerts.deviceFeatures.length == 0 && !this._loadingAlerts.deviceEmulation)
+                    return;
 
-                var d = new PocketCode.Ui.UnsupportedSoundFileDialog();
-                d.onCancel.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
-                d.bodyInnerHTML += '<br /><br />Details: [';
-                for (var i = 0, l = files.length - 1; i < l; i++)
-                    d.bodyInnerHTML += e.files[i].src.replace(new RegExp('/', 'g'), '/&shy;') + ', ';
-                //d.bodyInnerHTML += files[files.length-1].src + ']';
-                this._showDialog(d, false);
+                //TODO: check for device emulation and show a message as well
+                //TODO: add dialog for all missing features/warnings
+
+                //var files = e.files;
+
+                //var d = new PocketCode.Ui.UnsupportedSoundFileDialog();
+                //d.onCancel.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                //d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
+                ////d.bodyInnerHTML += '<br /><br />Details: [';
+                ////for (var i = 0, l = files.length - 1; i < l; i++)
+                ////    d.bodyInnerHTML += e.files[i].src.replace(new RegExp('/', 'g'), '/&shy;') + ', ';
+                ////d.bodyInnerHTML += files[files.length-1].src + ']';
+                //this._showDialog(d, false);
             },
             _requestProjectDetails: function (projectId) {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
@@ -205,7 +228,7 @@ PocketCode.merge({
 
                 var d = new PocketCode.Ui.ProjectNotFoundDialog();
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
             },
@@ -257,7 +280,7 @@ PocketCode.merge({
                 }
                 PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
 
-                d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                 d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
@@ -365,7 +388,7 @@ PocketCode.merge({
                     else {
                         var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                         d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                        d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                        //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                         this._onInit.dispatchEvent();   //hide splash screen
                         this._showDialog(d, false);
                     }
