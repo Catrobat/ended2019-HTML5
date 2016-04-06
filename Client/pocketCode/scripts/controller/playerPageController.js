@@ -20,7 +20,7 @@ PocketCode.PlayerPageController = (function () {
 
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
-        this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.PLAY })); }, this));
+        this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         //this._playerViewportController.onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._scalingChangedHandler, this));
         this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
@@ -202,7 +202,7 @@ PocketCode.PlayerPageController = (function () {
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     break;
-                case PocketCode.Ui.PlayerBtnCommand.PLAY:
+                case PocketCode.Ui.PlayerBtnCommand.START:
                     if (SmartJs.Device.isMobile) {    //create history entry
                         var state = history.state;
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
@@ -237,7 +237,7 @@ PocketCode.PlayerPageController = (function () {
             }
         },
         //_startButtonClickedHandler: function(e){
-        //    this._buttonClickedHandler(e.merge({command: PocketCode.Ui.PlayerBtnCommand.PLAY}));
+        //    this._buttonClickedHandler(e.merge({command: PocketCode.Ui.PlayerBtnCommand.START}));
         //},
         _spriteClickedHandler: function (e) {
             //TODO: get id + dispatch event in gameEngine
