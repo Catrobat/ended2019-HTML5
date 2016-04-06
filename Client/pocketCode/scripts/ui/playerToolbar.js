@@ -88,7 +88,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._pauseButton);
             // i18n: btnScreenshot
             this._screenshotButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.SCREENSHOT, 'btnScreenshot');
-            this._screenshotButtonDisabled = false;
+            this._screenshotButtonDisabled = true;
             this._screenshotButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.SCREENSHOT }); }, this));
             this._menuContainerAlign.appendChild(this._screenshotButton);
             // i18n: btnAxes
