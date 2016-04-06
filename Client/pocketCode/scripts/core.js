@@ -8,67 +8,67 @@
 if (!PocketCode)
     var PocketCode = {};
 
-if (!PocketCode.crossOrigin)
-    PocketCode.crossOrigin = new ((function () {
+//if (!PocketCode.crossOrigin)
+//    PocketCode.crossOrigin = new ((function () {
 
-        function CrossOrigin() {
-            //init: worst case
-            this._current = true;
-            this._supported = false;
-            this._initialized = false;
+//        function CrossOrigin() {
+//            //init: worst case
+//            this._current = true;
+//            this._supported = false;
+//            this._initialized = false;
 
-            var loc = window.location, a = document.createElement('a');
-            a.href = PocketCode.domain;
-            var port = loc.protocol == 'https:' ? '443' : loc.port;
-            var aPort = a.port; //safari fix
-            if (aPort == '0')
-                aPort = '';
-            if (a.hostname == loc.hostname && (aPort == loc.port || aPort == port) && a.protocol == loc.protocol) {  //TODO: check sub domains
-                this._current = false;
-                this._initialized = true;
-            }
-            else {
-                //this._current = true;
-                var oImg = new Image();
-                if (!('crossOrigin' in oImg)) {
-                    this._initialized = true;
-                    return;
-                }
-                oImg.crossOrigin = 'anonymous';
-                oImg.onload = function () {
-                    this._supported = true;
-                    this._initialized = true;
-                }.bind(this);
-                oImg.onerror = function () {
-                    this._supported = false;
-                    this._initialized = true;
-                    //throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
-                }.bind(this);
-                oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
-            }
-        }
+//            var loc = window.location, a = document.createElement('a');
+//            a.href = PocketCode.domain;
+//            var port = loc.protocol == 'https:' ? '443' : loc.port;
+//            var aPort = a.port; //safari fix
+//            if (aPort == '0')
+//                aPort = '';
+//            if (a.hostname == loc.hostname && (aPort == loc.port || aPort == port) && a.protocol == loc.protocol) {  //TODO: check sub domains
+//                this._current = false;
+//                this._initialized = true;
+//            }
+//            else {
+//                //this._current = true;
+//                var oImg = new Image();
+//                if (!('crossOrigin' in oImg)) {
+//                    this._initialized = true;
+//                    return;
+//                }
+//                oImg.crossOrigin = 'anonymous';
+//                oImg.onload = function () {
+//                    this._supported = true;
+//                    this._initialized = true;
+//                }.bind(this);
+//                oImg.onerror = function () {
+//                    this._supported = false;
+//                    this._initialized = true;
+//                    //throw new Error('core: cross origin check failed: please make sure both the provided base and favicon urls are valid');
+//                }.bind(this);
+//                oImg.src = PocketCode.domain + 'html5/pocketCode/img/favicon.png';
+//            }
+//        }
 
-        //properties
-        Object.defineProperties(CrossOrigin.prototype, {
-            current: {
-                get: function () {
-                    return this._current;
-                },
-            },
-            supported: {
-                get: function () {
-                    return this._supported;
-                },
-            },
-            initialized: {
-                get: function () {
-                    return this._initialized;
-                },
-            },
-        });
+//        //properties
+//        Object.defineProperties(CrossOrigin.prototype, {
+//            current: {
+//                get: function () {
+//                    return this._current;
+//                },
+//            },
+//            supported: {
+//                get: function () {
+//                    return this._supported;
+//                },
+//            },
+//            initialized: {
+//                get: function () {
+//                    return this._initialized;
+//                },
+//            },
+//        });
 
-        return CrossOrigin;
-    })())();
+//        return CrossOrigin;
+//    })())();
 
 
 /**
