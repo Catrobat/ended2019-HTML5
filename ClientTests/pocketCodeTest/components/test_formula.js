@@ -6,7 +6,7 @@
 /// <reference path="../_resources/testDataFormula.js" />
 'use strict';
 
-QUnit.module("formula.js");
+QUnit.module("components/formula.js");
 
 
 QUnit.test("Formula", function (assert) {

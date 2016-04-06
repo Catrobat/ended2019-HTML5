@@ -2,7 +2,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 'use strict';
 
-QUnit.module("bricksCore.js");
+QUnit.module("model/bricksCore.js");
 
 
 QUnit.test("BrickContainer", function (assert) {

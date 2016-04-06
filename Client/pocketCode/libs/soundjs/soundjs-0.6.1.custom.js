@@ -2107,7 +2107,9 @@ this.createjs = this.createjs || {};
 	 */
 	p._sendError = function (event) {
 		if (this._isCanceled() || !this.hasEventListener("error")) { return; }
-		if (event == null) {
+		if (event instanceof Error || event instanceof DOMException)
+			event = new createjs.ErrorEvent(event.name + ': ' + event.message, null, event);
+		else if (event == null) {
 			event = new createjs.ErrorEvent("PRELOAD_ERROR_EMPTY"); // TODO: Populate error
 		}
 		this.dispatchEvent(event);
@@ -3439,10 +3441,10 @@ this.createjs = this.createjs || {};
 	 *      createjs.Sound.on("fileload", createjs.proxy(this.loadHandler, (this)));
 	 *      createjs.Sound.registerSound("path/to/mySound.ogg", "sound");
 	 *      function loadHandler(event) {
-     *          // This is fired for each sound that is registered.
-     *          var instance = createjs.Sound.play("sound");  // play using id.  Could also use full source path or event.src.
-     *          instance.on("complete", createjs.proxy(this.handleComplete, this));
-     *          instance.volume = 0.5;
+	 *          // This is fired for each sound that is registered.
+	 *          var instance = createjs.Sound.play("sound");  // play using id.  Could also use full source path or event.src.
+	 *          instance.on("complete", createjs.proxy(this.handleComplete, this));
+	 *          instance.volume = 0.5;
 	 *      }
 	 *
 	 * The maximum number of concurrently playing instances of the same sound can be specified in the "data" argument
@@ -3476,7 +3478,7 @@ this.createjs = this.createjs || {};
 	 *					{id:"sound2", startTime:1000, duration:400},
 	 *					{id:"sound3", startTime:1700, duration: 1000}
 	 *				]}
- 	 *			}
+	 *			}
 	 *		];
 	 *		createjs.Sound.alternateExtensions = ["mp3"];
 	 *		createjs.Sound.on("fileload", loadSound);
@@ -3523,7 +3525,7 @@ this.createjs = this.createjs || {};
 	 * <ul><li>There is a delay in applying volume changes to tags that occurs once playback is started. So if you have
 	 * muted all sounds, they will all play during this delay until the mute applies internally. This happens regardless of
 	 * when or how you apply the volume change, as the tag seems to need to play to apply it.</li>
-     * <li>MP3 encoding will not always work for audio tags, particularly in Internet Explorer. We've found default
+	 * <li>MP3 encoding will not always work for audio tags, particularly in Internet Explorer. We've found default
 	 * encoding with 64kbps works.</li>
 	 * <li>Occasionally very short samples will get cut off.</li>
 	 * <li>There is a limit to how many audio tags you can load and play at once, which appears to be determined by
@@ -3672,7 +3674,7 @@ this.createjs = this.createjs || {};
 	 * that support so plugins can accurately determine if an extension is supported.  Adding to this list can help
 	 * plugins determine more accurately if an extension is supported.
 	 *
- 	 * A useful list of extensions for each format can be found at <a href="http://html5doctor.com/html5-audio-the-state-of-play/" target="_blank">http://html5doctor.com/html5-audio-the-state-of-play/</a>.
+	 * A useful list of extensions for each format can be found at <a href="http://html5doctor.com/html5-audio-the-state-of-play/" target="_blank">http://html5doctor.com/html5-audio-the-state-of-play/</a>.
 	 * @property EXTENSION_MAP
 	 * @type {Object}
 	 * @since 0.4.0
@@ -3743,7 +3745,7 @@ this.createjs = this.createjs || {};
 	 * @type {Object}
 	 * @static
 	 */
-    s.activePlugin = null;
+	s.activePlugin = null;
 
 
 // class getter / setter properties
@@ -4636,7 +4638,7 @@ this.createjs = this.createjs || {};
 		var defaultPlayProps = s._defaultPlayPropsHash[src];	// for audio sprites, which create and store defaults by id
 		var details = s._getSrcById(src);
 		if (details.id === undefined)
-		    details = s._parsePath(details.src);
+			details = s._parsePath(details.src);
 
 		var instance = null;
 		if (details != null && details.src != null) {
@@ -5907,7 +5909,7 @@ this.createjs = this.createjs || {};
 	 * Handles starting playback when the sound is ready for playing.
 	 * @method _handleSoundReady
 	 * @protected
- 	 */
+	 */
 	p._handleSoundReady = function () {
 		// plugin specific code
 	};
@@ -6069,7 +6071,7 @@ this.createjs = this.createjs || {};
 
 
 // constructor:
- 	/**
+	/**
 	 * A default plugin class used as a base for all other plugins.
 	 * @class AbstractPlugin
 	 * @constructor
@@ -6406,8 +6408,8 @@ this.createjs = this.createjs || {};
 	p._sendComplete = function (event) {
 		// OJR we leave this wrapped in Loader because we need to reference src and the handler only receives a single argument, the decodedAudio
 		Loader.context.decodeAudioData(this._rawResult,
-	         createjs.proxy(this._handleAudioDecoded, this),
-	         createjs.proxy(this._sendError, this));
+			 createjs.proxy(this._handleAudioDecoded, this),
+			 createjs.proxy(this._sendError, this));
 	};
 
 
@@ -6533,7 +6535,7 @@ this.createjs = this.createjs || {};
 	/**
 	 * Note this is only intended for use by advanced users.
 	 * <br />Audio context used to create nodes.  This is and needs to be the same context used by {{#crossLink "WebAudioPlugin"}}{{/crossLink}}.
-  	 * @property context
+	 * @property context
 	 * @type {AudioContext}
 	 * @static
 	 * @since 0.6.0
@@ -6683,9 +6685,9 @@ this.createjs = this.createjs || {};
 
 	p._updateVolume = function () {
 		var newVolume = this._muted ? 0 : this._volume;
-	  	if (newVolume != this.gainNode.gain.value) {
+		if (newVolume != this.gainNode.gain.value) {
 		  this.gainNode.gain.value = newVolume;
-  		}
+		}
 	};
 
 	p._calculateCurrentPosition = function () {
@@ -7512,12 +7514,12 @@ this.createjs = this.createjs || {};
 	 * this limit, you can expect to see unpredictable results. Please use {{#crossLink "Sound.MAX_INSTANCES"}}{{/crossLink}} as
 	 * a guide to how many total audio tags you can safely use in all browsers.  This issue is primarily limited to IE9.
 	 *
-     * <b>IE html limitations</b><br />
-     * <ul><li>There is a delay in applying volume changes to tags that occurs once playback is started. So if you have
-     * muted all sounds, they will all play during this delay until the mute applies internally. This happens regardless of
-     * when or how you apply the volume change, as the tag seems to need to play to apply it.</li>
-     * <li>MP3 encoding will not always work for audio tags if it's not default.  We've found default encoding with
-     * 64kbps works.</li>
+	 * <b>IE html limitations</b><br />
+	 * <ul><li>There is a delay in applying volume changes to tags that occurs once playback is started. So if you have
+	 * muted all sounds, they will all play during this delay until the mute applies internally. This happens regardless of
+	 * when or how you apply the volume change, as the tag seems to need to play to apply it.</li>
+	 * <li>MP3 encoding will not always work for audio tags if it's not default.  We've found default encoding with
+	 * 64kbps works.</li>
 	 * <li>Occasionally very short samples will get cut off.</li>
 	 * <li>There is a limit to how many audio tags you can load or play at once, which appears to be determined by
 	 * hardware and browser settings.  See {{#crossLink "HTMLAudioPlugin.MAX_INSTANCES"}}{{/crossLink}} for a safe estimate.

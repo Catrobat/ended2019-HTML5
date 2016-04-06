@@ -5,7 +5,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/userVariable.js" />
 'use strict';
 
-QUnit.module("userVariable.js");
+QUnit.module("model/userVariable.js");
 
 
 QUnit.test("UserVariableCollection", function (assert) {

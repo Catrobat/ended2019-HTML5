@@ -518,16 +518,16 @@ PocketCode.DeviceEmulator = (function () {
             Y: 0.0,
         };
         this._inclinationLimits = {
-            X_MIN: -36, //-90,
-            X_MAX: 36, //90,
-            Y_MIN: -36, //-90,
-            Y_MAX: 36, //90,
+            X_MIN: -36.0, //-90,
+            X_MAX: 36.0, //90,
+            Y_MIN: -36.0, //-90,
+            Y_MAX: 36.0, //90,
         };
         this._inclinationIncr = {
-            X: 3, //10,
-            Y: 3, //10
+            X: 6.0, //10,
+            Y: 6.0, //10
         };
-        this._inclinationTimerDuration = 100;
+        this._inclinationTimerDuration = 200;
 
         // Arrow Keys 
         this._keyCode = {
@@ -553,15 +553,15 @@ PocketCode.DeviceEmulator = (function () {
             RIGHT: false,
             UP: false,
             DOWN: false,
-            SPACE: false
+            SPACE: false,
         };
 
         //key down time
         this._keyDownTime = {
-            LEFT: 0,
-            RIGHT: 0,
-            UP: 0,
-            DOWN: 0
+            LEFT: 0.0,
+            RIGHT: 0.0,
+            UP: 0.0,
+            DOWN: 0.0,
         };
 
         this._keyDownTimeDefault = 3;
@@ -573,6 +573,22 @@ PocketCode.DeviceEmulator = (function () {
 
         this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
     }
+
+    //properties
+    Object.defineProperties(DeviceEmulator.prototype, {
+        inclinationX: {
+            get: function () {
+                this._features.INCLINATION.inUse = true;
+                return this._sensorData.X_INCLINATION;
+            },
+        },
+        inclinationY: {
+            get: function () {
+                this._features.INCLINATION.inUse = true;
+                return this._sensorData.Y_INCLINATION;
+            },
+        },
+    });
 
     //methods
     DeviceEmulator.prototype.merge({
@@ -650,28 +666,28 @@ PocketCode.DeviceEmulator = (function () {
                 return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                this._keyDownTime.LEFT += 1;
+                this._keyDownTime.LEFT += 1.0;
                 this._sensorData.X_INCLINATION += this._inclinationIncr.X;
                 if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
             }
             else if (this._keyPress.RIGHT && !this._keyPress.LEFT) {
                 // right
-                this._keyDownTime.RIGHT += 1;
+                this._keyDownTime.RIGHT += 1.0;
                 this._sensorData.X_INCLINATION -= this._inclinationIncr.X;
                 if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                this._keyDownTime.UP += 1;
+                this._keyDownTime.UP += 1.0;
                 this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y;
                 if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                this._keyDownTime.DOWN += 1;
+                this._keyDownTime.DOWN += 1.0;
                 this._sensorData.Y_INCLINATION += this._inclinationIncr.Y;
                 if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;

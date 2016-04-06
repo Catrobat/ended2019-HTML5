@@ -5,7 +5,7 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("playerViewportController.js");
+QUnit.module("controller/playerViewportController.js");
 
 
 QUnit.test("PlayerViewportController", function (assert) {

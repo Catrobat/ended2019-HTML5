@@ -7,7 +7,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/controller/controllerCore.js" />
 'use strict';
 
-QUnit.module("controllerCore.js");
+QUnit.module("controller/controllerCore.js");
 
 
 QUnit.test("BaseController", function (assert) {

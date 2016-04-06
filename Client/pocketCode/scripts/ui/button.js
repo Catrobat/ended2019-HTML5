@@ -62,7 +62,6 @@ PocketCode.Ui.Button = (function () {
         _clickHandler: function (e) {
             this._dom.blur();
             this._onClick.dispatchEvent();
-            //e.target.blur();//preventDefault(); //stop event so the button dowsn't get focus
         },
     });
 

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-QUnit.module("scrollContainer.js");
+QUnit.module("ui/scrollContainer.js");
 
 
 QUnit.test("ScrollContainer", function (assert) {

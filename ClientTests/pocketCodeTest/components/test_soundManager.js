@@ -2,7 +2,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 "use strict";
 
-QUnit.module("soundManager.js");
+QUnit.module("components/soundManager.js");
 
 
 QUnit.test("SoundManager", function (assert) {

@@ -3,7 +3,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';
 
-QUnit.module("device.js");
+QUnit.module("components/device.js");
 
 
 QUnit.test("Device", function (assert) {
