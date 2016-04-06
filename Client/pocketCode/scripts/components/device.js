@@ -568,10 +568,10 @@ PocketCode.DeviceEmulator = (function () {
 
         this._resetInclinationX();
         this._resetInclinationY();
-        this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
-        this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-        this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+        //this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+        //this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+        //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
     }
 
     //properties
@@ -579,12 +579,22 @@ PocketCode.DeviceEmulator = (function () {
         inclinationX: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
                 return this._sensorData.X_INCLINATION;
             },
         },
         inclinationY: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
                 return this._sensorData.Y_INCLINATION;
             },
         },
@@ -696,8 +706,10 @@ PocketCode.DeviceEmulator = (function () {
         /* override */
         dispose: function () {
             window.clearInterval(this._inclinationTimer);
-            this._removeDomListener(document, 'keydown', this._keyDownListener);
-            this._removeDomListener(document, 'keyup', this._keyUpListener);
+            if (this._keyDownListener)
+                this._removeDomListener(document, 'keydown', this._keyDownListener);
+            if (this._keyUpListener)
+                this._removeDomListener(document, 'keyup', this._keyUpListener);
 
             PocketCode.Device.prototype.dispose.call(this);    //call super()
         },
