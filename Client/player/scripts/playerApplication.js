@@ -166,7 +166,7 @@ PocketCode.merge({
                 //d.bodyInnerHTML += '<br /><br />Details: ';
                 //d.bodyInnerHTML += '{msg: ' + msg + ', file: ' + file.replace(new RegExp('/', 'g'), '/&shy;') + ', ln: ' + line + ', col: ' + column /*+ ', stack: ' + stack*/ + '}';
                 //d.bodyInnerHTML += '<br /><br />Application will be closed.';
-                d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
                 PocketCode.LoggingProvider.sendMessage(error, this._currentProjectId);
@@ -198,7 +198,7 @@ PocketCode.merge({
                 //var files = e.files;
 
                 //var d = new PocketCode.Ui.UnsupportedSoundFileDialog();
-                //d.onCancel.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                //d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                 //d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
                 ////d.bodyInnerHTML += '<br /><br />Details: [';
                 ////for (var i = 0, l = files.length - 1; i < l; i++)
@@ -206,8 +206,8 @@ PocketCode.merge({
                 ////d.bodyInnerHTML += files[files.length-1].src + ']';
                 //this._showDialog(d, false);
             },
-            _requestProjectDetails: function (projectId) {
-                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: projectId, imgDataMax: 0 });
+            _requestProjectDetails: function () {
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
                 req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestLoadHandler, this));
                 req.onError.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestErrorHandler, this));
                 PocketCode.Proxy.send(req);
@@ -219,21 +219,45 @@ PocketCode.merge({
                 this._onInit.dispatchEvent();
                 this._pages.PlayerPageController.projectDetails = json;
                 this._viewport.show();
-                this._requestProject(this._currentProjectId);
+                this._requestProject();
             },
             _projectDetailsRequestErrorHandler: function (e) {
                 if (this._disposing || this._disposed)
                     return;
                 this._onInit.dispatchEvent();
 
-                var d = new PocketCode.Ui.ProjectNotFoundDialog();
-                d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
-                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                var d, type;
+                var errorStatus = e.statusCode,
+                    errorJson = e.responseJson;
+
+                if (errorStatus)  //got a response
+                    type = errorJson.type || 'InternalServerError';
+                else
+                    type = 'ServerConnectionError';
+
+                switch (type) {
+                    case 'ProjectNotFoundException':
+                        d = new PocketCode.Ui.ProjectNotFoundDialog();
+                        break;
+                    case 'ServerConnectionError':
+                        d = new PocketCode.Ui.ServerConnectionErrorDialog();
+                        d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                        d.onRetry.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                            e.target.dispose();
+                            this._requestProjectDetails();
+                        }, this));
+                        break;
+
+                    default:    //InternalServerError
+                        d = new PocketCode.Ui.InternalServerErrorDialog();
+                }
+                if (d.onOK)
+                    d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
             },
-            _requestProject: function (projectId) {
-                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: projectId });
+            _requestProject: function () {
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: this._currentProjectId });
                 req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectRequestLoadHandler, this));
                 req.onError.addEventListener(new SmartJs.Event.EventListener(this._projectRequestErrorHandler, this));
                 PocketCode.Proxy.send(req);
@@ -256,7 +280,7 @@ PocketCode.merge({
                 var errorStatus = e.statusCode,
                     errorJson = e.responseJson;
 
-                if (errorStatus)  //gote response
+                if (errorStatus)  //got a response
                     type = errorJson.type || 'InternalServerError';
                 else
                     type = 'ServerConnectionError';
@@ -267,21 +291,28 @@ PocketCode.merge({
                         break;
                     case 'InvalidProjectFileException':
                         d = new PocketCode.Ui.ProjectNotValidDialog();
+                        PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
                         break;
                     case 'FileParserException':
                         d = new PocketCode.Ui.ParserErrorDialog();
+                        PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
                         break;
                     case 'ServerConnectionError':
                         d = new PocketCode.Ui.ServerConnectionErrorDialog();
+                        d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                        d.onRetry.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                            e.target.dispose();
+                            this._requestProject();
+                        }, this));
                         break;
 
                     default:    //InternalServerError
                         d = new PocketCode.Ui.InternalServerErrorDialog();
+                        PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
                 }
-                PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
 
-                //d.bodyInnerHTML += '<br /><br />Application will be closed.';
-                d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                if (d.onOK)
+                    d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                 this._onInit.dispatchEvent();   //hide splash screen
                 this._showDialog(d, false);
             },
@@ -315,7 +346,7 @@ PocketCode.merge({
                             this._onExit.dispatchEvent();
                         else {
                             var d = new PocketCode.Ui.ExitWarningDialog();
-                            d.onExit.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                            d.onExit.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                             d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) {
                                 e.target.dispose();
                                 this._forwardNavigationAllowed = true;
@@ -387,7 +418,7 @@ PocketCode.merge({
                     }
                     else {
                         var d = new PocketCode.Ui.BrowserNotSupportedDialog();
-                        d.onOK.addEventListener(new SmartJs.Event.EventListener(function () { this._onExit.dispatchEvent(); }, this));
+                        d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                         //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                         this._onInit.dispatchEvent();   //hide splash screen
                         this._showDialog(d, false);
@@ -398,7 +429,7 @@ PocketCode.merge({
                 if (SmartJs.Device.isMobile && !this._mobileInitialized) {
                     //to reinit app in the scope of an user event
                     var d = new PocketCode.Ui.MobileRestrictionDialog();
-                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onExit.dispatchEvent(e); }, this));
+                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     d.onConfirm.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         this._viewport.hide();
                         this._onMobileInitRequired.dispatchEvent(e);
@@ -414,7 +445,7 @@ PocketCode.merge({
                 this._currentPage.project = this._project;
 
                 this._currentProjectId = projectId;
-                this._requestProjectDetails(projectId);
+                this._requestProjectDetails();
             },
             toggleMuteSounds: function () {
                 this._muted = this._muted ? false : true;
