@@ -125,6 +125,16 @@ PocketCode.BroadcastManager = (function () {
          */
         _handleBroadcastWait: function (bcId, pubListener, callId) {
             var subs = this._subscriptions[bcId];
+            for (var i = 0, l = subs.length; i < l; i++) {
+                subListener = subs[i];
+                //delete disposed or missing objects
+                if (!subListener || !subListener.handler || !subListener.scope || subListener.scope._disposed) {
+                    subs.splice(i, 1);
+                    l--;
+                    i--;
+                    continue;
+                }
+            }
             var subsCount = subs.length;
 
             if (subsCount > 0) {
