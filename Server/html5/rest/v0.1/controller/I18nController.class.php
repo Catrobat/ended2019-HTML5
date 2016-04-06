@@ -11,7 +11,7 @@ class I18nController extends BaseController
   public $isRTL = [];
 
   public $api = "https://api.crowdin.com/api/project/catrobat/download/";
-  public $apiKey = "?key=6c9a3f10bd747ea3198c0bb9b651d9ab";
+  public $apiKey = "?key=" . CROWDIN_API_KEY;
 
   public function __construct($request)
   {
