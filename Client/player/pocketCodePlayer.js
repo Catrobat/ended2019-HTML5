@@ -874,6 +874,7 @@ PocketCode.Web = {
 		        var fapi = PocketCode.Web.FullscreenApi;
 		        fapi.onFullscreenChange = function (state) {
 		            var btn = ol.fullscreenButton;
+		            btn.blur();
 		            if (state)  //true
 		                btn.className += ' pc-webButtonChecked ';
 		            else
@@ -970,13 +971,14 @@ PocketCode.Web = {
 		    },
 		    _muteHandler: function (e) {
 		        var btn = this._webOverlay.muteButton;
+		        btn.blur();
 		        var muted = this._player.toggleMuteSounds();
 		        if (muted)  //true
 		            btn.className += ' pc-webButtonChecked ';
 		        else
 		            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
 		    },
-		    _closeHandler: function () {
+		    _closeHandler: function (e) {
 		        this._loader.abortLoading();
 		        try {
 		            this._splashScreen.hide();
