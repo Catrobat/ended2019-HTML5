@@ -9,5 +9,6 @@ define("EMAIL_TO", "pocketcode.html@gmail.com");
 define("EMAIL_NAME_TO", "PocketCode HTML5");
 define("EMAIL_USER", "pocketcode.html@gmail.com");
 define("EMAIL_PWD", "*****");
+
 //crowdin
-define("CROWDIN_API_KEY", "*****");
+define("CROWDIN_API_KEY", "?key=*****");
