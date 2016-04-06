@@ -189,7 +189,7 @@ PocketCode.Ui.ErrorDialog = (function () {
 
         this._sorryMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorSorry', '\n');
         this.insertAt(0, this._sorryMessageTextNode);
-        this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('lblErrorReportGenerated', '\n');
+        this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorReportGenerated', '\n');
         this._logMessageTextNode.hide();    //default
         this.appendChild(this._logMessageTextNode);
         this._closeMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorExit', '\n');
@@ -543,48 +543,50 @@ PocketCode.Ui.merge({
         return InternalServerErrorDialog;
     })(),
 
-    //ServerConnectionErrorDialog: (function () {
-    //    ServerConnectionErrorDialog.extends(PocketCode.Ui.Dialog, false);
+    ServerConnectionErrorDialog: (function () {
+        ServerConnectionErrorDialog.extends(PocketCode.Ui.Dialog, false);
 
-    //    //cntr
-    //    function ServerConnectionErrorDialog() {
-    //        PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblServerConnectionErrorCaption', 'msgServerConnectionError');
-    //        // i18n: lblCancel
-    //        this._btnCancel = new PocketCode.Ui.Button('lblCancel');
-    //        this.addButton(this._btnCancel);
-    //        // i18n: lblRetry
-    //        this._btnRetry = new PocketCode.Ui.Button('lblRetry');
-    //        this.addButton(this._btnRetry);
+        //cntr
+        function ServerConnectionErrorDialog() {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblServerConnectionErrorCaption', 'msgServerConnectionError');
+            // i18n: lblCancel
+            this._btnCancel = new PocketCode.Ui.Button('lblCancel');
+            this.addButton(this._btnCancel);
+            // i18n: lblRetry
+            this._btnRetry = new PocketCode.Ui.Button('lblRetry');
+            this.addButton(this._btnRetry);
 
-    //        // i18n: msgServerConnection
-    //        // ??
-    //        //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgServerConnection');
-    //    }
+            this._onRetry = new SmartJs.Event.Event(this);  //we need the dialog as target here
+            this._btnRetry.onClick.addEventListener(new SmartJs.Event.EventListener(this._onRetry.dispatchEvent, this._onRetry));
+            // i18n: msgServerConnection
+            // ??
+            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgServerConnection');
+        }
 
-    //    //events
-    //    Object.defineProperties(ServerConnectionErrorDialog.prototype, {
-    //        onCancel: {
-    //            get: function () {
-    //                return this._btnCancel.onClick;
-    //            },
-    //        },
-    //        onRetry: {
-    //            get: function () {
-    //                return this._btnRetry.onClick;
-    //            },
-    //        },
-    //    });
+        //events
+        Object.defineProperties(ServerConnectionErrorDialog.prototype, {
+            onCancel: {
+                get: function () {
+                    return this._btnCancel.onClick;
+                },
+            },
+            onRetry: {
+                get: function () {
+                    return this._onRetry;
+                },
+            },
+        });
 
-    //    //methods
-    //    //ServerConnectionErrorDialog.prototype.merge({
-    //    //    /* override */
-    //    //    handleHistoryBack: function () {
-    //    //        this.onOK.dispatchEvent();
-    //    //    },
-    //    //});
+        //methods
+        //ServerConnectionErrorDialog.prototype.merge({
+        //    /* override */
+        //    handleHistoryBack: function () {
+        //        this.onOK.dispatchEvent();
+        //    },
+        //});
 
-    //    return ServerConnectionErrorDialog;
-    //})(),
+        return ServerConnectionErrorDialog;
+    })(),
 
     UnsupportedFeatureDialog: (function () {
         UnsupportedFeatureDialog.extends(PocketCode.Ui.Dialog, false);
