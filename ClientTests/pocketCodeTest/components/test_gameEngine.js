@@ -2,7 +2,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 'use strict';
 
-QUnit.module("gameEngine.js");
+QUnit.module("components/gameEngine.js");
 
 
 QUnit.test("GameEngine", function (assert) {

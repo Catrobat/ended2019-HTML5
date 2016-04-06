@@ -5,7 +5,7 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("canvas.js");
+QUnit.module("ui/canvas.js");
 
 
 QUnit.test("Canvas", function (assert) {

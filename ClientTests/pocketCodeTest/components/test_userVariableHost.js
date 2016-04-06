@@ -6,7 +6,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/userVariableHost.js" />
 'use strict';
 
-QUnit.module("userVariableHost.js");
+QUnit.module("components/userVariableHost.js");
 
 
 QUnit.test("UserVariableHost", function (assert) {

@@ -7,7 +7,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 'use strict';
 
-QUnit.module("sprite.js");
+QUnit.module("model/sprite.js");
 
 QUnit.test("Sprite offsets", function (assert) {
     var testsDone = assert.async();

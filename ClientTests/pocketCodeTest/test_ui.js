@@ -6,7 +6,7 @@
 /// <reference path="../../Client/pocketCode/scripts/view/playerPageView.js" />
 'use strict';
 
-QUnit.module("ui.js");
+QUnit.module("/ui.js");
 
 
 QUnit.test("I18nTextNode", function (assert) {

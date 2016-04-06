@@ -7,7 +7,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/imageStore.js" />
 'use strict';
 
-QUnit.module("imageStore.js");
+QUnit.module("components/imageStore.js");
 
 
 QUnit.test("ImageStore: init and loading", function (assert) {

@@ -5,7 +5,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 'use strict';
 
-QUnit.module("bricksSound.js");
+QUnit.module("model/bricksSound.js");
 
 
 QUnit.test("PlaySoundBrick", function (assert) {

@@ -1,6 +1,6 @@
 'use strict';
 
-QUnit.module("core.js");
+QUnit.module("/core.js");
 
 
 QUnit.test("core framework", function (assert) {

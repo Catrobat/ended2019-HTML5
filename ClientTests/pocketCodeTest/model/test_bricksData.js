@@ -5,7 +5,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 'use strict';
 
-QUnit.module("bricksData.js");
+QUnit.module("model/bricksData.js");
 
 
 QUnit.test("SetVariableBrick", function (assert) {

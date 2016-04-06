@@ -7,7 +7,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 'use strict';
 
-QUnit.module("bricksControl.js");
+QUnit.module("model/bricksControl.js");
 
 
 QUnit.test("ProgramStartBrick", function (assert) {

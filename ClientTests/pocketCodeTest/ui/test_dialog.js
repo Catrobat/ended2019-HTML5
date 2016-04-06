@@ -1,7 +1,13 @@
-﻿/// <reference path="../../../Client/pocketCode/scripts/ui/dialog.js" />
+﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+/// <reference path="../../../Client/smartJs/sj.js" />
+/// <reference path="../../../Client/smartJs/sj-event.js" />
+/// <reference path="../../../Client/smartJs/sj-core.js" />
+/// <reference path="../../../Client/smartJs/sj-components.js" />
+/// <reference path="../../../Client/smartJs/sj-ui.js" />
+/// <reference path="../../../Client/pocketCode/scripts/ui/dialog.js" />
 'use strict';
 
-QUnit.module("dialog.js");
+QUnit.module("ui/dialog.js");
 
 
 QUnit.test("Dialog (Base Class)", function (assert) {

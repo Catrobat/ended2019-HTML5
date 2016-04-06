@@ -7,7 +7,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/loggingProvider.js" />
 'use strict';
 
-QUnit.module("loggingProvider.js");
+QUnit.module("components/loggingProvider.js");
 
 
 QUnit.test("LoggingProvider", function (assert) {

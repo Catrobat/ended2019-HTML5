@@ -6,7 +6,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/proxy.js" />
 'use strict';
 
-QUnit.module("proxy.js");
+QUnit.module("components/proxy.js");
 
 
 QUnit.test("ServiceRequest", function (assert) {

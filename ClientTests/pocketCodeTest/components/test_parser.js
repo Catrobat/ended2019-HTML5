@@ -19,7 +19,7 @@
 /// <reference path="../_resources/testDataProjects.js" />
 'use strict';
 
-QUnit.module("parser.js");
+QUnit.module("components/parser.js");
 
 
 QUnit.test("FormulaParser: operators", function (assert) {

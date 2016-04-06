@@ -1,9 +1,9 @@
+/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
-/// <reference path="../../qunit/qunit-1.23.0.js" />
 'use strict';
 
-QUnit.module("broadcastManager.js");
+QUnit.module("components/broadcastManager.js");
 
 
 QUnit.test("BroadcastManager: broadcast (simple)", function (assert) {

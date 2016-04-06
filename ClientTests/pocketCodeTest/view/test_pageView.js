@@ -6,10 +6,10 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("components/renderingImage.js");
+QUnit.module("view/pageView.js");
 
 
-QUnit.test("RenderingImage", function (assert) {
+QUnit.test("PageView", function (assert) {
 
     assert.ok(false, "TODO");
 });

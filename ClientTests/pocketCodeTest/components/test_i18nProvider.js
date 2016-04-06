@@ -8,7 +8,7 @@
 /// <reference path="../../../Client/pocketCode/scripts/components/proxy.js" />
 'use strict';
 
-QUnit.module("i18nProvider.js");
+QUnit.module("components/i18nProvider.js");
 
 
 QUnit.test("I18nProvider", function (assert) {

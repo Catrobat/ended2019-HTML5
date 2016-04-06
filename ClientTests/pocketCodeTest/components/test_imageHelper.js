@@ -6,7 +6,7 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("imageHelper.js");
+QUnit.module("components/imageHelper.js");
 
 
 QUnit.test("ImageHelper", function (assert) {
