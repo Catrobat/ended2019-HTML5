@@ -95,7 +95,7 @@ PocketCode.GameEngine = (function () {
             },
         },
         projectScreenSize: {
-            get: function() {
+            get: function () {
                 return { width: this._originalScreenWidth, height: this._originalScreenHeight };
             },
         },
@@ -267,16 +267,18 @@ PocketCode.GameEngine = (function () {
 
             this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
-            
-            var bricksCount = jsonProject.header.bricksCount;
-            if (bricksCount <= 0)   //TODO: necessary? - add test case
-                this._spritesLoaded = true;
 
             this._spritesLoadingProgress = 0;
             this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
+            var bricksCount = jsonProject.header.bricksCount;
+            if (bricksCount == 0) {
+                this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
+                return;
+            }
+            //else
             if (jsonProject.background) {
                 this._background = this._spriteFactory.create(jsonProject.background);
                 this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
@@ -314,12 +316,12 @@ PocketCode.GameEngine = (function () {
         _spriteFactoryUnsupportedBricksHandler: function (e) {
             this._onLoadingError.dispatchEvent({ bricks: e.unsupportedBricks });
         },
-        _initSprites: function() {
+        _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
             var sprites = this._sprites;
-            for (var i = 0,l=sprites.length;i<l;i++) {
-              sprites[i].init();
-          }
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].init();
+            }
             //console.log(sprites);
         },
         _resourceProgressChangeHandler: function (e) {
@@ -353,7 +355,7 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
 
-        _deviceOnSpaceKeyDownHandler: function(e) {
+        _deviceOnSpaceKeyDownHandler: function (e) {
             this._onTabbedAction.dispatchEvent({ sprite: this._background });
         },
         //project interaction
@@ -515,7 +517,7 @@ PocketCode.GameEngine = (function () {
         handleSpriteTap: function (id) {
             var sprite = this.getSpriteById(id);
             if (sprite)
-                this._onTabbedAction.dispatchEvent({sprite: sprite});
+                this._onTabbedAction.dispatchEvent({ sprite: sprite });
 
         },
         ifSpriteOnEdgeBounce: function (sprite) {
@@ -553,7 +555,7 @@ PocketCode.GameEngine = (function () {
                 x + boundary.right < sw2 &&
                 y + boundary.bottom > -sh2 &&
                 x + boundary.left > -sw2)
-                    return false;
+                return false;
 
             boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
             if (y + boundary.top < sh2 &&
@@ -663,7 +665,7 @@ PocketCode.GameEngine = (function () {
             var newDir = dir,
                 newX = x,
                 newY = y;//,
-                //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
+            //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
             //var edgesToHandle;
 
             //up to now, there are only 2 neigboured edges left at max (not ignored): let's call them p(rimus) and s(ecundus), where p (at least) is always inDirection (if one of them is)
