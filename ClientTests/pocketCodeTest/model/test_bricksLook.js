@@ -290,19 +290,24 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
 });
 
-QUnit.test("LedOnBrick", function (assert) {
+QUnit.test("FlashBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.LedOnBrick(device, sprite);
+    var b = new PocketCode.Model.FlashBrick(device, sprite, {
+        "selected": "1",
+        "type": "Flash"
+    });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.LedOnBrick, "instance check");
-    assert.ok(b.objClassName === "LedOnBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.FlashBrick, "instance check");
+    assert.ok(b.objClassName === "FlashBrick", "objClassName check");
+    assert.strictEqual(b._on, true, "on setter in ctr: 1");
 
     //execute
     var handler = function (e) {
@@ -313,29 +318,12 @@ QUnit.test("LedOnBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
+    var c = new PocketCode.Model.FlashBrick(device, sprite, {
+        "selected": "0",
+        "type": "Flash"
+    });
+    assert.strictEqual(c._on, false, "on setter in ctr: 0");
+
+    done2();
 });
 
-QUnit.test("LedOffBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-
-    var b = new PocketCode.Model.LedOffBrick(device, sprite);
-
-    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.LedOffBrick, "instance check");
-    assert.ok(b.objClassName === "LedOffBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
