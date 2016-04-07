@@ -269,11 +269,11 @@ PocketCode.GameEngine = (function () {
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
 
             this._spritesLoadingProgress = 0;
+            var bricksCount = jsonProject.header.bricksCount;
             this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
-            var bricksCount = jsonProject.header.bricksCount;
             if (bricksCount == 0) {
                 this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
                 return;
