@@ -93,6 +93,7 @@
 
         function init() {
             device = new PocketCode.Device();
+            var x = device.inclinationX;    //just make sure to start internal events
             if (window.DeviceOrientationEvent) {
                 document.getElementById("doEvent").innerHTML = "DeviceOrientation";
                 // Listen for the deviceorientation event

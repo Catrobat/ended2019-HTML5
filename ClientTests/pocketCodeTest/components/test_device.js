@@ -34,10 +34,10 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
     assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
 
-    assert.equal(dev.flashlightOn, false, "flashlightOn getter");
-    dev.flashlightOn = true;
-    assert.equal(dev.flashlightOn, true, "flashlightOn getter/setter");
-    assert.throws(function () { dev.flashlightOn = ""; }, Error, "ERROR: invlalid setter: flashlight on");
+    assert.equal(dev.flashOn, false, "flashOn getter");
+    dev.flashOn = true;
+    assert.equal(dev.flashOn, true, "flashOn getter/setter");
+    assert.throws(function () { dev.flashOn = ""; }, Error, "ERROR: invlalid setter: flash on");
     //lego nxt
     assert.ok(!isNaN(dev.nxt1), "nxt1 getter");
     assert.ok(!isNaN(dev.nxt2), "nxt2 getter");
@@ -105,6 +105,6 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected: acceleration");
     assert.equal(dev.unsupportedFeatures.length, 1, "unsupported features: acceleration");
     dev.unsupportedFeatures[0].i18nKey == "deviceFeatureAccelerationNEW";
-    assert.ok(dev.unsupportedFeatures[0].i18nKey == "lblDevFeatureAcceleration" && dev.unsupportedFeatures[0].inUse == true && dev.unsupportedFeatures[0].supported == false, "property and access check");
+    assert.ok(dev.unsupportedFeatures[0].i18nKey == "lblDeviceAcceleration" && dev.unsupportedFeatures[0].inUse == true && dev.unsupportedFeatures[0].supported == false, "property and access check");
 
 });

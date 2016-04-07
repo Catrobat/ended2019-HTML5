@@ -266,7 +266,7 @@ PocketCode.Model.merge({
         LedOnBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._device.flashlightOn = true;
+            this._device.flashOn = true;
             this._return(true);
         };
 
@@ -283,7 +283,7 @@ PocketCode.Model.merge({
         LedOffBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            this._device.flashlightOn = false;
+            this._device.flashOn = false;
             this._return(false);
         };
 

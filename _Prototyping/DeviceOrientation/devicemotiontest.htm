@@ -1,107 +1,112 @@
 ﻿<!doctype html>
-<html lang="en"> 
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-	  <title>PocketCode HTML5 Device Motion Test - based on HTML5Rocks sample</title>
-  
-	 <script>
-	  PocketCode = {};
-	</script>
-	<script src="scripts/sj.js"></script>
-	<script src="scripts/sj-core.js"></script>
-	<script src="scripts/sj-event.js"></script>
-	<script src="scripts/device.js"></script>
-  
-  <style type="text/css">
-	body {
-	  font-family: sans-serif;
-	}
-  
-	  .main {
-	  border: 1px solid black;
-	  box-shadow: 10px 10px 5px #888;
-	  border-radius: 12px;
-	  padding: 20px;
-	  background-color: #ddd;
-	  margin: 25px;
-	  width: 450px;
-	  margin-left:auto;
-	  margin-right:auto;  
-	}
-	
-	.logo {
-	  width:275px;
-	  margin-left: auto;
-	  margin-right: auto;
-	  display: block;
-	  padding: 15px;
-	}
-	
-	.container {
-	  -webkit-perspective: 300; 
-	  perspective: 300;
-	}
-  </style>
+    <meta charset="UTF-8">
+    <title>PocketCode HTML5 Device Motion Test - based on HTML5Rocks sample</title>
+
+    <script>
+        PocketCode = {};
+    </script>
+    <script src="scripts/sj.js"></script>
+    <script src="scripts/sj-core.js"></script>
+    <script src="scripts/sj-event.js"></script>
+    <script src="scripts/device.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+        }
+
+        .main {
+            border: 1px solid black;
+            box-shadow: 10px 10px 5px #888;
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #ddd;
+            margin: 25px;
+            width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logo {
+            width: 275px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            padding: 15px;
+        }
+
+        .container {
+            -webkit-perspective: 300;
+            perspective: 300;
+        }
+    </style>
 
 </head>
 <body>
-  <div class="main">
-	<h2>Device Motion</h2>
-	<table>
-	  <tr>
-		  <td>Event Supported</td><td id="dmEvent"></td>
-		</tr>
-	  <tr>
-		<td>acceleration</td><td id="moAccel"></td>
-	  </tr>
-	  <tr>
-		<td>rotationRate</td><td id="moRotation"></td>
-	  </tr>
-	  <tr>
-		<td>interval</td><td id="moInterval"></td>
-	  </tr>
-	</table>
-  </div>
-  
-  <script type="text/javascript">
-  
-	init();
+    <div class="main">
+        <h2>Device Motion</h2>
+        <table>
+            <tr>
+                <td>Event Supported</td>
+                <td id="dmEvent"></td>
+            </tr>
+            <tr>
+                <td>acceleration</td>
+                <td id="moAccel"></td>
+            </tr>
+            <tr>
+                <td>rotationRate</td>
+                <td id="moRotation"></td>
+            </tr>
+            <tr>
+                <td>interval</td>
+                <td id="moInterval"></td>
+            </tr>
+        </table>
+    </div>
 
-	
-	function init() {
-	  device = new PocketCode.Device();
-	  if ((window.DeviceMotionEvent) || ('listenForDeviceMovement' in window)) {
-		window.addEventListener('devicemotion', deviceMotionHandler, false);
-	  } else {
-		document.getElementById("dmEvent").innerHTML = "Not supported on your device or browser.  Sorry."
-	  }
-	}
-	
-	function deviceMotionHandler(eventData) {
-	  var info, xyz = "[X, Y, Z]";
+    <script type="text/javascript">
 
-	  // Grab the acceleration
-	  info = xyz.replace("X", round(device.accelerationX));
-	  info = info.replace("Y", round(device.accelerationY));
-	  info = info.replace("Z", round(device.accelerationZ));
-	  document.getElementById("moAccel").innerHTML = info;
+        init();
 
-	  // Grab the rotation Rate
-	  //info = xyz.replace("X", round(device.rotationRateX));
-	  //info = info.replace("Y", round(device.rotationRateY));
-	  info = info.replace("Z", 'n/a');
-	  document.getElementById("moRotation").innerHTML = info;
 
-	  info = eventData.interval;
-	  document.getElementById("moInterval").innerHTML = info;
-	}
+        function init() {
+            device = new PocketCode.Device();
+            var x = device.inclinationX;    //just make sure to start internal events
+            if ((window.DeviceMotionEvent) || ('listenForDeviceMovement' in window)) {
+                window.addEventListener('devicemotion', deviceMotionHandler, false);
+            } else {
+                document.getElementById("dmEvent").innerHTML = "Not supported on your device or browser.  Sorry."
+            }
+        }
 
-	function round(val) {
-	  var amt = 10;
-	  return Math.round(val * amt) /  amt;
-	}
+        function deviceMotionHandler(eventData) {
+            var info, xyz = "[X, Y, Z]";
 
-  </script>
-  
+            // Grab the acceleration
+            info = xyz.replace("X", round(device.accelerationX));
+            info = info.replace("Y", round(device.accelerationY));
+            info = info.replace("Z", round(device.accelerationZ));
+            document.getElementById("moAccel").innerHTML = info;
+
+            // Grab the rotation Rate
+            //info = xyz.replace("X", round(device.rotationRateX));
+            //info = info.replace("Y", round(device.rotationRateY));
+            info = info.replace("Z", 'n/a');
+            document.getElementById("moRotation").innerHTML = info;
+
+            info = eventData.interval;
+            document.getElementById("moInterval").innerHTML = info;
+        }
+
+        function round(val) {
+            var amt = 10;
+            return Math.round(val * amt) / amt;
+        }
+
+    </script>
+
 </body>
 </html>

@@ -8,6 +8,7 @@ PocketCode.I18nProvider = (function (propObject) {
         this._direction = PocketCode.Ui.Direction.LTR;
 
         this._dictionary = {    //storage: including locStrings used before loading / errors on loading
+            "lblLoadingResources": "Loading resources...",
             //TODO:
         };  
         this._dictionary.merge({    //only included for testing
@@ -42,13 +43,6 @@ PocketCode.I18nProvider = (function (propObject) {
             //"msgUnsupportedDevice": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
             //"msgErrorLoading": "Error: loading failed",
             
-            /*change*/"msgProjectNotFoundError": "The project you are requesting could not be found on our server. Please make sure you are using a valid Project ID.",
-            /*change*/"msgProjectNotValidError": "The project you are requesting has an invalid file structure or missing resources.",//<br/>Details:<br/>",
-            /*change*/"msgParserError": ">The project you are requesting could not be parsed correctly on our server.",// Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
-            /*change*/"msgInternalServerError": "The latest request caused an internal server error.",//<br/>",
-            //?"msgServerConnectionError": "Error connecting our server or server not responding.<br/>Please make sure you are connected to the internet.<br/>If your connection was temporarily unavailable please click \"Retry\" to resend the request.",
-            "msgUnsupportedSoundWarning": "We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.",
-            "msgUnsupportedDeviceFeatureWarning": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
             //"msgErrorLoadingError": "Error: loading failed",
 
             /*new*/"msgErrorSorry": "We are sorry.",
@@ -63,42 +57,52 @@ PocketCode.I18nProvider = (function (propObject) {
 
             "lblMobileRestrictionsWarningCaption": "Please Confirm",
             "msgMobileRestrictionsWarning": "Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.",
-            "msgMobileRestrictionsDebug": "There is currently NO official support for mobile devices- this is an experimental preview only! \nSo please do NOT file bugs until there is an official release available.",
+            "msgMobileRestrictionsDebug": "There is currently NO official support for mobile devices- this is an experimental preview only!\nSo please do NOT file bugs until there is an official release available.",
 
             "lblExitDialogCaption": "Exit Application",
             "msgExitDialog": "Do you really want to exit?",
 
             "lblProjectNotFoundErrorCaption": "Project Not Found",
+            /*change*/"msgProjectNotFoundError": "The project (ID {0}) you are requesting could not be found on our server. Please make sure you are using a valid Project ID.",
+
             "lblProjectNotValidErrorCaption": "Project Not Valid",
+            /*change*/"msgProjectNotValidError": "The project (ID {0}) you are requesting has an invalid file structure or missing resources.",//<br/>Details:<br/>",
+
             "lblParserErrorCaption": "Error Parsing Project",
+            /*change*/"msgParserError": "The project (ID {0}) you are requesting could not be parsed correctly on our server.",// Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
+
             "lblInternalServerErrorCaption": "Internal Server Error",
+            /*change*/"msgInternalServerError": "The latest request caused an internal server error.",//<br/>",
+
             "lblServerConnectionErrorCaption": "Server Not Responding",
-            "lblUnsupportedSoundWarningCaption": "Unsupported Sound File",
-            "lblUnsupportedDeviceFeatureWarningCaption": "Unsupported Device Feature",
+            /*change*/"msgServerConnectionError": "Error connecting to our server or server not responding.\nPlease make sure you are connected to the internet.\nIf your connection was temporarily unavailable please click \"{0}\" to resend the request.",
 
             "lblScreenshotCaption": "Screenshot",
             "msgScreenshotMobile": "Please use the long-press event of your browser to download/save the screenshot",
+            //"lblUnsupportedSoundWarningCaption": "Unsupported Sound File",
+            //"lblUnsupportedDeviceFeatureWarningCaption": "Unsupported Device Feature",
+            //"msgUnsupportedSoundWarning": "We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.",
+            //"msgUnsupportedDeviceFeatureWarning": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
+
+            /*new*/"msgUnsupportedWarningCaption": "??? not compatible ???",
+            /*new*/"msgUnsupportedWarning": "??? not compatible ???",
 
             //new (below)
-            lblDevFeatureAcceleration: 'device acceleration sensor',
-            lblDevCompass: 'device compass',
-            lblDevInclination: 'device inclination sensor',
-            lblDevCamera: 'device camera',
-            lblDevFlashlight: 'devicec flashlite',
-            lblDevVibrate: 'device vibration',
-            lblDevLegoNXT: 'Lego Mindstorms NXT bricks or sensors',
-            lblDevPhiro: 'PHIRO bricks or sensors',
-            lblDevArduino: 'Arduino bricks or sensors',
+            lblUnsupportedSound: '',
+            lblUnsupportedBricks: '',
+
+            lblDeviceAcceleration: 'device acceleration sensor',
+            lblDeviceCompass: 'device compass',
+            lblDeviceInclination: 'device inclination sensor',
+            lblDeviceCamera: 'device camera',
+            lblDeviceFlash: 'device flash',
+            lblDeviceVibrate: 'device vibration',
+            lblDeviceLegoNXT: 'Lego Mindstorms NXT bricks or sensors',
+            lblDevicePhiro: 'PHIRO bricks or sensors',
+            lblDeviceArduino: 'Arduino bricks or sensors',
         });
 
         this._supportedLanguages = [];
-        //this._supportedLanguages = [   //TODO: load from server?
-        //    { 'languageCode': 'en-GB', 'uiString': 'English (UK)' },
-        //    { 'languageCode': 'en-US', 'uiString': 'English (US)' },
-        //    { 'languageCode': 'de-AT', 'uiString': 'Deutsch (Österreich)' },
-        //    { 'languageCode': 'de-CH', 'uiString': 'Deutsch (Schweiz)' },
-        //    { 'languageCode': 'de-DE', 'uiString': 'Deutsch (Deutschland)' }
-        //];
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
@@ -182,8 +186,7 @@ PocketCode.I18nProvider = (function (propObject) {
                 this._direction = json.direction;
                 this._onDirectionChange.dispatchEvent({ direction: this._direction });
             }
-            //this._dictionary = json.dictionary;
-            this._dictionary.merge(json.dictionary); //temp: merge: so we can add strings client side that are currently not available on our server
+            this._dictionary.merge(json.dictionary); //using merge: so we can provide an initial dict for loading and errors
             this._currentLanguage = json.languageCode;
             this._onLanguageChange.dispatchEvent();
         },

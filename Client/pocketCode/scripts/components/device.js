@@ -9,7 +9,7 @@ PocketCode.Device = (function () {
     function Device(soundManager) {
         this._soundMgr = soundManager;
 
-        this._flashlightOn = false;
+        this._flashOn = false;
 
         this._compass = null;
         this._alpha = null;
@@ -25,47 +25,47 @@ PocketCode.Device = (function () {
         //sensor support
         this._features = {
             ACCELERATION: {
-                i18nKey: 'lblDevFeatureAcceleration',
+                i18nKey: 'lblDeviceAcceleration',
                 inUse: false,
                 supported: false,
             },
             COMPASS: {
-                i18nKey: 'lblDevCompass',
+                i18nKey: 'lblDeviceCompass',
                 inUse: false,
                 supported: false,
             },
             INCLINATION: {
-                i18nKey: 'lblDevInclination',
+                i18nKey: 'lblDeviceInclination',
                 inUse: false,
                 supported: false,
             },
             CAMERA: {
-                i18nKey: 'lblDevCamera',
+                i18nKey: 'lblDeviceCamera',
                 inUse: false,
                 supported: false,
             },
-            FLASHLITE: {
-                i18nKey: 'lblDevFlashlight',
+            FLASH: {
+                i18nKey: 'lblDeviceFlash',
                 inUse: false,
                 supported: false,
             },
             VIBRATE: {
-                i18nKey: 'lblDevVibrate',
+                i18nKey: 'lblDeviceVibrate',
                 inUse: false,
                 supported: false,
             },
             LEGO_NXT: {
-                i18nKey: 'lblDevLegoNXT',
+                i18nKey: 'lblDeviceLegoNXT',
                 inUse: false,
                 supported: false,
             },
             PHIRO: {
-                i18nKey: 'lblDevPhiro',
+                i18nKey: 'lblDevicePhiro',
                 inUse: false,
                 supported: false,
             },
             ARDUINO: {
-                i18nKey: 'lblDevArduino',
+                i18nKey: 'lblDeviceArduino',
                 inUse: false,
                 supported: false,
             },
@@ -301,17 +301,17 @@ PocketCode.Device = (function () {
             },
         },
         //flash: stae not shown but stored
-        flashlightOn: {
+        flashOn: {
             get: function () {
-                this._features.FLASHLITE.inUse = true;
-                return this._flashlightOn;
+                this._features.FLASH.inUse = true;
+                return this._flashOn;
             },
             set: function (value) {
                 if (typeof value !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
-                this._features.FLASHLITE.inUse = true;
+                this._features.FLASH.inUse = true;
 
-                this._flashlightOn = value;
+                this._flashOn = value;
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
         },

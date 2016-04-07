@@ -9,16 +9,8 @@ PocketCode.Device = (function () {
     function Device(soundManager) {
         this._soundMgr = soundManager;
 
-        this._flashlightOn = false;
-        this.sensorEmulation = false;
+        this._flashOn = false;
 
-        this.isMobile = SmartJs.Device.isMobile;
-        this.isTouch = SmartJs.Device.isTouch;
-
-        //events
-        //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
-
-        //init state variables: http://www.html5rocks.com/en/tutorials/device/orientation/
         this._compass = null;
         this._alpha = null;
         this._beta = null;
@@ -29,36 +21,66 @@ PocketCode.Device = (function () {
         this._z = null;
 
         this._windowOrientation = 0;
-        //this._rotationRate = null;
-
-        //event listener used for initialisation only
-        //this._initDeviceOrientationListener = undefined;
-        //this._initDeviceMotionListener = undefined;
-
-        //event listener if sensors enabled
-        //this._deviceOrientationListener = undefined;
-        //this._deviceMotionListener = undefined;
 
         //sensor support
-        this._sensorSupport = {
-            X_ACCELERATION: false,
-            Y_ACCELERATION: false,
-            Z_ACCELERATION: false,
-            COMPASS_DIRECTION: false,
-            X_INCLINATION: false,
-            Y_INCLINATION: false,
-            //LOUDNESS: false    //notify?
+        this._features = {
+            ACCELERATION: {
+                i18nKey: 'lblDeviceAcceleration',
+                inUse: false,
+                supported: false,
+            },
+            COMPASS: {
+                i18nKey: 'lblDeviceCompass',
+                inUse: false,
+                supported: false,
+            },
+            INCLINATION: {
+                i18nKey: 'lblDeviceInclination',
+                inUse: false,
+                supported: false,
+            },
+            CAMERA: {
+                i18nKey: 'lblDeviceCamera',
+                inUse: false,
+                supported: false,
+            },
+            FLASH: {
+                i18nKey: 'lblDeviceFlash',
+                inUse: false,
+                supported: false,
+            },
+            VIBRATE: {
+                i18nKey: 'lblDeviceVibrate',
+                inUse: false,
+                supported: false,
+            },
+            LEGO_NXT: {
+                i18nKey: 'lblDeviceLegoNXT',
+                inUse: false,
+                supported: false,
+            },
+            PHIRO: {
+                i18nKey: 'lblDevicePhiro',
+                inUse: false,
+                supported: false,
+            },
+            ARDUINO: {
+                i18nKey: 'lblDeviceArduino',
+                inUse: false,
+                supported: false,
+            },
         };
-        this._sensorEmulatedData = {
-            X_ACCELERATION: 0,  //we make sure no null-values are returned as this may break our formula calculations
-            Y_ACCELERATION: 0,
-            Z_ACCELERATION: 0,
-            COMPASS_DIRECTION: 0,
-            X_INCLINATION: 0,
-            Y_INCLINATION: 0,
-            //X_ROTATION_RATE: 0,
-            //Y_ROTATION_RATE: 0,
-            //LOUDNESS: 0
+
+        this._sensorData = {
+            X_ACCELERATION: 0.0,  //we make sure no null-values are returned as this may break our formula calculations
+            Y_ACCELERATION: 0.0,
+            Z_ACCELERATION: 0.0,
+            COMPASS_DIRECTION: 0.0,
+            X_INCLINATION: 0.0,
+            Y_INCLINATION: 0.0,
+            //X_ROTATION_RATE: 0.0,
+            //Y_ROTATION_RATE: 0.0,
+            //LOUDNESS: 0.0,
         };
 
         //bind events
@@ -75,6 +97,7 @@ PocketCode.Device = (function () {
 
         //events
         this._onSpaceKeyDown = new SmartJs.Event.Event(this);
+        //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
     }
 
     //events
@@ -88,15 +111,40 @@ PocketCode.Device = (function () {
 
     //properties
     Object.defineProperties(Device.prototype, {
-        unsupportedFeatureDetected: {
-            value: false,
-            writable: true,
+        isMobile: {
+            value: SmartJs.Device.isMobile,
         },
-        unsupportedFeatureInfo: {
-            value: {
-                sensor: false, //true = not supported
+        isTouch: {
+            value: SmartJs.Device.isTouch,
+        },
+        emulationInUser: {
+            get: function () {
+                if (this instanceof PocketCode.DeviceEmulator && this._features.INCLINATION.inUse)
+                    return true;
+                return false;
             },
-            writable: true,
+        },
+        unsupportedFeatureDetected: {
+            get: function () {
+                var tmp;
+                for (var f in this._features) {
+                    tmp = this._features[f];
+                    if (tmp.inUse && !tmp.supported)
+                        return true;
+                }
+                return false;
+            },
+        },
+        unsupportedFeatures: {
+            get: function () {
+                var unsupported = [], tmp;
+                for (var f in this._features) {
+                    tmp = this._features[f];
+                    if (tmp.inUse && !tmp.supported)
+                        unsupported.push({}.merge(tmp));   //create a copy: cannot be set from outside
+                }
+                return unsupported;
+            },
         },
         accelerationX: {
             get: function () {
@@ -112,14 +160,14 @@ PocketCode.Device = (function () {
                             return -this._y;
                     }
                 }
-                else if (this._sensorSupport.X_ACCELERATION) {
+                else if (this._features.ACCELERATION.supported) {
+                    this._features.ACCELERATION.inUse = true;
                     this._deviceMotionListener = this._addDomListener(window, 'devicemotion', this._deviceMotionChangeHandler);
                     return this.accelerationX;
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.X_ACCELERATION;
+                this._features.ACCELERATION.inUse = true;
+                return this._sensorData.X_ACCELERATION;
             },
         },
         accelerationY: {
@@ -136,14 +184,14 @@ PocketCode.Device = (function () {
                             return this._x;
                     }
                 }
-                else if (this._sensorSupport.Y_ACCELERATION) {
+                else if (this._features.ACCELERATION.supported) {
+                    this._features.ACCELERATION.inUse = true;
                     this._deviceMotionListener = this._addDomListener(window, 'devicemotion', this._deviceMotionChangeHandler);
                     return this.accelerationY;
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.Y_ACCELERATION;
+                this._features.ACCELERATION.inUse = true;
+                return this._sensorData.Y_ACCELERATION;
             },
         },
         accelerationZ: {
@@ -151,14 +199,14 @@ PocketCode.Device = (function () {
                 if (this._deviceMotionListener) { //supported
                     return this._z; // z is orientation independent.
                 }
-                else if (this._sensorSupport.Z_ACCELERATION) {
+                else if (this._features.ACCELERATION.supported) {
+                    this._features.ACCELERATION.inUse = true;
                     this._deviceMotionListener = this._addDomListener(window, 'devicemotion', this._deviceMotionChangeHandler);
                     return this.accelerationZ;
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.Z_ACCELERATION;
+                this._features.ACCELERATION.inUse = true;
+                return this._sensorData.Z_ACCELERATION;
             },
         },
         compassDirection: {
@@ -166,14 +214,14 @@ PocketCode.Device = (function () {
                 if (this._deviceOrientationListener) { //supported
                     return this._compass;   //wrong + todo: compass initialization needed?
                 }
-                else if (this._sensorSupport.COMPASS_DIRECTION) {
+                else if (this._features.COMPASS.supported) {
+                    this._features.COMPASS.inUse = true;
                     this._deviceOrientationListener = this._addDomListener(window, 'deviceorientation', this._deviceOrientationChangeHandler);
                     return this.compassDirection;
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.COMPASS_DIRECTION;
+                this._features.COMPASS.inUse = true;
+                return this._sensorData.COMPASS_DIRECTION;
             },
         },
         inclinationX: {
@@ -181,14 +229,14 @@ PocketCode.Device = (function () {
                 if (this._deviceOrientationListener) { //supported
                     return this._getInclinationX(this._beta, this._gamma);
                 }
-                else if (this._sensorSupport.X_INCLINATION) {
+                else if (this._features.INCLINATION.supported) {
+                    this._features.INCLINATION.inUse = true;
                     this._deviceOrientationListener = this._addDomListener(window, 'deviceorientation', this._deviceOrientationChangeHandler);
                     return this._getInclinationX(this._beta, this._gamma);
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.X_INCLINATION;
+                this._features.INCLINATION.inUse = true;
+                return this._sensorData.X_INCLINATION;
             },
         },
         inclinationY: {
@@ -196,36 +244,30 @@ PocketCode.Device = (function () {
                 if (this._deviceOrientationListener) { //supported
                     return this._getInclinationY(this._beta, this._gamma);
                 }
-                else if (this._sensorSupport.Y_INCLINATION) {
+                else if (this._features.INCLINATION.supported) {
+                    this._features.INCLINATION.inUse = true;
                     this._deviceOrientationListener = this._addDomListener(window, 'deviceorientation', this._deviceOrientationChangeHandler);
                     return this._getInclinationY(this._beta, this._gamma);
                 }
 
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.sensor = true;
-                return this._sensorEmulatedData.Y_INCLINATION;
+                this._features.INCLINATION.inUse = true;
+                return this._sensorData.Y_INCLINATION;
             },
         },
         //rotationRateX: {
         //	get: function () {
-        //		if (this._sensorSupport.X_INCLINATION && this._rotationRate) {
+        //		if (this._features.INCLINATION.supported && this._rotationRate) {
         //			return this._getInclinationX(this._rotationRate.beta, this._rotationRate.gamma);
         //		}
-
-        //		this.unsupportedFeatureDetected = true;
-        //		this.unsupportedFeatureInfo.sensor = true;
-        //		return this._sensorEmulatedData.X_ROTATION_RATE;
+        //		return this._sensorData.X_ROTATION_RATE;
         //	},
         //},
         //rotationRateY: {
         //	get: function () {
-        //		if (this._sensorSupport.Y_INCLINATION && this._rotationRate) {
+        //		if (this._features.INCLINATION.supported && this._rotationRate) {
         //			return this._getInclinationY(this._rotationRate.beta, this._rotationRate.gamma);
         //		}
-
-        //		this.unsupportedFeatureDetected = true;
-        //		this.unsupportedFeatureInfo.sensor = true;
-        //		return this._sensorEmulatedData.Y_ROTATION_RATE;
+        //		return this._sensorData.Y_ROTATION_RATE;
         //	},
         //},
         loudness: {
@@ -233,50 +275,107 @@ PocketCode.Device = (function () {
                 return this._soundMgr.volume;
             },
         },
+        //camera
         faceDetected: {
             get: function () {
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.faceDetection = true;
-                return false; //TODO: 
+                this._features.CAMERA.inUse = true;
+                return false; //not supported
             },
         },
         faceSize: {
             get: function () {
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.faceDetection = true;
-                return 0; //TODO: 
+                this._features.CAMERA.inUse = true;
+                return 0.0; //not supported
             },
         },
         facePositionX: {
             get: function () {
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.faceDetection = true;
-                return 0; //TODO: 
+                this._features.CAMERA.inUse = true;
+                return 0.0; //not supported
             },
         },
         facePositionY: {
             get: function () {
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.faceDetection = true;
-                return 0; //TODO: 
+                this._features.CAMERA.inUse = true;
+                return 0.0; //not supported
             },
         },
-        flashlightOn: {
+        //flash: stae not shown but stored
+        flashOn: {
             get: function () {
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.flashLight = true;
-                return this._flashlightOn;
+                this._features.FLASH.inUse = true;
+                return this._flashOn;
             },
             set: function (value) {
                 if (typeof value !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
-                this.unsupportedFeatureDetected = true;
-                this.unsupportedFeatureInfo.flashLight = true;
+                this._features.FLASH.inUse = true;
 
-                this._flashlightOn = value;
-
+                this._flashOn = value;
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
+        },
+        //lego nxt
+        nxt1: {
+            get: function () {
+                this._features.LEGO_NXT.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        nxt2: {
+            get: function () {
+                this._features.LEGO_NXT.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        nxt3: {
+            get: function () {
+                this._features.LEGO_NXT.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        nxt4: {
+            get: function () {
+                this._features.LEGO_NXT.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        //phiro
+        phiroFrontLeft: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        phiroFrontRight: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        phiroSideLeft: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        phiroSideRight: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        phiroBottomLeft: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
+        },
+        phiroBottomRight: {
+            get: function () {
+                this._features.PHIRO.inUse = true;
+                return 0.0; //not supported
+            },
         },
     });
 
@@ -318,9 +417,8 @@ PocketCode.Device = (function () {
                 this._gamma = e.gamma;
 
                 if (this._gamma != null || this._alpha != null || this._beta != null) { //checks if there is sensor data if not sensors are not supported
-                    this._sensorSupport.COMPASS_DIRECTION = true;
-                    this._sensorSupport.X_INCLINATION = true;
-                    this._sensorSupport.Y_INCLINATION = true;
+                    this._features.COMPASS.supported = true;
+                    this._features.INCLINATION.supported = true;
                 }
             }
         },
@@ -329,9 +427,7 @@ PocketCode.Device = (function () {
                 this._removeDomListener(window, 'devicemotion', this._initDeviceMotionListener);
                 delete this._initDeviceMotionListener;
 
-                this._sensorSupport.X_ACCELERATION = true;
-                this._sensorSupport.Y_ACCELERATION = true;
-                this._sensorSupport.Z_ACCELERATION = true;
+                this._features.ACCELERATION.supported = true;
             }
         },
         _deviceOrientationChangeHandler: function (e) {
@@ -365,24 +461,25 @@ PocketCode.Device = (function () {
         _orientationChangeHandler: function () {
             this._windowOrientation = window.orientation;
         },
-        setSensorInUse: function (sensor) {
-            if (this._sensorSupport[sensor]) {
-                var supported = this._sensorSupport[sensor];
-                if (!supported && !this.sensorEmulation) {
-                    this.sensorEmulation = true;
-                    //this._onSupportChange.dispatchEvent();
-                }
-            }
-            else    //unknown sensor
-                throw new Error('device: unknown sensor: ' + sensor);
-        },
         vibrate: function (duration) {
-            var time = duration * 1000;
+            this._features.VIBRATE.inUse = true;
+            //var time = duration * 1000;
             return true;
-            //TODO:
         },
+        //arduino
+        getArduinoAnalogPin: function (pin) {
+            this._features.ARDUINO.inUse = true;
+            return 0.0; //not supported
+        },
+        getArduinoDigitalPin: function(pin) {
+            this._features.ARDUINO.inUse = true;
+            return 0.0; //not supported
+        },
+
         /* override */
         dispose: function () {
+            this._soundMgr = undefined; //make sure it does not get disposed as well
+
             if (this._initDeviceOrientationListener) {
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
                 //delete this._initDeviceOrientationListener;
@@ -415,21 +512,22 @@ PocketCode.DeviceEmulator = (function () {
     function DeviceEmulator(soundManager) {
         PocketCode.Device.call(this, soundManager);
 
+        this._features.INCLINATION.supported = true;
         this._defaultInclination = {
-            X: 0,
-            Y: 0
+            X: 0.0,
+            Y: 0.0,
         };
         this._inclinationLimits = {
-            X_MIN: -36, //-90,
-            X_MAX: 36, //90,
-            Y_MIN: -36, //-90,
-            Y_MAX: 36, //90,
+            X_MIN: -36.0, //-90,
+            X_MAX: 36.0, //90,
+            Y_MIN: -36.0, //-90,
+            Y_MAX: 36.0, //90,
         };
         this._inclinationIncr = {
-            X: 6, //10,
-            Y: 6, //10
+            X: 6.0, //10,
+            Y: 6.0, //10
         };
-        this.inclinationTimer = 100;
+        this._inclinationTimerDuration = 200;
 
         // Arrow Keys 
         this._keyCode = {
@@ -455,26 +553,52 @@ PocketCode.DeviceEmulator = (function () {
             RIGHT: false,
             UP: false,
             DOWN: false,
-            SPACE: false
+            SPACE: false,
         };
 
         //key down time
         this._keyDownTime = {
-            LEFT: 0,
-            RIGHT: 0,
-            UP: 0,
-            DOWN: 0
+            LEFT: 0.0,
+            RIGHT: 0.0,
+            UP: 0.0,
+            DOWN: 0.0,
         };
 
         this._keyDownTimeDefault = 3;
 
         this._resetInclinationX();
         this._resetInclinationY();
-        this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
-        this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-        window.setInterval(this._inclinationTimerTick.bind(this), this.inclinationTimer);
+        //this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+        //this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+        //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
     }
+
+    //properties
+    Object.defineProperties(DeviceEmulator.prototype, {
+        inclinationX: {
+            get: function () {
+                this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
+                return this._sensorData.X_INCLINATION;
+            },
+        },
+        inclinationY: {
+            get: function () {
+                this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
+                return this._sensorData.Y_INCLINATION;
+            },
+        },
+    });
 
     //methods
     DeviceEmulator.prototype.merge({
@@ -542,48 +666,54 @@ PocketCode.DeviceEmulator = (function () {
             }
         },
         _resetInclinationX: function () {
-            this._sensorEmulatedData.X_INCLINATION = this._defaultInclination.X;
+            this._sensorData.X_INCLINATION = this._defaultInclination.X;
         },
         _resetInclinationY: function () {
-            this._sensorEmulatedData.Y_INCLINATION = this._defaultInclination.Y;
+            this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
         },
         _inclinationTimerTick: function () {
+            if (this._disposed)
+                return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                this._keyDownTime.LEFT += 1;
-                this._sensorEmulatedData.X_INCLINATION += this._inclinationIncr.X;
-                if (this._sensorEmulatedData.X_INCLINATION > this._inclinationLimits.X_MAX)
-                    this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MAX;
+                this._keyDownTime.LEFT += 1.0;
+                this._sensorData.X_INCLINATION += this._inclinationIncr.X;
+                if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
+                    this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
             }
             else if (this._keyPress.RIGHT && !this._keyPress.LEFT) {
                 // right
-                this._keyDownTime.RIGHT += 1;
-                this._sensorEmulatedData.X_INCLINATION -= this._inclinationIncr.X;
-                if (this._sensorEmulatedData.X_INCLINATION < this._inclinationLimits.X_MIN)
-                    this._sensorEmulatedData.X_INCLINATION = this._inclinationLimits.X_MIN;
+                this._keyDownTime.RIGHT += 1.0;
+                this._sensorData.X_INCLINATION -= this._inclinationIncr.X;
+                if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
+                    this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                this._keyDownTime.UP += 1;
-                this._sensorEmulatedData.Y_INCLINATION -= this._inclinationIncr.Y;
-                if (this._sensorEmulatedData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
-                    this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
+                this._keyDownTime.UP += 1.0;
+                this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y;
+                if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
+                    this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                this._keyDownTime.DOWN += 1;
-                this._sensorEmulatedData.Y_INCLINATION += this._inclinationIncr.Y;
-                if (this._sensorEmulatedData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
-                    this._sensorEmulatedData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
+                this._keyDownTime.DOWN += 1.0;
+                this._sensorData.Y_INCLINATION += this._inclinationIncr.Y;
+                if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
+                    this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
             }
         },
         /* override */
         dispose: function () {
-            this._removeDomListener(document, 'keydown', this._keyUpListener);
-            this._removeDomListener(document, 'keyup', this._keyDownListener);
+            window.clearInterval(this._inclinationTimer);
+            if (this._keyDownListener)
+                this._removeDomListener(document, 'keydown', this._keyDownListener);
+            if (this._keyUpListener)
+                this._removeDomListener(document, 'keyup', this._keyUpListener);
 
             PocketCode.Device.prototype.dispose.call(this);    //call super()
         },
     });
+
     return DeviceEmulator;
 })();
