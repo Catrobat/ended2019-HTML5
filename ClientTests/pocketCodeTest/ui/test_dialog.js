@@ -131,17 +131,17 @@ QUnit.test("Dialogs: various", function (assert) {
     assert.ok(d instanceof PocketCode.Ui.ErrorDialog && d instanceof PocketCode.Ui.InternalServerErrorDialog, "InternalServerErrorDialog: instance check");
     //assert.ok(d.onOK instanceof SmartJs.Event.Event, "InternalServerErrorDialog: events");
 
-    //d = new PocketCode.Ui.ServerConnectionErrorDialog();
-    //assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ServerConnectionErrorDialog, "ServerConnectionErrorDialog: instance check");
-    //assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onRetry instanceof SmartJs.Event.Event, "ServerConnectionErrorDialog: events");
+    d = new PocketCode.Ui.ServerConnectionErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ServerConnectionErrorDialog, "ServerConnectionErrorDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onRetry instanceof SmartJs.Event.Event, "ServerConnectionErrorDialog: events");
 
-    d = new PocketCode.Ui.UnsupportedFeatureDialog();
-    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedFeatureDialog, "UnsupportedFeatureDialog: instance check");
-    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedFeatureDialog: events");
+    d = new PocketCode.Ui.ProjectLoadingAlertDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ProjectLoadingAlertDialog, "ProjectLoadingAlertDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "ProjectLoadingAlertDialog: events");
     
-    //d = new PocketCode.Ui.UnsupportedDeviceFeatureDialog();
-    //assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.UnsupportedDeviceFeatureDialog, "UnsupportedDeviceFeatureDialog: instance check");
-    //assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onContinue instanceof SmartJs.Event.Event, "UnsupportedDeviceFeatureDialog: events");
+    d = new PocketCode.Ui.ProjectLoadingErrorDialog();
+    assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ProjectLoadingErrorDialog, "ProjectLoadingErrorDialog: instance check");
+    assert.ok(d.onCancel instanceof SmartJs.Event.Event && d.onRetry instanceof SmartJs.Event.Event, "ProjectLoadingErrorDialog: events");
 
     d = new PocketCode.Ui.ScreenshotDialog();
     assert.ok(d instanceof PocketCode.Ui.Dialog && d instanceof PocketCode.Ui.ScreenshotDialog, "ScreenshotDialog: instance check");
