@@ -20,6 +20,8 @@ QUnit.test("Device", function (assert) {
     assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
     assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: initial = []");
 
+    assert.ok(typeof dev.mobileLockRequired == 'boolean', "mobileLockRequired: accessor"); //poor tests as we cannot set isMobile here
+
     assert.ok(!isNaN(dev.accelerationX), "accelerationX getter");
     assert.ok(!isNaN(dev.accelerationY), "accelerationY getter");
     assert.ok(!isNaN(dev.accelerationZ), "accelerationZ getter");
