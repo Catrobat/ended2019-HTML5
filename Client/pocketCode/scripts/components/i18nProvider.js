@@ -84,8 +84,12 @@ PocketCode.I18nProvider = (function (propObject) {
             //"msgUnsupportedSoundWarning": "We have detected a sound file (or codec) that is not compatible with your current browser.<br/>You can run the project anyway - unsupported sounds will be ignored.",
             //"msgUnsupportedDeviceFeatureWarning": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
 
-            /*new*/"msgUnsupportedWarningCaption": "??? not compatible ???",
-            /*new*/"msgUnsupportedWarning": "??? not compatible ???",
+            /*new*/lblProjectLoadingErrorCaption: '??? ProjectLoadingError ???',
+            /*new*/msgProjectLoadingError: '??? ProjectLoadingError message ???',
+            /*new*/"msgUnsupportedDefaultCaption": "Note",
+            /*new*/"msgUnsupportedDefault": "??? device issues: ???",
+            /*new*/"msgUnsupportedWarningCaption": "Attention",
+            /*new*/"msgUnsupportedWarning": "??? compatibility issues: ???",
 
             //new (below)
             lblUnsupportedSound: '',
