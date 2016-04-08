@@ -55,6 +55,7 @@ PocketCode.merge({
             this._mobileInitialized = mobileInitialized;
             this._noPromtOnLeave = false;   //TODO: settings (do not show promt on leave again?)
             this._forwardNavigationAllowed = false;
+            this._loadingError = false;
 
             if (!vp.rendered)
                 vp.addToDom(viewportContainer || document.body);
@@ -83,12 +84,6 @@ PocketCode.merge({
             };
 
             this._project = new PocketCode.GameEngine();
-            this._loadingAlerts = {
-                files: [],
-                bricks: [],
-                deviceFeatures: [],
-                deviceEmulation: false,
-            };
             this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
@@ -179,32 +174,52 @@ PocketCode.merge({
                 throw new Error('i18nControllerError: ' + e.responseText);
             },
             _projectLoadingErrorHandler: function (e) {
-                if (e.files)
-                    this._loadingAlerts.files = this._loadingAlerts.files.concat(e.files);
-                else if (e.bricks)
-                    this._loadingAlerts.bricks = e.bricks;
-                else if (e.deviceFeatures)
-                    this._loadingAlerts.deviceFeatures = e.deviceFeatures;
-                else if (e.deviceEmulation)
-                    this._loadingAlerts.deviceEmulation = e.deviceEmulation;
+                //this handler is only called on loading errors that can't be ignored, e.g. image loading errors
+                this._loadingError = e;
             },
             _projectLoadHandler: function (e) {
-                if (this._loadingAlerts.files.length == 0 && this._loadingAlerts.bricks.length == 0 && this._loadingAlerts.deviceFeatures.length == 0 && !this._loadingAlerts.deviceEmulation)
+                if (!this._loadingError && !e.loadingAlerts) {
+                    this._pages.PlayerPageController.initOnLoad();
                     return;
+                }
+
+                if (this._loadingError) {
+                    var d = new PocketCode.Ui.ProjectLoadingErrorDialog();
+                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                    d.onRetry.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                        e.target.dispose();
+                        this._loadingError = false;
+                        this._project.reloadProject();
+                    }, this));
+                    this._showDialog(d, false);
+                    return;
+                }
+
+                //else
+                var loadingAlerts = e.loadingAlerts;
+                var msg = loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired;
+                var warning = loadingAlerts.invalidSoundFiles.length != 0 || loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0;
+
+                var d;
+                if (warning) {
+                    d = new PocketCode.Ui.ProjectLoadingAlertDialog(PocketCode.Ui.DialogType.WARNING);
+                }
+                else if (msg) {
+                    d = new PocketCode.Ui.ProjectLoadingAlertDialog(PocketCode.Ui.DialogType.DEFAULT);
+                }
+                if (d) {
+                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                    d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                        e.target.dispose();
+                        this._pages.PlayerPageController.initOnLoad();
+                    }, this));
+                    this._showDialog(d, false);
+                }
 
                 //TODO: check for device emulation and show a message as well
                 //TODO: add dialog for all missing features/warnings
+                //TODO: check for device: screen locking
 
-                //var files = e.files;
-
-                //var d = new PocketCode.Ui.UnsupportedSoundFileDialog();
-                //d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                //d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) { e.target.dispose(); }, this));
-                ////d.bodyInnerHTML += '<br /><br />Details: [';
-                ////for (var i = 0, l = files.length - 1; i < l; i++)
-                ////    d.bodyInnerHTML += e.files[i].src.replace(new RegExp('/', 'g'), '/&shy;') + ', ';
-                ////d.bodyInnerHTML += files[files.length-1].src + ']';
-                //this._showDialog(d, false);
             },
             _requestProjectDetails: function () {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
@@ -266,6 +281,7 @@ PocketCode.merge({
                 if (this._disposing || this._disposed)
                     return;
                 var json = e.target.responseJson;
+
                 if (json.header && json.header.device) {
                     var device = json.header.device;
                     this._onHWRatioChange.dispatchEvent({ ratio: device.screenHeight / device.screenWidth });
@@ -407,6 +423,7 @@ PocketCode.merge({
                 if (this._disposing || this._disposed)// || this._projectLoaded)    //prevent loading more than once
                     return;
 
+                this._loadingError = false;
                 //check browser compatibility
                 var pc = PocketCode.isPlayerCompatible();
                 var compatible = pc.result;

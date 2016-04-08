@@ -47,15 +47,21 @@ PocketCode.GameEngine = (function () {
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         this._soundManager.onLoad.addEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
-        this._invalidSoundFiles = [];
+        this._loadingAlerts = {
+            invalidSoundFiles: [],
+            unsupportedBricks: [],
+            deviceUnsupportedFeatures: [],
+            deviceEmulation: false,
+            deviceLockRequired: false,
+        };
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
-        this._onLoad = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
+        this._onLoad = new SmartJs.Event.Event(this);
 
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
@@ -106,7 +112,6 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.muted = value;
             },
         },
-
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
@@ -197,7 +202,12 @@ PocketCode.GameEngine = (function () {
                 obj = obj.concat(sprites[i].renderingVariables);
             return obj;
         },
-
+        reloadProject: function () {
+            if (!this._jsonProject)
+                throw new Error('no project loaded');
+            
+            this.loadProject(this._jsonProject);
+        },
         loadProject: function (jsonProject) {
             if (this._disposing || this._disposed)
                 return;
@@ -210,6 +220,13 @@ PocketCode.GameEngine = (function () {
 
             this._spritesLoaded = false;
             this._resourcesLoaded = false;
+            this._loadingAlerts = {
+                invalidSoundFiles: [],
+                unsupportedBricks: [],
+                deviceUnsupportedFeatures: [],
+                deviceEmulation: false,
+                deviceLockRequired: false,
+            };
 
             this._id = jsonProject.id;
             var header = jsonProject.header;
@@ -235,10 +252,10 @@ PocketCode.GameEngine = (function () {
                 this._resourceTotalSize += jsonProject.sounds[i].size;
             }
 
+            this._onLoadingProgress.dispatchEvent({ progress: 0 });
             if (this._resourceTotalSize === 0)
                 this._resourcesLoaded = true;
             else {
-                this._onLoadingProgress.dispatchEvent({ progress: 0 });
                 var initialScaling = 1,     //set initial scaling: default = 1
                     scaling;
                 if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
@@ -295,16 +312,12 @@ PocketCode.GameEngine = (function () {
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
-                if (this._device.unsupportedFeatureDetected)
-                    this._onLoadingError.dispatchEvent({ deviceFeatures: this._device.unsupportedFeatures });
-                if (this._device.emulationInUser)
-                    this._onLoadingError.dispatchEvent({ deviceEmulation: true });
                 this._spritesLoaded = true;
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                     this._initSprites();
-                    this._onLoad.dispatchEvent();
+                    this._handleLoadingComplete();
                 }
             }
             else {
@@ -314,7 +327,8 @@ PocketCode.GameEngine = (function () {
             }
         },
         _spriteFactoryUnsupportedBricksHandler: function (e) {
-            this._onLoadingError.dispatchEvent({ bricks: e.unsupportedBricks });
+            this._loadingAlerts.unsupportedBricks = e.unsupportedBricks;
+            //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
         _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
@@ -339,18 +353,32 @@ PocketCode.GameEngine = (function () {
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
-            if (this._invalidSoundFiles.length > 0)
-                this._onLoadingError.dispatchEvent({ files: this._invalidSoundFiles });
             this._resourcesLoaded = true;
             if (this._spritesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                 this._initSprites();
-                this._onLoad.dispatchEvent();
+                this._handleLoadingComplete();
             }
+        },
+        _handleLoadingComplete: function () {
+            var loadingAlerts = this._loadingAlerts;
+            var device = this._device;
+
+            loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
+            loadingAlerts.deviceEmulation = device.emulationInUser;
+            loadingAlerts.deviceLockRequired = device.mobileLockRequired;
+
+            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
+                loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
+                this._onLoadingProgress.dispatchEvent({ progress: 100 });   //update ui progress
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });  //dispatch warnings
+            }
+            else
+                this._onLoad.dispatchEvent();
         },
         _resourceLoadingErrorHandler: function (e) {
             if (e.target === this._soundManager)
-                this._invalidSoundFiles.push(e.file);
+                this._loadingAlerts.invalidSoundFiles.push(e.file);
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
