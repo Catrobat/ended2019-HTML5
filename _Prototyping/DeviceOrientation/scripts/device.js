@@ -124,6 +124,16 @@ PocketCode.Device = (function () {
                 return false;
             },
         },
+        mobileLockRequired: {
+            get: function () {
+                if (!this.isMobile)
+                    return false;
+                var feature;
+                if (features.ACCELERATION.inUse || features.COMPASS.inUse || features.INCLINATION.inUse)
+                    return true;
+                return false;
+            },
+        },
         unsupportedFeatureDetected: {
             get: function () {
                 var tmp;
@@ -471,7 +481,7 @@ PocketCode.Device = (function () {
             this._features.ARDUINO.inUse = true;
             return 0.0; //not supported
         },
-        getArduinoDigitalPin: function(pin) {
+        getArduinoDigitalPin: function (pin) {
             this._features.ARDUINO.inUse = true;
             return 0.0; //not supported
         },
