@@ -151,7 +151,7 @@ PocketCode.Device = (function () {
                 for (var f in this._features) {
                     tmp = this._features[f];
                     if (tmp.inUse && !tmp.supported)
-                        unsupported.push({}.merge(tmp));   //create a copy: cannot be set from outside
+                        unsupported.push(tmp.i18nKey);  //return i18nKeys only
                 }
                 return unsupported;
             },
@@ -473,7 +473,12 @@ PocketCode.Device = (function () {
         },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
+            if (typeof duration != 'number') //isNaN('') = false
+                return false;
+
+            //TODO: as soon as html supports this feature
             //var time = duration * 1000;
+
             return true;
         },
         //arduino
