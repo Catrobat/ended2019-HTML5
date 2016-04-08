@@ -389,6 +389,7 @@ PocketCode.Model.merge({
 			PocketCode.Model.BaseBrick.call(this, device, sprite);
 
 			this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+			this._device.vibrate();    //call on ctr to notify our device this feature is in use
 		}
 
 		VibrationBrick.prototype._execute = function () {

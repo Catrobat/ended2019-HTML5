@@ -263,7 +263,8 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._on = Boolean(parseInt(propObject.selected));
-            //please notice: Boolean('0') == true (string to bool)
+            //^^ please notice: Boolean('0') == true (string to bool)
+            this._device.flashOn = this._device.flashOn;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         FlashBrick.prototype._execute = function () {
