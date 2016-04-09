@@ -685,10 +685,14 @@ SmartJs.Ui.merge({
 });
 
 SmartJs.Ui.merge({
+    HtmlTag: (function () {
+        HtmlTag.extends(SmartJs.Ui.Control, false);
 
+        function HtmlTag(element, propObject) {
             SmartJs.Ui.Control.call(this, element, propObject);
         }
 
+        HtmlTag.prototype.merge({
             appendChild: function (uiControl) {
                 return this._appendChild(uiControl);
             },
@@ -709,6 +713,7 @@ SmartJs.Ui.merge({
             },
         });
 
+        return HtmlTag;
     })(),
 
     Image: (function () {
