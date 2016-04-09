@@ -128,8 +128,8 @@ PocketCode.Device = (function () {
             get: function() {
                 if (!this.isMobile)
                     return false;
-                var feature;
-                if (features.ACCELERATION.inUse || features.COMPASS.inUse || features.INCLINATION.inUse)
+                var tmp = this._features
+                if (tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse)
                     return true;
                 return false;
             },
