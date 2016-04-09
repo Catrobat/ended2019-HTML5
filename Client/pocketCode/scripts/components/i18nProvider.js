@@ -63,19 +63,19 @@ PocketCode.I18nProvider = (function (propObject) {
             "msgExitDialog": "Do you really want to exit?",
 
             "lblProjectNotFoundErrorCaption": "Project Not Found",
-            /*change*/"msgProjectNotFoundError": "The project (ID {0}) you are requesting could not be found on our server. Please make sure you are using a valid Project ID.",
+            /*change*/"msgProjectNotFoundError": "The project you are trying to load could not be found on our server. Please make sure you are using a valid Project ID.",
 
             "lblProjectNotValidErrorCaption": "Project Not Valid",
-            /*change*/"msgProjectNotValidError": "The project (ID {0}) you are requesting has an invalid file structure or missing resources.",//<br/>Details:<br/>",
+            /*change*/"msgProjectNotValidError": "The project you are trying to load has an invalid file structure or missing resources.",//<br/>Details:<br/>",
 
             "lblParserErrorCaption": "Error Parsing Project",
-            /*change*/"msgParserError": "The project (ID {0}) you are requesting could not be parsed correctly on our server.",// Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
+            /*change*/"msgParserError": "The project you are trying to load could not be parsed correctly on our server.",// Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
 
             "lblInternalServerErrorCaption": "Internal Server Error",
             /*change*/"msgInternalServerError": "The latest request caused an internal server error.",//<br/>",
 
             "lblServerConnectionErrorCaption": "Server Not Responding",
-            /*change*/"msgServerConnectionError": "Error connecting to our server or server not responding.\nPlease make sure you are connected to the internet.\nIf your connection was temporarily unavailable please click \"{0}\" to resend the request.",
+            /*change*/"msgServerConnectionError": "Error connecting to our server or server not responding.\nPlease make sure you are connected to the internet.",//\nIf your connection was temporarily unavailable please click \"{0}\" to resend the request.",
 
             "lblScreenshotCaption": "Screenshot",
             "msgScreenshotMobile": "Please use the long-press event of your browser to download/save the screenshot",
@@ -87,16 +87,16 @@ PocketCode.I18nProvider = (function (propObject) {
             /*new*/lblProjectLoadingErrorCaption: 'Loading failed',
             /*new*/msgProjectLoadingError: "There was an error loading the project's resources.\nPlease make sure you are connected to the internet.",
             /*new*/"msgUnsupportedDefaultCaption": "Note",
-            /*new*/"msgUnsupportedDefault": "Some things you should know before running this project:",
+            /*new*/"msgUnsupportedDefault": "Something you should know before running this project:",
             /*new*/"msgUnsupportedWarningCaption": "Attention",
             /*new*/"msgUnsupportedWarning": "Following features used in this project are not compatible with your device or browser:",
             /*new*/"msgUnsupportedWarningContinue": "You can run the project anyway- unsupported features will be ignored.",
 
             //new (below)
-            msgDeviceEmulation: "This project uses your device's inclination sensors. You can use your cursor keys (keyboard) to emulate these events.",
+            msgDeviceEmulation: "This project uses your device's inclination sensors. You can use your cursor keys (keyboard) to emulate these sensors.",
             msgDeviceLockScreen: "This project uses your device's sensors. We recommend to lock your screen during execution to avoid side-effects.",
-            lblUnsupportedSound: 'At least one sound file or codec is not compatible with your browser',
-            lblUnsupportedBricks: 'Unsupported brick/s',
+            lblUnsupportedSound: 'At least one sound file or codec',// is not compatible with your browser',
+            lblUnsupportedBricks: 'Unsupported brick/s found',
 
             lblDeviceAcceleration: 'Device acceleration sensor',
             lblDeviceCompass: 'Device compass',
