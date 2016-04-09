@@ -53,11 +53,12 @@ PocketCode.I18nProvider = (function (propObject) {
             /*change*/"msgGlobalError": "A global exception was detected.",
 
             "lblBrowserNotSupportedErrorCaption": "Browser Not Supported",
-            "msgBrowserNotSupportedError": /*"This application makes use of html5 features but is tested to be compatible with the latest versions of all common browsers. <br/>We are sorry, but */"your browser does not meet the minimal requirements to run this application.<br/>Please try again using another browser.",
+            "msgBrowserNotSupportedError": "Your browser does not meet the minimal requirements to run this application.",
+            "msgBrowserNotSupportedErrorOther": "Please try again using another browser.",
 
             "lblMobileRestrictionsWarningCaption": "Please Confirm",
-            "msgMobileRestrictionsWarning": "Due to mobile browser restrictions you have to confirm that this application is allowed to download/cache/show/play images and audio/video content required in the requested project.",
-            "msgMobileRestrictionsDebug": "There is currently NO official support for mobile devices- this is an experimental preview only!\nSo please do NOT file bugs until there is an official release available.",
+            "msgMobileRestrictionsWarning": "Due to mobile browser restrictions you have to confirm that this application is allowed to download, cache, show/play images and audio/video content required in the requested project.",
+            "msgMobileRestrictionsDebug": "There is currently NO official support for mobile devices- this is an experimental preview only! So please do NOT file bugs until there is an official release available.",
 
             "lblExitDialogCaption": "Exit Application",
             "msgExitDialog": "Do you really want to exit?",
@@ -66,17 +67,17 @@ PocketCode.I18nProvider = (function (propObject) {
             /*change*/"msgProjectNotFoundError": "The project you are trying to load could not be found on our server. Please make sure you are using a valid Project ID.",
 
             "lblProjectNotValidErrorCaption": "Project Not Valid",
-            /*change*/"msgProjectNotValidError": "The project you are trying to load has an invalid file structure or missing resources.",//<br/>Details:<br/>",
+            /*change*/"msgProjectNotValidError": "The project you are trying to load has an invalid file structure or missing resources.",
 
             "lblParserErrorCaption": "Error Parsing Project",
-            /*change*/"msgParserError": "The project you are trying to load could not be parsed correctly on our server.",// Please open an issue on either Github or Jira providing the projects ID- we will have a look asap.",
+            /*change*/"msgParserError": "The project you are trying to load could not be parsed correctly on our server.",
 
             "lblInternalServerErrorCaption": "Internal Server Error",
-            /*change*/"msgInternalServerError": "The latest request caused an internal server error.",//<br/>",
+            /*change*/"msgInternalServerError": "The latest request caused an internal server error.",
 
             "lblServerConnectionErrorCaption": "Server Not Responding",
-            /*change*/"msgServerConnectionError": "Error connecting to our server or server not responding.\nPlease make sure you are connected to the internet.",//\nIf your connection was temporarily unavailable please click \"{0}\" to resend the request.",
-
+            /*change*/"msgServerConnectionError": "Error connecting to our server or server not responding.",
+            msgInternetConnectionAvailable: "Please make sure you are connected to the internet.",
             "lblScreenshotCaption": "Screenshot",
             "msgScreenshotMobile": "Please use the long-press event of your browser to download/save the screenshot",
             //"lblUnsupportedSoundWarningCaption": "Unsupported Sound File",
@@ -85,7 +86,7 @@ PocketCode.I18nProvider = (function (propObject) {
             //"msgUnsupportedDeviceFeatureWarning": "The requested project makes use of device features currently not supported in our player and/or not available on your device/current browser.<br/>You can run the project anyway- unsupported features will be ignored.",
 
             /*new*/lblProjectLoadingErrorCaption: 'Loading failed',
-            /*new*/msgProjectLoadingError: "There was an error loading the project's resources.\nPlease make sure you are connected to the internet.",
+            /*new*/msgProjectLoadingError: "There was an error loading the project's resources.",
             /*new*/"msgUnsupportedDefaultCaption": "Note",
             /*new*/"msgUnsupportedDefault": "Something you should know before running this project:",
             /*new*/"msgUnsupportedWarningCaption": "Attention",
@@ -95,7 +96,7 @@ PocketCode.I18nProvider = (function (propObject) {
             //new (below)
             msgDeviceEmulation: "This project uses your device's inclination sensors. You can use your cursor keys (keyboard) to emulate these sensors.",
             msgDeviceLockScreen: "This project uses your device's sensors. We recommend to lock your screen during execution to avoid side-effects.",
-            lblUnsupportedSound: 'At least one sound file or codec',// is not compatible with your browser',
+            lblUnsupportedSound: 'At least one sound file or codec',
             lblUnsupportedBricks: 'Unsupported brick/s found',
 
             lblDeviceAcceleration: 'Device acceleration sensor',

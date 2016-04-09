@@ -232,7 +232,9 @@ PocketCode.Ui.merge({
         //cntr
         function BrowserNotSupportedDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblBrowserNotSupportedErrorCaption', 'msgBrowserNotSupportedError');
-            //this._logMessageTextNode.show();
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
+            this.appendChild(new PocketCode.Ui.I18nTextNode('msgBrowserNotSupportedErrorOther'));
         }
 
         return BrowserNotSupportedDialog;
@@ -245,7 +247,9 @@ PocketCode.Ui.merge({
         function MobileRestrictionDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'lblMobileRestrictionsWarningCaption', 'msgMobileRestrictionsWarning');
 
-            this._debugMessage = new PocketCode.Ui.I18nTextNode('msgMobileRestrictionsDebug', '\n');
+            this._debugMessage = new PocketCode.Ui.I18nTextNode('msgMobileRestrictionsDebug');//, '\n');
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
             this.appendChild(this._debugMessage);
 
             // i18n: lblCancel
@@ -359,10 +363,12 @@ PocketCode.Ui.merge({
         //cntr
         function ServerConnectionErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblServerConnectionErrorCaption', 'msgServerConnectionError');
-            // i18n: lblCancel
+
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
+            this.appendChild(new PocketCode.Ui.I18nTextNode('msgInternetConnectionAvailable'));
+
             this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
-            // i18n: lblRetry
             this._btnRetry = new PocketCode.Ui.Button('lblRetry');
             this.addButton(this._btnRetry);
 
@@ -394,10 +400,11 @@ PocketCode.Ui.merge({
         function ProjectLoadingErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblProjectLoadingErrorCaption', 'msgProjectLoadingError');
 
-            // i18n: lblCancel
+            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
+            this.appendChild(new PocketCode.Ui.I18nTextNode('msgInternetConnectionAvailable'));
+
             this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
-            // i18n: lblRetry
             this._btnRetry = new PocketCode.Ui.Button('lblRetry');
             this.addButton(this._btnRetry);
 
