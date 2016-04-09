@@ -84,7 +84,7 @@ PocketCode.merge({
             };
 
             this._project = new PocketCode.GameEngine();
-            this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+            this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function (e) { this._loadingError = e; }, this));
             this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
 
@@ -173,10 +173,6 @@ PocketCode.merge({
                 PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
                 throw new Error('i18nControllerError: ' + e.responseText);
             },
-            _projectLoadingErrorHandler: function (e) {
-                //this handler is only called on loading errors that can't be ignored, e.g. image loading errors
-                this._loadingError = e;
-            },
             _projectLoadHandler: function (e) {
                 if (!this._loadingError && !e.loadingAlerts) {
                     this._pages.PlayerPageController.initOnLoad();
@@ -197,29 +193,27 @@ PocketCode.merge({
 
                 //else
                 var loadingAlerts = e.loadingAlerts;
-                var msg = loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired;
-                var warning = loadingAlerts.invalidSoundFiles.length != 0 || loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0;
+                var alerts = [],
+                    warnings = [];
 
-                var d;
-                if (warning) {
-                    d = new PocketCode.Ui.ProjectLoadingAlertDialog(PocketCode.Ui.DialogType.WARNING);
-                }
-                else if (msg) {
-                    d = new PocketCode.Ui.ProjectLoadingAlertDialog(PocketCode.Ui.DialogType.DEFAULT);
-                }
-                if (d) {
-                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                    d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                        e.target.dispose();
-                        this._pages.PlayerPageController.initOnLoad();
-                    }, this));
-                    this._showDialog(d, false);
-                }
+                if (loadingAlerts.deviceEmulation)
+                    alerts.push('msgDeviceEmulation');
+                if (loadingAlerts.deviceLockRequired)
+                    alerts.push('msgDeviceLockScreen');
 
-                //TODO: check for device emulation and show a message as well
-                //TODO: add dialog for all missing features/warnings
-                //TODO: check for device: screen locking
+                if (loadingAlerts.invalidSoundFiles.length != 0)
+                    warnings.push('lblUnsupportedSound');
+                if (loadingAlerts.unsupportedBricks.length != 0)
+                    warnings.push('lblUnsupportedBricks');
+                warnings = warnings.concat(loadingAlerts.deviceUnsupportedFeatures);
 
+                var d = new PocketCode.Ui.ProjectLoadingAlertDialog(alerts, warnings);
+                d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    e.target.dispose();
+                    this._pages.PlayerPageController.initOnLoad();
+                }, this));
+                this._showDialog(d, false);
             },
             _requestProjectDetails: function () {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
@@ -307,7 +301,7 @@ PocketCode.merge({
                         break;
                     case 'InvalidProjectFileException':
                         d = new PocketCode.Ui.ProjectNotValidDialog();
-                        PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
+                        //PocketCode.LoggingProvider.sendMessage(errorJson, this._currentProjectId);
                         break;
                     case 'FileParserException':
                         d = new PocketCode.Ui.ParserErrorDialog();
