@@ -232,7 +232,7 @@ PocketCode.Ui.merge({
         //cntr
         function BrowserNotSupportedDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblBrowserNotSupportedErrorCaption', 'msgBrowserNotSupportedError');
-            this._logMessageTextNode.show();
+            //this._logMessageTextNode.show();
         }
 
         return BrowserNotSupportedDialog;
@@ -393,6 +393,7 @@ PocketCode.Ui.merge({
         //cntr
         function ProjectLoadingErrorDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, 'lblProjectLoadingErrorCaption', 'msgProjectLoadingError');
+
             // i18n: lblCancel
             this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
@@ -425,23 +426,51 @@ PocketCode.Ui.merge({
         ProjectLoadingAlertDialog.extends(PocketCode.Ui.Dialog, false);
 
         //cntr
-        function ProjectLoadingAlertDialog(alertType) {
-            if (alertType == this, PocketCode.Ui.DialogType.WARNING)
-                PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'msgUnsupportedWarningCaption', 'msgUnsupportedWarning');
+        function ProjectLoadingAlertDialog(i18nAlerts, i18nWarnings) {
+            if (!(i18nAlerts instanceof Array))
+                throw new Error('invalid parameter: i18nAlerts');
+            if (i18nWarnings && !(i18nWarnings instanceof Array))
+                throw new Error('invalid parameter: i18nWarnings');
+
+            if (i18nWarnings && i18nWarnings.length > 0)
+                PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'msgUnsupportedWarningCaption', 'msgUnsupportedDefault');
             else
                 PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.DEFAULT, 'msgUnsupportedDefaultCaption', 'msgUnsupportedDefault');
 
-            // i18n: lblCancel
+            this._container.style.textAlign = 'inherit';
+
             this._btnCancel = new PocketCode.Ui.Button('lblCancel');
             this.addButton(this._btnCancel);
-            // i18n: lblContinue
             this._btnContinue = new PocketCode.Ui.Button('lblContinue');
             this._btnContinue.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onContinue.dispatchEvent(); }, this));
             this.addButton(this._btnContinue);
 
-            // i18n: msgUnsupportedSound
-            // ??
-            //this.bodyInnerHTML = PocketCode.I18nProvider.getLocString('msgUnsupportedSound');
+            //msg
+            if (i18nAlerts.length > 0) {
+                this._msgUl = new SmartJs.Ui.HtmlTag('ul', { style: { color: '#33B5E5' } });
+                this._container.appendChild(this._msgUl);
+
+                for (var i = 0, l = i18nAlerts.length; i < l; i++) {
+                    this._addLiItem(i18nAlerts[i], this._msgUl);
+                }
+            }
+            else
+                this._messageTextNode.i18n = 'msgUnsupportedWarning';
+
+            //warning
+            if (i18nWarnings && i18nWarnings.length > 0) {
+                if (i18nAlerts.length > 0)
+                    this._container.appendChild(new PocketCode.Ui.I18nTextNode('msgUnsupportedWarning'));
+                this._warningUl = new SmartJs.Ui.HtmlTag('ul', { style: { color: '#EF7716' } });
+
+                for (var i = 0, l = i18nWarnings.length; i < l; i++) {
+                    this._addLiItem(i18nWarnings[i], this._warningUl);
+                }
+                this._container.appendChild(this._warningUl);
+                this._container.appendChild(new PocketCode.Ui.I18nTextNode('msgUnsupportedWarningContinue'));
+            }
+
+            //event
             this._onContinue = new SmartJs.Event.Event(this);
         }
 
@@ -456,6 +485,15 @@ PocketCode.Ui.merge({
                 get: function () {
                     return this._onContinue;
                 },
+            },
+        });
+
+        //methods
+        ProjectLoadingAlertDialog.prototype.merge({
+            _addLiItem: function (i18nKey, ul) {
+                var li = new SmartJs.Ui.HtmlTag('li');
+                li.appendChild(new PocketCode.Ui.I18nTextNode(i18nKey));
+                ul.appendChild(li);
             },
         });
 
