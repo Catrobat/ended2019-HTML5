@@ -685,6 +685,32 @@ SmartJs.Ui.merge({
 });
 
 SmartJs.Ui.merge({
+
+            SmartJs.Ui.Control.call(this, element, propObject);
+        }
+
+            appendChild: function (uiControl) {
+                return this._appendChild(uiControl);
+            },
+            insertAt: function (idx, uiControl) {
+                return this._insertAt(idx, uiControl);
+            },
+            insertBefore: function (newUiC, existingUiC) {
+                return this._insertBefore(newUiC, existingUiC);
+            },
+            insertAfter: function (newUiC, existingUiC) {
+                return this._insertAfter(newUiC, existingUiC);
+            },
+            replaceChild: function (newUiC, existingUiC) {
+                return this._replaceChild(newUiC, existingUiC);
+            },
+            removeChild: function (uiControl) {
+                return this._removeChild(uiControl);
+            },
+        });
+
+    })(),
+
     Image: (function () {
         Image.extends(SmartJs.Ui.Control, false);
 
