@@ -583,6 +583,15 @@
 		overflow: hidden;
 	}
 
+	.pc-dialogBody .pc-dialogContent ul {
+		list-style-type: square;
+		padding-left: 0px;
+		padding-right: 0px;
+		margin-top: 4px;
+		margin-bottom: 4px;
+		list-style-position: inside;
+	}
+
 .pc-dialogFooter {
 	border: solid 1px #282828;
 	border-top: solid 1px #484848;
