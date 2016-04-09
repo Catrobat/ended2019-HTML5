@@ -95,6 +95,11 @@ PocketCode.GameEngine = (function () {
             },
         },
         //project execution
+        executionState: {
+            get: function () {
+                return this._executionState;
+            },
+        },
         projectLoaded: {
             get: function () {
                 return this._resourcesLoaded && this._spritesLoaded;

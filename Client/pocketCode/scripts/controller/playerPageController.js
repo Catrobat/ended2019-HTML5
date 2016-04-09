@@ -115,15 +115,15 @@ PocketCode.PlayerPageController = (function () {
         loadViewState: function (viewState, dialogsLength) {
             PocketCode.PageController.prototype.loadViewState.call(this, viewState, dialogsLength);   //to handle dialogs
             //set UI based on viewState
-            if (viewState === PocketCode.ExecutionState.PAUSED) {
+            if (viewState === PocketCode.ExecutionState.PAUSED && this._gameEngine.executionState == PocketCode.ExecutionState.RUNNING) {
                 this._pauseProject();
                 this._view.executionState = PocketCode.ExecutionState.PAUSED;
-                this._view.screenshotButtonDisabled = false;
+                //this._view.screenshotButtonDisabled = false;
             }
             else {  //if(viewState === PocketCode.ExecutionState.STOPPED)
                 this._gameEngine.stopProject();
                 this._view.executionState = PocketCode.ExecutionState.STOPPED;
-                this._view.screenshotButtonDisabled = true;
+                //this._view.screenshotButtonDisabled = true;
             }
         },
         /* override */
