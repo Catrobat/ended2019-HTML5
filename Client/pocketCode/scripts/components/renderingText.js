@@ -49,39 +49,34 @@
 
 PocketCode.RenderingText = (function () {
 
-    function RenderingText(textProperties) {
-        //this.type = 'variable';
-        this._fabricText = new fabric.Text("");//PocketCode.FabricText();
-        /*this._fabricText.set({
-            id: options.id,
-            name: options.name,
-            perPixelTargetFind: true, // only pixels inside item area trigger click
+    function RenderingText(propObject) {    //{ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }
+        
+        if (typeof propObject !== 'object')
+            throw new Error('The rendering text has to be initialized using a variable or text parameter object');
+        this._fabricText = new fabric.Text(propObject.text, {
+            id: propObject.id,
+            //name: options.name,
+            //perPixelTargetFind: true, // only pixels inside item area trigger click
             selectable: false,
             hasControls: false,
             hasBorders: false,
             hasRotatingPoint: false,
             originX: "left",
             originY: "top",
-            positionX: options.x,
-            positionY: options.y,
+            positionX: propObject.x,
+            positionY: propObject.y,
             fontFamily: 'Arial',
             fontSize: 18,
             fontWeight: 'bold',
             //fill: 'rgb(b,b,b)',
-            visible: false,
+            visible: propObject.visible,
             //flipX = flipH: false, //already a property and false (default)
             //flipy = flipV: false, //already a property and false (default)
             //filters: [],
             //opacity: 1.0
-        });*/
+        });
 
-        if (!textProperties || !(typeof textProperties === 'object'))
-            throw new Error('The rendering object has to be initialized using a sprite parameter object');
-
-        this._x = 0;
-        this._y = 0;
-        this._viewportScaling = 1;
-        this.merge(textProperties);
+        this._viewportScaling = 1.0;
     }
 
     //properties
@@ -92,9 +87,9 @@ PocketCode.RenderingText = (function () {
         //    },
         //},
         id: {
-            set: function (value) {
-                this._id = value;   //this._fabricImage.id = value;
-            },
+            //set: function (value) {   //cannot be changed
+            //    this._id = value;
+            //},
             get: function () {
                 return this._id; //this._fabricImage.id;
             },
