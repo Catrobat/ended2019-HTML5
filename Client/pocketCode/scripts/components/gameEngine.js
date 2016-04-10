@@ -423,6 +423,8 @@ PocketCode.GameEngine = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
             this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
+            if (!bg)
+                this._spriteOnExecutedHandler();    //make sure an empty program terminates
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
