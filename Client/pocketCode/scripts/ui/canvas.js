@@ -71,6 +71,7 @@ PocketCode.Ui.Canvas = (function () {
                 },
                 //TODO: override rendering
                 clear: function () {
+                    this.clearContext(this.contextTop);
                     this.clearContext(this.contextContainer);
                 },
                 renderAll: function () {//viewportScaling) {//allOnTop) {
@@ -241,11 +242,11 @@ PocketCode.Ui.Canvas = (function () {
                 this._fcAdapter.renderingObjects = list;
             },
         },
-        //renderingTexts: {
-        //    set: function (list) {
-        //        this._fcAdapter.renderingTexts = list;
-        //    },
-        //},
+        renderingTexts: {
+            set: function (list) {
+                //TODO: this._fcAdapter.renderingTexts = list;
+            },
+        },
         //text: {
         //    get: function () {
         //        return this._textNode.text;

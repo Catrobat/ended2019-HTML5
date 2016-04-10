@@ -28,11 +28,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //events
         //this._onScalingChanged = new SmartJs.Event.Event(this);
 
-        this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
+        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
         //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
         //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
-        this._canvas.onResize.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
@@ -249,6 +248,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
             this.render();
+            this._drawAxes();
         },
         setOriginalViewportSize: function (width, height) {
             this._originalWidth = width;
@@ -268,6 +268,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 return;
             //this._showGrid = false;
             this._axesVisible = false;
+            this.clear();
             this.render();
         },
         _drawVariables: function () {
