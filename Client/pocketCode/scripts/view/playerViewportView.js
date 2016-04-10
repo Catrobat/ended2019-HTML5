@@ -30,8 +30,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
-        this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
-        this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
+        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+        this._canvas.onResize.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
@@ -249,7 +250,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             this.render();
         },
-        setOriginalViewportSize: function(width, height) {
+        setOriginalViewportSize: function (width, height) {
             this._originalWidth = width;
             this._originalHeight = height;
             this._resizeHandler();
@@ -269,16 +270,17 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._axesVisible = false;
             this.render();
         },
-        _drawVariables: function() {
+        _drawVariables: function () {
             var vars = this._renderingVariables;
             var ctx = this._canvas.contextTop;              //TODO: render in lower context inside the canvas?
             for (var i = 0, l = vars.length; i < l; i++)
                 vars[i].draw(ctx);
         },
         _drawAxes: function () {
-            //if (this._showGrid) {
-            if (this._axesVisible) {
-                var ctx = this._canvas.contextTop,
+            if (!this._axesVisible)
+                return;
+
+            var ctx = this._canvas.contextTop,
                     width = this._canvas.width,
                     height = this._canvas.height,
                     color = 'red',
@@ -287,32 +289,31 @@ PocketCode.Ui.PlayerViewportView = (function () {
                             return Math.round(window.devicePixelRatio);
                         return 1;
                     }();*/
-                //ctx.stroke();
-                ctx.save();
+            //ctx.stroke();
+            ctx.save();
 
-                ctx.beginPath();
-                ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
-                ctx.lineTo(Math.round(width / 2), height);
+            ctx.beginPath();
+            ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
+            ctx.lineTo(Math.round(width / 2), height);
 
-                ctx.moveTo(0, Math.round(height / 2));
-                ctx.lineTo(width, Math.round(height / 2));
+            ctx.moveTo(0, Math.round(height / 2));
+            ctx.lineTo(width, Math.round(height / 2));
 
-                ctx.strokeStyle = color;
-                ctx.lineWidth = pixelRatio;
-                ctx.font = (12 * pixelRatio) + 'px Arial';
-                ctx.fillStyle = color;
-                //center
-                ctx.fillText('0', width / 2 + 5, height / 2 + 15);
-                //width
-                ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
-                ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
-                //height
-                ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
-                ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = pixelRatio;
+            ctx.font = (12 * pixelRatio) + 'px Arial';
+            ctx.fillStyle = color;
+            //center
+            ctx.fillText('0', width / 2 + 5, height / 2 + 15);
+            //width
+            ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
+            ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
+            //height
+            ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
+            ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
 
-                ctx.stroke();
-                ctx.restore();
-            }
+            ctx.stroke();
+            ctx.restore();
         },
         getCanvasDataURL: function () {
             return this._canvas.toDataURL();//this._scaling);
