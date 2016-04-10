@@ -231,9 +231,9 @@ PocketCode.Ui.Canvas = (function () {
                 return this._fcAdapter.getWidth();
             },
         },
-        context: {
+        contextTop: {
             get: function () {
-                return this._fcAdapter.getContext();//'2d');
+                return this._fcAdapter.contextTop;
             },
         },
         renderingImages: {

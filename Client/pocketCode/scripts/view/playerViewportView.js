@@ -271,14 +271,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         _drawVariables: function() {
             var vars = this._renderingVariables;
-            var ctx = this._canvas.context;
+            var ctx = this._canvas.contextTop;              //TODO: render in lower context inside the canvas?
             for (var i = 0, l = vars.length; i < l; i++)
                 vars[i].draw(ctx);
         },
         _drawAxes: function () {
             //if (this._showGrid) {
             if (this._axesVisible) {
-                var ctx = this._canvas.context,
+                var ctx = this._canvas.contextTop,
                     width = this._canvas.width,
                     height = this._canvas.height,
                     color = 'red',
