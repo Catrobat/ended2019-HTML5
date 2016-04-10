@@ -301,7 +301,7 @@ PocketCode.Ui.Canvas = (function () {
             // TODO Check alpha channel value range
             backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
             this._fcAdapter.setBackgroundColor(backgroundColor);   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL();//{ multiplier: 1.0 / this._fcAdapter.scaling });
+            var dataUrl = this._fcAdapter.toDataURL({ multiplier: 1.0 / this._fcAdapter.scaling });
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
         },
