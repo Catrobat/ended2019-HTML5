@@ -215,6 +215,9 @@ PocketCode.RenderingImage = (function () {
             set: function (value) {
                 this._fabricImage.visible = value;
             },
+            get: function () {
+                return this._fabricImage.visible;
+            }
         },
         //transparency: {
         //    set: function (value) {
