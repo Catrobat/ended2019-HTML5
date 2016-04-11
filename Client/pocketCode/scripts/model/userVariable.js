@@ -150,7 +150,7 @@ PocketCode.Model.merge({
                 var val = this._value;
                 if (val == undefined)
                     return '';
-                if (isNaN(val))
+                if (typeof val != 'number')
                     return val.toString();
                 if (parseInt(val) === val)
                     return val.toFixed(1);
