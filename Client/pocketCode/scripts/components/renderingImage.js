@@ -1,16 +1,13 @@
 ﻿/// <reference path='../components/sprite.js' />
 
-PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
+PocketCode.RenderingImage = (function () {
 
-    initialize: function (element, options) {
-        if (!element)
-            return;
-        options || (options = {});
+    function RenderingImage(imageProperties) {
+        if (!imageProperties || !(typeof imageProperties === 'object'))
+            throw new Error('The rendering object has to be initialized using a sprite parameter object');
 
-        this.callSuper('initialize', element/*.canvas*/, options);
-        this.set({
-            id: options.id,
-            name: options.name,
+        var canvas = imageProperties.look;
+        this._fabricImage = new fabric.Image(canvas, {
             perPixelTargetFind: true, // only pixels inside item area trigger click
             selectable: false,
             hasControls: false,
@@ -19,24 +16,13 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
             originX: 'center',
             originY: 'center',
             centeredScaling: true,
-            width: element.width,
-            height: element.height,
+            width: canvas.width,
+            height: canvas.height,
             // flipX = flipH: false, //already a property and false (default)
             // flipy = flipV: false, //already a property and false (default)
             //filters: [],  //default
             //opacity: 1.0  //default
         });
-
-    },
-});
-
-PocketCode.RenderingImage = (function () {
-
-    function RenderingImage(imageProperties) {
-        if (!imageProperties || !(typeof imageProperties === 'object'))
-            throw new Error('The rendering object has to be initialized using a sprite parameter object');
-
-        this._fabricImage = new PocketCode.FabricImage(imageProperties.look);
         this._brightnesFilter = new fabric.Image.filters.Brightness({
             brightness: 0,
         });
