@@ -13,9 +13,6 @@ PocketCode.Ui.Canvas = (function () {
     //cntr
     function Canvas(args) {
 
-        //fabric canvas config
-        //var cheight = 920.0;    //TODO:
-        //var cwidth = 640.0;
         var config = {
             //width: cwidth,
             //height: cheight,
@@ -24,8 +21,9 @@ PocketCode.Ui.Canvas = (function () {
             skipTargetFind: false,
             perPixelTargetFind: true,
             renderOnAddRemove: false,
-            stateful: false,
+            //stateful: false,  //TODO: ??? check this again
             preserveObjectStacking: true,
+            //?centerTransform (= centeredRotation, centeredScaling in current version)
         };
 
         //create internal fabricJs canvas adapter
@@ -35,7 +33,8 @@ PocketCode.Ui.Canvas = (function () {
             function FCAdapter(canvasElement) {
                 fabric.Canvas.call(this, canvasElement, config);
                 this._renderingObjects = [];
-                this.scaling = 1;   //initial
+                this._renderingTexts = [];
+                this.scaling = 1.0;   //initial
                 //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
             }
 
@@ -44,6 +43,11 @@ PocketCode.Ui.Canvas = (function () {
                 renderingObjects: {
                     set: function (list) {
                         this._renderingObjects = list;  //TODO: exception handling, argument check
+                    },
+                },
+                renderingTexts: {
+                    set: function (list) {
+                        this._renderingTexts = list;  //TODO: exception handling, argument check
                     },
                 },
             });
@@ -60,133 +64,219 @@ PocketCode.Ui.Canvas = (function () {
                             return items[i];
                     }
                 },
-
                 setDimensionsWr: function (width, height, scaling) {   //without rerendering
+                    width = Math.round(width / 2.0) * 2.0;
+                    height = Math.round(height / 2.0) * 2.0;
+
                     this._setBackstoreDimension('width', width);
                     this._setCssDimension('width', width + 'px');
                     this._setBackstoreDimension('height', height);
                     this._setCssDimension('height', height + 'px');
                     this.scaling = scaling;
                     this.calcOffset();
+                    this._createCacheCanvas();  //make sure our cahce canvas has the full size to search for click events
                 },
-                //TODO: override rendering
+                _createCacheCanvas: function () {
+                    this.cacheCanvasEl = this._createCanvasElement();
+                    this.cacheCanvasEl.setAttribute('width', this.width / this.scaling);
+                    this.cacheCanvasEl.setAttribute('height', this.height / this.scaling);
+                    this.contextCache = this.cacheCanvasEl.getContext('2d');
+                },
                 clear: function () {
                     this.clearContext(this.contextTop);
                     this.clearContext(this.contextContainer);
                 },
-                renderAll: function () {//viewportScaling) {//allOnTop) {
-                    var ctx = this.contextContainer;//,//this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
-                    this.clearContext(ctx);
-                    //activeGroup = this.getActiveGroup();
+                __onMouseDown: function (e) {
 
-                    //if (this.contextTop && this.selection && !this._groupSelector) {
-                    //    this.clearContext(this.contextTop);
-                    //}
-
-                    //if (!allOnTop) {
-                    //    this.clearContext(context);
-                    //}
-
-                    //this.fire('before:render');
-
-                    //if (this.clipTo) {
-                    //    fabric.util.clipContext(this, context);
-                    //}
-                    this._renderBackground(ctx);
-                    //this._renderObjects(context, activeGroup);
-                    var ro = this._renderingObjects;
-                    for (var i = 0, l = ro.length; i < l; i++) //{
-                        //var obj = this._renderingObjects[i].object;
-                        //this._draw(ctx, ro[i].object);//obj);
-                        ro[i].draw(ctx, this.scaling);
-
-                    //ro = this._renderingTexts
-                    //for (var i = 0, l = ro.length; i < l; i++) //{
-                    //    //var obj = this._renderingObjects[i].object;
-                    //    //this._draw(ctx, ro[i].object);//obj);
-                    //    ro[i].draw(ctx, this.scaling);
-
-                    //this._renderActiveGroup(context, activeGroup);
-
-                    //if (this.clipTo) {
-                    //    context.restore();
-                    //}
-
-                    //this._renderOverlay(context);
-
-                    //if (this.controlsAboveOverlay && this.interactive) {
-                    //    this.drawControls(context);
-                    //}
-
-                    this.fire('after:render');
-
-                    //return this;
-                },
-                //_renderObjects: function (ctx, activeGroup) {
-                //    //var i, length;
-
-                //    // fast path
-                //    //if (!activeGroup || this.preserveObjectStacking) {
-                //    var ro = this._renderingObjects;
-                //    for (var i = 0, l = ro.length; i < l; ++i) //{    //++i???
-                //        //var obj = this._renderingObjects[i].object;
-                //        this._draw(ctx, ro[i].object);//obj);
-                //    //}
-                //    //}
-                //    //else {
-                //    //    for (i = 0, length = this._renderingObjects.length; i < length; ++i) {
-                //    //        if (this._renderingObjects[i].object && !activeGroup.contains(this._renderingObjects[i].object)) {
-                //    //            this._draw(ctx, this._renderingObjects[i].object);
-                //    //            console.log('B render', i);
-                //    //        }
-                //    //    }
-                //    //}
-                //},
-                _searchPossibleTargets: function(e, skipGroup){
-                    // Cache all targets where their bounding box contains point.
-                    if (e.type != 'mousedown')
+                    var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
+                    if (!isLeftClick && !SmartJs.Device.isTouch) {
                         return;
+                    }
+
+                    var target = this.findTarget(e),
+                        pointer = this.getPointer(e, true);
+
+                    // save pointer for check in __onMouseUp event
+                    this._previousPointer = pointer;
+
+                    var shouldRender = this._shouldRender(target, pointer),
+                        shouldGroup = this._shouldGroup(e, target);
+
+                    if (this._shouldClearSelection(e, target)) {
+                        this._clearSelection(e, target, pointer);
+                    }
+                    else if (shouldGroup) {
+                        this._handleGrouping(e, target);
+                        target = this.getActiveGroup();
+                    }
+
+                    if (target && target.selectable && !shouldGroup) {
+                        this._beforeTransform(e, target);
+                        this._setupCurrentTransform(e, target);
+                    }
+                    // we must renderAll so that active image is placed on the top canvas
+                    shouldRender && this.renderAll();
+
+                    this.fire('mouse:down', { target: target, e: e });
+                    target && target.fire('mousedown', { e: e });
+                },
+                _getTouchPointer: function (event, pageProp, clientProp) {
+                    var touchProp = event.type === 'touchend' ? 'changedTouches' : 'touches';
+
+                    return (event[touchProp] && event[touchProp][0] ?
+                        (event[touchProp][0][pageProp] - (event[touchProp][0][pageProp] - event[touchProp][0][clientProp])) || event[clientProp] :
+                        event[clientProp]);
+                },
+                _getEventPointer: function (event) {
+                    event || (event = fabric.window.event);
+
+                    var element = event.target || (typeof event.srcElement !== unknown ? event.srcElement : null),
+                        scroll = fabric.util.getScrollLeftTop(element),
+                        x = 0,
+                        y = 0;
+
+                    if (SmartJs.Device.isTouch) {
+                        x = this._getTouchPointer(event, 'pageX', 'clientX');
+                        y = this._getTouchPointer(event, 'pageY', 'clientY');
+                    }
+                    else {
+                        x = event.clientX ? event.clientX : 0;
+                        y = event.clientY ? event.clientY : 0;
+                    }
+                    return {
+                        x: x + scroll.left,
+                        y: y + scroll.top
+                    };
+                },
+                getPointer: function (e, ignoreZoom, upperCanvasEl) {
+                    if (!upperCanvasEl) {
+                        upperCanvasEl = this.upperCanvasEl;
+                    }
+                    var pointer = this._getEventPointer(e),
+                        bounds = upperCanvasEl.getBoundingClientRect(),
+                        boundsWidth = bounds.width || 0,
+                        boundsHeight = bounds.height || 0,
+                        cssScale;
+
+                    if (!boundsWidth || !boundsHeight) {
+                        if ('top' in bounds && 'bottom' in bounds) {
+                            boundsHeight = Math.abs(bounds.top - bounds.bottom);
+                        }
+                        if ('right' in bounds && 'left' in bounds) {
+                            boundsWidth = Math.abs(bounds.right - bounds.left);
+                        }
+                    }
+
+                    //this.calcOffset();    //are calculated during resize
+
+                    pointer.x = pointer.x - this._offset.left;
+                    pointer.y = pointer.y - this._offset.top;
+                    if (!ignoreZoom) {
+                        pointer = fabric.util.transformPoint(
+                          pointer,
+                          fabric.util.invertTransform(this.viewportTransform)
+                        );
+                    }
+
+                    if (boundsWidth === 0 || boundsHeight === 0) {
+                        // If bounds are not available (i.e. not visible), do not apply scale.
+                        cssScale = { width: 1, height: 1 };
+                    }
+                    else {
+                        cssScale = {
+                            width: upperCanvasEl.width / boundsWidth,
+                            height: upperCanvasEl.height / boundsHeight
+                        };
+                    }
+
+                    return {
+                        x: pointer.x * cssScale.width,
+                        y: pointer.y * cssScale.height,
+                    };
+                },
+                _checkTarget: function (obj, pointer) {
+                    obj.setCoords();
+                    if (obj && obj.visible && obj.evented && obj.containsPoint(pointer)) {
+                        if ((this.perPixelTargetFind || obj.perPixelTargetFind) && !obj.isEditing) {
+                            var isTransparent = this.isTargetTransparent(obj, pointer.x, pointer.y);
+                            if (!isTransparent) {
+                                return true;
+                            }
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                _searchPossibleTargets: function (e, skipGroup) {
+                    // Cache all targets where their bounding box contains point.
+                    if (e.type != 'mousedown' && e.type != 'touchstart')
+                        return;
+                    //this.calcOffset();    //calculated onResize
                     var target,
                         pointer = this.getPointer(e, true),
-                        i = this._renderingObjects.length;
-
-                    // Do not check for currently grouped objects, since we check the parent group itself.
-                    // untill we call this function specifically to search inside the activeGroup
+                        objs = this._renderingObjects,
+                        obj;
+                    var i = objs.length;
+                    pointer = { //include our canvas scaling for search only
+                        x: pointer.x / this.scaling,
+                        y: pointer.y / this.scaling,
+                    }
                     while (i--) {
-                        if (this._checkTarget(e, this._renderingObjects[i].object, pointer)){
-                            this.relatedTarget = this._renderingObjects[i].object;
-                            target = this._renderingObjects[i].object;
+                        obj = objs[i].object;
+                        if (this._checkTarget(obj, pointer)) {
+                            this.relatedTarget = obj;
+                            target = obj;
                             break;
                         }
                     }
                     return target;
                 },
+                renderAll: function (viewportScaling) {
+                    var ctx = this.contextContainer;
+                    this.clearContext(ctx);
 
-                __toDataURL: function(format, quality, cropping) {
+                    this._renderBackground(ctx);
 
-                    this.renderAll(true);
+                    var ro = this._renderingObjects,
+                        scaling = viewportScaling || this.scaling;
+                    ctx.save();
+                    ctx.scale(scaling, scaling);
 
-                    var canvasEl = this.lowerCanvasEl,
-                        croppedCanvasEl = this.__getCroppedCanvas(canvasEl, cropping);
+                    for (var i = 0, l = ro.length; i < l; i++)
+                        ro[i].draw(ctx);
 
-                    // to avoid common confusion https://github.com/kangax/fabric.js/issues/806
+                    ro = this._renderingTexts;
+                    for (var i = 0, l = ro.length; i < l; i++)
+                        ro[i].draw(ctx);
+
+                    ctx.restore();
+                    this.fire('after:render');
+                },
+                toDataURL: function (format, quality) {
+                    var origWidth = this.getWidth(),
+                        origHeight = this.getHeight();
+
+                    this.setWidth(Math.round(origWidth / this.scaling / 2.0) * 2.0).setHeight(Math.round(origHeight / this.scaling / 2.0) * 2.0);
+                    
+                    this.renderAll(1.0);
+                    format = format || 'png';
                     if (format === 'jpg') {
                         format = 'jpeg';
                     }
+                    quality = quality || 1;
 
                     var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
-                        ? (croppedCanvasEl || canvasEl).toDataURL('image/' + format, quality)
-                        : (croppedCanvasEl || canvasEl).toDataURL('image/' + format);
+                        ? this.lowerCanvasEl.toDataURL('image/' + format, quality)
+                        : this.lowerCanvasEl.toDataURL('image/' + format);
 
-                    this.contextTop && this.clearContext(this.contextTop);
+                    //restore
+                    this.setDimensionsWr(origWidth, origHeight, this.scaling);
                     this.renderAll();
 
-                    if (croppedCanvasEl) {
-                        croppedCanvasEl = null;
-                    }
-
                     return data;
-                },
+                }
             });
 
             return FCAdapter;
@@ -194,7 +284,6 @@ PocketCode.Ui.Canvas = (function () {
 
         args = args || {};
         SmartJs.Ui.Control.call(this, this._fcAdapter.wrapperEl, args); //the fabricJs wrapper div becomes our _dom root element
-        //this.className = 'pc-canvas';
 
         this._fcAdapter.on('mouse:down', (function (e) {
             if (e.target)
@@ -207,9 +296,6 @@ PocketCode.Ui.Canvas = (function () {
         //events
         this._onMouseDown = new SmartJs.Event.Event(this);
         this._onAfterRender = new SmartJs.Event.Event(this);
-
-        //this._onClick = new SmartJs.Event.Event(this);
-        //this._addDomListener(this._dom, 'click', this._clickHandler);
     }
 
     //properties
@@ -244,25 +330,9 @@ PocketCode.Ui.Canvas = (function () {
         },
         renderingTexts: {
             set: function (list) {
-                //TODO: this._fcAdapter.renderingTexts = list;
+                this._fcAdapter.renderingTexts = list;
             },
         },
-        //text: {
-        //    get: function () {
-        //        return this._textNode.text;
-        //    },
-        //    set: function (value) {
-        //        this._textNode.text = value;
-        //    },
-        //},
-        //disabled: {
-        //    get: function () {
-        //        return this._dom.disabled;
-        //    },
-        //    set: function (value) {
-        //        this._dom.disabled = value;
-        //    },
-        //},
     });
 
     //events
@@ -272,22 +342,15 @@ PocketCode.Ui.Canvas = (function () {
                 return this._onMouseDown;
             },
         },
-        onAfterRender: {
-            get: function () {
-                return this._onAfterRender;
-            },
-        },
+        //onAfterRender: {
+        //    get: function () {
+        //        return this._onAfterRender;
+        //    },
+        //},
     });
 
     //methods
     Canvas.prototype.merge({
-        //_onClickHandler: function (e) {
-        ////    this._onClick.dispatchEvent();
-        ////    //e.target.blur();//preventDefault(); //stop event so the button doesn't get focus
-        //},
-        //_onResizeHandler: function(e) {
-
-        //},
         setDimensions: function (width, height, scaling) {
             this._fcAdapter.setDimensionsWr(width, height, scaling);
         },
@@ -298,37 +361,13 @@ PocketCode.Ui.Canvas = (function () {
             this._fcAdapter.renderAll();
         },
         toDataURL: function (backgroundColor) {
-            //scaling = scaling || 1;
             // TODO Check alpha channel value range
             backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
             this._fcAdapter.setBackgroundColor(backgroundColor);   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL({ multiplier: 1.0 / this._fcAdapter.scaling });
+            var dataUrl = this._fcAdapter.toDataURL();
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
         },
-        //findItemById: function (id) {
-        //    return this._fcAdapter.findItemById(id);
-        //},
-        //handleChangedScaling: function(e){
-        //    var scaling = e.scaling;
-        //    var canv = this._fcAdapter;
-        //    for (var i = 0, l = canv._renderingObjects.length; i<l; i++) {
-        //        var obj = canv._renderingObjects[i];
-        //        this.applyScalingToObject(obj, scaling);
-        //    }
-
-        //    this.render();
-        //},
-        //applyScalingToObject: function(obj, scaling) {
-        //    var canvas = this._fcAdapter;
-        //    if (obj.object.id != undefined) {
-        //        obj.object.left = obj._positionX * scaling + canvas.width / 2.0;
-        //        obj.object.top = canvas.height - (obj._positionY * scaling + canvas.height / 2.0);
-        //        obj.object.scaleX = obj._size * scaling / obj._initialScaling;
-        //        obj.object.scaleY = obj._size * scaling / obj._initialScaling;
-        //        obj.object.setCoords();
-        //    }
-        //},
     });
 
     return Canvas;

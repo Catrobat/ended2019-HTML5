@@ -17,7 +17,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
         this._axesVisible = false;
-        this._renderingVariables = [];
+        //this._renderingVariables = [];
         //this._scaling = 1;
         //this._canvasNeedsRedraw = false;
 
@@ -28,8 +28,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //events
         //this._onScalingChanged = new SmartJs.Event.Event(this);
 
-        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
+        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this)); //TODO: check if handling is necesary twice
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._updateCanvasSize.bind(this, this), 120); }.bind(this), this));
         //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
         //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
@@ -153,7 +153,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 //if (!(value instanceof Array))
                 //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
 
-                this._renderingVariables = value;
+                this._canvas.renderingTexts = value;
             },
         },
         //fabricCanvas: {
@@ -193,13 +193,15 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //methods
     PlayerViewportView.prototype.merge({
-        _resizeHandler: function (e) {
+        _updateCanvasSize: function (e) {
             var w = this.width,// || window.innerWidth;
                 h = this.height,// || window.innerHeight; // TODO fix this, height stays 0
                 ow = this._originalWidth,
                 oh = this._originalHeight,
                 scaling;
 
+            if (!w || !h || !ow || !oh) //any =0 values
+                return;
             if (oh / ow >= h / w)   //aligned top/bottom
                 scaling = h / oh;
             else
@@ -253,7 +255,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         setOriginalViewportSize: function (width, height) {
             this._originalWidth = width;
             this._originalHeight = height;
-            this._resizeHandler();
+            this._updateCanvasSize();
         },
         showAxes: function () {
             if (this._axesVisible)
@@ -270,12 +272,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._axesVisible = false;
             this.clear();
             this.render();
-        },
-        _drawVariables: function () {
-            var vars = this._renderingVariables;
-            var ctx = this._canvas.contextTop;              //TODO: render in lower context inside the canvas?
-            for (var i = 0, l = vars.length; i < l; i++)
-                vars[i].draw(ctx);
         },
         _drawAxes: function () {
             if (!this._axesVisible)
@@ -317,13 +313,29 @@ PocketCode.Ui.PlayerViewportView = (function () {
             ctx.restore();
         },
         getCanvasDataURL: function () {
-            return this._canvas.toDataURL();//this._scaling);
+            var url = this._canvas.toDataURL();
+            this._drawAxes();   //a resize may be triggered and upper canvas cleared
+            return url;
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
-            this._canvas.render();//this._scaling);
+            //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
+            //    return;
+            this._redrawRequired = true;
+            if (this._redrawInProgress)
+                return;
+            else
+                window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+            //this._redrawCanvas();
         },
-
+        _redrawCanvas: function () {
+            this._redrawRequired = false;
+            this._redrawInProgress = true;
+            this._canvas.render();
+            this._redrawInProgress = false;
+            if (this._redrawRequired)
+                this.render();
+        },
         clear: function () {
             this._canvas.clear();
         },
