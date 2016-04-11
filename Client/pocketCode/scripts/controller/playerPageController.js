@@ -217,6 +217,7 @@ PocketCode.PlayerPageController = (function () {
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
                     //this._view.hideStartScreen();
+                    this._pauseProject();
                     var dataUrl = this._playerViewportController.takeScreenshot();
                     this._showScreenshotDialog(dataUrl);
                     break;
@@ -244,9 +245,8 @@ PocketCode.PlayerPageController = (function () {
             this._gameEngine.handleSpriteTap(e.id);
         },
         _pauseProject: function () {
-            if (this._gameEngine)   //may be undefined when triggered on onVisibilityChange
-                this._gameEngine.pauseProject();
-            this._view.executionState = PocketCode.ExecutionState.PAUSED;
+            if (this._gameEngine && this._gameEngine.pauseProject())   //may be undefined when triggered on onVisibilityChange
+                this._view.executionState = PocketCode.ExecutionState.PAUSED;
         },
         /* override */
         //updateViewState: function (viewState) {
@@ -259,9 +259,6 @@ PocketCode.PlayerPageController = (function () {
         //    //this._gameEngine.loadProject(jsonProject);
         //},
         _showScreenshotDialog: function (imageSrc) {
-            if (this._view.executionState == PocketCode.ExecutionState.RUNNING)
-                this._pauseProject();
-
             var d = new PocketCode.Ui.ScreenshotDialog();
             if (this._screenshotDialog && !this._screenshotDialog.disposed)
                 this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)
