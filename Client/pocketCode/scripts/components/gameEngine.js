@@ -432,7 +432,7 @@ PocketCode.GameEngine = (function () {
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
-                return;
+                return false;
 
             this._soundManager.pauseSounds();
             if (this._background)
@@ -443,6 +443,7 @@ PocketCode.GameEngine = (function () {
                 sprites[i].pauseScripts();
             }
             this._executionState = PocketCode.ExecutionState.PAUSED;
+            return true;
         },
         resumeProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
