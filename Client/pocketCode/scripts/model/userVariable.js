@@ -147,9 +147,14 @@ PocketCode.Model.merge({
                     return value;
             },
             toString: function () {
-                if (this._value)
-                    return this._value.toString();
-                return '';
+                var val = this._value;
+                if (val == undefined)
+                    return '';
+                if (isNaN(val))
+                    return val.toString();
+                if (parseInt(val) === val)
+                    return val.toFixed(1);
+                return val.toFixed(10);
             },
             reset: function () {
                 if (this.value === undefined)

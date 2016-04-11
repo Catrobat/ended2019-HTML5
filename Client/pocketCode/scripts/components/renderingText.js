@@ -6,6 +6,7 @@ PocketCode.RenderingText = (function () {
         
         if (typeof propObject !== 'object')
             throw new Error('The rendering text has to be initialized using a variable or text parameter object');
+
         this._fabricText = new fabric.Text(propObject.text, {
             id: propObject.id,
             selectable: false,
@@ -17,13 +18,12 @@ PocketCode.RenderingText = (function () {
             positionX: propObject.x,
             positionY: propObject.y,
             fontFamily: 'Arial',
-            fontSize: 18,
+            fontSize: 50,
             fontWeight: 'bold',
             //fill: 'rgb(b,b,b)',
             visible: propObject.visible,
         });
 
-        //this._viewportScaling = 1.0;
     }
 
     //properties
