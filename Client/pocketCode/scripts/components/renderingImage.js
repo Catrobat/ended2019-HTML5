@@ -27,7 +27,7 @@ PocketCode.RenderingImage = (function () {
             brightness: 0,
         });
 
-        this._fabricImage.filters.push(this._brightnesFilter);  //TODO:
+        //this._fabricImage.filters.push(this._brightnesFilter);
         //this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
 
         this.merge(imageProperties);
@@ -107,15 +107,26 @@ PocketCode.RenderingImage = (function () {
         graphicEffects: {
             set: function (effects) {
                 if (!(effects instanceof Array))
-                    throw new Error ('invalid argument: effects');
+                    throw new Error('invalid argument: effects');
+
                 for (var i = 0, l = effects.length; i < l; i++) {
                     switch (effects[i].effect) {
                         case PocketCode.GraphicEffect.GHOST:
+                            //opacity: 1.0  //default
                             this._fabricImage.opacity = 1 - effects[i].value / 100.0;
                             break;
                         case PocketCode.GraphicEffect.BRIGHTNESS:
-                            this._brightnesFilter.brightness = effects[i].value * 2.55;
-                            this._fabricImage.applyFilters();
+                            var val = effects[i].value;
+                            if (val) {  //!= 0
+                                this._brightnesFilter.brightness = Math.round(val * 2.55);
+                                if (this._fabricImage.filters.indexOf(this._brightnesFilter) == -1) //not in list
+                                    this._fabricImage.filters.push(this._brightnesFilter);
+                                this._fabricImage.applyFilters();
+                            }
+                            else if (this._fabricImage.filters.indexOf(this._brightnesFilter) !== -1) { //remove
+                                this._fabricImage.filters.remove(this._brightnesFilter);
+                                this._fabricImage.applyFilters();
+                            }
                             break;
 
                         //default:
