@@ -34,7 +34,7 @@ QUnit.test("*", function(assert)
 
   /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
   /* Works only, if JsonToGameEngine = false! */
-  var test_only_listed_programs = "server";   //"server", "client", false;
+  var test_only_listed_programs = false;   //"server", "client", false;
 
   /*                          known server errors                              */
   /* will be skipped if test_only_listed_programs = false */
@@ -722,9 +722,7 @@ QUnit.test("*", function(assert)
     };
 
     var onErrorProjectsHandler = function(e) {
-      //console.log("---- ERROR ----");
-      //console.log(e);
-      assert.ok(true, "Fetch of all projects failed");
+      assert.ok(false, "Fetch of all projects failed");
     };
 
     srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
