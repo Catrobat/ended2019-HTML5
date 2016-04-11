@@ -422,7 +422,7 @@ PocketCode.Model.Sprite = (function () {
 
             var rotationAngle = (this._direction - 90.0) * Math.PI / 180.;
             var center = look.center;
-            var scale = this._size / 100.0;// / look.initialScaling;
+            var scale = this._size / 100.0 / look.initialScaling;
 
             this._lookOffsetX = center.length*scale * Math.cos(center.angle - rotationAngle);
             this._lookOffsetY = center.length*scale * Math.sin(center.angle - rotationAngle);
@@ -826,7 +826,7 @@ PocketCode.Model.Sprite = (function () {
                 size = 0;
             this._size = size;
             this._recalculateLookOffsets();
-            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: this._size });
             return true;
         },
@@ -849,7 +849,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._size = size;
-            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: size });
             return true;
         },
