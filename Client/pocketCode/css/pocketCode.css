@@ -585,11 +585,13 @@
 
 	.pc-dialogBody .pc-dialogContent ul {
 		list-style-type: square;
-		padding-left: 0px;
+		padding-left: 18px;
 		padding-right: 0px;
 		margin-top: 4px;
 		margin-bottom: 8px;
-		list-style-position: inside;
+	}
+	.pc-dialogBody .pc-dialogContent ul li {
+		list-style-position: outside;
 	}
 
 .pc-dialogFooter {
