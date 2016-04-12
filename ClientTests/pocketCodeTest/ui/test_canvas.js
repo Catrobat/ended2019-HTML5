@@ -16,8 +16,9 @@ QUnit.test("Canvas", function (assert) {
         return alphaAtPoint(x, y) > 0.;
     };
 
-    var alphaAtPoint = function (x, y){
-        return canvas.context.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
+    var alphaAtPoint = function (x, y) {
+        var ctx = canvas._fcAdapter.contextContainer;   //access to check internal settings
+        return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
     };
 
     var polarOffset = function(distance, angle) {
@@ -420,6 +421,4 @@ QUnit.test("Canvas", function (assert) {
     canvas.setDimensions(80, 40, 1);
     is.loadImages(baseUrl, images, 1);
 });
-
-
 
