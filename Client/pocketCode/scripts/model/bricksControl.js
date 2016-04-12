@@ -26,6 +26,7 @@ PocketCode.Model.merge({
         ProgramStartBrick.prototype.merge({
             dispose: function () {
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                this._onStart = undefined;  //make sure to disconnect from gameEngine
                 PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
             },
         });
@@ -53,6 +54,7 @@ PocketCode.Model.merge({
             },
             dispose: function () {
                 this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
+                this._onAction = undefined;  //make sure to disconnect from gameEngine
                 PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
             },
         });

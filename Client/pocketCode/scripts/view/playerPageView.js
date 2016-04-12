@@ -48,6 +48,9 @@ PocketCode.Ui.PlayerPageView = (function () {
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
         executionState: {
+            get: function (){
+                return this._toolbar.executionState;
+            },
             set: function (value) {
                 this._toolbar.executionState = value;
             },

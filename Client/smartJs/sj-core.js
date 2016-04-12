@@ -101,28 +101,16 @@ SmartJs.Core = {
                     if (typeof propertyObject[p] === 'object' && typeof propertyObject[p] !== 'array')
                         this._mergeProperties(propertyObject[p], object[p]);
                     else {
-                        //if (object instanceof CSSStyleDeclaration && typeof propertyObject[p] !== 'string')
-                        //    throw new Error('invalid parameter: CSSStyleDeclaration setter, expected: property "' + object[p] + '" typeof string');
-                        //if (object.hasOwnProperty(object[p]) || object instanceof CSSStyleDeclaration) {    //property found in object
+                        //var ignore = (/color/i).test(p);  //we need this to make sure the setter has changed ignoring color conversion
+                        var saved = object[p];  //as soon the value has changed it has been set: fix to avoid errors on color conversion
                         try {
                             object[p] = propertyObject[p];
                         }
-                        catch (e) { }   //silent catch due to write protected properties
-                        if (object instanceof CSSStyleDeclaration && object[p] !== propertyObject[p])
+                        catch (e) {}   //silent catch due to write protected properties
+                        if (object instanceof CSSStyleDeclaration && object[p] !== propertyObject[p] && saved == object[p])// && !ignore)
                             throw new Error('invalid parameter: constructor parameter object "' + p + '" was not set correctly');
-                        //}
-                        //else if (object === this && this.setAttribute) {    //try to map to DOM object
-                        //    this.setAttribute(p, propertyObject[p]);
-                        //}
-                        //else var breakpoint=true;
                     }
-                    //}
-                    //catch (e) {
-                    //    throw new Error('error setting property "p": ' + e.message);
-                    //}
-
                 }
-
             },
         });
 

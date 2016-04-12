@@ -47,15 +47,21 @@ PocketCode.GameEngine = (function () {
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         this._soundManager.onLoad.addEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
         this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));    //check if project has finished executing
-        this._invalidSoundFiles = [];
+        this._loadingAlerts = {
+            invalidSoundFiles: [],
+            unsupportedBricks: [],
+            deviceUnsupportedFeatures: [],
+            deviceEmulation: false,
+            deviceLockRequired: false,
+        };
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
-        this._onLoad = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
+        this._onLoad = new SmartJs.Event.Event(this);
 
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
@@ -89,13 +95,18 @@ PocketCode.GameEngine = (function () {
             },
         },
         //project execution
+        executionState: {
+            get: function () {
+                return this._executionState;
+            },
+        },
         projectLoaded: {
             get: function () {
                 return this._resourcesLoaded && this._spritesLoaded;
             },
         },
         projectScreenSize: {
-            get: function() {
+            get: function () {
                 return { width: this._originalScreenWidth, height: this._originalScreenHeight };
             },
         },
@@ -106,7 +117,6 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.muted = value;
             },
         },
-
         //background: {     //currently not in use- we're keeping them anyway
         //    get: function () {
         //        return this._background;
@@ -197,7 +207,12 @@ PocketCode.GameEngine = (function () {
                 obj = obj.concat(sprites[i].renderingVariables);
             return obj;
         },
-
+        reloadProject: function () {
+            if (!this._jsonProject)
+                throw new Error('no project loaded');
+            
+            this.loadProject(this._jsonProject);
+        },
         loadProject: function (jsonProject) {
             if (this._disposing || this._disposed)
                 return;
@@ -210,6 +225,13 @@ PocketCode.GameEngine = (function () {
 
             this._spritesLoaded = false;
             this._resourcesLoaded = false;
+            this._loadingAlerts = {
+                invalidSoundFiles: [],
+                unsupportedBricks: [],
+                deviceUnsupportedFeatures: [],
+                deviceEmulation: false,
+                deviceLockRequired: false,
+            };
 
             this._id = jsonProject.id;
             var header = jsonProject.header;
@@ -235,10 +257,10 @@ PocketCode.GameEngine = (function () {
                 this._resourceTotalSize += jsonProject.sounds[i].size;
             }
 
+            this._onLoadingProgress.dispatchEvent({ progress: 0 });
             if (this._resourceTotalSize === 0)
                 this._resourcesLoaded = true;
             else {
-                this._onLoadingProgress.dispatchEvent({ progress: 0 });
                 var initialScaling = 1,     //set initial scaling: default = 1
                     scaling;
                 if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
@@ -267,16 +289,18 @@ PocketCode.GameEngine = (function () {
 
             this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
-            
-            var bricksCount = jsonProject.header.bricksCount;
-            if (bricksCount <= 0)   //TODO: necessary? - add test case
-                this._spritesLoaded = true;
 
             this._spritesLoadingProgress = 0;
+            var bricksCount = jsonProject.header.bricksCount;
             this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
+            if (bricksCount == 0) {
+                this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
+                return;
+            }
+            //else
             if (jsonProject.background) {
                 this._background = this._spriteFactory.create(jsonProject.background);
                 this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
@@ -293,16 +317,12 @@ PocketCode.GameEngine = (function () {
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
-                if (this._device.unsupportedFeatureDetected)
-                    this._onLoadingError.dispatchEvent({ deviceFeatures: this._device.unsupportedFeatures });
-                if (this._device.emulationInUser)
-                    this._onLoadingError.dispatchEvent({ deviceEmulation: true });
                 this._spritesLoaded = true;
                 this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                     this._initSprites();
-                    this._onLoad.dispatchEvent();
+                    this._handleLoadingComplete();
                 }
             }
             else {
@@ -312,14 +332,15 @@ PocketCode.GameEngine = (function () {
             }
         },
         _spriteFactoryUnsupportedBricksHandler: function (e) {
-            this._onLoadingError.dispatchEvent({ bricks: e.unsupportedBricks });
+            this._loadingAlerts.unsupportedBricks = e.unsupportedBricks;
+            //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
-        _initSprites: function() {
+        _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
             var sprites = this._sprites;
-            for (var i = 0,l=sprites.length;i<l;i++) {
-              sprites[i].init();
-          }
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].init();
+            }
             //console.log(sprites);
         },
         _resourceProgressChangeHandler: function (e) {
@@ -337,23 +358,37 @@ PocketCode.GameEngine = (function () {
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
-            if (this._invalidSoundFiles.length > 0)
-                this._onLoadingError.dispatchEvent({ files: this._invalidSoundFiles });
             this._resourcesLoaded = true;
             if (this._spritesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                 this._initSprites();
-                this._onLoad.dispatchEvent();
+                this._handleLoadingComplete();
             }
+        },
+        _handleLoadingComplete: function () {
+            var loadingAlerts = this._loadingAlerts;
+            var device = this._device;
+
+            loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
+            loadingAlerts.deviceEmulation = device.emulationInUser;
+            loadingAlerts.deviceLockRequired = device.mobileLockRequired;
+
+            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
+                loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
+                this._onLoadingProgress.dispatchEvent({ progress: 100 });   //update ui progress
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });  //dispatch warnings
+            }
+            else
+                this._onLoad.dispatchEvent();
         },
         _resourceLoadingErrorHandler: function (e) {
             if (e.target === this._soundManager)
-                this._invalidSoundFiles.push(e.file);
+                this._loadingAlerts.invalidSoundFiles.push(e.file);
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
 
-        _deviceOnSpaceKeyDownHandler: function(e) {
+        _deviceOnSpaceKeyDownHandler: function (e) {
             this._onTabbedAction.dispatchEvent({ sprite: this._background });
         },
         //project interaction
@@ -515,7 +550,7 @@ PocketCode.GameEngine = (function () {
         handleSpriteTap: function (id) {
             var sprite = this.getSpriteById(id);
             if (sprite)
-                this._onTabbedAction.dispatchEvent({sprite: sprite});
+                this._onTabbedAction.dispatchEvent({ sprite: sprite });
 
         },
         ifSpriteOnEdgeBounce: function (sprite) {
@@ -553,7 +588,7 @@ PocketCode.GameEngine = (function () {
                 x + boundary.right < sw2 &&
                 y + boundary.bottom > -sh2 &&
                 x + boundary.left > -sw2)
-                    return false;
+                return false;
 
             boundary = imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
             if (y + boundary.top < sh2 &&
@@ -663,7 +698,7 @@ PocketCode.GameEngine = (function () {
             var newDir = dir,
                 newX = x,
                 newY = y;//,
-                //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
+            //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
             //var edgesToHandle;
 
             //up to now, there are only 2 neigboured edges left at max (not ignored): let's call them p(rimus) and s(ecundus), where p (at least) is always inDirection (if one of them is)

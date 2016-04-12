@@ -20,6 +20,8 @@ QUnit.test("Device", function (assert) {
     assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
     assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: initial = []");
 
+    assert.ok(typeof dev.mobileLockRequired == 'boolean', "mobileLockRequired: accessor"); //poor tests as we cannot set isMobile here
+
     assert.ok(!isNaN(dev.accelerationX), "accelerationX getter");
     assert.ok(!isNaN(dev.accelerationY), "accelerationY getter");
     assert.ok(!isNaN(dev.accelerationZ), "accelerationZ getter");
@@ -34,10 +36,10 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
     assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
 
-    assert.equal(dev.flashlightOn, false, "flashlightOn getter");
-    dev.flashlightOn = true;
-    assert.equal(dev.flashlightOn, true, "flashlightOn getter/setter");
-    assert.throws(function () { dev.flashlightOn = ""; }, Error, "ERROR: invlalid setter: flashlight on");
+    assert.equal(dev.flashOn, false, "flashOn getter");
+    dev.flashOn = true;
+    assert.equal(dev.flashOn, true, "flashOn getter/setter");
+    assert.throws(function () { dev.flashOn = ""; }, Error, "ERROR: invlalid setter: flash on");
     //lego nxt
     assert.ok(!isNaN(dev.nxt1), "nxt1 getter");
     assert.ok(!isNaN(dev.nxt2), "nxt2 getter");
@@ -56,16 +58,13 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.getArduinoAnalogPin()), "Arduino analog getter");
     assert.ok(!isNaN(dev.getArduinoDigitalPin()), "Arduino digital getter");
 
-    assert.equal(dev.vibrate(), true, "vibrate call");
+    assert.equal(dev.vibrate(''), false, "vibrate call without valid parameter");
+    assert.equal(dev.vibrate(10), true, "vibrate call with parameter");
 
     assert.equal(dev.emulationInUser, false, "emulationInUse getter: should always return false");
 
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected");
     assert.equal(dev.unsupportedFeatures.length, 9, "unsupported features: all");
-    for (var i = 0, l = dev.unsupportedFeatures.length; i < l; i++) {
-        if (dev.unsupportedFeatures[i].supported || !dev.unsupportedFeatures[i].inUse)
-            assert.ok(false, "unsupported feature list: error");
-    }
 
     //dispose
     dev.dispose();
@@ -104,7 +103,7 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.ok(!isNaN(dev.accelerationX), "accelerationX getter");
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected: acceleration");
     assert.equal(dev.unsupportedFeatures.length, 1, "unsupported features: acceleration");
-    dev.unsupportedFeatures[0].i18nKey == "deviceFeatureAccelerationNEW";
-    assert.ok(dev.unsupportedFeatures[0].i18nKey == "lblDevFeatureAcceleration" && dev.unsupportedFeatures[0].inUse == true && dev.unsupportedFeatures[0].supported == false, "property and access check");
+    dev.unsupportedFeatures[0] == "deviceFeatureAccelerationNEW";
+    assert.equal(dev.unsupportedFeatures[0], "lblDeviceAcceleration", "property and access check");
 
 });

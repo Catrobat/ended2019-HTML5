@@ -735,6 +735,49 @@ QUnit.test("SmartJs.Ui.Control: resize & layoutChange events", function (assert)
 });
 
 
+QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
+
+    var tag = new SmartJs.Ui.HtmlTag('br');
+    assert.ok(tag instanceof SmartJs.Ui.Control, "instance check");
+    assert.equal(tag.objClassName, "HtmlTag", "objClassName check");
+
+    //override internal functions to test interface
+    var lastMethod = -1;
+    tag._appendChild = function () {
+        lastMethod = 0;
+    };
+    tag._insertAt = function () {
+        lastMethod = 1;
+    };
+    tag._insertBefore = function () {
+        lastMethod = 2;
+    };
+    tag._insertAfter = function () {
+        lastMethod = 3;
+    };
+    tag._replaceChild = function () {
+        lastMethod = 4;
+    };
+    tag._removeChild = function () {
+        lastMethod = 5;
+    };
+
+    tag.appendChild();
+    assert.equal(lastMethod, 0, "appendChild");
+    tag.insertAt();
+    assert.equal(lastMethod, 1, "insertAt");
+    tag.insertBefore();
+    assert.equal(lastMethod, 2, "insertBefore");
+    tag.insertAfter();
+    assert.equal(lastMethod, 3, "insertAfter");
+    tag.replaceChild();
+    assert.equal(lastMethod, 4, "replaceChild");
+    tag.removeChild();
+    assert.equal(lastMethod, 5, "removeChild");
+
+});
+
+
 QUnit.test("SmartJs.Ui.Image", function (assert) {
 
     var done1 = assert.async();
@@ -746,7 +789,7 @@ QUnit.test("SmartJs.Ui.Image", function (assert) {
     //dom.appendChild(div);
 
     var img = new SmartJs.Ui.Image({ style: { maxWidth: '100px' } });
-    assert.ok(img instanceof SmartJs.Ui.Image && img instanceof SmartJs.Core.Component && img instanceof Object, "instance check");
+    assert.ok(img instanceof SmartJs.Ui.Image && img instanceof SmartJs.Ui.Control, "instance check");
     assert.equal(img.objClassName, "Image", "objClassName check");
     assert.ok(img._dom instanceof HTMLImageElement, "image html element created");
     assert.ok(img.style.maxWidth === "100px" && img.style.width === "auto" && img.style.height === "auto", "constuctor with default style parameters");

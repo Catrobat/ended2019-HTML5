@@ -1,109 +1,13 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "ProjectFileParser.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "ProjectFileParser_v0_94.class.php";
 
-class ProjectFileParser_v0_93 extends ProjectFileParser
+class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
 {
+
   public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml)
   {
     parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
-  }
-
-  protected function getName($script)
-  {
-    return (string)$script["name"];
-  }
-
-  protected function getBrickType($script)
-  {
-    return (string)$script["type"];
-  }
-
-  protected function includeGlobalData()
-  {
-    $vars = $this->simpleXml->variables;
-    array_push($this->cpp, $vars);
-    array_push($this->cpp, $vars->programVariableList);
-
-    foreach($vars->programVariableList->children() as $userVar)
-    {
-      $userVar = $this->getObject($userVar, $this->cpp);
-      array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
-    }
-
-    array_pop($this->cpp);
-    array_pop($this->cpp);
-  }
-
-  protected function parseRepeatBrickScript($script)
-  {
-    $ttr = $script->formulaList;
-    array_push($this->cpp, $ttr);
-    $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
-    array_pop($this->cpp);
-    return $brick;
-  }
-
-  protected function parseIfLogicBeginBrickScript($script)
-  {
-    $condition = $script->formulaList;
-    array_push($this->cpp, $condition);
-    $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula));
-    array_pop($this->cpp);
-    return $brick;
-  }
-
-  protected function parseControlBricks($brickType, $script)
-  {
-    switch($brickType)
-    {
-      case "WaitBrick":
-        $duration = $script->formulaList;
-        array_push($this->cpp, $duration);
-        $brick = new WaitBrickDto($this->parseFormula($duration->formula));
-        array_pop($this->cpp);
-        break;
-
-      case "BroadcastBrick":
-        $msg = (string)$script->broadcastMessage;
-        $res = $this->findItemInArrayByName($msg, $this->broadcasts);
-        if($res === false)
-        {
-          $id = $this->getNewId();
-          array_push($this->broadcasts, new VariableDto($id, $msg));
-        }
-        else
-        {
-          $id = $res->id;
-        }
-
-        $brick = new BroadcastBrickDto($id);
-        break;
-
-      case "BroadcastWaitBrick":
-        $msg = (string)$script->broadcastMessage;
-        $res = $this->findItemInArrayByName($msg, $this->broadcasts);
-        if($res === false)
-        {
-          $id = $this->getNewId();
-          array_push($this->broadcasts, new VariableDto($id, $msg));
-        }
-        else
-        {
-          $id = $res->id;
-        }
-
-        $brick = new BroadcastAndWaitBrickDto($id);
-        break;
-
-      case "NoteBrick":
-        $brick = new NoteBrickDto((string)$script->note);
-        break;
-
-      default:
-        return false;
-    }
-    return $brick;
   }
 
   protected function parseMotionBricks($brickType, $script)
@@ -202,7 +106,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         $brick = new PointInDirectionBrickDto($degrees);
         break;
 
-      case "Vibration":
+      case "VibrationBrick":    /*name changed?*/
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $duration = $this->parseFormula($fl->formula);
@@ -289,61 +193,6 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 
-  protected function parseSoundBricks($brickType, $script)
-  {
-    switch($brickType)
-    {
-      case "PlaySoundBrick":
-        if(!property_exists($script, "sound"))
-        {
-            //play sound brick is initial set to "New.." and has no child tags per default
-            $brick = new PlaySoundBrickDto(null);
-            break;
-        }
-        
-        $sound = $this->getObject($script->sound, $this->cpp);
-        $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
-
-        if($res === false)	//will only return false on invalid projects, as resources are registered already
-            throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
-
-        $id = $res->id;
-        $brick = new PlaySoundBrickDto($id);
-        break;
-
-      case "StopAllSoundsBrick":
-        $brick = new StopAllSoundsBrickDto();
-        break;
-
-      case "SetVolumeToBrick":
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $volume = $fl->formula;
-        $brick = new SetVolumeBrickDto($this->parseFormula($volume));
-        array_pop($this->cpp);
-        break;
-
-      case "ChangeVolumeByNBrick":
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $volume = $fl->formula;
-        $brick = new ChangeVolumeBrickDto($this->parseFormula($volume));
-        array_pop($this->cpp);
-        break;
-
-      case "SpeakBrick":
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $brick = new SpeakBrickDto($this->parseFormula($fl->formula));
-        array_pop($this->cpp);
-        break;
-
-      default:
-        return false;
-    }
-    return $brick;
-  }
-
   protected function parseLookBricks($brickType, $script)
   {
     switch($brickType)
@@ -395,7 +244,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         $brick = new ShowBrickDto();
         break;
 
-      case "SetGhostEffectBrick":
+      case "SetTransparencyBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -403,7 +252,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         array_pop($this->cpp);
         break;
 
-      case "ChangeGhostEffectByNBrick":
+      case "ChangeTransparencyByNBrick":    /*name changed*/
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -411,7 +260,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         array_pop($this->cpp);
         break;
 
-      case "SetBrightnessBrick":
+      case "SetBrightnessBrick":    /*name changed*/
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brightness = $fl->formula;
@@ -431,48 +280,23 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         $brick = new ClearGraphicEffectBrickDto();
         break;
 
-      case "LedOffBrick":
-        $brick = new FlashBrickDto("0");
+      case "FlashBrick":    /*name changed*/
+        $brick = new FlashBrickDto();   //spinnerSelectionID = 0/1 (off/on)
+        $brick->selected = (string)$script->spinnerSelectionID;
         break;
 
-      case "LedOnBrick":
-        $brick = new FlashBrickDto("1");
+      // case "LedOnBrick":    /*name changed*/
+        // $brick = new LedOnBrickDto();
+        // break;
+
+      case "CameraBrick":    /*new*/
+        $brick = new CameraBrickDto();   //spinnerSelectionID = 0/1 (off/on)
+        $brick->selected = (string)$script->spinnerSelectionID;
         break;
 
-      default:
-        return false;
-    }
-    return $brick;
-  }
-
-  protected function parseDataBricks($brickType, $script)
-  {
-    switch($brickType)
-    {
-      case "SetVariableBrick":
-        $id = null;
-        if(property_exists($script, "userVariable"))
-        {
-            $var = $this->getObject($script->userVariable, $this->cpp);
-            $id = $this->getVariableId((string)$var);
-        }
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $brick = new SetVariableBrickDto($id, $this->parseFormula($fl->formula));
-        array_pop($this->cpp);
-        break;
-
-      case "ChangeVariableBrick":
-        $id = null;
-        if(property_exists($script, "userVariable"))
-        {
-            $var = $this->getObject($script->userVariable, $this->cpp);
-            $id = $this->getVariableId((string)$var);
-        }
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $brick = new ChangeVariableBrickDto($id, $this->parseFormula($fl->formula));
-        array_pop($this->cpp);
+      case "ChooseCameraBrickBrick":    /*new*/
+        $brick = new SelectCameraBrickDto();   //spinnerSelectionID = 0/1 (back/front)
+        $brick->selected = (string)$script->spinnerSelectionID;
         break;
 
       default:
@@ -481,3 +305,4 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
     return $brick;
   }
 }
+  

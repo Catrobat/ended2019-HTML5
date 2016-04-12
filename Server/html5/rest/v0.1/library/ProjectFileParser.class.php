@@ -468,7 +468,7 @@ class ProjectFileParser
         $nestedCounter++;
       }
 
-      // if($name === "LoopEndlessBrick")
+      //if($name === "LoopEndlessBrick")
       if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
       {
         if($nestedCounter === 0)
@@ -663,8 +663,14 @@ class ProjectFileParser
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
-            $loopEndType = $script->loopEndBrick;
-            $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            $endless = ! isset($script->loopEndBrick);
+
+            if(! $endless)
+            {
+              $loopEndType = $script->loopEndBrick;
+              $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            }
+
             $result = $this->parseForeverBrick($brickList, $idx, $endless);
             array_push($bricks, $result["brick"]);
             $idx = $result["idx"];

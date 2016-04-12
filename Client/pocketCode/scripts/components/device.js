@@ -9,7 +9,7 @@ PocketCode.Device = (function () {
     function Device(soundManager) {
         this._soundMgr = soundManager;
 
-        this._flashlightOn = false;
+        this._flashOn = false;
 
         this._compass = null;
         this._alpha = null;
@@ -25,47 +25,47 @@ PocketCode.Device = (function () {
         //sensor support
         this._features = {
             ACCELERATION: {
-                i18nKey: 'lblDevFeatureAcceleration',
+                i18nKey: 'lblDeviceAcceleration',
                 inUse: false,
                 supported: false,
             },
             COMPASS: {
-                i18nKey: 'lblDevCompass',
+                i18nKey: 'lblDeviceCompass',
                 inUse: false,
                 supported: false,
             },
             INCLINATION: {
-                i18nKey: 'lblDevInclination',
+                i18nKey: 'lblDeviceInclination',
                 inUse: false,
                 supported: false,
             },
             CAMERA: {
-                i18nKey: 'lblDevCamera',
+                i18nKey: 'lblDeviceCamera',
                 inUse: false,
                 supported: false,
             },
-            FLASHLITE: {
-                i18nKey: 'lblDevFlashlight',
+            FLASH: {
+                i18nKey: 'lblDeviceFlash',
                 inUse: false,
                 supported: false,
             },
             VIBRATE: {
-                i18nKey: 'lblDevVibrate',
+                i18nKey: 'lblDeviceVibrate',
                 inUse: false,
                 supported: false,
             },
             LEGO_NXT: {
-                i18nKey: 'lblDevLegoNXT',
+                i18nKey: 'lblDeviceLegoNXT',
                 inUse: false,
                 supported: false,
             },
             PHIRO: {
-                i18nKey: 'lblDevPhiro',
+                i18nKey: 'lblDevicePhiro',
                 inUse: false,
                 supported: false,
             },
             ARDUINO: {
-                i18nKey: 'lblDevArduino',
+                i18nKey: 'lblDeviceArduino',
                 inUse: false,
                 supported: false,
             },
@@ -124,6 +124,16 @@ PocketCode.Device = (function () {
                 return false;
             },
         },
+        mobileLockRequired: {
+            get: function() {
+                if (!this.isMobile)
+                    return false;
+                var tmp = this._features
+                if (tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse)
+                    return true;
+                return false;
+            },
+        },
         unsupportedFeatureDetected: {
             get: function () {
                 var tmp;
@@ -141,7 +151,7 @@ PocketCode.Device = (function () {
                 for (var f in this._features) {
                     tmp = this._features[f];
                     if (tmp.inUse && !tmp.supported)
-                        unsupported.push({}.merge(tmp));   //create a copy: cannot be set from outside
+                        unsupported.push(tmp.i18nKey);  //return i18nKeys only
                 }
                 return unsupported;
             },
@@ -301,17 +311,17 @@ PocketCode.Device = (function () {
             },
         },
         //flash: stae not shown but stored
-        flashlightOn: {
+        flashOn: {
             get: function () {
-                this._features.FLASHLITE.inUse = true;
-                return this._flashlightOn;
+                this._features.FLASH.inUse = true;
+                return this._flashOn;
             },
             set: function (value) {
                 if (typeof value !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
-                this._features.FLASHLITE.inUse = true;
+                this._features.FLASH.inUse = true;
 
-                this._flashlightOn = value;
+                this._flashOn = value;
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
             }
         },
@@ -463,7 +473,12 @@ PocketCode.Device = (function () {
         },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
+            if (typeof duration != 'number') //isNaN('') = false
+                return false;
+
+            //TODO: as soon as html supports this feature
             //var time = duration * 1000;
+
             return true;
         },
         //arduino
@@ -568,10 +583,10 @@ PocketCode.DeviceEmulator = (function () {
 
         this._resetInclinationX();
         this._resetInclinationY();
-        this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
-        this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-        this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+        //this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+        //this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+        //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
     }
 
     //properties
@@ -579,12 +594,22 @@ PocketCode.DeviceEmulator = (function () {
         inclinationX: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
                 return this._sensorData.X_INCLINATION;
             },
         },
         inclinationY: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
+                if (!this._inclinationTimer) {  //init on use
+                    this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
+                    this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
+                }
                 return this._sensorData.Y_INCLINATION;
             },
         },
@@ -696,8 +721,10 @@ PocketCode.DeviceEmulator = (function () {
         /* override */
         dispose: function () {
             window.clearInterval(this._inclinationTimer);
-            this._removeDomListener(document, 'keydown', this._keyDownListener);
-            this._removeDomListener(document, 'keyup', this._keyUpListener);
+            if (this._keyDownListener)
+                this._removeDomListener(document, 'keydown', this._keyDownListener);
+            if (this._keyUpListener)
+                this._removeDomListener(document, 'keyup', this._keyUpListener);
 
             PocketCode.Device.prototype.dispose.call(this);    //call super()
         },

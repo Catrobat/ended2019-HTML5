@@ -28,7 +28,7 @@ PocketCode.Ui.merge({
                 this.previewImage = PocketCode.domain + '/images/default/screenshot.png';
 
             this._progressLayout = new SmartJs.Ui.Control('div');
-            this._progressTextNode = new SmartJs.Ui.TextNode(PocketCode.I18nProvider.getLocString('lblLoadingRes'));
+            this._progressTextNode = new SmartJs.Ui.TextNode(PocketCode.I18nProvider.getLocString('lblLoadingResources'));
             this._progressBar = new PocketCode.Web.LoadingIndicator();
 
             this._startButton = document.createElement('button');
