@@ -319,22 +319,15 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
-            //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
-            //    return;
             this._redrawRequired = true;
             if (this._redrawInProgress)
                 return;
-            else
-                window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
-            //this._redrawCanvas();
+
+            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
         },
         _redrawCanvas: function () {
-            this._redrawRequired = false;
-            this._redrawInProgress = true;
-            this._canvas.render();
             this._redrawInProgress = false;
-            if (this._redrawRequired)
-                this.render();
+            this._canvas.render();
         },
         clear: function () {
             this._canvas.clear();
