@@ -12,6 +12,10 @@ PocketCode.PlayerViewportController = (function () {
         this._renderingVariables = [];
         this._redrawRequired = false;
         this._redrawInProgress = false;
+        this._animationRequest = undefined;
+
+        this._lastSecond = 0;
+        this._frames = 0;
 
         //init default values
         this._projectScreenWidth = 200;
@@ -124,7 +128,7 @@ PocketCode.PlayerViewportController = (function () {
                     break;
                 }
             }
-            this.render();
+            //this.render();
         },
         updateVariable: function (varId, properties) {
             var _var, _vars = this._renderingVariables;
@@ -141,7 +145,7 @@ PocketCode.PlayerViewportController = (function () {
                     break;
                 }
             }
-            this.render();
+            //this.render();
         },
         initRenderingImages: function (sprites) {
             if (!(sprites instanceof Array))
@@ -178,27 +182,48 @@ PocketCode.PlayerViewportController = (function () {
 
         //},
         render: function () {
+            // for testing purposes only
+            /*var now = Date.now();
+            this._frames += 1;
+            if (now - this._lastSecond >= 1000)
+            {
+                this._lastSecond = now;
+                console.log(this._frames + ' FPS');
+                this._frames = 0;
+            }*/
+
             //TEST ONLY
-            return this._view.render();
+            // return this._view.render();
             //TEST ONLY
 
             //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
             //    return;
-            this._redrawRequired = true;
-            if (this._redrawInProgress)
-                return;
-            else
-                window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
-            //this._redrawCanvas();
+            //this._redrawRequired = true;
+            //if (!this._redrawInProgress) {
+            this._view.render();
+            this._animationRequest = window.requestAnimationFrame(this.render.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+
+            //}
         },
-        _redrawCanvas: function() {
+
+        startRendering: function () {
+            this._lastSecond = Date.now();
+            this._frames = 0;
+            this.render();
+        },
+
+        stopRendering: function () {
+          window.cancelAnimationFrame(this._animationRequest);
+        },
+
+        /*_redrawCanvas: function() {
             this._redrawRequired = false;
             this._redrawInProgress = true;
             this._view.render();
             this._redrawInProgress = false;
-            if (this._redrawRequired)
-                this.render();
-        },
+           // if (this._redrawRequired)
+            //    this.render();
+        },*/
         setProjectScreenSize: function (width, height) {
             this._projectScreenWidth = width;
             this._projectScreenHeight = height;
