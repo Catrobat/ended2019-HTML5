@@ -77,7 +77,7 @@ QUnit.test("TestRequestLimitedNrOfProjects", function(assert) {
     assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
     //console.log(receivedAllProjects);
 
-    var projectCount = receivedAllProjects.limit;
+    var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
     //console.log(projectCount);
     assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
 
