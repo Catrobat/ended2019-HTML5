@@ -198,7 +198,9 @@ PocketCode.PlayerPageController = (function () {
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
+                    this._playerViewportController.stopRendering();
                     this._gameEngine.restartProject();
+                    this._playerViewportController.startRendering();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     break;
@@ -209,6 +211,7 @@ PocketCode.PlayerPageController = (function () {
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
                     this._gameEngine.runProject();
+                    this._playerViewportController.startRendering();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     break;
@@ -246,6 +249,7 @@ PocketCode.PlayerPageController = (function () {
         _pauseProject: function () {
             if (this._gameEngine)   //may be undefined when triggered on onVisibilityChange
                 this._gameEngine.pauseProject();
+            this._playerViewportController.stopRendering();
             this._view.executionState = PocketCode.ExecutionState.PAUSED;
         },
         /* override */
