@@ -1,5 +1,42 @@
 ﻿/// <reference path='../components/sprite.js' />
 
+/*override*/
+fabric.Image.prototype.applyFilters = function (callback, filters, imgElement, forResizing) {
+
+    filters = filters || this.filters;
+    imgElement = imgElement || this._originalElement;
+
+    if (!imgElement) {
+        return;
+    }
+
+    if (filters.length === 0) {
+        this._element = imgElement;
+        callback && callback();
+        return imgElement;
+    }
+
+    //we need to draw the a new canvas to apply filters without modifying our original look
+    var canvasEl = fabric.util.createCanvasElement();
+    canvasEl.width = imgElement.width;
+    canvasEl.height = imgElement.height;
+    canvasEl.getContext('2d').drawImage(imgElement, 0, 0, imgElement.width, imgElement.height);
+
+    filters.forEach(function (filter) {
+        filter && filter.applyTo(canvasEl, filter.scaleX || this.scaleX, filter.scaleY || this.scaleY);
+        if (!forResizing && filter && filter.type === 'Resize') {
+            this.width *= filter.scaleX;
+            this.height *= filter.scaleY;
+        }
+    }.bind(this));
+
+    this._element = canvasEl;
+    !forResizing && (this._filteredEl = canvasEl);
+    callback && callback();
+
+    return canvasEl;
+};
+
 PocketCode.RenderingImage = (function () {
 
     function RenderingImage(imageProperties) {
@@ -26,9 +63,6 @@ PocketCode.RenderingImage = (function () {
         this._brightnesFilter = new fabric.Image.filters.Brightness({
             brightness: 0,
         });
-
-        //this._fabricImage.filters.push(this._brightnesFilter);
-        //this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
 
         this.merge(imageProperties);
     }
@@ -78,14 +112,6 @@ PocketCode.RenderingImage = (function () {
                 this._fabricImage.scaleY = value;
             },
         },
-        //rotationStyle: {
-        //    set: function (value) {
-        //        if (value == this._rotationStyle)
-        //            return;
-        //        this._rotationStyle = value;
-        //        this.direction = this._direction;
-        //    },
-        //},
         rotation: {
             set: function (value) {
                 this._fabricImage.angle = value;
