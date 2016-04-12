@@ -68,16 +68,18 @@ QUnit.test("Dialog: error", function (assert) {
     d.logMsgVisible = false;
     d.closeMsgVisible = false;
 
-    var length = dom.innerHTML.length;
+    //check for innerText: innerHTML will increase due to css visibilit=hidden
+    var length = dom.innerText.length;
     d.logMsgVisible = true;
-    assert.ok(dom.innerHTML.length > length, "show log message");
+    assert.ok(dom.innerText.length > length, "show log message");
     d.logMsgVisible = false;
-    assert.equal(dom.innerHTML.length, length, "hide log message");
+    assert.equal(dom.innerText.length, length, "hide log message");
 
+    var _dom = dom.innerText;
     d.closeMsgVisible = true;
-    assert.ok(dom.innerHTML.length > length, "show close message");
+    assert.ok(dom.innerText.length > length, "show close message");
     d.closeMsgVisible = false;
-    assert.equal(dom.innerHTML.length, length, "hide close message");
+    assert.equal(dom.innerText.length, length, "hide close message");
 
 });
 
