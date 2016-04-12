@@ -326,8 +326,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
         },
         _redrawCanvas: function () {
-            this._redrawInProgress = false;
             this._canvas.render();
+            this._redrawInProgress = false;
+            if (this._redrawRequired)
+                this.render();
         },
         clear: function () {
             this._canvas.clear();
