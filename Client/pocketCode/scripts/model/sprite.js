@@ -422,7 +422,7 @@ PocketCode.Model.Sprite = (function () {
 
             var rotationAngle = (this._direction - 90.0) * Math.PI / 180.;
             var center = look.center;
-            var scale = this._size / 100.0;// / look.initialScaling;
+            var scale = this._size / 100.0 / look.initialScaling;
 
             this._lookOffsetX = center.length*scale * Math.cos(center.angle - rotationAngle);
             this._lookOffsetY = center.length*scale * Math.sin(center.angle - rotationAngle);

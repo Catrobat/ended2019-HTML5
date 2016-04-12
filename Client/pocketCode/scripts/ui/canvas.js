@@ -68,14 +68,16 @@ PocketCode.Ui.Canvas = (function () {
                     this._setCssDimension('height', height + 'px');
                     this.scaling = scaling;
                     this.calcOffset();
+                    //PocketCode.ImageHelper.setImageSmoothing(this.contextContainer, false);
                 },
                 //TODO: override rendering
                 clear: function () {
                     this.clearContext(this.contextContainer);
                 },
-                renderAll: function () {//viewportScaling) {//allOnTop) {
+                renderAll: function (fireEvent, ignoreScaling) {//viewportScaling) {//allOnTop) {
                     var ctx = this.contextContainer;//,//this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
                     this.clearContext(ctx);
+                    //PocketCode.ImageHelper.setImageSmoothing(ctx, false);
                     //activeGroup = this.getActiveGroup();
 
                     //if (this.contextTop && this.selection && !this._groupSelector) {
@@ -91,14 +93,18 @@ PocketCode.Ui.Canvas = (function () {
                     //if (this.clipTo) {
                     //    fabric.util.clipContext(this, context);
                     //}
+
                     this._renderBackground(ctx);
+                    var scaling = 1.;
+                    if (!ignoreScaling)
+                        scaling = this.scaling;
                     //this._renderObjects(context, activeGroup);
                     var ro = this._renderingObjects;
-                    for (var i = 0, l = ro.length; i < l; i++) //{
+                    for (var i = 0, l = ro.length; i < l; i++) {
                         //var obj = this._renderingObjects[i].object;
                         //this._draw(ctx, ro[i].object);//obj);
-                        ro[i].draw(ctx, this.scaling);
-
+                        ro[i].draw(ctx, scaling);
+                    }
                     //ro = this._renderingTexts
                     //for (var i = 0, l = ro.length; i < l; i++) //{
                     //    //var obj = this._renderingObjects[i].object;
@@ -116,8 +122,8 @@ PocketCode.Ui.Canvas = (function () {
                     //if (this.controlsAboveOverlay && this.interactive) {
                     //    this.drawControls(context);
                     //}
-
-                    this.fire('after:render');
+                    if (fireEvent)
+                        this.fire('after:render');
 
                     //return this;
                 },
@@ -163,7 +169,7 @@ PocketCode.Ui.Canvas = (function () {
 
                 __toDataURL: function(format, quality, cropping) {
 
-                    this.renderAll(true);
+                    this.renderAll(false, true);
 
                     var canvasEl = this.lowerCanvasEl,
                         croppedCanvasEl = this.__getCroppedCanvas(canvasEl, cropping);
@@ -177,12 +183,80 @@ PocketCode.Ui.Canvas = (function () {
                         ? (croppedCanvasEl || canvasEl).toDataURL('image/' + format, quality)
                         : (croppedCanvasEl || canvasEl).toDataURL('image/' + format);
 
-                    this.contextTop && this.clearContext(this.contextTop);
+                    //this.contextTop && this.clearContext(this.contextTop);
                     this.renderAll();
 
                     if (croppedCanvasEl) {
                         croppedCanvasEl = null;
                     }
+
+                    return data;
+                },
+
+                __toDataURLWithMultiplier: function(format, quality, cropping, multiplier) {
+
+                    var origWidth = this.getWidth(),
+                        origHeight = this.getHeight(),
+                        scaledWidth = origWidth * multiplier,
+                        scaledHeight = origHeight * multiplier,
+                        activeObject = this.getActiveObject(),
+                        activeGroup = this.getActiveGroup(),
+
+                        ctx = this.contextTop || this.contextContainer;
+
+                    if (multiplier > 1) {
+                        this.setWidth(scaledWidth).setHeight(scaledHeight);
+                    }
+                    ctx.scale(multiplier, multiplier);
+
+                    if (cropping.left) {
+                        cropping.left *= multiplier;
+                    }
+                    if (cropping.top) {
+                        cropping.top *= multiplier;
+                    }
+                    if (cropping.width) {
+                        cropping.width *= multiplier;
+                    }
+                    else if (multiplier < 1) {
+                        cropping.width = scaledWidth;
+                    }
+                    if (cropping.height) {
+                        cropping.height *= multiplier;
+                    }
+                    else if (multiplier < 1) {
+                        cropping.height = scaledHeight;
+                    }
+
+                    /*if (activeGroup) {
+                        // not removing group due to complications with restoring it with correct state afterwords
+                        this._tempRemoveBordersControlsFromGroup(activeGroup);
+                    }
+                    else if (activeObject && this.deactivateAll) {
+                        this.deactivateAll();
+                    }*/
+
+                    this.renderAll(false, true);
+
+                    var data = this.__toDataURL(format, quality, cropping);
+
+                    // restoring width, height for `renderAll` to draw
+                    // background properly (while context is scaled)
+                    this.width = origWidth;
+                    this.height = origHeight;
+
+                    ctx.scale(1. / multiplier,  1. / multiplier);
+                    this.setWidth(origWidth).setHeight(origHeight);
+
+                    /*if (activeGroup) {
+                        this._restoreBordersControlsOnGroup(activeGroup);
+                    }
+                    else if (activeObject && this.setActiveObject) {
+                        this.setActiveObject(activeObject);
+                    }*/
+
+                    // this.contextTop && this.clearContext(this.contextTop);
+                    this.renderAll();
 
                     return data;
                 },
@@ -234,6 +308,11 @@ PocketCode.Ui.Canvas = (function () {
         context: {
             get: function () {
                 return this._fcAdapter.getContext();//'2d');
+            },
+        },
+        canvasOverlay: {
+            get: function () {
+                return this._fcAdapter.upperCanvasEl;
             },
         },
         renderingImages: {
@@ -294,14 +373,14 @@ PocketCode.Ui.Canvas = (function () {
             this._fcAdapter.clear();
         },
         render: function () {
-            this._fcAdapter.renderAll();
+            this._fcAdapter.renderAll(true);
         },
         toDataURL: function (backgroundColor) {
             //scaling = scaling || 1;
             // TODO Check alpha channel value range
             backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
             this._fcAdapter.setBackgroundColor(backgroundColor);   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL();//{ multiplier: 1.0 / this._fcAdapter.scaling });
+            var dataUrl = this._fcAdapter.toDataURL({ multiplier: 1. / this._fcAdapter.scaling });
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
         },
