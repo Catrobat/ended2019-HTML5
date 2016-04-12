@@ -154,7 +154,7 @@ PocketCode.Model.merge({
                     return val.toString();
                 if (parseInt(val) === val)
                     return val.toFixed(1);
-                return val.toFixed(10);
+                return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
                 if (this.value === undefined)
