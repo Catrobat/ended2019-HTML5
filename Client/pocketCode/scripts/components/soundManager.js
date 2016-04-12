@@ -336,7 +336,7 @@ PocketCode.SoundManager = (function () {
                     sounds[i].paused = true;
 
                     //fixes rounding errors in the framework that occurs when sounds are paused before 1ms
-                    if (sounds[i].position < 1) {
+                    if (sounds[i].position && sounds[i].position < 1) {
                         sounds[i].position = 0;
                     }
                 }
