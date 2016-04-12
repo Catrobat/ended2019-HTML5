@@ -31,7 +31,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
         this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
-        this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+        // this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
@@ -216,6 +216,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             canvas.style.left = Math.floor((w - cw) / 2) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2) + 'px';
 
+            // rerender here, so canvas doesnt go blank when resizing while paused
+            this.render();
+            this._drawAxes();
             //this._onScalingChanged.dispatchEvent({ scaling: scaling });
 
             //this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
@@ -247,7 +250,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
-            this.render();
+          //  this.render();
         },
         setOriginalViewportSize: function(width, height) {
             this._originalWidth = width;
@@ -267,7 +270,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 return;
             //this._showGrid = false;
             this._axesVisible = false;
-            this.render();
+            this._canvas._fcAdapter.clearContext(this._canvas.canvasOverlay.getContext('2d'));
         },
         _drawVariables: function() {
             var vars = this._renderingVariables;
@@ -278,7 +281,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         _drawAxes: function () {
             //if (this._showGrid) {
             if (this._axesVisible) {
-                var ctx = this._canvas.context,
+                var ctx = this._canvas.canvasOverlay.getContext('2d'),//this._canvas.context,
                     width = this._canvas.width,
                     height = this._canvas.height,
                     color = 'red',
@@ -315,7 +318,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             }
         },
         getCanvasDataURL: function () {
-            return this._canvas.toDataURL();//this._scaling);
+            var data = this._canvas.toDataURL();//this._scaling);
+            this._drawAxes(); // restore axes after taking screenshot
+            return data;
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
