@@ -11,9 +11,10 @@ PocketCode.ProjectTesterClass = (function () {
     /* if 0, fetch all */
     this._limit = 0;
     this._offset = 0; // TODO: retest this
+    this._mask = "downloads";
     //
 
-    /*              2. just test JSON or also test uf object works               */
+    /*              2. just test JSON or also test if object works               */
     /* if true, gameEngine will test project */
     this._JsonToGameEngine = false;   //true;//
     //
@@ -26,6 +27,8 @@ PocketCode.ProjectTesterClass = (function () {
     /* 4. Only test listed programs in server_known_errors or client_known_errors (and don't skip them) */
     /* Works only, if JsonToGameEngine = false! */
     this._test_only_listed_programs = false;   //"server", "client", false;
+
+    this._projectList = [];
 
     /*                          known server errors                              */
     /* will be skipped if test_only_listed_programs = false */
@@ -621,6 +624,26 @@ PocketCode.ProjectTesterClass = (function () {
       set: function () {
         this._test_only_listed_programs = "false";
       }
+    },
+    sortedByDownloads: {
+      set: function () {
+        this._mask = "downloads";
+      }
+    },
+    sortedByRecent: {
+      set: function () {
+        this._mask = "recent";
+      }
+    },
+    sortedByViews: {
+      set: function () {
+        this._mask = "views";
+      }
+    },
+    sortedByRandom: {
+      set: function () {
+        this._mask = "random";
+      }
     }
   });
 
@@ -631,9 +654,31 @@ PocketCode.ProjectTesterClass = (function () {
 
   //methods
   ProjectTesterClass.prototype.merge({
-    _add : function() {
-      this._value++;
+    // Fetch Programs and add them to _projectList
+    _fetchAllProjects : function() {
+      // TODO
+      return true;
+    },
+    _testSingleProjectJustServer : function( id ) {
+      // TODO
+      return true;
+    },
+    _testSingleProjectAll : function( id ) {
+      // TODO
+      return true;
+    },
+    _testProjectsOfListJustServer : function( id_object_list ) {
+      // TODO
+      return true;
+    },
+    _testProjectsOfListAll : function( id_object_list ) {
+      // TODO
+      return true;
+    },
+    _printResult : function() {
+      // TODO
     }
+    // many more
   });
 
   return ProjectTesterClass;

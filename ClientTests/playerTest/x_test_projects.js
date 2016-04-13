@@ -642,7 +642,7 @@ QUnit.test("*", function(assert)
     var onErrorProjectsHandler = function(e) {
       //console.log("---- ERROR ----");
       //console.log(e);
-      assert.ok(true, "Fetch of all projects failed");
+      assert.ok(false, "Fetch of all projects failed");
     };
 
     srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onSuccessProjectsHandler, this));
