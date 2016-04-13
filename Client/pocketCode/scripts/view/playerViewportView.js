@@ -209,14 +209,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             //var scaling = Math.min(this.height / oh, this.width / oh);
             //this._scaling = scaling;
-            var canvas = this._canvas;
-            var cw = Math.ceil(ow * scaling),
-                ch = Math.ceil(oh * scaling);
-            //canvas.width = cw;
-            //canvas.height = ch;
+            var canvas = this._canvas,
+                cw = Math.floor(ow * scaling / 2.0) * 2.0,  //size = even int number: without white border (background visible due to sub-pixel rendering)
+                ch = Math.floor(oh * scaling / 2.0) * 2.0;
             canvas.setDimensions(cw, ch, scaling);
-            canvas.style.left = Math.floor((w - cw) / 2) + 'px';
-            canvas.style.top = Math.floor((h - ch) / 2) + 'px';
+            canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
+            canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 
             //this._onScalingChanged.dispatchEvent({ scaling: scaling });
 
@@ -313,7 +311,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             ctx.restore();
         },
         getCanvasDataURL: function () {
-            var url = this._canvas.toDataURL();
+            var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
             this._drawAxes();   //a resize may be triggered and upper canvas cleared
             return url;
         },

@@ -22,7 +22,6 @@ PocketCode.Ui.Canvas = (function () {
             perPixelTargetFind: true,
             renderOnAddRemove: false,
             //stateful: false,  //TODO: ??? check this again
-            preserveObjectStacking: true,
             //?centerTransform (= centeredRotation, centeredScaling in current version)
         };
 
@@ -65,8 +64,8 @@ PocketCode.Ui.Canvas = (function () {
                     }
                 },
                 setDimensionsWr: function (width, height, scaling) {   //without rerendering
-                    width = Math.round(width / 2.0) * 2.0;
-                    height = Math.round(height / 2.0) * 2.0;
+                    width = Math.floor(width / 2.0) * 2.0;
+                    height = Math.floor(height / 2.0) * 2.0;
 
                     this._setBackstoreDimension('width', width);
                     this._setCssDimension('width', width + 'px');
@@ -254,25 +253,26 @@ PocketCode.Ui.Canvas = (function () {
                     ctx.restore();
                     this.fire('after:render');
                 },
-                toDataURL: function (format, quality) {
-                    var origWidth = this.getWidth(),
-                        origHeight = this.getHeight();
+                toDataURL: function (width, height) {//format, quality) {
+                    var cw = this.getWidth(),
+                        ch = this.getHeight();
 
-                    this.setWidth(Math.round(origWidth / this.scaling / 2.0) * 2.0).setHeight(Math.round(origHeight / this.scaling / 2.0) * 2.0);
+                    this.setWidth(width).setHeight(height);//Math.floor(origWidth / this.scaling / 2.0) * 2.0).setHeight(Math.floor(origHeight / this.scaling / 2.0) * 2.0);
                     
-                    this.renderAll(1.0);
-                    format = format || 'png';
-                    if (format === 'jpg') {
-                        format = 'jpeg';
-                    }
-                    quality = quality || 1;
+                    this.renderAll(width * this.scaling / cw);//1.0);
+                    //format = format || 'png';
+                    //if (format === 'jpg') {
+                    //    format = 'jpeg';
+                    //}
+                    //quality = quality || 1;
 
-                    var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
-                        ? this.lowerCanvasEl.toDataURL('image/' + format, quality)
-                        : this.lowerCanvasEl.toDataURL('image/' + format);
+                    //var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
+                    //    ? this.lowerCanvasEl.toDataURL('image/' + format, quality)
+                    //    : this.lowerCanvasEl.toDataURL('image/' + format);
+                    var data = this.lowerCanvasEl.toDataURL('image/png');
 
                     //restore
-                    this.setDimensionsWr(origWidth, origHeight, this.scaling);
+                    this.setDimensionsWr(cw, ch, this.scaling);
                     this.renderAll();
 
                     return data;
@@ -360,11 +360,11 @@ PocketCode.Ui.Canvas = (function () {
         render: function () {
             this._fcAdapter.renderAll();
         },
-        toDataURL: function (backgroundColor) {
+        toDataURL: function (width, height) {//backgroundColor) {
             // TODO Check alpha channel value range
-            backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
-            this._fcAdapter.setBackgroundColor(backgroundColor);   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL();
+            //backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
+            this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');//backgroundColor);   //setting background temporarly without triggering a render
+            var dataUrl = this._fcAdapter.toDataURL(width, height);
             this._fcAdapter.setBackgroundColor('');
             return dataUrl;
         },

@@ -222,7 +222,7 @@ PocketCode.PlayerPageController = (function () {
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
-                        this._view.hideStartScreen();
+                        //this._view.hideStartScreen();
                         this._playerViewportController.showAxes();
                         this._view.axesButtonChecked = true;
                         this._axesVisible = true;
