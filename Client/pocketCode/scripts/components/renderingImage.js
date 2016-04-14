@@ -33,10 +33,15 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
         //this.setOpacity(options.opacity); //TODO:
     },
 
+    updateFilter: function(filter) {
+        this.applyFilters(undefined, [filter]);
+    },
+
     applyFilters: function(callback, filters, imgElement, forResizing) {
         // console.trace();
         // method called on graphic effect change and look change
         // always pass the filter in a list when its effect change (to avoid applying all)
+
         filters = filters || this.filters;
         imgElement = imgElement || this._originalElement;
 
@@ -45,14 +50,13 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
         }
 
         var imgEl = imgElement,
-            //canvasEl = fabric.util.createCanvasElement(),
-            canvasEl = imgElement,
+            canvasEl = fabric.util.createCanvasElement(),
             //replacement = fabric.util.createImage(),
             _this = this;
 
-        /*canvasEl.width = imgEl.width;
+        canvasEl.width = imgEl.width;
         canvasEl.height = imgEl.height;
-        canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);*/
+        canvasEl.getContext('2d').drawImage(imgEl, 0, 0, imgEl.width, imgEl.height);
 
         if (filters.length === 0) {
             this._element = imgElement;
@@ -67,6 +71,8 @@ PocketCode.FabricImage = fabric.util.createClass(fabric.Image, {
                 _this.height *= filter.scaleY;
             }
         });
+
+        this._element = canvasEl;
 
         /** @ignore */
         /*replacement.width = canvasEl.width;
@@ -148,10 +154,10 @@ PocketCode.RenderingImage = (function () {
 
         //this.type = 'sprite';
         this._fabricImage = new PocketCode.FabricImage(imageProperties.look);
-        this._brightnesFilter = new fabric.Image.filters.Brightness({
+        this._brightnessFilter = new fabric.Image.filters.Brightness({
             brightness: 0,
         });
-        this._fabricImage.filters.push(this._brightnesFilter);
+        this._fabricImage.filters.push(this._brightnessFilter);
 
         //this._length = imageProperties.look.center.length;
         //this._angle = imageProperties.look.center.angle;
@@ -295,8 +301,8 @@ PocketCode.RenderingImage = (function () {
                             this._fabricImage.opacity = 1 - effects[i].value / 100.0;
                             break;
                         case PocketCode.GraphicEffect.BRIGHTNESS:
-                            this._brightnesFilter.brightness = effects[i].value * 2.55;
-                            this._fabricImage.applyFilters([this._brightnessFilter]);
+                            this._brightnessFilter.brightness = effects[i].value * 2.55;
+                            this._fabricImage.updateFilter(this._brightnessFilter);
                             break;
                             //default:
                             //throw? unknown effect? -> we ignore it as we have not implemented all scratch effects
