@@ -172,12 +172,21 @@ PocketCode.Ui.ErrorDialog = (function () {
         this._btnOK = new PocketCode.Ui.Button('lblOk');
         this.addButton(this._btnOK);
 
-        this._sorryMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorSorry', '\n');
+        this._sorryMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorSorry','',' ');
         this.insertAt(0, this._sorryMessageTextNode);
-        this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorReportGenerated', '\n');
-        this._logMessageTextNode.hide();    //default
+
+        this._br1 = new SmartJs.Ui.HtmlTag('br');
+        this.appendChild(this._br1);
+        this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorReportGenerated');
         this.appendChild(this._logMessageTextNode);
-        this._closeMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorExit', '\n');
+        this._br1.hide();                   //default
+        this._logMessageTextNode.hide();    //default
+
+        this._br2 = new SmartJs.Ui.HtmlTag('br');
+        this._br3 = new SmartJs.Ui.HtmlTag('br');
+        this.appendChild(this._br2);
+        this.appendChild(this._br3);
+        this._closeMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorExit');
         this.appendChild(this._closeMessageTextNode);
     }
 
@@ -194,18 +203,28 @@ PocketCode.Ui.ErrorDialog = (function () {
     Object.defineProperties(ErrorDialog.prototype, {
         logMsgVisible: {
             set: function (bool) {
-                if (bool)
+                if (bool) {
+                    this._br1.show();
                     this._logMessageTextNode.show();
-                else
+                }
+                else {
+                    this._br1.hide();
                     this._logMessageTextNode.hide();
+                }
             },
         },
         closeMsgVisible: {
             set: function (bool) {
-                if (bool)
+                if (bool) {
+                    this._br2.show();
+                    this._br3.show();
                     this._closeMessageTextNode.show();
-                else
+                }
+                else {
+                    this._br2.hide();
+                    this._br3.hide();
                     this._closeMessageTextNode.hide();
+                }
             },
         },
     });
@@ -220,7 +239,7 @@ PocketCode.Ui.merge({
         //cntr
         function GlobalErrorDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblGlobalErrorCaption', 'msgGlobalError');
-            this._logMessageTextNode.show();
+            this.logMsgVisible = true;
         }
 
         return GlobalErrorDialog;
@@ -247,7 +266,7 @@ PocketCode.Ui.merge({
         function MobileRestrictionDialog() {
             PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.WARNING, 'lblMobileRestrictionsWarningCaption', 'msgMobileRestrictionsWarning');
 
-            this._debugMessage = new PocketCode.Ui.I18nTextNode('msgMobileRestrictionsDebug');//, '\n');
+            this._debugMessage = new PocketCode.Ui.I18nTextNode('msgMobileRestrictionsDebug');
             this.appendChild(new SmartJs.Ui.HtmlTag('br'));
             this.appendChild(new SmartJs.Ui.HtmlTag('br'));
             this.appendChild(this._debugMessage);
@@ -339,7 +358,7 @@ PocketCode.Ui.merge({
         //cntr
         function ParserErrorDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblParserErrorCaption', 'msgParserError');
-            this._logMessageTextNode.show();
+            this.logMsgVisible = true;
         }
 
         return ParserErrorDialog;
@@ -351,7 +370,7 @@ PocketCode.Ui.merge({
         //cntr
         function InternalServerErrorDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblInternalServerErrorCaption', 'msgInternalServerError');
-            this._logMessageTextNode.show();
+            this.logMsgVisible = true;
         }
 
         return InternalServerErrorDialog;

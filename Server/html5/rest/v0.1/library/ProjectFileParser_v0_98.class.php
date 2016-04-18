@@ -244,7 +244,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         $brick = new ShowBrickDto();
         break;
 
-      case "SetTransparencyBrick":
+      case "SetTransparencyBrick":    /*name changed*/
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $transparency = $fl->formula;
@@ -260,7 +260,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         array_pop($this->cpp);
         break;
 
-      case "SetBrightnessBrick":    /*name changed*/
+      case "SetBrightnessBrick":
         $fl = $script->formulaList;
         array_push($this->cpp, $fl);
         $brightness = $fl->formula;

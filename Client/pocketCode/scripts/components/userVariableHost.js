@@ -39,7 +39,7 @@ PocketCode.UserVariableHost = (function () {
                     vars = this.__variablesSimple.getVariables();
                 for (var v in vars) {   //{[id]: {}}
                     if (vars.hasOwnProperty(v))
-                        list.push({ id: v, text: vars[v].value || '', x: 0, y: 0, visible: false });
+                        list.push({ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false });
                 }
                 return list;
             },

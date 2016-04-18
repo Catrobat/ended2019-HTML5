@@ -84,7 +84,7 @@ PocketCode.merge({
             };
 
             this._project = new PocketCode.GameEngine();
-            this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(function (e) { this._loadingError = e; }, this));
+            this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
 
@@ -214,6 +214,9 @@ PocketCode.merge({
                     this._pages.PlayerPageController.initOnLoad();
                 }, this));
                 this._showDialog(d, false);
+            },
+            _projectLoadingErrorHandler: function (e) { 
+                this._loadingError = e; 
             },
             _requestProjectDetails: function () {
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });

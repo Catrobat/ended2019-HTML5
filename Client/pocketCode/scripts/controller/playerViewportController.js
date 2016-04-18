@@ -12,10 +12,6 @@ PocketCode.PlayerViewportController = (function () {
         this._renderingVariables = [];
         this._redrawRequired = false;
         this._redrawInProgress = false;
-        this._animationRequest = undefined;
-
-        this._lastSecond = 0;
-        this._frames = 0;
 
         //init default values
         this._projectScreenWidth = 200;
@@ -104,49 +100,6 @@ PocketCode.PlayerViewportController = (function () {
             return this._projectScreenHeight / 2. - wy;
 
         },
-
-        updateSprite: function (spriteId, properties) {
-            var img,
-                imgs = this._renderingImages;//,
-
-            //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined){
-                properties.y = this._transformYCoordinate(properties.y);
-            }
-
-            for (var i = 0, l = imgs.length; i < l; i++) {
-                img = imgs[i];
-                if (img.id === spriteId) {
-                    img.merge(properties);
-
-                    if (properties.layer !== undefined) {
-                        imgs.remove(img);
-                        imgs.insert(properties.layer, img);
-                    }
-                    break;
-                }
-            }
-            //this.render();
-        },
-        updateVariable: function (varId, properties) {
-            var _var, _vars = this._renderingVariables;
-            //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined)
-                properties.y = this._transformYCoordinate(properties.y);
-
-            for (var i = 0, l = _vars.length; i < l; i++) {
-                _var = _vars[i];
-                if (_var.id === varId) {
-                    _var.merge(properties);
-                    break;
-                }
-            }
-            //this.render();
-        },
         initRenderingImages: function (sprites) {
             if (!(sprites instanceof Array))
                 throw new Error('invalid argument: sprites');
@@ -166,6 +119,34 @@ PocketCode.PlayerViewportController = (function () {
             this._view.renderingImages = this._renderingImages;
             //this._view.render();  //we do not need this.. setting the items will not cause a rerender, but render() has to called at start
         },
+        updateSprite: function (spriteId, properties) {
+            var img,
+                imgs = this._renderingImages,
+                visible;
+
+            //update positions: top/left positioning
+            if (properties.x !== undefined)
+                properties.x = this._transformXCoordinate(properties.x);
+            if (properties.y !== undefined){
+                properties.y = this._transformYCoordinate(properties.y);
+            }
+
+            for (var i = 0, l = imgs.length; i < l; i++) {
+                img = imgs[i];
+                if (img.id === spriteId) {
+                    visible = img.visible;
+                    img.merge(properties);
+
+                    if (properties.layer !== undefined) {
+                        imgs.remove(img);
+                        imgs.insert(properties.layer, img);
+                    }
+                    break;
+                }
+            }
+            if (img.visible || visible != img.visible)   //visible or visibility changed
+                this._view.render();
+        },
         initRenderingVariables: function (variables) {
             if (!(variables instanceof Array))
                 throw new Error('invalid argument: variables');
@@ -178,52 +159,53 @@ PocketCode.PlayerViewportController = (function () {
             }
             this._view.renderingVariables = this._renderingVariables;
         },
+        updateVariable: function (varId, properties) {  //properties: {text: , x: , y: , visible: }
+            var _var,
+                _vars = this._renderingVariables,
+                _visible;
+            //update positions: top/left positioning
+            if (properties.x !== undefined)
+                properties.x = this._transformXCoordinate(properties.x);
+            if (properties.y !== undefined)
+                properties.y = this._transformYCoordinate(properties.y);
+
+            var renderVars = [];
+            for (var i = 0, l = _vars.length; i < l; i++) {
+                _var = _vars[i];
+                _visible = _var.visible;
+                if (_var.id === varId) {
+                    _var.merge(properties);
+                    break;
+                }
+            }
+            if (_var.visible || _visible != _var.visible)   //visible or visibility changed
+                this._view.render(); //this.render();
+        },
         //load: function (images, sprites) {
 
         //},
-        render: function () {
-            // for testing purposes only
-            /*var now = Date.now();
-            this._frames += 1;
-            if (now - this._lastSecond >= 1000)
-            {
-                this._lastSecond = now;
-                console.log(this._frames + ' FPS');
-                this._frames = 0;
-            }*/
+        //render: function () {
+        //    //TEST ONLY
+        //    return this._view.render();
+        //    //TEST ONLY
 
-            //TEST ONLY
-            // return this._view.render();
-            //TEST ONLY
-
-            //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
-            //    return;
-            //this._redrawRequired = true;
-            //if (!this._redrawInProgress) {
-            this._view.render();
-            this._animationRequest = window.requestAnimationFrame(this.render.bind(this));    //this works because we have already defined the function in sj-animation.js globally
-
-            //}
-        },
-
-        startRendering: function () {
-            this._lastSecond = Date.now();
-            this._frames = 0;
-            this.render();
-        },
-
-        stopRendering: function () {
-          window.cancelAnimationFrame(this._animationRequest);
-        },
-
-        /*_redrawCanvas: function() {
-            this._redrawRequired = false;
-            this._redrawInProgress = true;
-            this._view.render();
-            this._redrawInProgress = false;
-           // if (this._redrawRequired)
-            //    this.render();
-        },*/
+        ////    //if (/*this._renderingImages.length == 0 ||*/ this._redrawRequired)
+        ////    //    return;
+        ////    this._redrawRequired = true;
+        ////    if (this._redrawInProgress)
+        ////        return;
+        ////    else
+        ////        window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+        ////    //this._redrawCanvas();
+        ////},
+        ////_redrawCanvas: function() {
+        ////    this._redrawRequired = false;
+        ////    this._redrawInProgress = true;
+        ////    this._view.render();
+        ////    this._redrawInProgress = false;
+        ////    if (this._redrawRequired)
+        ////        this.render();
+        //},
         setProjectScreenSize: function (width, height) {
             this._projectScreenWidth = width;
             this._projectScreenHeight = height;

@@ -17,7 +17,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
         this._axesVisible = false;
-        this._renderingVariables = [];
+        //this._renderingVariables = [];
         //this._scaling = 1;
         //this._canvasNeedsRedraw = false;
 
@@ -28,10 +28,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //events
         //this._onScalingChanged = new SmartJs.Event.Event(this);
 
-        this.onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
-        this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
-        // this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
+        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this)); //TODO: check if handling is necesary twice
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._updateCanvasSize.bind(this, this), 120); }.bind(this), this));
+        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
+        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
         //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
 
         //test
@@ -153,7 +153,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 //if (!(value instanceof Array))
                 //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
 
-                this._renderingVariables = value;
+                this._canvas.renderingTexts = value;
             },
         },
         //fabricCanvas: {
@@ -193,13 +193,15 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //methods
     PlayerViewportView.prototype.merge({
-        _resizeHandler: function (e) {
+        _updateCanvasSize: function (e) {
             var w = this.width,// || window.innerWidth;
                 h = this.height,// || window.innerHeight; // TODO fix this, height stays 0
                 ow = this._originalWidth,
                 oh = this._originalHeight,
                 scaling;
 
+            if (!w || !h || !ow || !oh) //any =0 values
+                return;
             if (oh / ow >= h / w)   //aligned top/bottom
                 scaling = h / oh;
             else
@@ -207,18 +209,13 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             //var scaling = Math.min(this.height / oh, this.width / oh);
             //this._scaling = scaling;
-            var canvas = this._canvas;
-            var cw = Math.ceil(ow * scaling),
-                ch = Math.ceil(oh * scaling);
-            //canvas.width = cw;
-            //canvas.height = ch;
+            var canvas = this._canvas,
+                cw = Math.floor(ow * scaling / 2.0) * 2.0,  //size = even int number: without white border (background visible due to sub-pixel rendering)
+                ch = Math.floor(oh * scaling / 2.0) * 2.0;
             canvas.setDimensions(cw, ch, scaling);
-            canvas.style.left = Math.floor((w - cw) / 2) + 'px';
-            canvas.style.top = Math.floor((h - ch) / 2) + 'px';
+            canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
+            canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 
-            // rerender here, so canvas doesnt go blank when resizing while paused
-            this.render();
-            this._drawAxes();
             //this._onScalingChanged.dispatchEvent({ scaling: scaling });
 
             //this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
@@ -250,12 +247,13 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
 
-          //  this.render();
+            this.render();
+            this._drawAxes();
         },
-        setOriginalViewportSize: function(width, height) {
+        setOriginalViewportSize: function (width, height) {
             this._originalWidth = width;
             this._originalHeight = height;
-            this._resizeHandler();
+            this._updateCanvasSize();
         },
         showAxes: function () {
             if (this._axesVisible)
@@ -270,18 +268,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 return;
             //this._showGrid = false;
             this._axesVisible = false;
-            this._canvas._fcAdapter.clearContext(this._canvas.canvasOverlay.getContext('2d'));
-        },
-        _drawVariables: function() {
-            var vars = this._renderingVariables;
-            var ctx = this._canvas.context;
-            for (var i = 0, l = vars.length; i < l; i++)
-                vars[i].draw(ctx);
+            this.clear();
+            this.render();
         },
         _drawAxes: function () {
-            //if (this._showGrid) {
-            if (this._axesVisible) {
-                var ctx = this._canvas.canvasOverlay.getContext('2d'),//this._canvas.context,
+            if (!this._axesVisible)
+                return;
+
+            var ctx = this._canvas.contextTop,
                     width = this._canvas.width,
                     height = this._canvas.height,
                     color = 'red',
@@ -290,43 +284,51 @@ PocketCode.Ui.PlayerViewportView = (function () {
                             return Math.round(window.devicePixelRatio);
                         return 1;
                     }();*/
-                //ctx.stroke();
-                ctx.save();
+            //ctx.stroke();
+            ctx.save();
 
-                ctx.beginPath();
-                ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
-                ctx.lineTo(Math.round(width / 2), height);
+            ctx.beginPath();
+            ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
+            ctx.lineTo(Math.round(width / 2), height);
 
-                ctx.moveTo(0, Math.round(height / 2));
-                ctx.lineTo(width, Math.round(height / 2));
+            ctx.moveTo(0, Math.round(height / 2));
+            ctx.lineTo(width, Math.round(height / 2));
 
-                ctx.strokeStyle = color;
-                ctx.lineWidth = pixelRatio;
-                ctx.font = (12 * pixelRatio) + 'px Arial';
-                ctx.fillStyle = color;
-                //center
-                ctx.fillText('0', width / 2 + 5, height / 2 + 15);
-                //width
-                ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
-                ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
-                //height
-                ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
-                ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = pixelRatio;
+            ctx.font = (12 * pixelRatio) + 'px Arial';
+            ctx.fillStyle = color;
+            //center
+            ctx.fillText('0', width / 2 + 5, height / 2 + 15);
+            //width
+            ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
+            ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
+            //height
+            ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
+            ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
 
-                ctx.stroke();
-                ctx.restore();
-            }
+            ctx.stroke();
+            ctx.restore();
         },
         getCanvasDataURL: function () {
-            var data = this._canvas.toDataURL();//this._scaling);
-            this._drawAxes(); // restore axes after taking screenshot
-            return data;
+            var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
+            this._drawAxes();   //a resize may be triggered and upper canvas cleared
+            return url;
         },
         // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
         render: function () {
-            this._canvas.render();//this._scaling);
-        },
+            this._redrawRequired = true;
+            if (this._redrawInProgress)
+                return;
 
+            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+        },
+        _redrawCanvas: function () {
+            this._canvas.render();
+            this._redrawInProgress = false;
+            if (this._redrawRequired)
+                this.render();
+        },
         clear: function () {
             this._canvas.clear();
         },

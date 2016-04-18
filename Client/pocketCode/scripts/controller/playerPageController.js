@@ -115,16 +115,15 @@ PocketCode.PlayerPageController = (function () {
         loadViewState: function (viewState, dialogsLength) {
             PocketCode.PageController.prototype.loadViewState.call(this, viewState, dialogsLength);   //to handle dialogs
             //set UI based on viewState
-            if (viewState === PocketCode.ExecutionState.PAUSED && this._gameEngine.executionState == PocketCode.ExecutionState.RUNNING) {
-                this._pauseProject();
-                this._view.executionState = PocketCode.ExecutionState.PAUSED;
-                //this._view.screenshotButtonDisabled = false;
+            if (viewState === PocketCode.ExecutionState.PAUSED) {
+                if (this._gameEngine.executionState == PocketCode.ExecutionState.RUNNING)
+                    this._pauseProject();
+                //else: paused already
             }
             else {  //if(viewState === PocketCode.ExecutionState.STOPPED)
                 this._gameEngine.stopProject();
-                this._view.executionState = PocketCode.ExecutionState.STOPPED;
-                //this._view.screenshotButtonDisabled = true;
             }
+            this._view.executionState = viewState;
         },
         /* override */
         actionOnGlobalError: function() {
@@ -198,9 +197,7 @@ PocketCode.PlayerPageController = (function () {
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
-                    this._playerViewportController.stopRendering();
                     this._gameEngine.restartProject();
-                    this._playerViewportController.startRendering();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     break;
@@ -211,7 +208,6 @@ PocketCode.PlayerPageController = (function () {
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
                     this._gameEngine.runProject();
-                    this._playerViewportController.startRendering();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     break;
@@ -220,12 +216,13 @@ PocketCode.PlayerPageController = (function () {
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.SCREENSHOT:
                     //this._view.hideStartScreen();
+                    this._pauseProject();
                     var dataUrl = this._playerViewportController.takeScreenshot();
                     this._showScreenshotDialog(dataUrl);
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.AXES:
                     if (!this._axesVisible) {
-                        this._view.hideStartScreen();
+                        //this._view.hideStartScreen();
                         this._playerViewportController.showAxes();
                         this._view.axesButtonChecked = true;
                         this._axesVisible = true;
@@ -247,10 +244,8 @@ PocketCode.PlayerPageController = (function () {
             this._gameEngine.handleSpriteTap(e.id);
         },
         _pauseProject: function () {
-            if (this._gameEngine)   //may be undefined when triggered on onVisibilityChange
-                this._gameEngine.pauseProject();
-            this._playerViewportController.stopRendering();
-            this._view.executionState = PocketCode.ExecutionState.PAUSED;
+            if (this._gameEngine && this._gameEngine.pauseProject())   //may be undefined when triggered on onVisibilityChange
+                this._view.executionState = PocketCode.ExecutionState.PAUSED;
         },
         /* override */
         //updateViewState: function (viewState) {
@@ -263,9 +258,6 @@ PocketCode.PlayerPageController = (function () {
         //    //this._gameEngine.loadProject(jsonProject);
         //},
         _showScreenshotDialog: function (imageSrc) {
-            if (this._view.executionState == PocketCode.ExecutionState.RUNNING)
-                this._pauseProject();
-
             var d = new PocketCode.Ui.ScreenshotDialog();
             if (this._screenshotDialog && !this._screenshotDialog.disposed)
                 this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)

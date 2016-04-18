@@ -423,6 +423,8 @@ PocketCode.GameEngine = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
             this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
+            if (!bg)
+                this._spriteOnExecutedHandler();    //make sure an empty program terminates
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
@@ -430,7 +432,7 @@ PocketCode.GameEngine = (function () {
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
-                return;
+                return false;
 
             this._soundManager.pauseSounds();
             if (this._background)
@@ -441,6 +443,7 @@ PocketCode.GameEngine = (function () {
                 sprites[i].pauseScripts();
             }
             this._executionState = PocketCode.ExecutionState.PAUSED;
+            return true;
         },
         resumeProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
