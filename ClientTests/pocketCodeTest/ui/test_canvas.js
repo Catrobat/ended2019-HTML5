@@ -100,6 +100,7 @@ QUnit.test("Canvas", function (assert) {
                     // find original pixel
                     // negative rotation as rotation is applied clockwise at rendering
                     rotatedPoint = rotatePointAroundAnchor(currentX, currentY, centerX, centerY, -rotation);
+                    // console.log(currentX, currentY, centerX, centerY, rotation);
                     originalX = rotatedPoint.x;
                     originalY = rotatedPoint.y;
 
@@ -381,7 +382,6 @@ QUnit.test("Canvas", function (assert) {
 
             canvas.render();
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth / imageScalingFactor * viewportScaling, opaqueImageHeight / imageScalingFactor * viewportScaling, rotationAngle), 'opaque sprite (2.5x, canvas 1.5x, rotated ' + rotationAngle + ')');
-            console.log(canvas.toDataURL());
             canvas.clear();
         }
     // ********************************** TEST TRANSPARENT SPRITE INTEGRATED *******************************************
