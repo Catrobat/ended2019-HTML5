@@ -17,7 +17,7 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var alphaAtPoint = function (x, y) {
-        var ctx = canvas._fcAdapter.contextContainer;   //access to check internal settings
+        var ctx = canvas._fcAdapter.contextContainer;   // access to check internal settings
         return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
     };
 
@@ -42,8 +42,8 @@ QUnit.test("Canvas", function (assert) {
         return pixels;
     };
 
-    var pixelNearEdge = function(x, y, rect) {
-        var eps = 1.7;
+    var pixelNearEdge = function(x, y, rect, minorThreshold) {
+        var eps = minorThreshold ? 1.0 : 2.0;
 
         var ld = Math.abs(rect.tlX - x) <= eps;
         var rd = Math.abs(rect.tlX + rect.width - x) <= eps;
@@ -75,7 +75,7 @@ QUnit.test("Canvas", function (assert) {
     };
 
     // helper function to check which pixels of canvas were actually drawn on
-    var checkPixels = function(centerX, centerY, width, height, rotation) {
+    var checkPixels = function(centerX, centerY, width, height, rotation, log) {
         var canvasHeight = canvas.height;
         var canvasWidth = canvas.width;
         var pixelIsSet, rotatedPoint, originalX, originalY;
@@ -127,7 +127,7 @@ QUnit.test("Canvas", function (assert) {
                 else {
                     if (pixelWithinBoundaries(currentX, currentY, rect)) {
                         // pixel is within boundaries, is it set?
-                        if (!pixelIsSet){
+                        if (!pixelIsSet && !pixelNearEdge(currentX, currentY, rect, true)) {
                             console.log('pixel not set, but it should be', currentX, currentY);
                             return false;
                         }
@@ -135,7 +135,7 @@ QUnit.test("Canvas", function (assert) {
 
                     else {
                         // pixel not inside boundaries, is it set?
-                        if (pixelIsSet) {
+                        if (pixelIsSet && !pixelNearEdge(currentX, currentY, rect, true)) {
                             console.log('pixel set, but it shouldnt be', currentX, currentY);
                             return false;
                         }
@@ -214,7 +214,7 @@ QUnit.test("Canvas", function (assert) {
         renderingImageOpaque.x = 25.55;
         renderingImageOpaque.y = 30;
         canvas.render();
-        assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), 'opaque sprite (subpixel x ceil)');
+        assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, false, true), 'opaque sprite (subpixel x ceil)');
         canvas.clear();
         // test subpixel rendering y ceil
         estimatedCenterX = 25;
