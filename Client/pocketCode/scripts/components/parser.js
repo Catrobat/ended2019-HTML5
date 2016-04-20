@@ -633,6 +633,7 @@ PocketCode.merge({
 
                         return 'this._sprite.brightness';
 
+                    case 'OBJECT_TRANSPARENCY':
                     case 'OBJECT_GHOSTEFFECT':
                         if (uiString)
                             return 'transparency';
