@@ -92,7 +92,8 @@ PocketCode.RenderingImage = (function () {
                 this._fabricImage.left = value;
             },
             get: function () {
-                return this._x;
+                return this._fabricImage.left;
+                // return this._x;
             }
         },
         y: {
@@ -102,7 +103,8 @@ PocketCode.RenderingImage = (function () {
             },
 
             get: function () {
-                return this._y;
+                return this._fabricImage.top;
+                // return this._y;
             }
         },
         scaling: {
