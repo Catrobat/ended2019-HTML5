@@ -78,7 +78,7 @@ QUnit.test("Sprite", function (assert) {
     var lastOnChangeArgs;
     var onChangeHandler = function (e) {
         lastOnChangeArgs = e.properties;
-    }
+    };
     sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //properties
@@ -249,6 +249,60 @@ QUnit.test("Sprite", function (assert) {
             looksMatch = false;
     }
     assert.ok(looksMatch, "Looks set correctly.");
+
+    //mock gameEngines getLookImage function
+    var initialScaling = 50;
+    var canvas = "canvas";
+    testSprite._gameEngine.getLookImage = function () {
+        return {
+            canvas: canvas,
+            initialScaling: initialScaling
+        }
+    };
+
+    testSprite._flipX = false;
+    var lookOffsetX = 1;
+    var lookOffsetY = 2;
+    testSprite._lookOffsetX = lookOffsetX;
+    testSprite._lookOffsetY = lookOffsetY;
+
+    var renderingProperties = testSprite.renderingProperties;
+
+    assert.strictEqual(renderingProperties.id, testSprite.id, "renderingProperties: id set correctly");
+    assert.strictEqual(renderingProperties.x, testSprite._positionY + lookOffsetX, "renderingProperties: x set correctly");
+    assert.strictEqual(renderingProperties.y, testSprite._positionY + lookOffsetY, "renderingProperties: y set correctly");
+    assert.strictEqual(renderingProperties.rotation, testSprite._direction - 90, "renderingProperties: rotation set correctly");
+    assert.strictEqual(renderingProperties.flipX, testSprite._flipX, "renderingProperties: flipX set correctly");
+    assert.strictEqual(renderingProperties.scaling, 1/initialScaling, "renderingProperties: scaling set correctly");
+    assert.strictEqual(renderingProperties.visible, testSprite._visible, "renderingProperties: visible set correctly");
+    assert.strictEqual(renderingProperties.look, canvas, "renderingProperties: look set correctly");
+
+    var graphicEffectsSet = renderingProperties.graphicEffects && renderingProperties.graphicEffects instanceof Array;
+    assert.ok(graphicEffectsSet, "renderingProperties: graphicEffects created as array");
+    if(graphicEffectsSet){
+        var ghostSet = 0;
+        var brightnessSet = 0;
+        for(var i = 0, l = renderingProperties.graphicEffects.length; i < l; i++){
+            if(renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.GHOST){
+                ghostSet++;
+                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._transparency, "renderingProperties: ghost set correctly");
+            } else if(renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS){
+                brightnessSet++;
+                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._brightness - 100, "renderingProperties: brightness set correctly");
+            }
+        }
+    }
+
+    testSprite._currentLook = null;
+    renderingProperties = testSprite.renderingProperties;
+    assert.strictEqual(renderingProperties.x, testSprite._positionX, "renderingProperties: x set correctly without currentLook");
+    assert.strictEqual(renderingProperties.y, testSprite._positionY, "renderingProperties: y set correctly without currentLook");
+    assert.strictEqual(renderingProperties.scaling, 1, "renderingProperties: scaling set correctly without currentLook");
+    assert.ok(!renderingProperties.look, "renderingProperties: no look set if there is no current look");
+
+    var rotationStyle = "someRotationStyle";
+    testSprite._rotationStyle = rotationStyle;
+    assert.strictEqual(testSprite.rotationStyle, rotationStyle, "rotationStyle getter works as expected");
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.bricks = {};
