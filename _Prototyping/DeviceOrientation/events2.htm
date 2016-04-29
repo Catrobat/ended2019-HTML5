@@ -1,0 +1,40 @@
+<DOCTYPE html>
+<html>
+  <head>
+    <style>
+    #compassContainer{
+      width:100%;
+      transform-origin: 50% 50%;
+      -webkit-transform-origin: 50% 50%;
+      -moz-transform-origin: 50% 50%;
+    }
+    </style>
+    <script>
+    function init() {
+      var compass = document.getElementById('compassContainer');
+
+      if(window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function(event) {
+          var dir='';
+          var alpha;
+          //Check for iOS property
+          if(event.webkitCompassHeading) {
+            alpha = event.webkitCompassHeading;
+            //Direction is reversed for iOS
+            dir='-';
+          }
+          else alpha = event.alpha;
+          compass.style.Transform = 'rotate(' + alpha + 'deg)';
+          compass.style.WebkitTransform = 'rotate('+dir + alpha + 'deg)';
+          compass.style.MozTransform = 'rotate(-' + alpha + 'deg)'; 
+        }  , false);
+      }
+    }
+    </script>
+  </head>
+  <body onload="init()">
+  <div id="compassContainer1">
+    <img src="compass5.png" id="compassContainer" style="max-width:400px" />
+  </div>
+  </body>
+</html>

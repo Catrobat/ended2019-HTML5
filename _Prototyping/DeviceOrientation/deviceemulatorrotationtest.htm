@@ -1,0 +1,120 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PocketCode HTML5 Device Emulator Rotation Test - based on HTML5Rocks sample</title>
+
+    <script>
+        PocketCode = {};
+    </script>
+    <script src="scripts/sj.js"></script>
+    <script src="scripts/sj-core.js"></script>
+    <script src="scripts/sj-event.js"></script>
+    <script src="scripts/device.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: sans-serif;
+        }
+
+        .main {
+            border: 1px solid black;
+            box-shadow: 10px 10px 5px #888;
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #ddd;
+            margin: 25px;
+            width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logo {
+            width: 275px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            padding: 15px;
+        }
+
+        .container {
+            -webkit-perspective: 300;
+            perspective: 300;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="main">
+        <h2>Device Emulator Rotation/Orientation</h2>
+        <table>
+            <tr>
+                <td>Event Supported</td>
+                <td id="doEvent"></td>
+            </tr>
+            <tr>
+                <td>Tilt Left/Right [gamma]</td>
+                <td id="doTiltLR"></td>
+            </tr>
+            <tr>
+                <td>Tilt Front/Back [beta]</td>
+                <td id="doTiltFB"></td>
+            </tr>
+            <tr>
+                <td>Direction [alpha]</td>
+                <td id="doDirection"></td>
+            </tr>
+            <tr>
+                <td>Inclination X</td>
+                <td id="doInclinationX"></td>
+            </tr>
+            <tr>
+                <td>Inclination Y</td>
+                <td id="doInclinationY"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="container">
+        <img src="mobilePhone.png" style="height: 190px; width: 105px;" id="imgLogo" class="logo">
+        <!--img src="html5_logo.png" id="imgLogoY" class="logo"-->
+    </div>
+
+    <script type="text/javascript">
+
+        var count = 0;
+        init();
+
+        function init() {
+            var handler = function (e) {
+                console.log('space pressed');
+            }
+
+            device = new PocketCode.DeviceEmulator();
+            var x = device.inclinationX;    //just make sure to start internal events
+            device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(handler, this));
+            setInterval(function () { this.deviceOrientationHandler(); }, 100);
+        }
+
+        var logo = document.getElementById("imgLogo");
+        //var logo2 = document.getElementById("imgLogoY");
+
+        function deviceOrientationHandler(eventData) {
+            document.getElementById("doTiltLR").innerHTML = Math.round(device._gamma);
+            document.getElementById("doTiltFB").innerHTML = Math.round(device._beta);
+            document.getElementById("doDirection").innerHTML = Math.round(device._alpha);
+
+            document.getElementById("doInclinationX").innerHTML = Math.round(device.inclinationX);
+            document.getElementById("doInclinationY").innerHTML = Math.round(device.inclinationY);
+
+            // Apply the transform to the image
+            //var logo = document.getElementById("imgLogo");
+            //logo.style.webkitTransform = "rotate3d(0,1,0, "+ (device.inclinationX)+"deg) rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
+            logo.style.webkitTransform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
+            logo.style.transform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
+            //var logo2 = document.getElementById("imgLogoY");
+            //logo2.style.webkitTransform = "rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
+        }
+    </script>
+</body>
+</html>

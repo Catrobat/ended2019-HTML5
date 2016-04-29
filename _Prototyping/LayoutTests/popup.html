@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Mockup: popup</title>
+    <meta charset="utf-8" />
+
+    <link href="../../Client/PocketCodePlayer/_startup/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
+    <script src="script/playerInterface.js"></script>
+</head>
+<body style="background-color: white">
+
+    <div class="pc-webOverlay">
+        <div class="pc-webOpacity"></div>
+        <div class="pc-webLayout">
+            <div class="pc-webLayoutRow">
+                <div class="pc-col50">    <button onclick="javascript: changePopupBorder('default');">Default</button>
+                    <button onclick="javascript: changePopupBorder('warning');">Warning</button>
+                    <button onclick="javascript: changePopupBorder('error');">Error</button></div>
+                <div class="pc-centerCol">
+                    <div class="pc-popupDefaultBorder"><!-- error border is added from script -->
+                        <div class="pc-popup" id="pc-popup">
+                            <div class="pc-webLayoutRow">
+                                <div class="pc-popupHeader" id="pc-popupHeader">
+                                    Error Header Text ...
+                                </div>
+                            </div>
+                            <div class="pc-webLayoutRow">
+                                <div class="pc-popupBody">
+                                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                                </div>
+                            </div>
+                            <div class="pc-webLayoutRow"><div class="pc-popupFooter"><button onclick="alert('ok clicked');">OK</button><button onclick="alert('cancel clicked');">Cancel</button></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pc-col50"></div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

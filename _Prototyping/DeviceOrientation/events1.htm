@@ -1,0 +1,59 @@
+<DOCTYPE html>
+<html>
+<head>
+<script>
+function init() {
+var dataContainerOrientation = document.getElementById('dataContainerOrientation');
+var dataContainerMotion = document.getElementById('dataContainerMotion');
+if(window.DeviceOrientationEvent) {
+  window.addEventListener('deviceorientation', function(event) {
+                var alpha = event.alpha;
+                var beta = event.beta;
+                var gamma = event.gamma;
+               
+                if(alpha!=null || beta!=null || gamma!=null) 
+                  dataContainerOrientation.innerHTML = '<strong>Orientation</strong><br />alpha: ' + alpha + '<br/>beta: ' + beta + '<br />gamma: ' + gamma;
+              }, false);
+  }
+
+if(window.DeviceMotionEvent) {
+  window.addEventListener('devicemotion', function(event) {
+   
+                var x;
+                var y;
+                var z;
+                if(event.accelerationIncludingGravity) {
+                  x = event.accelerationIncludingGravity.x;
+                  y = event.accelerationIncludingGravity.y;
+                  z = event.accelerationIncludingGravity.z;
+
+                }
+                else if(event.acceleration) {
+                  x = event.acceleration.x;
+                  y = event.acceleration.y;
+                  z = event.acceleration.z;
+                }
+                var r = event.rotationRate;
+                var html = '<strong>Acceleration</strong><br />';
+                html += 'x: ' + x +'<br />y: ' + y + '<br/>z: ' + z+ '<br />';
+                html += '<strong>Rotation rate</strong><br />';
+                if(r!=null) html += 'alpha: ' + r.alpha +'<br />beta: ' + r.beta + '<br/>gamma: ' + r.gamma + '<br />';
+                dataContainerMotion.innerHTML = html;
+                  
+                });
+
+  }
+}  
+
+
+</script>
+</head>
+<body onload="init()">
+<div id="dataContainerOrientation">
+No device orientation data
+</div>
+<div id="dataContainerMotion">
+No device motion data
+</div>
+</body>
+</html>

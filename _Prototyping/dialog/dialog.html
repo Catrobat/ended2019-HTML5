@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>dialog mockup</title>
+	<link href="../../Client/player/pocketCodePlayer.css" rel="stylesheet" />
+	<link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
+	<script src="../../Client/pocketCode/libs/iscroll/iscroll-5.3.1.custom.js"></script>
+	<style type="text/css">
+		.pc-dialog {
+			height: 60%;
+			width: 230px;
+		}
+		.pc-dialogBody {
+			height:290px;
+/*			overflow:hidden;
+			padding: 0px 14px;
+*/		}
+/*		.pc-dialogBody .pc-content {
+			padding-top: 17px;
+			padding-bottom: 17px;
+			cursor: default;
+		}
+		.iScrollVerticalScrollbar {
+			background-image: url('../../Client/pocketCode/img/scrollbarBackground.gif');
+			position: absolute;
+			z-index: 9999;
+			width: 7px;
+			bottom: 2px;
+			top: 2px;
+			right: 3px;
+			overflow: hidden;
+		}
+		.iScrollIndicator {
+			width: 7px;
+			position: absolute;
+			border-radius: 1px;
+		    background-color: #00475E;
+		    -moz-opacity: 0.8;
+		    opacity: 0.8;
+		    filter: alpha(opacity = 80);
+		}*/
+	</style>
+	<script type="text/javascript">
+		window.onload = function () {
+			myScroll = new IScroll(document.getElementsByClassName('pc-dialogBody')[0], {
+				mouseWheel: true,
+				scrollbars: true,
+				//fadeScrollbars: true,           //on mobile
+				interactiveScrollbars: true,  //on desktop ^^use this exclusive?
+				scrollbars: 'custom',
+				bounce: true,   //default
+				shrinkScrollbars: 'clip',
+				//invertWheelDirection: true,
+				preventDefault: true,
+			});
+		};
+	</script>
+</head>
+<body style="background-color: white">
+
+	<div class="pc-webOverlay">
+		<div class="pc-overlay"></div>
+		<div class="pc-webLayout">
+			<div class="pc-webLayoutRow">
+				<div class="pc-leftCol"></div>
+				<div class="pc-centerCol">
+					<div class="pc-dialog">
+						<div class="pc-dialogHeader pc-dialogWarning">
+							Error Header Text ...
+						</div>
+						<div class="pc-dialogBody">
+							<div class="pc-dialogContent">
+								Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+							</div>
+						</div>
+						<div class="pc-dialogFooter dialogFooterTwoButtons">
+							<button onclick="alert('ok clicked');">OK</button>
+							<button onclick="alert('cancel clicked');">Cancel</button>
+						</div>
+					</div>
+				</div>
+				<div class="pc-rightCol"></div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>
