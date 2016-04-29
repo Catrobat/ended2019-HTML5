@@ -1,0 +1,39 @@
+
+.pc-startButton, .pc-startButton:active {
+	background: none;
+	border: medium none;
+	color: #a9dcf1;
+	cursor: pointer;
+	fill: #a9dcf1;
+	height: 100%;
+	margin: 0;
+	outline: medium none;
+	padding: 0;
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+}
+
+	.pc-startButton svg {
+		height: 50%;
+		left: 25%;
+		margin: 0;
+		padding: 0;
+		position: absolute;
+		top: 25%;
+		width: 50%;
+	}
+
+	.pc-startButton:hover {
+		fill: #ffffff;
+	}
+	.pc-startButton:active {
+		fill: #17a5b8;
+		margin: 0;
+		padding: 0;
+	}
+	.pc-startButton:disabled {
+		fill: #A5A5A5;
+		cursor: default;
+	}
