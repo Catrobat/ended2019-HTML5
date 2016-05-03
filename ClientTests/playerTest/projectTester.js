@@ -1,12 +1,12 @@
 'use strict';
 
-PocketCode.ProjectTesterClass = (function ( ) {
+PocketCode.ProjectTesterClass = (function () {
 
   /**
    * Project Test Class
    * @constructor
    */
-  function ProjectTesterClass( server_known_errors, client_known_errors, known_invalid_projects ) {
+  function ProjectTesterClass(server_known_errors, client_known_errors, known_invalid_projects) {
     /* ************************************************************************* */
     /* ******************************* CONFIG ********************************** */
     /* ************************************************************************* */
@@ -54,9 +54,9 @@ PocketCode.ProjectTesterClass = (function ( ) {
     this._server_known_errors = {};                               // Server Errors known by us
     this._client_known_errors = {};                               // Client Errors known by us
     this._known_invalid_projects = {};                            // Invalid Projects
-    this._server_known_errors.merge( server_known_errors );
-    this._client_known_errors.merge( client_known_errors );
-    this._known_invalid_projects.merge( known_invalid_projects );
+    this._server_known_errors.merge(server_known_errors);
+    this._client_known_errors.merge(client_known_errors);
+    this._known_invalid_projects.merge(known_invalid_projects);
 
 
     /* ************************************************************************* */
@@ -152,6 +152,7 @@ PocketCode.ProjectTesterClass = (function ( ) {
       e.result = e.target._responseJson;
       this.onGetError.dispatchEvent(e);
     },
+
     // EventListener Called to get Number of all Projects
     _onLoadProjectCountRequest: function (e) {
       this._projectCount = e.responseJson.totalProjects;
@@ -170,12 +171,15 @@ PocketCode.ProjectTesterClass = (function ( ) {
 
       PocketCode.Proxy.send(srAllProjects);
     },
+
     // EventListener to get All projects
     _onSuccessAllProjectsHandler: function (e) {
-      this._projectList = e.responseJson;
+      this._projectList.merge(e.responseJson);
       this._projectCount = this._projectList.items.length;
-      this.onGetProjectList.dispatchEvent();
+      e.print = "Start to test " + this._projectCount + " projects.";
+      this.onGetProject.dispatchEvent(e);
     },
+
     // EventListener to get GameEngine Result
     _gameEngineOnLoad: function (e) {
 
@@ -186,24 +190,23 @@ PocketCode.ProjectTesterClass = (function ( ) {
       this._gameEngine = new PocketCode.GameEngine();
 
       e.print = "project " + this._currentID + " success";
-      this.onGetProject.dispatchEvent( e );
+      this.onGetProject.dispatchEvent(e);
     },
-    // EventListener to get JSON - Result of Program
-    _onSuccessProjectHandler : function(e) {
 
-      if( this._settings.method == this._methods.JSON ) {
+    // EventListener to get JSON - Result of Program
+    _onSuccessProjectHandler: function (e) {
+
+      if (this._currentID in this._client_known_errors) {
+        e.print = "[KNOWN ERROR] project " + this._currentID + " skipped. (" + this._client_known_errors[this._currentID] + ")";
+        this.onGetProject.dispatchEvent(e);
+        return;
+      }
+
+      if (this._settings.method == this._methods.JSON) {
         e.print = "project " + this._currentID + " success. (just JSON)";
         this.onGetProject.dispatchEvent(e);
       } else {
-
-        if( this._currentID in this._client_known_errors )
-        {
-          e.print = "[KNOWN ERROR] project " + this._currentID + " skipped. (" + this._client_known_errors[id] + ")";
-          this.onGetProject.dispatchEvent(e);
-          return;
-        }
-
-        this._testGameEngine( e.responseJson );
+        this._testGameEngine(e.responseJson);
       }
     },
 
@@ -211,7 +214,7 @@ PocketCode.ProjectTesterClass = (function ( ) {
     // Test
 
     // Fetch Programs and add them to _projectList
-    _fetchAllProjects : function() {
+    _fetchAllProjects: function () {
 
       // Fetch a list of Projects and save them to "receivedObject"
       var url = PocketCode.Services.PROJECT_SEARCH;
@@ -229,7 +232,7 @@ PocketCode.ProjectTesterClass = (function ( ) {
     },
 
     // fetch projects with specified settings
-    _fetchProjects : function() {
+    _fetchProjects: function () {
 
       // Fetch a list of Projects and save them to "receivedObject"
       var url = PocketCode.Services.PROJECT_SEARCH;
@@ -240,7 +243,7 @@ PocketCode.ProjectTesterClass = (function ( ) {
       });
 
 
-      srProjectList.onLoad.addEventListener(new SmartJs.Event.EventListener(this._onLoadProjectCountRequest, this));
+      srProjectList.onLoad.addEventListener(new SmartJs.Event.EventListener(this._onSuccessAllProjectsHandler, this));
       srProjectList.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
 
       PocketCode.Proxy.send(srProjectList);
@@ -249,44 +252,45 @@ PocketCode.ProjectTesterClass = (function ( ) {
     },
 
     // start Tests
-    _startTests : function( projectIds, settings ) {
-      this._settings.merge( settings );
+    _startTests: function (settings, projectIds) {
 
-      if( this._settings.limit == this._limits.ALL )
+      this._settings.merge(settings);
+
+      if (typeof projectIds != "undefined")
+        this._addProjectIdsListToObject(projectIds);
+
+      if (this._settings.limit == this._limits.ALL)
         this._fetchAllProjects();
-      else if ( this._settings.limit != this._limits.NONE )
+      else if (this._settings.limit != this._limits.NONE)
         this._fetchProjects();
-
-      this._addToList( projectIds );
-
-      this._nextTest();
+      else
+        this._nextTest();
     },
-    // Next Test
-    _nextTest : function() {
 
+    // Next Test
+    _nextTest: function () {
       // termination condition
-      if( this._projectList.items.length == this._currentProjectCounter )
+      if (this._projectList.items.length == this._currentProjectCounter)
         return "last_call";
 
       // set Url
       var url = PocketCode.Services.PROJECT;
-
+      var e = {};
       // set Current ProjectID to see in result
-      this._currentID = this._projectList.items[ this._currentProjectCounter ].id;
+      this._currentID = this._projectList.items[this._currentProjectCounter].id;
 
       // project-counter
       this._currentProjectCounter++;
 
-      if( this._currentID in this._server_known_errors && id in this._known_invalid_projects )
-      {
-        e.print = "[KNOWN ERROR] project " + this._currentID + " passed, error in project. (" + this._known_invalid_projects[id] + ")";
+      if (this._currentID in this._server_known_errors && this._currentID in this._known_invalid_projects) {
+
+        e.print = "[KNOWN ERROR] project " + this._currentID + " passed, error in project. (" + this._known_invalid_projects[this._currentID] + ")";
         this.onGetProject.dispatchEvent(e);
         return;
       }
 
-      if( this._currentID in server_known_errors)
-      {
-        e.print = "[KNOWN ERROR] project " + this._currentID + " passed. (" + this._server_known_errors[id] + ")";
+      if (this._currentID in this._server_known_errors) {
+        e.print = "[KNOWN ERROR] project " + this._currentID + " passed. (" + this._server_known_errors[this._currentID] + ")";
         this.onGetProject.dispatchEvent(e);
         return;
       }
@@ -299,34 +303,30 @@ PocketCode.ProjectTesterClass = (function ( ) {
       // send request
       PocketCode.Proxy.send(sr);
     },
-    _testGameEngine : function( json )
-    {
+
+    // JSON to GameEngine
+    _testGameEngine: function (json) {
       // Test Loading Project Errors
-      if(this._gameEngine)
-      {
-        this._gameEngine.onLoad.removeEventListener( new SmartJs.Event.EventListener( this._gameEngineOnLoad, this ) );
+      if (this._gameEngine) {
+        this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._gameEngineOnLoad, this));
         this._gameEngine = undefined;
       }
       this._gameEngine = new PocketCode.GameEngine();
       // define 2 EventListener
-      this._gameEngine.onLoad.addEventListener( new SmartJs.Event.EventListener( this._gameEngineOnLoad, this ) );
+      this._gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(this._gameEngineOnLoad, this));
 
       // load Project with json data
-      try
-      {
+      try {
         this._startTimeOut();
-        this._gameEngine.loadProject( json );
+        this._gameEngine.loadProject(json);
       }
-      catch(error)
-      {
+      catch (error) {
         var receivedObject = error;
         var type = "";
-        if((receivedObject instanceof Object))
-        {
+        if ((receivedObject instanceof Object)) {
           type = "uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
         }
-        else
-        {
+        else {
           type = "Unknown target";
         }
         this._errorMsg = type;
@@ -336,32 +336,29 @@ PocketCode.ProjectTesterClass = (function ( ) {
     },
 
     // TIMER functions
-    _callTimeout : function()
-    {
+    _callTimeout: function () {
       var e = {};
       e.target._responseJson.type = "Timeout";
       e.target._responseJson.message = "";
-      this._loadErrorHandler( e );
+      this._loadErrorHandler(e);
     },
-    _startTimeOut : function()
-    {
+    _startTimeOut: function () {
       this._timeout_timer = setTimeout(
         this._callTimeout
-      , this._settings.timeout);
+        , this._settings.timeout);
     },
-    _stopTimeOut : function()
-    {
+    _stopTimeOut: function () {
       clearTimeout(this._timeout_timer);
     },
 
 
-    // Helping functions
-    _addToList : function( list ) {
+    // merge projectId-Array to projectList-Object
+    _addProjectIdsListToObject: function (list) {
       var i = 0;
-      while( i < list.length ) {
+      while (i < list.length) {
         var obj = {};
-        obj.id = list[ i ];
-        this._projectList.items.push( obj );
+        obj.id = list[i];
+        this._projectList.items.push(obj);
         i++;
       }
       this._projectCount = this._projectList.totalProjects;

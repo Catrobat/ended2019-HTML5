@@ -1,15 +1,12 @@
 'use strict';
 
-QUnit.module("Test 10 RANDOM projects - FULL");
+QUnit.module("Test 3 own ids - FULL");
 
 QUnit.test("projectTesterClass", function (assert) {
 
-
-  /* ********************************** */
-  /* Example to test a list of Projects */
-  /* ********************************** */
-
-
+  /* ********************************************* */
+  /* Example to test 3 own projects given by array */
+  /* ********************************************* */
 
   // Create Test Instance
   var test = new PocketCode.ProjectTesterClass();
@@ -17,32 +14,31 @@ QUnit.test("projectTesterClass", function (assert) {
 
 
   var singleProjectHandler = function (e) {
-    assert.ok( true, e.print );
-    if( test._nextTest() == "last_call" )
+    assert.ok(true, e.print);
+    if (test._nextTest() == "last_call")
       last_assert();
   };
 
   var errorHandler = function (e) {
-    assert.ok( false, e.print );
-    if( test._nextTest() == "last_call" )
+    assert.ok(false, e.print);
+    if (test._nextTest() == "last_call")
       last_assert();
   };
+
+
+  // list of projects
+  var pid = [1, 2, 3];
 
   // define own settings
   var settings = {
     method: test._methods.FULL,
-    limit: 10,
-    mask: test._mask.RANDOM
+    limit: test._limits.NONE
   };
 
   // Add Listener
   test.onGetProject.addEventListener(new SmartJs.Event.EventListener(singleProjectHandler, this));
   test.onGetError.addEventListener(new SmartJs.Event.EventListener(errorHandler, this));
 
-  // Fetch Projects
-  test._fetchProjects( settings );
-
   // start test
-  test._startTests();
-
+  test._startTests(settings, pid);
 });
