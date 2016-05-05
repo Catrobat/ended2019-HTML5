@@ -200,6 +200,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.restartProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
+                    this._view.axesButtonDisabled = false;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.START:
                     if (SmartJs.Device.isMobile) {    //create history entry
@@ -210,6 +211,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.runProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
+                    this._view.axesButtonDisabled = false;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.PAUSE:
                     this._pauseProject();

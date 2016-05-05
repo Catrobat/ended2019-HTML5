@@ -66,6 +66,11 @@ PocketCode.Ui.PlayerPageView = (function () {
                 this._toolbar.axesButtonChecked = value;
             },
         },
+        axesButtonDisabled: {
+            set: function (value) {
+                this._toolbar.axesButtonDisabled = value;
+            },
+        },
         backButtonDisabled: {
             set: function (value) {
                 this._toolbar.backButtonDisabled = value;
