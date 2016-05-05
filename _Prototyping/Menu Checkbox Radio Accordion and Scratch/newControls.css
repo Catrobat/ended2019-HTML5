@@ -1,0 +1,306 @@
+﻿/* ask input */
+.pc-askInput {
+    width: 100%;
+    height: 43px;
+    position: absolute;
+    bottom: 0px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+    .pc-askInput div {
+        position: relative;
+        width: 100%;
+        height: 37px;
+        border: 3px solid #17a5b8;
+        border-radius: 8px;
+        background-color: #fff;
+        padding: 4px 30px 4px 4px;
+    }
+
+        .pc-askInput div input {
+            width: 100%;
+            height: 100%;
+            background-color: #f2f2f2;
+            border: 2px solid #c2c2c2;
+            border-right-color: #f2f2f2;
+            border-bottom-color: #f2f2f2;
+            padding-left: 3px;
+            outline: none;
+        }
+
+        .pc-askInput div button {
+            position: absolute;
+            top: 5px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background-color: #17a5b8;
+            margin: 0px;
+            border: 0px solid #fff;
+            border-radius: 11px;
+            cursor: pointer;
+            outline: none;
+        }
+
+            .pc-askInput div button:after {
+                content: '✔';
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                color: #fff;
+                font-weight: 600;
+            }
+
+/* speech bubble */
+blockquote {
+    position: relative;
+    z-index: 1;
+}
+
+    blockquote p {
+        margin: 8px;
+        font-weight: 600;
+        color: #000;
+        z-index: 2;
+    }
+
+p {
+    margin: 1em 0;
+}
+
+.pc-speechBubble {
+    min-width: 68px;
+    max-width: 148px;
+    position: absolute;
+    border: 3px solid #a0a0a0;
+    text-align: center;
+    background: #fff;
+    border-radius: 8px;
+    /*margin-bottom: 20px;*/
+}
+
+    .pc-speechBubble div {
+        position: absolute;
+        width: 55px;
+        height: 21px;
+        overflow: hidden;
+        left: 0px;
+        bottom: -21px;
+    }
+
+    .pc-speechBubble.bl div {
+        left: initial;
+        right: 0px;
+    }
+
+    .pc-speechBubble.l div, .pc-speechBubble.r div {
+        width: 21px;
+        height: 55px;
+        left: initial;
+        bottom: initial;
+        top: 0px;
+    }
+
+    .pc-speechBubble.l, .pc-speechBubble.r {
+        min-height: 50px;
+    }
+
+        .pc-speechBubble.l div {
+            right: -21px;
+        }
+        .pc-speechBubble.r div {
+            left: -21px;
+        }
+
+    .pc-speechBubble div::before {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: relative;
+        float: left;
+        left: 10px;
+        bottom: 8px;
+        border-top: 37px solid #a0a0a0;
+        border-right: 37px solid transparent;
+        -moz-transform: rotate(22deg);
+        -webkit-transform: rotate(22deg);
+        -ms-transform: rotate(22deg);
+        transform: rotate(22deg);
+        z-index: 2;
+        display: block;
+    }
+
+    .pc-speechBubble div::after {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: relative;
+        float: left;
+        left: 15px;
+        bottom: 47px;
+        border-top: 32px solid #fff;
+        border-right: 32px solid transparent;
+        -moz-transform: rotate(22deg);
+        -webkit-transform: rotate(22deg);
+        -ms-transform: rotate(22deg);
+        transform: rotate(22deg);
+        z-index: 3;
+        display: block;
+    }
+
+    .pc-speechBubble.l div::before {
+        float: right;
+        left: initial;
+        top: initial;
+        bottom: -8px;
+        right: -8px;
+        border: 0px;
+        border-left: 37px solid #a0a0a0;
+        border-top: 37px solid transparent;
+        -moz-transform: rotate(22deg);
+        -webkit-transform: rotate(22deg);
+        -ms-transform: rotate(22deg);
+        transform: rotate(22deg);
+    }
+
+    .pc-speechBubble.l div::after {
+        float: right;
+        left: initial;
+        top: initial;
+        bottom: 28px;
+        right: -2px;
+        border: 0px;
+        border-left: 32px solid #fff;
+        border-top: 32px solid transparent;
+        -moz-transform: rotate(22deg);
+        -webkit-transform: rotate(22deg);
+        -ms-transform: rotate(22deg);
+        transform: rotate(22deg);
+    }
+
+    .pc-speechBubble.bl div::before {
+        float: right;
+        left: initial;
+        right: 10px;
+        border: 0px;
+        border-top: 37px solid #a0a0a0;
+        border-left: 37px solid transparent;
+        -moz-transform: rotate(-22deg);
+        -webkit-transform: rotate(-22deg);
+        -ms-transform: rotate(-22deg);
+        transform: rotate(-22deg);
+    }
+
+    .pc-speechBubble.bl div::after {
+        float: right;
+        left: initial;
+        right: 15px;
+        border: 0px;
+        border-top: 32px solid #fff;
+        border-left: 32px solid transparent;
+        -moz-transform: rotate(-22deg);
+        -webkit-transform: rotate(-22deg);
+        -ms-transform: rotate(-22deg);
+        transform: rotate(-22deg);
+    }
+
+    .pc-speechBubble.r div::before {
+        left: -8px;
+        top: initial;
+        bottom: -8px;
+        border: 0px;
+        border-bottom: 37px solid #a0a0a0;
+        border-left: 37px solid transparent;
+        -moz-transform: rotate(-22deg);
+        -webkit-transform: rotate(-22deg);
+        -ms-transform: rotate(-22deg);
+        transform: rotate(-22deg);
+    }
+
+    .pc-speechBubble.r div::after {
+        left: -1px;
+        top: initial;
+        bottom: 29px;
+        border: 0px;
+        border-bottom: 32px solid #fff;
+        border-left: 32px solid transparent;
+        -moz-transform: rotate(-22deg);
+        -webkit-transform: rotate(-22deg);
+        -ms-transform: rotate(-22deg);
+        transform: rotate(-22deg);
+    }
+
+/* thought bubble */
+.pc-thoughtBubble {
+    min-width: 68px;
+    max-width: 148px;
+    position: absolute;
+    border: 3px solid #a0a0a0;
+    text-align: center;
+    color: #333;
+    background: #fff;
+    border-radius: 9px;
+    /*margin-bottom: 20px;*/
+}
+
+    .pc-thoughtBubble::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        bottom: -16px;
+        left: 13px;
+        width: 16px;
+        height: 7px;
+        border: 2px solid #a0a0a0;
+        background: #fff;
+        border-radius: 8px / 5px;
+        display: block;
+    }
+
+    .pc-thoughtBubble::after {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        bottom: -23px;
+        left: 2px;
+        width: 8px;
+        height: 4px;
+        border: 2px solid #a0a0a0;
+        background: #fff;
+        border-radius: 5px / 4px;
+        display: block;
+    }
+
+    .pc-thoughtBubble.l::before {
+        left: initial;
+        top: 7px;
+        right: -25px;
+    }
+
+    .pc-thoughtBubble.l::after {
+        left: initial;
+        top: 18px;
+        right: -34px;
+    }
+
+    .pc-thoughtBubble.bl::before {
+        left: initial;
+        right: 13px;
+    }
+
+    .pc-thoughtBubble.bl::after {
+        left: initial;
+        right: 2px;
+    }
+
+    .pc-thoughtBubble.r::before {
+        bottom: initial;
+        top: 7px;
+        left: -25px;
+    }
+
+    .pc-thoughtBubble.r::after {
+        bottom: initial;
+        top: 18px;
+        left: -34px;
+    }
