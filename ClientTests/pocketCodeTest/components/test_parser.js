@@ -322,7 +322,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     var lst = [];
     lst.push(nr);
     sprite._lists = [{ id: "s22", name: "listName" }];
-    sprite.getList("s22").value = lst;
+    sprite.getList("s22")._value = lst;
 
     f.json = numberOfItems;
     assert.equal(f.calculate(), 1, "number of list elements");
