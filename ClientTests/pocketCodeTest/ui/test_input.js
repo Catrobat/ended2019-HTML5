@@ -134,7 +134,7 @@ QUnit.test("RadioGroup", function (assert) {
     ctrl.remove(rd2);
     assert.equal(rd2._group, undefined, "set radio group property to undefined");
     assert.ok(ctrl.radios.length === 1 && ctrl.radios[0] === rd1, "removed from radios list");
-    assert.equal(checkedChangeCount, 0, "no event on remove of unchecked radio");   //this will only work if the radio buttons are added to the DOM, otherwide the browser will not uncheck them
+    assert.equal(checkedChangeCount, 0, "no event on remove of unchecked radio");
 
     ctrl.remove(rd1);
     assert.equal(ctrl.radios.length, 0, "removed from radios list");
