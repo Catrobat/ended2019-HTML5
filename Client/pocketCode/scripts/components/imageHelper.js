@@ -309,6 +309,40 @@ PocketCode.ImageHelper = (function () {
 
             return { height: newH * scaling, width: newW * scaling };
         },
+
+        getScrollLeftTop: function(element) {
+
+            var left = 0,
+                top = 0,
+                docElement = document.documentElement,
+                body = document.body || {
+                        scrollLeft: 0, scrollTop: 0
+                    };
+
+            while (element && element.parentNode) {
+
+                element = element.parentNode;
+
+                if (element === document) {
+                    left = body.scrollLeft || docElement.scrollLeft || 0;
+                    top = body.scrollTop ||  docElement.scrollTop || 0;
+                }
+                else {
+                    left += element.scrollLeft || 0;
+                    top += element.scrollTop || 0;
+                }
+
+
+                if(element.nodeType === 1){
+                    var style = document.defaultView.getComputedStyle(element, null);
+                    style = style['position'] || undefined;
+                    if(style === 'fixed')
+                        break;
+                }
+            }
+            return { left: left, top: top };
+        },
+
         /* override */
         dispose: function () {
             //static class: cannot be disposed
