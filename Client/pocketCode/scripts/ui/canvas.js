@@ -11,7 +11,6 @@ PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
     function Canvas(args) {
-
         this.document = document;
         //this.viewportTransform = [1, 0, 0, 1, 0, 0];
 
@@ -20,6 +19,7 @@ PocketCode.Ui.Canvas = (function () {
 
         this.lowerCanvasEl = this._createCanvasElement('lower-canvas', this.wrapperEl);
         this.contextContainer = this.lowerCanvasEl.getContext('2d');
+        this.lowerCanvasEl.style.backgroundColor = 'rgba(255, 255, 255, 1)';
 
         this.upperCanvasEl = this._createCanvasElement('upper-canvas', this.wrapperEl);
         this._contextTop = this.upperCanvasEl.getContext('2d');
@@ -178,6 +178,7 @@ PocketCode.Ui.Canvas = (function () {
             this.lowerCanvasEl.width = width;
             this.upperCanvasEl.height = height;
             this.upperCanvasEl.width = width;
+
             this._height = height;
             this._width = width;
 
@@ -332,33 +333,26 @@ PocketCode.Ui.Canvas = (function () {
             ctx.restore();
             // this.fire('after:render');
         },
-        //todo, not working properly
-        toDataURL: function (width, height) {//format, quality) {
 
-            //todo set bg color
-            //this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');//backgroundColor);   //setting background temporarly without triggering a render
+        toDataURL: function (width, height) {
             var cw = this.width,
                 ch = this.height;
 
-            this.width = width;
-            this.height = height;
+            this.setDimensions(width, height, this.scaling);
+            this.cacheCanvasEl.width = width;
+            this.cacheCanvasEl.height = height;
 
-            this.render(width * this.scaling / cw);//1.0);
-            //format = format || 'png';
-            //if (format === 'jpg') {
-            //    format = 'jpeg';
-            //}
-            //quality = quality || 1;
+            this.render(width * this.scaling / cw);
 
-            //var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
-            //    ? this.lowerCanvasEl.toDataURL('image/' + format, quality)
-            //    : this.lowerCanvasEl.toDataURL('image/' + format);
-            var data = this.lowerCanvasEl.toDataURL('image/png');
+            this.contextCache.save();
+            this.contextCache.fillStyle = "#ffffff";
+            this.contextCache.fillRect(0,0, this.width, this.height);
 
-            //this._fcAdapter.setBackgroundColor('');
+            this.contextCache.drawImage(this.lowerCanvasEl, 0, 0);
 
+            var data = this.cacheCanvasEl.toDataURL('image/png');
 
-            //restore
+            this.contextCache.restore();
             this.setDimensions(cw, ch, this.scaling);
             this.render();
 
