@@ -206,7 +206,7 @@ PocketCode.ProjectTesterClass = (function () {
         e.print = "project " + this._currentID + " success. (just JSON)";
         this.onGetProject.dispatchEvent(e);
       } else {
-        this._testGameEngine(e.responseJson);
+        this._testGameEngine(e.responseJson,e);
       }
     },
 
@@ -305,7 +305,7 @@ PocketCode.ProjectTesterClass = (function () {
     },
 
     // JSON to GameEngine
-    _testGameEngine: function (json) {
+    _testGameEngine: function (json,e) {
       // Test Loading Project Errors
       if (this._gameEngine) {
         this._gameEngine.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._gameEngineOnLoad, this));
