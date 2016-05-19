@@ -1,10 +1,8 @@
 <?php
 
-class WhenActionBrickDto extends BaseBrickDto {
+class WhenActionBrickDto extends ScriptBlockDto {
 
-  public $action;
-  public $bricks = array();	//inner scripts
-  
+  public $action;	//"video motion", "timer", "loudness"
   
   public function __construct($action) {
 	parent::__construct("WhenAction");
