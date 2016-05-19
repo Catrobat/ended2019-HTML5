@@ -19,6 +19,7 @@ class ProjectHeaderDto {
   public $author;	//$userHandle;
   public $bricksCount;
   public $device;
+  public $cloud = new ProjectCloudDto();
   
   
   public function __construct($title, $description, $languageVersion, $author, $url) {

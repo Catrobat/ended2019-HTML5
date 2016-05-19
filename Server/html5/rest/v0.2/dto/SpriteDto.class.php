@@ -5,12 +5,13 @@ class SpriteDto {
   public $id;		//used for e.g. PointToBrick
   public $name;
   
-  public $looks = array();	//of type ResourceDto
-  public $sounds = array();	//of type ResourceDto
+  public $looks = array();	//of type LookDto : ResourceReferenceDto
+  public $sounds = array();	//of type ResourceReferenceDto
   public $variables = array();
   public $lists = array();
+  public $nfcTags = array();
   
-  public $bricks = array();	//scripts
+  public $scripts = array();	//scripts
 
   
   public function __construct($id, $name) {
