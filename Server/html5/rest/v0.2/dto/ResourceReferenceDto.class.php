@@ -2,12 +2,12 @@
 
 class ResourceReferenceDto {
 
-  public $id;
+  public $referenceId;
   public $name;
   
   
-  public function __construct($id, $name) {
-    $this->id = $id;
+  public function __construct($referenceId, $name) {
+    $this->referenceId = $referenceId;
     $this->name = $name;
   }
     
