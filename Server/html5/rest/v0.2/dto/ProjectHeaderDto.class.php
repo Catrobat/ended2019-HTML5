@@ -9,7 +9,7 @@ class ProjectHeaderDto {
   public $languageVersion;
   //public $dateTimeUpload;
   public $description;
-  
+
   //public $mediaLicense;
   //public $programLicense;
   public $title;	//$programName;
@@ -19,15 +19,17 @@ class ProjectHeaderDto {
   public $author;	//$userHandle;
   public $bricksCount;
   public $device;
-  public $cloud = new ProjectCloudDto();
-  
-  
+  public $cloud;
+
+
   public function __construct($title, $description, $languageVersion, $author, $url) {
     $this->title = $title;
     $this->description = $description;
     $this->languageVersion = $languageVersion;
     $this->author = $author;
     $this->url = $url;
+
+    $this->cloud = new ProjectCloudDto();
   }
-  
+
 }
