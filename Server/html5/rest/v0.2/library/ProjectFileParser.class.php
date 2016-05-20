@@ -113,7 +113,7 @@ class ProjectFileParser
       //1st entry = background
       $bg = true;
       $cppSaved = array_merge([], $this->cpp); //store path to reset after parsing
-    
+
       foreach($this->simpleXml->objectList->children() as $sprite)
       {
         $this->cpp = $cppSaved; //restore path
@@ -189,7 +189,7 @@ class ProjectFileParser
     return (string)$script->name;
   }
 
-  //this method is used to access properties not defined in all supported language versions 
+  //this method is used to access properties not defined in all supported language versions
   protected function getProperty($object, $pName)
   {
     if(property_exists($object, $pName))
@@ -204,7 +204,7 @@ class ProjectFileParser
   {
     $xmlh = $this->simpleXml->header;
 
-    //device 
+    //device
     $device = new ProjectDeviceDto(intval($xmlh->screenHeight), intval($xmlh->screenWidth), (string)$this->getProperty($xmlh,
                                                                         "screenMode"));
 
@@ -472,14 +472,13 @@ class ProjectFileParser
     while($idx < count($brickList) - 1)
     {
       $idx++;
-      
+
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "ForeverBrick")
       {
         $nestedCounter++;
       }
 
-      // if($name === "LoopEndlessBrick")
       if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
       {
         if($nestedCounter === 0)
@@ -512,7 +511,7 @@ class ProjectFileParser
     {
       throw new InvalidProjectFileException("ForeverBrick: missing LoopEndBrick");
     }
-      
+
     return array("brick" => $brick, "idx" => $idx);
   }
 
@@ -528,13 +527,13 @@ class ProjectFileParser
     $brick = $this->parseRepeatBrickScript($brickList[$idx]);
     $nestedCounter = 0;
     $parsed = false;
-    
+
     //search for associated end brick
     $innerBricks = [];
     while($idx < count($brickList) - 1)
     {
       $idx++;
-      
+
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "RepeatBrick")
       {
@@ -567,7 +566,7 @@ class ProjectFileParser
 
     if (!$parsed)
       throw new InvalidProjectFileException("RepeatBrick: missing LoopEndBrick");
-      
+
     return array("brick" => $brick, "idx" => $idx);
   }
 
@@ -583,7 +582,7 @@ class ProjectFileParser
     $brick = $this->parseIfLogicBeginBrickScript($brickList[$idx]);
     $nestedCounter = 0;
     $parsed = false;
-    
+
     //search for associated end brick
     $innerIfBricks = [];
     $innerElseBricks = [];
@@ -592,7 +591,7 @@ class ProjectFileParser
     {
       //skip begin brick
       $idx++;
-      
+
       $name = $this->getBrickType($brickList[$idx]);
       if($name === "IfLogicBeginBrick")
       {
@@ -646,11 +645,11 @@ class ProjectFileParser
 
     if (!$parsed)
       throw new InvalidProjectFileException("IfLogicBeginBrick: missing IfLogicEndBrick");
-      
+
     return array("brick" => $brick, "idx" => $idx);
   }
 
-  //this method is used to handle bricks like if-then-else, which are a single container brick according to our definition 
+  //this method is used to handle bricks like if-then-else, which are a single container brick according to our definition
   //but split up into several bricks in the catrobat file format
   protected function parseInnerBricks($brickList)
   {
@@ -674,8 +673,12 @@ class ProjectFileParser
         switch($this->getBrickType($script))
         {
           case "ForeverBrick":
-            $loopEndType = $script->loopEndBrick;
-            $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            $endless = !isset($script->loopEndBrick);
+            if(!$endless)
+            {
+                $loopEndType = $script->loopEndBrick;
+                $endless = isset($loopEndType["class"]) && $loopEndType["class"] == "loopEndlessBrick";
+            }
             $result = $this->parseForeverBrick($brickList, $idx, $endless);
             array_push($bricks, $result["brick"]);
             $idx = $result["idx"];

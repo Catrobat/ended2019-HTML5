@@ -2,13 +2,13 @@
 
 class SetLookBrickDto extends BaseBrickDto {
 
-  public $imageId;
+  public $id;
   
   
-  public function __construct($imageId) {
+  public function __construct($id) {
 	parent::__construct("SetLook");
 
-	$this->imageId = $imageId;
+	$this->id = $id;
   }
   
 }
