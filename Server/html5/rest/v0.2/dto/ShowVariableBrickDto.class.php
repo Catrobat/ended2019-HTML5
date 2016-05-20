@@ -2,16 +2,16 @@
 
 class ShowVariableBrickDto extends BaseBrickDto
 {
-  public $referenceId;
-  public $x;	//FormulaDto
-  public $y;	//FormulaDto
+    public $resourceId;
+    public $x;	//FormulaDto
+    public $y;	//FormulaDto
 
-  public function __construct($referenceId, $x, $y)
-  {
-    parent::__construct("ShowVariable");
+    public function __construct($resourceId, $x, $y)
+    {
+        parent::__construct("ShowVariable");
 
-    $this->referenceId = $referenceId;
-    $this->x = $x;
-    $this->y = $y;
-  }
+        $this->resourceId = $resourceId;
+        $this->x = $x;
+        $this->y = $y;
+    }
 }

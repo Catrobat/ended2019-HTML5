@@ -2,12 +2,12 @@
 
 class HideVariableBrickDto extends BaseBrickDto
 {
-  public $referenceId;
+    public $resourceId;
 
-  public function __construct($referenceId)
-  {
-    parent::__construct("HideVariable");
+    public function __construct($resourceId)
+    {
+        parent::__construct("HideVariable");
 
-    $this->referenceId = $referenceId;
-  }
+        $this->resourceId = $resourceId;
+    }
 }

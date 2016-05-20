@@ -3,10 +3,10 @@
 class ShowListBrickDto extends ShowVariableBrickDto
 {
 
-  public function __construct($referenceId, $x, $y)
-  {
-    parent::__construct($referenceId, $x, $y);
+    public function __construct($resourceId, $x, $y)
+    {
+        parent::__construct($resourceId, $x, $y);
 
-    $this->type = "ShowList";
-  }
+        $this->type = "ShowList";
+    }
 }

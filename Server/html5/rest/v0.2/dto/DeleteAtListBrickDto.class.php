@@ -2,14 +2,14 @@
 
 class DeleteAtListBrickDto extends BaseBrickDto
 {
-  public $referenceId;
-  public $index;  //type of FormulaDto
+    public $resourceId;
+    public $index;  //type of FormulaDto
 
-  public function __construct($referenceId, $index)
-  {
-    parent::__construct("DeleteAtList");
+    public function __construct($resourceId, $index)
+    {
+        parent::__construct("DeleteAtList");
 
-    $this->referenceId = $referenceId;
-    $this->index = $index;
-  }
+        $this->resourceId = $resourceId;
+        $this->index = $index;
+    }
 }

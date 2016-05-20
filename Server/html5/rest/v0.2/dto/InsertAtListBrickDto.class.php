@@ -2,16 +2,16 @@
 
 class InsertAtListBrickDto extends BaseBrickDto
 {
-  public $referenceId;
-  public $index;  //type of FormulaDto
-  public $value;  //type of FormulaDto
+    public $resourceId;
+    public $index;  //type of FormulaDto
+    public $value;  //type of FormulaDto
 
-  public function __construct($referenceId, $index, $value)
-  {
-    parent::__construct("InsertAtList");
+    public function __construct($resourceId, $index, $value)
+    {
+        parent::__construct("InsertAtList");
 
-    $this->referenceId = $referenceId;
-    $this->index = $index;
-    $this->value = $value;
-  }
+        $this->resourceId = $resourceId;
+        $this->index = $index;
+        $this->value = $value;
+    }
 }
