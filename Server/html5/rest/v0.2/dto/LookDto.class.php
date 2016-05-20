@@ -6,7 +6,6 @@ class LookDto extends ResourceReferenceDto {
   public $rotationCenterX;
   public $rotationCenterY;
   
-  
   public function __construct($id, $imageId, $name, rotationCenterX = null, rotationCenterY = null) {
     parent::__construct($imageId, $name);
     $this->rotationCenterX = $rotationCenterX;

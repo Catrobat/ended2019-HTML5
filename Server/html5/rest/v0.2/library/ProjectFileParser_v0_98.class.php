@@ -35,7 +35,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
           }
         }
         array_pop($this->cpp);
-        $brick = new PlaceAtBrickDto($x, $y);
+        $brick = new GoToPositionBrickDto($x, $y);
         break;
 
       case "SetXBrick":
@@ -209,10 +209,18 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
 
         if($res === false)	//will only return false on invalid projects, as resources are registered already
-            throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+        {
+		  throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+		}
+		else {
+		  //find id in sprite->looks[]
+		  $lookObject = $this->findLookByReferenceId($res->id);
+		  if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
+            throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
+		}
 
-        //the image has already been included in the resources
-        $id = $res->id;
+        //the image has already been included in the resources & look[]
+        $id = $lookObject->id;
         $brick = new SetLookBrickDto($id);
         break;
 

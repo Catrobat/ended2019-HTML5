@@ -230,6 +230,17 @@ class ProjectFileParser
     return false;
   }
 
+  //resource already registered
+  protected function findLookByReferenceId($referenceId)
+  {
+    foreach($this->currentSprite->looks as $item)
+    {
+      if($item->referenceId === $referenceId)
+        return $item;
+    }
+    return false;
+  }
+
   //global variable?
   protected function findItemInArrayByName($name, $array)
   {
@@ -377,7 +388,7 @@ class ProjectFileParser
       $res = $this->findItemInArrayByUrl($url, $this->images);
       if($res === false)
       {
-        $id = $this->getNewId();
+        $imageId = $this->getNewId();
         $path = $this->cacheDir . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName;
         if(is_file($path))
         {
@@ -385,14 +396,14 @@ class ProjectFileParser
         }
         else
           throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
-        array_push($this->images, new ResourceDto($id, $url, $size));
+        array_push($this->images, new ResourceDto($imageId, $url, $size));
       }
       else
       {
-        $id = $res->id;
+        $imageId = $res->id;
       }
 
-      array_push($sp->looks, new ResourceReferenceDto($id, $this->getName($look)));
+      array_push($sp->looks, new LookDto($this->getNewId(), $imageId, $this->getName($look)));
     }
     array_pop($this->cpp);
 
@@ -433,7 +444,7 @@ class ProjectFileParser
 
       foreach($sprite->scriptList->children() as $script)
       {
-        array_push($sp->bricks, $this->parseScript($script));
+        array_push($sp->scripts, $this->parseScript($script));
       }
 
       array_pop($this->cpp);
@@ -734,7 +745,7 @@ class ProjectFileParser
           $id = $res->id;
         }
 
-        $brick = new BroadcastReceiveBrickDto($id);
+        $brick = new WhenBroadcastReceiveBrickDto($id);
 
         $brickList = $script->brickList;
         array_push($this->cpp, $brickList);
@@ -820,7 +831,7 @@ class ProjectFileParser
       case "PlaceAtBrick":
         $x = $this->parseFormula($script->xPosition->formulaTree);
         $y = $this->parseFormula($script->yPosition->formulaTree);
-        $brick = new PlaceAtBrickDto($x, $y);
+        $brick = new GoToPositionBrickDto($x, $y);
         break;
 
       case "SetXBrick":
@@ -980,10 +991,18 @@ class ProjectFileParser
         $look = $this->getObject($script->look, $this->cpp);
         $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images);
         if($res === false)	//will only return false on invalid projects, as resources are registered already
-            throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+        {
+		  throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+		}
+		else {
+		  //find id in sprite->looks[]
+		  $lookObject = $this->findLookByReferenceId($res->id);
+		  if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
+            throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
+		}
 
-        //the image has already been included in the resources
-        $id = $res->id;
+        //the image has already been included in the resources & look[]
+        $id = $lookObject->id;
         $brick = new SetLookBrickDto($id);
         break;
 
