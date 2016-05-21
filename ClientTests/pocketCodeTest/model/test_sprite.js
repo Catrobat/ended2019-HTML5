@@ -237,8 +237,8 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
 
     var bricksMatch = true;
-    for (var i = 0, length = jsonSprite.bricks.length; i < length; i++) {
-        if (testSprite._bricks[i].imageId !== jsonSprite.bricks[i].id)
+    for (var i = 0, length = jsonSprite.scripts.length; i < length; i++) {
+        if (testSprite._scripts[i].imageId !== jsonSprite.scripts[i].id)
             bricksMatch = false;
     }
     assert.ok(bricksMatch, "Bricks set correctly.");
@@ -305,7 +305,7 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(testSprite.rotationStyle, rotationStyle, "rotationStyle getter works as expected");
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
-    corruptSprite.bricks = {};
+    corruptSprite.scripts = {};
     assert.throws(function () { new PocketCode.Model.Sprite(prog, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
@@ -630,22 +630,22 @@ QUnit.test("Sprite", function (assert) {
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
     };
 
-    var brick1 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, programAsync.onProgramStart);
     brick1.id = "first";
-    var brick2 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, programAsync.onProgramStart);
     //adding a test brick to the internal brick container
     var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
-    var brick3 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    //var brick4 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
-    //var brick5 = new PocketCode.Model.ProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    var brick3 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    //var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, programAsync.onProgramStart);
+    //var brick5 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, programAsync.onProgramStart);
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;
     tmpBricks[2] = brick3;
-    sprite.bricks = tmpBricks;
-    assert.equal(sprite.bricks, tmpBricks, "bricks getter");
-    assert.ok(sprite._bricks.length == 3, "bricks length");
+    sprite.scripts = tmpBricks;
+    assert.equal(sprite.scripts, tmpBricks, "bricks getter");
+    assert.ok(sprite._scripts.length == 3, "bricks length");
 
     assert.ok(sprite.scriptsRunning == false, "scrips not running");
     brick2._executionState = PocketCode.ExecutionState.PAUSED;  //simulate paused

@@ -202,7 +202,7 @@ PocketCode.Model.ThreadedBrick = (function () {
     ThreadedBrick.prototype.merge({
         /**
          * Calls "execute(id)" with a uniquely generated thread Id and adds an entry to pendingOps list. Parameters can
-         * be null e.g. ProgramStartBrick, WhenActionBrick, BroadcastReceiveBrick if not triggered by BroadcastWaitBrick
+         * be null e.g. WhenProgramStartBrick, WhenActionBrick, WhenBroadcastReceiveBrick if not triggered by BroadcastWaitBrick
          * @param {SmartJs.Event.EventListener} onExecutedListener: given executedListener
          * @param {String} threadId: given thread ID
          * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type

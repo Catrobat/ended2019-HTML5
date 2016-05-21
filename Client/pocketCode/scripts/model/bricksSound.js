@@ -14,7 +14,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             this._soundManager = soundManager;
-            this._soundId = propObject.soundId;
+            this._soundId = propObject.resourceId;
         }
 
         PlaySoundBrick.prototype._execute = function () {

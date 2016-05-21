@@ -57,7 +57,7 @@ QUnit.test("PlayerViewportController", function (assert) {
 
 
     //spriteWithLook.setPosition(100, 200);
-    console.log('rimage', controller.renderingImages[0]._x, controller.renderingImages[0]._y);
+    //console.log('rimage', controller.renderingImages[0]._x, controller.renderingImages[0]._y);
 
     // rendering variables
 

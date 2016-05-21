@@ -2,13 +2,13 @@
 
 class PlaySoundBrickDto extends BaseBrickDto {
 
-  public $soundId;
+  public $resourceId;
   
   
-  public function __construct($soundId) {
+  public function __construct($resourceId) {
 	parent::__construct("PlaySound");
 
-	$this->soundId = $soundId;
+	$this->resourceId = $resourceId;
   }
   
 }

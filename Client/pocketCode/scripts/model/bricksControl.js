@@ -13,17 +13,17 @@
 
 PocketCode.Model.merge({
 
-    ProgramStartBrick: (function () {
-        ProgramStartBrick.extends(PocketCode.Model.RootContainerBrick, false);
+    WhenProgramStartBrick: (function () {
+        WhenProgramStartBrick.extends(PocketCode.Model.RootContainerBrick, false);
 
-        function ProgramStartBrick(device, sprite, startEvent) {
+        function WhenProgramStartBrick(device, sprite, startEvent) {
             PocketCode.Model.RootContainerBrick.call(this, device, sprite);
 
             this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
-        ProgramStartBrick.prototype.merge({
+        WhenProgramStartBrick.prototype.merge({
             dispose: function () {
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
                 this._onStart = undefined;  //make sure to disconnect from gameEngine
@@ -31,7 +31,7 @@ PocketCode.Model.merge({
             },
         });
 
-        return ProgramStartBrick;
+        return WhenProgramStartBrick;
     })(),
 
 
@@ -133,16 +133,16 @@ PocketCode.Model.merge({
     })(),
 
 
-    BroadcastReceiveBrick: (function () {
-        BroadcastReceiveBrick.extends(PocketCode.Model.RootContainerBrick, false);
+    WhenBroadcastReceiveBrick: (function () {
+        WhenBroadcastReceiveBrick.extends(PocketCode.Model.RootContainerBrick, false);
 
-        function BroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
+        function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
             PocketCode.Model.RootContainerBrick.call(this, device, sprite);
 
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
 
-        BroadcastReceiveBrick.prototype.merge({
+        WhenBroadcastReceiveBrick.prototype.merge({
             _onBroadcastHandler: function (e) {
                 if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
                     PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
@@ -154,7 +154,7 @@ PocketCode.Model.merge({
             },
         });
 
-        return BroadcastReceiveBrick;
+        return WhenBroadcastReceiveBrick;
     })(),
 
 

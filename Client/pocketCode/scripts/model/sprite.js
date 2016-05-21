@@ -43,7 +43,7 @@ PocketCode.GraphicEffect = {
  * @property {Array} _looks list of looks
  * @property {Array} _sounds list of sounds
  * @property {number} _onChange maps events to gameEngine.onSpriteUiChange
- * @property {Array} _bricks list of bricks
+ * @property {Array} _scripts list of scripts
  * @property {number} _positionX horizontal position
  * @property {number} _positionY vertical position
  * @property {number} _direction indicates the direction the sprite points to in degree
@@ -78,9 +78,9 @@ PocketCode.Model.Sprite = (function () {
         this._lookOffsetX = 0.0;
         this._lookOffsetY = 0.0;
         this._sounds = [];
-        this._bricks = [];
+        this._scripts = [];
 
-        //attach to bricks onExecuted event, get sure all are executed and not running
+        //attach to scripts onExecuted event, get sure all are executed and not running
         //property initialization
 
         ////motion: set in init()
@@ -120,9 +120,9 @@ PocketCode.Model.Sprite = (function () {
         this._variables = propObject.variables || [];
         this._lists = propObject.lists || [];
 
-        //bricks
-        if (propObject.bricks) {
-            this.bricks = propObject.bricks;
+        //scripts
+        if (propObject.scripts) {
+            this.scripts = propObject.scripts;
         }
     }
 
@@ -262,25 +262,28 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
-        bricks: {
-            set: function (bricks) {
-                if (!(bricks instanceof Array))
-                    throw new Error('bricks setter expects type Array');
-                //for (var i = 0, l = bricks.length; i < l; i++) {
-                //    this._bricks.push(this._gameEngine._brickFactory.create(this, bricks[i])); //TODO: brickfactory is PRIVATE
+        scripts: {
+            set: function (scripts) {
+                if (!(scripts instanceof Array))
+                    throw new Error('scripts setter expects type Array');
+                //for (var i = 0, l = scripts.length; i < l; i++) {
+                //    this._scripts.push(this._gameEngine._brickFactory.create(this, scripts[i])); //TODO: brickfactory is PRIVATE
                 //}
-                var brick;
-                for (var i = 0, l = bricks.length; i < l; i++) {
-                    brick = bricks[i];
+                console.log("TODO: check script tags/bricks");
+
+                var script;
+                for (var i = 0, l = scripts.length; i < l; i++) {
+                    script = scripts[i];
+                    
                     //if (!(brick instanceof PocketCode.Model.BaseBrick))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid brick: every brick has to be inherited from BaseBrick');
-                    if (brick.onExecuted)  //supported by all root container bricks
-                        brick.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
+                    if (script.onExecuted)  //supported by all (root container) scripts
+                        script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
                 }
-                this._bricks = bricks;
+                this._scripts = scripts;
             },
             get: function () {
-                return this._bricks;
+                return this._scripts;
             },
         },
 
@@ -291,10 +294,10 @@ PocketCode.Model.Sprite = (function () {
         },
         scriptsRunning: {
             get: function () {
-                var bricks = this._bricks;
+                var scripts = this._scripts;
                 var es;
-                for (var i = 0, l = bricks.length; i < l; i++) {
-                    es = bricks[i].executionState;
+                for (var i = 0, l = scripts.length; i < l; i++) {
+                    es = scripts[i].executionState;
                     if (es == PocketCode.ExecutionState.PAUSED || es == PocketCode.ExecutionState.RUNNING) {
                         return true;
                     }
@@ -344,46 +347,46 @@ PocketCode.Model.Sprite = (function () {
             this._resetVariables();
         },
         ///**
-        // * calls execute() on every brick as long as method is available
+        // * calls execute() on every script as long as method is available
         // */
         //execute: function() {
-        //    for (var i = 0, l = this._bricks.length; i < l; i++) {
-        //        if (this._bricks[i].execute) {
-        //            this._bricks[i].execute();
+        //    for (var i = 0, l = this._scripts.length; i < l; i++) {
+        //        if (this._scripts[i].execute) {
+        //            this._scripts[i].execute();
         //        }
         //    }
         //    this._executionState =  PocketCode.ExecutionState.RUNNING;
         //},
         /**
-         * calls pause() on every brick as long as method is available
+         * calls pause() on every script as long as method is available
          */
         pauseScripts: function () {
-            var bricks = this._bricks;
-            for (var i = 0, l = bricks.length; i < l; i++) {
-                if (bricks[i].pause)
-                    bricks[i].pause();
+            var scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                if (scripts[i].pause)
+                    scripts[i].pause();
             }
             //this._executionState = PocketCode.ExecutionState.PAUSED;
         },
         /**
-         * calls resume() on every brick as long as method is available
+         * calls resume() on every script as long as method is available
          */
         resumeScripts: function () {
-            var bricks = this._bricks;
-            for (var i = 0, l = bricks.length; i < l; i++) {
-                if (bricks[i].resume)
-                    bricks[i].resume();
+            var scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                if (scripts[i].resume)
+                    scripts[i].resume();
             }
             //this._executionState = PocketCode.ExecutionState.RUNNING;
         },
         /**
-         * calls stop() on every brick as long as method is available
+         * calls stop() on every script as long as method is available
          */
         stopScripts: function () {
-            var bricks = this._bricks;
-            for (var i = 0, l = bricks.length; i < l; i++) {
-                if (bricks[i].stop)
-                    bricks[i].stop();
+            var scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                if (scripts[i].stop)
+                    scripts[i].stop();
             }
             //this._executionState = PocketCode.ExecutionState.STOPPED;
         },
@@ -391,7 +394,7 @@ PocketCode.Model.Sprite = (function () {
          * @event handler
          * @private
          */
-        _bricksOnExecuted: function (e) {
+        _scriptOnExecuted: function (e) {
             if (!this.scriptsRunning) {
                 this._onExecuted.dispatchEvent();
             }
@@ -1057,11 +1060,12 @@ PocketCode.Model.Sprite = (function () {
             this.stopScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
-            var bricks = this._bricks;
-            for (var i = 0, l = bricks.length; i < l; i++) {  //remove handlers
-                var brick = bricks[i];
-                if (brick.onExecuted)  //supported by all root container bricks
-                    brick.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._bricksOnExecuted, this));
+            var script,
+                scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
+                script = scripts[i];
+                if (script.onExecuted)  //supported by all (root container) scripts
+                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
             }
 
             //call super

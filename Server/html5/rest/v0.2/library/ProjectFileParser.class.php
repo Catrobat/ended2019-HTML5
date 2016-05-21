@@ -2,12 +2,12 @@
 
 require_once("TextToSpeechProvider.class.php");
 
-foreach(glob("Server/html5/rest/v0.1/dto/*.class.php") as $class)
+foreach(glob("Server/html5/rest/v0.2/dto/*.class.php") as $class)
 {
     include_once $class;
 }
 
-foreach(glob("Server/html5/rest/v0.1/library/*.class.php") as $class)
+foreach(glob("Server/html5/rest/v0.2/library/*.class.php") as $class)
 {
     include_once $class;
 }
@@ -725,7 +725,7 @@ class ProjectFileParser
         switch($brickType)
         {
             case "StartScript":
-                $brick = new ProgramStartBrickDto();
+                $brick = new WhenProgramStartBrickDto();
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 

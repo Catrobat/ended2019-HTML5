@@ -24,7 +24,7 @@ class ScratchController extends ProjectsController
     if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
     {
       // is localhost
-      $local_path = str_replace("html5\\rest\\v0.1", "", getcwd());
+      $local_path = str_replace("html5\\rest\\v0.2", "", getcwd());
       $this->SERVER_ROOT = $local_path;
     }
   }

@@ -42,10 +42,10 @@ PocketCode.merge({
 
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
                 var bricks = [];
-                for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
-                    bricks.push(this._brickFactory.create(sprite, jsonSprite.bricks[i]));
+                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
+                    bricks.push(this._brickFactory.create(sprite, jsonSprite.scripts[i]));
                 }
-                sprite.bricks = bricks;
+                sprite.scripts = bricks;
                 return sprite;
             },
             dispose: function () {
@@ -98,7 +98,7 @@ PocketCode.merge({
                 var brick = undefined;
 
                 switch (type) {
-                    case 'ProgramStartBrick':
+                    case 'WhenProgramStartBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
                         break;
 
@@ -106,7 +106,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
                         break;
 
-                    case 'BroadcastReceiveBrick':
+                    case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
                     case 'BroadcastAndWaitBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
@@ -139,8 +139,8 @@ PocketCode.merge({
 
                 //load sub bricks
                 if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
-                    if (jsonBrick.bricks)   //all loops
-                        brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
+                    if (jsonBrick.scripts)   //all loops
+                        brick._bricks = this._createList(currentSprite, jsonBrick.scripts);
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
                         brick._ifBricks = this._createList(currentSprite, jsonBrick.ifBricks);
                         brick._elseBricks = this._createList(currentSprite, jsonBrick.elseBricks);

@@ -175,10 +175,10 @@ QUnit.test("BroadcastManager: broadcast & wait", function (assert) {
     b.init([{ id: "s12", name: "test" }, { id: "s13", name: "test2" }]);
 
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Model.BroadcastReceiveBrick, false);
+        TestBrick2.extends(PocketCode.Model.WhenBroadcastReceiveBrick, false);
 
         function TestBrick2(device, sprite, broadcastMgr, broadcastMsgId) {
-            PocketCode.Model.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            PocketCode.Model.WhenBroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
             this.executed = 0;
             this.delay = 100;
             this.loopDelay = false;
@@ -231,10 +231,10 @@ QUnit.test("BroadcastManager: broadcast & wait: multiple hierachies", function (
     //BROADCAST WAIT COMPLEX: 2 hierachies
 
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Model.BroadcastReceiveBrick, false);
+        TestBrick2.extends(PocketCode.Model.WhenBroadcastReceiveBrick, false);
 
         function TestBrick2(device, sprite, broadcastMgr, broadcastMsgId) {
-            PocketCode.Model.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            PocketCode.Model.WhenBroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
             this.executed = 0;
             this.delay = 100;
             this.loopDelay = false;
@@ -260,10 +260,10 @@ QUnit.test("BroadcastManager: broadcast & wait: multiple hierachies", function (
     brick21.loopDelay = true;
 
     var TestBrick3 = (function () {
-        TestBrick3.extends(PocketCode.Model.BroadcastReceiveBrick, false);
+        TestBrick3.extends(PocketCode.Model.WhenBroadcastReceiveBrick, false);
 
         function TestBrick3(device, sprite, broadcastMgr, broadcastMsgId) {
-            PocketCode.Model.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            PocketCode.Model.WhenBroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
             this.executed = 0;
             this.delay = 200;
             this.loopDelay = false;
@@ -314,10 +314,10 @@ QUnit.test("BroadcastManager: broadcast & wait: recursive calls", function (asse
     //BROADCAST WAIT COMPLEX: multiple self calls
 
     var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Model.BroadcastReceiveBrick, false);
+        TestBrick2.extends(PocketCode.Model.WhenBroadcastReceiveBrick, false);
 
         function TestBrick2(device, sprite, broadcastMgr, broadcastMsgId) {
-            PocketCode.Model.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            PocketCode.Model.WhenBroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
             this.executed = 0;
             this.delay = 100;
             this.loopDelay = false;
@@ -345,10 +345,10 @@ QUnit.test("BroadcastManager: broadcast & wait: recursive calls", function (asse
     brick22.loopDelay = true;
 
     var TestBrick4 = (function () {
-        TestBrick4.extends(PocketCode.Model.BroadcastReceiveBrick, false);
+        TestBrick4.extends(PocketCode.Model.WhenBroadcastReceiveBrick, false);
 
         function TestBrick4(device, sprite, broadcastMgr, broadcastMsgId) {
-            PocketCode.Model.BroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
+            PocketCode.Model.WhenBroadcastReceiveBrick.call(this, device, sprite, broadcastMgr, broadcastMsgId);
             this.executed = 0;
             this.delay = 70;
             this.loopDelay = false;
@@ -362,7 +362,7 @@ QUnit.test("BroadcastManager: broadcast & wait: recursive calls", function (asse
             },
             execute: function (id) {
                 //console.log("execute:" + this.executed + ", delay: " + (new Date - this.startTime2));
-                PocketCode.Model.BroadcastReceiveBrick.prototype.execute.call(this, id);
+                PocketCode.Model.WhenBroadcastReceiveBrick.prototype.execute.call(this, id);
             },
             _execute: function (id) {
                 this.executed++;

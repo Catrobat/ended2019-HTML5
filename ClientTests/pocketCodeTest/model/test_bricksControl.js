@@ -10,7 +10,7 @@
 QUnit.module("model/bricksControl.js");
 
 
-QUnit.test("ProgramStartBrick", function (assert) {
+QUnit.test("WhenProgramStartBrick", function (assert) {
 
     //assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
@@ -19,11 +19,11 @@ QUnit.test("ProgramStartBrick", function (assert) {
     program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
-    var b = new PocketCode.Model.ProgramStartBrick("device", "sprite", program.onProgramStart);
+    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", program.onProgramStart);
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ProgramStartBrick, "instance check");
-    assert.ok(b.objClassName === "ProgramStartBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick, "instance check");
+    assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
@@ -271,17 +271,17 @@ QUnit.test("WaitBrick", function (assert) {
 });
 
 
-QUnit.test("BroadcastReceiveBrick", function (assert) {
+QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
+    var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.BroadcastReceiveBrick, "instance check");
-    assert.ok(b.objClassName === "BroadcastReceiveBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick, "instance check");
+    assert.ok(b.objClassName === "WhenBroadcastReceiveBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
