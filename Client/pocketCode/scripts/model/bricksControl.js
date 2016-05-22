@@ -253,6 +253,31 @@ PocketCode.Model.merge({
     })(),
 
 
+    WhenCollisionBrick: (function () {
+        WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenCollisionBrick(device, sprite, broadcastMgr, propObject) {
+            //PocketCode.Model.ScriptBlock.call(this, device, sprite);
+
+            //broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
+        }
+
+        WhenCollisionBrick.prototype.merge({
+            //_onBroadcastHandler: function (e) {
+            //    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
+            //        PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
+            //    }
+            //    else {
+            //        //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
+            //        this.execute();
+            //    }
+            //},
+        });
+
+        return WhenCollisionBrick;
+    })(),
+
+
     NoteBrick: (function () {
         NoteBrick.extends(PocketCode.Model.BaseBrick, false);
 
