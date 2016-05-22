@@ -288,7 +288,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $color = $fl->formula;
-                $brick = new SetColorBrickDto($this->parseFormula($color));
+                $brick = new SetColorEffectBrickDto($this->parseFormula($color));
                 array_pop($this->cpp);
                 break;
 
@@ -296,7 +296,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $color = $fl->formula;
-                $brick = new ChangeColorBrickDto($this->parseFormula($color));
+                $brick = new ChangeColorEffectBrickDto($this->parseFormula($color));
                 array_pop($this->cpp);
                 break;
 

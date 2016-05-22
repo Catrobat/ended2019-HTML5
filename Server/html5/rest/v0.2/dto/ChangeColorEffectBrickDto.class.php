@@ -1,12 +1,12 @@
 <?php
 
-class SetColorBrickDto extends SetGraphicEffectBrickDto {
+class ChangeColorEffectBrickDto extends ChangeGraphicEffectBrickDto {
 
   public function __construct($value) {
 		parent::__construct(EGraphicEffect::COLOR, $value);
 		
-		$this->type = "SetColor";
-
+		$this->type = "ChangeColorEffect";
+		
   }
 
 }
