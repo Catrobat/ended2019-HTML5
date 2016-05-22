@@ -151,7 +151,7 @@ PocketCode.merge({
                 this._updateProgress();
 
                 //add event listener
-                //if (brick instanceof PocketCode.Model.RootContainerBrick) {
+                //if (brick instanceof PocketCode.Model.ScriptBlock) {
                 //	//TODO: this has to be handled by the brick itself: check if there is a testcast for adding an event handler
                 //}
 

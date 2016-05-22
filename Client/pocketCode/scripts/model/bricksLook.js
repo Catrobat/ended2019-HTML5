@@ -95,6 +95,52 @@ PocketCode.Model.merge({
     })(),
 
 
+    SelectCameraBrick: (function () {
+        SelectCameraBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SelectCameraBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+            //$this->selected = $selected;  //{1: back, 2: front}
+        }
+
+        SelectCameraBrick.prototype._execute = function () {
+            //if (this._disposed)
+            //    return;
+            //var val = this._percentage.calculate();
+            //if (isNaN(val))
+            //    this._return(false);
+            //else
+            //    this._return(this._sprite.setSize(val));
+        };
+
+        return SelectCameraBrick;
+    })(),
+
+
+    CameraBrick: (function () {
+        CameraBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function CameraBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+            //$this->selected = $selected;	//{1: off, 2: on}
+        }
+
+        CameraBrick.prototype._execute = function () {
+            //if (this._disposed)
+            //    return;
+            //var val = this._percentage.calculate();
+            //if (isNaN(val))
+            //    this._return(false);
+            //else
+            //    this._return(this._sprite.setSize(val));
+        };
+
+        return CameraBrick;
+    })(),
+
+
     SetSizeBrick: (function () {
         SetSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -236,6 +282,38 @@ PocketCode.Model.merge({
         //};
 
         return ChangeBrightnessBrick;
+    })(),
+
+
+    SetColorEffectBrick: (function () {
+        SetColorEffectBrick.extends(PocketCode.Model.SetGraphicEffectBrick, false);
+
+        function SetColorEffectBrick(device, sprite, propObject) {
+            PocketCode.Model.SetGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
+        }
+
+        //SetBrightnessBrick.prototype._execute = function () {
+        //    this._return(this._sprite.setBrightness(this._value.calculate()));
+        //};
+
+        return SetColorEffectBrick;
+    })(),
+
+
+    ChangeColorEffectBrick: (function () {
+        ChangeColorEffectBrick.extends(PocketCode.Model.ChangeGraphicEffectBrick, false);
+
+        function ChangeColorEffectBrick(device, sprite, propObject) {
+            PocketCode.Model.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
+            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
+        }
+
+        //ChangeBrightnessBrick.prototype._execute = function () {
+        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //};
+
+        return ChangeColorEffectBrick;
     })(),
 
 

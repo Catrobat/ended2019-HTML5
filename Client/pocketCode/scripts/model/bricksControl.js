@@ -14,10 +14,10 @@
 PocketCode.Model.merge({
 
     WhenProgramStartBrick: (function () {
-        WhenProgramStartBrick.extends(PocketCode.Model.RootContainerBrick, false);
+        WhenProgramStartBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenProgramStartBrick(device, sprite, startEvent) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite);
 
             this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
@@ -27,7 +27,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
                 this._onStart = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
@@ -36,10 +36,10 @@ PocketCode.Model.merge({
 
 
     WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Model.RootContainerBrick, false);
+        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenActionBrick(device, sprite, actionEvent, propObject) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite);
 
             this._action = propObject.action;
             //listen to 'when tabbed'
@@ -55,7 +55,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
@@ -134,10 +134,10 @@ PocketCode.Model.merge({
 
 
     WhenBroadcastReceiveBrick: (function () {
-        WhenBroadcastReceiveBrick.extends(PocketCode.Model.RootContainerBrick, false);
+        WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite);
 
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }

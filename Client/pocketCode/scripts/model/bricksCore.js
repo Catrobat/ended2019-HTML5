@@ -7,7 +7,7 @@
 
 /**
  * @fileOverview bricksCore: This file covers the different types of a brick. BrickContainer, BaseBrick, ThreadedBrick,
- * SingleContainerBrick, RootContainerBrick, LoopBrick, UnsupportedBrick
+ * SingleContainerBrick, ScriptBlock, LoopBrick, UnsupportedBrick
  *
  * @author catrobat HTML5 team
  *
@@ -327,18 +327,18 @@ PocketCode.Model.SingleContainerBrick = (function () {
 })();
 
 /**
- * @class RootContainerBrick
+ * @class ScriptBlock
  * representing a script block
  */
-PocketCode.Model.RootContainerBrick = (function () {
-    RootContainerBrick.extends(PocketCode.Model.SingleContainerBrick, false);
+PocketCode.Model.ScriptBlock = (function () {
+    ScriptBlock.extends(PocketCode.Model.SingleContainerBrick, false);
     /**
      * Initializes onExecuted event
      * @param device
      * @param sprite
      * @constructor
      */
-    function RootContainerBrick(device, sprite) {
+    function ScriptBlock(device, sprite) {
         PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
 
         this._executionState = PocketCode.ExecutionState.STOPPED;
@@ -346,7 +346,7 @@ PocketCode.Model.RootContainerBrick = (function () {
     }
 
     //properties
-    Object.defineProperties(RootContainerBrick.prototype, {
+    Object.defineProperties(ScriptBlock.prototype, {
         executionState: {
             get: function () {
                 return this._executionState;
@@ -357,7 +357,7 @@ PocketCode.Model.RootContainerBrick = (function () {
     });
 
     //events
-    Object.defineProperties(RootContainerBrick.prototype, {
+    Object.defineProperties(ScriptBlock.prototype, {
         /**
          * returns onExecuted
          * @event
@@ -371,7 +371,7 @@ PocketCode.Model.RootContainerBrick = (function () {
     });
 
     //methods
-    RootContainerBrick.prototype.merge({
+    ScriptBlock.prototype.merge({
         /**
          * execute method is overridden, as we need a specific return event handling to determine "program executed" 
          */
@@ -408,7 +408,7 @@ PocketCode.Model.RootContainerBrick = (function () {
         },
     });
 
-    return RootContainerBrick;
+    return ScriptBlock;
 })();
 
 /**

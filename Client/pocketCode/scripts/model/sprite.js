@@ -271,14 +271,13 @@ PocketCode.Model.Sprite = (function () {
                 //for (var i = 0, l = scripts.length; i < l; i++) {
                 //    this._scripts.push(this._gameEngine._brickFactory.create(this, scripts[i])); //TODO: brickfactory is PRIVATE
                 //}
-                console.log("TODO: check script tags/bricks");
 
                 var script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
                     
-                    //if (!(brick instanceof PocketCode.Model.BaseBrick))                               //this change breaks our tests: //TODO: 
-                    //    throw new Error('invalid brick: every brick has to be inherited from BaseBrick');
+                    //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
+                    //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
                     if (script.onExecuted)  //supported by all (root container) scripts
                         script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
                 }
@@ -766,7 +765,7 @@ PocketCode.Model.Sprite = (function () {
                 look = looks[i];
                 if (look.id === lookId) {
                     this._currentLook = look;
-                    look = this._gameEngine.getLookImage(look.imageId); //TODO: include in look object
+                    look = this._gameEngine.getLookImage(look.imageId);     //TODO: include in look object
                     update = { look: look.canvas };
                     center = look.center;
                     this._recalculateLookOffsets();
@@ -898,6 +897,7 @@ PocketCode.Model.Sprite = (function () {
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._setBrightness(value);
                 case PocketCode.GraphicEffect.COLOR:
+                    return this._setColorEffect(value);
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
                 case PocketCode.GraphicEffect.PIXELATE:
@@ -922,12 +922,10 @@ PocketCode.Model.Sprite = (function () {
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._changeTransparency(value);
-                //break;
-
                 case PocketCode.GraphicEffect.BRIGHTNESS:
                     return this._changeBrightness(value);
-                //break;
                 case PocketCode.GraphicEffect.COLOR:
+                    return this._changeColorEffect(value);
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
                 case PocketCode.GraphicEffect.PIXELATE:
@@ -1010,7 +1008,7 @@ PocketCode.Model.Sprite = (function () {
         },
         /* set to private and called from set/change graphic effect*/
         /**
-         * changes the transparency of the sprite by the "value" percentage
+         * changes the brightness of the sprite by the "value" percentage
          * @param {number} percentage
          * @returns {boolean}
          * @private
@@ -1031,6 +1029,26 @@ PocketCode.Model.Sprite = (function () {
             this._brightness = value;
             this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100.0 }] }); //send +-100 instead of 0..200
             return true;
+        },
+        /* set to private and called from set/change graphic effect*/
+        /**
+         * sets the color effect of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
+        _setColorEffect: function (percentage) {
+            return false;   //TODO: clearGraphicEffects
+        },
+        /* set to private and called from set/change graphic effect*/
+        /**
+         * changes the color effect of the sprite by the "value" percentage
+         * @param {number} percentage
+         * @returns {boolean}
+         * @private
+         */
+        _changeColorEffect: function (value) {
+            return false;    //TODO: clearGraphicEffects
         },
         /**
          * clears all graphicEffects of the sprite
