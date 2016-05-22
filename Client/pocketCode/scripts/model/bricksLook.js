@@ -63,14 +63,14 @@ PocketCode.Model.merge({
         function SetLookBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._imageId = propObject.imageId;
+            this._lookId = propObject.lookId;
         }
 
         SetLookBrick.prototype._execute = function () {
             if (this._disposed)
                 return;
-            if (this._imageId)  //can be null
-                this._return(this._sprite.setLook(this._imageId));
+            if (this._lookId)  //can be null
+                this._return(this._sprite.setLook(this._lookId));
         };
 
         return SetLookBrick;

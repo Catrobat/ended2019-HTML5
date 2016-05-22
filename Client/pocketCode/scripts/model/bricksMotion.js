@@ -8,17 +8,17 @@
 
 PocketCode.Model.merge({
 
-	PlaceAtBrick: (function () {
-		PlaceAtBrick.extends(PocketCode.Model.BaseBrick, false);
+	GoToPositionBrick: (function () {
+		GoToPositionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-		function PlaceAtBrick(device, sprite, propObject) {
+		function GoToPositionBrick(device, sprite, propObject) {
 			PocketCode.Model.BaseBrick.call(this, device, sprite);
 
 			this._x = new PocketCode.Formula(device, sprite, propObject.x);
 			this._y = new PocketCode.Formula(device, sprite, propObject.y);
 		}
 
-		PlaceAtBrick.prototype._execute = function () {
+		GoToPositionBrick.prototype._execute = function () {
 			if (this._disposed)
 				return;
 			var x = this._x.calculate(),
@@ -29,7 +29,7 @@ PocketCode.Model.merge({
 				this._return(this._sprite.setPosition(x, y));
 		};
 
-		return PlaceAtBrick;
+		return GoToPositionBrick;
 	})(),
 
 

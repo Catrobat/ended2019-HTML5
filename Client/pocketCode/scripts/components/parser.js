@@ -41,11 +41,11 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
-                var bricks = [];
+                var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
-                    bricks.push(this._brickFactory.create(sprite, jsonSprite.scripts[i]));
+                    scripts.push(this._brickFactory.create(sprite, jsonSprite.scripts[i]));
                 }
-                sprite.scripts = bricks;
+                sprite.scripts = scripts;
                 return sprite;
             },
             dispose: function () {
@@ -139,8 +139,8 @@ PocketCode.merge({
 
                 //load sub bricks
                 if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
-                    if (jsonBrick.scripts)   //all loops
-                        brick._bricks = this._createList(currentSprite, jsonBrick.scripts);
+                    if (jsonBrick.bricks)   //all loops
+                        brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
                         brick._ifBricks = this._createList(currentSprite, jsonBrick.ifBricks);
                         brick._elseBricks = this._createList(currentSprite, jsonBrick.elseBricks);

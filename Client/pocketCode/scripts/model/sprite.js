@@ -751,20 +751,20 @@ PocketCode.Model.Sprite = (function () {
         //looks
         /**
          * sets the look of the sprite
-         * @param imageId
+         * @param lookId
          * @returns {boolean}
          */
-        setLook: function (imageId) {
-            if (this._currentLook && this._currentLook.imageId === imageId || this._looks.length == 0)
+        setLook: function (lookId) {
+            if (this._currentLook && this._currentLook.lookId === lookId || this._looks.length == 0)
                 return false;
-
+            console.log("TODO: lookId passed insted of imageId");
             var looks = this._looks;
             var look, center, update, angle;
             for (var i = 0, l = looks.length; i < l; i++) {
                 look = looks[i];
-                if (look.imageId === imageId) {
+                if (look.lookId === lookId) {
                     this._currentLook = look;
-                    look = this._gameEngine.getLookImage(imageId);
+                    look = this._gameEngine.getLookImage(lookId);
                     update = { look: look.canvas };
                     center = look.center;
                     this._recalculateLookOffsets();
@@ -775,7 +775,7 @@ PocketCode.Model.Sprite = (function () {
                     return true;
                 }
             }
-            throw new Error('look image with id ' + imageId + ' could not be found');
+            throw new Error('look image with id ' + lookId + ' could not be found');
         },
         /**
          * sets the current look of the sprite to the next one in the list
