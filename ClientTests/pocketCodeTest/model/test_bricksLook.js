@@ -16,9 +16,9 @@ QUnit.test("SetLookBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetLookBrick(device, sprite, { imageId: "lookId" });
+    var b = new PocketCode.Model.SetLookBrick(device, sprite, { lookId: "lookId" });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._imageId === "lookId", "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetLookBrick, "instance check");
     assert.ok(b.objClassName === "SetLookBrick", "objClassName check");
 

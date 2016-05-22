@@ -108,7 +108,7 @@ PocketCode.ImageStore = (function () {
             if (look) {
                 return { canvas: look.canvas, center: { length: look.center.length, angle: look.center.angle }, initialScaling: this._initialScaling };
             }
-            throw new Error('requested look could not be found: ' + id);
+            throw new Error('requested look could not be found: ' + lookId);
         },
         _calcLookBoundary: function (imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
             var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1 / this._initialScaling,

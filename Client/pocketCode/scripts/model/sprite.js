@@ -206,18 +206,20 @@ PocketCode.Model.Sprite = (function () {
 
         //looks
         looks: {
-            set: function (looks) {
-                if (!(looks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' ||
-                    throw new Error('invalid argument: expected looks type of array');
+            set: function (jsonLooks) {
+                if (!(jsonLooks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' ||
+                    throw new Error('invalid argument: expected jsonLooks type of array');
 
                 //this._looks = looks;  //TODO: change this as soon as looks becode own DTOs with ID
                 this._looks = [];
-                for (var i = 0, l = looks.length; i < l; i++) {
-                    var look = looks[i];
-                    this._looks.push({ imageId: look.id, name: look.name });
-                }
+                for (var i = 0, l = jsonLooks.length; i < l; i++)
+                    this._looks.push(new PocketCode.Model.Look(jsonLooks[i]));
+                //{
+                //    var look = looks[i];
+                //    this._looks.push({ imageId: look.id, name: look.name });
+                //}
                 this._currentLook = undefined; //make sure its deleted on re-initialize
-                if (looks.length > 0)
+                if (jsonLooks.length > 0)
                     this._currentLook = this._looks[0];
             },
             //get: function () {
@@ -755,16 +757,16 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         setLook: function (lookId) {
-            if (this._currentLook && this._currentLook.lookId === lookId || this._looks.length == 0)
+            if (this._currentLook && this._currentLook.id === lookId || this._looks.length == 0)
                 return false;
-            console.log("TODO: lookId passed insted of imageId");
+            
             var looks = this._looks;
             var look, center, update, angle;
             for (var i = 0, l = looks.length; i < l; i++) {
                 look = looks[i];
-                if (look.lookId === lookId) {
+                if (look.id === lookId) {
                     this._currentLook = look;
-                    look = this._gameEngine.getLookImage(lookId);
+                    look = this._gameEngine.getLookImage(look.imageId); //TODO: include in look object
                     update = { look: look.canvas };
                     center = look.center;
                     this._recalculateLookOffsets();

@@ -13,7 +13,7 @@ QUnit.test("Sprite offsets", function (assert) {
     var testsDone = assert.async();
 
     var onLoadHandler = function () {
-        var looks = [{id:"s1", name:"look1"}, {id:"s2", name:"look2"}];
+        var looks = [{ id: "s_1", imageId: "s1", name: "look1" }, { id: "s_2", imageId: "s2", name: "look2" }];
         var sprite = new PocketCode.Model.Sprite(gameEngine, {id: "id", name: "sprite", looks: looks });
         sprite.init();
 
@@ -30,7 +30,7 @@ QUnit.test("Sprite offsets", function (assert) {
             assert.equal(sprite._lookOffsetX.toFixed(2), (center.length * Math.cos(center.angle - convertedAngle)).toFixed(2) , "lookOffsetX calculated correctly after setting direction to " + rotationAngle + " degrees");
             assert.equal(sprite._lookOffsetY.toFixed(2), (center.length * Math.sin(center.angle - convertedAngle)).toFixed(2), "lookOffsetY calculated correctly after setting direction to " + rotationAngle + " degrees");
         }
-        sprite.setLook("s2");
+        sprite.setLook("s_2");
         center = is.getLook(sprite._currentLook.imageId).center;
         convertedAngle = (sprite._direction - 90.0) * Math.PI / 180.;
         assert.equal(sprite._lookOffsetX.toFixed(2), (center.length * Math.cos(center.angle - convertedAngle)).toFixed(2) , "lookOffsetX calculated correctly after look change");
@@ -87,10 +87,11 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.name, "myName", "name ctr setter");
 
     assert.throws(function () { sprite.looks = undefined; }, Error, "ERROR: setting looks");
-    var looks = [{ id: 1 }, { id: 2 }];
+    var looks = [{ id: 1, imageId: "s1", name: "name1" }, { id: 2, imageId: "s2", name: "name2" }];
     sprite.looks = looks;
-    assert.ok(sprite._looks[0].imageId === looks[0].id && sprite._looks[1].imageId === looks[1].id, "looks setter");
-    assert.equal(sprite.currentLook.imageId, looks[0].id, "current look getter");
+    assert.ok(sprite._looks[0].id === looks[0].id && sprite._looks[1].id === looks[1].id, "looks setter");
+    assert.ok(sprite._looks[0] instanceof PocketCode.Model.Look && sprite._looks[1] instanceof PocketCode.Model.Look, "looks setter: instances");
+    assert.equal(sprite.currentLook.id, looks[0].id, "current look getter");
 
     assert.equal(sprite.size, 100, "size (percentage) initial");
     assert.equal(sprite.visible, true, "visibility initial");
@@ -217,8 +218,8 @@ QUnit.test("Sprite", function (assert) {
 
     var testSprite = new PocketCode.Model.Sprite(prog, jsonSprite);
 
-    assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly.");
-    assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly.");
+    assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
+    assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
 
     var varsMatch = true;
     for (var i = 0, length = jsonSprite.variables.length; i < length; i++) {
@@ -226,14 +227,14 @@ QUnit.test("Sprite", function (assert) {
         if (testSprite.getVariable(jsonSprite.variables[i].id)._id !== jsonSprite.variables[i].id)
             varsMatch = false;
     }
-    assert.ok(varsMatch, "Variables set correctly.");
+    assert.ok(varsMatch, "Variables set correctly");
 
     //var soundsMatch = true;
     //for (var i = 0, length = jsonSprite.sounds.length; i < length; i++) {
     //    if (!testSprite._sounds[jsonSprite.sounds[i].id])
     //        soundsMatch = false;
     //}
-    //assert.ok(soundsMatch, "Sounds set correctly.");
+    //assert.ok(soundsMatch, "Sounds set correctly");
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
 
     var bricksMatch = true;
@@ -241,14 +242,14 @@ QUnit.test("Sprite", function (assert) {
         if (testSprite._scripts[i].imageId !== jsonSprite.scripts[i].id)
             bricksMatch = false;
     }
-    assert.ok(bricksMatch, "Bricks set correctly.");
+    assert.ok(bricksMatch, "Bricks set correctly");
 
     var looksMatch = true;
     for (var i = 0, length = jsonSprite.looks.length; i < length; i++) {
-        if (testSprite._looks[i].imageId !== jsonSprite.looks[i].id)
+        if (testSprite._looks[i].id !== jsonSprite.looks[i].id)
             looksMatch = false;
     }
-    assert.ok(looksMatch, "Looks set correctly.");
+    assert.ok(looksMatch, "Looks set correctly");
 
     //mock gameEngines getLookImage function
     var initialScaling = 50;
@@ -552,9 +553,9 @@ QUnit.test("Sprite", function (assert) {
     //sprite._looks[0].center = { length: 0, angle: 0 };
     //sprite._looks[1].center = { length: 0, angle: 0 };
 
-    assert.ok(sprite._looks[0].imageId === looks[0].id && sprite._looks[1].imageId === looks[1].id, "looks setter");
+    assert.ok(sprite._looks[0].id === looks[0].id && sprite._looks[1].id === looks[1].id, "looks setter");
     assert.equal(sprite._looks[1].name, "look2", "set looks1");
-    assert.equal(sprite._currentLook.imageId, "first", "set looks2");
+    assert.equal(sprite._currentLook.id, "first", "set looks2");
     assert.equal(sprite._currentLook.name, "look1", "set looks3");
 
     returnVal = sprite.setLook("first");

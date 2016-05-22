@@ -12,7 +12,7 @@ QUnit.test("Canvas", function (assert) {
     var ALPHA_CHANNEL = 3;
     var done = assert.async();
 
-    var pixelHasAlpha = function(x,y) {
+    var pixelHasAlpha = function (x, y) {
         return alphaAtPoint(x, y) > 0.;
     };
 
@@ -21,20 +21,20 @@ QUnit.test("Canvas", function (assert) {
         return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
     };
 
-    var polarOffset = function(distance, angle) {
+    var polarOffset = function (distance, angle) {
         var x = distance * Math.cos(angle);
         var y = distance * Math.sin(angle);
-        return {xOffset:x, yOffset:y};
+        return { xOffset: x, yOffset: y };
     };
 
-    var countPixels = function() {
+    var countPixels = function () {
         var canvasHeight = canvas.height;
         var canvasWidth = canvas.width;
         var pixels = 0;
 
-        for (var i = 0; i < canvasHeight;i++) {
+        for (var i = 0; i < canvasHeight; i++) {
             for (var j = 0; j < canvasWidth; j++) {
-                if (pixelHasAlpha(j,i)) {
+                if (pixelHasAlpha(j, i)) {
                     pixels++;
                 }
             }
@@ -42,7 +42,7 @@ QUnit.test("Canvas", function (assert) {
         return pixels;
     };
 
-    var pixelNearEdge = function(x, y, rect, minorThreshold) {
+    var pixelNearEdge = function (x, y, rect, minorThreshold) {
         var eps = minorThreshold ? 1.0 : 2.0;
 
         var ld = Math.abs(rect.tlX - x) <= eps;
@@ -53,7 +53,7 @@ QUnit.test("Canvas", function (assert) {
         return ld || rd || td || bd;
     };
 
-    var pixelWithinBoundaries = function(x, y, rect) {
+    var pixelWithinBoundaries = function (x, y, rect) {
         var insideLeftBound, insideUpperBound, insideRightBound, insideLowerBound;
 
         insideLeftBound = x >= rect.tlX;
@@ -71,11 +71,11 @@ QUnit.test("Canvas", function (assert) {
         var xPrime = Math.cos(angle) * (x - anchorX) - Math.sin(angle) * (y - anchorY) + anchorX;
         var yPrime = Math.sin(angle) * (x - anchorX) + Math.cos(angle) * (y - anchorY) + anchorY;
 
-        return {x: xPrime, y: yPrime}
+        return { x: xPrime, y: yPrime }
     };
 
     // helper function to check which pixels of canvas were actually drawn on
-    var checkPixels = function(centerX, centerY, width, height, rotation, log) {
+    var checkPixels = function (centerX, centerY, width, height, rotation, log) {
         var canvasHeight = canvas.height;
         var canvasWidth = canvas.width;
         var pixelIsSet, rotatedPoint, originalX, originalY;
@@ -90,9 +90,9 @@ QUnit.test("Canvas", function (assert) {
         var topLeftX = Math.round(centerX - width / 2.);
         var topLeftY = Math.round(centerY - height / 2.);
 
-        rect = {tlX: topLeftX, tlY: topLeftY, width: width, height: height};
+        rect = { tlX: topLeftX, tlY: topLeftY, width: width, height: height };
 
-        for (var currentY = 0; currentY < canvasHeight;currentY++) {
+        for (var currentY = 0; currentY < canvasHeight; currentY++) {
             for (var currentX = 0; currentX < canvasWidth; currentX++) {
                 pixelIsSet = pixelHasAlpha(currentX, currentY);
 
@@ -147,11 +147,11 @@ QUnit.test("Canvas", function (assert) {
     };
 
 
-    var runDefaultTests = function() {
-        var looks1 = [{id:"s1", name:"look1"}];
-        var looks2 = [{id:"s2", name:"look2"}];
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks:looks1});
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, {id: "id1", name: "sprite1", looks:looks2});
+    var runDefaultTests = function () {
+        var looks1 = [{ id: "s_1", imageId: "s1", name: "look1" }];
+        var looks2 = [{ id: "s_2", imageId: "s2", name: "look2" }];
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: looks1 });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: looks2 });
 
         var renderingImageOpaque = new PocketCode.RenderingImage(sprite1.renderingProperties);
         var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
@@ -169,11 +169,11 @@ QUnit.test("Canvas", function (assert) {
         canvas.renderingImages = [renderingImageOpaque];
         canvas.render();
 
-        assert.equal(countPixels(), opaqueImageWidth*opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
+        assert.equal(countPixels(), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
 
         var estimatedCenterX, estimatedCenterY;
 
-    //   ************** TESTS WITH 100% opaque SPRITE ******************************************************************
+        //   ************** TESTS WITH 100% opaque SPRITE ******************************************************************
         //  test simple rendering on origin
         estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0;
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), 'opaque sprite (topleft)');
@@ -241,18 +241,18 @@ QUnit.test("Canvas", function (assert) {
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), 'opaque sprite (subpixel y floor)');
         canvas.clear();
 
-        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle+=30) {
+        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 30) {
             // test rotated rendering
             estimatedCenterX = renderingImageOpaque.x = 10;
             estimatedCenterY = renderingImageOpaque.y = 10;
             renderingImageOpaque.rotation = rotationAngle;
             canvas.render();
-            assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, rotationAngle), 'opaque sprite (rotated '+rotationAngle+')');
+            assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, rotationAngle), 'opaque sprite (rotated ' + rotationAngle + ')');
             canvas.clear();
         }
 
-    // ******************* TEST WITH PARTLY TRANSPARENT SPRITE *********************************************************
-    // 5x5 area of 10x10 image
+        // ******************* TEST WITH PARTLY TRANSPARENT SPRITE *********************************************************
+        // 5x5 area of 10x10 image
         canvas.renderingImages = [renderingImageTransparent];
 
         // TODO test rendering with partly transparent sprite
@@ -285,7 +285,7 @@ QUnit.test("Canvas", function (assert) {
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight, rotationAngle), 'transparent sprite (rotated 60)');
         canvas.clear();
 
-    // ********************* TEST WITH CANVAS SCALING ******************************************************************
+        // ********************* TEST WITH CANVAS SCALING ******************************************************************
         // TODO test rendering with canvas scaling (via setDimensions)
         renderingImageOpaque.rotation = 0;
         canvas.renderingImages = [renderingImageOpaque];
@@ -309,10 +309,10 @@ QUnit.test("Canvas", function (assert) {
         canvas.clear();
 
 
-        for (rotationAngle = 0; rotationAngle<=360;rotationAngle+=36) {
+        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
             renderingImageOpaque.rotation = rotationAngle;
             canvas.render();
-            assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling, rotationAngle), 'opaque sprite (canvas 1.5x, rotated '+rotationAngle+')');
+            assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling, rotationAngle), 'opaque sprite (canvas 1.5x, rotated ' + rotationAngle + ')');
             canvas.clear();
         }
 
@@ -322,10 +322,10 @@ QUnit.test("Canvas", function (assert) {
 
     var runScaledImagesTests = function () {
         // TODO test rendering with initialscaling in sprite (via imagestore)
-        var lookOpaque = [{id:"s3", name:"look3"}];
-        var lookTransparent = [{id:"s4", name:"look4"}];
-        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, {id: "id2", name: "sprite2", looks:lookOpaque});
-        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, {id: "id3", name: "sprite3", looks:lookTransparent});
+        var lookOpaque = [{ id: "s_3", imageId: "s3", name: "look3" }];
+        var lookTransparent = [{ id: "s_4", imageId: "s4", name: "look4" }];
+        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, { id: "id2", name: "sprite2", looks: lookOpaque });
+        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, { id: "id3", name: "sprite3", looks: lookTransparent });
         var renderingImageOpaque = new PocketCode.RenderingImage(spriteOpaque.renderingProperties);
         // var renderingImageTransparent = new PocketCode.RenderingImage(spriteTransparent.renderingProperties);
 
@@ -335,7 +335,7 @@ QUnit.test("Canvas", function (assert) {
 
         var opaqueImageWidth = renderingImageOpaque.object.width;
         var opaqueImageHeight = renderingImageOpaque.object.height;
-    //     ****************** TEST OPAQUE SPRITE SCALED RENDERING ******************************************************
+        //     ****************** TEST OPAQUE SPRITE SCALED RENDERING ******************************************************
         canvas.renderingImages = [renderingImageOpaque];
 
         estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0;
@@ -348,7 +348,7 @@ QUnit.test("Canvas", function (assert) {
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth / imageScalingFactor, opaqueImageHeight / imageScalingFactor), 'opaque sprite (2.5x, (20,20))');
         canvas.clear();
 
-        for (rotationAngle = 0;rotationAngle <= 360; rotationAngle+=36) {
+        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
             renderingImageOpaque.rotation = rotationAngle;
             estimatedCenterX = renderingImageOpaque.x = Math.random() * canvasWidth;
             estimatedCenterY = renderingImageOpaque.y = Math.random() * canvasHeight;
@@ -356,7 +356,7 @@ QUnit.test("Canvas", function (assert) {
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth / imageScalingFactor, opaqueImageHeight / imageScalingFactor, rotationAngle), 'opaque sprite (2.5x, rotated ' + rotationAngle + ')');
             canvas.clear();
         }
-    //       ****************** TEST OPAQUE SPRITE SCALED RENDERING ****************************************************
+        //       ****************** TEST OPAQUE SPRITE SCALED RENDERING ****************************************************
 
         // TODO test rendering with initialscaling AND viewportscaling
         canvas.setDimensions(80, 40, viewportScaling);
@@ -372,7 +372,7 @@ QUnit.test("Canvas", function (assert) {
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth / imageScalingFactor * viewportScaling, opaqueImageHeight / imageScalingFactor * viewportScaling), 'opaque sprite (2.5x, canvas 1.5x)');
         canvas.clear();
 
-        for (rotationAngle = 0;rotationAngle <= 360; rotationAngle+=36) {
+        for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
             renderingImageOpaque.rotation = rotationAngle;
             renderingImageOpaque.x = Math.random() * canvasWidth / viewportScaling;
             renderingImageOpaque.y = Math.random() * canvasHeight / viewportScaling;
@@ -384,7 +384,7 @@ QUnit.test("Canvas", function (assert) {
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth / imageScalingFactor * viewportScaling, opaqueImageHeight / imageScalingFactor * viewportScaling, rotationAngle), 'opaque sprite (2.5x, canvas 1.5x, rotated ' + rotationAngle + ')');
             canvas.clear();
         }
-    // ********************************** TEST TRANSPARENT SPRITE INTEGRATED *******************************************
+        // ********************************** TEST TRANSPARENT SPRITE INTEGRATED *******************************************
 
         done();
     };
@@ -400,7 +400,7 @@ QUnit.test("Canvas", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     //var app = new PocketCode.PlayerApplication();
     //app._project = gameEngine;
-   // playerPageController.project = gameEngine;
+    // playerPageController.project = gameEngine;
 
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;
@@ -411,8 +411,8 @@ QUnit.test("Canvas", function (assert) {
             { id: "s2", url: "imgHelper15.png", size: 1 }  // green square inside transparent area
         ];
 
-    var imagesScaling = [{id:'s3', url:'imgHelper14.png', size: 1},
-                         {id:'s4', url:'imgHelper15.png', size: 1}];
+    var imagesScaling = [{ id: 's3', url: 'imgHelper14.png', size: 1 },
+                         { id: 's4', url: 'imgHelper15.png', size: 1 }];
     var imageScalingFactor = 2.5;
     var viewportScaling = 1.5; // dont set too high, or scaled position wont be on canvas anymore
 
