@@ -1,9 +1,7 @@
 <?php
 
-class WhenProgramStartBrickDto extends BaseBrickDto {
+class WhenProgramStartBrickDto extends ScriptBlockDto {
 
-  public $bricks = array();	//inner scripts
-  
   public function __construct() {
 	parent::__construct("WhenProgramStart");
   }

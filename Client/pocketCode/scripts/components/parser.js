@@ -99,11 +99,11 @@ PocketCode.merge({
 
                 switch (type) {
                     case 'WhenProgramStartBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
                         break;
 
                     case 'WhenActionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
                         break;
 
                     case 'WhenBroadcastReceiveBrick':
@@ -121,8 +121,11 @@ PocketCode.merge({
                         break;
 
                     case 'ForeverBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime);
+                        break;
+
                     case 'RepeatBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._minLoopCycleTime);
                         break;
 
                     default:

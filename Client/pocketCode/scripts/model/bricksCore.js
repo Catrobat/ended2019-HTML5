@@ -338,9 +338,13 @@ PocketCode.Model.ScriptBlock = (function () {
      * @param sprite
      * @constructor
      */
-    function ScriptBlock(device, sprite) {
+    function ScriptBlock(device, sprite, propObject) {
         PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
 
+        if (propObject) {   //can be null
+            this._x = propObject.x;
+            this._y = propObject.y;
+        }
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
     }

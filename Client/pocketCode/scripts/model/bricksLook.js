@@ -102,6 +102,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             //$this->selected = $selected;  //{1: back, 2: front}
+            this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         SelectCameraBrick.prototype._execute = function () {
@@ -125,6 +126,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
             //$this->selected = $selected;	//{1: off, 2: on}
+            this._device.cameraOn = this._device.cameraOn;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype._execute = function () {

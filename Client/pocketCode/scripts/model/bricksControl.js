@@ -16,8 +16,8 @@ PocketCode.Model.merge({
     WhenProgramStartBrick: (function () {
         WhenProgramStartBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenProgramStartBrick(device, sprite, startEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite);
+        function WhenProgramStartBrick(device, sprite, propObject, startEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
@@ -38,8 +38,8 @@ PocketCode.Model.merge({
     WhenActionBrick: (function () {
         WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenActionBrick(device, sprite, actionEvent, propObject) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite);
+        function WhenActionBrick(device, sprite, propObject, actionEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._action = propObject.action;
             //listen to 'when tabbed'
@@ -137,7 +137,7 @@ PocketCode.Model.merge({
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
@@ -256,8 +256,8 @@ PocketCode.Model.merge({
     WhenCollisionBrick: (function () {
         WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenCollisionBrick(device, sprite, broadcastMgr, propObject) {
-            //PocketCode.Model.ScriptBlock.call(this, device, sprite);
+        function WhenCollisionBrick(device, sprite, propObject) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             //broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
@@ -378,11 +378,10 @@ PocketCode.Model.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function RepeatBrick(device, sprite, minLoopCycleTime, propObject) {
+        function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
             PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
-            this._bricks = propObject.bricks;
         }
 
         RepeatBrick.prototype.merge({

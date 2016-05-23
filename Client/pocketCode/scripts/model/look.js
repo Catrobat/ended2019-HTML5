@@ -5,6 +5,7 @@
 'use strict';
 
 PocketCode.Model.Look = (function () {
+    Look.extends(SmartJs.Core.Component);
 
     function Look(jsonLooks) {
         this._id = jsonLooks.id;
