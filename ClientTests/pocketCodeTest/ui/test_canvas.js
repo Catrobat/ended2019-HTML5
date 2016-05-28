@@ -298,7 +298,7 @@ QUnit.test("Canvas", function (assert) {
         //mock objects
         var mockObj = {
             visible: true,
-            evented: true,
+           // evented: true,
             containsPoint: function () {
                 return true;
             }
@@ -313,7 +313,7 @@ QUnit.test("Canvas", function (assert) {
             y: 0
         };
 
-        canvas.isTargetTransparent = function () { return false; };
+        canvas._isTargetTransparent = function () { return false; };
 
         assert.ok(canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns true if object is visible, contains the pointer and is not transparent');
 
@@ -325,11 +325,51 @@ QUnit.test("Canvas", function (assert) {
         assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object does not contain pointer');
         mockObj.containsPoint = function () { return true; };
 
-        canvas.isTargetTransparent = function () { return true; };
+        canvas._isTargetTransparent = function () { return true; };
         assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object is transparent');
 
+        //getTouchPointer
+
         // geteventpointer
-        //
+        var previousGetEventPointer = PocketCode.ImageHelper.getScrollLeftTop;
+
+        //mock imageHelper function
+        var left = 6;
+        var top = 3;
+
+        var touchLeft = 5;
+        var touchTop = 10;
+
+        PocketCode.ImageHelper.getScrollLeftTop = function () {
+            return { left: left, top: top }
+        };
+
+        canvas.getTouchPointer = function () {
+            return { left: touchLeft, top: touchTop }
+        };
+
+        var isTouchDevice = SmartJs.Device.isTouch;
+        SmartJs.Device.isTouch = false;
+
+        var pointer = canvas._getEventPointer({});
+
+        assert.equal(pointer.x, left, "getEventPointer returns correct x coordinate with no given clientX");
+        assert.equal(pointer.y, top, "getEventPointer returns correct y coordinate with no given clientY");
+
+        var clientX = 50;
+        var clientY = 33;
+
+        pointer = canvas._getEventPointer({ clientX: clientX, clientY: clientY });
+
+        assert.equal(pointer.x, left + clientX, "getEventPointer returns correct x coordinate with given clientX");
+        assert.equal(pointer.y, top + clientY, "getEventPointer returns correct y coordinate with given clientY");
+
+        //restore
+        PocketCode.ImageHelper.getScrollLeftTop = previousGetEventPointer;
+        SmartJs.Device.isTouch = isTouchDevice;
+
+
+            //
         // var getScrollLeftTop = function () {
         //     return {scroll: { left: 5, right:5 } }
         // };
@@ -393,7 +433,7 @@ QUnit.test("Canvas", function (assert) {
             onMouseDownTriggered++;
         };
 
-        var isTouchDevice = SmartJs.Device.isTouch;
+        isTouchDevice = SmartJs.Device.isTouch;
         SmartJs.Device.isTouch = false;
 
         var event = {};
@@ -429,6 +469,20 @@ QUnit.test("Canvas", function (assert) {
 
         //restore to previous setting
         SmartJs.Device.isTouch = isTouchDevice;
+
+        var before = canvas.height;
+        var randomNr = Math.random();
+        canvas.height = randomNr;
+        assert.equal(canvas._height, randomNr, "set height");
+        assert.equal(canvas._height, canvas.height, "get height");
+        canvas.height = before;
+
+        before = canvas.width;
+        randomNr = Math.random();
+        canvas.width = randomNr;
+        assert.equal(canvas._width, randomNr, "set width");
+        assert.equal(canvas._width, canvas.width, "get width");
+        canvas.height = before;
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         // TODO test rendering with canvas scaling (via setDimensions)
