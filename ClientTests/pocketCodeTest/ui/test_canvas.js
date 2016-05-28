@@ -350,29 +350,28 @@ QUnit.test("Canvas", function (assert) {
         canvas.scaling = 2;
         mockPointer = { x: 10, y: 10};
 
-        this.getPointer = function () {
+        canvas.getPointer = function () {
             return mockPointer;
         };
 
         canvas._checkTarget = function (obj, pointer) {
             if(pointer.x === mockPointer.x/this.scaling && pointer.y === mockPointer.y/this.scaling)
                 scalingAppliedToPointer = true;
-
-                return !!obj.mockTarget;
+            return !!obj.object.mockTarget;
         };
 
         var previousRenderingObjects = canvas._renderingObjects;
         canvas._renderingObjects = [ {object:{ id: 1 }}, {object:{id: 2}}, {object:{id:3}}, {object:{ mockTarget: true, id:4 }}];
 
 
-        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).id, 4, 'searchPossibleTargets returns correct target');
+        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 4, 'searchPossibleTargets returns correct target');
         assert.ok(scalingAppliedToPointer, 'scaling applied to pointer before checking');
 
         canvas._renderingObjects.push({object:{mockTarget:true, id: 5}});
         canvas._renderingObjects.push({object:{mockTarget:false, id: 6}});
         canvas._renderingObjects.push({object:{mockTarget:true, id: 7}});
 
-        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).id, 7, 'searchPossibleTargets returns last correct target in renderingObjects');
+        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 7, 'searchPossibleTargets returns last correct target in renderingObjects');
 
         canvas._renderingObjects = [];
         assert.ok(!canvas._searchPossibleTargets(mockPointer), 'no target found if there are no rendering objects');
