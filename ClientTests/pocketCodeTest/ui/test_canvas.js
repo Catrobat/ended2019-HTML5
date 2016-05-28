@@ -294,153 +294,153 @@ QUnit.test("Canvas", function (assert) {
         // _isTargetTransparent
 
 
-        // _checkTarget
-        //mock objects
-        var mockObj = {
-            visible: true,
-           // evented: true,
-            containsPoint: function () {
-                return true;
-            }
-        };
-
-        mockObj.setCoords = function () {
-            return true;
-        };
-
-        var mockPointer = {
-            x: 0,
-            y: 0
-        };
-
-        canvas._isTargetTransparent = function () { return false; };
-
-        assert.ok(canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns true if object is visible, contains the pointer and is not transparent');
-
-        mockObj.visible = false;
-        assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object is not visible');
-        mockObj.visible = true;
-
-        mockObj.containsPoint = function () { return false; };
-        assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object does not contain pointer');
-        mockObj.containsPoint = function () { return true; };
-
-        canvas._isTargetTransparent = function () { return true; };
-        assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object is transparent');
-
-        //getTouchPointer
-
-        // geteventpointer
-        var previousGetEventPointer = PocketCode.ImageHelper.getScrollLeftTop;
-
-        //mock imageHelper function
-        var left = 6;
-        var top = 3;
-
-        var touchLeft = 5;
-        var touchTop = 10;
-
-        PocketCode.ImageHelper.getScrollLeftTop = function () {
-            return { left: left, top: top }
-        };
-
-        canvas.getTouchPointer = function () {
-            return { left: touchLeft, top: touchTop }
-        };
-
-        var isTouchDevice = SmartJs.Device.isTouch;
-        SmartJs.Device.isTouch = false;
-
-        var pointer = canvas._getEventPointer({});
-
-        assert.equal(pointer.x, left, "getEventPointer returns correct x coordinate with no given clientX");
-        assert.equal(pointer.y, top, "getEventPointer returns correct y coordinate with no given clientY");
-
-        var clientX = 50;
-        var clientY = 33;
-
-        pointer = canvas._getEventPointer({ clientX: clientX, clientY: clientY });
-
-        assert.equal(pointer.x, left + clientX, "getEventPointer returns correct x coordinate with given clientX");
-        assert.equal(pointer.y, top + clientY, "getEventPointer returns correct y coordinate with given clientY");
-
-        //restore
-        PocketCode.ImageHelper.getScrollLeftTop = previousGetEventPointer;
-        SmartJs.Device.isTouch = isTouchDevice;
-
-
-            //
-        // var getScrollLeftTop = function () {
-        //     return {scroll: { left: 5, right:5 } }
+        // // _checkTarget
+        // //mock objects
+        // var mockObj = {
+        //     visible: true,
+        //    // evented: true,
+        //     containsPoint: function () {
+        //         return true;
+        //     }
         // };
-        // canvas._getEventPointer();
-
-
-        // getPointer
-
-
-        // _searchPossibleTargets
-        canvas.getPointer = function (mockPointer) {
-            return mockPointer;
-        };
-
-        var scalingAppliedToPointer = false;
-
-        var previousScaling = canvas.scaling;
-        canvas.scaling = 2;
-        mockPointer = { x: 10, y: 10};
-
-        canvas.getPointer = function () {
-            return mockPointer;
-        };
-
-        canvas._checkTarget = function (obj, pointer) {
-            if(pointer.x === mockPointer.x/this.scaling && pointer.y === mockPointer.y/this.scaling)
-                scalingAppliedToPointer = true;
-            return !!obj.object.mockTarget;
-        };
-
-        var previousRenderingObjects = canvas._renderingObjects;
-        canvas._renderingObjects = [ {object:{ id: 1 }}, {object:{id: 2}}, {object:{id:3}}, {object:{ mockTarget: true, id:4 }}];
-
-
-        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 4, 'searchPossibleTargets returns correct target');
-        assert.ok(scalingAppliedToPointer, 'scaling applied to pointer before checking');
-
-        canvas._renderingObjects.push({object:{mockTarget:true, id: 5}});
-        canvas._renderingObjects.push({object:{mockTarget:false, id: 6}});
-        canvas._renderingObjects.push({object:{mockTarget:true, id: 7}});
-
-        assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 7, 'searchPossibleTargets returns last correct target in renderingObjects');
-
-        canvas._renderingObjects = [];
-        assert.ok(!canvas._searchPossibleTargets(mockPointer), 'no target found if there are no rendering objects');
-
-        canvas._renderingObjects.push({object:{}});
-        assert.ok(!canvas._searchPossibleTargets(mockPointer), 'no target found if there are no target rendering objects');
-
-        canvas._renderingObjects = previousRenderingObjects;
-        canvas.scaling = previousScaling;
-
+        //
+        // mockObj.setCoords = function () {
+        //     return true;
+        // };
+        //
+        // var mockPointer = {
+        //     x: 0,
+        //     y: 0
+        // };
+        //
+        // canvas._isTargetTransparent = function () { return false; };
+        //
+        // assert.ok(canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns true if object is visible, contains the pointer and is not transparent');
+        //
+        // mockObj.visible = false;
+        // assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object is not visible');
+        // mockObj.visible = true;
+        //
+        // mockObj.containsPoint = function () { return false; };
+        // assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object does not contain pointer');
+        // mockObj.containsPoint = function () { return true; };
+        //
+        // canvas._isTargetTransparent = function () { return true; };
+        // assert.ok(!canvas._checkTarget(mockObj, mockPointer), 'checkTarget returns false if object is transparent');
+        //
+        // //getTouchPointer
+        //
+        // // geteventpointer
+        // var previousGetEventPointer = PocketCode.ImageHelper.getScrollLeftTop;
+        //
+        // //mock imageHelper function
+        // var left = 6;
+        // var top = 3;
+        //
+        // var touchLeft = 5;
+        // var touchTop = 10;
+        //
+        // PocketCode.ImageHelper.getScrollLeftTop = function () {
+        //     return { left: left, top: top }
+        // };
+        //
+        // canvas.getTouchPointer = function () {
+        //     return { left: touchLeft, top: touchTop }
+        // };
+        //
+        // var isTouchDevice = SmartJs.Device.isTouch;
+        // SmartJs.Device.isTouch = false;
+        //
+        // var pointer = canvas._getEventPointer({});
+        //
+        // assert.equal(pointer.x, left, "getEventPointer returns correct x coordinate with no given clientX");
+        // assert.equal(pointer.y, top, "getEventPointer returns correct y coordinate with no given clientY");
+        //
+        // var clientX = 50;
+        // var clientY = 33;
+        //
+        // pointer = canvas._getEventPointer({ clientX: clientX, clientY: clientY });
+        //
+        // assert.equal(pointer.x, left + clientX, "getEventPointer returns correct x coordinate with given clientX");
+        // assert.equal(pointer.y, top + clientY, "getEventPointer returns correct y coordinate with given clientY");
+        //
+        // //restore
+        // PocketCode.ImageHelper.getScrollLeftTop = previousGetEventPointer;
+        // SmartJs.Device.isTouch = isTouchDevice;
+        //
+        //
+        //     //
+        // // var getScrollLeftTop = function () {
+        // //     return {scroll: { left: 5, right:5 } }
+        // // };
+        // // canvas._getEventPointer();
+        //
+        //
+        // // getPointer
+        //
+        //
+        // // _searchPossibleTargets
+        // canvas.getPointer = function (mockPointer) {
+        //     return mockPointer;
+        // };
+        //
+        // var scalingAppliedToPointer = false;
+        //
+        // var previousScaling = canvas.scaling;
+        // canvas.scaling = 2;
+        // mockPointer = { x: 10, y: 10};
+        //
+        // canvas.getPointer = function () {
+        //     return mockPointer;
+        // };
+        //
+        // canvas._checkTarget = function (obj, pointer) {
+        //     if(pointer.x === mockPointer.x/this.scaling && pointer.y === mockPointer.y/this.scaling)
+        //         scalingAppliedToPointer = true;
+        //     return !!obj.object.mockTarget;
+        // };
+        //
+        // var previousRenderingObjects = canvas._renderingObjects;
+        // canvas._renderingObjects = [ {object:{ id: 1 }}, {object:{id: 2}}, {object:{id:3}}, {object:{ mockTarget: true, id:4 }}];
+        //
+        //
+        // assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 4, 'searchPossibleTargets returns correct target');
+        // assert.ok(scalingAppliedToPointer, 'scaling applied to pointer before checking');
+        //
+        // canvas._renderingObjects.push({object:{mockTarget:true, id: 5}});
+        // canvas._renderingObjects.push({object:{mockTarget:false, id: 6}});
+        // canvas._renderingObjects.push({object:{mockTarget:true, id: 7}});
+        //
+        // assert.strictEqual(canvas._searchPossibleTargets(mockPointer).object.id, 7, 'searchPossibleTargets returns last correct target in renderingObjects');
+        //
+        // canvas._renderingObjects = [];
+        // assert.ok(!canvas._searchPossibleTargets(mockPointer), 'no target found if there are no rendering objects');
+        //
+        // canvas._renderingObjects.push({object:{}});
+        // assert.ok(!canvas._searchPossibleTargets(mockPointer), 'no target found if there are no target rendering objects');
+        //
+        // canvas._renderingObjects = previousRenderingObjects;
+        // canvas.scaling = previousScaling;
+        //
 
         // _onMouseDown tests
-        var onMouseDownTriggered = 0, searchTargetsTriggered = 0;
-        canvas._searchPossibleTargets = function () {
-            searchTargetsTriggered++;
+        var onMouseDownTriggered = 0, getTargetCalled = 0;
+        canvas._getTargetAtPosition = function () {
+            getTargetCalled++;
             return {id: 'testTarget'}
         };
         canvas._onMouseDown.dispatchEvent = function () {
             onMouseDownTriggered++;
         };
 
-        isTouchDevice = SmartJs.Device.isTouch;
+        var isTouchDevice = SmartJs.Device.isTouch;
         SmartJs.Device.isTouch = false;
 
         var event = {};
         canvas.__onMouseDown(event);
 
         assert.strictEqual(onMouseDownTriggered, 0, 'onMouseDown was not triggered by event without left click');
-        assert.strictEqual(searchTargetsTriggered, 0, 'does not search for a target if no left click registered');
+        assert.strictEqual(getTargetCalled, 0, 'does not search for a target if no left click registered');
 
         event.button = 1;
 

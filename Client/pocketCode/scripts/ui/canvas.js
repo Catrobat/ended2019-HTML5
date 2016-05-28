@@ -210,77 +210,108 @@ PocketCode.Ui.Canvas = (function () {
                 return;
             }
 
-            var target = this._searchPossibleTargets(e);
+            //var target = this._searchPossibleTargets(e);
+
+            var pointerX, pointerY;
+            if (SmartJs.Device.isTouch && (e.touches && e.touches[0])){
+                //todo boundingClientRect
+                var touch = e.touches[0];
+                pointerX = (touch.pageX - (touch.pageX - touch.clientX)) || e.clientX;
+                pointerY = (touch.pageY - (touch.pageY - touch.clientY)) || e.clientY;
+            } else {
+                var boundingClientRect = this.lowerCanvasEl.getBoundingClientRect();
+                pointerX = e.clientX ? e.clientX - boundingClientRect.left : 0;
+                pointerY = e.clientY ? e.clientY - boundingClientRect.top : 0;
+            }
+
+            var target = this._getTargetAtPosition(pointerX, pointerY);
+            //console.log(pointerX, pointerY);
+            //console.log(this.getPointer(e));
 
             if (target){
                 this._onMouseDown.dispatchEvent({ id: target.id });
             }
         },
-        _getTouchPointer: function (event, pageProp, clientProp) {
-            var touchProp = event.type === 'touchend' ? 'changedTouches' : 'touches';
+        // _getTouchPointer: function (event, pageProp, clientProp) {
+        //     var touchProp = event.type === 'touchend' ? 'changedTouches' : 'touches';
+        //     console.log(event.touches);
+        //     console.log((event[touchProp][0][pageProp] - (event[touchProp][0][pageProp] - event[touchProp][0][clientProp])), event[clientProp]);
+        //
+        //
+        //     return (event[touchProp] && event[touchProp][0] ?
+        //     (event[touchProp][0][pageProp] - (event[touchProp][0][pageProp] - event[touchProp][0][clientProp])) || event[clientProp] :
+        //         event[clientProp]);
+        // },
+        // _getEventPointer: function (event) {
+        //     var element = event.target,
+        //         scroll = PocketCode.ImageHelper.getScrollLeftTop(element),
+        //         x = 0,
+        //         y = 0;
+        //
+        //     if (SmartJs.Device.isTouch) {
+        //         // x = this._getTouchPointer(event, 'pageX', 'clientX');
+        //         // y = this._getTouchPointer(event, 'pageY', 'clientY');
+        //
+        //
+        //         if ((event.touches && event.touches[0])){
+        //             var touch = event.touches[0];
+        //             x = (touch.pageX - (touch.pageX - touch.clientX)) || event.clientX;
+        //             y = (touch.pageY - (touch.pageY - touch.clientY)) || event.clientY;
+        //         } else {
+        //             x = event.clientX;
+        //             y = event.clientY;
+        //         }
+        //
+        //     }
+        //     else {
+        //         x = event.clientX ? event.clientX : 0;
+        //         y = event.clientY ? event.clientY : 0;
+        //     }
+        //     return {
+        //         x: x + scroll.left,
+        //         y: y + scroll.top
+        //     };
+        // },
 
-            return (event[touchProp] && event[touchProp][0] ?
-            (event[touchProp][0][pageProp] - (event[touchProp][0][pageProp] - event[touchProp][0][clientProp])) || event[clientProp] :
-                event[clientProp]);
-        },
-        _getEventPointer: function (event) {
-            var element = event.target || (typeof event.srcElement !== unknown ? event.srcElement : null),
-                scroll = PocketCode.ImageHelper.getScrollLeftTop(element),
-                x = 0,
-                y = 0;
+        // getPointer: function (e) {
+        //     var pointer = this._getEventPointer(e),
+        //         upperCanvasEl = this.upperCanvasEl,
+        //         bounds = upperCanvasEl.getBoundingClientRect(),
+        //         boundsWidth = bounds.width || 0,
+        //         boundsHeight = bounds.height || 0,
+        //         cssScale;
+        //
+        //     pointer.x = pointer.x - this._offset.left;
+        //     pointer.y = pointer.y - this._offset.top;
+        //
+        //     cssScale = {
+        //         width: upperCanvasEl.width / boundsWidth,
+        //         height: upperCanvasEl.height / boundsHeight
+        //     };
+        //
+        //     return {
+        //         x: pointer.x * cssScale.width,
+        //         y: pointer.y * cssScale.height
+        //     };
+        // },
+        // _checkTarget: function (obj, pointer) {
+        //     if (obj && obj.visible && obj.containsPoint(pointer)) {
+        //         var isTransparent = this._isTargetTransparent(obj, pointer.x, pointer.y);
+        //         if (!isTransparent) {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // },
 
-            if (SmartJs.Device.isTouch) {
-                x = this._getTouchPointer(event, 'pageX', 'clientX');
-                y = this._getTouchPointer(event, 'pageY', 'clientY');
-            }
-            else {
-                x = event.clientX ? event.clientX : 0;
-                y = event.clientY ? event.clientY : 0;
-            }
-            return {
-                x: x + scroll.left,
-                y: y + scroll.top
-            };
-        },
-        getPointer: function (e) {
-            var pointer = this._getEventPointer(e),
-                upperCanvasEl = this.upperCanvasEl,
-                bounds = upperCanvasEl.getBoundingClientRect(),
-                boundsWidth = bounds.width || 0,
-                boundsHeight = bounds.height || 0,
-                cssScale;
-
-            pointer.x = pointer.x - this._offset.left;
-            pointer.y = pointer.y - this._offset.top;
-
-            cssScale = {
-                width: upperCanvasEl.width / boundsWidth,
-                height: upperCanvasEl.height / boundsHeight
-            };
-
-            return {
-                x: pointer.x * cssScale.width,
-                y: pointer.y * cssScale.height
-            };
-        },
-        _checkTarget: function (obj, pointer) {
-            if (obj && obj.visible && obj.containsPoint(pointer)) {
-                var isTransparent = this.isTargetTransparent(obj, pointer.x, pointer.y);
-                if (!isTransparent) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        isTargetTransparent: function (target, x, y) {
+        _isTargetTransparent: function (target, x, y) {
             this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
             this.contextCache.save();
             target.draw(this.contextCache);
             this.contextCache.restore();
 
             var imageData = this.contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
-            //console.log('data ' + imageData.data);
+            //console.log('data: ' + imageData.data);
 
             //imageData.data contains rgba values - here we look at the alpha value
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
@@ -290,26 +321,42 @@ PocketCode.Ui.Canvas = (function () {
             this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
             return hasTransparentAlpha;
         },
-        _searchPossibleTargets: function (e) {
-            // Cache all targets where their bounding box contains point.
-            var target,
-                pointer = this.getPointer(e, true),
-                objs = this._renderingObjects,
-                obj;
-            var i = objs.length;
-            pointer = { //include our canvas scaling for search only
-                x: pointer.x / this.scalingX,
-                y: pointer.y / this.scalingY,
-            };
-            while (i--) {
-                obj = objs[i];
-                if (this._checkTarget(obj, pointer)) {
-                    target = obj;
+
+        _getTargetAtPosition: function (x, y) {
+            var pointer = { x: x / this.scalingX, y: y / this.scalingY };
+            var objects = this._renderingObjects;
+            var i = objects.length;
+            var object, target;
+
+            while (i--){
+                object = objects[i];
+                if (object && object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, pointer.x, pointer.y)) {
+                    target = object;
                     break;
                 }
             }
             return target;
         },
+        // _searchPossibleTargets: function (e) {
+        //     // Cache all targets where their bounding box contains point.
+        //     var target,
+        //         pointer = this.getPointer(e, true),
+        //         objs = this._renderingObjects,
+        //         obj;
+        //     var i = objs.length;
+        //     pointer = { //include our canvas scaling for search only
+        //         x: pointer.x / this.scalingX,
+        //         y: pointer.y / this.scalingY,
+        //     };
+        //     while (i--) {
+        //         obj = objs[i];
+        //         if (this._checkTarget(obj, pointer)) {
+        //             target = obj;
+        //             break;
+        //         }
+        //     }
+        //     return target;
+        // },
         render: function (viewportScaling) {
 
             var ctx = this.contextContainer;
