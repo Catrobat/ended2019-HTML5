@@ -12,7 +12,7 @@ PocketCode.RenderingImage = (function () {
         this.length = 0;
         this._scaleX = 1;
         this._scaleY = 1;
-        this._scale = 1;
+        this._scaling = 1;
         this.opacity = 1;
         this._flipX = false;
         this._visible = true;
@@ -144,7 +144,6 @@ PocketCode.RenderingImage = (function () {
             var tl = { x: (this.x - this.scaleX * this.width / 2), y: (this.y - this.scaleY * this.height / 2) };
             var bl = { x: (this.x - this.scaleX * this.width / 2), y: (this.y + this.scaleY * this.height / 2) };
             var tr = { x: (this.x + this.scaleX * this.width / 2), y: (this.y - this.scaleY * this.height / 2) };
-            //var br = { x: (this.x + this.scaleX * this.width / 2), y: (this.y + this.scaleY * this.height / 2) };
 
             if(!this._angle){
                 return (point.x >= tl.x && point.x <= tr.x &&
@@ -157,58 +156,7 @@ PocketCode.RenderingImage = (function () {
             point = {x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
                 y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y};
 
-            // if(this.id === "s15" || this.id === "s17"){
-            //     console.log(this.id + ": width: " + this.width * this.scaleX + ", height: " + this.height * this.scaleY + ", center: " + this.x + "," + this.y + ", angle: " + this._angle, rad);
-            //     console.log(pointBefore, point, (point.x >= tl.x && point.x <= tr.x && point.y >= tl.y && point.y <= bl.y));
-            // }
-
-            // if(this.output){
-            //     console.log(pointBefore, point, (point.x >= tl.x && point.x <= tr.x && point.y >= tl.y && point.y <= bl.y));
-            // }
             return (point.x.toFixed(4) >= tl.x && point.x.toFixed(4) <= tr.x && point.y.toFixed(4) >= tl.y && point.y.toFixed(4) <= bl.y);
-
-            // this would need correct tr tl bl br to work
-            // var scalar = function(a, b){
-            //     return a.x * b.x + a.y * b.y;
-            // };
-            //
-            //
-            //
-            // var tltr = {x: tl.x - tr.x, y: tl.y - tr.y};
-            // var tlp = {x: tl.x - point.x, y: tl.y - point.y};
-            // var tlbl = {x: tl.x - bl.x, y: tl.y - bl.y};
-            //
-            // var pointInRect = ((0 < scalar(tlp, tltr)) && (scalar(tlp, tltr) < scalar(tltr, tltr))) ||  ((0 < scalar(tlp, tlbl)) && (scalar(tlp, tlbl) < scalar(tlbl, tlbl)));
-
-
-            //
-            // //rough estimate
-            // var offsetTl = { x: tl.x - this.x, y: tl.y - this.y };
-            // var offsetBl = { x: bl.x - this.x, y: bl.y - this.y };
-            // var offsetTr = { x: tr.x - this.x, y: tr.y - this.y };
-            // var offsetBr = { x: br.x - this.x, y: br.y - this.y };
-            //
-            // var theta = this._angle * (Math.PI / 180);
-            //
-            // tl.x = offset.tl.x * Math.cos(theta) - offsetTl.y * Math.sin(theta);
-            // tl.y = offset.tl.x * Math.sin(theta) - offsetTl.y * Math.cos(theta);
-            //
-            // bl.x = offset.bl.x * Math.cos(theta) - offsetBl.y * Math.sin(theta);
-            // bl.y = offset.bl.x * Math.sin(theta) - offsetBl.y * Math.cos(theta);
-            //
-            // tr.x = offset.tr.x * Math.cos(theta) - offsetTr.y * Math.sin(theta);
-            // tr.y = offset.tr.x * Math.sin(theta) - offsetTr.y * Math.cos(theta);
-            //
-            // br.x = offset.br.x * Math.cos(theta) - offsetBr.y * Math.sin(theta);
-            // br.y = offset.br.x * Math.sin(theta) - offsetBr.y * Math.cos(theta);
-            //
-            // var minX = Math.min(tl.x, bl.x, tr.x, br.x);
-            // var minY = Math.min(tl.y, bl.y, tr.y, br.y);
-            // var maxX = Math.max(tl.x, bl.x, tr.x, br.x);
-            // var maxY = Math.max(tl.y, bl.y, tr.y, br.y);
-            // console.log(!(point.x < minX || point.x > maxX || point.y < minY || point.y > maxY));
-            //
-            // return !(point.x < minX || point.x > maxX || point.y < minY || point.y > maxY);
         },
         
         applyFilters: function(){
@@ -264,22 +212,6 @@ PocketCode.RenderingImage = (function () {
             this._element && context.drawImage(this._element, x, y, this.width, this.height);
 
             context.restore();
-            //
-            // scaling missing here
-            // var tl = { x: this.x - this.width / 2, y: this.y - this.height / 2 };
-            // var bl = { x: this.x - this.width / 2, y: this.y + this.height / 2 };
-            // var tr = { x: this.x + this.width / 2, y: this.y - this.height / 2 };
-            // var br = { x: this.x + this.width / 2, y: this.y + this.height / 2 };
-            //
-            //
-            // context.strokeStyle="green";
-            // //context.rect(this.left,this.top,5,5);
-            // if(this.id === 's6'){
-            //     console.log(this._scaling);
-            //     context.rect(tl.x,tl.y,5,5);
-            //     context.stroke();
-            //
-            // }
         }
     });
 
