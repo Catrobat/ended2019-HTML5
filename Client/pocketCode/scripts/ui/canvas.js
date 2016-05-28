@@ -4,7 +4,6 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../core.js" />
 /// <reference path="../ui.js" />
-/// <reference path="../../libs/fabric/fabric-1.6.0-rc.1.js" />
 'use strict';
 
 PocketCode.Ui.Canvas = (function () {
@@ -35,12 +34,11 @@ PocketCode.Ui.Canvas = (function () {
         this.upperCanvasEl.addEventListener('mousedown', this.__onMouseDown, false);
         this.upperCanvasEl.addEventListener('touchstart', this.__onMouseDown, false);
 
-        //todo, check what difference this makes for mobile
-        //this._initRetinaScaling();
-
         this._renderingObjects = [];
         this._renderingTexts = [];
-        this.scaling = 1.0;   //initial
+        this._scaling = 1.0;   //initial
+        this._scalingX = 1.0;
+        this._scalingY = 1.0;
         //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
 
         this.setDimensions(this.lowerCanvasEl.width, this.lowerCanvasEl.height, this.scaling);
@@ -82,6 +80,32 @@ PocketCode.Ui.Canvas = (function () {
                 this._renderingTexts = list;  //TODO: exception handling, argument check
             },
         },
+        scaling: {
+            set: function (value) {
+                this._scaling = value;
+                this._scalingX = value;
+                this._scalingY = value;
+            },
+            get: function () {
+                return this._scaling;
+            }
+        },
+        scalingX: {
+            set: function (value) {
+                this._scalingX = value;
+            },
+            get: function () {
+                return this._scalingX;
+            }
+        },
+        scalingY: {
+            set: function (value) {
+                this._scalingY = value;
+            },
+            get: function () {
+                return this._scalingY;
+            }
+        }
     });
 
     //events
@@ -137,18 +161,6 @@ PocketCode.Ui.Canvas = (function () {
             };
         },
 
-        //todo modify if used
-        _initRetinaScaling: function() {
-            if (fabric.devicePixelRatio === 1 || !this.enableRetinaScaling) {
-                return;
-            }
-
-            this.lowerCanvasEl.setAttribute('width', this._width * fabric.devicePixelRatio);
-            this.lowerCanvasEl.setAttribute('height', this._height * fabric.devicePixelRatio);
-
-            this.contextContainer.scale(fabric.devicePixelRatio, fabric.devicePixelRatio);
-        },
-
         _createCanvasElement: function (name, parentElement) {
 
             var canvasElement = this.document.createElement('canvas');
@@ -158,9 +170,6 @@ PocketCode.Ui.Canvas = (function () {
             canvasElement.style.position = 'absolute';
             canvasElement.style.left = 0;
             canvasElement.style.top = 0;
-
-            //todo css
-            canvasElement.onselectstart = function(){ return false; };
 
             //todo typecheck
             if(parentElement){
@@ -182,15 +191,6 @@ PocketCode.Ui.Canvas = (function () {
             this._height = height;
             this._width = width;
 
-            this.lowerCanvasEl.style.height = height + 'px';
-            this.lowerCanvasEl.style.width = width + 'px';
-            this.upperCanvasEl.style.height = height + 'px';
-            this.upperCanvasEl.style.width = width + 'px';
-            this.cacheCanvasEl.style.height = height + 'px';
-            this.cacheCanvasEl.style.width = width + 'px';
-
-            //console.log(this._height, this._width, this.lowerCanvasEl);
-
             this.scaling = scaling;
             this.calcOffset();
 
@@ -205,6 +205,7 @@ PocketCode.Ui.Canvas = (function () {
 
         __onMouseDown: function (e) {
             var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
+
             if (!isLeftClick && !SmartJs.Device.isTouch) {
                 return;
             }
@@ -252,7 +253,6 @@ PocketCode.Ui.Canvas = (function () {
             pointer.x = pointer.x - this._offset.left;
             pointer.y = pointer.y - this._offset.top;
 
-            //todo check behaviour without our css
             cssScale = {
                 width: upperCanvasEl.width / boundsWidth,
                 height: upperCanvasEl.height / boundsHeight
@@ -260,12 +260,11 @@ PocketCode.Ui.Canvas = (function () {
 
             return {
                 x: pointer.x * cssScale.width,
-                y: pointer.y * cssScale.height,
+                y: pointer.y * cssScale.height
             };
         },
         _checkTarget: function (obj, pointer) {
-            obj.setCoords();
-            if (obj && obj.visible && obj.evented && obj.containsPoint(pointer)) {
+            if (obj && obj.visible && obj.containsPoint(pointer)) {
                 var isTransparent = this.isTargetTransparent(obj, pointer.x, pointer.y);
                 if (!isTransparent) {
                     return true;
@@ -275,36 +274,35 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         isTargetTransparent: function (target, x, y) {
+            this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
             this.contextCache.save();
-            target.render(this.contextCache);
+            target.draw(this.contextCache);
             this.contextCache.restore();
 
             var imageData = this.contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
-
-            //console.log(imageData.data);
+            //console.log('data ' + imageData.data);
 
             //imageData.data contains rgba values - here we look at the alpha value
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
 
             imageData = null;
-            this.contextCache.clearRect(0, 0, this._width, this._height);
 
+            this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
             return hasTransparentAlpha;
         },
         _searchPossibleTargets: function (e) {
             // Cache all targets where their bounding box contains point.
-
             var target,
                 pointer = this.getPointer(e, true),
                 objs = this._renderingObjects,
                 obj;
             var i = objs.length;
             pointer = { //include our canvas scaling for search only
-                x: pointer.x / this.scaling,
-                y: pointer.y / this.scaling,
+                x: pointer.x / this.scalingX,
+                y: pointer.y / this.scalingY,
             };
             while (i--) {
-                obj = objs[i].object;
+                obj = objs[i];
                 if (this._checkTarget(obj, pointer)) {
                     target = obj;
                     break;
@@ -322,7 +320,6 @@ PocketCode.Ui.Canvas = (function () {
                 scaling = viewportScaling || this.scaling;
             ctx.save();
             ctx.scale(scaling, scaling);
-
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
 
