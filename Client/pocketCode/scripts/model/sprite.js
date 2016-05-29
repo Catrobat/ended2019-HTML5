@@ -148,11 +148,11 @@ PocketCode.Model.Sprite = (function () {
                     ],
                 };
                 if (this._currentLook) {
-                    var look = this._gameEngine.getLookImage(this._currentLook.imageId);
+                    var look = this._currentLook;//this._gameEngine.getLookImage(this._currentLook.imageId);
 
                     obj.merge({
                         look: look.canvas,
-                        scaling: 1 / look.initialScaling,
+                        scaling: 1.0 / look.initialScaling,
                         x: this._positionX + this._lookOffsetX,//center.length * Math.cos(center.angle),
                         y: this._positionY + this._lookOffsetY,//center.length * Math.sin(center.angle),
                     });
@@ -210,17 +210,17 @@ PocketCode.Model.Sprite = (function () {
                 if (!(jsonLooks instanceof Array))// || looks.length === 0)    //looks === undefined || typeof looks !== 'object' ||
                     throw new Error('invalid argument: expected jsonLooks type of array');
 
-                //this._looks = looks;  //TODO: change this as soon as looks becode own DTOs with ID
                 this._looks = [];
-                for (var i = 0, l = jsonLooks.length; i < l; i++)
-                    this._looks.push(new PocketCode.Model.Look(jsonLooks[i]));
-                //{
-                //    var look = looks[i];
-                //    this._looks.push({ imageId: look.id, name: look.name });
-                //}
-                this._currentLook = undefined; //make sure its deleted on re-initialize
+                var look;
+                for (var i = 0, l = jsonLooks.length; i < l; i++) {
+                    look = new PocketCode.Model.Look(jsonLooks[i]);
+                    this._looks.push(look);
+                }
+                
                 if (jsonLooks.length > 0)
                     this._currentLook = this._looks[0];
+                else    //make sure its deleted on re-initialize
+                    this._currentLook = undefined;
             },
             //get: function () {
             //    return this._looks;
@@ -259,9 +259,9 @@ PocketCode.Model.Sprite = (function () {
                 //    this._sounds[sound.id] = sound;
                 //}
             },
-            get: function () {
-                return this._sounds;
-            },
+            //get: function () {
+            //    return this._sounds;
+            //},
         },
 
         scripts: {
@@ -338,7 +338,9 @@ PocketCode.Model.Sprite = (function () {
             this._flipX = false;
             //sounds: currently not in use but defined: in future: change name + serialization required
             //looks
-            this._currentLook = this._looks.length > 0 ? this._looks[0] : undefined;
+            var looks = this._looks;
+            this._currentLook = looks.length > 0 ? looks[0] : undefined;
+
             this._size = 100.0;
             this._visible = true;
             this._transparency = 0.0;
@@ -346,6 +348,17 @@ PocketCode.Model.Sprite = (function () {
             this._recalculateLookOffsets();
             //variables
             this._resetVariables();
+        },
+        initLooks: function(initialScaling) {
+            var looks = this._looks;
+            var l = looks.length,
+                look, img;
+
+            for (var i = 0; i < l; i++) {
+                look = looks[i];
+                img = this._gameEngine.getLookImage(look.imageId);
+                look.init(img, initialScaling);
+            }
         },
         ///**
         // * calls execute() on every script as long as method is available
@@ -420,13 +433,13 @@ PocketCode.Model.Sprite = (function () {
                 return;
             }
             // bypass tests where looks were not loaded via the image store
-            try {
-                var look = this._gameEngine.getLookImage(this._currentLook.imageId);
-            } catch (err) {console.log('LOOK NOT FOUND, PROBABLY NOT YET LOADED.');return;}
+            //try {
+            var look = this._currentLook;//this._gameEngine.getLookImage(this._currentLook.imageId);
+            //} catch (err) {console.log('LOOK NOT FOUND, PROBABLY NOT YET LOADED.');return;}
 
-            var rotationAngle = (this._direction - 90.0) * Math.PI / 180.;
-            var center = look.center;
-            var scale = this._size / 100.0 / look.initialScaling;
+            var rotationAngle = (this._direction - 90.0) * Math.PI / 180.0;
+            var center = look.center;///look.center;
+            var scale = this._size / 100.0 / look.initialScaling;   //TODO: delete initial scaling???
 
             this._lookOffsetX = center.length*scale * Math.cos(center.angle - rotationAngle);
             this._lookOffsetY = center.length*scale * Math.sin(center.angle - rotationAngle);
@@ -456,7 +469,7 @@ PocketCode.Model.Sprite = (function () {
                     if (rotationStyleChanged && this._direction != 90.0) {
                         props.rotation = 0.0;
                         //recalculate x/y position and add them to props
-                        var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                        var center = this._currentLook.center;//this._gameEngine.getLookImage(this._currentLook.imageId).center;
                         props.x = this._positionX + this._lookOffsetX; // + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
                         props.y = this._positionY + this._lookOffsetY; // + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
@@ -470,7 +483,7 @@ PocketCode.Model.Sprite = (function () {
                     if (rotationStyleChanged) {
                         props.rotation = 0.0;
                         //recalculate x/y position and add them to props
-                        var center = this._gameEngine.getLookImage(this._currentLook.imageId).center;
+                        var center = this._currentLook.center;//this._gameEngine.getLookImage(this._currentLook.imageId).center;
                         props.x = this._positionX + this._lookOffsetX; // + center.length * Math.cos(center.angle);// - props.rotation * Math.PI / 180.0);
                         props.y = this._positionY + this._lookOffsetY; // + center.length * Math.sin(center.angle);// - props.rotation * Math.PI / 180.0);
                     }
@@ -601,14 +614,6 @@ PocketCode.Model.Sprite = (function () {
             this._positionY += value;
             this._triggerOnChange({ y: this._positionY + this._lookOffsetY});//center.angle - (this._direction - 90.0) * Math.PI / 180.0) });
             return true;
-        },
-        /**
-         * checks if sprite flips at the edge
-         * @returns {*}
-         */
-        ifOnEdgeBounce: function () {
-            return this._gameEngine.ifSpriteOnEdgeBounce(this);//.id, this);    //TODO: check parameters: this, 
-            //onChange event is triggered by program in this case
         },
         /**
          * moves the sprite "value" steps in the direction of the current direction
@@ -759,23 +764,28 @@ PocketCode.Model.Sprite = (function () {
             if (this._currentLook && this._currentLook.id === lookId || this._looks.length == 0)
                 return false;
             
-            var looks = this._looks;
-            var look, center, update, angle;
+            var looks = this._looks,
+                look, update;
+            //var look, center, update, angle;
             for (var i = 0, l = looks.length; i < l; i++) {
                 look = looks[i];
-                if (look.id === lookId) {
+                if (looks.id === lookId) {
                     this._currentLook = look;
-                    look = this._gameEngine.getLookImage(look.imageId);     //TODO: include in look object
+            //        look = this._gameEngine.getLookImage(look.imageId);     //TODO: include in look object
                     update = { look: look.canvas };
-                    center = look.center;
+            //        center = look.center;
                     this._recalculateLookOffsets();
-                    // angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
+            //        // angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
                     update.x = this._positionX + this._lookOffsetX;
                     update.y = this._positionY + this._lookOffsetY;
                     this._triggerOnChange(update);
                     return true;
                 }
             }
+            //var look = this._looks[lookId];
+            //if (look)   //exists
+            //    this._currentLook = look;
+            //else
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
         /**
@@ -783,36 +793,42 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          */
         nextLook: function () {
-            if (this._currentLook == undefined || this._looks.length == 0) {
-                //   throw new Error('current look is invalid');
+            if (this._currentLook == undefined || this._looks.length == 0)
                 return false;
-            }
-            var looks = this._looks;
+
+            var looks = this._looks,
+                update;
             var count = looks.length;
             if (count < 2)
                 return false;
             //var look, center, update, angle;
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
-                    if ((i + 1) < count) { //1+1=2 < 2    2<2
+                    if ((i + 1) < count) {  //1+1=2 < 2    2<2
                         var j = i + 1;
                         this._currentLook = looks[j];
                     }
                     else {
                         this._currentLook = looks[0];
                     }
-                    break;
+                    this._recalculateLookOffsets();
+                    update = { look: this._currentLook.canvas };
+                    update.x = this._positionX + this._lookOffsetX;
+                    update.y = this._positionY + this._lookOffsetY;
+                    this._triggerOnChange(update);
+                    return true;
                 }
             }
-            var look = this._gameEngine.getLookImage(this._currentLook.imageId),
-                update = { look: look.canvas };
-            this._recalculateLookOffsets();
-            //center = look.center,
-            //angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
-            update.x = this._positionX + this._lookOffsetX;
-            update.y = this._positionY + this._lookOffsetY;
-            this._triggerOnChange(update);
-            return true;
+            //var look = this._gameEngine.getLookImage(this._currentLook.imageId),
+            //    update = { look: look.canvas };
+            //this._recalculateLookOffsets();
+            ////center = look.center,
+            ////angle = (this._rotationStyle === PocketCode.RotationStyle.ALL_AROUND) ? center.angle - (this._direction - 90.0) * Math.PI / 180.0 : center.angle;
+            //update.x = this._positionX + this._lookOffsetX;
+            //update.y = this._positionY + this._lookOffsetY;
+            //this._triggerOnChange(update);
+            //return true;
+            return false;
         },
         /**
          * sets the size of the sprite with percentage "value"
@@ -830,7 +846,7 @@ PocketCode.Model.Sprite = (function () {
                 size = 0;
             this._size = size;
             this._recalculateLookOffsets();
-            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;   //TODO: delete initial scaling???
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: this._size });
             return true;
         },
@@ -853,7 +869,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._size = size;
-            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;
+            var scaling = this._currentLook ? this._gameEngine.getLookImage(this._currentLook.imageId).initialScaling : 1.0;   //TODO: delete initial scaling???
             this._triggerOnChange({ scaling: size / 100.0 / scaling });//{ size: size });
             return true;
         },
@@ -1073,6 +1089,258 @@ PocketCode.Model.Sprite = (function () {
                 return true;
             }
             return false;
+        },
+        ///**
+        // * checks if sprite flips at the edge
+        // * @returns {*}
+        // */
+        //ifOnEdgeBounce: function () {
+        //    return this._gameEngine.ifSpriteOnEdgeBounce(this);//.id, this);    //TODO: check parameters: this, 
+        //    //onChange event is triggered by program in this case
+        //},
+        ifOnEdgeBounce: function () {
+
+            if (!this.currentLook)   //no look defined (cannot be changed either): no need to handle this
+                return false;
+
+            var size = this._gameEngine.projectScreenSize;
+            var sh2 = size.height / 2.0,
+                sw2 = size.width / 2.0,
+                dir = this.direction,
+                x = this.positionX,
+                y = this.positionY;
+
+            var look = this.currentLook,
+                //lookId = this.currentLook.imageId,    //TODO: this may change to lookId (next version)
+                scaling = this.size / 100.0,
+                rotation = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                //^^ sprite has a direction but is not rotated
+                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+
+            //var imgStore = this._imageStore;
+            /* interface to use: imgStore.getLookBoundary(spriteId, lookId, scalingFactor, rotationAngle, flipX, pixelAccuracy)
+            *  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
+            *  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
+            *  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
+            *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
+            */
+
+            var boundary = look.getBoundary(scaling, rotation, flipX, false);//imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, false);
+            //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+            //quick check
+            if (!boundary.pixelAccuracy &&
+                y + boundary.top < sh2 &&
+                x + boundary.right < sw2 &&
+                y + boundary.bottom > -sh2 &&
+                x + boundary.left > -sw2)
+                return false;
+
+            boundary = look.getBoundary(scaling, rotation, flipX, true);//imgStore.getLookBoundary(this.id, lookId, scaling, rotation, flipX, true);    //update to exact values at collision
+            if (y + boundary.top < sh2 &&
+                x + boundary.right < sw2 &&
+                y + boundary.bottom > -sh2 &&
+                x + boundary.left > -sw2)
+                return false;
+
+            //handle bounce
+            var centerOffset = {  //store the center position of the current area
+                x: (boundary.right + boundary.left) / 2.0,
+                y: (boundary.top + boundary.bottom) / 2.0,
+            };
+
+            var vpEdges = { //viewport edges
+                top: {
+                    overflow: y + boundary.top - sh2,
+                    ignore: false,
+                    inDirection: Math.abs(dir) <= 90.0,
+                    calcDirection: function (dir) { return dir >= 0.0 ? 180.0 - dir : -180.0 - dir; },    // //make sure we do not get an angle within +-180
+                },
+                right: {
+                    overflow: x + boundary.right - sw2,
+                    ignore: false,
+                    inDirection: dir >= 0.0,
+                    calcDirection: function (dir) { return dir == 180.0 ? dir : -dir; },
+                },
+                bottom: {
+                    overflow: -y - boundary.bottom - sh2,
+                    ignore: false,
+                    inDirection: Math.abs(dir) > 90.0,
+                    calcDirection: function (dir) { return dir > 0.0 ? 180.0 - dir : -180.0 - dir; },
+                },
+                left: {
+                    overflow: -x - boundary.left - sw2,
+                    ignore: false,
+                    inDirection: dir < 0.0,
+                    calcDirection: function (dir) { return -dir; },
+                },
+                getXCorrection: function () {   //TODO: !!!!!!!!!!!!!!!   move in direction!!!!!!!!!!!!
+                    var c,
+                        l = vpEdges.left,
+                        r = vpEdges.right;
+
+                    if (l.ignore || r.ignore) {
+                        return l.ignore ? -r.overflow : l.overflow; //overflows can be negativ as well (after rotation)- we also have to take care of this 
+                    }
+                    //after rotation there can be a an overflow that didn't exist before
+                    if (l.overflow > 0.0 && r.overflow > 0.0 || l.overflow + r.overflow > 0.0) {  //check as well, if the rotated area still fits in the viewport
+                        //move from original direction
+                        if (dir >= 0.0)
+                            return -r.overflow;
+                        else
+                            return l.overflow;
+                    }
+                    else if (l.overflow > 0.0)
+                        return l.overflow;  //check if lo+ro < 0 -> else: include direction
+                    else if (r.overflow > 0.0)
+                        return -r.overflow;
+                    return 0.0;   //move to center already applied
+                },
+                getYCorrection: function () {       //TODO: abhängig von dir  (nicht newDir)- falls beide nicht ignored !!!!!!!!!!!!!!!   move in direction!!!!!!!!!!!!
+                    var c,
+                        t = vpEdges.top,
+                        b = vpEdges.bottom;
+                    if (t.ignore || b.ignore) {
+                        return t.ignore ? b.overflow : -t.overflow;
+                    }
+                    //after rotation
+                    if (t.overflow > 0.0 && b.overflow > 0.0) {
+                        //move from original direction
+                        if (Math.abs(dir) <= 90.0)
+                            return -t.overflow;
+                        else
+                            return b.overflow;
+                    }
+                    else if (t.overflow > 0.0)
+                        return -t.overflow;
+                    else if (b.overflow > 0.0)
+                        return b.overflow;
+                    return 0.0;   //move to center already applied
+                },
+            };
+
+            //check if overflow
+            //if (vpEdges.top.overflow <= 0.0 &&
+            //    vpEdges.right.overflow <= 0.0 &&
+            //    vpEdges.bottom.overflow <= 0.0 &&
+            //    vpEdges.left.overflow <= 0.0)
+            //    return false;   //no collision: pixel exact calculation
+
+            //handle conflics: if there is an overflow on both sides we always bounce from the side the sprites points to
+            if (vpEdges.top.overflow > 0.0 && vpEdges.bottom.overflow > 0.0) {
+                if (Math.abs(dir) <= 90.0)
+                    vpEdges.bottom.ignore = true;
+                else
+                    vpEdges.top.ignore = true;
+            }
+            if (vpEdges.left.overflow > 0.0 && vpEdges.right.overflow > 0.0) {
+                if (dir < 0.0)
+                    vpEdges.right.ignore = true;
+                else
+                    vpEdges.left.ignore = true;
+            }
+
+            //calc new positions and direction: we need this to compare new with existing properties to trigger the update event correctly
+            var newDir = dir,
+                newX = x,
+                newY = y;//,
+            //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
+            //var edgesToHandle;
+
+            //up to now, there are only 2 neigboured edges left at max (not ignored): let's call them p(rimus) and s(ecundus), where p (at least) is always inDirection (if one of them is)
+            var p, s;
+            if (vpEdges.top.overflow > 0.0 && !vpEdges.top.ignore) {
+                p = vpEdges.top;
+            }
+            if (vpEdges.right.overflow > 0.0 && !vpEdges.right.ignore) {
+                if (!p)
+                    p = vpEdges.right;
+                else if (p && vpEdges.right.inDirection) {
+                    s = p;
+                    p = vpEdges.right;
+                }
+                else
+                    s = vpEdges.right;
+            }
+            if (vpEdges.bottom.overflow > 0.0 && !vpEdges.bottom.ignore) {
+                if (!p)
+                    p = vpEdges.bottom;
+                else if (p && vpEdges.bottom.inDirection) {
+                    s = p;
+                    p = vpEdges.bottom;
+                }
+                else
+                    s = vpEdges.bottom;
+            }
+            if (vpEdges.left.overflow > 0.0 && !vpEdges.left.ignore) {
+                if (!p)
+                    p = vpEdges.left;
+                else if (p && vpEdges.left.inDirection) {
+                    s = p;
+                    p = vpEdges.left;
+                }
+                else
+                    s = vpEdges.left;
+            }
+
+            //calc positions and rotations
+            if (p && p.inDirection)
+                newDir = p.calcDirection(newDir);
+            if (s && s.inDirection)
+                newDir = s.calcDirection(newDir);
+
+            var updateBoundary = false;
+            if (newDir != dir && this.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
+                rotation = newDir - 90.0;
+                updateBoundary = true;
+            }
+            else if (newDir != dir && this.rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
+                rotation = 0.0;
+                if ((newDir >= 0.0 && dir < 0.0) || (newDir < 0.0 && dir >= 0.0)) { //flipX changed
+                    flipX = !flipX;
+                    updateBoundary = true;
+                }
+            }
+
+            if (updateBoundary) {
+                boundary = look.getBoundary(scaling, rotation, flipX, true);//imgStore.getLookBoundary(this.id, lookId, scaling, rotation, flipX, true);    //recalculate
+                //center = {  //update center position of the current area
+                //    x: x + (boundary.right + boundary.left) / 2.0,
+                //    y: y + (boundary.top + boundary.bottom) / 2.0,
+                //};
+                //adjust: keep the area center during rotate
+                newX += centerOffset.x - (boundary.right + boundary.left) / 2.0;
+                newY += centerOffset.y - (boundary.top + boundary.bottom) / 2.0;
+                //update overflows
+                vpEdges.top.overflow = newY + boundary.top - sh2;
+                vpEdges.right.overflow = newX + boundary.right - sw2;
+                vpEdges.bottom.overflow = -newY - boundary.bottom - sh2;
+                vpEdges.left.overflow = -newX - boundary.left - sw2;
+            }
+            //set position
+            newX += vpEdges.getXCorrection();
+            newY += vpEdges.getYCorrection();
+
+            //set sprite values: avoid triggering multiple onChange events
+            var props = {};
+            if (this.direction !== newDir) {
+                this.setDirection(newDir, false);
+                props.rotation = newDir - 90.0;
+            }
+            if (this.positionX !== newX) {
+                props.positionX = newX;
+            }
+            if (this.positionY !== newY) {
+                props.positionY = newY;
+            }
+            this.setPosition(newX, newY, false);
+
+            //this._onSpriteUiChange.dispatchEvent({ id: this.id, properties: props }, this); //TODO
+            if (!props.positionX && !props.positionY)
+                return false;
+            this._triggerOnChange(props);
+            return true;
         },
 
         /* override */
