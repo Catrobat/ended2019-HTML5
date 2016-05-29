@@ -123,42 +123,6 @@ PocketCode.Ui.Canvas = (function () {
 
     //methods
     Canvas.prototype.merge({
-        calcOffset: function () {
-            var element = this.lowerCanvasEl,
-                docElem,
-                doc = element && element.ownerDocument,
-                box = { left: 0, top: 0 },
-                offset = { left: 0, top: 0 },
-                scrollLeftTop,
-                offsetAttributes = {
-                    borderLeftWidth: 'left',
-                    borderTopWidth:  'top',
-                    paddingLeft:     'left',
-                    paddingTop:      'top'
-                };
-
-            if (!doc) {
-                return offset;
-            }
-
-            for (var attr in offsetAttributes) {
-                var style = document.defaultView.getComputedStyle(element, null);
-                style = style[attr] || undefined;
-                offset[offsetAttributes[attr]] += parseInt(style, 10) || 0;
-            }
-
-            docElem = doc.documentElement;
-            if ( typeof element.getBoundingClientRect !== 'undefined' ) {
-                box = element.getBoundingClientRect();
-            }
-
-            scrollLeftTop = PocketCode.ImageHelper.getScrollLeftTop(element);
-
-            this._offset = {
-                left: box.left + scrollLeftTop.left - (docElem.clientLeft || 0) + offset.left,
-                top: box.top + scrollLeftTop.top - (docElem.clientTop || 0)  + offset.top
-            };
-        },
 
         _createCanvasElement: function (name, parentElement) {
 
@@ -169,6 +133,7 @@ PocketCode.Ui.Canvas = (function () {
             canvasElement.style.position = 'absolute';
             canvasElement.style.left = 0;
             canvasElement.style.top = 0;
+            canvasElement.style.border = 0;
 
             //todo typecheck
             if(parentElement){
@@ -191,7 +156,6 @@ PocketCode.Ui.Canvas = (function () {
             this._width = width;
 
             this.scaling = scaling;
-            this.calcOffset();
 
             this.cacheCanvasEl.setAttribute('width', this._width / this.scaling);
             this.cacheCanvasEl.setAttribute('height', this._height / this.scaling);
