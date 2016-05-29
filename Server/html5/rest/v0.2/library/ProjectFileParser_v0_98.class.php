@@ -318,7 +318,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $brick->selected = (string)$script->spinnerSelectionID;
                 break;
 
-            case "ChooseCameraBrickBrick":    /*new*/
+            case "ChooseCameraBrick":    /*new*/
                 $brick = new SelectCameraBrickDto();   //spinnerSelectionID = 0/1 (back/front)
                 $brick->selected = (string)$script->spinnerSelectionID;
                 break;
