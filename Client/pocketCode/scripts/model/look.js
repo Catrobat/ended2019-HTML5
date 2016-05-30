@@ -19,7 +19,7 @@ PocketCode.Model.Look = (function () {
 
         this._initialScaling = 1.0;
         //this._canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
-        this._cache = {};
+        //this._cache = {};
     }
 
     //properties
@@ -107,7 +107,13 @@ PocketCode.Model.Look = (function () {
             var cache = this._cache || {},
                 retB;
             if (cache.scaling === scaling && cache.rotation === rotation && (!pixelAccuracy || pixelAccuracy && cache.pixelAccuracy)) {
-                retB = { top: cache.top, right: cache.right, bottom: cache.bottom, left: cache.left, pixelAccuracy: cache.pixelAccuracy };   //make sure the cache cannot be overwritten from outside
+                retB = {
+                    top: cache.top,
+                    right: cache.right,
+                    bottom: cache.bottom,
+                    left: cache.left,
+                    pixelAccuracy: cache.pixelAccuracy,
+                };   //make sure the cache cannot be overwritten from outside
                 //if (flipX)
                 //    return this._flipXBoundary(ret);
                 //return ret;
@@ -138,10 +144,12 @@ PocketCode.Model.Look = (function () {
             //bl: { length: undefined, angle: undefined }, 
             //br: { length: undefined, angle: undefined } };
 
-            var boundary = {};
-            if (this._cache)
-                boundary = this._cache;
-            else {
+            var boundary = this._cache;//{};
+            //if (this._cache)
+            //    boundary = this._cache;
+            //else {
+            if (!boundary) {
+                boundary = {};
                 var calc = {},
                 length = this.tl.length * scalingFactor,
                 angle = this.tl.angle - rotationRad;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
@@ -159,7 +167,7 @@ PocketCode.Model.Look = (function () {
                 angle = this.br.angle - rotationRad;
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
-                var boundary;
+                //var boundary;
                 if (rotation)
                     boundary = {   //due to rotation every corner can become a max/min value
                         top: Math.ceil(Math.max(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
