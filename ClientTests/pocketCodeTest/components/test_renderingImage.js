@@ -68,61 +68,20 @@ QUnit.test("RenderingImage", function (assert) {
             assert.ok(!renderingImage.containsPoint(centerTop) && !renderingImage.containsPoint(centerBottom)
                 && !renderingImage.containsPoint(centerLeft) && !renderingImage.containsPoint(centerRight), "Does not contain Points outside boundaries with rotation: " + rotationAngle);
 
-
-            //
-            // centerTop = {x: renderingImage.x + xOffset, y: renderingImage.y + yOffset};
-            // centerBottom = {x: renderingImage.x - xOffset, y: renderingImage.y - yOffset};
-            //
-            //
-            // var tl = {x: renderingImage.x - xOffset, y: renderingImage.y - yOffset};
-            // var tr = {x: renderingImage.x + xOffset, y: renderingImage.y - yOffset};
-            // var bl = {x: renderingImage.x - xOffset, y: renderingImage.y + yOffset};
-            // var br = {x: renderingImage.x + xOffset, y: renderingImage.y + yOffset};
-            // assert.ok(renderingImage.containsPoint(tl) && renderingImage.containsPoint(tr)
-            //        && renderingImage.containsPoint(bl) && renderingImage.containsPoint(br), "Contains Points on corners with rotation: " + rotationAngle);
-            //
-            // xOffset = ((renderingImage.width / 2) + 1) * Math.cos(rad);
-            //
-            // tl = {x: renderingImage.x - xOffset, y: renderingImage.y - yOffset};
-            // tr = {x: renderingImage.x + xOffset, y: renderingImage.y - yOffset};
-            // bl = {x: renderingImage.x - xOffset, y: renderingImage.y + yOffset};
-            // br = {x: renderingImage.x + xOffset, y: renderingImage.y + yOffset};
-            // assert.ok(!renderingImage.containsPoint(tl) && !renderingImage.containsPoint(tr)
-            //     && !renderingImage.containsPoint(bl) && !renderingImage.containsPoint(br), "Does not contain Points outside of corners with rotation: " + rotationAngle);
-            //
-            // xOffset = renderingImage.width / 2 * Math.cos(rad);
-            // yOffset = ((renderingImage.height / 2) + 1) * Math.sin(rad);
-            //
-            // tl = {x: renderingImage.x - xOffset, y: renderingImage.y - yOffset};
-            // tr = {x: renderingImage.x + xOffset, y: renderingImage.y - yOffset};
-            // bl = {x: renderingImage.x - xOffset, y: renderingImage.y + yOffset};
-            // br = {x: renderingImage.x + xOffset, y: renderingImage.y + yOffset};
-            // assert.ok(!renderingImage.containsPoint(tl) && !renderingImage.containsPoint(tr)
-            //     && !renderingImage.containsPoint(bl) && !renderingImage.containsPoint(br), "Does not contain Points outside of corners with rotation: " + rotationAngle);
         }
 
         //draw tests
         var looks1 = [{id:"s1", name:"look1"}];
         var looks2 = [{id:"s2", name:"look2"}];
         var sprite1 = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks:looks1});
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, {id: "id1", name: "sprite1", looks:looks2});
+        //var sprite2 = new PocketCode.Model.Sprite(gameEngine, {id: "id1", name: "sprite1", looks:looks2});
 
         var renderingImageOpaque = new PocketCode.RenderingImage(sprite1.renderingProperties);
-        var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
+        //var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
 
 
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
-
-        //console.log(canvasElement.width, canvasElement.height);
-
-
-
-        //
-        // var canvas = new PocketCode.Ui.Canvas();
-        // canvas.setDimensions(80, 40, 1);
-
-        //todo set canvas size
 
         renderingImageOpaque.draw(ctx);
         assert.ok(ctx.getImageData(0,0,1,1).data[3], "visible image drawn");
@@ -132,10 +91,7 @@ QUnit.test("RenderingImage", function (assert) {
         console.log(ctx.getImageData(0,0,1,1).data[3]);
         assert.ok(!ctx.getImageData(0,0,1,1).data[3], "invisible image not drawn");
 
-
         console.log(canvas.toDataURL('image/png'));
-        //var imageData = this.contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
-
 
         asyncTestsDone();
     };
