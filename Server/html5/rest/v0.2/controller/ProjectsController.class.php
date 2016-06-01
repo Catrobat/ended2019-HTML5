@@ -262,8 +262,16 @@ class ProjectsController extends BaseController
                 throw new Exception("code file not found: " . $cacheDir . "code.xml");
             }
 
-            // load code.xml of project
-            $xml = simplexml_load_file($cacheDir . "code.xml");
+            //load code.xml of project
+            //replace invalid 0 chars due to physics bug
+            $content = file_get_contents($base_dir . 'code.xml');
+            if ($content === false) {
+                    throw new FileParserException("error loading file: invalid xml");
+            }
+            $content = str_replace('&#x0;', '', $content);
+
+            $xml = @simplexml_load_string($content);
+            //$xml = simplexml_load_file($cacheDir . "code.xml");
             if($xml === false)
             {
                 throw new FileParserException("error loading file: invalid xml");
