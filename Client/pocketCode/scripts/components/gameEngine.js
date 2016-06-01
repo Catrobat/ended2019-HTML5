@@ -127,22 +127,6 @@ PocketCode.GameEngine = (function () {
         //        return this._sprites;
         //    },
         //},
-        //images: {   //public getter required for rendering //TODO: change this to looks/costumes
-        //    get: function () {
-        //        return this.__images;
-        //    }
-        //},
-        //_images: {
-        //    set: function (images) {
-        //        if (!(images instanceof Array))
-        //            throw new Error('setter expects type Array');
-
-        //        for (var i = 0, l = images.length; i < l; i++)
-        //            this.__images[images[i].id] = images[i];
-        //    },
-        //    //enumerable: false,
-        //    //configurable: true,
-        //},
         _sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -261,22 +245,8 @@ PocketCode.GameEngine = (function () {
             if (this._resourceTotalSize === 0)
                 this._resourcesLoaded = true;
             else {
-                //var //initialScaling = 1,     //set initial scaling: default = 1
-                //    scaling;
-                //if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
-                //    var min = Math.min(window.innerWidth, window.innerHeight),
-                //        max = Math.max(window.innerWidth, window.innerHeight),
-                //        smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
-                //        smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
-                //    scaling = Math.min(min / smin, max / smax);
-                //}
-                //else
-                //    scaling = Math.min(screen.width / this._originalScreenWidth, screen.height / this._originalScreenHeight);
-
-                //if (scaling < 1)
-                //    initialScaling = scaling;
                 this._resourceBaseUrl = jsonProject.resourceBaseUrl;
-                this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images);//, initialScaling);
+                this._imageStore.loadImages(this._resourceBaseUrl, jsonProject.images);
                 //sounds are loaded after images using the image stores onLoad event
             }
 
@@ -338,30 +308,16 @@ PocketCode.GameEngine = (function () {
         _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
             var bg = this._background,
-                sprites = this._sprites;//,//;
-            //var //initialScaling = 1,     //set initial scaling: default = 1
-            //    initialScaling;
-            //if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
-            //    var min = Math.min(window.innerWidth, window.innerHeight),
-            //        max = Math.max(window.innerWidth, window.innerHeight),
-            //        smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
-            //        smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
-            //    initialScaling = Math.min(min / smin, max / smax);
-            //}
-            //else
-            //    initialScaling = Math.min(screen.width / this._originalScreenWidth, screen.height / this._originalScreenHeight);
+                sprites = this._sprites;
 
-            //if (initialScaling > 1.0)
-            //    initialScaling = 1.0;
             if (bg) {
-                bg.initLooks();//initialScaling);
+                bg.initLooks();
                 bg.init();
             }
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].initLooks();//initialScaling);
+                sprites[i].initLooks();
                 sprites[i].init();
             }
-            //console.log(sprites);
         },
         _resourceProgressChangeHandler: function (e) {
             if (!e.file || !e.file.size)
