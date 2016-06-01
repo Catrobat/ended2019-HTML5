@@ -38,7 +38,7 @@ PocketCode.Ui.Dialog = (function () {
         //define the body as inner container
         this._dialog = new SmartJs.Ui.ContainerControl({ className: 'pc-dialog' });
         this._container = new PocketCode.Ui.ScrollContainer({ className: 'pc-dialogBody' }, { className: 'pc-dialogContent' });
-        this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter' });// dialogFooterSingleButton' });
+        this._footer = new SmartJs.Ui.ContainerControl({ className: 'pc-dialogFooter' });
 
         this._createLayout();
 
@@ -131,15 +131,16 @@ PocketCode.Ui.Dialog = (function () {
                 this._container.style.maxHeight = availableHeight + 'px';
             else
                 this._container.style.maxHeight = minHeight + 'px';
-            //var width = this.width - 30;
-            this._dialog.style.width = (this.width - 30) + 'px';//width + 'px';
+            this._dialog.style.width = (this.width - 30) + 'px';
 
             var buttons = this._footer._dom.children;
-            for (var i = 0, l = buttons.length; i < l; i++)
+            for (var i = 0, l = buttons.length; i < l; i++) {
                 if (l == 1)
                     buttons[i].style.width = '100%';
                 else
                     buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
+            }
+            this._container.onResize.dispatchEvent();
         },
         addButton: function (button) {
             if (!(button instanceof PocketCode.Ui.Button))

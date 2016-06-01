@@ -217,6 +217,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 
             //this._onScalingChanged.dispatchEvent({ scaling: scaling });
+            this.onResize.dispatchEvent();
 
             //this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
             //var factor = this._scalingFactor;
@@ -246,7 +247,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //style.width = this._fabricCanvas.width + 'px';
             //style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
             //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
-
+            //this.onResize.dispatchEvebt();
             this.render();
             this._drawAxes();
         },
@@ -262,7 +263,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._axesVisible = true;
             this._drawAxes();
         },
-
         hideAxes: function () {
             if (!this._axesVisible)
                 return;
