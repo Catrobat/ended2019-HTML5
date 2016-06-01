@@ -338,27 +338,27 @@ PocketCode.GameEngine = (function () {
         _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
             var bg = this._background,
-                sprites = this._sprites,//;
+                sprites = this._sprites;//,//;
             //var //initialScaling = 1,     //set initial scaling: default = 1
-                initialScaling;
-            if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
-                var min = Math.min(window.innerWidth, window.innerHeight),
-                    max = Math.max(window.innerWidth, window.innerHeight),
-                    smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
-                    smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
-                initialScaling = Math.min(min / smin, max / smax);
-            }
-            else
-                initialScaling = Math.min(screen.width / this._originalScreenWidth, screen.height / this._originalScreenHeight);
+            //    initialScaling;
+            //if (SmartJs.Device.isMobile) {  //calculate a max scaling for mobile devices to scale images during download
+            //    var min = Math.min(window.innerWidth, window.innerHeight),
+            //        max = Math.max(window.innerWidth, window.innerHeight),
+            //        smin = Math.min(this._originalScreenWidth, this._originalScreenHeight),
+            //        smax = Math.max(this._originalScreenWidth, this._originalScreenHeight);
+            //    initialScaling = Math.min(min / smin, max / smax);
+            //}
+            //else
+            //    initialScaling = Math.min(screen.width / this._originalScreenWidth, screen.height / this._originalScreenHeight);
 
-            if (initialScaling > 1.0)
-                initialScaling = 1.0;
+            //if (initialScaling > 1.0)
+            //    initialScaling = 1.0;
             if (bg) {
-                bg.initLooks(initialScaling);
+                bg.initLooks();//initialScaling);
                 bg.init();
             }
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].initLooks(initialScaling);
+                sprites[i].initLooks();//initialScaling);
                 sprites[i].init();
             }
             //console.log(sprites);

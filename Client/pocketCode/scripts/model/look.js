@@ -17,7 +17,7 @@ PocketCode.Model.Look = (function () {
         if (jsonLook.rotationCenterY)
             this._rotationCenterY = jsonLook.rotationCenterY;
 
-        this._initialScaling = 1.0;
+        //this._initialScaling = 1.0;
         //this._canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
         //this._cache = {};
     }
@@ -39,11 +39,11 @@ PocketCode.Model.Look = (function () {
                 return this._name;
             },
         },
-        initialScaling: {
-            get: function () {
-                return this._initialScaling;
-            },
-        },
+        //initialScaling: {
+        //    get: function () {
+        //        return this._initialScaling;
+        //    },
+        //},
         canvas: {
             get: function () {
                 return this._canvas;
@@ -77,15 +77,17 @@ PocketCode.Model.Look = (function () {
     });
 
     Look.prototype.merge({
-        init: function (img, initialScaling) {
-            this._initialScaling = initialScaling;
-            this._canvas = PocketCode.ImageHelper.scale(img, initialScaling);
+        init: function (img) {//, initialScaling) {
+            //this._initialScaling = initialScaling;
+            this._canvas = PocketCode.ImageHelper.scale(img, 1.0);  //convert image element to canvas
+                                                                    //this garantees synchronous operations on image manipulation
 
             var adjusted;
             if (!this._rotationCenterX && !this._rotationCenterY)
                 adjusted = PocketCode.ImageHelper.adjustCenterAndTrim(this._canvas, undefined, undefined, true);
             else if (typeof this._rotationCenterX === 'number' && typeof this._rotationCenterY === 'number')
-                adjusted = PocketCode.ImageHelper.adjustCenterAndTrim(this._canvas, this._rotationCenterX * this._initialScaling, this._rotationCenterY * this._initialScaling, true);
+                adjusted = PocketCode.ImageHelper.adjustCenterAndTrim(this._canvas, this._rotationCenterX, this._rotationCenterY, true);
+                //adjusted = PocketCode.ImageHelper.adjustCenterAndTrim(this._canvas, this._rotationCenterX * this._initialScaling, this._rotationCenterY * this._initialScaling, true);
             else
                 throw new Error('both rotation center arguments are required (typeof number)');
 
@@ -104,27 +106,41 @@ PocketCode.Model.Look = (function () {
             /*  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
             /*  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
             */
-            var cache = this._cache || {},
-                retB;
-            if (cache.scaling === scaling && cache.rotation === rotation && (!pixelAccuracy || pixelAccuracy && cache.pixelAccuracy)) {
-                retB = {
-                    top: cache.top,
-                    right: cache.right,
-                    bottom: cache.bottom,
-                    left: cache.left,
-                    pixelAccuracy: cache.pixelAccuracy,
-                };   //make sure the cache cannot be overwritten from outside
-                //if (flipX)
-                //    return this._flipXBoundary(ret);
-                //return ret;
+            var cache = this._cache || {};//,
+            //retB;
+            if (cache.scaling !== scaling || cache.rotation !== rotation || (pixelAccuracy && !cache.pixelAccuracy)) {
+                cache = this._calcBoundary(scaling, rotation, pixelAccuracy, this._cache);
+                this._cache = cache;
             }
-            else {
-                //cache.scaling = scaling;
-                //cache.rotation = rotation;
-                retB = this._calcBoundary(scaling, rotation, pixelAccuracy);//lookId, scaling, rotation, pixelAccuracy, cache);
-                //cache.merge(retB);
-                this._cache = retB;
-            }
+            //if (cache.scaling === scaling && cache.rotation === rotation && (!pixelAccuracy || pixelAccuracy && cache.pixelAccuracy)) {
+            //        retB = {
+            //        top: cache.top,
+            //        right: cache.right,
+            //        bottom: cache.bottom,
+            //        left: cache.left,
+            //        pixelAccuracy: cache.pixelAccuracy,
+            //    };   //make sure the cache cannot be overwritten from outside
+            //    //if (flipX)
+            //    //    return this._flipXBoundary(ret);
+            //    //return ret;
+            //}
+            //else {
+            //    //cache.scaling = scaling;
+            //    //cache.rotation = rotation;
+            //    retB = this._calcBoundary(scaling, rotation, pixelAccuracy);//lookId, scaling, rotation, pixelAccuracy, cache);
+            //    //cache.merge(retB);
+            //    this._cache = retB;
+            //}
+
+            //cache clone to avoid side effects on manipulations
+            var retB = {
+                top: cache.top,
+                right: cache.right,
+                bottom: cache.bottom,
+                left: cache.left,
+                pixelAccuracy: cache.pixelAccuracy,
+            };
+
             if (flipX) {
                 var tmp = retB.left
                 retB.left = -retB.right;
@@ -133,8 +149,8 @@ PocketCode.Model.Look = (function () {
             }
             return retB;
         },
-        _calcBoundary: function (scaling, rotation, pixelAccuracy) {//imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
-            var scalingFactor = scaling !== undefined ? scaling / this._initialScaling : 1.0 / this._initialScaling,
+        _calcBoundary: function (scaling, rotation, pixelAccuracy, cached) {//imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
+            var scalingFactor = scaling || 1.0,//!== undefined ? scaling / this._initialScaling : 1.0 / this._initialScaling,
                 rotationRad = rotation ? rotation * Math.PI / 180.0 : 0.0;//,
                 //initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
             //{ canvas: canvas,                                 //minmized image (clipped + scaled initial) 
@@ -144,7 +160,7 @@ PocketCode.Model.Look = (function () {
             //bl: { length: undefined, angle: undefined }, 
             //br: { length: undefined, angle: undefined } };
 
-            var boundary = this._cache;//{};
+            var boundary = cached;//{};
             //if (this._cache)
             //    boundary = this._cache;
             //else {
@@ -187,16 +203,17 @@ PocketCode.Model.Look = (function () {
                 }
             }
 
-            if (!pixelAccuracy || boundary.pixelAccuracy) {
-                return boundary;
+            if (pixelAccuracy || !boundary.pixelAccuracy) {
+                boundary = PocketCode.ImageHelper.getElementTrimOffsets(this.canvas, scaling, rotation);
+                boundary.pixelAccuracy = true;
             }
             //calc pixel-exact values
-            var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(this.canvas, scaling, rotation);
-            boundary.top -= Math.floor(trimOffsets.top / this._initialScaling);
-            boundary.right -= Math.floor(trimOffsets.right / this._initialScaling);
-            boundary.bottom += Math.ceil(trimOffsets.bottom / this._initialScaling);
-            boundary.left += Math.ceil(trimOffsets.left / this._initialScaling);
-            boundary.pixelAccuracy = true;
+            //var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(this.canvas, scaling, rotation);
+            //boundary.top -= Math.floor(trimOffsets.top);// / this._initialScaling);
+            //boundary.right -= Math.floor(trimOffsets.right);// / this._initialScaling);
+            //boundary.bottom += Math.ceil(trimOffsets.bottom);// / this._initialScaling);
+            //boundary.left += Math.ceil(trimOffsets.left);// / this._initialScaling);
+            //boundary.pixelAccuracy = true;
 
             return boundary;
         },
