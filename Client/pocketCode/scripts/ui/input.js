@@ -25,8 +25,7 @@ PocketCode.Ui.Checkbox = (function () {
         this._dom.appendChild(label);
 
         this.name = SmartJs.getNewId();
-        if (value)
-            this._value = value;
+        this._value = value;
         this._onCheckedChangeListener = this._addDomListener(this._input, 'change', function (e) {
             this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
         }.bind(this));
@@ -53,7 +52,10 @@ PocketCode.Ui.Checkbox = (function () {
                 if (typeof bool != 'boolean')
                     throw new Error('invalid argument: expected type: boolean');
 
-                this._input.checked = true;
+                if (this._input.checked == bool)
+                    return;
+                this._input.checked = bool;
+                this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
             },
         },
     });
@@ -99,6 +101,11 @@ PocketCode.Ui.merge({
                     return this._id;
                 },
             },
+            radios: {
+                get: function() {
+                    return this._radios;
+                },
+            },
             checked: {
                 get: function() {
                     return this._checked;
@@ -106,10 +113,13 @@ PocketCode.Ui.merge({
                 set: function(radio) {
                     if (!(radio instanceof PocketCode.Ui.Radio))
                         throw new Error('invalid argument: expected type: Radio');
+
+                    if (this._checked === radio)
+                        return;
                     var idx = this._radios.indexOf(radio);
-                    if (idx >= 0) {
-                        var r = this._radios[i];
-                        r.checked = true;
+                    if (idx != -1) {
+                        var r = this._radios[idx];
+                        r.checked = true;   //will trigger event
                     }
                 },
             },
@@ -137,9 +147,10 @@ PocketCode.Ui.merge({
                 else {
                     var idx = this._radios.indexOf(radio);
                     if (idx == -1) {    //prevent from adding twice
-                        radio.group = this;
                         radio.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._radioCheckHandler, this));
                         this._radios.push(radio);
+                        radio.group = this;
+                        this._radioCheckHandler({ checked: radio.checked, target: radio }); //call to make sure a checked item triggers event and all other radios become unchecked
                     }
                 }
             },
@@ -153,20 +164,34 @@ PocketCode.Ui.merge({
                 }
                 else {
                     var idx = this._radios.indexOf(radio);
-                    if (idx >= 0) {
-                        radio.name = SmartJs.getNewId();
-                        radio.onCheckedChange.removeEventListener(new SmartJs.Event.EventListener(this._radioCheckHandler, this));
+                    if (idx != -1) {
                         this._radios.remove(radio);
+                        radio.onCheckedChange.removeEventListener(new SmartJs.Event.EventListener(this._radioCheckHandler, this));
+                        radio.group = undefined;
+                        if (radio.checked) {
+                            this._checked = undefined;
+                            this._onCheckedChange.dispatchEvent({ groupId: this._id, value: undefined, radio: this._checked });
+                        }
                     }
                 }
             },
             _radioCheckHandler: function (e) {
-                if (e.checked)
-                    this._onCheckedChange.dispatchEvent({ groupId: this._id, value: e.target.value, radio: e.target });
+                if (e.checked && this._checked !== e.target) {
+                    this._checked = e.target;
+                    var radios = this._radios,
+                        r;
+                    for (var i = 0, l = radios.length; i < l; i++) {    //this is required because radios will not change if they are not attached to the DOM
+                        r = radios[i];
+                        if (r !== e.target)
+                            r.checked = false;
+                    }
+                    this._onCheckedChange.dispatchEvent({ groupId: this._id, value: this._checked.value, radio: this._checked });
+                }
             },
             dispose: function () {
                 this._checked = undefined;
-                this.remove(this._radios);  //remove and unbind all
+                this._radios.length = 0;  //remove and unbind all
+                this._disposed = true;
             },
         });
 
@@ -192,9 +217,10 @@ PocketCode.Ui.merge({
 
             this._group = undefined;
             this.name = SmartJs.getNewId();
-            if (value)
-                this._value = value;
+            this._value = value;
+
             this._onCheckedChangeListener = this._addDomListener(this._input, 'change', function (e) {
+                //please notice: a radio buttons change event is only fired when set to true
                 this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
             }.bind(this));
 
@@ -206,15 +232,21 @@ PocketCode.Ui.merge({
         Object.defineProperties(Radio.prototype, {
             group: {
                 set: function (group) {
-                    if (!(group instanceof PocketCode.Ui.RadioGroup))
+                    if (group && !(group instanceof PocketCode.Ui.RadioGroup))
                         throw new Error('invalid argument: expected type: RadioGroup');
-                    if (group == this._group)
+                    if (group === this._group)
                         return;
                     if (this._group)
                         this._group.remove(this);
-                    this._group = group;
-                    this._input.name = group.id;
-                    group.add(this);
+                    if (group) {
+                        this._group = group;
+                        this._input.name = group.id;
+                        group.add(this);
+                    }
+                    else {  //undefined
+                        this._group = undefined;
+                        this._input.name = SmartJs.getNewId();
+                    }
                 },
             },
         });
