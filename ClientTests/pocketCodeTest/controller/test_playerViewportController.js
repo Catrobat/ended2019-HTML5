@@ -31,22 +31,21 @@ QUnit.test("PlayerViewportController", function (assert) {
             return { canvas: new Image(10, 10), center: { length: 0, angle: 0 }, initialScaling: 0.5 }; // important to set image size here
     };
 
-    var testLook = {id:"id0", name:"first"};
-
     for (var i = 1; i < 5; i++){
         sprites.push(new PocketCode.Model.Sprite(gameEngine, {id: "id"+i, name: "sprite"+i}).renderingProperties);
     }
 
     controller.initRenderingImages(sprites);
-
     assert.ok(controller.renderingImages.length == 0, "Check rendering images init with no sprite having a look");
 
-    var spriteWithLook = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks: [testLook] });
+    var testLook = { id: "id_0", resourceId: "resourceId_0", name: "first" };
+    var spriteWithLook = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: [testLook] });
+    spriteWithLook._looks[0]._canvas = "canvas";  //set internally do not return undefined as look for this test;
+    sprites.push(spriteWithLook.renderingProperties);
 
-    sprites.splice(0, 0, spriteWithLook.renderingProperties);
+    //sprites.splice(0, 0, spriteWithLook.renderingProperties);
 
     controller.initRenderingImages(sprites);
-
     assert.ok(controller.renderingImages.length == 1, "Check rendering images init with one sprite having a look");
 
     controller.updateSprite("id0", {x:300, y: 300});
@@ -75,7 +74,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.initRenderingVariables(variables);
     assert.ok(controller.renderingVariables.length == 5, "Check rendering variables init");
 
-    controller.updateVariable("id0", {x: 5, y:3});
+    controller.updateVariable("id0", { x: 5, y: 3, visible: true });
     // TODO test if result correcct
 
     assert.ok(controller.takeScreenshot() != undefined, "Screenshot generated");

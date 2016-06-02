@@ -354,7 +354,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     sprite._positionY = 4;
     sprite._transparency = 46;
     sprite._brightness = 123;
-    sprite._size = 84;
+    sprite._scaling = 0.84;
     sprite._direction = 34;
 
 

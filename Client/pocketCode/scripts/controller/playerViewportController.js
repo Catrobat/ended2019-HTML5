@@ -88,7 +88,7 @@ PocketCode.PlayerViewportController = (function () {
             var vxleft = 0;
             var vxright = this._projectScreenWidth;
             return vxleft + (wx - wxleft) * (vxright - vxleft) / (wxright - wxleft);*/
-            return wx + this._projectScreenWidth / 2.;
+            return wx + this._projectScreenWidth / 2.0;
         },
 
         _transformYCoordinate : function(wy) {
@@ -97,7 +97,7 @@ PocketCode.PlayerViewportController = (function () {
             var vybottom = this._projectScreenHeight;
             var vytop = 0;
             return vybottom + (wy - wybottom) * (vytop - vybottom) / (wytop - wybottom);*/
-            return this._projectScreenHeight / 2. - wy;
+            return this._projectScreenHeight / 2.0 - wy;
 
         },
         initRenderingImages: function (sprites) {
@@ -141,11 +141,13 @@ PocketCode.PlayerViewportController = (function () {
                         imgs.remove(img);
                         imgs.insert(properties.layer, img);
                     }
+                    if (img.visible || visible != img.visible)   //visible or visibility changed
+                        this._view.render();
                     break;
                 }
             }
-            if (img.visible || visible != img.visible)   //visible or visibility changed
-                this._view.render();
+            //if (img.visible || visible != img.visible)   //visible or visibility changed - image may not be found
+            //    this._view.render();
         },
         initRenderingVariables: function (variables) {
             if (!(variables instanceof Array))
@@ -175,11 +177,13 @@ PocketCode.PlayerViewportController = (function () {
                 _visible = _var.visible;
                 if (_var.id === varId) {
                     _var.merge(properties);
+                    if (_var.visible != false || _visible != _var.visible)   //visible or visibility changed
+                        this._view.render(); //this.render();
                     break;
                 }
             }
-            if (_var.visible || _visible != _var.visible)   //visible or visibility changed
-                this._view.render(); //this.render();
+            //if (_var.visible || _visible != _var.visible)   //visible or visibility changed
+            //    this._view.render(); //this.render();
         },
         //load: function (images, sprites) {
 

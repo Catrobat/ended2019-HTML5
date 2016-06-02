@@ -17,6 +17,10 @@ PocketCode.Model.Look = (function () {
         if (jsonLook.rotationCenterY)
             this._rotationCenterY = jsonLook.rotationCenterY;
 
+        this._center = {
+            length: 0.0,
+            angle: 0.0
+        };
         //this._initialScaling = 1.0;
         //this._canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
         //this._cache = {};
@@ -150,8 +154,8 @@ PocketCode.Model.Look = (function () {
             return retB;
         },
         _calcBoundary: function (scaling, rotation, pixelAccuracy, cached) {//imageId, scaling, rotation, pixelAccuracy, existingBoundary) {
-            var scalingFactor = scaling || 1.0,//!== undefined ? scaling / this._initialScaling : 1.0 / this._initialScaling,
-                rotationRad = rotation ? rotation * Math.PI / 180.0 : 0.0;//,
+            scaling = scaling || 1.0;//!== undefined ? scaling / this._initialScaling : 1.0 / this._initialScaling,
+            var rotationRad = rotation ? rotation * Math.PI / 180.0 : 0.0;//,
                 //initialLook = this._looks[imageId]; //the id may change as soon as looks get an id
             //{ canvas: canvas,                                 //minmized image (clipped + scaled initial) 
             //center: { length: undefined, angle: undefined },  //rotation point to look center
@@ -167,24 +171,24 @@ PocketCode.Model.Look = (function () {
             if (!boundary) {
                 boundary = {};
                 var calc = {},
-                length = this.tl.length * scalingFactor,
+                length = this.tl.length * scaling,
                 angle = this.tl.angle - rotationRad;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
                 calc.tl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
-                length = this.tr.length * scalingFactor;
+                length = this.tr.length * scaling;
                 angle = this.tr.angle - rotationRad;
                 calc.tr = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
-                length = this.bl.length * scalingFactor;
+                length = this.bl.length * scaling;
                 angle = this.bl.angle - rotationRad;
                 calc.bl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
-                length = this.br.length * scalingFactor;
+                length = this.br.length * scaling;
                 angle = this.br.angle - rotationRad;
                 calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
 
                 //var boundary;
-                if (rotation)
+                if (rotationRad != 0.0)
                     boundary = {   //due to rotation every corner can become a max/min value
                         top: Math.ceil(Math.max(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
                         right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
