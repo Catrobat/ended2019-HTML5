@@ -276,6 +276,22 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         array_pop($this->cpp);
         break;
 
+      case "SetColorBrick":
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $color = $fl->formula;
+          $brick = new SetColorEffectBrickDto($this->parseFormula($color));
+          array_pop($this->cpp);
+          break;
+
+      case "ChangeColorByNBrick":
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $color = $fl->formula;
+          $brick = new ChangeColorEffectBrickDto($this->parseFormula($color));
+          array_pop($this->cpp);
+          break;
+
       case "ClearGraphicEffectBrick":
         $brick = new ClearGraphicEffectBrickDto();
         break;
@@ -305,4 +321,4 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
     return $brick;
   }
 }
-  
+
