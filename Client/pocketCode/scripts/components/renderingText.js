@@ -43,6 +43,9 @@
             set: function (value) {
                 this._visible = value;
             },
+            get: function () {
+                return this._visible;
+            }
         },
     });
 
