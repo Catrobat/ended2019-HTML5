@@ -50,11 +50,12 @@ PocketCode.RenderingImage = (function () {
         look: {
             set: function (value) {
                 this._element = value;
-
                 this._originalElement = value;
 
-                //todo color
-                if (this._filters.brightness !== 0) {
+                this.width = value.width;
+                this.height = value.height;
+
+                if (this._filters.brightness || this._filters.color) {
                     this.applyFilters();
                 }
             },
@@ -227,49 +228,55 @@ PocketCode.RenderingImage = (function () {
             canvasEl.height = imgElement.height;
             canvasEl.getContext('2d').drawImage(imgElement, 0, 0, imgElement.width, imgElement.height);
 
-            var i, l,
-                context = canvasEl.getContext('2d'),
+            var context = canvasEl.getContext('2d'),
                 imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
                 data = imageData.data;
 
-            if(filters.brightness){
-                var brightness = Math.round(filters.brightness * 2.55);
-                for (i = 0, l = data.length; i < l; i += 4) {
-                    data[i] += brightness;
-                    data[i + 1] += brightness;
-                    data[i + 2] += brightness;
-                }
+            if (filters.brightness){
+                this.applyBrightnessFilter(data);
                 context.putImageData(imageData, 0, 0);
             }
 
-            if(filters.color){
-                for (i = 0, l = data.length; i < l; i += 4) {
-                    var r = data[i],
-                        g = data[i + 1],
-                        b = data[i + 2];
-
-                    var hsv = this.rgbToHsv(r, g, b);
-                    var h = hsv.h;
-                    var s = hsv.s;
-                    var v = hsv.v;
-
-                    h = (h + filters.color) % 360;
-                    if (h < 0)
-                        h += 360;
-                    s = Math.max(0, Math.min(s, 1.0));
-                    v = Math.max(0, Math.min(v, 255.0));
-
-                    var rgb = this.hsvToRgb(h, s, v);
-
-                    data[i] = rgb.r;
-                    data[i + 1] = rgb.g;
-                    data[i + 2] = rgb.b;
-                }
+            if (filters.color){
+                this.applyColorFilter(data);
                 context.putImageData(imageData, 0, 0);
             }
             this._element = canvasEl;
         },
 
+        applyBrightnessFilter: function (data) {
+            var brightness = Math.round(this._filters.brightness * 2.55);
+            for (var i = 0, l = data.length; i < l; i += 4) {
+                data[i] += brightness;
+                data[i + 1] += brightness;
+                data[i + 2] += brightness;
+            }
+        },
+
+        applyColorFilter: function (data) {
+            for (var i = 0, l = data.length; i < l; i += 4) {
+                var r = data[i],
+                    g = data[i + 1],
+                    b = data[i + 2];
+
+                var hsv = this.rgbToHsv(r, g, b);
+                var h = hsv.h;
+                var s = hsv.s;
+                var v = hsv.v;
+
+                h = (h + this._filters.color) % 360;
+                if (h < 0)
+                    h += 360;
+                s = Math.max(0, Math.min(s, 1.0));
+                v = Math.max(0, Math.min(v, 255.0));
+
+                var rgb = this.hsvToRgb(h, s, v);
+
+                data[i] = rgb.r;
+                data[i + 1] = rgb.g;
+                data[i + 2] = rgb.b;
+            }
+        },
         
         draw: function (context) {
             if ((this.width === 0 && this.height === 0) || !this.visible) {
