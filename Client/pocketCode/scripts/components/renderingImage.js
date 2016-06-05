@@ -25,7 +25,8 @@ PocketCode.RenderingImage = (function () {
         this._originalElement = canvas;
 
         this._filters = {
-            brightness: 0
+            brightness: 0,
+            color: 0
         };
 
         this.merge(imageProperties);
@@ -52,6 +53,7 @@ PocketCode.RenderingImage = (function () {
 
                 this._originalElement = value;
 
+                //todo color
                 if (this._filters.brightness !== 0) {
                     this.applyFilters();
                 }
@@ -130,6 +132,11 @@ PocketCode.RenderingImage = (function () {
                             this._filters.brightness = effects[i].value;
                             applyFilterNeeded = true;
                             break;
+                        case PocketCode.GraphicEffect.COLOR:
+                            //todo check if value or look changed
+                            this._filters.color = effects[i].value;
+                            applyFilterNeeded = true;
+                            break;
                     }
                 }
                 if(applyFilterNeeded)
@@ -158,12 +165,59 @@ PocketCode.RenderingImage = (function () {
 
             return (point.x.toFixed(4) >= tl.x && point.x.toFixed(4) <= tr.x && point.y.toFixed(4) >= tl.y && point.y.toFixed(4) <= bl.y);
         },
+
+        //todo move helper method
+        hsvToRgb: function(h, s, v){
+            h = h % 360;
+
+            var i = (Math.floor(h / 60.0));
+            var f = (h / 60.0) - i;
+            var p = v * (1.0 - s);
+            var q = v * (1.0 - (s * f));
+            var t = v * (1.0 - (s * (1.0 - f)));
+
+            switch(i){
+                case 0: return {r: v, g: t, b: p};
+                case 1: return {r: q, g: v, b: p};
+                case 2: return {r: p, g: v, b: t};
+                case 3: return {r: p, g: q, b: v};
+                case 4: return {r: t, g: p, b: v};
+                case 5: return {r: v, g: p, b: q};
+            }
+
+            return {r: 0, g: 0, b: 0}
+        },
+
+        //todo move helper method
+        // ranges
+        // h: 0 - 360
+        // s: 0 - 1
+        // v: 0 - 255
+        rgbToHsv: function(r, g, b){
+            var h, s, v;
+            v = Math.max(r, g, b);
+            var span = v - Math.min(r, g, b);
+            if(!span){
+                h = 0;
+                s = 0;
+            } else {
+                if (r === v)
+                    h = 60.0 * ((g - b) / span);
+                else if (g === v)
+                    h = 120.0 + (60.0 * ((b - r) / span));
+                else if (b === v)
+                    h = 240.0 + (60.0 * ((r - g) / span));
+                s = span / v;
+            }
+
+            return {h: h, s: s, v: v};
+        },
         
         applyFilters: function(){
             var filters = this._filters;
             var imgElement = this._originalElement;
 
-            if (!filters.brightness) {
+            if (!filters.brightness && !filters.color) {
                 this._element = this._originalElement;
                 return;
             }
@@ -173,16 +227,43 @@ PocketCode.RenderingImage = (function () {
             canvasEl.height = imgElement.height;
             canvasEl.getContext('2d').drawImage(imgElement, 0, 0, imgElement.width, imgElement.height);
 
-            if(filters.brightness){
-                var context = canvasEl.getContext('2d'),
-                    imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
-                    data = imageData.data,
-                    brightness = Math.round(filters.brightness * 2.55);
+            var i, l,
+                context = canvasEl.getContext('2d'),
+                imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
+                data = imageData.data;
 
-                for (var i = 0, len = data.length; i < len; i += 4) {
+            if(filters.brightness){
+                var brightness = Math.round(filters.brightness * 2.55);
+                for (i = 0, l = data.length; i < l; i += 4) {
                     data[i] += brightness;
                     data[i + 1] += brightness;
                     data[i + 2] += brightness;
+                }
+                context.putImageData(imageData, 0, 0);
+            }
+
+            if(filters.color){
+                for (i = 0, l = data.length; i < l; i += 4) {
+                    var r = data[i],
+                        g = data[i + 1],
+                        b = data[i + 2];
+
+                    var hsv = this.rgbToHsv(r, g, b);
+                    var h = hsv.h;
+                    var s = hsv.s;
+                    var v = hsv.v;
+
+                    h = (h + filters.color) % 360;
+                    if (h < 0)
+                        h += 360;
+                    s = Math.max(0, Math.min(s, 1.0));
+                    v = Math.max(0, Math.min(v, 255.0));
+
+                    var rgb = this.hsvToRgb(h, s, v);
+
+                    data[i] = rgb.r;
+                    data[i + 1] = rgb.g;
+                    data[i + 2] = rgb.b;
                 }
                 context.putImageData(imageData, 0, 0);
             }
