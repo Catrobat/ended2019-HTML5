@@ -118,6 +118,7 @@ PocketCode.RenderingImage = (function () {
                 return this._visible;
             }
         },
+
         graphicEffects: {
             set: function (effects) {
                 if (!(effects instanceof Array))
@@ -130,11 +131,16 @@ PocketCode.RenderingImage = (function () {
                             this.opacity = 1 - effects[i].value / 100.0;
                             break;
                         case PocketCode.GraphicEffect.BRIGHTNESS:
+                            if (this._filters.brightness === effects[i].value)
+                                break;
+
                             this._filters.brightness = effects[i].value;
                             applyFilterNeeded = true;
                             break;
                         case PocketCode.GraphicEffect.COLOR:
-                            //todo check if value or look changed
+                            if (this._filters.color === effects[i].value)
+                                break;
+
                             this._filters.color = effects[i].value;
                             applyFilterNeeded = true;
                             break;
@@ -232,19 +238,18 @@ PocketCode.RenderingImage = (function () {
                 imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
                 data = imageData.data;
 
-            if (filters.brightness){
-                this.applyBrightnessFilter(data);
-                context.putImageData(imageData, 0, 0);
-            }
+            this.applyBrightnessFilter(data);
+            this.applyColorFilter(data);
 
-            if (filters.color){
-                this.applyColorFilter(data);
-                context.putImageData(imageData, 0, 0);
-            }
+            context.putImageData(imageData, 0, 0);
+
             this._element = canvasEl;
         },
 
         applyBrightnessFilter: function (data) {
+            if(!this._filters.brightness)
+                return;
+
             var brightness = Math.round(this._filters.brightness * 2.55);
             for (var i = 0, l = data.length; i < l; i += 4) {
                 data[i] += brightness;
@@ -254,6 +259,9 @@ PocketCode.RenderingImage = (function () {
         },
 
         applyColorFilter: function (data) {
+            if(!this._filters.color)
+                return;
+
             for (var i = 0, l = data.length; i < l; i += 4) {
                 var r = data[i],
                     g = data[i + 1],
