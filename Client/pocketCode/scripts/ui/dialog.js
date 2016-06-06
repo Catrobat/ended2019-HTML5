@@ -88,7 +88,8 @@ PocketCode.Ui.Dialog = (function () {
     //methods
     Dialog.prototype.merge({
         _updateUiStrings: function () {
-            //TODO: override this in the individual controls
+            setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 0);
+            //Tmake sure the scroll position is updated after strings were replaced
         },
         _createLayout: function () {
             var background = document.createElement('div');

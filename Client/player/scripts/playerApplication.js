@@ -70,6 +70,11 @@ PocketCode.merge({
 
             this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
 
+            //init i18n
+            PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
+            PocketCode.I18nProvider.loadSuppordetLanguages();
+            PocketCode.I18nProvider.loadDictionary(rfc3066);
+
             //init
             if (SmartJs.Device.isMobile && !mobileInitialized) {    //do not initialize the UI if app needs to be recreated for mobile 
                 var state = history.state;
@@ -87,11 +92,6 @@ PocketCode.merge({
             this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
-
-            //init i18n
-            PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
-            PocketCode.I18nProvider.loadSuppordetLanguages();
-            PocketCode.I18nProvider.loadDictionary(rfc3066);
 
             //webOverlay is undefined if running in mobile page, no viewport defined
             this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
