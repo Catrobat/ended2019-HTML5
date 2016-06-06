@@ -642,6 +642,12 @@ PocketCode.merge({
 
                         return 'this._sprite.transparency';
 
+                    case 'OBJECT_COLOR':
+                        if (uiString)
+                            return 'color';
+
+                        return 'this._sprite.colorEffect';
+
                     case 'OBJECT_LAYER':
                         if (uiString)
                             return 'layer';

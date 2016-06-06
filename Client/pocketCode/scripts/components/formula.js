@@ -88,6 +88,7 @@ PocketCode.Formula = (function () {
                 formula._sprite = { //override sprite to enable validation during parsing
                     brightness: 100,
                     transparency: 0,
+                    colorEffect: 0,
                     layer: 1,
                     direction: 90,
                     size: 100,
