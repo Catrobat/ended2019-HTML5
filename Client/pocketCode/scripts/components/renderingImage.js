@@ -63,7 +63,6 @@ PocketCode.RenderingImage = (function () {
         this._brightnesFilter = new fabric.Image.filters.Brightness({
             brightness: 0,
         });
-
         this.merge(imageProperties);
     }
 
@@ -136,7 +135,6 @@ PocketCode.RenderingImage = (function () {
             set: function (effects) {
                 if (!(effects instanceof Array))
                     throw new Error('invalid argument: effects');
-
                 for (var i = 0, l = effects.length; i < l; i++) {
                     switch (effects[i].effect) {
                         case PocketCode.GraphicEffect.GHOST:

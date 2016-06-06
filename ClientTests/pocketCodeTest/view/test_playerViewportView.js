@@ -11,6 +11,10 @@ QUnit.module("view/playerViewportView.js");
 
 QUnit.test("PlayerViewportView", function (assert) {
 
+    var view = new PocketCode.Ui.PlayerViewportView();
+    assert.ok(view instanceof  PocketCode.Ui.PlayerViewportView, 'instance check');
+    assert.ok(view.axisVisible == false, 'axes hidden initially');
+    assert.ok(view.onSpriteClicked instanceof SmartJs.Event.Event, 'click event instance check');
     assert.ok(false, "TODO");
 });
 

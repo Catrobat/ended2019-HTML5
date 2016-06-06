@@ -15,23 +15,18 @@ PocketCode.RenderingText = (function () {
             hasRotatingPoint: false,
             originX: "left",
             originY: "top",
-            positionX: propObject.x,
-            positionY: propObject.y,
             fontFamily: 'Arial',
             fontSize: 50,
             fontWeight: 'bold',
-            //fill: 'rgb(b,b,b)',
-            visible: propObject.visible,
         });
-
+        this.x = propObject.x;
+        this.y = propObject.y;
+        this.visible = propObject.visible;
     }
 
     //properties
     Object.defineProperties(RenderingText.prototype, {
         id: {
-            //set: function (value) {   //cannot be changed
-            //    this._id = value;
-            //},
             get: function () {
                 return this._fabricText.id;
             },
@@ -41,11 +36,19 @@ PocketCode.RenderingText = (function () {
                 this._x = value;
                 this._fabricText.left = value;
             },
+
+            get: function () {
+                return this._x;
+            },
         },
         y: {
             set: function (value) {
                 this._y = value;
                 this._fabricText.top = value;
+            },
+
+            get: function () {
+                return this._y;
             },
         },
         text: {
