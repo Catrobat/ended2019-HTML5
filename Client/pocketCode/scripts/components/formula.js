@@ -94,6 +94,9 @@ PocketCode.Formula = (function () {
                     size: 100,
                     positionX: 0,
                     positionY: 0,
+                    velocityX: 0,
+                    velocityY: 0,
+                    velocityAngular: 0,
                     getVariable: function (id) { return { id: id, value: 0 }; },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                 };

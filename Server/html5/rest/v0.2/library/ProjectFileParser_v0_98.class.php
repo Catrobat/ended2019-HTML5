@@ -10,6 +10,75 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
     }
 
+    protected function parseFirstLevelBricks($brickType, $script)
+    {
+        switch($brickType)
+        {
+            case "StartScript":
+                $brick = new WhenProgramStartBrickDto();
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            case "BroadcastScript":
+                $msg = (string)$script->receivedMessage;
+                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
+                if($res === false)
+                {
+                    $id = $this->getNewId();
+                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                }
+                else
+                {
+                    $id = $res->id;
+                }
+
+                $brick = new WhenBroadcastReceiveBrickDto($id);
+
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            case "WhenScript":
+                $brick = new WhenActionBrickDto((string)$script->action);
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            //physics
+            case "CollisionScript":
+                $msg = (string)$script->receivedMessage;   //TODO: extend spriteId from string
+                $brick = new WhenCollisionBrickDto("TODO");
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            default:
+                return false;
+        }
+        return $brick;
+    }
+
     protected function parseMotionBricks($brickType, $script)
     {
         switch($brickType)
@@ -185,6 +254,101 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
 
             case "ComeToFrontBrick":
                 $brick = new ComeToFrontBrickDto();
+                break;
+
+            //physics
+            case "SetPhysicsObjectTypeBrick":
+                //$type = (string)$script->type; //"DYNAMIC", "FIXED", "NONE"
+                $brick = new SetPhysicsObjectTypeBrickDto((string)$script->type);
+                break;
+
+            case "SetVelocityBrick":    //PHYSICS_VELOCITY_X, PHYSICS_VELOCITY_Y
+                $x = null;
+                $y = null;
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                foreach($fl->children() as $formula)
+                {
+                    $cat = (string)$formula["category"];
+                    if($cat === "PHYSICS_VELOCITY_X")
+                    {
+                        $x = $this->parseFormula($formula);
+                    }
+                    else
+                    {
+                        if($cat === "PHYSICS_VELOCITY_Y")
+                        {
+                            $y = $this->parseFormula($formula);
+                        }
+                    }
+                }
+                array_pop($this->cpp);
+                $brick = new SetVelocityBrickDto($x, $y);
+                break;
+
+            case "TurnLeftSpeedBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $value = $this->parseFormula($fl->formula);
+
+                array_pop($this->cpp);
+                $brick = new TurnLeftSpeedBrickDto($value);
+                break;
+
+            case "TurnRightSpeedBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $value = $this->parseFormula($fl->formula);
+
+                $brick = new TurnRightSpeedBrickDto($value);
+                break;
+
+            case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y
+                $x = null;
+                $y = null;
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                foreach($fl->children() as $formula)
+                {
+                    $cat = (string)$formula["category"];
+                    if($cat === "PHYSICS_GRAVITY_X")
+                    {
+                        $x = $this->parseFormula($formula);
+                    }
+                    else
+                    {
+                        if($cat === "PHYSICS_GRAVITY_Y")
+                        {
+                            $y = $this->parseFormula($formula);
+                        }
+                    }
+                }
+                array_pop($this->cpp);
+                $brick = new SetGravityBrickDto($x, $y);
+                break;
+
+            case "SetMassBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $value = $this->parseFormula($fl->formula);
+
+                $brick = new SetMassBrickDto($value);
+                break;
+
+            case "SetBounceBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $percentage = $this->parseFormula($fl->formula);
+
+                $brick = new SetBounceFactorBrickDto($percentage);
+                break;
+
+            case "SetFrictionBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $percentage = $this->parseFormula($fl->formula);
+
+                $brick = new SetFrictionBrickDto($percentage);
                 break;
 
             default:

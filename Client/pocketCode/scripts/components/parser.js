@@ -678,6 +678,24 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    case 'OBJECT_X_VELOCITY':
+                        if (uiString)
+                            return 'x_velocity';
+
+                        return 'this._sprite.velocityX';    //TODO: physics
+
+                    case 'OBJECT_Y_VELOCITY':
+                        if (uiString)
+                            return 'y_velocity';
+
+                        return 'this._sprite.velocityY';    //TODO: physics
+
+                    case 'OBJECT_ANGULAR_VELOCITY':
+                        if (uiString)
+                            return 'angular_velocity';
+
+                        return 'this._sprite.velocityAngular';  //TODO: physics
+
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';
