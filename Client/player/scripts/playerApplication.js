@@ -16,6 +16,13 @@ PocketCode.merge({
             this.objClassName = '_InitialPopStateController';
         }
 
+        //properties
+        Object.defineProperties(_InitialPopStateController.prototype, {
+            hasOpenDialogs: {
+                value: false,
+            },
+        });
+
         _InitialPopStateController.prototype.dispose = function () {
             delete this.historyLength;
             delete this.objClassName;
@@ -135,7 +142,12 @@ PocketCode.merge({
                 get: function () {
                     return this._onExit;
                 }
-            }
+            },
+            hasOpenDialogs: {
+                get: function () {
+                    return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
+                }
+            },
         });
 
         //methods
@@ -332,8 +344,11 @@ PocketCode.merge({
             //navigation
             _escKeyHandler: function (e) {
                 var l = this._dialogs.length;
-                if (l > 0)
+                if (l > 0) {
                     this._dialogs[l - 1].execDefaultBtnAction();
+                    e.preventDefault();
+                    return false;
+                }
                 else
                     this._currentPage.execDialogDefaultOnEsc();
             },

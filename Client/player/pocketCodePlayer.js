@@ -980,7 +980,7 @@ PocketCode.Web = {
 		            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
 		    },
 		    _keyHandler: function (e) {
-		        if (e.keyCode == 27) {
+		        if (!this._redirected && e.keyCode == 27 && (!this._player || (this._player && !this._player.hasOpenDialogs))) {
 		            this._removeDomListener(document, 'keyup', this._keyupListener);
 		            this._closeHandler();
 		        }

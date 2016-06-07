@@ -261,10 +261,13 @@ PocketCode.PlayerPageController = (function () {
         //},
         _showScreenshotDialog: function (imageSrc) {
             var d = new PocketCode.Ui.ScreenshotDialog();
-            if (this._screenshotDialog && !this._screenshotDialog.disposed)
+            if (this._screenshotDialog && !this._screenshotDialog.disposed) {
+                this._dialogs.remove(this._screenshotDialog);
                 this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)
+            }
             this._screenshotDialog = d;
             d.onCancel.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                this._dialogs.remove(e.target);
                 e.target.dispose();
                 if (SmartJs.Device.isMobile)
                     history.back();
