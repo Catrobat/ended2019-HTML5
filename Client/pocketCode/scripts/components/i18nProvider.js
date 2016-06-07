@@ -33,7 +33,7 @@ PocketCode.I18nProvider = (function (propObject) {
             "msgInternetConnectionAvailable": "Please make sure you are connected to the internet.",
             "lblProjectLoadingErrorCaption": "Loading failed",
             "msgProjectLoadingError": "There was an error loading the project's resources.",
-            //TODO:
+            //TODO: only add strings required if i18n strings fail to load at startup
         };  
 
         this._supportedLanguages = [];
