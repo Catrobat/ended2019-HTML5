@@ -264,7 +264,7 @@ class ProjectsController extends BaseController
 
             //load code.xml of project
             //replace invalid 0 chars due to physics bug
-            $content = file_get_contents($base_dir . 'code.xml');
+            $content = file_get_contents($cacheDir . 'code.xml');
             if ($content === false) {
                     throw new FileParserException("error loading file: invalid xml");
             }

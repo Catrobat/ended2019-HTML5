@@ -62,8 +62,29 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
 
             //physics
             case "CollisionScript":
-                $msg = (string)$script->receivedMessage;   //TODO: extend spriteId from string
-                $brick = new WhenCollisionBrickDto("TODO");
+                $msg = (string)$script->receivedMessage;
+                $items = explode("<->", $msg);
+                $name = $items[1];
+                //$brick;
+                if ($name == "ANYTHING")
+                    $brick = new WhenCollisionBrickDto();
+                else if ($name == "Background")
+                    $brick = new WhenCollisionBrickDto($this->background->id);
+                else {
+                    //find sprite by name
+                    for($i = 0; $i < count($this->sprites); $i++)
+                    {
+                        if($this->sprites[$i]->name == $name)
+                        {
+                            $id = $this->sprites[$i]->id;
+                            $brick = new WhenCollisionBrickDto($id);
+                            break;
+                        }
+                    }
+
+                    if(!isset($brick))
+                        throw new InvalidProjectFileException("physics collision ref $name not found");
+                }
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 

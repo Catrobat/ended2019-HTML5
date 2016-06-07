@@ -18,6 +18,7 @@ class ProjectFileParser
     protected $resourceBaseUrl = "";
     protected $cacheDir = "";
     protected $simpleXml = null;
+    protected $background = null;
     protected $sprites = [];
     protected $bricksCount = 0;
     protected $images = [];
@@ -100,7 +101,8 @@ class ProjectFileParser
 
                 if($bg === true)
                 {
-                    $project->background = new SpriteDto($this->getNewId(), $this->getName($sprite));
+                    $this->background = new SpriteDto($this->getNewId(), $this->getName($sprite));
+                    $project->background = $this->background;
                     $bg = false;
                 }
                 else
