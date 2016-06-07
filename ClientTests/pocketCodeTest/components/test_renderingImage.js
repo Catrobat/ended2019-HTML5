@@ -28,6 +28,7 @@ QUnit.test("RenderingImage", function (assert) {
     var transparency = 63;
     var opacity = 100 - transparency;
     var sprite = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks: [testLook]});
+    sprite.init();
     sprite.setPosition(x,y);
     sprite.setDirection(rotationAngle);
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, brightness);

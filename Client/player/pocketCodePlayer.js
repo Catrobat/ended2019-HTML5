@@ -863,6 +863,7 @@ PocketCode.Web = {
 		        var ol = new PocketCode.Web.WebOverlay();
 		        this._addDomListener(ol.closeButton, 'click', this._closeHandler);
 		        this._addDomListener(ol.closeButton, 'touchend', this._closeHandler);
+		        this._keyupListener = this._addDomListener(document, 'keyup', this._keyHandler);
 		        //var check = document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0');
 		        if (this._redirected)//document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0')) //on our index page
 		            ol.closeButton.disabled = true;
@@ -977,6 +978,12 @@ PocketCode.Web = {
 		            btn.className += ' pc-webButtonChecked ';
 		        else
 		            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
+		    },
+		    _keyHandler: function (e) {
+		        if (e.keyCode == 27) {
+		            this._removeDomListener(document, 'keyup', this._keyupListener);
+		            this._closeHandler();
+		        }
 		    },
 		    _closeHandler: function (e) {
 		        this._loader.abortLoading();
