@@ -8,7 +8,7 @@
 PocketCode.Ui.PlayerPageView = (function () {
     PlayerPageView.extends(PocketCode.Ui.PageView, false);
 
-    function PlayerPageView() {//playerViewportView) {
+    function PlayerPageView() {
         PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
         if (SmartJs.Device.isMobile) {
             var exitBtnDom = (new PocketCode.Web.ExitButton()).dom;
@@ -22,9 +22,6 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._header.hide();
         this._footer.hide();
 
-        //if (!(playerViewportView instanceof PocketCode.Ui.PlayerViewportView))
-        //    throw new Error('invalid ctr argument: PlayerViewportView');
-        //this.appendChild(playerViewportView);
 
         if (SmartJs.Device.isIOs || SmartJs.Device.isFirefoxOS) //devices with no hardware back button
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE_IOS);
@@ -32,7 +29,6 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.MOBILE);
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
-            //this._toolbar.hide();
         }
         this.appendChild(this._toolbar);
 
@@ -121,15 +117,6 @@ PocketCode.Ui.PlayerPageView = (function () {
         updateLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);
         },
-        //_initPageLayout: function() {
-        //    //this.appendChild(this._viewport); //TODO: add a view and not the controller
-        //    //this.appendChild(this._toolbar);
-        //    // this.appendChild(this._startScreen);
-        //},
-        /* override */    //this is a test->remove this
-        //show: function () {
-        //    //?
-        //},
     });
 
     return PlayerPageView;

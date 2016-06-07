@@ -11,97 +11,23 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //ctr
     function PlayerViewportView() {
-        //var props = {width:originalWidth, height:originalHeight};
+
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-playerViewportView' });
 
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
         this._axesVisible = false;
-        //this._renderingVariables = [];
-        //this._scaling = 1;
-        //this._canvasNeedsRedraw = false;
 
-
-        this._canvas = new PocketCode.Ui.Canvas();//{ className: 'pc-canvas' });
+        this._canvas = new PocketCode.Ui.Canvas();
         this._appendChild(this._canvas);
 
-        //events
-        //this._onScalingChanged = new SmartJs.Event.Event(this);
-
-        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this)); //TODO: check if handling is necesary twice
+        //TODO: check if handling is necesary twice
+        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this));
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._updateCanvasSize.bind(this, this), 120); }.bind(this), this));
-        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawVariables, this));
-        //this._canvas.onAfterRender.addEventListener(new SmartJs.Event.EventListener(this._drawAxes, this));
-        //this._onScalingChanged.addEventListener(new SmartJs.Event.EventListener(this._canvas.handleChangedScaling, this._canvas));
-
-        //test
-        //this._drawAxes();
-        //this._canvas = document.createElement('canvas', { className: 'pc-canvas' });
-        ////this._canvas.className = 'pc-canvas';
-        //var cheight = 480.0;
-        //var cwidth = 320.0;
-        //var cvprops = {
-        //    width: cwidth,
-        //    height: cheight,
-        //    containerClass: 'canvas-container',
-        //    selection: false,
-        //    skipTargetFind: false,
-        //    perPixelTargetFind: true,
-        //    renderOnAddRemove: false,
-        //    preserveObjectStacking: true,   //enable fast rendering
-        //    stateful: false
-        //};
-
-        //this._fabricCanvas = new fabric.Canvas(this._canvas, cvprops);
-
-        //// draw frame
-        ////this._framerect = new fabric.Rect({selectable:false,fill:'', stroke:'black', width: cwidth-1, height:cheight-1, top: 0, left: 0 });
-        ////this._fabricCanvas.add(this._framerect);
-
-        //this._dom.appendChild(this._fabricCanvas.wrapperEl);
-
-        ////this.className = 'pc-PlayerViewportView';
-
-        ////TODO: originalHeight, originalWidth may not be defined here
-        ////if (!originalHeight || !originalWidth)
-        ////    throw new Error('invalid argument: missing hight and/or width property of original app screen');
-
-        //this._originalHeight = cheight;
-        //this._originalWidth = cwidth;
-
-        //this._ratio = cheight / cwidth;
-
-        //this._context = this._fabricCanvas.getContext('2d');
-        //this._axesVisible = false;
-        ////this._showGrid = false;
-
-        ////this._scalingFactor = 1;  //set when added to DOM (onResize)
-
-        ////this._canvas.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
-        //var _self = this;
-
-        ////window.addEventListener('resize', this._updateScaling.bind(this)); // remove bind
-        //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateScaling, this));
-        //this._onSpriteClicked = new SmartJs.Event.Event(this);
-
-        //this._fabricCanvas.on('mouse:down', function (e) {
-        //    if (typeof e.target != 'undefined') {
-        //        _self.onSpriteClicked.dispatchEvent({ id: e.target.id });
-        //    }
-        //});
-        //this._fabricCanvas.on('after:render', this._drawAxes.bind(this));
-        //this._renderingObjects = [];
-        ////this._updateScaling();
     }
 
     //properties
     Object.defineProperties(PlayerViewportView.prototype, {
-        //canvasNeedsRedraw: {
-        //  set: function (value) {
-        //      this._canvasNeedsRedraw = value;
-        //  }
-        //},
-
         axisVisible: {
             get: function () {
                 return this._axesVisible;
@@ -109,93 +35,33 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //enumerable: false,
             //configurable: true,
         },
-        //originalHight: {
-        //    //get: function () {
-        //    //    return this._originalHight;
-        //    //},
-        //    set: function (value) {
-        //        if (this._originalHight === value)
-        //            return;
-        //        this._originalHight = value;
-        //        this._updateScaling();//Factor();
-        //    }
-        //    //enumerable: false,
-        //    //configurable: true,
-        //},
-        //originalWidth: {
-        //    //get: function () {
-        //    //    return this._originalWidth;
-        //    //},
-        //    set: function (value) {
-        //        if (this._originalWidth === value)
-        //            return;
-        //        this._originalWidth = value;
-        //        this._updateScaling();//Factor();
-        //    }
-        //    //enumerable: false,
-        //    //configurable: true,
-        //},
         renderingImages: {
             set: function (value) {
-                //if (!(value instanceof Array))
-                //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
-
                 this._canvas.renderingImages = value;
             },
-            //get: function () {
-            //    return this._renderingObjects;
-            //}
-            //enumerable: false,
-            //configurable: true,
         },
         renderingVariables: {
             set: function (value) {
-                //if (!(value instanceof Array))
-                //    throw new SmartJs.Error.InvalidArgumentException(typeof value, 'Array');
-
                 this._canvas.renderingTexts = value;
             },
         },
-        //fabricCanvas: {
-        //    get: function (value) {
-        //        return this._fabricCanvas;
-        //    }
-        //    //enumerable: false,
-        //    //configurable: true,
-        //}
     });
 
     // events
     Object.defineProperties(PlayerViewportView.prototype, {
-        //onScalingChanged: {
-        //    get: function () {
-        //        return this._onScalingChanged;
-        //    },
-        //},
-        //onResize: {
-        //    get: function () {
-        //        return this._onResize;
-        //    }
-        //},
-        //enumerable: false,
-        //configurable: true,
         onSpriteClicked: {
             get: function () {
                 return this._canvas.onMouseDown;
             }
         },
-        //onAfterRender: {
-        //    get: function () {
-        //        return this._canvas.onAfterRender;
-        //    },
-        //},
+
     });
 
     //methods
     PlayerViewportView.prototype.merge({
         _updateCanvasSize: function (e) {
-            var w = this.width,// || window.innerWidth;
-                h = this.height,// || window.innerHeight; // TODO fix this, height stays 0
+            var w = this.width,
+                h = this.height,
                 ow = this._originalWidth,
                 oh = this._originalHeight,
                 scaling;
@@ -207,47 +73,16 @@ PocketCode.Ui.PlayerViewportView = (function () {
             else
                 scaling = w / ow;   //aligned left/right
 
-            //var scaling = Math.min(this.height / oh, this.width / oh);
-            //this._scaling = scaling;
+
+            //size = even int number: without white border (background visible due to sub-pixel rendering)
             var canvas = this._canvas,
-                cw = Math.floor(ow * scaling / 2.0) * 2.0,  //size = even int number: without white border (background visible due to sub-pixel rendering)
+                cw = Math.floor(ow * scaling / 2.0) * 2.0,
                 ch = Math.floor(oh * scaling / 2.0) * 2.0;
             canvas.setDimensions(cw, ch, scaling);
             canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 
-            //this._onScalingChanged.dispatchEvent({ scaling: scaling });
             this.onResize.dispatchEvent();
-
-            //this._scalingFactor = Math.min(height / this._originalHeight, width / this._originalWidth) || 1;
-            //var factor = this._scalingFactor;
-            ////console.log('sfact: ' + this._scalingFactor);
-            ////update ui layout
-            //this._fabricCanvas.setHeight(Math.floor(this._originalHeight * this._scalingFactor));
-            //this._fabricCanvas.setWidth(Math.floor(this._originalWidth * this._scalingFactor));
-            //this._fabricCanvas.calcOffset();
-
-            //this._fabricCanvas.forEachObject(function (obj) {
-            //    if (obj.id != undefined) {
-            //        obj.scaleX = factor;
-            //        obj.scaleY = factor;
-            //        obj.scaledPositionX = obj.positionX * factor;
-            //        obj.scaledPositionY = obj.positionY * factor;
-            //        obj.setCoords();
-            //    }
-            //});
-
-            //this._canvas.width = this._fabricCanvas.width;
-            //this._canvas.height = this._fabricCanvas.height;
-            //this._fabricCanvas.style.position = 'static';
-
-            //var style = this._fabricCanvas.wrapperEl.style;
-            //style.position = 'absolute';
-            //style.height = this._fabricCanvas.height + 'px';
-            //style.width = this._fabricCanvas.width + 'px';
-            //style.top = Math.floor((height - this._fabricCanvas.height) / 2.0) + 'px';
-            //style.left = Math.floor((width - this._fabricCanvas.width) / 2.0) + 'px';
-            //this.onResize.dispatchEvebt();
             this.render();
             this._drawAxes();
         },
@@ -259,14 +94,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
         showAxes: function () {
             if (this._axesVisible)
                 return;
-            //this._showGrid = true;
             this._axesVisible = true;
             this._drawAxes();
         },
         hideAxes: function () {
             if (!this._axesVisible)
                 return;
-            //this._showGrid = false;
             this._axesVisible = false;
             this.clear();
             this.render();
@@ -279,12 +112,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
                     width = this._canvas.width,
                     height = this._canvas.height,
                     color = 'red',
-                    pixelRatio = 1;/*function () {
-                        if (window.devicePixelRatio)
-                            return Math.round(window.devicePixelRatio);
-                        return 1;
-                    }();*/
-            //ctx.stroke();
+                    pixelRatio = 1;
+
             ctx.save();
 
             ctx.beginPath();
@@ -312,16 +141,16 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         getCanvasDataURL: function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
-            this._drawAxes();   //a resize may be triggered and upper canvas cleared
+            this._drawAxes();   // a resize may be triggered and upper canvas cleared
             return url;
         },
-        // clears the canvas and then renders all items inside the renderingObjects list    //TODO: far from optimal solution- concentrate on canvas implementing this
+
         render: function () {
             this._redrawRequired = true;
             if (this._redrawInProgress)
                 return;
-
-            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));    //this works because we have already defined the function in sj-animation.js globally
+            //this works because we have already defined the function in sj-animation.js globally
+            this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
         },
         _redrawCanvas: function () {
             this._canvas.render();
@@ -337,14 +166,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //override: to make sure a view is disposed by it's controller
         },
 
-        //handleSpriteChange: function (id, changes) {
-        //    var item = this._canvas.findItemById(id);
-        //    if (item) {
-        //        item.merge(changes);
-        //        this._canvas.applyScalingToObject(item, this._scaling);
-        //        this._canvas.render();
-        //    }
-        //},
     });
 
     return PlayerViewportView;
