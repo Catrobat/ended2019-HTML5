@@ -6,15 +6,11 @@
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 'use strict';
 
-QUnit.module("view/playerViewportView.js");
+QUnit.module("ui/accordion.js");
 
 
-QUnit.test("PlayerViewportView", function (assert) {
+QUnit.test("Accordion", function (assert) {
 
-    var view = new PocketCode.Ui.PlayerViewportView();
-    assert.ok(view instanceof  PocketCode.Ui.PlayerViewportView, 'instance check');
-    assert.ok(view.axisVisible == false, 'axes hidden initially');
-    assert.ok(view.onSpriteClicked instanceof SmartJs.Event.Event, 'click event instance check');
     assert.ok(false, "TODO");
 });
 

@@ -166,7 +166,8 @@ PocketCode.Ui.Canvas = (function () {
                         }
                     }
 
-                    //this.calcOffset();    //are calculated during resize
+                    this.calcOffset();    //are calculated during resize
+                    //^^ we need this because the offsets are not calculated initially- this should happen at append or better: get rid of this and calc pointer positions directly
 
                     pointer.x = pointer.x - this._offset.left;
                     pointer.y = pointer.y - this._offset.top;
@@ -251,7 +252,7 @@ PocketCode.Ui.Canvas = (function () {
                         ro[i].draw(ctx);
 
                     ctx.restore();
-                    this.fire('after:render');
+                    //this.fire('after:render');
                 },
                 toDataURL: function (width, height) {//format, quality) {
                     var cw = this.getWidth(),
@@ -289,13 +290,13 @@ PocketCode.Ui.Canvas = (function () {
             if (e.target)
                 this._onMouseDown.dispatchEvent({ id: e.target.id });
         }).bind(this));
-        this._fcAdapter.on('after:render', (function (e) {
-            this._onAfterRender.dispatchEvent();
-        }).bind(this));
+        //this._fcAdapter.on('after:render', (function (e) {
+        //    this._onAfterRender.dispatchEvent();
+        //}).bind(this));
 
         //events
         this._onMouseDown = new SmartJs.Event.Event(this);
-        this._onAfterRender = new SmartJs.Event.Event(this);
+        //this._onAfterRender = new SmartJs.Event.Event(this);
     }
 
     //properties
