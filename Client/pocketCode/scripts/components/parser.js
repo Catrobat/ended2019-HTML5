@@ -254,7 +254,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getList("' + jsonFormula.value + '").value';
+                        return 'this._sprite.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
@@ -524,15 +524,14 @@ PocketCode.merge({
                             return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         this._isStatic = false;
-                        var list_idx = this._parseJsonType(jsonFormula.left) - 1;
-                        return this._parseJsonType(jsonFormula.right) + '[' + list_idx + ']';
+                        return this._parseJsonType(jsonFormula.right) + '.valueAt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'CONTAINS':
                         if (uiString)
                             return 'contains(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                         this._isStatic = false;
-                        return this._parseJsonType(jsonFormula.left) + '.indexOf(' + this._parseJsonType(jsonFormula.right) + ') > -1';
+                        return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'ARDUINOANALOG':
                         if (uiString)
