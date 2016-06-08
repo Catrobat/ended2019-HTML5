@@ -16,20 +16,6 @@ PocketCode.RotationStyle = {
     ALL_AROUND: 'all around',
 };
 
-/**
- * GraphicEffects
- * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
- */
-PocketCode.GraphicEffect = {
-    COLOR: 'color',
-    FISHEYE: 'fisheye',
-    WHIRL: 'whirl',
-    PIXELATE: 'pixelate',
-    MOSAIC: 'mosaic',
-    BRIGHTNESS: 'brightness',
-    GHOST: 'ghost',     //opacity, transparency
-};
-
 PocketCode.Model.Sprite = (function () {
     Sprite.extends(PocketCode.UserVariableHost, false);
 
