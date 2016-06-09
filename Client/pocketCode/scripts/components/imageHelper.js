@@ -28,6 +28,42 @@ PocketCode.GraphicEffect = {
 };
 
 PocketCode.ImageFilter = {
+
+    /*
+     * TODO:
+     * following methods include the source code of scratch filters (action script)
+     * you can find them at: https://github.com/LLK/scratch-flash/tree/5cff62b909856b7d7b3d116a5dcc2b4f03de8482/src/filters
+     * these filters are not included in the latest version of scratch HTML5 player (which is currently deprecated?)
+     * If you're not familiar with flash/action script you should read the resource/s below to undestand the implementation :
+     *   http://www.adobe.com/devnet/flex/articles/pixel_bender_basics_flex_air.html
+     * even more information can be found here:
+     *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_reference.pdf
+     *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_guide.pdf
+     * 
+     * DOTO: (for each filter)
+     * - define input parameters (check correctness of existing parameters)
+     * - set default values for input parameters if undefined
+     * - validate input parameters
+     * - iterate over pixel array: example:
+     *   var r, g, b, a;
+     *   for (var i = 0, l = p.length; i < l; i += 4) {
+     *     r = p[i];
+     *     g = p[i + 1];
+     *     b = p[i + 2];
+     *     a = p[i + 3];
+     * 
+     *     //IMPLEMENT FILTER LOGIC HERE
+     *   }
+     * 
+     * - implementation
+     * - tests
+     * - cleanup: delete action script comments when done
+     * 
+     * GLOBAL TODO: 
+     * - implement ImageHelper.setFilter: basic and untested implementation right now
+     *   make sure all method parameters are passed correcty
+     * - implement unit-tests (if done for the filters already this shouldn't be much work)
+     */
     whirl: function (p, whirlRadians, center, radius, scale) {  //scale = {x:?, y:?}
         //// range: -infinity..infinity
         //var radians:Number = (Math.PI * filterDict["whirl"]) / 180;
@@ -299,10 +335,9 @@ PocketCode.ImageFilter = {
         return p;
     },
     brightness: function (p, value) {
-        var i;
         if (value !== 0) {
             value = Math.round(2.55 * value);   //255 = 100% of this color [0..255]
-            for (i = 0; i < p.length; i += 4) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
                 p[i] += value;
                 p[i + 1] += value;
                 p[i + 2] += value;
@@ -315,7 +350,7 @@ PocketCode.ImageFilter = {
     /*
     grayscale: function(p, args) {
         var r, g, b;
-        for (var i=0; i<d.length; i+=4) {
+        for (var i = 0, l = p.length; i < l; i += 4) {
             r = p[i];
             g = p[i+1];
             b = p[i+2];
@@ -328,7 +363,7 @@ PocketCode.ImageFilter = {
     },
     threshold: function(p, threshold) {
         var r, g, b, v;
-        for (var i = 0; i < d.length; i += 4) {
+        for (var i = 0, l = p.length; i < l; i += 4) {
             r = p[i];
             g = p[i+1];
             b = p[i+2];
@@ -339,9 +374,9 @@ PocketCode.ImageFilter = {
     },
 
     negative: function (p, value) {
-        var i, rcom, gcom, bcom;
+        var rcom, gcom, bcom;
         if (value !== 0) {
-            for (i = 0; i < p.length; i += 4) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
                 rcom = 255 - p[i];
                 gcom = 255 - p[i + 1];
                 bcom = 255 - p[i + 2];
@@ -366,9 +401,8 @@ PocketCode.ImageFilter = {
         return p;
     },
     comic: function (p, value) {
-        var i;
         if (value !== 0) {
-            for (i = 0; i < p.length; i += 4) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
                 p[i] += Math.sin(i * value) * 127 + 128;
                 p[i + 1] += Math.sin(i * value) * 127 + 128;
                 p[i + 2] += Math.sin(i * value) * 127 + 128;
@@ -377,9 +411,8 @@ PocketCode.ImageFilter = {
         return p;
     },
     duplicate: function (p, value) {
-        var i;
         if (value !== 0) {
-            for (i = 0; i < p.length; i += 4) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
                 p[i] = p[i * value];
                 p[i + 1] = p[i * value + 1];
                 p[i + 2] = p[i * value + 2];
@@ -389,9 +422,8 @@ PocketCode.ImageFilter = {
         return p;
     },
     confetti: function (p, value) {
-        var i;
         if (value !== 0) {
-            for (i = 0; i < p.length; i += 1) {
+            for (var i = 0, l = p.length; i < l; i += 1) {
                 p[i] = Math.sin(value * p[i]) * 127 + p[i];
             }
         }
