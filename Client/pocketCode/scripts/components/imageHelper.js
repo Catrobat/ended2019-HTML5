@@ -474,24 +474,26 @@ PocketCode.ImageHelper = (function () {
             var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             var pixels = imageData.data;
 
-            //TODO: call filter opertaitons using correct parameters (example only)
-            if (_effects[PocketCode.GraphicEffect.WHIRL]) { //make sure filters are applied in correct order
-                pixels = PocketCode.ImageFilter.whirl(pixels, _effects[PocketCode.GraphicEffect.WHIRL]);
+            //TODO: call filter operations using correct parameters (example only)
+            var ge = PocketCode.GraphicEffect,
+                imgf = PocketCode.ImageFilter;
+            if (_effects[ge.WHIRL]) { //make sure filters are applied in correct order
+                pixels = imgf.whirl(pixels, _effects[ge.WHIRL]);
             }
-            if (_effects[PocketCode.GraphicEffect.FISHEYE]) {
-                pixels = PocketCode.ImageFilter.fisheye(pixels, _effects[PocketCode.GraphicEffect.FISHEYE]);
+            if (_effects[ge.FISHEYE]) {
+                pixels = imgf.fisheye(pixels, _effects[ge.FISHEYE]);
             }
-            if (_effects[PocketCode.GraphicEffect.PIXELATE]) {
-                pixels = PocketCode.ImageFilter.pixelate(pixels, _effects[PocketCode.GraphicEffect.PIXELATE]);
+            if (_effects[ge.PIXELATE]) {
+                pixels = imgf.pixelate(pixels, _effects[ge.PIXELATE]);
             }
-            if (_effects[PocketCode.GraphicEffect.MOSAIC]) {
-                pixels = PocketCode.ImageFilter.mosaic(pixels, _effects[PocketCode.GraphicEffect.MOSAIC]);
+            if (_effects[ge.MOSAIC]) {
+                pixels = imgf.mosaic(pixels, _effects[ge.MOSAIC]);
             }
-            if (_effects[PocketCode.GraphicEffect.COLOR]) {
-                pixels = PocketCode.ImageFilter.color(pixels, _effects[PocketCode.GraphicEffect.COLOR]);
+            if (_effects[ge.COLOR]) {
+                pixels = imgf.color(pixels, _effects[ge.COLOR]);
             }
-            if (_effects[PocketCode.GraphicEffect.BRIGHTNESS]) {
-                pixels = PocketCode.ImageFilter.brightness(pixels, _effects[PocketCode.GraphicEffect.BRIGHTNESS]);
+            if (_effects[ge.BRIGHTNESS]) {
+                pixels = imgf.brightness(pixels, _effects[ge.BRIGHTNESS]);
             }
             //.. for all filters
 

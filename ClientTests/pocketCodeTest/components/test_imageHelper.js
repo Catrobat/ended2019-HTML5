@@ -8,6 +8,10 @@
 
 QUnit.module("components/imageHelper.js");
 
+QUnit.test("ImageFilter", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
 
 QUnit.test("ImageHelper", function (assert) {
 
