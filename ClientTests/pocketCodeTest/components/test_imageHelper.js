@@ -15,6 +15,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done2 = assert.async();
     var done3 = assert.async();
     var done4 = assert.async();
+    var done5 = assert.async();
 
     //helper function to alimit rounding errors
     var round1000 = function (value) {
@@ -390,8 +391,68 @@ QUnit.test("ImageHelper", function (assert) {
         oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);   //check transparent
         tl = oImg7.tl;
         assert.ok(tl.length == 0 && tl.angle == 0, "check return value on transparent images");
-
         done4();
+        runTests_rgbHsvConversion();
+    };
+
+    // h: 0 - 360
+    // s: 0 - 1
+    // v: 0 - 255
+    var runTests_rgbHsvConversion = function () {
+        var hsvRgbMapping = [
+            {
+                hsv: {h: 0, s: 0.498, v: 255},
+                rgb: {r: 255, g: 128, b: 128}
+            },
+            {
+                hsv: {h: 0, s: 0, v: 0},
+                rgb: {r: 0, g: 0, b: 0}
+            },
+            {
+                hsv: {h: 30, s: 0.571, v: 77},
+                rgb: {r: 77, g: 55, b: 33}
+            },
+            {
+                hsv: {h: 337, s: 0.98, v: 255},
+                rgb: {r: 255, g: 5, b: 100}
+            },
+            {
+                hsv: {h: 0, s: 0, v: 50},
+                rgb: {r: 50, g: 50, b: 50}
+            },
+            {
+                hsv: {h: 0, s: 0, v: 50},
+                rgb: {r: 50, g: 50, b: 50}
+            },
+            {
+                hsv: {h: 0, s: 0, v: 255},
+                rgb: {r: 255, g: 255, b: 255}
+            },
+        ];
+
+        for(var i = 0, l = hsvRgbMapping.length; i < l; i++){
+            //console.log(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b));
+            // console.log("----------------------");
+            // console.log('input: ' , hsvRgbMapping[i].hsv);
+            //
+            // console.log('actual: ' , ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v));
+            // console.log('expected: ' , hsvRgbMapping[i].rgb);
+            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv);
+            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb);
+        }
+
+        // var h = 50;
+        // var s = 128;
+        // var v = 128;
+        //
+        // h = (h + 25) % 360;
+        // if (h < 0)
+        //     h += 360;
+        // s = Math.max(0, Math.min(s, 1));
+        // v = Math.max(0, Math.min(v, 255.0));
+        // var rgb = renderingImage.hsvToRgb(h, s, v);
+
+        done5();
     };
 });
 
