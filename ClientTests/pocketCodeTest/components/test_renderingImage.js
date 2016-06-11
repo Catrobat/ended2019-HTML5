@@ -4,7 +4,7 @@
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-components.js" />
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
-"use strict";
+'use strict';
 
 QUnit.module("components/renderingImage.js");
 
@@ -17,6 +17,7 @@ QUnit.test("RenderingImage", function (assert) {
 
         var canvasElement = {width: 10, height: 20};
         var renderingImage = new PocketCode.RenderingImage({look: canvasElement});
+
         assert.ok(renderingImage instanceof PocketCode.RenderingImage, "instance check");
         assert.equal(renderingImage.object, canvasElement, "RenderingImage.object returns canvas element");
 
@@ -88,10 +89,72 @@ QUnit.test("RenderingImage", function (assert) {
         renderingImageOpaque._visible = false;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         renderingImageOpaque.draw(ctx);
-        console.log(ctx.getImageData(0,0,1,1).data[3]);
         assert.ok(!ctx.getImageData(0,0,1,1).data[3], "invisible image not drawn");
 
-        console.log(canvas.toDataURL('image/png'));
+
+        //filters
+        renderingImage._filters.brightness = 0;
+        var originalData = [
+            1, 2, 3, 4,
+            7, 8, 9, 17,
+            3, 3, 2, 15
+        ];
+
+        var modifiedData = originalData.slice(0);
+
+        renderingImage.applyBrightnessFilter(modifiedData);
+
+        var dataAsExpected = true;
+        for(var i = 0, l = modifiedData.length; i < l; i++){
+            if(originalData[i] !== modifiedData[i])
+                dataAsExpected = false;
+        }
+
+        assert.ok(dataAsExpected, "applyBrightnessFilter: no change made to brightness if brightness is 0");
+
+        var brightnessChange = 10;
+        renderingImage._filters.brightness = brightnessChange;
+
+        dataAsExpected = true;
+        modifiedData = originalData.slice(0);
+        renderingImage.applyBrightnessFilter(modifiedData);
+
+        for(i = 0, l = modifiedData.length; i < l; i++){
+            if(!(i % 4) && (modifiedData[i] !== originalData[i] + Math.round(brightnessChange * 2.55))){
+                dataAsExpected = false;
+            }
+        }
+
+        assert.ok(dataAsExpected, "applyBrightnessFilter: correct change made to brightness if brightness is not 0");
+
+        var filterRenderingImage = new PocketCode.RenderingImage(sprite1.renderingProperties);
+
+        var brightnessFilterApplied = false;
+        filterRenderingImage.applyBrightnessFilter = function () {
+            brightnessFilterApplied = true;
+        };
+
+        var colorFilterApplied = false;
+        filterRenderingImage.applyColorFilter = function () {
+            colorFilterApplied= true;
+        };
+
+        var originalElement = 'test';
+        var originalElementBackup = filterRenderingImage._originalElement;
+        filterRenderingImage._originalElement = originalElement;
+
+        filterRenderingImage.applyFilters();
+        assert.ok(!brightnessFilterApplied && !colorFilterApplied, "no filter applied if filters both empty");
+        assert.equal(filterRenderingImage._element, originalElement, "canvasElement reset to original when there are no filters");
+
+        filterRenderingImage._originalElement = originalElementBackup;
+        filterRenderingImage._filters = {
+            brightness: 5,
+            color: 5
+        };
+
+        filterRenderingImage.applyFilters();
+        assert.ok(brightnessFilterApplied && colorFilterApplied, "filter applied if filters exist");
 
         asyncTestsDone();
     };

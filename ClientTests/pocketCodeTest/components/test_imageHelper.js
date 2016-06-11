@@ -431,26 +431,9 @@ QUnit.test("ImageHelper", function (assert) {
         ];
 
         for(var i = 0, l = hsvRgbMapping.length; i < l; i++){
-            //console.log(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b));
-            // console.log("----------------------");
-            // console.log('input: ' , hsvRgbMapping[i].hsv);
-            //
-            // console.log('actual: ' , ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v));
-            // console.log('expected: ' , hsvRgbMapping[i].rgb);
-            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv);
-            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb);
+            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected");
+            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected");
         }
-
-        // var h = 50;
-        // var s = 128;
-        // var v = 128;
-        //
-        // h = (h + 25) % 360;
-        // if (h < 0)
-        //     h += 360;
-        // s = Math.max(0, Math.min(s, 1));
-        // v = Math.max(0, Math.min(v, 255.0));
-        // var rgb = renderingImage.hsvToRgb(h, s, v);
 
         done5();
     };
