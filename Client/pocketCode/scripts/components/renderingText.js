@@ -27,16 +27,21 @@
             set: function (value) {
                 this._x = value;
             },
+            get: function () {
+                return this._x;
+            },
         },
         y: {
             set: function (value) {
                 this._y = value;
             },
+            get: function () {
+                return this._y;
+            },
         },
         text: {
             set: function (value) {
                 this._text = value.toString();
-                //this._text = 'multiline text to try out if this is handled correctly \nhello \n \nlets see if this looks how it should look like';
             },
         },
         visible: {
