@@ -35,7 +35,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     // taken from test_sprite.js, overwrite game engine look getter
     assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
     gameEngine.getLookImage = function () {
-        return { canvas: fabric.document.createElement("canvas"), center: { length: 0, angle: 0 }, initialScaling: 1 };
+    return { canvas: document.createElement('canvas'), center: { length: 0, angle: 0 }, initialScaling: 1 };
     };
 
     for (var i = 1; i < 5; i++) {

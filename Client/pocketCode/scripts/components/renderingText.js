@@ -1,42 +1,32 @@
-﻿/// <reference path="../components/sprite.js" />
-
-PocketCode.RenderingText = (function () {
+﻿PocketCode.RenderingText = (function () {
 
     function RenderingText(propObject) {    //{ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }
         
         if (typeof propObject !== 'object')
             throw new Error('The rendering text has to be initialized using a variable or text parameter object');
 
-        this._fabricText = new fabric.Text(propObject.text, {
-            id: propObject.id,
-            selectable: false,
-            hasControls: false,
-            hasBorders: false,
-            hasRotatingPoint: false,
-            originX: "left",
-            originY: "top",
-            fontFamily: 'Arial',
-            fontSize: 50,
-            fontWeight: 'bold',
-        });
-        this.x = propObject.x;
-        this.y = propObject.y;
-        this.visible = propObject.visible;
+        this._id = propObject.id;
+        this._x = propObject.x;
+        this._y = propObject.y;
+        this._fontFamily = 'Arial';
+        this._fontSize = 50;
+        this._fontWeight = 'bold';
+        this._fontStyle = '';
+        this._visible = propObject.visible;
+        this._lineHeight = 1.31;
     }
 
     //properties
     Object.defineProperties(RenderingText.prototype, {
         id: {
             get: function () {
-                return this._fabricText.id;
+                return this._id;
             },
         },
         x: {
             set: function (value) {
                 this._x = value;
-                this._fabricText.left = value;
             },
-
             get: function () {
                 return this._x;
             },
@@ -44,29 +34,45 @@ PocketCode.RenderingText = (function () {
         y: {
             set: function (value) {
                 this._y = value;
-                this._fabricText.top = value;
             },
-
             get: function () {
                 return this._y;
             },
         },
         text: {
             set: function (value) {
-                this._fabricText.setText(value.toString());
+                this._text = value.toString();
             },
         },
         visible: {
             set: function (value) {
-                this._fabricText.visible = value;
+                this._visible = value;
             },
+            get: function () {
+                return this._visible;
+            }
         },
     });
 
     //methods
     RenderingText.prototype.merge({
         draw: function (context) {
-            this._fabricText.render(context);
+
+            if (!this._visible || !this._text) {
+                return;
+            }
+
+            context.textBaseline = 'top';
+            context.font = this._fontStyle + ' ' + this._fontWeight + ' ' + this._fontSize + 'px' + ' '+ this._fontFamily;
+
+            // wrap lines
+            var newline = /\r?\n/;
+            var textLines = this._text.split(newline);
+
+            for (var i = 0, len = textLines.length; i < len; i++) {
+                var heightOfLine = this._fontSize * this._lineHeight * i;
+                context.fillText(textLines[i], this._x, this._y + heightOfLine);
+            }
         },
     });
 

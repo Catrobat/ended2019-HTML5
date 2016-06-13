@@ -1052,7 +1052,6 @@ PocketCode.Web.resources = {
 		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.js', type: 'js' },
-		{ url: 'pocketCode/libs/fabric/fabric-1.6.0-rc.1.js', type: 'js' },
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
