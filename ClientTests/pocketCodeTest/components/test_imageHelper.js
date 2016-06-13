@@ -187,18 +187,18 @@ QUnit.test("ImageHelper", function (assert) {
 
         //argument check
         assert.throws(function () { ih.adjustCenterAndTrim("image"); }, Error, "ERROR: invlaid image argument");
-        assert.throws(function () { ih.adjustCenterAndTrim(img8, "a", 3); }, Error, "ERROR: invlaid rotationCenter argument");
+        //assert.throws(function () { ih.adjustCenterAndTrim(img8, "a", 3); }, Error, "ERROR: invlaid rotationCenter argument");
 
         //simple
-        var oImg9 = ih.adjustCenterAndTrim(img9, undefined, undefined, true);  //we start with the slowest and hope that loading time will not effect our tests
-        var oImg8 = ih.adjustCenterAndTrim(img8, undefined, undefined, true);
-        var oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);
-        var oImg6 = ih.adjustCenterAndTrim(img6, undefined, undefined, true);
-        var oImg5 = ih.adjustCenterAndTrim(img5, undefined, undefined, true);
-        var oImg4 = ih.adjustCenterAndTrim(img4, undefined, undefined, true);
-        var oImg3 = ih.adjustCenterAndTrim(img3, undefined, undefined, true);
-        var oImg2 = ih.adjustCenterAndTrim(img2, undefined, undefined, true);
-        var oImg1 = ih.adjustCenterAndTrim(img1, undefined, undefined, true);
+        var oImg9 = ih.adjustCenterAndTrim(img9, /*undefined, undefined,*/ true);  //we start with the slowest and hope that loading time will not effect our tests
+        var oImg8 = ih.adjustCenterAndTrim(img8, /*undefined, undefined,*/ true);
+        var oImg7 = ih.adjustCenterAndTrim(img7, /*undefined, undefined,*/ true);
+        var oImg6 = ih.adjustCenterAndTrim(img6, /*undefined, undefined,*/ true);
+        var oImg5 = ih.adjustCenterAndTrim(img5, /*undefined, undefined,*/ true);
+        var oImg4 = ih.adjustCenterAndTrim(img4, /*undefined, undefined,*/ true);
+        var oImg3 = ih.adjustCenterAndTrim(img3, /*undefined, undefined,*/ true);
+        var oImg2 = ih.adjustCenterAndTrim(img2, /*undefined, undefined,*/ true);
+        var oImg1 = ih.adjustCenterAndTrim(img1, /*undefined, undefined,*/ true);
 
         var m = oImg1.center, //{ length: , angle: }
             img = oImg1.canvas,
@@ -304,58 +304,58 @@ QUnit.test("ImageHelper", function (assert) {
         assert.ok(img.height == 602 && img.width == 471, "calling method using canvas element: size- make sure there is no trim-area after first trim");
         assert.ok(round1000(x) == 0 && round1000(y) == 0, "calling method using canvas element: resized- make sure there is no trim-area after first trim");
 
-        //individual rotation center applied
-        oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
-        oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
-        oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
-        oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);
-        oImg5 = ih.adjustCenterAndTrim(img5, 0, img5.height);
-        oImg4 = ih.adjustCenterAndTrim(img4, 4, 3);
+        ////individual rotation center applied
+        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
+        //oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
+        //oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
+        //oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);
+        //oImg5 = ih.adjustCenterAndTrim(img5, 0, img5.height);
+        //oImg4 = ih.adjustCenterAndTrim(img4, 4, 3);
 
-        m = oImg4.center, //{ length: , angle: }
-        img = oImg4.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 7 && img.width == 1, "img4 cut (individual rotation center)");
-        assert.ok(round1000(x) == -3.5 && round1000(y) == -0.5, "img4 recentered (individual rotation center)");
+        //m = oImg4.center, //{ length: , angle: }
+        //img = oImg4.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 7 && img.width == 1, "img4 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -3.5 && round1000(y) == -0.5, "img4 recentered (individual rotation center)");
 
-        m = oImg5.center, //{ length: , angle: }
-        img = oImg5.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 8 && img.width == 1, "img5 cut (individual rotation center)");
-        assert.ok(round1000(x) == 9.5 && round1000(y) == 4, "img5 recentered (individual rotation center)");
+        //m = oImg5.center, //{ length: , angle: }
+        //img = oImg5.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 8 && img.width == 1, "img5 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 9.5 && round1000(y) == 4, "img5 recentered (individual rotation center)");
 
-        m = oImg6.center, //{ length: , angle: }
-        img = oImg6.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 8 && img.width == 10, "img6 cut (individual rotation center)");
-        assert.ok(round1000(x) == -5 && round1000(y) == 4, "img6 recentered (individual rotation center)");
+        //m = oImg6.center, //{ length: , angle: }
+        //img = oImg6.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 8 && img.width == 10, "img6 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -5 && round1000(y) == 4, "img6 recentered (individual rotation center)");
 
-        m = oImg7.center, //{ length: , angle: }
-        img = oImg7.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 0 && img.width == 0, "img7 cut (individual rotation center)");
-        assert.ok(round1000(x) == 0 && round1000(y) == 0, "img7 recentered (individual rotation center)");
+        //m = oImg7.center, //{ length: , angle: }
+        //img = oImg7.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 0 && img.width == 0, "img7 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 0 && round1000(y) == 0, "img7 recentered (individual rotation center)");
 
-        m = oImg8.center, //{ length: , angle: }
-        img = oImg8.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 4 && img.width == 4, "img8 cut (individual rotation center)");
-        assert.ok(round1000(x) == -5 && round1000(y) == -4, "img8 recentered (individual rotation center)");
+        //m = oImg8.center, //{ length: , angle: }
+        //img = oImg8.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 4 && img.width == 4, "img8 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -5 && round1000(y) == -4, "img8 recentered (individual rotation center)");
 
-        m = oImg9.center, //{ length: , angle: }
-        img = oImg9.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 602 && img.width == 471, "img9 cut (individual rotation center)");
-        assert.ok(round1000(x) == 18.5 && round1000(y) == 48, "img9 recentered (individual rotation center)");
+        //m = oImg9.center, //{ length: , angle: }
+        //img = oImg9.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 602 && img.width == 471, "img9 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 18.5 && round1000(y) == 48, "img9 recentered (individual rotation center)");
 
         //include vectors to bounding corners
-        oImg4 = ih.adjustCenterAndTrim(img4, undefined, undefined, true);
+        oImg4 = ih.adjustCenterAndTrim(img4, /*undefined, undefined,*/ true);
         var tl = oImg4.tl;
         x = tl.length * Math.cos(tl.angle),
         y = tl.length * Math.sin(tl.angle);
@@ -373,7 +373,7 @@ QUnit.test("ImageHelper", function (assert) {
         y = br.length * Math.sin(br.angle);
         assert.ok(round1000(x) == -4 && round1000(y) == -3, "img4: br corner vector");
 
-        oImg3 = ih.adjustCenterAndTrim(img3, undefined, undefined, true);
+        oImg3 = ih.adjustCenterAndTrim(img3, /*undefined, undefined,*/ true);
         tl = oImg3.tl;
         x = tl.length * Math.cos(tl.angle),
         y = tl.length * Math.sin(tl.angle);
@@ -391,7 +391,7 @@ QUnit.test("ImageHelper", function (assert) {
         y = br.length * Math.sin(br.angle);
         assert.ok(round1000(x) == 1 && round1000(y) == -1, "img3: br corner vector");
 
-        oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);   //check transparent
+        oImg7 = ih.adjustCenterAndTrim(img7, /*undefined, undefined,*/ true);   //check transparent
         tl = oImg7.tl;
         assert.ok(tl.length == 0 && tl.angle == 0, "check return value on transparent images");
 

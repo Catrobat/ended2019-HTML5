@@ -510,6 +510,7 @@ PocketCode.ImageHelper = (function () {
             ctx.oImageSmoothingEnabled = bool;
         },
         scale: function (element, scalingFactor) {
+            scalingFactor = scalingFactor || 1.0;
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
@@ -548,7 +549,7 @@ PocketCode.ImageHelper = (function () {
         },
         /* rotation center x & y are defined as used in scratch: from the top-left corner of the image to the rc 
            please notice that the axes are defined as: right & bottom = positive */
-        adjustCenterAndTrim: function (element, rotationCenterX, rotationCenterY, includeBoundingCorners) {
+        adjustCenterAndTrim: function (element, /*rotationCenterX, rotationCenterY,*/ includeBoundingCorners) {
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
@@ -566,13 +567,13 @@ PocketCode.ImageHelper = (function () {
                 centerOffsetY = 0;
             var trimOffsets = this.getElementTrimOffsets(element, 1, 0);
 
-            if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
-                if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
-                    throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
+            //if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
+            //    if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
+            //        throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
 
-                centerOffsetX = w / 2 - rotationCenterX;
-                centerOffsetY = -h / 2 + rotationCenterY;
-            }
+            //    centerOffsetX = w / 2 - rotationCenterX;
+            //    centerOffsetY = -h / 2 + rotationCenterY;
+            //}
 
             centerOffsetX += (trimOffsets.left - trimOffsets.right) / 2;    //offsets between old and new rotation center
             centerOffsetY += (trimOffsets.bottom - trimOffsets.top) / 2;

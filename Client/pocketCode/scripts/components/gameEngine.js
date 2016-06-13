@@ -495,8 +495,8 @@ PocketCode.GameEngine = (function () {
             return idx + 1;
         },
         getLookImage: function (id) {
-            //used by the sprite to access a look object when firing onSpriteUiChange (setLook, nextLook bricks)
-            return this._imageStore.getImage(id);//.getLook(id);
+            //used by the sprite to access an image during look init
+            return this._imageStore.getImage(id);
         },
         setSpriteLayerBack: function (sprite, layers) {
             var sprites = this._sprites;

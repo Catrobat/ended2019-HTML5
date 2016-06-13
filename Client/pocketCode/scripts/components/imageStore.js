@@ -80,17 +80,32 @@ PocketCode.ImageStore = (function () {
             this._resourceLoader.abortLoading();
         },
         _resourceLoaderProgressHandler: function (e) {
-            var imgObject = e.file;//,
-                //imgElement = e.element,
-                //look = {};
-            imgObject.imgElement = e.element;//imgElement;
+            var //file = e.file,
+                //img,
+                canvas = PocketCode.ImageHelper.scale(e.element);   //convert image to canvas elemetn
+
+            var img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, /*undefined, undefined,*/ true);
+            img.originalHeight = e.element.naturalHeight;
+            img.originalWidth = e.element.naturalWidth;
+            this._images[e.file.id] = img;
+            //{ canvas: canvas,                                     //minmized image (clipped + scaled initial) 
+            //  center: { length: undefined, angle: undefined },    //rotation point to look center
+            //  tl: { length: undefined, angle: undefined },        //rotation point to corner vectors
+            //  tr: { length: undefined, angle: undefined }, 
+            //  bl: { length: undefined, angle: undefined }, 
+            //  br: { length: undefined, angle: undefined } };
+
+            //    //imgElement = e.element,
+            //    //look = {};
+            ////imgObject.imgElement = e.element;//imgElement;
             
-            //register in store: this._images.ID = { id: , url: , size: , img: };
-            //look.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
-            //this._looks[imgObject.id] = look;
-            //imgObject.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
-            this._images[imgObject.id] = imgObject;
-            //this._looks[imgObject.id] = this._initLook(imgObject.id);
+            ////register in store: this._images.ID = { id: , url: , size: , img: };
+            ////look.canvas = PocketCode.ImageHelper.scale(imgElement, this._initialScaling);
+            ////this._looks[imgObject.id] = look;
+            //imgObject.canvas = PocketCode.ImageHelper.scale(e.element);//imgElement, this._initialScaling);
+            //PocketCode.ImageHelper.adjustCenterAndTrim(
+            //this._images[imgObject.id] = imgObject;
+            ////this._looks[imgObject.id] = this._initLook(imgObject.id);
             this._onLoadingProgress.dispatchEvent({ progress: e.progress, file: e.file });
         },
         //_initLook: function (lookId, rotationCenterX, rotationCenterY) {
@@ -106,7 +121,7 @@ PocketCode.ImageStore = (function () {
         getImage: function (resourceId) {
             var img = this._images[resourceId];
             if (img)
-                return img.imgElement;
+                return img;//.imgElement;
             throw new Error('requested resource image could not be found: ' + resourceId);
         },
         //getLook: function (lookId) {
