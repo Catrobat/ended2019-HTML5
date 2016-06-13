@@ -23,7 +23,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         //TODO: check if handling is necesary twice
         //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this));
-        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._updateCanvasSize.bind(this, this), 120); }.bind(this), this));
+        this._onResize.addEventListener(new SmartJs.Event.EventListener(function () {
+            window.setTimeout(this._updateCanvasSize.bind(this), 120);
+        }, this));
     }
 
     //properties
@@ -82,7 +84,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 
-            this.onResize.dispatchEvent();
+            //this.onResize.dispatchEvent();
             this.render();
             this._drawAxes();
         },
@@ -152,7 +154,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //this works because we have already defined the function in sj-animation.js globally
             this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
         },
-        _redrawCanvas: function () {
+        _redrawCanvas: function ()
+        {
+            this._redrawRequired = false;
             this._canvas.render();
             this._redrawInProgress = false;
             if (this._redrawRequired)
