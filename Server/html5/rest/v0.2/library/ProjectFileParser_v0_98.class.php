@@ -160,6 +160,11 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $brick = new ChangeYBrickDto($y);
                 break;
 
+            case "SetRotationStyleBrick":
+                $brick = new SetRotationStyleBrickDto();
+                TODO: $brick->selected = (string)$script->selection;
+                break;
+
             case "IfOnEdgeBounceBrick":
                 $brick = new IfOnEdgeBounceBrickDto();
                 break;
