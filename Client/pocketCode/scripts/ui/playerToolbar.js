@@ -93,6 +93,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._screenshotButton);
             // i18n: btnAxes
             this._axesButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.AXES, 'btnAxes');
+            this._axesButtonDisabled = true;
             this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
             this._menuContainerAlign.appendChild(this._axesButton);
 
@@ -158,7 +159,11 @@ PocketCode.Ui.merge({
                         this._screenshotButton.disabled = true;
                     else
                         this._screenshotButton.disabled = value;
-                    this._axesButton.disabled = value;
+
+                    if (this._axesButtonDisabled)
+                        this._axesButton.disabled = true;
+                    else
+                        this._axesButton.disabled = value;
                 },
             },
             axesButtonChecked: {
@@ -166,6 +171,14 @@ PocketCode.Ui.merge({
                     if (typeof value !== 'boolean')
                         throw new Error('invalid argument: expected type: boolean');
                     this._axesButton.checked = value;
+                },
+            },
+            axesButtonDisabled: {
+                set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
+                    this._axesButtonDisabled = value;
+                    this._axesButton.disabled = value;
                 },
             },
             backButtonDisabled: {

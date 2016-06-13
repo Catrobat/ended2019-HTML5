@@ -93,8 +93,8 @@ PocketCode.Formula = (function () {
                     size: 100,
                     positionX: 0,
                     positionY: 0,
-                    getVariable: function () { return { value: 0 }; },
-                    getList: function () { return { value: [] }; },
+                    getVariable: function (id) { return { id: id, value: 0 }; },
+                    getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                 };
                 var test = this.calculate.call(formula);    //execute generated calculate method in testFormula
             }
