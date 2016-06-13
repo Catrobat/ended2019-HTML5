@@ -113,6 +113,7 @@ PocketCode.Model.merge({
             //    this._return(false);
             //else
             //    this._return(this._sprite.setSize(val));
+            this._return(false);
         };
 
         return SelectCameraBrick;
@@ -137,6 +138,7 @@ PocketCode.Model.merge({
             //    this._return(false);
             //else
             //    this._return(this._sprite.setSize(val));
+            this._return(false);
         };
 
         return CameraBrick;

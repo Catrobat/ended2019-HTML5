@@ -125,6 +125,35 @@ PocketCode.Model.merge({
     })(),
 
 
+    SetRotionStyleBrick: (function () {
+        SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetRotionStyleBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+            switch (propObject.selected) {  //TODO: check if selected indices where generated correctly
+                case 1:
+                    this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+                    break;
+                case 2:
+                    this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
+                    break;
+                default:
+                    this._style = PocketCode.RotationStyle.ALL_AROUND;
+                    break;
+            }
+        }
+
+        SetRotionStyleBrick.prototype._execute = function () {
+            if (this._disposed)
+                return;
+            this._return(this._sprite.setRotationStyle(this._style));
+        };
+
+        return SetRotionStyleBrick;
+    })(),
+
+
     IfOnEdgeBounceBrick: (function () {
         IfOnEdgeBounceBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -417,6 +446,8 @@ PocketCode.Model.merge({
         }
 
         SetPhysicsObjectTypeBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetPhysicsObjectTypeBrick;
@@ -432,6 +463,8 @@ PocketCode.Model.merge({
         }
 
         SetVelocityBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetVelocityBrick;
@@ -447,6 +480,8 @@ PocketCode.Model.merge({
         }
 
         TurnLeftSpeedBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return TurnLeftSpeedBrick;
@@ -462,6 +497,8 @@ PocketCode.Model.merge({
         }
 
         TurnRightSpeedBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return TurnRightSpeedBrick;
@@ -477,6 +514,8 @@ PocketCode.Model.merge({
         }
 
         SetGravityBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetGravityBrick;
@@ -492,6 +531,8 @@ PocketCode.Model.merge({
         }
 
         SetMassBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetMassBrick;
@@ -507,6 +548,8 @@ PocketCode.Model.merge({
         }
 
         SetBounceFactorBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetBounceFactorBrick;
@@ -522,6 +565,8 @@ PocketCode.Model.merge({
         }
 
         SetFrictionBrick.prototype._execute = function () {
+            //TODO:
+            this._return(false);
         };
 
         return SetFrictionBrick;
