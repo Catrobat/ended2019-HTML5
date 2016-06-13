@@ -493,22 +493,21 @@
 	height: 100%;
 	position: relative;
 	overflow: hidden;
-	/*background-color: #EEE;*/
 }
 
 
 /* canvas */
-.pc-canvas {
-	left: 0;
+.pc-canvasContainer {
+    position: relative;
+	background-color: #FFF;
+}
+.pc-canvasContainer canvas {
+	position: absolute;
 	top: 0;
+	left: 0;
 	border: 0;
 	padding: 0;
 	margin: 0;
-	position: absolute;
-}
-
-.pc-canvas-container {
-	background-color: #FFF;
 }
 
 
