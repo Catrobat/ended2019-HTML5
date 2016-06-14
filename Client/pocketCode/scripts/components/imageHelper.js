@@ -457,9 +457,9 @@ PocketCode.ImageHelper = (function () {
             if (!(canvas instanceof HTMLCanvasElement))
                 throw new Error('invalid argument: canvas');
             if (!(filters instanceof Array))
-                throw new Error('invalid argument: effects[]');
+                throw new Error('invalid argument: filters[]');
 
-            if (filters.length = 0)
+            if (filters.length == 0)
                 return;
             var _effects = {},
                 filter;
@@ -498,19 +498,19 @@ PocketCode.ImageHelper = (function () {
             //.. for all filters
 
             //the last object will have all the transformations done on it
-            var newImageData = ctx.createImageData(imagedata); //make imgdata object
+            var newImageData = ctx.createImageData(imageData); //make imgdata object
             newImageData.data.set(pixels); //add transformed pixels
             ctx.putImageData(newImageData, 0, 0);
         },
         setImageSmoothing: function (ctx, bool) {
             ctx.imageSmoothingEnabled = bool;
-            ctx.webkitImageSmoothingEnabled = bool;
+            //ctx.webkitImageSmoothingEnabled = bool;   //deprecated
             ctx.mozImageSmoothingEnabled = bool;
             ctx.msImageSmoothingEnabled = bool;
             ctx.oImageSmoothingEnabled = bool;
         },
         scale: function (element, scalingFactor) {
-            scalingFactor = scalingFactor || 1.0;
+            scalingFactor = scalingFactor != undefined ? scalingFactor : 1.0;
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
@@ -528,7 +528,7 @@ PocketCode.ImageHelper = (function () {
 
             if (typeof scalingFactor !== 'number')
                 throw new Error('invalid argument: scalingFactor: expected type: number');
-            else if (scalingFactor === 0) {
+            else if (scalingFactor <= 0) {
                 canvas.height = 0;
                 canvas.width = 0;
                 return canvas;

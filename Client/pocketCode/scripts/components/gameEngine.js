@@ -346,7 +346,7 @@ PocketCode.GameEngine = (function () {
             var device = this._device;
 
             loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
-            loadingAlerts.deviceEmulation = device.emulationInUser;
+            loadingAlerts.deviceEmulation = device.emulationInUse;
             loadingAlerts.deviceLockRequired = device.mobileLockRequired;
 
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||

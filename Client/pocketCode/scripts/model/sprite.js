@@ -247,6 +247,16 @@ PocketCode.Model.Sprite = (function () {
 
     //methods
     Sprite.prototype.merge({
+        initLooks: function () {    //is called before init() to load image canvas from image store
+            var looks = this._looks;
+            var look, img;
+
+            for (var i = 0, l = looks.length; i < l; i++) {
+                look = looks[i];
+                img = this._gameEngine.getLookImage(look.imageId);
+                look.init(img);
+            }
+        },
         init: function () {
             //property initialization
             //motion
@@ -267,17 +277,6 @@ PocketCode.Model.Sprite = (function () {
 
             //variables
             this._resetVariables();
-        },
-        initLooks: function () {
-            var looks = this._looks;
-            var l = looks.length,
-                look, img;
-
-            for (var i = 0; i < l; i++) {
-                look = looks[i];
-                img = this._gameEngine.getLookImage(look.imageId);
-                look.init(img);
-            }
         },
         /**
          * calls pause() on every script as long as method is available

@@ -17,6 +17,11 @@ PocketCode.Model.Look = (function () {
         if (jsonLook.rotationCenterY)
             this._rotationCenterY = jsonLook.rotationCenterY;
 
+        //center defined to reduce test efford: testing interfaces without loading explicit images
+        this._center = {
+            length: 0.0,
+            angle: 0.0,
+        };
         this._cache = {};
     }
 

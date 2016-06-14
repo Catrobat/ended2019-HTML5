@@ -56,7 +56,7 @@ PocketCode.ImageStore = (function () {
 
     //methods
     ImageStore.prototype.merge({
-        loadImages: function (resourceBaseUrl, imgArray) {//, initialScaling) {  //[{ id: , url: , size: }, { .. }, ..]
+        loadImages: function (resourceBaseUrl, imgArray) {
             if (!(imgArray instanceof Array))
                 throw new Error('invalid parameter image array: expected type Array');
 

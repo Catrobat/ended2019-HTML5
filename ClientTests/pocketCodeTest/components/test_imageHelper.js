@@ -3,15 +3,41 @@
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-components.js" />
-/// <reference path="../../../Client/smartJs/sj-ui.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/imageHelper.js" />
 'use strict';
 
 QUnit.module("components/imageHelper.js");
 
-QUnit.test("ImageFilter", function (assert) {
+QUnit.test("ImageFilter: whirl", function (assert) {
 
     assert.ok(false, "TODO: tests");
 });
+
+QUnit.test("ImageFilter: fisheye", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: pixelate", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: mosaic", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: color", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: brightness", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
 
 QUnit.test("ImageHelper", function (assert) {
 
@@ -20,6 +46,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done3 = assert.async();
     var done4 = assert.async();
     var done5 = assert.async();
+    var done6 = assert.async();
 
     //helper function to alimit rounding errors
     var round1000 = function (value) {
@@ -83,10 +110,18 @@ QUnit.test("ImageHelper", function (assert) {
 
         assert.throws(function () { ih.scale("image"); }, Error, "ERROR: scale: argument check: image");
         assert.throws(function () { ih.scale(new Image(), "asd"); }, Error, "ERROR: scale: argument check: scaling factor");
-        assert.throws(function () { ih.scale(img8); }, Error, "ERROR: scale: argument check: scaling factor undefined");
+        //assert.throws(function () { ih.scale(img8); }, Error, "ERROR: scale: argument check: scaling factor undefined");
 
-        var oImg = ih.scale(img8, 0);
-        assert.ok(oImg.width == 0 && oImg.height == 0, "scaling factor = 0");
+        var oImg = ih.scale(img8);
+        assert.ok(oImg.width == img8.width && oImg.height == img8.height, "scaling factor undefined -> sclaing = 1");
+        assert.ok(oImg instanceof HTMLCanvasElement, "returns a canvas");
+        ih.setImageSmoothing(oImg.getContext('2d'));
+        //assert.ok(oImg.imageSmoothingEnabled, true, "setter: image smoothing enabled");
+
+        oImg = ih.scale(img8, 0);
+        assert.ok(oImg.width == 0 && oImg.height == 0, "scaling factor == 0");
+        oImg = ih.scale(img8, -0.1);
+        assert.ok(oImg.width == 0 && oImg.height == 0, "negative scaling factor");
 
         oImg = ih.scale(img8, 2);
         assert.ok(oImg.height == img8.height * 2 && oImg.width == img8.width * 2, "upscaling proportions: h:" + oImg.height + ", w:" + oImg.width);
@@ -396,6 +431,33 @@ QUnit.test("ImageHelper", function (assert) {
         tl = oImg7.tl;
         assert.ok(tl.length == 0 && tl.angle == 0, "check return value on transparent images");
         done4();
+        runTests_setFilters();
+    };
+
+    //filters
+    var runTests_setFilters = function () {
+
+        var canvas = document.createElement("canvas");
+        canvas.width = 20;
+        canvas.height = 10;
+        assert.throws(function () { ih.setFilters("canvas", []); }, Error, "ERROR: invalid argument canvas");
+        assert.throws(function () { ih.setFilters(canvas); }, Error, "ERROR: invalid argument filters");
+
+        ih.setFilters(canvas, []);  //code coverage
+        assert.throws(function () { ih.setFilters(canvas, [{ effect: undefined, value: 4 }]); }, Error, "ERROR: invalid filter argument: effect");
+        assert.throws(function () { ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: undefined }]); }, Error, "ERROR: invalid filter argument: value");
+        ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: 4 }]);
+
+        //call all existing filters once
+        ih.setFilters(canvas, [
+            { effect: PocketCode.GraphicEffect.WHIRL, value: 4 },
+            { effect: PocketCode.GraphicEffect.FISHEYE, value: 4 },
+            { effect: PocketCode.GraphicEffect.PIXELATE, value: 4 },
+            { effect: PocketCode.GraphicEffect.MOSAIC, value: 4 },
+            { effect: PocketCode.GraphicEffect.COLOR, value: 4 },
+            { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: 4 }]);
+
+        done5();
         runTests_rgbHsvConversion();
     };
 
@@ -432,14 +494,28 @@ QUnit.test("ImageHelper", function (assert) {
                 hsv: {h: 0, s: 0, v: 255},
                 rgb: {r: 255, g: 255, b: 255}
             },
+
+            {
+                hsv: { h: 213, s: 75, v: 76 },
+                rgb: { r: 47, g: 113, b: 194 }
+            },
+            {
+                hsv: { h: 270, s: 81, v: 76 },
+                rgb: { r: 116, g: 35, b: 194 }
+            },
+            {
+                hsv: { h: 25, s: 75, v: 76 },
+                rgb: { r: 194, g: 109, b: 47 }
+            },
+
         ];
 
         for(var i = 0, l = hsvRgbMapping.length; i < l; i++){
-            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected");
-            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected");
+            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected: " + i);
+            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected: " + i);
         }
 
-        done5();
+        done6();
     };
 });
 

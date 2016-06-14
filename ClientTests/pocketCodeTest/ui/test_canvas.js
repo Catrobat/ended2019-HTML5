@@ -191,19 +191,19 @@ QUnit.test("Canvas", function (assert) {
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.setDimensions(80, 40, viewportScaling);
 
-        assert.equal(canvas.lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
-        assert.equal(canvas.lowerCanvasEl.width, 80, 'setDimensions sets width for lower canvas');
-        assert.equal(canvas.upperCanvasEl.height, 40, 'setDimensions sets height for upper canvas');
-        assert.equal(canvas.upperCanvasEl.width, 80, 'setDimensions sets width for upper canvas');
-        assert.equal(canvas.cacheCanvasEl.height, Math.floor(40 / viewportScaling), 'setDimensions sets height for cache canvas');
-        assert.equal(canvas.cacheCanvasEl.width, Math.floor(80 / viewportScaling), 'setDimensions sets width for cache canvas');
+        assert.equal(canvas._lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
+        assert.equal(canvas._lowerCanvasEl.width, 80, 'setDimensions sets width for lower canvas');
+        assert.equal(canvas._upperCanvasEl.height, 40, 'setDimensions sets height for upper canvas');
+        assert.equal(canvas._upperCanvasEl.width, 80, 'setDimensions sets width for upper canvas');
+        assert.equal(canvas._cacheCanvasEl.height, Math.floor(40 / viewportScaling), 'setDimensions sets height for cache canvas');
+        assert.equal(canvas._cacheCanvasEl.width, Math.floor(80 / viewportScaling), 'setDimensions sets width for cache canvas');
         assert.equal(canvas.scaling, viewportScaling, 'setDimensions sets scaling');
 
         var contextScaling = 0;
         var drawCalledRenderingImage = 0;
         var scaleX, scaleY;
 
-        var context = canvas.lowerCanvasEl.getContext('2d');
+        var context = canvas._lowerCanvasEl.getContext('2d');
 
         context.scale = function (x, y) {
             scaleX = x;

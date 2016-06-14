@@ -103,7 +103,7 @@ QUnit.test("ImageStore: init and loading", function (assert) {
     //image getter, dispose
 	var startTest3 = function () {
 	    var img = is.getImage("s1");
-	    assert.ok(img instanceof HTMLImageElement, "image getter");
+	    assert.ok(img.canvas instanceof HTMLCanvasElement, "image getter = object including canvas");
         assert.throws(function () { is.getImage("s1_NOT_FOUND"); }, Error, "ERROR: image not found");
 
         is.dispose();

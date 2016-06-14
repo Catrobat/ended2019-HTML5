@@ -124,7 +124,7 @@ PocketCode.Device = (function () {
         isTouch: {
             value: SmartJs.Device.isTouch,
         },
-        emulationInUser: {
+        emulationInUse: {
             get: function () {
                 if (this instanceof PocketCode.DeviceEmulator && this._features.INCLINATION.inUse)
                     return true;
@@ -300,8 +300,8 @@ PocketCode.Device = (function () {
             },
             set: function (cameraType) {
                 var found = false;
-                for (type in PocketCode.CameraType) {
-                    if (type == cameraType) {
+                for (var type in PocketCode.CameraType) {
+                    if (PocketCode.CameraType[type] == cameraType) {
                         found = true;
                         break;
                     }
