@@ -10,28 +10,24 @@ PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
     function Canvas(args) {
-        this.document = document;
+        args = args || { className: 'pc-canvasContainer' };
+        SmartJs.Ui.Control.call(this, 'div', args);
 
-        this.wrapperEl = this.document.createElement('div');
-        this.wrapperEl.className = 'canvas-container';
+        this._lowerCanvasEl = document.createElement('canvas');
+        this._dom.appendChild(this._lowerCanvasEl);
+        this._contextContainer = this._lowerCanvasEl.getContext('2d');
 
-        this.lowerCanvasEl = this._createCanvasElement(this.wrapperEl);
-        this.contextContainer = this.lowerCanvasEl.getContext('2d');
-        this.lowerCanvasEl.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+        this._upperCanvasEl = document.createElement('canvas');
+        this._dom.appendChild(this._upperCanvasEl);
+        this._contextTop = this._upperCanvasEl.getContext('2d');
 
-        this.upperCanvasEl = this._createCanvasElement(this.wrapperEl);
-        this._contextTop = this.upperCanvasEl.getContext('2d');
-
-        this.cacheCanvasEl = this.document.createElement('canvas');
-        this.contextCache = this.cacheCanvasEl.getContext('2d');
-
-        this._width = this.lowerCanvasEl.width;
-        this._height = this.lowerCanvasEl.height;
+        this._cacheCanvasEl = document.createElement('canvas');
+        this._contextCache = this._cacheCanvasEl.getContext('2d');
 
         this._onMouseDown = new SmartJs.Event.Event(this);
         this.__onMouseDown = this.__onMouseDown.bind(this);
-        this.upperCanvasEl.addEventListener('mousedown', this.__onMouseDown, false);
-        this.upperCanvasEl.addEventListener('touchstart', this.__onMouseDown, false);
+        this._upperCanvasEl.addEventListener('mousedown', this.__onMouseDown, false);
+        this._upperCanvasEl.addEventListener('touchstart', this.__onMouseDown, false);
 
         this._renderingObjects = [];
         this._renderingTexts = [];
@@ -40,30 +36,30 @@ PocketCode.Ui.Canvas = (function () {
         this._scalingY = 1.0;
         //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
 
-        this.setDimensions(this.lowerCanvasEl.width, this.lowerCanvasEl.height, this.scaling);
+        //this.setDimensions(this._lowerCanvasEl.width, this._lowerCanvasEl.height, this.scaling);
 
-        args = args || {};
-        SmartJs.Ui.Control.call(this, this.wrapperEl, args); //the wrapper div becomes our _dom root element
+        //args = args || {};
+        //SmartJs.Ui.Control.call(this, this.wrapperEl, args); //the wrapper div becomes our _dom root element
     }
 
     //properties
     Object.defineProperties(Canvas.prototype, {
-        height: {
-            set: function(height){
-                this._height = height;
-            },
-            get: function () {
-                return this._height;
-            },
-        },
-        width: {
-            set: function(width){
-                this._width = width;
-            },
-            get: function () {
-                return this._width;
-            },
-        },
+        //height: {
+        //    set: function(height){
+        //        this._height = height;
+        //    },
+        //    get: function () {
+        //        return this._height;
+        //    },
+        //},
+        //width: {
+        //    set: function(width){
+        //        this._width = width;
+        //    },
+        //    get: function () {
+        //        return this._width;
+        //    },
+        //},
         contextTop: {
             get: function () {
                 return this._contextTop;
@@ -119,39 +115,27 @@ PocketCode.Ui.Canvas = (function () {
     //methods
     Canvas.prototype.merge({
 
-        _createCanvasElement: function (parentElement) {
-
-            var canvasElement = this.document.createElement('canvas');
-            canvasElement.className = 'pc-canvas';
-
-            if (parentElement && parentElement.appendChild){
-                parentElement.appendChild(canvasElement);
-            }
-
-            return canvasElement;
-        },
-
         setDimensions: function (width, height, scaling) {
             width = Math.floor(width / 2.0) * 2.0;
             height = Math.floor(height / 2.0) * 2.0;
 
-            this.lowerCanvasEl.height = height;
-            this.lowerCanvasEl.width = width;
-            this.upperCanvasEl.height = height;
-            this.upperCanvasEl.width = width;
+            this.height = height;
+            this.width = width;
 
-            this._height = height;
-            this._width = width;
+            this._lowerCanvasEl.height = height;
+            this._lowerCanvasEl.width = width;
+            this._upperCanvasEl.height = height;
+            this._upperCanvasEl.width = width;
 
             this.scaling = scaling;
 
-            this.cacheCanvasEl.setAttribute('width', this._width / this.scaling);
-            this.cacheCanvasEl.setAttribute('height', this._height / this.scaling);
+            this._cacheCanvasEl.setAttribute('width', this.width / this.scaling);
+            this._cacheCanvasEl.setAttribute('height', this.height / this.scaling);
         },
 
         clear: function () {
-            this._contextTop.clearRect(0, 0, this._width, this._height);
-            this.contextContainer.clearRect(0, 0, this._width, this._height);
+            this._contextTop.clearRect(0, 0, this.width, this.height);
+            this._contextContainer.clearRect(0, 0, this.width, this.height);
         },
 
         __onMouseDown: function (e) {
@@ -162,14 +146,14 @@ PocketCode.Ui.Canvas = (function () {
             }
 
             var pointerX, pointerY;
-            var boundingClientRect = this.lowerCanvasEl.getBoundingClientRect();
+            var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
             if (SmartJs.Device.isTouch && (e.touches && e.touches[0])){
                 var touch = e.touches[0];
                 pointerX = (touch.clientX ? touch.clientX - boundingClientRect.left : e.clientX);
                 pointerY = (touch.clientY ? touch.clientY - boundingClientRect.top : e.clientY);
             } else {
-                boundingClientRect = this.lowerCanvasEl.getBoundingClientRect();
+                boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
                 pointerX = e.clientX ? e.clientX - boundingClientRect.left : 0;
                 pointerY = e.clientY ? e.clientY - boundingClientRect.top : 0;
             }
@@ -181,19 +165,19 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         _isTargetTransparent: function (target, x, y) {
-            this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
-            this.contextCache.save();
-            target.draw(this.contextCache);
-            this.contextCache.restore();
+            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
+            this._contextCache.save();
+            target.draw(this._contextCache);
+            this._contextCache.restore();
 
             //imageData.data contains rgba values - here we look at the alpha value
-            var imageData = this.contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
+            var imageData = this._contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
             //console.log('data: ' + imageData.data);
 
             //clear
             imageData = null;
-            this.contextCache.clearRect(0, 0, this.cacheCanvasEl.width, this.cacheCanvasEl.height);
+            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
             return hasTransparentAlpha;
         },
 
@@ -215,9 +199,9 @@ PocketCode.Ui.Canvas = (function () {
 
         render: function (viewportScaling) {
 
-            var ctx = this.contextContainer;
+            var ctx = this._contextContainer;
 
-            ctx.clearRect(0, 0, this._width, this._height);
+            ctx.clearRect(0, 0, this.width, this.height);
 
             var ro = this._renderingObjects,
                 scaling = viewportScaling || this.scaling;
@@ -238,20 +222,20 @@ PocketCode.Ui.Canvas = (function () {
                 ch = this.height;
 
             this.setDimensions(width, height, this.scaling);
-            this.cacheCanvasEl.width = width;
-            this.cacheCanvasEl.height = height;
+            this._cacheCanvasEl.width = width;
+            this._cacheCanvasEl.height = height;
 
             this.render(width * this.scaling / cw);
 
-            this.contextCache.save();
-            this.contextCache.fillStyle = "#ffffff";
-            this.contextCache.fillRect(0,0, this.width, this.height);
+            this._contextCache.save();
+            this._contextCache.fillStyle = "#ffffff";
+            this._contextCache.fillRect(0,0, this.width, this.height);
 
-            this.contextCache.drawImage(this.lowerCanvasEl, 0, 0);
+            this._contextCache.drawImage(this._lowerCanvasEl, 0, 0);
 
-            var data = this.cacheCanvasEl.toDataURL('image/png');
+            var data = this._cacheCanvasEl.toDataURL('image/png');
 
-            this.contextCache.restore();
+            this._contextCache.restore();
             this.setDimensions(cw, ch, this.scaling);
             this.render();
 

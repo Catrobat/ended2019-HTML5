@@ -10,7 +10,7 @@
 QUnit.module("model/bricksControl.js");
 
 
-QUnit.test("ProgramStartBrick", function (assert) {
+QUnit.test("WhenProgramStartBrick", function (assert) {
 
     //assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
@@ -19,11 +19,11 @@ QUnit.test("ProgramStartBrick", function (assert) {
     program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
-    var b = new PocketCode.Model.ProgramStartBrick("device", "sprite", program.onProgramStart);
+    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ProgramStartBrick, "instance check");
-    assert.ok(b.objClassName === "ProgramStartBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick, "instance check");
+    assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
@@ -89,7 +89,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WhenActionBrick("device", sprite, program.onTabbedAction, { action: "action" });
+    var b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onTabbedAction);
 
     assert.ok(b._device === "device" && b._sprite === sprite && b._action === "action", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.WhenActionBrick, "instance check");
@@ -271,17 +271,17 @@ QUnit.test("WaitBrick", function (assert) {
 });
 
 
-QUnit.test("BroadcastReceiveBrick", function (assert) {
+QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
+    var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.BroadcastReceiveBrick, "instance check");
-    assert.ok(b.objClassName === "BroadcastReceiveBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick, "instance check");
+    assert.ok(b.objClassName === "WhenBroadcastReceiveBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
@@ -691,7 +691,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.RepeatBrick("device", sprite, 24, { timesToRepeat: nTimes });
+    var b = new PocketCode.Model.RepeatBrick("device", sprite, { x: 1, y: 2, timesToRepeat: nTimes }, 24);
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.RepeatBrick, "instance check");
@@ -769,7 +769,7 @@ QUnit.test("RepeatBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
+    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, { timesToRepeat: nTimes }, 25);
     var tb2 = new TestBrick2("device", "sprite");
     tb2.loopDelay = true;
     bca = [];

@@ -3,13 +3,20 @@
 /// <reference path="../core.js" />
 'use strict';
 
+PocketCode.CameraType = {
+    BACK: 1,
+    FRONT: 2,
+};
+
 PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
     function Device(soundManager) {
         this._soundMgr = soundManager;
 
-        this._flashOn = false;
+        this._flashOn = false;      //TODO: temp solution until flash supported
+        this._cameraType = PocketCode.CameraType.BACK;
+        this._cameraOn = false;     //TODO: temp solution until camera supported
 
         this._compass = null;
         this._alpha = null;
@@ -117,7 +124,7 @@ PocketCode.Device = (function () {
         isTouch: {
             value: SmartJs.Device.isTouch,
         },
-        emulationInUser: {
+        emulationInUse: {
             get: function () {
                 if (this instanceof PocketCode.DeviceEmulator && this._features.INCLINATION.inUse)
                     return true;
@@ -286,6 +293,38 @@ PocketCode.Device = (function () {
             },
         },
         //camera
+        selectedCamera: {
+            get: function () {
+                this._features.CAMERA.inUse = true;
+                return this._cameraType;
+            },
+            set: function (cameraType) {
+                var found = false;
+                for (var type in PocketCode.CameraType) {
+                    if (PocketCode.CameraType[type] == cameraType) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    throw new Error('invalid parameter: expected type \'cameraType\'');
+                this._features.CAMERA.inUse = true;
+                this._cameraType = cameraType;
+            },
+        },
+        cameraOn: {
+            get: function () {
+                this._features.CAMERA.inUse = true;
+                return this._cameraOn;
+            },
+            set: function (bool) {
+                if (typeof bool !== 'boolean')
+                    throw new Error('invalid parameter: expected type \'boolean\'');
+                this._features.CAMERA.inUse = true;
+                this._cameraOn = bool;
+            },
+        },
+
         faceDetected: {
             get: function () {
                 this._features.CAMERA.inUse = true;
@@ -323,7 +362,7 @@ PocketCode.Device = (function () {
 
                 this._flashOn = value;
                 //TODO: https://developer.mozilla.org/en-US/docs/Web/API/CameraControl/flashMode
-            }
+            },
         },
         //lego nxt
         nxt1: {

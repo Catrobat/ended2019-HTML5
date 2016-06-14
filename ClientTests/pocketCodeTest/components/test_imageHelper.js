@@ -3,10 +3,40 @@
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-components.js" />
-/// <reference path="../../../Client/smartJs/sj-ui.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/imageHelper.js" />
 'use strict';
 
 QUnit.module("components/imageHelper.js");
+
+QUnit.test("ImageFilter: whirl", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: fisheye", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: pixelate", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: mosaic", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: color", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
+
+QUnit.test("ImageFilter: brightness", function (assert) {
+
+    assert.ok(false, "TODO: tests");
+});
 
 
 QUnit.test("ImageHelper", function (assert) {
@@ -16,6 +46,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done3 = assert.async();
     var done4 = assert.async();
     var done5 = assert.async();
+    var done6 = assert.async();
 
     //helper function to alimit rounding errors
     var round1000 = function (value) {
@@ -79,10 +110,18 @@ QUnit.test("ImageHelper", function (assert) {
 
         assert.throws(function () { ih.scale("image"); }, Error, "ERROR: scale: argument check: image");
         assert.throws(function () { ih.scale(new Image(), "asd"); }, Error, "ERROR: scale: argument check: scaling factor");
-        assert.throws(function () { ih.scale(img8); }, Error, "ERROR: scale: argument check: scaling factor undefined");
+        //assert.throws(function () { ih.scale(img8); }, Error, "ERROR: scale: argument check: scaling factor undefined");
 
-        var oImg = ih.scale(img8, 0);
-        assert.ok(oImg.width == 0 && oImg.height == 0, "scaling factor = 0");
+        var oImg = ih.scale(img8);
+        assert.ok(oImg.width == img8.width && oImg.height == img8.height, "scaling factor undefined -> sclaing = 1");
+        assert.ok(oImg instanceof HTMLCanvasElement, "returns a canvas");
+        ih.setImageSmoothing(oImg.getContext('2d'));
+        //assert.ok(oImg.imageSmoothingEnabled, true, "setter: image smoothing enabled");
+
+        oImg = ih.scale(img8, 0);
+        assert.ok(oImg.width == 0 && oImg.height == 0, "scaling factor == 0");
+        oImg = ih.scale(img8, -0.1);
+        assert.ok(oImg.width == 0 && oImg.height == 0, "negative scaling factor");
 
         oImg = ih.scale(img8, 2);
         assert.ok(oImg.height == img8.height * 2 && oImg.width == img8.width * 2, "upscaling proportions: h:" + oImg.height + ", w:" + oImg.width);
@@ -184,18 +223,18 @@ QUnit.test("ImageHelper", function (assert) {
 
         //argument check
         assert.throws(function () { ih.adjustCenterAndTrim("image"); }, Error, "ERROR: invlaid image argument");
-        assert.throws(function () { ih.adjustCenterAndTrim(img8, "a", 3); }, Error, "ERROR: invlaid rotationCenter argument");
+        //assert.throws(function () { ih.adjustCenterAndTrim(img8, "a", 3); }, Error, "ERROR: invlaid rotationCenter argument");
 
         //simple
-        var oImg9 = ih.adjustCenterAndTrim(img9, undefined, undefined, true);  //we start with the slowest and hope that loading time will not effect our tests
-        var oImg8 = ih.adjustCenterAndTrim(img8, undefined, undefined, true);
-        var oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);
-        var oImg6 = ih.adjustCenterAndTrim(img6, undefined, undefined, true);
-        var oImg5 = ih.adjustCenterAndTrim(img5, undefined, undefined, true);
-        var oImg4 = ih.adjustCenterAndTrim(img4, undefined, undefined, true);
-        var oImg3 = ih.adjustCenterAndTrim(img3, undefined, undefined, true);
-        var oImg2 = ih.adjustCenterAndTrim(img2, undefined, undefined, true);
-        var oImg1 = ih.adjustCenterAndTrim(img1, undefined, undefined, true);
+        var oImg9 = ih.adjustCenterAndTrim(img9, /*undefined, undefined,*/ true);  //we start with the slowest and hope that loading time will not effect our tests
+        var oImg8 = ih.adjustCenterAndTrim(img8, /*undefined, undefined,*/ true);
+        var oImg7 = ih.adjustCenterAndTrim(img7, /*undefined, undefined,*/ true);
+        var oImg6 = ih.adjustCenterAndTrim(img6, /*undefined, undefined,*/ true);
+        var oImg5 = ih.adjustCenterAndTrim(img5, /*undefined, undefined,*/ true);
+        var oImg4 = ih.adjustCenterAndTrim(img4, /*undefined, undefined,*/ true);
+        var oImg3 = ih.adjustCenterAndTrim(img3, /*undefined, undefined,*/ true);
+        var oImg2 = ih.adjustCenterAndTrim(img2, /*undefined, undefined,*/ true);
+        var oImg1 = ih.adjustCenterAndTrim(img1, /*undefined, undefined,*/ true);
 
         var m = oImg1.center, //{ length: , angle: }
             img = oImg1.canvas,
@@ -301,58 +340,58 @@ QUnit.test("ImageHelper", function (assert) {
         assert.ok(img.height == 602 && img.width == 471, "calling method using canvas element: size- make sure there is no trim-area after first trim");
         assert.ok(round1000(x) == 0 && round1000(y) == 0, "calling method using canvas element: resized- make sure there is no trim-area after first trim");
 
-        //individual rotation center applied
-        oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
-        oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
-        oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
-        oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);
-        oImg5 = ih.adjustCenterAndTrim(img5, 0, img5.height);
-        oImg4 = ih.adjustCenterAndTrim(img4, 4, 3);
+        ////individual rotation center applied
+        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
+        //oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
+        //oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
+        //oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);
+        //oImg5 = ih.adjustCenterAndTrim(img5, 0, img5.height);
+        //oImg4 = ih.adjustCenterAndTrim(img4, 4, 3);
 
-        m = oImg4.center, //{ length: , angle: }
-        img = oImg4.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 7 && img.width == 1, "img4 cut (individual rotation center)");
-        assert.ok(round1000(x) == -3.5 && round1000(y) == -0.5, "img4 recentered (individual rotation center)");
+        //m = oImg4.center, //{ length: , angle: }
+        //img = oImg4.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 7 && img.width == 1, "img4 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -3.5 && round1000(y) == -0.5, "img4 recentered (individual rotation center)");
 
-        m = oImg5.center, //{ length: , angle: }
-        img = oImg5.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 8 && img.width == 1, "img5 cut (individual rotation center)");
-        assert.ok(round1000(x) == 9.5 && round1000(y) == 4, "img5 recentered (individual rotation center)");
+        //m = oImg5.center, //{ length: , angle: }
+        //img = oImg5.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 8 && img.width == 1, "img5 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 9.5 && round1000(y) == 4, "img5 recentered (individual rotation center)");
 
-        m = oImg6.center, //{ length: , angle: }
-        img = oImg6.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 8 && img.width == 10, "img6 cut (individual rotation center)");
-        assert.ok(round1000(x) == -5 && round1000(y) == 4, "img6 recentered (individual rotation center)");
+        //m = oImg6.center, //{ length: , angle: }
+        //img = oImg6.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 8 && img.width == 10, "img6 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -5 && round1000(y) == 4, "img6 recentered (individual rotation center)");
 
-        m = oImg7.center, //{ length: , angle: }
-        img = oImg7.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 0 && img.width == 0, "img7 cut (individual rotation center)");
-        assert.ok(round1000(x) == 0 && round1000(y) == 0, "img7 recentered (individual rotation center)");
+        //m = oImg7.center, //{ length: , angle: }
+        //img = oImg7.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 0 && img.width == 0, "img7 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 0 && round1000(y) == 0, "img7 recentered (individual rotation center)");
 
-        m = oImg8.center, //{ length: , angle: }
-        img = oImg8.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 4 && img.width == 4, "img8 cut (individual rotation center)");
-        assert.ok(round1000(x) == -5 && round1000(y) == -4, "img8 recentered (individual rotation center)");
+        //m = oImg8.center, //{ length: , angle: }
+        //img = oImg8.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 4 && img.width == 4, "img8 cut (individual rotation center)");
+        //assert.ok(round1000(x) == -5 && round1000(y) == -4, "img8 recentered (individual rotation center)");
 
-        m = oImg9.center, //{ length: , angle: }
-        img = oImg9.canvas,
-        x = m.length * Math.cos(m.angle),
-        y = m.length * Math.sin(m.angle);
-        assert.ok(img.height == 602 && img.width == 471, "img9 cut (individual rotation center)");
-        assert.ok(round1000(x) == 18.5 && round1000(y) == 48, "img9 recentered (individual rotation center)");
+        //m = oImg9.center, //{ length: , angle: }
+        //img = oImg9.canvas,
+        //x = m.length * Math.cos(m.angle),
+        //y = m.length * Math.sin(m.angle);
+        //assert.ok(img.height == 602 && img.width == 471, "img9 cut (individual rotation center)");
+        //assert.ok(round1000(x) == 18.5 && round1000(y) == 48, "img9 recentered (individual rotation center)");
 
         //include vectors to bounding corners
-        oImg4 = ih.adjustCenterAndTrim(img4, undefined, undefined, true);
+        oImg4 = ih.adjustCenterAndTrim(img4, /*undefined, undefined,*/ true);
         var tl = oImg4.tl;
         x = tl.length * Math.cos(tl.angle),
         y = tl.length * Math.sin(tl.angle);
@@ -370,7 +409,7 @@ QUnit.test("ImageHelper", function (assert) {
         y = br.length * Math.sin(br.angle);
         assert.ok(round1000(x) == -4 && round1000(y) == -3, "img4: br corner vector");
 
-        oImg3 = ih.adjustCenterAndTrim(img3, undefined, undefined, true);
+        oImg3 = ih.adjustCenterAndTrim(img3, /*undefined, undefined,*/ true);
         tl = oImg3.tl;
         x = tl.length * Math.cos(tl.angle),
         y = tl.length * Math.sin(tl.angle);
@@ -388,10 +427,37 @@ QUnit.test("ImageHelper", function (assert) {
         y = br.length * Math.sin(br.angle);
         assert.ok(round1000(x) == 1 && round1000(y) == -1, "img3: br corner vector");
 
-        oImg7 = ih.adjustCenterAndTrim(img7, undefined, undefined, true);   //check transparent
+        oImg7 = ih.adjustCenterAndTrim(img7, /*undefined, undefined,*/ true);   //check transparent
         tl = oImg7.tl;
         assert.ok(tl.length == 0 && tl.angle == 0, "check return value on transparent images");
         done4();
+        runTests_setFilters();
+    };
+
+    //filters
+    var runTests_setFilters = function () {
+
+        var canvas = document.createElement("canvas");
+        canvas.width = 20;
+        canvas.height = 10;
+        assert.throws(function () { ih.setFilters("canvas", []); }, Error, "ERROR: invalid argument canvas");
+        assert.throws(function () { ih.setFilters(canvas); }, Error, "ERROR: invalid argument filters");
+
+        ih.setFilters(canvas, []);  //code coverage
+        assert.throws(function () { ih.setFilters(canvas, [{ effect: undefined, value: 4 }]); }, Error, "ERROR: invalid filter argument: effect");
+        assert.throws(function () { ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: undefined }]); }, Error, "ERROR: invalid filter argument: value");
+        ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: 4 }]);
+
+        //call all existing filters once
+        ih.setFilters(canvas, [
+            { effect: PocketCode.GraphicEffect.WHIRL, value: 4 },
+            { effect: PocketCode.GraphicEffect.FISHEYE, value: 4 },
+            { effect: PocketCode.GraphicEffect.PIXELATE, value: 4 },
+            { effect: PocketCode.GraphicEffect.MOSAIC, value: 4 },
+            { effect: PocketCode.GraphicEffect.COLOR, value: 4 },
+            { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: 4 }]);
+
+        done5();
         runTests_rgbHsvConversion();
     };
 
@@ -428,14 +494,28 @@ QUnit.test("ImageHelper", function (assert) {
                 hsv: {h: 0, s: 0, v: 255},
                 rgb: {r: 255, g: 255, b: 255}
             },
+
+            {
+                hsv: { h: 213, s: 75, v: 76 },
+                rgb: { r: 47, g: 113, b: 194 }
+            },
+            {
+                hsv: { h: 270, s: 81, v: 76 },
+                rgb: { r: 116, g: 35, b: 194 }
+            },
+            {
+                hsv: { h: 25, s: 75, v: 76 },
+                rgb: { r: 194, g: 109, b: 47 }
+            },
+
         ];
 
         for(var i = 0, l = hsvRgbMapping.length; i < l; i++){
-            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected");
-            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected");
+            assert.propEqual(ih.rgbToHsv(hsvRgbMapping[i].rgb.r, hsvRgbMapping[i].rgb.g, hsvRgbMapping[i].rgb.b), hsvRgbMapping[i].hsv, "rgb to hsv conversion worked as expected: " + i);
+            assert.propEqual(ih.hsvToRgb(hsvRgbMapping[i].hsv.h, hsvRgbMapping[i].hsv.s, hsvRgbMapping[i].hsv.v), hsvRgbMapping[i].rgb, "hsv to rgb conversion worked as expected: " + i);
         }
 
-        done5();
+        done6();
     };
 });
 

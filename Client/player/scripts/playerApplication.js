@@ -16,6 +16,13 @@ PocketCode.merge({
             this.objClassName = '_InitialPopStateController';
         }
 
+        //properties
+        Object.defineProperties(_InitialPopStateController.prototype, {
+            hasOpenDialogs: {
+                value: false,
+            },
+        });
+
         _InitialPopStateController.prototype.dispose = function () {
             delete this.historyLength;
             delete this.objClassName;
@@ -70,6 +77,11 @@ PocketCode.merge({
 
             this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
 
+            //init i18n
+            PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
+            PocketCode.I18nProvider.loadSuppordetLanguages();
+            PocketCode.I18nProvider.loadDictionary(rfc3066);
+
             //init
             if (SmartJs.Device.isMobile && !mobileInitialized) {    //do not initialize the UI if app needs to be recreated for mobile 
                 var state = history.state;
@@ -87,11 +99,6 @@ PocketCode.merge({
             this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
             this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
             this._currentProjectId = undefined;
-
-            //init i18n
-            PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
-            PocketCode.I18nProvider.loadSuppordetLanguages();
-            PocketCode.I18nProvider.loadDictionary(rfc3066);
 
             //webOverlay is undefined if running in mobile page, no viewport defined
             this._isMobilePage = viewportContainer ? false : true;	//this represents the players mode, not the device
@@ -135,7 +142,12 @@ PocketCode.merge({
                 get: function () {
                     return this._onExit;
                 }
-            }
+            },
+            hasOpenDialogs: {
+                get: function () {
+                    return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
+                }
+            },
         });
 
         //methods
@@ -332,8 +344,11 @@ PocketCode.merge({
             //navigation
             _escKeyHandler: function (e) {
                 var l = this._dialogs.length;
-                if (l > 0)
+                if (l > 0) {
                     this._dialogs[l - 1].execDefaultBtnAction();
+                    e.preventDefault();
+                    return false;
+                }
                 else
                     this._currentPage.execDialogDefaultOnEsc();
             },

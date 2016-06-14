@@ -4,6 +4,434 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 'use strict';
 
+/**
+ * GraphicEffects
+ * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
+ */
+PocketCode.GraphicEffect = {
+    WHIRL: 'whirl',
+    FISHEYE: 'fisheye',
+    PIXELATE: 'pixelate',
+    MOSAIC: 'mosaic',
+    COLOR: 'color',
+    BRIGHTNESS: 'brightness',
+    GHOST: 'ghost',     //opacity, transparency
+    /*
+    GRAYSCALE: 'grayscale',
+    THRESHOLD: 'threshold',
+    
+    NEGATIVE: 'negative',
+    COMIC: 'comic',
+    DUPLICATE: 'duplicate',
+    CONFETTI: 'confetti',
+    */
+};
+
+PocketCode.ImageFilter = {
+
+    /*
+     * TODO:
+     * following methods include the source code of scratch filters (action script)
+     * you can find them at: https://github.com/LLK/scratch-flash/tree/5cff62b909856b7d7b3d116a5dcc2b4f03de8482/src/filters
+     * these filters are not included in the latest version of scratch HTML5 player (which is currently deprecated?)
+     * If you're not familiar with flash/action script you should read the resource/s below to undestand the implementation :
+     *   http://www.adobe.com/devnet/flex/articles/pixel_bender_basics_flex_air.html
+     * even more information can be found here:
+     *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_reference.pdf
+     *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_guide.pdf
+     * 
+     * DOTO: (for each filter)
+     * - define input parameters (check correctness of existing parameters)
+     * - set default values for input parameters if undefined
+     * - validate input parameters
+     * - iterate over pixel array: example:
+     *   var r, g, b, a;
+     *   for (var i = 0, l = p.length; i < l; i += 4) {
+     *     r = p[i];
+     *     g = p[i + 1];
+     *     b = p[i + 2];
+     *     a = p[i + 3];
+     * 
+     *     //IMPLEMENT FILTER LOGIC HERE
+     *   }
+     * 
+     * - implementation
+     * - tests
+     * - cleanup: delete action script comments when done
+     * 
+     * GLOBAL TODO: 
+     * - implement ImageHelper.setFilter: basic and untested implementation right now
+     *   make sure all method parameters are passed correcty
+     * - implement unit-tests (if done for the filters already this shouldn't be much work)
+     */
+    whirl: function (p, whirlRadians, center, radius, scale) {  //scale = {x:?, y:?}
+        //// range: -infinity..infinity
+        //var radians:Number = (Math.PI * filterDict["whirl"]) / 180;
+        //var scaleX:Number, scaleY:Number
+        //if (srcWidth > srcHeight) {
+        //    scaleX = srcHeight / srcWidth;
+        //    scaleY = 1;
+        //} else {
+        //    scaleX = 1;
+        //    scaleY = srcWidth / srcHeight;
+        //}
+        //whirlShader.data.whirlRadians.value = [radians];
+        //whirlShader.data.center.value = [srcWidth / 2, srcHeight / 2];
+        //whirlShader.data.radius.value = [Math.min(srcWidth, srcHeight) / 2];
+        //whirlShader.data.scale.value = [scaleX, scaleY];
+        //newFilters.push(new ShaderFilter(whirlShader));
+
+    //    kernel Whirl
+    //    <	vendor : "MIT Media Laboratory";
+    //    namespace : "filters";
+    //    version : 1;
+    //    description : "Scratch Whirl";
+    //    >
+    //    {
+    //        parameter float whirlRadians
+    //        <
+    //    minValue: float(-100.0);
+    //    maxValue: float(100.0);
+    //    defaultValue: float(0);
+    //    >;
+    //    parameter float2 center
+    //    <
+    //    minValue:float2(0, 0);
+    //    maxValue:float2(1000, 1000);
+    //    defaultValue:float2(100, 100);
+    //    >;
+    //    parameter float radius
+    //    <
+    //    minValue: float(0);
+    //    maxValue: float(500);
+    //    defaultValue: float(100);
+    //    >;
+    //    parameter float2 scale
+    //    <
+    //    minValue:float2(0, 0);
+    //    maxValue:float2(10, 10);
+    //    defaultValue:float2(1, 1);
+    //    >;
+
+    //    input image4 src;
+    //    output float4 dst;
+
+    //    void evaluatePixel() {
+    //        float2 vec = scale * (outCoord() - center);
+    //        float d = length(vec);
+    //        float factor = 1.0 - (d / radius);
+    //        float a = whirlRadians * (factor * factor);
+    //        // matrix to rotate the vector from the center
+    //        float sinAngle = sin(a);
+    //        float cosAngle = cos(a);
+    //        float2x2 rotationMat = float2x2(
+    //            cosAngle,	-sinAngle,
+    //            sinAngle,	 cosAngle
+    //        );
+    //        // rotate, unscale, and compute source point
+    //        float2 p = ((rotationMat * vec) / scale) + center;
+    //        dst = sampleNearest(src, p);
+    //        if (d > radius) dst = sampleNearest(src, outCoord());
+    //    }
+    //}
+        return p;
+    },
+    fisheye: function (p, scaledPower, center) {
+        //// range: -100..infinity
+        //n = Math.max(0, (filterDict["fisheye"] + 100) / 100);
+        //fisheyeShader.data.scaledPower.value = [n];
+        //fisheyeShader.data.center.value = [srcWidth / 2, srcHeight / 2];
+        //newFilters.push(new ShaderFilter(fisheyeShader));
+
+    //    kernel Fisheye
+    //    <	vendor : "MIT Media Laboratory";
+    //    namespace : "filters";
+    //    version : 1;
+    //    description : "Scratch Fisheye";
+    //    >
+    //    {
+    //        parameter float scaledPower
+    //        <
+    //    minValue:float(0);
+    //    maxValue:float(10);
+    //    defaultValue:float(1);
+    //    >;
+    //    parameter float2 center
+    //    <
+    //    minValue:float2(0, 0);
+    //    maxValue:float2(1000, 1000);
+    //    defaultValue:float2(100, 100);
+    //    >;
+
+    //    input image4 src;
+    //    output float4 dst;
+
+    //    void evaluatePixel() {
+    //        float2 p = outCoord();
+    //        float2 vec = (p - center) / center;
+    //        float r = pow(length(vec), scaledPower);
+    //        float angle = atan(vec[1], vec[0]);
+
+    //        p = center + (r * float2(cos(angle), sin(angle)) * center);
+    //        if (r > 1.0) p = outCoord();
+    //        dst = sample(src, p);
+    //    }
+    //}
+        return p;
+    },
+    pixelate: function (p, pixelSize/*, stagePane*/) {
+        //// range of absolute value: 0..(10 * min(w, h))
+        //n = (Math.abs(filterDict["pixelate"]) / 10) + 1;
+        //if (targetObj == Scratch.app.stagePane) n *= Scratch.app.stagePane.scaleX;
+        //n = Math.min(n, Math.min(srcWidth, srcHeight));
+        //pixelateShader.data.pixelSize.value = [n];
+        //newFilters.push(new ShaderFilter(pixelateShader));
+
+    //    kernel Pixelate
+    //    <	vendor : "MIT Media Laboratory";
+    //    namespace : "filters";
+    //    version : 1;
+    //    description : "Scratch Pixelate";
+    //    >
+    //    {
+    //        parameter float pixelSize
+    //        <
+    //    minValue: 1.0;
+    //    maxValue: 100.0;
+    //    defaultValue: 1.0;
+    //    >;
+
+    //    input image4 src;
+    //    output pixel4 dst;
+
+    //    void evaluatePixel() {
+    //        float2 p = floor(outCoord() / pixelSize) * pixelSize;
+    //        dst = sampleNearest(src, p);
+    //    }
+    //}
+        return p;
+    },
+    mosaic: function (p, count, srcWidth, srcHeight) {
+        //// range of absolute value: 0..(10 * min(w, h))
+        //n = Math.round((Math.abs(filterDict["mosaic"]) + 10) / 10);
+        //n = Math.max(1, Math.min(n, Math.min(srcWidth, srcHeight)));
+        //mosaicShader.data.count.value = [n];
+        //mosaicShader.data.widthAndHeight.value = [srcWidth, srcHeight];
+        //newFilters.push(new ShaderFilter(mosaicShader));
+
+    //    kernel Mosaic
+    //    <	vendor : "MIT Media Laboratory";
+    //    namespace : "filters";
+    //    version : 1;
+    //    description : "Scratch Mosaic";
+    //    >
+    //    {
+    //        // number of copies of the original
+    //        parameter float count
+    //        <
+    //    minValue: 1.0;
+    //    maxValue: 100.0;
+    //    defaultValue: 1.0;
+    //    >;
+
+    //    // width and height of the input image
+    //    parameter float2 widthAndHeight
+    //    <
+    //    minValue: float2(1.0, 1.0);
+    //    maxValue: float2(2000.0, 2000.0);
+    //    defaultValue: float2(200.0, 200.0);
+    //    >;
+
+    //    input image4 src;
+    //    output pixel4 dst;
+
+    //    void evaluatePixel() {
+    //        dst = sampleNearest(src, mod(outCoord() * count, widthAndHeight));
+    //    }
+    //}
+        return p;
+    },
+    color: function (p, brightnessShift) {
+        //// brightness range is -100..100
+        ////			n = Math.max(-100, Math.min(filterDict["brightness"], 100));
+        ////			hsvShader.data.brightnessShift.value = [n];
+        //hsvShader.data.brightnessShift.value = [0];
+
+        //// hue range: -infinity..infinity
+        //n = ((360.0 * filterDict["color"]) / 200.0) % 360.0;
+        //hsvShader.data.hueShift.value = [n];
+        //newFilters.push(new ShaderFilter(hsvShader));
+
+    //    kernel HSV
+    //    <	vendor : "MIT Media Laboratory";
+    //    namespace : "filters";
+    //    version : 1;
+    //    description : "Scratch HSV";
+    //    >
+    //    {
+    //        parameter float hueShift
+    //        <
+    //    minValue: float(-500.0);
+    //    maxValue: float(500.0);
+    //    defaultValue: float(0);
+    //    >;
+    //    parameter float brightnessShift
+    //    <
+    //    minValue: float(-100.0);
+    //    maxValue: float(100.0);
+    //    defaultValue: float(0);
+    //    >;
+
+    //    input image4 src;
+    //    output float4 dst;
+
+    //    void evaluatePixel() {
+    //        dst = sampleNearest(src, outCoord());
+    //        float r = dst.r;
+    //        float g = dst.g;
+    //        float b = dst.b;
+    //        // compute h, s, v
+    //        float h, s;
+    //        float v = max(r, max(g, b));
+    //        float span = v - min(r, min(g, b));
+    //        if (span == 0.0) {
+    //            h = s = 0.0; // grayscale
+    //        } else {
+    //            if (r == v) h = 60.0 * ((g - b) / span);
+    //            else if (g == v) h = 120.0 + (60.0 * ((b - r) / span));
+    //            else if (b == v) h = 240.0 + (60.0 * ((r - g) / span));
+    //            s = span / v;
+    //        }
+
+    //        if (hueShift != 0.0) {
+    //            // this code forces grayscale values to be slightly saturated
+    //            // so that some slight change of hue will be visible
+    //            if (v < 0.11) { v = 0.11; s = 1.0; } // force black to dark gray, fully-saturated
+    //            if (s < 0.09) s = 0.09; // make saturation at least 0.09
+    //            if ((v == 0.11) || (s == 0.09)) h = 0.0; // use same tint for all grays
+    //        }
+
+    //        // apply h, s, v shifts
+    //        h = mod(h + hueShift, 360.0);
+    //        if (h < 0.0) h += 360.0;
+    //        s = max(0.0, min(s, 1.0));
+    //        v = max(0.0, min(v + (brightnessShift / 100.0), 1.0));
+
+    //        // convert hsv to rgb and save pixel
+    //        int i = int(floor(h / 60.0));
+    //        float f = (h / 60.0) - float(i);
+    //        float p = v * (1.0 - s);
+    //        float q = v * (1.0 - (s * f));
+    //        float t = v * (1.0 - (s * (1.0 - f)));
+
+    //        if ((i == 0) || (i == 6)) dst.rgb = float3(v, t, p);
+    //        else if (i == 1) dst.rgb = float3(q, v, p);
+    //        else if (i == 2) dst.rgb = float3(p, v, t);
+    //        else if (i == 3) dst.rgb = float3(p, q, v);
+    //        else if (i == 4) dst.rgb = float3(t, p, v);
+    //        else if (i == 5) dst.rgb = float3(v, p, q);
+    //    }
+    //}
+        return p;
+    },
+    brightness: function (p, value) {
+        if (value !== 0) {
+            value = Math.round(2.55 * value);   //255 = 100% of this color [0..255]
+            for (var i = 0, l = p.length; i < l; i += 4) {
+                p[i] += value;
+                p[i + 1] += value;
+                p[i + 2] += value;
+            }
+        }
+        return p;
+    },
+
+    /* filtes below currently not supported- do not delete */
+    /*
+    grayscale: function(p, args) {
+        var r, g, b;
+        for (var i = 0, l = p.length; i < l; i += 4) {
+            r = p[i];
+            g = p[i+1];
+            b = p[i+2];
+            // CIE luminance for the RGB
+            // The human eye is bad at seeing red and blue, so we de-emphasize them.
+            var v = 0.2126*r + 0.7152*g + 0.0722*b;
+            p[i] = p[i+1] = p[i+2] = v
+        }
+        return p;
+    },
+    threshold: function(p, threshold) {
+        var r, g, b, v;
+        for (var i = 0, l = p.length; i < l; i += 4) {
+            r = p[i];
+            g = p[i+1];
+            b = p[i+2];
+            v = (0.2126*r + 0.7152*g + 0.0722*b >= threshold) ? 255 : 0;
+            p[i] = p[i+1] = p[i+2] = v
+        }
+        return p;
+    },
+
+    negative: function (p, value) {
+        var rcom, gcom, bcom;
+        if (value !== 0) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
+                rcom = 255 - p[i];
+                gcom = 255 - p[i + 1];
+                bcom = 255 - p[i + 2];
+
+                if (p[i] < rcom) { //compare to the complement
+                    p[i] += value;
+                } else if (p[i] > rcom) {
+                    p[i] -= value;
+                }
+                if (p[i + 1] < gcom) {
+                    p[i + 1] += value;
+                } else if (p[i + 1] > gcom) {
+                    p[i + 1] -= value;
+                }
+                if (p[i + 2] < bcom) {
+                    p[i + 2] += value;
+                } else if (p[i + 2] > bcom) {
+                    p[i + 2] -= value;
+                }
+            }
+        }
+        return p;
+    },
+    comic: function (p, value) {
+        if (value !== 0) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
+                p[i] += Math.sin(i * value) * 127 + 128;
+                p[i + 1] += Math.sin(i * value) * 127 + 128;
+                p[i + 2] += Math.sin(i * value) * 127 + 128;
+            }
+        }
+        return p;
+    },
+    duplicate: function (p, value) {
+        if (value !== 0) {
+            for (var i = 0, l = p.length; i < l; i += 4) {
+                p[i] = p[i * value];
+                p[i + 1] = p[i * value + 1];
+                p[i + 2] = p[i * value + 2];
+                p[i + 3] = p[i * value + 3];
+            }
+        }
+        return p;
+    },
+    confetti: function (p, value) {
+        if (value !== 0) {
+            for (var i = 0, l = p.length; i < l; i += 1) {
+                p[i] = Math.sin(value * p[i]) * 127 + p[i];
+            }
+        }
+        return p;
+    },
+    */
+};
+
 /*
  * this class is a helper class including image manipulation logic
  */
@@ -25,14 +453,64 @@ PocketCode.ImageHelper = (function () {
             else
                 throw new Error('The static image helper class uses the DOM and cannot be used until loading completed');
         },
+        setFilters: function (canvas, filters) {
+            if (!(canvas instanceof HTMLCanvasElement))
+                throw new Error('invalid argument: canvas');
+            if (!(filters instanceof Array))
+                throw new Error('invalid argument: filters[]');
+
+            if (filters.length == 0)
+                return;
+            var _effects = {},
+                filter;
+            for (var i = 0, l = filters.length; i < l; i++) {
+                filter = filters[i];
+                if (!filter.effect || !filter.value)
+                    throw new Error('invalid argument: effects[' + i + ']');
+                _effects[filter.effect] = filter.value;
+            }
+
+            var ctx = canvas.getContext("2d");
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var pixels = imageData.data;
+
+            //TODO: call filter operations using correct parameters (example only)
+            var ge = PocketCode.GraphicEffect,
+                imgf = PocketCode.ImageFilter;
+            if (_effects[ge.WHIRL]) { //make sure filters are applied in correct order
+                pixels = imgf.whirl(pixels, _effects[ge.WHIRL]);
+            }
+            if (_effects[ge.FISHEYE]) {
+                pixels = imgf.fisheye(pixels, _effects[ge.FISHEYE]);
+            }
+            if (_effects[ge.PIXELATE]) {
+                pixels = imgf.pixelate(pixels, _effects[ge.PIXELATE]);
+            }
+            if (_effects[ge.MOSAIC]) {
+                pixels = imgf.mosaic(pixels, _effects[ge.MOSAIC]);
+            }
+            if (_effects[ge.COLOR]) {
+                pixels = imgf.color(pixels, _effects[ge.COLOR]);
+            }
+            if (_effects[ge.BRIGHTNESS]) {
+                pixels = imgf.brightness(pixels, _effects[ge.BRIGHTNESS]);
+            }
+            //.. for all filters
+
+            //the last object will have all the transformations done on it
+            var newImageData = ctx.createImageData(imageData); //make imgdata object
+            newImageData.data.set(pixels); //add transformed pixels
+            ctx.putImageData(newImageData, 0, 0);
+        },
         setImageSmoothing: function (ctx, bool) {
             ctx.imageSmoothingEnabled = bool;
-            ctx.webkitImageSmoothingEnabled = bool;
+            //ctx.webkitImageSmoothingEnabled = bool;   //deprecated
             ctx.mozImageSmoothingEnabled = bool;
             ctx.msImageSmoothingEnabled = bool;
             ctx.oImageSmoothingEnabled = bool;
         },
         scale: function (element, scalingFactor) {
+            scalingFactor = scalingFactor != undefined ? scalingFactor : 1.0;
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
@@ -50,7 +528,7 @@ PocketCode.ImageHelper = (function () {
 
             if (typeof scalingFactor !== 'number')
                 throw new Error('invalid argument: scalingFactor: expected type: number');
-            else if (scalingFactor === 0) {
+            else if (scalingFactor <= 0) {
                 canvas.height = 0;
                 canvas.width = 0;
                 return canvas;
@@ -71,7 +549,7 @@ PocketCode.ImageHelper = (function () {
         },
         /* rotation center x & y are defined as used in scratch: from the top-left corner of the image to the rc 
            please notice that the axes are defined as: right & bottom = positive */
-        adjustCenterAndTrim: function (element, rotationCenterX, rotationCenterY, includeBoundingCorners) {
+        adjustCenterAndTrim: function (element, /*rotationCenterX, rotationCenterY,*/ includeBoundingCorners) {
             this._checkInitialized();
             var h, w;
             if (element instanceof HTMLImageElement) {
@@ -89,13 +567,13 @@ PocketCode.ImageHelper = (function () {
                 centerOffsetY = 0;
             var trimOffsets = this.getElementTrimOffsets(element, 1, 0);
 
-            if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
-                if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
-                    throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
+            //if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
+            //    if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
+            //        throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
 
-                centerOffsetX = w / 2 - rotationCenterX;
-                centerOffsetY = -h / 2 + rotationCenterY;
-            }
+            //    centerOffsetX = w / 2 - rotationCenterX;
+            //    centerOffsetY = -h / 2 + rotationCenterY;
+            //}
 
             centerOffsetX += (trimOffsets.left - trimOffsets.right) / 2;    //offsets between old and new rotation center
             centerOffsetY += (trimOffsets.bottom - trimOffsets.top) / 2;

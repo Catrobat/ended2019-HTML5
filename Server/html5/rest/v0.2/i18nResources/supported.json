@@ -1,0 +1,9 @@
+{
+  "languages" : [
+    { "languageCode" : "en-GB", "uiString" : "English (UK)" },
+    { "languageCode" : "en-US", "uiString" : "English (US)" },
+    { "languageCode" : "de-AT", "uiString" : "Deutsch (Österreich)" },
+    { "languageCode" : "de-CH", "uiString" : "Deutsch (Schweiz)" },
+    { "languageCode" : "de-DE", "uiString" : "Deutsch (Deutschland)" }
+  ]
+}

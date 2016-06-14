@@ -12,7 +12,7 @@ QUnit.test("Canvas", function (assert) {
     var ALPHA_CHANNEL = 3;
     var done = assert.async();
 
-    var pixelHasAlpha = function(x,y) {
+    var pixelHasAlpha = function (x, y) {
         return alphaAtPoint(x, y) > 0.;
     };
 
@@ -21,14 +21,14 @@ QUnit.test("Canvas", function (assert) {
         return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
     };
 
-    var countPixels = function() {
+    var countPixels = function () {
         var canvasHeight = canvas.height;
         var canvasWidth = canvas.width;
         var pixels = 0;
 
-        for (var i = 0; i < canvasHeight;i++) {
+        for (var i = 0; i < canvasHeight; i++) {
             for (var j = 0; j < canvasWidth; j++) {
-                if (pixelHasAlpha(j,i)) {
+                if (pixelHasAlpha(j, i)) {
                     pixels++;
                 }
             }
@@ -36,11 +36,11 @@ QUnit.test("Canvas", function (assert) {
         return pixels;
     };
 
-    var runDefaultTests = function() {
-        var looks1 = [{id:"s1", name:"look1"}];
-        var looks2 = [{id:"s2", name:"look2"}];
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks:looks1});
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, {id: "id1", name: "sprite1", looks:looks2});
+    var runDefaultTests = function () {
+        var looks1 = [{ id: "s1", name: "look1" }];
+        var looks2 = [{ id: "s2", name: "look2" }];
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: looks1 });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: looks2 });
 
         var renderingImageOpaque = new PocketCode.RenderingImage(sprite1.renderingProperties);
         var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
@@ -52,7 +52,7 @@ QUnit.test("Canvas", function (assert) {
         canvas.render();
         assert.ok(!canvas._isTargetTransparent(renderingImageOpaque, renderingImageOpaque.x, renderingImageOpaque.y), "target not transparent");
 
-        assert.equal(countPixels(), opaqueImageWidth*opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
+        assert.equal(countPixels(), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
 
         canvas.renderingImages = [renderingImageTransparent];
 
@@ -73,7 +73,7 @@ QUnit.test("Canvas", function (assert) {
         var previousScaling = canvas.scaling;
         var scaling = 2;
         canvas.scaling = scaling;
-        var mockPointer = { x: 10, y: 10};
+        var mockPointer = { x: 10, y: 10 };
 
         canvas.getPointer = function () {
             return mockPointer;
@@ -86,7 +86,7 @@ QUnit.test("Canvas", function (assert) {
                 id: id,
                 visible: true,
                 containsPoint: function (pointer) {
-                    if(pointer.x === mockPointer.x / scaling && pointer.y === mockPointer.y / scaling)
+                    if (pointer.x === mockPointer.x / scaling && pointer.y === mockPointer.y / scaling)
                         scalingAppliedToPointer = true;
                     return isPotentialTarget;
                 }
@@ -126,7 +126,7 @@ QUnit.test("Canvas", function (assert) {
         var onMouseDownTriggered = 0, getTargetCalled = 0;
         canvas._getTargetAtPosition = function () {
             getTargetCalled++;
-            return {id: 'testTarget'}
+            return { id: 'testTarget' }
         };
         canvas._onMouseDown.dispatchEvent = function () {
             onMouseDownTriggered++;
@@ -191,21 +191,21 @@ QUnit.test("Canvas", function (assert) {
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.setDimensions(80, 40, viewportScaling);
 
-        assert.equal(canvas.lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
-        assert.equal(canvas.lowerCanvasEl.width,  80, 'setDimensions sets width for lower canvas');
-        assert.equal(canvas.upperCanvasEl.height, 40, 'setDimensions sets height for upper canvas');
-        assert.equal(canvas.upperCanvasEl.width,  80, 'setDimensions sets width for upper canvas');
-        assert.equal(canvas.cacheCanvasEl.height, Math.floor(40/viewportScaling), 'setDimensions sets height for cache canvas');
-        assert.equal(canvas.cacheCanvasEl.width,  Math.floor(80/viewportScaling), 'setDimensions sets width for cache canvas');
+        assert.equal(canvas._lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
+        assert.equal(canvas._lowerCanvasEl.width, 80, 'setDimensions sets width for lower canvas');
+        assert.equal(canvas._upperCanvasEl.height, 40, 'setDimensions sets height for upper canvas');
+        assert.equal(canvas._upperCanvasEl.width, 80, 'setDimensions sets width for upper canvas');
+        assert.equal(canvas._cacheCanvasEl.height, Math.floor(40 / viewportScaling), 'setDimensions sets height for cache canvas');
+        assert.equal(canvas._cacheCanvasEl.width, Math.floor(80 / viewportScaling), 'setDimensions sets width for cache canvas');
         assert.equal(canvas.scaling, viewportScaling, 'setDimensions sets scaling');
 
         var contextScaling = 0;
         var drawCalledRenderingImage = 0;
         var scaleX, scaleY;
 
-        var context = canvas.lowerCanvasEl.getContext('2d');
+        var context = canvas._lowerCanvasEl.getContext('2d');
 
-        context.scale = function(x, y){
+        context.scale = function (x, y) {
             scaleX = x;
             scaleY = y;
         };
@@ -261,4 +261,3 @@ QUnit.test("Canvas", function (assert) {
     canvas.setDimensions(80, 40, 1);
     is.loadImages(baseUrl, images, 1);
 });
-

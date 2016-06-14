@@ -41,11 +41,11 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
-                var bricks = [];
-                for (var i = 0, l = jsonSprite.bricks.length; i < l; i++) {
-                    bricks.push(this._brickFactory.create(sprite, jsonSprite.bricks[i]));
+                var scripts = [];
+                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
+                    scripts.push(this._brickFactory.create(sprite, jsonSprite.scripts[i]));
                 }
-                sprite.bricks = bricks;
+                sprite.scripts = scripts;
                 return sprite;
             },
             dispose: function () {
@@ -98,15 +98,15 @@ PocketCode.merge({
                 var brick = undefined;
 
                 switch (type) {
-                    case 'ProgramStartBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onProgramStart, jsonBrick);
+                    case 'WhenProgramStartBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
                         break;
 
                     case 'WhenActionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.onTabbedAction, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
                         break;
 
-                    case 'BroadcastReceiveBrick':
+                    case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
                     case 'BroadcastAndWaitBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
@@ -121,8 +121,11 @@ PocketCode.merge({
                         break;
 
                     case 'ForeverBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime);
+                        break;
+
                     case 'RepeatBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._minLoopCycleTime);
                         break;
 
                     default:
@@ -151,7 +154,7 @@ PocketCode.merge({
                 this._updateProgress();
 
                 //add event listener
-                //if (brick instanceof PocketCode.Model.RootContainerBrick) {
+                //if (brick instanceof PocketCode.Model.ScriptBlock) {
                 //	//TODO: this has to be handled by the brick itself: check if there is a testcast for adding an event handler
                 //}
 
@@ -639,6 +642,12 @@ PocketCode.merge({
 
                         return 'this._sprite.transparency';
 
+                    case 'OBJECT_COLOR':
+                        if (uiString)
+                            return 'color';
+
+                        return 'this._sprite.colorEffect';
+
                     case 'OBJECT_LAYER':
                         if (uiString)
                             return 'layer';
@@ -668,6 +677,24 @@ PocketCode.merge({
                             return 'position_y';
 
                         return 'this._sprite.positionY';
+
+                    case 'OBJECT_X_VELOCITY':
+                        if (uiString)
+                            return 'x_velocity';
+
+                        return 'this._sprite.velocityX';    //TODO: physics
+
+                    case 'OBJECT_Y_VELOCITY':
+                        if (uiString)
+                            return 'y_velocity';
+
+                        return 'this._sprite.velocityY';    //TODO: physics
+
+                    case 'OBJECT_ANGULAR_VELOCITY':
+                        if (uiString)
+                            return 'angular_velocity';
+
+                        return 'this._sprite.velocityAngular';  //TODO: physics
 
                     case 'NXT_SENSOR_1':
                         if (uiString)

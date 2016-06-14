@@ -277,20 +277,20 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         break;
 
       case "SetColorBrick":
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $color = $fl->formula;
-        $brick = new SetColorBrickDto($this->parseFormula($color));
-        array_pop($this->cpp);
-        break;
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $color = $fl->formula;
+          $brick = new SetColorEffectBrickDto($this->parseFormula($color));
+          array_pop($this->cpp);
+          break;
 
       case "ChangeColorByNBrick":
-        $fl = $script->formulaList;
-        array_push($this->cpp, $fl);
-        $color = $fl->formula;
-        $brick = new ChangeColorBrickDto($this->parseFormula($color));
-        array_pop($this->cpp);
-        break;
+          $fl = $script->formulaList;
+          array_push($this->cpp, $fl);
+          $color = $fl->formula;
+          $brick = new ChangeColorEffectBrickDto($this->parseFormula($color));
+          array_pop($this->cpp);
+          break;
 
       case "ClearGraphicEffectBrick":
         $brick = new ClearGraphicEffectBrickDto();
@@ -310,7 +310,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         $brick->selected = (string)$script->spinnerSelectionID;
         break;
 
-      case "ChooseCameraBrickBrick":    /*new*/
+      case "ChooseCameraBrick":    /*new*/
         $brick = new SelectCameraBrickDto();   //spinnerSelectionID = 0/1 (back/front)
         $brick->selected = (string)$script->spinnerSelectionID;
         break;
@@ -321,4 +321,4 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
     return $brick;
   }
 }
-  
+

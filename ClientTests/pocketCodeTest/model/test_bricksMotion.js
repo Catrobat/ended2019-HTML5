@@ -8,7 +8,7 @@
 QUnit.module("model/bricksMotion.js");
 
 
-QUnit.test("PlaceAtBrick", function (assert) {
+QUnit.test("GoToPositionBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -18,11 +18,11 @@ QUnit.test("PlaceAtBrick", function (assert) {
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.PlaceAtBrick(device, sprite, { x: x, y: y });
+    var b = new PocketCode.Model.GoToPositionBrick(device, sprite, { x: x, y: y });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.PlaceAtBrick, "instance check");
-    assert.ok(b.objClassName === "PlaceAtBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.GoToPositionBrick, "instance check");
+    assert.ok(b.objClassName === "GoToPositionBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

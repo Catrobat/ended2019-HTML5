@@ -88,11 +88,15 @@ PocketCode.Formula = (function () {
                 formula._sprite = { //override sprite to enable validation during parsing
                     brightness: 100,
                     transparency: 0,
+                    colorEffect: 0,
                     layer: 1,
                     direction: 90,
                     size: 100,
                     positionX: 0,
                     positionY: 0,
+                    velocityX: 0,
+                    velocityY: 0,
+                    velocityAngular: 0,
                     getVariable: function (id) { return { id: id, value: 0 }; },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                 };

@@ -49,12 +49,10 @@ PocketCode.PlayerViewportController = (function () {
     //methods
     PlayerViewportController.prototype.merge({
         _transformXCoordinate : function(wx) {
-            return wx + this._projectScreenWidth / 2.;
+            return wx + this._projectScreenWidth / 2.0;
         },
-
         _transformYCoordinate : function(wy) {
             return this._projectScreenHeight / 2. - wy;
-
         },
         initRenderingImages: function (sprites) {
             if (!(sprites instanceof Array))
@@ -95,11 +93,11 @@ PocketCode.PlayerViewportController = (function () {
                         imgs.remove(img);
                         imgs.insert(properties.layer, img);
                     }
+                    if (img.visible || visible != img.visible)   //visible or visibility changed
+                        this._view.render();
                     break;
                 }
             }
-            if (img.visible || visible != img.visible)   //visible or visibility changed
-                this._view.render();
         },
         initRenderingVariables: function (variables) {
             if (!(variables instanceof Array))
@@ -128,11 +126,11 @@ PocketCode.PlayerViewportController = (function () {
                 _visible = _var.visible;
                 if (_var.id === varId) {
                     _var.merge(properties);
+                    if (_var.visible != false || _visible != _var.visible)   //visible or visibility changed
+                        this._view.render(); //this.render();
                     break;
                 }
             }
-            if (_var.visible || _visible != _var.visible)   //visible or visibility changed
-                this._view.render();
         },
 
         setProjectScreenSize: function (width, height) {

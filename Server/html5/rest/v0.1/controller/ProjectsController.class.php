@@ -310,7 +310,7 @@ class ProjectsController extends BaseController
             break;
           case 0.98:
           case 0.99:
-            $parser = new ProjectFileParser_v0_98($projectId, $resourceRoot, $cacheDir, $xml);
+              $parser = new ProjectFileParser_v0_98($projectId, $resourceRoot, $cacheDir, $xml);
             break;
           default:
             throw new FileParserException("no parser specified for catrobat language version: " . $fileVersion);

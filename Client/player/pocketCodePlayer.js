@@ -980,7 +980,7 @@ PocketCode.Web = {
 		            btn.className = btn.className.replace(' pc-webButtonChecked ', '').trim();
 		    },
 		    _keyHandler: function (e) {
-		        if (e.keyCode == 27) {
+		        if (!this._redirected && e.keyCode == 27 && (!this._player || (this._player && !this._player.hasOpenDialogs))) {
 		            this._removeDomListener(document, 'keyup', this._keyupListener);
 		            this._closeHandler();
 		        }
@@ -1080,6 +1080,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksData.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/look.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/sprite.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 

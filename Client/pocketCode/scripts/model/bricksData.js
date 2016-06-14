@@ -12,8 +12,8 @@ PocketCode.Model.merge({
         function SetVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId) //can be null
-                this._var = sprite.getVariable(propObject.referenceId);
+            if (propObject.resourceId) //can be null
+                this._var = sprite.getVariable(propObject.resourceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -34,8 +34,8 @@ PocketCode.Model.merge({
         function ChangeVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId) //can be null
-                this._var = sprite.getVariable(propObject.referenceId);
+            if (propObject.resourceId) //can be null
+                this._var = sprite.getVariable(propObject.resourceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -61,7 +61,7 @@ PocketCode.Model.merge({
         function ShowVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
              
-            this._varId = propObject.referenceId;
+            this._varId = propObject.resourceId;
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
@@ -83,7 +83,7 @@ PocketCode.Model.merge({
         function HideVariableBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._varId = propObject.referenceId;
+            this._varId = propObject.resourceId;
         }
 
         HideVariableBrick.prototype._execute = function () {
@@ -103,8 +103,8 @@ PocketCode.Model.merge({
         function AppendToListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId)    //can be null
-                this._list = sprite.getList(propObject.referenceId);
+            if (propObject.resourceId)    //can be null
+                this._list = sprite.getList(propObject.resourceId);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -126,8 +126,8 @@ PocketCode.Model.merge({
         function InsertAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId)    //can be null
-                this._list = sprite.getList(propObject.referenceId);
+            if (propObject.resourceId)    //can be null
+                this._list = sprite.getList(propObject.resourceId);
             this._idx = new PocketCode.Formula(device, sprite, propObject.index);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -151,8 +151,8 @@ PocketCode.Model.merge({
         function ReplaceAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId)    //can be null
-                this._list = sprite.getList(propObject.referenceId);
+            if (propObject.resourceId)    //can be null
+                this._list = sprite.getList(propObject.resourceId);
             this._idx = new PocketCode.Formula(device, sprite, propObject.index);
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -176,8 +176,8 @@ PocketCode.Model.merge({
         function DeleteAtListBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            if (propObject.referenceId)    //can be null
-                this._list = sprite.getList(propObject.referenceId);
+            if (propObject.resourceId)    //can be null
+                this._list = sprite.getList(propObject.resourceId);
             this._idx = new PocketCode.Formula(device, sprite, propObject.index);
         }
 

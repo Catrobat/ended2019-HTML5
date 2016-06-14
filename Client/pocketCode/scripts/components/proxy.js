@@ -7,18 +7,18 @@
 
 PocketCode.merge({
 
-    //_serviceEndpoint: 'https://share.catrob.at/html5/rest/v0.1/',    //TODO:
-    //_serviceEndpoint: 'https://web-test.catrob.at/html5/rest/v0.1/',   //TODO:
-    //_serviceEndpoint: 'http://localhost/html5/rest/v0.1/',  //TODO:
+    //_serviceEndpoint: 'https://share.catrob.at/html5/rest/v0.2/',    //TODO:
+    //_serviceEndpoint: 'https://web-test.catrob.at/html5/rest/v0.2/',   //TODO:
+    //_serviceEndpoint: 'http://localhost/html5/rest/v0.2/',  //TODO:
     _serviceEndpoint: function () {
         switch (window.location.hostname) {
             case "localhost":
                 // To test with local projects
-                //return 'http://localhost/html5/rest/v0.1/';
+                //return 'http://localhost/html5/rest/v0.2/';
             case "web-test.catrob.at":
-                return 'https://web-test.catrob.at/html5/rest/v0.1/';
+                return 'https://web-test.catrob.at/html5/rest/v0.2/';
             default:
-                return 'https://share.catrob.at/html5/rest/v0.1/';
+                return 'https://share.catrob.at/html5/rest/v0.2/';
         }
     }(),
 

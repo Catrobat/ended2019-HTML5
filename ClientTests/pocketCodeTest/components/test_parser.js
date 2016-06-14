@@ -354,7 +354,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     sprite._positionY = 4;
     sprite._transparency = 46;
     sprite._brightness = 123;
-    sprite._size = 84;
+    sprite._scaling = 0.84;
     sprite._direction = 34;
 
 
@@ -640,7 +640,7 @@ QUnit.test("BrickFactory", function (assert) {
     sprite._variables = allBricksProject.background.variables;
 
     var count = 0;
-    var bricks = allBricksProject.background.bricks;
+    var bricks = allBricksProject.background.scripts;
     for (var i = 0, l = bricks.length; i < l; i++) {
         controlBricks.push(bf.create(sprite, bricks[i]));
         count++;
@@ -667,8 +667,8 @@ QUnit.test("BrickFactory", function (assert) {
                 break;
         }
 
-        for (var j = 0, k = currentSprite.bricks.length; j < k; j++) {
-            bricks.push(bf.create(sprite, currentSprite.bricks[j]));
+        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
+            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
             count++;
         }
     }
@@ -690,8 +690,8 @@ QUnit.test("BrickFactory", function (assert) {
     //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
     sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    allBricksProject.background.bricks.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
-    allBricksProject.background.bricks.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
+    allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
+    allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
     allBricksProject.header.bricksCount += 2;
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
@@ -731,7 +731,7 @@ QUnit.test("BrickFactory", function (assert) {
 
     //background:
     var count = 0;
-    var bricks = allBricksProject.background.bricks;
+    var bricks = allBricksProject.background.scripts;
     for (var i = 0, l = bricks.length; i < l; i++) {
         controlBricks.push(bf.create(sprite, bricks[i]));
         count++;
@@ -758,8 +758,8 @@ QUnit.test("BrickFactory", function (assert) {
                 break;
         }
 
-        for (var j = 0, k = currentSprite.bricks.length; j < k; j++) {
-            bricks.push(bf.create(sprite, currentSprite.bricks[j]));
+        for (var j = 0, k = currentSprite.scripts.length; j < k; j++) {
+            bricks.push(bf.create(sprite, currentSprite.scripts[j]));
             count++;
         }
     }

@@ -376,15 +376,15 @@ QUnit.test("SingleContainerBrick", function (assert) {
 
 });
 
-QUnit.test("RootContainerBrick", function (assert) {
+QUnit.test("ScriptBlock", function (assert) {
 
     var done1 = assert.async();
 
-    var b = new PocketCode.Model.RootContainerBrick("device", "sprite");
+    var b = new PocketCode.Model.ScriptBlock("device", "sprite");
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.RootContainerBrick && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
-    assert.ok(b.objClassName === "RootContainerBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.ScriptBlock && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
+    assert.ok(b.objClassName === "ScriptBlock", "objClassName check");
 
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
 

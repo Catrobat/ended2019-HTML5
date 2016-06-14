@@ -13,33 +13,33 @@
 
 PocketCode.Model.merge({
 
-    ProgramStartBrick: (function () {
-        ProgramStartBrick.extends(PocketCode.Model.RootContainerBrick, false);
+    WhenProgramStartBrick: (function () {
+        WhenProgramStartBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function ProgramStartBrick(device, sprite, startEvent) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+        function WhenProgramStartBrick(device, sprite, propObject, startEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
-        ProgramStartBrick.prototype.merge({
+        WhenProgramStartBrick.prototype.merge({
             dispose: function () {
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
                 this._onStart = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
-        return ProgramStartBrick;
+        return WhenProgramStartBrick;
     })(),
 
 
     WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Model.RootContainerBrick, false);
+        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenActionBrick(device, sprite, actionEvent, propObject) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+        function WhenActionBrick(device, sprite, propObject, actionEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._action = propObject.action;
             //listen to 'when tabbed'
@@ -55,7 +55,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.RootContainerBrick.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
@@ -133,16 +133,16 @@ PocketCode.Model.merge({
     })(),
 
 
-    BroadcastReceiveBrick: (function () {
-        BroadcastReceiveBrick.extends(PocketCode.Model.RootContainerBrick, false);
+    WhenBroadcastReceiveBrick: (function () {
+        WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function BroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.RootContainerBrick.call(this, device, sprite);
+        function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
 
-        BroadcastReceiveBrick.prototype.merge({
+        WhenBroadcastReceiveBrick.prototype.merge({
             _onBroadcastHandler: function (e) {
                 if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
                     PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
@@ -154,7 +154,7 @@ PocketCode.Model.merge({
             },
         });
 
-        return BroadcastReceiveBrick;
+        return WhenBroadcastReceiveBrick;
     })(),
 
 
@@ -250,6 +250,31 @@ PocketCode.Model.merge({
         });
 
         return BroadcastAndWaitBrick;
+    })(),
+
+
+    WhenCollisionBrick: (function () {
+        WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenCollisionBrick(device, sprite, propObject) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+            //broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
+        }
+
+        WhenCollisionBrick.prototype.merge({
+            //_onBroadcastHandler: function (e) {
+            //    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
+            //        PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
+            //    }
+            //    else {
+            //        //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
+            //        this.execute();
+            //    }
+            //},
+        });
+
+        return WhenCollisionBrick;
     })(),
 
 
@@ -353,11 +378,10 @@ PocketCode.Model.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function RepeatBrick(device, sprite, minLoopCycleTime, propObject) {
+        function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
             PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
-            this._bricks = propObject.bricks;
         }
 
         RepeatBrick.prototype.merge({
