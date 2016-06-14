@@ -7,7 +7,17 @@ QUnit.module("model/look.js");
 
 QUnit.test("Look", function (assert) {
 
-    assert.ok(false, "TODO: look tests");
+    var jsonLook = { id: "id", resourceId: "imgId", name: "lookName", rotationCenterX: 1, rotationCenterY: 2 };
+    var l = new PocketCode.Model.Look(jsonLook);
+
+    assert.ok(l instanceof PocketCode.Model.Look, "instance created correctly");
+    assert.equal(l.id, "id", "look id getter");
+    assert.equal(l.imageId, "imgId", "image id getter");
+    assert.equal(l.name, "lookName", "look name getter");
+    assert.equal(l.id, "id", "look id getter");
+    assert.ok(l._rotationCenterX == 1 && l._rotationCenterY == 2, "roationCenter: internal ctr setter");
+    assert.deepEqual(l.center, { length: 0.0, angle: 0.0 }, "center initial and getter");
+
 });
 
 QUnit.test("Look: preprocessing & caching", function (assert) {

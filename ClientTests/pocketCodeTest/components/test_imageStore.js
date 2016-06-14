@@ -115,4 +115,43 @@ QUnit.test("ImageStore: init and loading", function (assert) {
 });
 
 
+QUnit.test("ImageStore: preprocessing & caching", function (assert) {
 
+    var done1 = assert.async();
+    var is = new PocketCode.ImageStore();
+
+    //init tests
+    var baseUrl = "_resources/images/",
+	images = [
+		{ id: "i1", url: "imgHelper1.png", size: 1 },
+		{ id: "i2", url: "imgHelper2.png", size: 1 },
+		{ id: "i3", url: "imgHelper3.png", size: 1 },
+		{ id: "i4", url: "imgHelper4.png", size: 1 },
+		{ id: "i5", url: "imgHelper5.png", size: 1 },
+		{ id: "i6", url: "imgHelper6.png", size: 1 },
+		{ id: "i7", url: "imgHelper7.png", size: 1 },
+		{ id: "i8", url: "imgHelper8.png", size: 1 },
+		{ id: "i9", url: "imgHelper9.png", size: 1 },
+		{ id: "i11", url: "imgHelper11.png", size: 1 },
+	];
+
+
+    var onLoadCount = 0;
+    var onLoadHandler = function (e) {
+        onLoadCount++;
+
+        startTest();
+    };
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
+    is.loadImages(baseUrl, images, 0.5); //do not apply an initial scaling as this has an impact on corner calculations
+
+    var startTest = function () {
+        var img;
+        assert.throws(function () { img = is.getImage("i10"); }, Error, "ERROR: img not found");
+        img = is.getImage("i1");
+        assert.ok(img && img.canvas instanceof HTMLCanvasElement && img.center !== undefined && img !== is._images.i1.img, "make sure the delivered img is a copy and therefor cannot overwritten");
+
+        done1();
+    };
+
+});
