@@ -144,6 +144,8 @@ PocketCode.Model.merge({
              * SmartJs.Event.EventListener
              */
             execute: function (onExecutedListener, threadId) {
+                if (this._disposed)
+                    return;
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                     throw new Error('BaseBrick: missing or invalid arguments on execute()');
 
@@ -297,8 +299,6 @@ PocketCode.Model.SingleContainerBrick = (function () {
          * @private
          */
         _execute: function (id) {
-            if (this._disposed)
-                return;
             this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);
         },
         /**
@@ -444,7 +444,7 @@ PocketCode.Model.LoopBrick = (function () {
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener, startTime: new Date(), paused: this._paused };
 
             if (this._bricks && this._loopConditionMet(id)) {
-                if (!this._paused)
+                if (!this._paused && !this._disposed)
                     this._execute(id);
             }
             else
@@ -456,8 +456,6 @@ PocketCode.Model.LoopBrick = (function () {
          * @private
          */
         _execute: function (id) {
-            if (this._disposed)
-                return;
             this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id);
         },
         /**
@@ -516,7 +514,7 @@ PocketCode.Model.LoopBrick = (function () {
                 if (!po.paused) //long running loops may not have been paused
                     continue;
                 po.paused = false;
-                if (/*this._bricks &&*/ this._loopConditionMet(id))
+                if (/*this._bricks &&*/ this._loopConditionMet(id) && !this._disposed)
                     this._execute(id);
                 else
                     this._return(id);

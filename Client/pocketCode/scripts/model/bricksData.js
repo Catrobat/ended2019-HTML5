@@ -18,8 +18,6 @@ PocketCode.Model.merge({
         }
 
         SetVariableBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             if (this._var)  //can be undefined
                 this._var.value = this._value.calculate();
             this._return();
@@ -40,8 +38,6 @@ PocketCode.Model.merge({
         }
 
         ChangeVariableBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var value = this._value.calculate();
             if (this._var) {   //this._var can be undefined
                 if (!isNaN(this._var.value) && !isNaN(value))
@@ -67,8 +63,6 @@ PocketCode.Model.merge({
         }
 
         ShowVariableBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             if (this._varId)    //can be null
                 this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
             this._return();
@@ -87,8 +81,6 @@ PocketCode.Model.merge({
         }
 
         HideVariableBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             if (this._varId)    //can be null
                 this._sprite.hideVariable(this._varId);
             this._return();
@@ -109,8 +101,6 @@ PocketCode.Model.merge({
         }
 
         AppendToListBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             if (this._list) //can be null
                 this._list.append(this._value.calculate());
             this._return();
@@ -133,8 +123,6 @@ PocketCode.Model.merge({
         }
 
         InsertAtListBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var idx = this._idx.calculate();
             if (this._list && !isNaN(idx))
                 this._list.insertAt(idx, this._value.calculate());
@@ -158,8 +146,6 @@ PocketCode.Model.merge({
         }
 
         ReplaceAtListBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var idx = this._idx.calculate();
             if (this._list && !isNaN(idx))
                 this._list.replaceAt(idx, this._value.calculate());
@@ -182,8 +168,6 @@ PocketCode.Model.merge({
         }
 
         DeleteAtListBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var idx = this._idx.calculate();
             if (this._list && !isNaN(idx))
                 this._list.deleteAt(idx);

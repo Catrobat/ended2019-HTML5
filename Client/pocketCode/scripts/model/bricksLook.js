@@ -17,8 +17,6 @@ PocketCode.Model.merge({
         }
 
         SetGraphicEffectBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._value.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -41,8 +39,6 @@ PocketCode.Model.merge({
         }
 
         ChangeGraphicEffectBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._value.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -67,8 +63,6 @@ PocketCode.Model.merge({
         }
 
         SetLookBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             if (this._lookId)  //can be null
                 this._return(this._sprite.setLook(this._lookId));
         };
@@ -86,8 +80,6 @@ PocketCode.Model.merge({
         }
 
         NextLookBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.nextLook());
         };
 
@@ -101,19 +93,25 @@ PocketCode.Model.merge({
         function SelectCameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            //$this->selected = $selected;  //{1: back, 2: front}
+            if (propObject && propObject.selected)    //set and 1
+                this._selected = PocketCode.CameraType.FRONT;
+            else
+                this._selected = PocketCode.CameraType.BACK;
+
             this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         SelectCameraBrick.prototype._execute = function () {
-            //if (this._disposed)
-            //    return;
-            //var val = this._percentage.calculate();
-            //if (isNaN(val))
-            //    this._return(false);
-            //else
-            //    this._return(this._sprite.setSize(val));
-            this._return(false);
+            if (this._selected == this._device.selectedCamera) {
+                this._return(false);
+                return;
+            }
+
+            this._device.selectedCamera = this._selected;
+            if (this._device.cameraOn)
+                this._return(true);
+            else
+                this._return(false);
         };
 
         return SelectCameraBrick;
@@ -126,18 +124,20 @@ PocketCode.Model.merge({
         function CameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            //$this->selected = $selected;	//{1: off, 2: on}
+            this._selected = propObject && propObject.selected ? 1 : 0; //{0: off, 1: on}
             this._device.cameraOn = this._device.cameraOn;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype._execute = function () {
-            //if (this._disposed)
-            //    return;
-            //var val = this._percentage.calculate();
-            //if (isNaN(val))
-            //    this._return(false);
-            //else
-            //    this._return(this._sprite.setSize(val));
+            if (this._selected == 1 && !this._device.cameraOn) {
+                this._device.cameraOn = true;
+                this._return(true);
+            }
+            else if (this._selected == 0 && this._device.cameraOn) {
+                this._device.cameraOn = false;
+                this._return(true);
+            }
+
             this._return(false);
         };
 
@@ -155,8 +155,6 @@ PocketCode.Model.merge({
         }
 
         SetSizeBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._percentage.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -178,8 +176,6 @@ PocketCode.Model.merge({
         }
 
         ChangeSizeBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._value.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -199,8 +195,6 @@ PocketCode.Model.merge({
         }
 
         HideBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.hide());
         };
 
@@ -216,8 +210,6 @@ PocketCode.Model.merge({
         }
 
         ShowBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.show());
         };
 
@@ -330,8 +322,6 @@ PocketCode.Model.merge({
         }
 
         ClearGraphicEffectBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.clearGraphicEffects());
         };
 
@@ -344,14 +334,12 @@ PocketCode.Model.merge({
         function FlashBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            this._on = Boolean(parseInt(propObject.selected));
+            this._on = Boolean(parseInt(propObject.selected));	//{0: off, 1: on}
             //^^ please notice: Boolean('0') == true (string to bool)
             this._device.flashOn = this._device.flashOn;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         FlashBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._device.flashOn = this._on;
             this._return(true);
         };
