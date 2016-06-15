@@ -61,8 +61,12 @@ QUnit.test("NextLookBrick", function (assert) {
 QUnit.test("SelectCameraBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var device = new PocketCode.Device(new PocketCode.SoundManager());
+    device.cameraOn = true;
+
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
@@ -72,20 +76,45 @@ QUnit.test("SelectCameraBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Model.SelectCameraBrick, "instance check");
     assert.ok(b.objClassName === "SelectCameraBrick", "objClassName check");
 
+    assert.equal(b._selected, PocketCode.CameraType.BACK, "initial brick selection");
+    b = new PocketCode.Model.SelectCameraBrick(device, sprite, { selected: 0 });
+    assert.equal(b._selected, PocketCode.CameraType.BACK, "camera back selection");
+    b = new PocketCode.Model.SelectCameraBrick(device, sprite, { selected: 1 });
+    assert.equal(b._selected, PocketCode.CameraType.FRONT, "camera front selection");
+
     //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
+    var trueHandler = function (e) {
+        assert.ok(true, "1 executed: true because devcie.cameraOn = true");
+        assert.equal(e.loopDelay, true, "1 loopDelay received: true");
+        assert.equal(e.id, "thread_id", " 1threadId handled correctly");
         done1();
     };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    var falseHandler = function (e) {
+        assert.ok(true, "2 executed: not changed because set already");
+        assert.equal(e.loopDelay, false, "2 loopDelay received: false");
+        assert.equal(e.id, "thread_id2", "2 threadId handled correctly");
+        done2();
+    };
+    b.execute(new SmartJs.Event.EventListener(trueHandler, this), "thread_id");     //true because devcie.cameraOn = true
+    b.execute(new SmartJs.Event.EventListener(falseHandler, this), "thread_id2");   //false: not changed because set already
+
+    device.cameraOn = false;
+    b = new PocketCode.Model.SelectCameraBrick(device, sprite, { selected: 0 });
+    var falseHandlerDisabled = function (e) {
+        assert.ok(true, "3 executed: changed beck to back");
+        assert.equal(e.loopDelay, false, "3 loopDelay = false: no effect because camera is turn off");
+        assert.equal(e.id, "thread_id3", "3 threadId handled correctly");
+        done3();
+    };
+    b.execute(new SmartJs.Event.EventListener(falseHandlerDisabled, this), "thread_id3");     //false: camera turned of so no effect on rendering
 
 });
 
 QUnit.test("CameraBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
@@ -97,14 +126,37 @@ QUnit.test("CameraBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Model.CameraBrick, "instance check");
     assert.ok(b.objClassName === "CameraBrick", "objClassName check");
 
+    assert.equal(b._selected, 0, "initial brick selection");
+    b = new PocketCode.Model.CameraBrick(device, sprite, { selected: 0 });
+    assert.equal(b._selected, 0, "initial brick selection");
+    b = new PocketCode.Model.CameraBrick(device, sprite, { selected: 1 });
+    assert.equal(b._selected, 1, "initial brick selection");
+
     //execute
-    var handler = function (e) {
+    var onHandler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.ok(e.loopDelay, "1: loopDelay true: switched to on");
+        assert.equal(e.id, "thread_id", "1: threadId handled correctly");
+        assert.ok(device.cameraOn, "1: device camera set to on");
         done1();
     };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    b.execute(new SmartJs.Event.EventListener(onHandler, this), "thread_id");
+
+    var onHandler2 = function (e) {
+        assert.ok(true, "2: executed");
+        assert.notOk(e.loopDelay, "2: loopDelay = false: camera still on");
+        assert.ok(device.cameraOn, "2: device camera still set to on");
+        done2();
+    };
+    b.execute(new SmartJs.Event.EventListener(onHandler2, this), "thread_id2");
+
+    b = new PocketCode.Model.CameraBrick(device, sprite);   //default = off
+    var offHandler = function (e) {
+        assert.ok(e.loopDelay, "3: loopDelay true: switched to off");
+        assert.notOk(device.cameraOn, "3: device camera set to off");
+        done3();
+    };
+    b.execute(new SmartJs.Event.EventListener(offHandler, this), "thread_id3");
 
 });
 

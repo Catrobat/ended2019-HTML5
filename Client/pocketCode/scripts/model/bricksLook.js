@@ -129,16 +129,15 @@ PocketCode.Model.merge({
         }
 
         CameraBrick.prototype._execute = function () {
-            if (this._selected == 1 && !this._device.cameraOn) {
+            if (this._selected == 1 && !this._device.cameraOn)
                 this._device.cameraOn = true;
-                this._return(true);
-            }
-            else if (this._selected == 0 && this._device.cameraOn) {
+            else if (this._selected == 0 && this._device.cameraOn)
                 this._device.cameraOn = false;
-                this._return(true);
+            else {  //set already
+                this._return(false);
+                return;
             }
-
-            this._return(false);
+            this._return(true);
         };
 
         return CameraBrick;
