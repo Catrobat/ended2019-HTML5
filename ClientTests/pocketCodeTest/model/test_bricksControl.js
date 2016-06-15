@@ -20,9 +20,12 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     program.projectReady = true;
 
     var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
-
+    b.dispose();
+    assert.equal(b._disposed, true, "disposed");
+    
+    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
     //test empty container
@@ -91,8 +94,12 @@ QUnit.test("WhenActionBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onTabbedAction);
 
+    b.dispose();
+    assert.equal(b._disposed, true, "dispose called");
+
+    b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onTabbedAction);
     assert.ok(b._device === "device" && b._sprite === sprite && b._action === "action", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenActionBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenActionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenActionBrick", "objClassName check");
 
     //test empty container
@@ -280,7 +287,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
     var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenBroadcastReceiveBrick", "objClassName check");
 
     //test empty container
@@ -431,6 +438,18 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
     broadcastMgr.subscribe("s12", new SmartJs.Event.EventListener(_returnHandler, this));
     b.execute(new SmartJs.Event.EventListener(h, this), "sdf");
 
+});
+
+
+QUnit.test("WhenCollisionBrick", function (assert) {
+
+    var b = new PocketCode.Model.WhenCollisionBrick("device", "sprite", {});
+
+    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  //TODO: add new properties
+    assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenCollisionBrick", "objClassName check");
+
+    assert.ok(false, "TODO: add tests for WhenCollisionBrick");
 });
 
 
