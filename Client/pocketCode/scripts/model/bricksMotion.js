@@ -121,17 +121,20 @@ PocketCode.Model.merge({
         function SetRotionStyleBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            switch (propObject.selected) {  //TODO: check if selected indices where generated correctly
-                case 1:
-                    this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
-                    break;
-                case 2:
-                    this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
-                    break;
-                default:
-                    this._style = PocketCode.RotationStyle.ALL_AROUND;
-                    break;
-            }
+            if (!propObject)
+                this._style = PocketCode.RotationStyle.ALL_AROUND;
+            else
+                switch (propObject.selected) {  //{ 0: left-right, 1: all around, 2: don't rotate }
+                    case 0:
+                        this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+                        break;
+                    case 2:
+                        this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
+                        break;
+                    default:
+                        this._style = PocketCode.RotationStyle.ALL_AROUND;
+                        break;
+                }
         }
 
         SetRotionStyleBrick.prototype._execute = function () {
