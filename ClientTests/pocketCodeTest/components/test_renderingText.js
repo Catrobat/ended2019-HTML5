@@ -24,26 +24,55 @@ QUnit.test("RenderingText", function (assert) {
     assert.ok(renderingText instanceof  PocketCode.RenderingText, 'correct instance');
 
     // test default config
-    assert.ok(renderingText.id == id, 'id set correctly');
-    assert.ok(renderingText.x == x, 'x set correctly');
-    assert.ok(renderingText.y == y, 'y set correctly');
+    assert.equal(renderingText.id, id, 'id set correctly');
+    assert.equal(renderingText.x, x, 'x set correctly in constructor');
+    assert.equal(renderingText.y, y, 'y set correctly in constructor');
 
-    assert.ok(false, 'TODO');
+    x = 10;
+    y = 15;
+    renderingText.x = x;
+    renderingText.y = y;
 
-    /*id: propObject.id,
-     selectable: false,
-     hasControls: false,
-     hasBorders: false,
-     hasRotatingPoint: false,
-     originX: "left",
-     originY: "top",
-     positionX: propObject.x,
-     positionY: propObject.y,
-     fontFamily: 'Arial',
-     fontSize: 50,
-     fontWeight: 'bold',
-     //fill: 'rgb(b,b,b)',
-     visible: propObject.visible,*/
+    assert.equal(renderingText.x, x, 'x set correctly in setter');
+    assert.equal(renderingText.y, y, 'y set correctly in setter');
+
+    text = 5;
+    renderingText.text = text;
+    assert.equal(renderingText._text, text.toString(), "Numeric Text set correctly");
+
+    renderingText.text = text;
+    assert.equal(renderingText._text, text, "String set to text correctly");
+
+    var visibility = 5;
+    renderingText.visible = visibility;
+    assert.equal(renderingText._visible, visibility, "Set visibility");
+
+    renderingText.visible = false;
+    assert.equal(renderingText.visible, renderingText._visible, "Get visibility");
+
+    //rendering
+    var fillTextCalled = 0;
+    var context = {
+        fillText: function () {
+            fillTextCalled++;
+        }
+    };
+
+    renderingText.draw(context);
+    assert.ok(!fillTextCalled, "No text drawn on canvas is Text is not visible");
+    fillTextCalled = 0;
+
+    var numberOfNewlines = 5;
+    text = "Hello world";
+
+    for (var i = 0, l = numberOfNewlines; i < l; i++){
+        text = text + "\n test";
+    }
+
+    renderingText.text = text;
+    renderingText.visible = true;
+    renderingText.draw(context);
+    assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
 
 });
 

@@ -790,12 +790,11 @@ PocketCode.ImageHelper = (function () {
 
         hsvToRgb: function(h, s, v){
             h = h % 360;
-
             var i = Math.floor(h / 60.0);
             var f = ((h / 60.0) - i);
-            var p = Math.floor(v * (1.0 - s));
-            var q = Math.floor(v * (1.0 - (s * f)));
-            var t = Math.floor(v * (1.0 - (s * (1.0 - f))));
+            var p = Math.round(v * (1.0 - s));
+            var q = Math.round(v * (1.0 - (s * f)));
+            var t = Math.round(v * (1.0 - (s * (1.0 - f))));
 
             switch(i){
                 case 0: return {r: v, g: t, b: p};
@@ -805,8 +804,6 @@ PocketCode.ImageHelper = (function () {
                 case 4: return {r: t, g: p, b: v};
                 case 5: return {r: v, g: p, b: q};
             }
-
-            return {r: 0, g: 0, b: 0}
         },
 
         // ranges
@@ -828,11 +825,12 @@ PocketCode.ImageHelper = (function () {
                 else if (b === v)
                     h = 240.0 + (60.0 * ((r - g) / span));
 
-                h = Math.round(h) % 360;
+                h = h.toFixed(2);
+                h = h % 360;
                 if(h < 0)
                     h += 360;
 
-                s = +(span / v).toFixed(3);
+                s = +(span / v).toFixed(2);
             }
 
             return {h: h, s: s, v: v};

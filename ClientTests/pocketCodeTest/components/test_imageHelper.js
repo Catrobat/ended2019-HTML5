@@ -465,9 +465,10 @@ QUnit.test("ImageHelper", function (assert) {
     // s: 0 - 1
     // v: 0 - 255
     var runTests_rgbHsvConversion = function () {
+        //when adding values accuracy and ranges need to be taken into account. e.g. s goes from 0 - 1 and not from 0-100
         var hsvRgbMapping = [
             {
-                hsv: {h: 0, s: 0.498, v: 255},
+                hsv: {h: 0, s: 0.5, v: 255},
                 rgb: {r: 255, g: 128, b: 128}
             },
             {
@@ -475,11 +476,11 @@ QUnit.test("ImageHelper", function (assert) {
                 rgb: {r: 0, g: 0, b: 0}
             },
             {
-                hsv: {h: 30, s: 0.571, v: 77},
+                hsv: {h: 30, s: 0.57, v: 77},
                 rgb: {r: 77, g: 55, b: 33}
             },
             {
-                hsv: {h: 337, s: 0.98, v: 255},
+                hsv: {h: 337.2, s: 0.98, v: 255},
                 rgb: {r: 255, g: 5, b: 100}
             },
             {
@@ -494,18 +495,25 @@ QUnit.test("ImageHelper", function (assert) {
                 hsv: {h: 0, s: 0, v: 255},
                 rgb: {r: 255, g: 255, b: 255}
             },
-
             {
-                hsv: { h: 213, s: 75, v: 76 },
+                hsv: { h: 213.06, s: 0.76, v: 194 },
                 rgb: { r: 47, g: 113, b: 194 }
             },
             {
-                hsv: { h: 270, s: 81, v: 76 },
+                hsv: { h: 270.57, s: 0.82, v: 194 },
                 rgb: { r: 116, g: 35, b: 194 }
             },
             {
-                hsv: { h: 25, s: 75, v: 76 },
+                hsv: { h: 25.31, s: 0.76, v: 194 },
                 rgb: { r: 194, g: 109, b: 47 }
+            },
+            {
+                hsv: { h: 100.43, s: 0.9, v: 255 },
+                rgb: { r: 100, g: 255, b: 25 }
+            },
+            {
+                hsv: { h: 124.79, s: 0.99, v: 240 },
+                rgb: { r: 2, g: 240, b: 21 }
             },
 
         ];
