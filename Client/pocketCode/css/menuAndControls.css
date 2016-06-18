@@ -13,6 +13,7 @@
 	right: 0;
 	z-index: 99999;
 	zoom: 1;
+	color: #D3D3D3;
 }
 
 .pc-menuContainer {
@@ -39,7 +40,6 @@
 		z-index: 10000;
 		background: #303030;
 		float: right;
-		min-width:200px;
 	}
 
 .pc-menu, .gh-sublayer {
@@ -72,6 +72,7 @@
 */
 	.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover/*, .pc-accordion > label:hover*/ {
 		color: #33B5E5;
+		cursor: pointer;
 	}
 
 .pc-menuItemSep hr {
