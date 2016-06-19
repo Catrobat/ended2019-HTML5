@@ -14,7 +14,7 @@ PocketCode.Ui.Menu = (function () {
 
   //cntr
   function Menu(args) {
-    SmartJs.Ui.Control.call(this, 'DIV', { className: 'pc-topElement' });
+    SmartJs.Ui.ContainerControl.call(this, { className: 'pc-topElement' });
 
     this._states = {
       CLOSED: 'open',
@@ -26,7 +26,7 @@ PocketCode.Ui.Menu = (function () {
     // Object parameters
     this._state = this._states.OPEN;
     this._content = null;
-
+    this._minHeight = 200;
 
     var img_tag = document.createElement("IMG");
     img_tag.setAttribute("src", "/HTML5/Client/pocketCode/img/menue.png");
@@ -44,9 +44,9 @@ PocketCode.Ui.Menu = (function () {
     menuContainer.className = "pc-menuContainer";
     var menu = document.createElement( "DIV" );
     menu.className = "pc-menu";
-    var menuTitle = document.createElement( "DIV" );
-    menuTitle.className = "pc-menuTitle";
-    menuTitle.appendChild( img_tag );
+    this._menuTitle = document.createElement( "DIV" );
+    this._menuTitle.className = "pc-menuTitle";
+    this._menuTitle.appendChild( img_tag );
     this._menuLabel = img_tag;
     var submenu = document.createElement( "DIV" );
     submenu.className = "pc-submenu";
@@ -56,23 +56,24 @@ PocketCode.Ui.Menu = (function () {
     this._content = document.createElement( "DIV" );
     this._content.style = "padding:0";
 
+    this._container = new PocketCode.Ui.ScrollContainer({ style: 'padding:0' });
 
-    scrollContainer.appendChild( this._content );
+    this._container.style.maxHeight = 1000;
+
+    scrollContainer.appendChild( this._container._dom );
     submenu.appendChild( scrollContainer );
-    menu.appendChild( menuTitle );
+    menu.appendChild( this._menuTitle );
     menu.appendChild( submenu );
     menuContainer.appendChild( menu );
     mainMenu.appendChild( menuContainer );
     menuAlign.appendChild( mainMenu );
     this._dom.appendChild( menuAlign );
 
-
-
     //events
     this._onClick = new SmartJs.Event.Event(this);
-    this._addDomListener(this._menuLabel, 'click', this._clickHandler);
-    this._addDomListener(this._menuLabel, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
-    //this._addDomListener(this._dom, 'touchend', this._clickHandler, { cancelBubble: true });//function (e) { this._dom.click(); });
+    this._addDomListener(this._menuTitle, 'click', this._clickHandler);
+    this._addDomListener(this._menuTitle, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
+    this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this));
   }
 
   //properties
@@ -108,16 +109,28 @@ PocketCode.Ui.Menu = (function () {
       this._onClick.dispatchEvent();
     },
     _open: function(e) {
-      this._content.style = "display:block;padding:0;";
+      this._container._dom.style = "display:block;padding:0;";
       this._state = this._states.OPEN;
+      this._onResize.dispatchEvent();
     },
     _close: function(e) {
-      this._content.style = "display:none";
+      this._container._dom.style = "display:none";
       this._state = this._states.CLOSED;
+      this._onResize.dispatchEvent();
     },
     addElement: function(element) {
-      this._content.appendChild( element._dom );
-    }
+      console.log( element );
+      this._container.appendChild( element );
+    },
+    _resizeHandler: function (e) {
+      var availableHeight = document.documentElement.clientHeight - 65;
+      var minHeight = this._minHeight - (this._menuLabel.height);
+
+      if (availableHeight > minHeight)
+        this._container.style.maxHeight = availableHeight + 'px';
+      else
+        this._container.style.maxHeight = minHeight + 'px';
+      }
   });
 
   return Menu;

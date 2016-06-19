@@ -6,7 +6,7 @@
 window.onload = function () {
   var layoutContainer = document.getElementById('layoutContainer');
 
-  var menue = new PocketCode.Ui.Menu();
+  var menu = new PocketCode.Ui.Menu();
   var separator = new PocketCode.Ui.MenuSeparator();
   var separator2 = new PocketCode.Ui.MenuSeparator();
   var button1 = new PocketCode.Ui.MenuItem("example");
@@ -27,37 +27,49 @@ window.onload = function () {
   var button8 = new PocketCode.Ui.MenuItem("example");
   var button9 = new PocketCode.Ui.MenuItem("example");
 
-  menue.addElement( button1 );
-  menue.addElement( separator );
-  menue.addElement( button2 );
-  menue.addElement( separator2 );
-  menue.addElement( button3 );
-
-  menue.addElement( button4 );
-  menue.addElement( separator3 );
-  menue.addElement( button5 );
-  menue.addElement( separator4 );
-  menue.addElement( button6 );
-
-  menue.addElement( button7 );
-  menue.addElement( separator5 );
-  menue.addElement( button8 );
-  menue.addElement( separator6 );
-  menue.addElement( button9 );
+  var cb1 = new PocketCode.Ui.Checkbox("lblOk");
+  var radio1 = new PocketCode.Ui.Radio('key1', 'val1');
+  var radio2 = new PocketCode.Ui.Radio('key2', 'val2');
 
 
+  menu.addElement( button1 );
 
-  layoutContainer.appendChild(menue._dom);
+  menu.addElement( separator );
+  menu.addElement( button2 );
+  menu.addElement( separator2 );
+  menu.addElement( button3 );
+
+  menu.addElement( button4 );
+  menu.addElement( separator3 );
+  menu.addElement( cb1 );
+  menu.addElement( separator5 );
+  menu.addElement( radio1 );
+  menu.addElement( separator6 );
+  menu.addElement( radio2 );
+
+  menu.addElement( button5 );
+  menu.addElement( separator4 );
+  menu.addElement( button6 );
+
+  menu.addElement( button7 );
 
 
 
+  layoutContainer.appendChild(menu._dom);
+
+
+
+  window.onresize = function (e) {
+    menu._onResize.dispatchEvent();
+  };
+  menu._onResize.dispatchEvent();  //once at the beginning
 
 
   //click handler
   var onClickEventFired = function () {
     outputContainer.innerHTML += '<br />Menu open/close clicked';
   };
-  menue.onClick.addEventListener(new SmartJs.Event.EventListener(onClickEventFired, this));
+  menu.onClick.addEventListener(new SmartJs.Event.EventListener(onClickEventFired, this));
 
   //click handler
   var onClick2EventFired = function () {
