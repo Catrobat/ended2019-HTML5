@@ -29,13 +29,93 @@ QUnit.test("ImageFilter: mosaic", function (assert) {
 });
 
 QUnit.test("ImageFilter: color", function (assert) {
+    var originalPixelData = [
+        1, 2, 3, 4,
+        7, 8, 9, 17,
+        3, 3, 2, 15
+    ];
 
-    assert.ok(false, "TODO: tests");
+    var originalHsvToRgb = PocketCode.ImageHelper.hsvToRgb;
+    PocketCode.ImageHelper.hsvToRgb = function(h, s, v){
+        return {r: h, g: s, b: v};
+    };
+
+    var originalRgbToHsv = PocketCode.ImageHelper.rgbToHsv;
+    PocketCode.ImageHelper.rgbToHsv = function(r, g, b){
+        return {h: r, s: g, v: b};
+    };
+
+    var modifiedData = originalPixelData.slice(0);
+
+    PocketCode.ImageFilter.color(modifiedData, 0);
+    assert.deepEqual(modifiedData, originalPixelData, "no change made to color if color is 0");
+
+    var colorShift = 25;
+    PocketCode.ImageFilter.color(modifiedData, colorShift);
+
+    var checkData = function () {
+        var dataAsExpected = true;
+        for (var i = 0, l = modifiedData.length; i < l; i++) {
+            //only h value shifted
+            if ((i % 4) !== 0) {
+                if(originalPixelData[i] !== modifiedData[i]){
+                    dataAsExpected = false;
+                }
+            } else if ((originalPixelData[i] + colorShift) < 0){
+                if(modifiedData[i] !== (originalPixelData[i] + colorShift + 360))
+                    dataAsExpected = false
+            } else {
+                if (modifiedData[i] !== ((originalPixelData[i] + colorShift) % 360))
+                    dataAsExpected = false;
+            }
+        }
+        return dataAsExpected;
+    };
+
+    assert.ok(checkData(), "Color shifted correctly positive value");
+
+    colorShift = -35;
+    modifiedData = originalPixelData.slice(0);
+    PocketCode.ImageFilter.color(modifiedData, colorShift);
+    assert.ok(checkData(), "Color shifted correctly negative value");
+
+    colorShift = 400;
+    modifiedData = originalPixelData.slice(0);
+    PocketCode.ImageFilter.color(modifiedData, colorShift);
+    assert.ok(checkData(), "Color shifted correctly large value");
+
+    PocketCode.ImageHelper.hsvToRgb = originalHsvToRgb;
+    PocketCode.ImageHelper.rgbToHsv = originalRgbToHsv;
 });
 
 QUnit.test("ImageFilter: brightness", function (assert) {
+    var originalPixelData = [
+        1, 2, 3, 4,
+        7, 8, 9, 17,
+        3, 3, 2, 15
+    ];
 
-    assert.ok(false, "TODO: tests");
+    var modifiedData = originalPixelData.slice(0);
+
+    PocketCode.ImageFilter.brightness(modifiedData, 0);
+    assert.deepEqual(modifiedData, originalPixelData, "no change made to brightness if brightness is 0");
+
+    var brightnessChange = 10;
+    modifiedData = originalPixelData.slice(0);
+    PocketCode.ImageFilter.brightness(modifiedData, brightnessChange);
+
+    var dataAsExpected = true;
+
+    for (var i = 0, l = modifiedData.length; i < l; i++) {
+        if ((i % 4) !== 3){
+            if (modifiedData[i] !== (originalPixelData[i] + Math.round(brightnessChange * 2.55))) {
+                dataAsExpected = false;
+            }
+        } else if (modifiedData[i] !== originalPixelData[i]){
+            dataAsExpected = false;
+        }
+    }
+    assert.ok(dataAsExpected, "applyBrightnessFilter: correct change made to brightness if brightness is not 0");
 });
 
 
@@ -48,7 +128,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done5 = assert.async();
     var done6 = assert.async();
 
-    //helper function to alimit rounding errors
+    //helper function to limit rounding errors
     var round1000 = function (value) {
         return Math.round(value * 1000) / 1000;
     };
@@ -445,7 +525,7 @@ QUnit.test("ImageHelper", function (assert) {
 
         ih.setFilters(canvas, []);  //code coverage
         assert.throws(function () { ih.setFilters(canvas, [{ effect: undefined, value: 4 }]); }, Error, "ERROR: invalid filter argument: effect");
-        assert.throws(function () { ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: undefined }]); }, Error, "ERROR: invalid filter argument: value");
+        //assert.throws(function () { ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: undefined }]); }, Error, "ERROR: invalid filter argument: value");
         ih.setFilters(canvas, [{ effect: PocketCode.GraphicEffect.COLOR, value: 4 }]);
 
         //call all existing filters once
@@ -455,6 +535,7 @@ QUnit.test("ImageHelper", function (assert) {
             { effect: PocketCode.GraphicEffect.PIXELATE, value: 4 },
             { effect: PocketCode.GraphicEffect.MOSAIC, value: 4 },
             { effect: PocketCode.GraphicEffect.COLOR, value: 4 },
+            { effect: PocketCode.GraphicEffect.GHOST, value: 4 },
             { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: 4 }]);
 
         done5();

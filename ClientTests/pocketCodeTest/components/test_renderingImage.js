@@ -90,7 +90,6 @@ QUnit.test("RenderingImage", function (assert) {
                     // find original pixel
                     // negative rotation as rotation is applied clockwise at rendering
                     rotatedPoint = rotatePointAroundAnchor(currentX, currentY, centerX, centerY, -rotation);
-                    // console.log(currentX, currentY, centerX, centerY, rotation);
                     originalX = rotatedPoint.x;
                     originalY = rotatedPoint.y;
 
@@ -200,7 +199,10 @@ QUnit.test("RenderingImage", function (assert) {
 
     var runTests = function () {
 
-        var canvasElement = { width: 10, height: 20 };
+        var canvasElement = document.createElement('canvas');
+        canvasElement.height = 20;
+        canvasElement.width = 10;
+
         var renderingImage = new PocketCode.RenderingImage({ look: canvasElement });
 
         assert.ok(renderingImage instanceof PocketCode.RenderingImage, "instance check");
@@ -225,14 +227,14 @@ QUnit.test("RenderingImage", function (assert) {
             renderingImage.rotation = rotationAngle;
             var rad = (-rotationAngle + 90) * (Math.PI / 180.0);
 
-            var xOffset = renderingImage.height / 2 * Math.cos(rad);
-            var yOffset = renderingImage.height / 2 * Math.sin(rad);
+            var xOffset = renderingImage._height / 2 * Math.cos(rad);
+            var yOffset = renderingImage._height / 2 * Math.sin(rad);
             var centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             var centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = renderingImage.width / 2 * Math.cos(rad);
-            yOffset = renderingImage.width / 2 * Math.sin(rad);
+            xOffset = renderingImage._width / 2 * Math.cos(rad);
+            yOffset = renderingImage._width / 2 * Math.sin(rad);
             var centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             var centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
@@ -240,14 +242,14 @@ QUnit.test("RenderingImage", function (assert) {
                 && renderingImage.containsPoint(centerLeft) && renderingImage.containsPoint(centerRight), "Contains Points on boundaries with rotation: " + rotationAngle);
 
             rad = (-rotationAngle + 90) * (Math.PI / 180.0);
-            xOffset = ((renderingImage.height / 2) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage.height / 2) + 1) * Math.sin(rad);
+            xOffset = ((renderingImage._height / 2) + 1) * Math.cos(rad);
+            yOffset = ((renderingImage._height / 2) + 1) * Math.sin(rad);
             centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = ((renderingImage.width / 2) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage.width / 2) + 1) * Math.sin(rad);
+            xOffset = ((renderingImage._width / 2) + 1) * Math.cos(rad);
+            yOffset = ((renderingImage._width / 2) + 1) * Math.sin(rad);
             centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
@@ -455,75 +457,33 @@ QUnit.test("RenderingImage", function (assert) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
+        var look = undefined;
+        renderingImage.look = look;
+        assert.ok(renderingImage._canvasElement instanceof HTMLCanvasElement, "Created new canvas element as look if none was passed");
+        assert.ok(renderingImage._originalElement instanceof HTMLCanvasElement, "Created new canvas original element as look if none was passed");
+
         //filters
-        renderingImage._filters.brightness = 0;
-        var originalData = [
-            1, 2, 3, 4,
-            7, 8, 9, 17,
-            3, 3, 2, 15
-        ];
 
-        var modifiedData = originalData.slice(0);
-
-        renderingImage.applyBrightnessFilter(modifiedData);
-
-        var dataAsExpected = true;
-        for (var i = 0, l = modifiedData.length; i < l; i++) {
-            if (originalData[i] !== modifiedData[i])
-                dataAsExpected = false;
-        }
-
-        assert.ok(dataAsExpected, "applyBrightnessFilter: no change made to brightness if brightness is 0");
-
-        var brightnessChange = 10;
-        renderingImage._filters.brightness = brightnessChange;
-
-        dataAsExpected = true;
-        modifiedData = originalData.slice(0);
-        renderingImage.applyBrightnessFilter(modifiedData);
-
-        for (i = 0, l = modifiedData.length; i < l; i++) {
-            if (!(i % 4) && (modifiedData[i] !== originalData[i] + Math.round(brightnessChange * 2.55))) {
-                dataAsExpected = false;
-            }
-        }
-
-        assert.ok(dataAsExpected, "applyBrightnessFilter: correct change made to brightness if brightness is not 0");
-
-        var filterRenderingImage = new PocketCode.RenderingImage(sprite1.renderingProperties);
-
-        var brightnessFilterApplied = false;
-        filterRenderingImage.applyBrightnessFilter = function () {
-            brightnessFilterApplied = true;
+        var backup = PocketCode.ImageHelper.setFilters;
+        var setFiltersCalled = 0;
+        PocketCode.ImageHelper.setFilters = function () {
+            setFiltersCalled++;
         };
+        assert.throws(function () { renderingImage.graphicEffects = '' }, Error, "Set graphic effects to non-array type");
+        assert.ok(!setFiltersCalled, "no filters set when non array argument is given");
 
-        var colorFilterApplied = false;
-        filterRenderingImage.applyColorFilter = function () {
-            colorFilterApplied = true;
-        };
+        renderingImage.graphicEffects = [];
+        assert.ok(!setFiltersCalled, "setFilters not called when empty array given");
 
-        var originalElement = "test";
-        var originalElementBackup = filterRenderingImage._originalElement;
-        filterRenderingImage._originalElement = originalElement;
+        renderingImage.graphicEffects = ['item'];
+        assert.equal(setFiltersCalled, 1, "setFilters not called when empty array given");
 
-        filterRenderingImage.applyFilters();
-        assert.ok(!brightnessFilterApplied && !colorFilterApplied, "no filter applied if filters both empty");
-        assert.equal(filterRenderingImage._element, originalElement, "canvasElement reset to original when there are no filters");
-
-        filterRenderingImage._originalElement = originalElementBackup;
-        filterRenderingImage._filters = {
-            brightness: 5,
-            color: 5
-        };
-
-        filterRenderingImage.applyFilters();
-        assert.ok(brightnessFilterApplied && colorFilterApplied, "filter applied if filters exist");
+        PocketCode.ImageHelper.setFilters = backup;
 
         reconfigureTestSettings();
     };
 
     var runScaledImagesTests = function () {
-        // TODO test rendering with initialscaling in sprite (via imagestore)
         //var lookOpaque = new PocketCode.Model.Look({ name: "look3", id: "sid3", resourceId: "s3" });
         //var lookTransparent = new PocketCode.Model.Look({ name: "look4", id: "sid4", resourceId: "s4" });
 
@@ -567,7 +527,6 @@ QUnit.test("RenderingImage", function (assert) {
         }
         // ****************** TEST OPAQUE SPRITE SCALED RENDERING ****************************************************
 
-        // // TODO test rendering with initialscaling AND viewportscaling
         // canvas.setDimensions(80, 40, viewportScaling);
         // estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0; // 0 * viewportScaling
         // renderingImageOpaque.draw(ctx);
@@ -631,6 +590,5 @@ QUnit.test("RenderingImage", function (assert) {
     is.loadImages(baseUrl, images);
 
 });
-
 
 

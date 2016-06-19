@@ -252,6 +252,31 @@ PocketCode.ImageFilter = {
         return p;
     },
     color: function (p, brightnessShift) {
+        if(!brightnessShift)
+            return;
+
+        for (var i = 0, l = p.length; i < l; i += 4) {
+            var r = p[i],
+                g = p[i + 1],
+                b = p[i + 2];
+
+            var hsv = PocketCode.ImageHelper.rgbToHsv(r, g, b);
+            var h = hsv.h;
+            var s = hsv.s;
+            var v = hsv.v;
+
+            h = (h + brightnessShift) % 360;
+            if (h < 0)
+                h += 360;
+
+            var rgb = PocketCode.ImageHelper.hsvToRgb(h, s, v);
+
+            p[i] = rgb.r;
+            p[i + 1] = rgb.g;
+            p[i + 2] = rgb.b;
+        }
+        return p;
+
         //// brightness range is -100..100
         ////			n = Math.max(-100, Math.min(filterDict["brightness"], 100));
         ////			hsvShader.data.brightnessShift.value = [n];
@@ -332,7 +357,6 @@ PocketCode.ImageFilter = {
     //        else if (i == 5) dst.rgb = float3(v, p, q);
     //    }
     //}
-        return p;
     },
     brightness: function (p, value) {
         if (value !== 0) {
@@ -465,9 +489,10 @@ PocketCode.ImageHelper = (function () {
                 filter;
             for (var i = 0, l = filters.length; i < l; i++) {
                 filter = filters[i];
-                if (!filter.effect || !filter.value)
+                if (!filter.effect)
                     throw new Error('invalid argument: effects[' + i + ']');
-                _effects[filter.effect] = filter.value;
+                if(filter.value)
+                    _effects[filter.effect] = filter.value;
             }
 
             var ctx = canvas.getContext("2d");
@@ -494,6 +519,9 @@ PocketCode.ImageHelper = (function () {
             }
             if (_effects[ge.BRIGHTNESS]) {
                 pixels = imgf.brightness(pixels, _effects[ge.BRIGHTNESS]);
+            }
+            if(_effects[ge.GHOST]){
+                ctx.globalAlpha *= (1 - _effects[ge.GHOST] / 100.0);
             }
             //.. for all filters
 
@@ -537,7 +565,7 @@ PocketCode.ImageHelper = (function () {
             var ih = h * scalingFactor,
                 iw = w * scalingFactor;
             var ch = Math.ceil(ih),
-                cw = Math.ceil(iw)
+                cw = Math.ceil(iw);
 
             canvas.height = ch;
             canvas.width = cw;
