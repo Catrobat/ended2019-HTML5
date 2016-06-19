@@ -118,7 +118,7 @@ PocketCode.Ui.Menu = (function () {
       this._content.style = "display:none";
       this._state = this._states.CLOSED;
     },
-    _addElement: function(element) {
+    addElement: function(element) {
       this._content.appendChild( element._dom );
     }
   });
@@ -131,27 +131,19 @@ PocketCode.Ui.MenuSeparator = (function () {
 
   //cntr
   function MenuSeparator(args) {
-    SmartJs.Ui.Control.call(this, 'separator', args);
-    var element = document.createElement("LI");
-    element.className = "pc-menuItemSep";
-    var separator = document.createElement("HR");
-    element.appendChild( separator );
-    this._dom = element;
+    SmartJs.Ui.Control.call(this, 'div', { className: 'pc-menuItemSep' });
+    this._dom.appendChild(document.createElement("hr"));
   }
 
   return MenuSeparator;
 })();
 
 PocketCode.Ui.MenuItem = (function () {
-  MenuItem.extends(SmartJs.Ui.Control, false);
+  MenuItem.extends(PocketCode.Ui.Button, false);
 
   //cntr
-  function MenuItem(txt, args) {
-    SmartJs.Ui.Control.call(this, 'menuItem', args);
-    var element = document.createElement("DIV");
-    element.className = "pc-menuItem";
-    element.innerHTML = txt;
-    this._dom = element;
+  function MenuItem(i18nKey) {
+    PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-menuItem' });
   }
 
   return MenuItem;
