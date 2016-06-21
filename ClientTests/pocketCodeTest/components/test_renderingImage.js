@@ -211,8 +211,8 @@ QUnit.test("RenderingImage", function (assert) {
         assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "missing arguments");
         assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "argument not an object");
 
-        renderingImage._x = 10;
-        renderingImage._y = 15;
+        renderingImage.x = 10;
+        renderingImage.y = 15;
 
         assert.ok(renderingImage.containsPoint({ x: 5, y: 5 }), "Contains Point on left top corner");
         assert.ok(renderingImage.containsPoint({ x: 15, y: 5 }), "Contains Point on right top corner");

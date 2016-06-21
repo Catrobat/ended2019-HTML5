@@ -13,7 +13,7 @@ PocketCode.Ui.merge({
     PlayerStartScreen: (function () {
         PlayerStartScreen.extends(PocketCode.Ui.I18nControl, false);
 
-        function PlayerStartScreen(title, base64peviewImage) {
+        function PlayerStartScreen(title, base64previewImage) {
             PocketCode.Ui.I18nControl.call(this, 'div');
 
             this._dom.className = 'pc-playerStartScreen';
@@ -22,8 +22,8 @@ PocketCode.Ui.merge({
                 this.title = title;
 
             this._previewImage = new Image();
-            if (base64peviewImage)
-                this.previewImage = base64peviewImage;
+            if (base64previewImage)
+                this.previewImage = base64previewImage;
             else
                 this.previewImage = PocketCode.domain + '/images/default/screenshot.png';
 
@@ -73,6 +73,9 @@ PocketCode.Ui.merge({
             },
             startEnabled: {
                 set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new error('invalid argument: startEnabled: expected type = boolean');
+
                     this._startButton.disabled = !value;
                     if (value) {
                         this._previewImage.className = '';

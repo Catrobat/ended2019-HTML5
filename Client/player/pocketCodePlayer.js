@@ -496,6 +496,8 @@ PocketCode.Web = {
 					clearInterval(this._loadingTimer);
 			},
 			setProgress: function (perc) {
+			    if (typeof perc !== 'number' || perc < 0.0 || perc > 100.0)
+			        throw new Error('invalid parameter: percentage');
 				this.hidePending();
 				var style = this.progressBar.style;
 				style.display = '';

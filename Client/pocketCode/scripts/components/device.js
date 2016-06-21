@@ -4,8 +4,8 @@
 'use strict';
 
 PocketCode.CameraType = {
-    BACK: 1,
-    FRONT: 2,
+    BACK: 0,
+    FRONT: 1,
 };
 
 PocketCode.Device = (function () {

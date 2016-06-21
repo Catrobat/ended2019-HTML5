@@ -19,8 +19,6 @@ PocketCode.Model.merge({
         }
 
         GoToPositionBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var x = this._x.calculate(),
 				y = this._y.calculate();
             if (isNaN(x) || isNaN(y))
@@ -43,8 +41,6 @@ PocketCode.Model.merge({
         }
 
         SetXBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var x = this._x.calculate();
             if (isNaN(x))
                 this._return(false);
@@ -66,8 +62,6 @@ PocketCode.Model.merge({
         }
 
         SetYBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var y = this._y.calculate();
             if (isNaN(y))
                 this._return(false);
@@ -89,8 +83,6 @@ PocketCode.Model.merge({
         }
 
         ChangeXBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var x = this._x.calculate();
             if (isNaN(x))
                 this._return(false);
@@ -112,8 +104,6 @@ PocketCode.Model.merge({
         }
 
         ChangeYBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var y = this._y.calculate();
             if (isNaN(y))
                 this._return(false);
@@ -131,22 +121,23 @@ PocketCode.Model.merge({
         function SetRotionStyleBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-            switch (propObject.selected) {  //TODO: check if selected indices where generated correctly
-                case 1:
-                    this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
-                    break;
-                case 2:
-                    this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
-                    break;
-                default:
-                    this._style = PocketCode.RotationStyle.ALL_AROUND;
-                    break;
-            }
+            if (!propObject)
+                this._style = PocketCode.RotationStyle.ALL_AROUND;
+            else
+                switch (propObject.selected) {  //{ 0: left-right, 1: all around, 2: don't rotate }
+                    case 0:
+                        this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+                        break;
+                    case 2:
+                        this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
+                        break;
+                    default:
+                        this._style = PocketCode.RotationStyle.ALL_AROUND;
+                        break;
+                }
         }
 
         SetRotionStyleBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.setRotationStyle(this._style));
         };
 
@@ -163,8 +154,6 @@ PocketCode.Model.merge({
         }
 
         IfOnEdgeBounceBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.ifOnEdgeBounce());
         };
 
@@ -182,8 +171,6 @@ PocketCode.Model.merge({
         }
 
         MoveNStepsBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._steps.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -205,8 +192,6 @@ PocketCode.Model.merge({
         }
 
         TurnLeftBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._degrees.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -228,8 +213,6 @@ PocketCode.Model.merge({
         }
 
         TurnRightBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._degrees.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -251,8 +234,6 @@ PocketCode.Model.merge({
         }
 
         PointInDirectionBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._degrees.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -274,8 +255,6 @@ PocketCode.Model.merge({
         }
 
         PointToBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.pointTo(this._spriteId));
         };
 
@@ -304,8 +283,6 @@ PocketCode.Model.merge({
                 this._return(callId, true);
             },
             _execute: function (callId) {
-                if (this._disposed)
-                    return;
                 var sprite = this._sprite;
                 var po = this._pendingOps[callId];
                 po.paused = this._paused;
@@ -381,8 +358,6 @@ PocketCode.Model.merge({
         }
 
         GoBackBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._layers.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -403,8 +378,6 @@ PocketCode.Model.merge({
         }
 
         ComeToFrontBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             this._return(this._sprite.comeToFront());
         };
 
@@ -423,8 +396,6 @@ PocketCode.Model.merge({
         }
 
         VibrationBrick.prototype._execute = function () {
-            if (this._disposed)
-                return;
             var val = this._duration.calculate();
             if (isNaN(val))
                 this._return(false);

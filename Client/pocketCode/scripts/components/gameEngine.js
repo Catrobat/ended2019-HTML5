@@ -6,8 +6,9 @@
 /// <reference path="sprite.js" />
 /// <reference path="imageStore.js" />
 /// <reference path="../model/userVariable.js" />
-/// <reference path="../components/broadcastManager.js" />
-/// <reference path="../components/soundManager.js" />
+/// <reference path="broadcastManager.js" />
+/// <reference path="collisionManager.js" />
+/// <reference path="soundManager.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {
@@ -54,6 +55,8 @@ PocketCode.GameEngine = (function () {
             deviceEmulation: false,
             deviceLockRequired: false,
         };
+
+        this._collisionManager;// = new PocketCode.CollisionManager()
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -146,7 +149,12 @@ PocketCode.GameEngine = (function () {
                 this._broadcasts = broadcasts;
                 this._broadcastMgr.init(broadcasts);
             },
-        }
+        },
+        collisionManager: {
+            get: function () {
+                return this._collisionManager;
+            },
+        },
     });
 
     //events
@@ -224,6 +232,7 @@ PocketCode.GameEngine = (function () {
             this.author = header.author;
             this._originalScreenHeight = header.device.screenHeight;
             this._originalScreenWidth = header.device.screenWidth;
+            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);    //TODO: dispose before recreating (Benny)
 
             //create objects
             if (this._background)
@@ -513,7 +522,6 @@ PocketCode.GameEngine = (function () {
             this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);
             return true;
         },
-
         setSpriteLayerToFront: function (sprite) {
             var sprites = this._sprites;
             if (sprites.indexOf(sprite) === sprites.length - 1)

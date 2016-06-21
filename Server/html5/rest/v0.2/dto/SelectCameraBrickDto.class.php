@@ -7,6 +7,6 @@ class SelectCameraBrickDto extends BaseBrickDto {
     public function __construct($selected = "0") {
         parent::__construct("SelectCamera");
         
-        $this->selected = $selected;	//{1: back, 2: front}
+        $this->selected = $selected;	//{0: back, 1: front}
     }
 }

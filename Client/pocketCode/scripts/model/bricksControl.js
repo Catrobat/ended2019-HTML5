@@ -78,8 +78,6 @@ PocketCode.Model.merge({
                 this._return(e.callId);
             },
             _execute: function (callId) {
-                if (this._disposed)
-                    return;
                 var duration = this._duration.calculate();
                 if (isNaN(duration)) {
                     this._return(callId);
@@ -177,8 +175,6 @@ PocketCode.Model.merge({
 
         BroadcastBrick.prototype.merge({
             _execute: function (usingTimeout) {
-                if (this._disposed)
-                    return;
                 if (usingTimeout && this._stopped)
                     return;
                 this._stopped = false;
@@ -212,7 +208,7 @@ PocketCode.Model.merge({
                 this._paused = false;
                 if (this._pendingOp) {
                     this._pendingOp = false;
-                    this._execute();
+                    this.execute();
                 }
             },
             stop: function () {
@@ -243,8 +239,6 @@ PocketCode.Model.merge({
                 this._return(e.id, e.loopDelay)
             },
             _execute: function (id) {
-                if (this._disposed)
-                    return;
                 this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(this._returnHandler, this), id);
             },
         });

@@ -6,13 +6,13 @@
             throw new Error('The rendering text has to be initialized using a variable or text parameter object');
 
         this._id = propObject.id;
-        this._x = propObject.x;
-        this._y = propObject.y;
+        this.x = propObject.x;
+        this.y = propObject.y;
         this._fontFamily = 'Arial';
         this._fontSize = 50;
         this._fontWeight = 'bold';
         this._fontStyle = '';
-        this._visible = propObject.visible;
+        this.visible = propObject.visible;
         this._lineHeight = 1.31;
     }
 
@@ -24,20 +24,12 @@
             },
         },
         x: {
-            set: function (value) {
-                this._x = value;
-            },
-            get: function () {
-                return this._x;
-            },
+            value: 0.0,
+            writable: true,
         },
         y: {
-            set: function (value) {
-                this._y = value;
-            },
-            get: function () {
-                return this._y;
-            },
+            value: 0.0,
+            writable: true,
         },
         text: {
             set: function (value) {
@@ -45,12 +37,8 @@
             },
         },
         visible: {
-            set: function (value) {
-                this._visible = value;
-            },
-            get: function () {
-                return this._visible;
-            }
+            value: true,
+            writable: true,
         },
     });
 
@@ -58,7 +46,7 @@
     RenderingText.prototype.merge({
         draw: function (context) {
 
-            if (!this._visible || !this._text) {
+            if (!this.visible || !this._text) {
                 return;
             }
 
@@ -71,7 +59,7 @@
 
             for (var i = 0, len = textLines.length; i < len; i++) {
                 var heightOfLine = this._fontSize * this._lineHeight * i;
-                context.fillText(textLines[i], this._x, this._y + heightOfLine);
+                context.fillText(textLines[i], this.x, this.y + heightOfLine);
             }
         },
     });
