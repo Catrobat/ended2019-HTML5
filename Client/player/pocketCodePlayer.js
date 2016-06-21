@@ -1062,6 +1062,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/collisionManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/device.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/imageHelper.js', type: 'js' },
