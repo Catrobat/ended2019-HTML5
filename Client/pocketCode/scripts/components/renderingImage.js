@@ -12,9 +12,6 @@ PocketCode.RenderingImage = (function () {
 
         this._scaling = 1.0;
         this._flipX = false;
-        this._visible = true;
-        this._x = 0.0;
-        this._y = 0.0;
         this._rotation = 0.0;
 
         this.graphicEffects = args.graphicEffects || [];    //TODO: store effects and use canvas = ImageHelper.setFilters(canvas filter[]);
@@ -57,21 +54,12 @@ PocketCode.RenderingImage = (function () {
             },
         },
         x: {
-            set: function (value) {
-                this._x = value;
-            },
-            get: function () {
-                return this._x;
-            }
+            value: 0.0,
+            writable: true,
         },
         y: {
-            set: function (value) {
-                this._y = value;
-            },
-
-            get: function () {
-                return this._y;
-            }
+            value: 0.0,
+            writable: true,
         },
         scaling: {
             set: function (value) {
@@ -89,12 +77,8 @@ PocketCode.RenderingImage = (function () {
             }
         },
         visible: {
-            set: function (value) {
-                this._visible = value;
-            },
-            get: function () {
-                return this._visible;
-            }
+            value: true,
+            writable: true,
         },
 
         graphicEffects: {
@@ -104,7 +88,7 @@ PocketCode.RenderingImage = (function () {
 
                 this._graphicEffects = filters;
 
-                if(!this._canvasElement || !filters.length)
+                if (!this._canvasElement || !filters.length)
                     return;
 
                 var imageElement = this._originalElement;
@@ -121,12 +105,12 @@ PocketCode.RenderingImage = (function () {
 
     //methods
     RenderingImage.prototype.merge({
-        containsPoint: function(point){
-            var tl = { x: (this.x - this._scaling * this._width / 2), y: (this.y - this._scaling * this._height / 2) };
-            var bl = { x: (this.x - this._scaling * this._width / 2), y: (this.y + this._scaling * this._height / 2) };
-            var tr = { x: (this.x + this._scaling * this._width / 2), y: (this.y - this._scaling * this._height / 2) };
+        containsPoint: function (point) {
+            var tl = { x: (this.x - this._scaling * this._width / 2.0), y: (this.y - this._scaling * this._height / 2.0) };
+            var bl = { x: (this.x - this._scaling * this._width / 2.0), y: (this.y + this._scaling * this._height / 2.0) };
+            var tr = { x: (this.x + this._scaling * this._width / 2.0), y: (this.y - this._scaling * this._height / 2.0) };
 
-            if(!this._rotation){
+            if (!this._rotation) {
                 return (point.x >= tl.x && point.x <= tr.x &&
                         point.y >= tl.y && point.y <= bl.y);
             }
@@ -134,8 +118,10 @@ PocketCode.RenderingImage = (function () {
             //rotate point back
             var rad = -(this._rotation * (Math.PI / 180.0));
             var centerToPoint = { x: point.x - this.x, y: point.y - this.y };
-            point = {x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
-                y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y};
+            point = {
+                x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
+                y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y
+            };
 
             return (point.x.toFixed(4) >= tl.x && point.x.toFixed(4) <= tr.x && point.y.toFixed(4) >= tl.y && point.y.toFixed(4) <= bl.y);
         },
@@ -148,16 +134,16 @@ PocketCode.RenderingImage = (function () {
             context.save();
             context.translate(this.x, this.y);
 
-            context.rotate(this._rotation * (Math.PI / 180));
+            context.rotate(this._rotation * (Math.PI / 180.0));
             context.scale(
-                this._scaling * (this._flipX ? -1 : 1),
+                this._scaling * (this._flipX ? -1.0 : 1.0),
                 this._scaling
             );
 
             context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;;
 
-            var x = -this._width / 2;
-            var y = -this._height / 2;
+            var x = -this._width / 2.0;
+            var y = -this._height / 2.0;
 
             this._canvasElement && context.drawImage(this._canvasElement, x, y, this._width, this._height);
 
