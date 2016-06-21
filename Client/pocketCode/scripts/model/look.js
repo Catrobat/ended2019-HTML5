@@ -77,7 +77,8 @@ PocketCode.Model.Look = (function () {
     Look.prototype.merge({
         init: function (img) {
             this._canvas = img.canvas;
-            this._center = img.center;
+            var center = img.center;
+            this._center = center;
             this._tl = img.tl;
             this._tr = img.tr;
             this._bl = img.bl;
@@ -90,8 +91,8 @@ PocketCode.Model.Look = (function () {
 
                 //adjust center vector
                 var centerOffsetX = img.originalWidth / 2.0 - this._rotationCenterX,
-                    centerOffsetY = -img.originalHeight / 2.0 + this._rotationCenterY;
-                centerOffsetX = center.length * Math.cos(center.angle) - centerOffsetX,
+                    centerOffsetY = -img.originalHeight / 2.0 - this._rotationCenterY;
+                centerOffsetX += center.length * Math.cos(center.angle);// - centerOffsetX,
                 centerOffsetY += center.length * Math.sin(center.angle);// + centerOffsetY;
 
                 this._center = {
