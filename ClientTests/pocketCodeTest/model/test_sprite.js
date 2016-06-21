@@ -20,8 +20,8 @@ QUnit.test("Sprite offsets", function (assert) {
 
         var rotationAngle = 180;
         sprite.setDirection(rotationAngle);
-        assert.equal(sprite._lookOffsetX.toFixed(2), 3, "lookOffsetX calculated correctly after setting direction to 180 degrees");
-        assert.equal(sprite._lookOffsetY.toFixed(2), 0, "lookOffsetY calculated correctly after setting direction to 180 degrees");
+        assert.equal(sprite._lookOffsetX.toFixed(2), 3.0, "lookOffsetX calculated correctly after setting direction to 180 degrees");
+        assert.equal(sprite._lookOffsetY.toFixed(2), 0.0, "lookOffsetY calculated correctly after setting direction to 180 degrees");
 
         var center,convertedAngle;
         for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
@@ -66,6 +66,8 @@ QUnit.test("Sprite", function (assert) {
     var sprite = new PocketCode.Model.Sprite(prog, {id: "newId", name: "myName"});
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
         if (asyncCalls < 2)
@@ -92,12 +94,23 @@ QUnit.test("Sprite", function (assert) {
     sprite.looks = looks;
     assert.ok(sprite._looks[0].id === looks[0].id && sprite._looks[1].id === looks[1].id, "looks setter");
     assert.ok(sprite._looks[0] instanceof PocketCode.Model.Look && sprite._looks[1] instanceof PocketCode.Model.Look, "looks setter: instances");
-    assert.equal(sprite.currentLook.id, looks[0].id, "current look getter");
+    assert.equal(sprite._currentLook.id, looks[0].id, "current look getter");
+
+    var looks = sprite.looks;
+    var lookInstances = true;
+    for (var i = 0, l = looks.lenth; i < l; i++) {
+        if (!(looks[i] instanceof PocketCode.Model.Look)) {
+            lookInstances = false;
+            break;
+        }
+    }
+    assert.ok(lookInstances, "looks getter: returns PocketCode.Model.Look objects");
 
     assert.equal(sprite.size, 100, "size (percentage) initial");
     assert.equal(sprite.visible, true, "visibility initial");
     assert.equal(sprite.transparency, 0, "transparency initial");
     assert.equal(sprite.brightness, 100, "brighness initial");
+    assert.equal(sprite.colorEffect, 0, "colorEffect initial");
 
     //events
     //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
@@ -252,15 +265,10 @@ QUnit.test("Sprite", function (assert) {
     }
     assert.ok(looksMatch, "Looks set correctly");
 
-    //mock gameEngines getLookImage function
-    var initialScaling = 50;
-    var canvas = "canvas";
-    testSprite._gameEngine.getLookImage = function () {
-        return {
-            canvas: canvas,
-            initialScaling: initialScaling
-        }
-    };
+    //mock _currentLook
+    var look = new PocketCode.Model.Look({ id: "s1", resourceId: "img1", name: "testLook" });
+    look._canvas = "canvas";    //we have to set this to maek sure a renderingImage returns this properties
+    testSprite._currentLook = look;
 
     testSprite._flipX = false;
     var lookOffsetX = 1;
@@ -275,32 +283,40 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingProperties.y, testSprite._positionY + lookOffsetY, "renderingProperties: y set correctly");
     assert.strictEqual(renderingProperties.rotation, testSprite._direction - 90, "renderingProperties: rotation set correctly");
     assert.strictEqual(renderingProperties.flipX, testSprite._flipX, "renderingProperties: flipX set correctly");
-    assert.strictEqual(renderingProperties.scaling, 1/initialScaling, "renderingProperties: scaling set correctly");
+    assert.strictEqual(renderingProperties.scaling, testSprite.size / 100.0, "renderingProperties: scaling set correctly");
     assert.strictEqual(renderingProperties.visible, testSprite._visible, "renderingProperties: visible set correctly");
-    assert.strictEqual(renderingProperties.look, canvas, "renderingProperties: look set correctly");
+    assert.equal(renderingProperties.look, look.canvas, "renderingProperties: look set correctly");
 
     var graphicEffectsSet = renderingProperties.graphicEffects && renderingProperties.graphicEffects instanceof Array;
     assert.ok(graphicEffectsSet, "renderingProperties: graphicEffects created as array");
     if(graphicEffectsSet){
         var ghostSet = 0;
         var brightnessSet = 0;
+        var colorSet = 0;
         for(var i = 0, l = renderingProperties.graphicEffects.length; i < l; i++){
             if(renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.GHOST){
                 ghostSet++;
                 assert.equal(renderingProperties.graphicEffects[i].value, testSprite._transparency, "renderingProperties: ghost set correctly");
-            } else if(renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS){
+            }
+            else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS) {
                 brightnessSet++;
                 assert.equal(renderingProperties.graphicEffects[i].value, testSprite._brightness - 100, "renderingProperties: brightness set correctly");
             }
-        }
+            else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.COLOR) {
+                colorSet++;
+                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._colorEffect, "renderingProperties: colorEffect set correctly");
+            }
+    }
     }
 
     testSprite._currentLook = null;
+    testSprite._recalculateLookOffsets();   //resetting looks (=private) for tests include calling this calculation update method to ensure internal offsets are reset as well
+
     renderingProperties = testSprite.renderingProperties;
-    assert.strictEqual(renderingProperties.x, testSprite._positionX, "renderingProperties: x set correctly without currentLook");
-    assert.strictEqual(renderingProperties.y, testSprite._positionY, "renderingProperties: y set correctly without currentLook");
+    assert.strictEqual(renderingProperties.x, testSprite.positionX, "renderingProperties: x set correctly without currentLook");
+    assert.strictEqual(renderingProperties.y, testSprite.positionY, "renderingProperties: y set correctly without currentLook");
     assert.strictEqual(renderingProperties.scaling, 1, "renderingProperties: scaling set correctly without currentLook");
-    assert.ok(!renderingProperties.look, "renderingProperties: no look set if there is no current look");
+    assert.ok(renderingProperties.look == undefined, "renderingProperties: no look set if there is no current look");
 
     var rotationStyle = "someRotationStyle";
     testSprite._rotationStyle = rotationStyle;
@@ -333,22 +349,22 @@ QUnit.test("Sprite", function (assert) {
     sprite.setSize(100);
     assert.ok(!sprite.setSize(100), "size not changed: same size");
     sprite.setSize(-20);
-    assert.equal(sprite._size, 0, "set size below 0");
+    assert.equal(sprite.size, 0, "set size below 0");
     returnVal = sprite.setSize(50);
-    assert.equal(sprite._size, 50, "set size");
+    assert.equal(sprite.size, 50, "set size");
     assert.ok(returnVal, "set size return val");
     assert.ok(lastOnChangeArgs.scaling !== undefined, "set size event args");
 
     returnVal = sprite.changeSize(-60);
-    assert.equal(sprite._size, 0, "change size below 0");
+    assert.equal(sprite.size, 0, "change size below 0");
     assert.ok(returnVal, "change size: changed");
     assert.ok(lastOnChangeArgs.scaling !== undefined, "change size event args");
 
     sprite.changeSize(20);
-    assert.equal(sprite._size, 20, "change size upwards");
+    assert.equal(sprite.size, 20, "change size upwards");
     sprite.changeSize(15);
     sprite.changeSize(20);
-    assert.equal(sprite._size, 55, "double change size");
+    assert.equal(sprite.size, 55, "double change size");
     assert.throws(function () { sprite.changeSize(); }, Error, "ERROR: missing argument");
     lastOnChangeArgs = undefined;
     returnVal = sprite.changeSize(0);
@@ -358,6 +374,10 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* Position *********************
+    assert.throws(function () { sprite.setPosition("s10", 10); }, Error, "ERROR: setPosition invalid args");
+    returnVal = sprite.setPosition(5, 5, false);
+    assert.notOk(returnVal, "returns fails if triggerEvent is set to false");
+
     returnVal = sprite.setPosition(10, 10);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 10, "set Position");
     assert.ok(returnVal, "set position: update");
@@ -365,6 +385,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setPosition(10, 10);
     assert.ok(returnVal == false, "set position: no change");
 
+    assert.throws(function () { sprite.setPositionY("s90"); }, Error, "ERROR: setPositionY invalid args");
     returnVal = sprite.setPositionY(90);
     assert.ok(sprite._positionX == 10 && sprite._positionY == 90, "set PositionY");
     assert.ok(returnVal, "set positionY: update");
@@ -372,6 +393,7 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setPositionY(90);
     assert.ok(returnVal == false, "set positionY: no change");
 
+    assert.throws(function () { sprite.setPositionX("s35"); }, Error, "ERROR: setPositionX invalid args");
     returnVal = sprite.setPositionX(35);
     assert.ok(sprite._positionX == 35 && sprite._positionY == 90, "set PositionX");
     assert.ok(returnVal, "set positionX: update");
@@ -379,11 +401,14 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setPositionX(35);
     assert.ok(returnVal == false, "set positionX: no change");
 
+    assert.throws(function () { sprite.changePositionX("s35"); }, Error, "ERROR: setPositionX invalid args");
     returnVal = sprite.changePositionX(50);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90, "change PositionX");
     assert.ok(returnVal, "change positionX: change");
     assert.ok(lastOnChangeArgs.x !== undefined, "chagne positionX event args");
     assert.ok(sprite.changePositionX(0) == false, "change positionX: no change");
+
+    assert.throws(function () { sprite.changePositionY("s-20"); }, Error, "ERROR: setPositionY invalid args");
     returnVal = sprite.changePositionY(-20);
     assert.ok(sprite._positionX == 35 + 50 && sprite._positionY == 90 - 20, "change PositionY");
     assert.ok(returnVal, "change positionY: change");
@@ -392,13 +417,13 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     //if on edge, bounce
-    assert.ok(typeof prog.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
-    var ioeCalled = false;
-    prog.ifSpriteOnEdgeBounce = function () {    //override to check call
-        ioeCalled = true;
-    };
-    sprite.ifOnEdgeBounce();
-    assert.ok(ioeCalled, "if on edge bounce: call parent");
+    //assert.ok(typeof prog.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
+    //var ioeCalled = false;
+    //prog.ifSpriteOnEdgeBounce = function () {    //override to check call
+    //    ioeCalled = true;
+    //};
+    //sprite.ifOnEdgeBounce();
+    //assert.ok(ioeCalled, "if on edge bounce: call parent");
 
     // ********************* Move/Direction *********************
     sprite.setPosition(-10, -10);
@@ -418,22 +443,22 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite._positionX == -35 && sprite._positionY == -10 && sprite._direction == -90, "move steps -90°");
+    assert.ok(sprite.positionX == -35 && sprite.positionY == -10 && sprite._direction == -90, "move steps -90°");
 
     sprite.setDirection(-180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite._positionX == -10 && sprite._positionY == -35 && sprite._direction == 180, "move steps -180°");
+    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps -180°");
 
     sprite.setDirection(180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite._positionX == -10 && sprite._positionY == -35 && sprite._direction == 180, "move steps 180°");
+    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps 180°");
 
     sprite.setDirection(0, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite._positionX == -10 && sprite._positionY == 15 && sprite._direction == 0, "move steps 0°");
+    assert.ok(sprite.positionX == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
 
     // *************************************************************
 
@@ -538,24 +563,23 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.setLook("non existing");
     assert.ok(!returnVal, "set look on nonexisting look");
 
-    var look1 = new PocketCode.Model.Look({ name: "look1", id: "first", resourceId: "1" });//new Object();
-    look1._center = { length: 0.0, angle: 0.0 };
-    //look1.name = "look1";
-    //look1.id = "first";
-    ////look1.center = { length: 0, angle: 0 };
-    var look2 = new PocketCode.Model.Look({ name: "look2", id: "second", resourceId: "2" });//new Object();
-    look2._center = { length: 0.0, angle: 0.0 };
-    //look2.name = "look2";
-    //look2.id = "second";
-    ////look2.center = { length: 0, angle: 0 };
+    var look1 = { name: "look1", id: "first", resourceId: "1" };    //new PocketCode.Model.Look({ name: "look1", id: "first", resourceId: "1" });//new Object();
+    //look1._center = { length: 0.0, angle: 0.0 };
+    //look1._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
+
+    var look2 = { name: "look2", id: "second", resourceId: "2" };   //new PocketCode.Model.Look({ name: "look2", id: "second", resourceId: "2" });//new Object();
+    //look2._center = { length: 0.0, angle: 0.0 };
+
     var looks = [];
     looks[0] = look1;
     looks[1] = look2;
+
     sprite.looks = looks;
-    //sprite.initLooks(); //make sure looks are preprovessed
     //apply center to internal looks to run these tests
-    //sprite._looks[0].center = { length: 0, angle: 0 };
-    //sprite._looks[1].center = { length: 0, angle: 0 };
+    sprite._looks[0]._center = { length: 0, angle: 0 };
+    sprite._looks[0]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
+    sprite._looks[1]._center = { length: 0, angle: 0 };
+    sprite._looks[1]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
 
     assert.ok(sprite._looks[0].id === looks[0].id && sprite._looks[1].id === looks[1].id, "looks setter");
     assert.equal(sprite._looks[1].name, "look2", "set looks1");
@@ -583,8 +607,10 @@ QUnit.test("Sprite", function (assert) {
 
     sprite.looks = looks;
     //apply center to internal looks to run these tests
-    //sprite._looks[0].center = { length: 0, angle: 0 };
-    //sprite._looks[1].center = { length: 0, angle: 0 };
+    sprite._looks[0]._center = { length: 0, angle: 0 };
+    sprite._looks[0]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
+    sprite._looks[1]._center = { length: 0, angle: 0 };
+    sprite._looks[1]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
 
     returnVal = sprite.setLook("second");
     returnVal = sprite.nextLook();
@@ -600,9 +626,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(!returnVal, "next look if only one is defined");
 
     looks[1] = look2;   //add again
-    var look3 = new Object();
-    look3.name = "look3";
-    look3.id = "third";
+    var look3 = { name: "look3", id: "third", resourceId: "s3" };
     looks[2] = look3;
     sprite.looks = looks;
     //apply center to internal looks to run these tests
