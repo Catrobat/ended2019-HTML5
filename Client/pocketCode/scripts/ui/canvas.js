@@ -25,9 +25,8 @@ PocketCode.Ui.Canvas = (function () {
         this._contextCache = this._cacheCanvasEl.getContext('2d');
 
         this._onMouseDown = new SmartJs.Event.Event(this);
-        this.__onMouseDown = this.__onMouseDown.bind(this);
-        this._upperCanvasEl.addEventListener('mousedown', this.__onMouseDown, false);
-        this._upperCanvasEl.addEventListener('touchstart', this.__onMouseDown, false);
+        this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
+        this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
 
         this._renderingObjects = [];
         this._renderingTexts = [];
@@ -44,22 +43,6 @@ PocketCode.Ui.Canvas = (function () {
 
     //properties
     Object.defineProperties(Canvas.prototype, {
-        //height: {
-        //    set: function(height){
-        //        this._height = height;
-        //    },
-        //    get: function () {
-        //        return this._height;
-        //    },
-        //},
-        //width: {
-        //    set: function(width){
-        //        this._width = width;
-        //    },
-        //    get: function () {
-        //        return this._width;
-        //    },
-        //},
         contextTop: {
             get: function () {
                 return this._contextTop;
@@ -129,8 +112,8 @@ PocketCode.Ui.Canvas = (function () {
 
             this.scaling = scaling;
 
-            this._cacheCanvasEl.setAttribute('width', this.width / this.scaling);
-            this._cacheCanvasEl.setAttribute('height', this.height / this.scaling);
+            this._cacheCanvasEl.setAttribute('width', width / scaling);
+            this._cacheCanvasEl.setAttribute('height', height / scaling);
         },
 
         clear: function () {
@@ -173,7 +156,6 @@ PocketCode.Ui.Canvas = (function () {
             //imageData.data contains rgba values - here we look at the alpha value
             var imageData = this._contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
-            //console.log('data: ' + imageData.data);
 
             //clear
             imageData = null;
@@ -240,6 +222,11 @@ PocketCode.Ui.Canvas = (function () {
             this.render();
 
             return data;
+        },
+        dispose: function () {
+            this._removeDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
+            this._removeDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
+            SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
         }
     });
 
