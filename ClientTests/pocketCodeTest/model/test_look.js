@@ -114,7 +114,7 @@ QUnit.test("Look: preprocessing & caching", function (assert) {
         assert.ok(b.top >= 3 && b.right >= 1 && b.bottom <= -1 && b.left <= -3, "img3: corner check");
 
         b = l4.getBoundary(1.0, 0.0);
-        assert.ok(b.top >= 5 && b.right >= -4 && b.bottom <= -4 && b.left <= -5, "img4: corner check");
+        assert.ok(b.top >= 4 && b.right >= -4 && b.bottom <= -3 && b.left <= -5, "img4: corner check");
 
         b = l5.getBoundary(1.0, 0.0);
         assert.ok(b.top >= 4 && b.right >= 5 && b.bottom <= -4 && b.left <= 4, "img5: corner check");
@@ -135,8 +135,10 @@ QUnit.test("Look: preprocessing & caching", function (assert) {
 
         //if not rotated, pixelAccuracy should be true
         assert.equal(b.pixelAccuracy, true, "pixelAccuracy set for unrotated objects");
-        b = l1.getBoundary(1.0, 90.0);
+        b = l1.getBoundary(1.0, 91.0);
         assert.equal(b.pixelAccuracy, false, "pixelAccuracy not set for rotated objects");
+        b = l1.getBoundary(1.0, 270.0);
+        assert.equal(b.pixelAccuracy, true, "pixelAccuracy set for rotated objects: mod 90");
 
         //check lookCache
         var lookCache = l9._cache;//is._lookCache[spriteId]["i9"];
@@ -155,10 +157,14 @@ QUnit.test("Look: preprocessing & caching", function (assert) {
         //flipped horizontal (from cache)
         b = l1.getBoundary(1.0, 90.0, true);
         assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X (from cache)");
+        assert.equal(b.pixelAccuracy, true, "pixelAccuracy set for rotated objects: % 90");
+
+        b = l1.getBoundary(1.0, 91.0, true);
+        assert.ok(b.top >= 5 && b.right >= 4 && b.bottom <= -3 && b.left <= 3, "img1: 90° flipped X (from cache)");
         assert.equal(b.pixelAccuracy, false, "pixelAccuracy not set for rotated objects");
 
         //pixelAccuracy: rotated
-        b = l1.getBoundary(1.0, 90.0, false, true);
+        b = l1.getBoundary(1.0, 90.00, false, true);
         assert.equal(b.pixelAccuracy, true, "pixelAccuracy set when requested (loaded init boundary from cache)");
         assert.ok(b.top >= 5 && b.right >= -3 && b.bottom <= -3 && b.left <= -4, "boundary not changed: 0, 90, 180, -90 will always return exact boundaries (even we search them)");
 
@@ -176,7 +182,7 @@ QUnit.test("Look: preprocessing & caching", function (assert) {
         //img 11
         b = l1.getBoundary(1.0, 45.0, false, false);
         var b2 = l1.getBoundary(1.0, 45.0, false, true);
-        assert.ok(b2.top < b.top && b2.bottom > b.bottom, "make sure pixel-based operation is successful");
+        assert.ok(b2.top <= b.top && b2.bottom >= b.bottom && b2.left >= b.left && b2.right >= b.right, "make sure pixel-based operation is successful");
 
         done1();
     };

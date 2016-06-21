@@ -123,6 +123,7 @@ PocketCode.Model.Look = (function () {
             *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
             */
             var cache = this._cache;
+            pixelAccuracy = pixelAccuracy || false;
 
             if (cache.scaling !== scaling || cache.rotation !== rotation || (pixelAccuracy && !cache.pixelAccuracy)) {
                 this._calcAndCacheBoundary(scaling, rotation, pixelAccuracy);
@@ -149,26 +150,25 @@ PocketCode.Model.Look = (function () {
         _calcAndCacheBoundary: function (scaling, rotation, pixelAccuracy) {
             scaling = scaling || 1.0;
             var rotationRad = rotation ? rotation * Math.PI / 180.0 : 0.0;
-            var boundary = this._cache,
-                boundary = {};
+            var boundary = this._cache;
 
             if (boundary.scaling !== scaling || boundary.rotation !== rotation) {
                 var calc = {},
                 length = this.tl.length * scaling,
                 angle = this.tl.angle - rotationRad;    //notice: we have different rotation directions here: polar: counterclockwise, rendering: clockwise
-                calc.tl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
+                calc.tl = { x: Math.round(length * Math.cos(angle) * 100.0) / 100.0, y: Math.round(length * Math.sin(angle) * 100.0) / 100.0 };
 
                 length = this.tr.length * scaling;
                 angle = this.tr.angle - rotationRad;
-                calc.tr = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
+                calc.tr = { x: Math.round(length * Math.cos(angle) * 100.0) / 100.0, y: Math.round(length * Math.sin(angle) * 100.0) / 100.0 };
 
                 length = this.bl.length * scaling;
                 angle = this.bl.angle - rotationRad;
-                calc.bl = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
+                calc.bl = { x: Math.round(length * Math.cos(angle) * 100.0) / 100.0, y: Math.round(length * Math.sin(angle) * 100.0) / 100.0 };
 
                 length = this.br.length * scaling;
                 angle = this.br.angle - rotationRad;
-                calc.br = { x: length * Math.cos(angle), y: length * Math.sin(angle) };
+                calc.br = { x: Math.round(length * Math.cos(angle) * 100.0) / 100.0, y: Math.round(length * Math.sin(angle) * 100.0) / 100.0 };
 
                 //var boundary;
                 if (rotationRad != 0.0)
@@ -177,7 +177,7 @@ PocketCode.Model.Look = (function () {
                         right: Math.ceil(Math.max(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
                         bottom: Math.floor(Math.min(calc.tl.y, calc.tr.y, calc.bl.y, calc.br.y)),
                         left: Math.floor(Math.min(calc.tl.x, calc.tr.x, calc.bl.x, calc.br.x)),
-                        pixelAccuracy: false,
+                        pixelAccuracy: rotation % 90 == 0 ? true : false,
                     };
                 else {
                     boundary = {
@@ -190,7 +190,7 @@ PocketCode.Model.Look = (function () {
                 }
             }
 
-            if (pixelAccuracy || !boundary.pixelAccuracy) {
+            if (pixelAccuracy && !boundary.pixelAccuracy) {
                 //calc pixel-exact offsets & include them 
                 var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(this.canvas, scaling, rotation);
                 boundary.top -= Math.floor(trimOffsets.top);
@@ -200,6 +200,8 @@ PocketCode.Model.Look = (function () {
                 boundary.pixelAccuracy = true;
             }
 
+            boundary.scaling = scaling;
+            boundary.rotation = rotation;
             this._cache = boundary;
             return boundary;
         },
