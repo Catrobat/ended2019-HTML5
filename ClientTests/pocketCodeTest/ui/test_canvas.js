@@ -17,13 +17,13 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var alphaAtPoint = function (x, y) {
-        var ctx = canvas.contextContainer;   // access to check internal settings
+        var ctx = canvas._contextContainer;   // access to check internal settings
         return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL];
     };
 
     var countPixels = function () {
-        var canvasHeight = canvas.height;
-        var canvasWidth = canvas.width;
+        var canvasHeight = canvas._lowerCanvasEl.height;
+        var canvasWidth = canvas._lowerCanvasEl.width;
         var pixels = 0;
 
         for (var i = 0; i < canvasHeight; i++) {
@@ -37,16 +37,20 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var runDefaultTests = function () {
-        var looks1 = [{ id: "s1", name: "look1" }];
-        var looks2 = [{ id: "s2", name: "look2" }];
+        var looks1 = [{ resourceId: "s1", id: "s1", name: "look1" }];
+        var looks2 = [{ resourceId: "s2", id: "s2", name: "look2" }];
         var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: looks1 });
         var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: looks2 });
+
+        sprite1.initLooks();
+        sprite2.initLooks();
 
         var renderingImageOpaque = new PocketCode.RenderingImage(sprite1.renderingProperties);
         var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
 
         var opaqueImageWidth = renderingImageOpaque.object.width;
         var opaqueImageHeight = renderingImageOpaque.object.height;
+
 
         canvas.renderingImages = [renderingImageOpaque];
         canvas.render();
@@ -169,24 +173,8 @@ QUnit.test("Canvas", function (assert) {
 
         assert.strictEqual(onMouseDownTriggered, 3, 'onMouseDown triggered if touch event');
 
-
         //restore to previous setting
         SmartJs.Device.isTouch = isTouchDevice;
-
-        //height, width set/get
-        var before = canvas.height;
-        var randomNr = Math.random();
-        canvas.height = randomNr;
-        assert.equal(canvas._height, randomNr, "set height");
-        assert.equal(canvas._height, canvas.height, "get height");
-        canvas.height = before;
-
-        before = canvas.width;
-        randomNr = Math.random();
-        canvas.width = randomNr;
-        assert.equal(canvas._width, randomNr, "set width");
-        assert.equal(canvas._width, canvas.width, "get width");
-        canvas.height = before;
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.setDimensions(80, 40, viewportScaling);
@@ -239,6 +227,26 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(contextScaling, canvas.scaling, "canvas scaling used to scale context if no viewportScaling passed");
 
         canvas.renderingImages = [renderingImageOpaque];
+
+        var scalingY = 50;
+        canvas.scalingY = scalingY;
+        assert.equal(canvas._scalingY, scalingY, "scalingY set correctly.");
+        assert.equal(canvas.scalingY, canvas._scalingY, "get scalingY");
+
+        var scalingX = 10;
+        canvas.scalingX = scalingX;
+        assert.equal(canvas._scalingX, scalingX, "scalingX set correctly.");
+        assert.equal(canvas.scalingY, canvas._scalingY, "get scalingX");
+
+        canvas._onMouseDown = "onMouseDown";
+        assert.equal(canvas.onMouseDown, canvas._onMouseDown, "get onMouseDown");
+
+        canvas._contextTop = "contextTop";
+        assert.equal(canvas.contextTop, canvas._contextTop, "get contextTop");
+
+        canvas.dispose();
+        assert.equal(canvas._disposed, true, "disposed");
+
 
         done();
     };
