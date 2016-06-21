@@ -45,10 +45,10 @@ QUnit.test("RenderingText", function (assert) {
 
     var visibility = 5;
     renderingText.visible = visibility;
-    assert.equal(renderingText._visible, visibility, "Set visibility");
+    assert.equal(renderingText.visible, visibility, "Set visibility");
 
     renderingText.visible = false;
-    assert.equal(renderingText.visible, renderingText._visible, "Get visibility");
+    assert.equal(renderingText.visible, renderingText.visible, "Get visibility");
 
     //rendering
     var fillTextCalled = 0;
