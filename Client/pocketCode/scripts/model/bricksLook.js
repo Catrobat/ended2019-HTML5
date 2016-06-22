@@ -144,6 +144,27 @@ PocketCode.Model.merge({
     })(),
 
 
+    SetCameraTransparencyBrick: (function () {
+        SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetCameraTransparencyBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+        }
+
+        SetCameraTransparencyBrick.prototype._execute = function () {
+            var val = this._value.calculate();
+            if (isNaN(val))
+                this._return(false);
+            else
+                this._return(false);    //TODO: e.g. this._return(this._device.setCameraTransparenc(val));
+        };
+
+        return SetCameraTransparencyBrick;
+    })(),
+
+
     SetSizeBrick: (function () {
         SetSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
