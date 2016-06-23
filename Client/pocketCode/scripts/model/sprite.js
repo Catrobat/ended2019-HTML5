@@ -1200,10 +1200,10 @@ PocketCode.Model.Sprite = (function () {
             //TODO: include this._lookOffset_X/Y: make sure the update event is only dispatched once
 
             if (this.positionX !== newX) {
-                props.x = newX;
+                props.x = newX + this._lookOffsetX;
             }
             if (this.positionY !== newY) {
-                props.y = newY;
+                props.y = newY + this._lookOffsetY;
             }
             if (props.x || props.y)
                 this.setPosition(newX, newY, false);
