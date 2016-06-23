@@ -208,7 +208,7 @@ PocketCode.Model.merge({
                 this._paused = false;
                 if (this._pendingOp) {
                     this._pendingOp = false;
-                    this.execute();
+                    this._execute();
                 }
             },
             stop: function () {

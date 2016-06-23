@@ -160,6 +160,22 @@ QUnit.test("CameraBrick", function (assert) {
 
 });
 
+QUnit.test("SetCameraTransparencyBrick", function (assert) {
+
+    var device = new PocketCode.Device(new PocketCode.SoundManager());
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
+
+    var b = new PocketCode.Model.SetCameraTransparencyBrick(device, sprite, { value: value });
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SetCameraTransparencyBrick, "instance check");
+    assert.ok(b.objClassName === "SetCameraTransparencyBrick", "objClassName check");
+
+    assert.ok(false, "TODO");
+});
+
 QUnit.test("SetSizeBrick", function (assert) {
 
     var done1 = assert.async();
