@@ -588,6 +588,8 @@ PocketCode.Model.Sprite = (function () {
                         props.y = this._positionY + this._lookOffsetY;
                     }
                     break;
+                default:
+                    throw new Error("invalid argument: unknown rotation style");
             }
 
             if (props.flipX == undefined && props.rotation == undefined)

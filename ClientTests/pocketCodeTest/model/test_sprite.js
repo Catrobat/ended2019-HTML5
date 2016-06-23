@@ -3,8 +3,8 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
 'use strict';
 
 QUnit.module("model/sprite.js");
@@ -67,6 +67,9 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+    //triggerOnChange
+    assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
+
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
@@ -811,6 +814,63 @@ QUnit.test("Sprite", function (assert) {
     testsExecAsync();
     asyncCalls++;
     disposeTest();
+
+});
+
+QUnit.test("Sprite: rotation style", function (assert) {
+    //all sprite features are tested where rotation style has an impact: except ifOnEdgeBounce- there is another test routine for this feature
+    var done = assert.async();
+
+    var gameEngine = new PocketCode.GameEngine(),
+        is = new PocketCode.ImageStore(),
+        baseUrl = "_resources/images/",
+        images = [
+            { id: "s1", url: "imgHelper17.png", size: 1 },
+            { id: "s2", url: "imgHelper18.png", size: 1 }
+        ];
+
+    gameEngine._imageStore = is;    //inject image store
+    var looks = [{ id: "s_1", resourceId: "s1", name: "look1" }, { id: "s_2", resourceId: "s2", name: "look2" }];
+    var sprite = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "sprite", looks: looks });
+
+    //start tests
+    var onLoadHandler = function () {
+        sprite.initLooks();
+        sprite.init();
+
+        //rotation style method and getter
+        assert.equal(sprite.rotationStyle, PocketCode.RotationStyle.ALL_AROUND, "default ALL-AROUND after loading/init");
+
+        assert.throws(function () { sprite.rotationStyle = PocketCode.RotationStyle.ALL_AROUND }, Error, "ERROR: no setter, use setRotationStyle() instead to get a return value");
+        sprite.setDirection(45); //make sure changing the rotationStyle triggers a UI update
+        var result = sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        assert.ok(result, "rotationStyle UI update triggered: return value");
+        assert.equal(sprite.rotationStyle, PocketCode.RotationStyle.LEFT_TO_RIGHT, "rotation style: getter/setter");
+        result = sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        assert.notOk(result, "rotationStyle NOT changed");
+        assert.throws(function () { sprite.setRotationStyle("invalid") }, Error, "ERROR: invalid argument/unknown rotation style");
+
+        //private method: _recalculateLookOffsets (we test this even it's private because this is a very importent method calculating rendering offsets due to look size != sprite size
+
+
+        //direction
+
+
+        //change look: setLook, nextLook
+
+
+
+        assert.ok(false, "TODO");
+
+        done();
+    };
+
+    //var rotationAngle = 180;
+    //sprite.setDirection(rotationAngle);
+
+    //start loading
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
+    is.loadImages(baseUrl, images, 1);
 
 });
 
