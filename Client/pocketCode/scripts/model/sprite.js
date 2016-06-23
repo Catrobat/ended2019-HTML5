@@ -324,7 +324,7 @@ PocketCode.Model.Sprite = (function () {
          */
         _triggerOnChange: function (properties) {
             for (var prop in properties) {
-                if (properties.hasOwnProperty(prop)) { //at least on item to update
+                if (properties[prop] != undefined && properties.hasOwnProperty(prop)) { //at least on item to update
                     this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
                     return true;
                 }
@@ -345,6 +345,8 @@ PocketCode.Model.Sprite = (function () {
             var rotationAngle = (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) ? (90.0 - this._direction) * Math.PI / 180.0 : 0.0;
             var center = this._currentLook.center;
             this._lookOffsetX = center.length * this._scaling * Math.cos(center.angle + rotationAngle);
+            if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0)
+                this._lookOffsetX *= -1.0;
             this._lookOffsetY = center.length * this._scaling * Math.sin(center.angle + rotationAngle);
         },
 
@@ -492,15 +494,20 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             //check if sprite rotation changed: e.g. flipped/rotation
+            var flipXChanged = this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && (this._direction < 0.0 && nd >= 0.0 || this._direction >= 0.0 && nd < 0.0);
             this._direction = nd;
-            if (this._rotationStyle != PocketCode.RotationStyle.ALL_AROUND) //rotation == 0.0
+
+            if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE) //rotation == 0.0
+                return false;
+            else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && !flipXChanged)
                 return false;
 
             this._recalculateLookOffsets();
             if (triggerEvent == false)
                 return true;
             return this._triggerOnChange({
-                rotation: this._direction - 90.0,
+                rotation: this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
+                flipX: flipXChanged ? this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0 : undefined,
                 x: this._positionX + this._lookOffsetX,
                 y: this._positionY + this._lookOffsetY,
             });
@@ -514,9 +521,7 @@ PocketCode.Model.Sprite = (function () {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._gameEngine.getSpriteById(spriteId);
-            //if (pointTo == undefined) //-> will throw an error in getSpriteById()
-            //    return false;
+            var pointTo = this._gameEngine.getSpriteById(spriteId); //throws error if undefined
 
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
@@ -756,10 +761,9 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         changeGraphicEffect: function (effect, value) {
-            if (value === undefined || isNaN(value)) {
+            if (value === undefined || isNaN(value))
                 throw new Error('invalid value: ');
-                //return false;
-            }
+
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._changeTransparency(value);
@@ -785,9 +789,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _setTransparency: function (percentage) {
-            //if (percentage === undefined) //->error on set grafic effect
-            //    return false;
-
             if (percentage < 0.0)
                 percentage = 0.0;
             if (percentage > 100.0)
@@ -807,9 +808,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _changeTransparency: function (value) {
-            //if (value === undefined)  //->error on set grafic effect
-            //    return false;
-
             value = this._transparency + value;
             if (value < 0.0)
                 value = 0.0;
@@ -830,9 +828,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _setBrightness: function (percentage) {
-            //if (percentage === undefined) //->error on set grafic effect
-            //    return false;
-
             if (percentage < 0.0)
                 percentage = 0.0;
             if (percentage > 200.0)
@@ -852,9 +847,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _changeBrightness: function (value) {
-            //if (value === undefined)  //->error on set grafic effect
-            //    return false;
-
             value = this._brightness + value;
             if (value < 0.0)
                 value = 0.0;
@@ -875,9 +867,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _setColorEffect: function (percentage) {
-            //if (percentage === undefined) //->error on set grafic effect
-            //    return false;
-
             if (percentage < 0.0)
                 percentage = 0.0;
             if (percentage > 100.0)
@@ -897,9 +886,6 @@ PocketCode.Model.Sprite = (function () {
          * @private
          */
         _changeColorEffect: function (value) {
-            //if (value === undefined)  //->error on set grafic effect
-            //    return false;
-
             value = this._colorEffect + value;
             if (value < 0.0)
                 value = 0.0;
@@ -948,197 +934,86 @@ PocketCode.Model.Sprite = (function () {
 
             var collisionMgr = this._gameEngine.collisionManager;
 
-            var //size = this._gameEngine.projectScreenSize,//;
-            //var sh2 = size.height / 2.0,    //TODO: should not be necessary anymore
-            //    sw2 = size.width / 2.0,
-            //    dir = this.direction,
-                x = this._positionX,// + this._lookOffsetX,
-            y = this._positionY;// + this._lookOffsetY;
+            var x = this._positionX,
+                y = this._positionY;
 
             var dir = this.direction;
             var look = this._currentLook,
-                scaling = this._scaling,//size / 100.0,
+                scaling = this._scaling,
                 rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
                 //^^ sprite has a direction but is not rotated
                 flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
 
-
-            //var imgStore = this._imageStore;
-            /* interface to use: imgStore.getLookBoundary(spriteId, lookId, scalingFactor, rotationAngle, flipX, pixelAccuracy)
-            *  sprite is needed for caching index, accuracy (boolean) indicates, if you need pixel-exact proportions (which should not be used for the first check)
-            *  the return value looks like: { top: , right: , bottom: , left: , pixelAccuracy: }
-            *  offsets: these properties include the distances between the sprite center and the bounding box edges (from center x/y).. these can be negative as well
-            *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
-            */
-
-            var boundary = look.getBoundary(scaling, rotationCW, flipX, false);//imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, false);
+            var boundary = look.getBoundary(scaling, rotationCW, flipX, false);
             //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
             //quick check
             var collision = collisionMgr.checkSpriteEdgeCollision(x, y, boundary);//, boundary.pixelAccuracy);
             if (!collision.occurs)
                 return false;
-                ////!boundary.pixelAccuracy &&
-                //y + boundary.top < sh2 &&
-                //x + boundary.right < sw2 &&
-                //y + boundary.bottom > -sh2 &&
-                //x + boundary.left > -sw2)
-                //return false;
 
             //check based on pixels if not already done
             if (!boundary.pixelAccuracy) {
                 boundary = look.getBoundary(scaling, rotationCW, flipX, true);
-                collision = collisionMgr.checkSpriteEdgeCollision(x, y, boundary);//, boundary.pixelAccuracy);
+                collision = collisionMgr.checkSpriteEdgeCollision(x, y, boundary);
                 if (!collision.occurs)
                     return false;
             }
-            //if (y + boundary.top < sh2 &&
-            //    x + boundary.right < sw2 &&
-            //    y + boundary.bottom > -sh2 &&
-            //    x + boundary.left > -sw2)
-            //    return false;
 
             //handle bounce
             var overflow = collision.overflow;
             var vpEdges = { //viewport edges
                 top: {
-                    overflow: overflow.top, //y + boundary.top - sh2,
-                    ignore: false,
+                    overflow: overflow.top,
+                    handled: overflow.top > 0.0,
                     inDirection: Math.abs(dir) <= 90.0,
                     calcDirection: function (dir) { return dir >= 0.0 ? 180.0 - dir : -180.0 - dir; },    // //make sure we do not get an angle within +-180
                 },
                 right: {
-                    overflow: overflow.right, //x + boundary.right - sw2,
-                    ignore: false,
+                    overflow: overflow.right,
+                    handled: overflow.right > 0.0,
                     inDirection: dir >= 0.0,
                     calcDirection: function (dir) { return dir == 180.0 ? dir : -dir; },
                 },
                 bottom: {
-                    overflow: overflow.bottom, //-y - boundary.bottom - sh2,
-                    ignore: false,
+                    overflow: overflow.bottom,
+                    handled: overflow.bottom > 0.0,
                     inDirection: Math.abs(dir) > 90.0,
                     calcDirection: function (dir) { return dir > 0.0 ? 180.0 - dir : -180.0 - dir; },
                 },
                 left: {
-                    overflow: overflow.left, //-x - boundary.left - sw2,
-                    ignore: false,
+                    overflow: overflow.left,
+                    handled: overflow.left > 0.0,
                     inDirection: dir < 0.0,
                     calcDirection: function (dir) { return -dir; },
                 },
-                getXCorrection: function () {   //TODO: move in direction???
-                    var c,
-                        l = vpEdges.left,
-                        r = vpEdges.right;
-
-                    if (l.ignore || r.ignore) {
-                        return l.ignore ? -r.overflow : l.overflow; //overflows can be negativ as well (after rotation)- we also have to take care of this 
-                    }
-                    //after rotation there can be a an overflow that didn't exist before
-                    if (l.overflow > 0.0 && r.overflow > 0.0 || l.overflow + r.overflow > 0.0) {  //check as well, if the rotated area still fits in the viewport
-                        //move from original direction
-                        if (dir >= 0.0)
-                            return -r.overflow;
-                        else
-                            return l.overflow;
-                    }
-                    else if (l.overflow > 0.0)
-                        return l.overflow;  //check if lo+ro < 0 -> else: include direction
-                    else if (r.overflow > 0.0)
-                        return -r.overflow;
-                    return 0.0;   //move to center already applied
-                },
-                getYCorrection: function () {       //TODO: abhängig von dir  (nicht newDir)- falls beide nicht ignored !!!!!!!!!!!!!!!   move in direction!!!!!!!!!!!!
-                    var c,
-                        t = vpEdges.top,
-                        b = vpEdges.bottom;
-                    if (t.ignore || b.ignore) {
-                        return t.ignore ? b.overflow : -t.overflow;
-                    }
-                    //after rotation
-                    if (t.overflow > 0.0 && b.overflow > 0.0) {
-                        //move from original direction
-                        if (Math.abs(dir) <= 90.0)
-                            return -t.overflow;
-                        else
-                            return b.overflow;
-                    }
-                    else if (t.overflow > 0.0)
-                        return -t.overflow;
-                    else if (b.overflow > 0.0)
-                        return b.overflow;
-                    return 0.0;   //move to center already applied
-                },
             };
-
-            //check if overflow
-            //if (vpEdges.top.overflow <= 0.0 &&
-            //    vpEdges.right.overflow <= 0.0 &&
-            //    vpEdges.bottom.overflow <= 0.0 &&
-            //    vpEdges.left.overflow <= 0.0)
-            //    return false;   //no collision: pixel exact calculation
 
             //handle conflics: if there is an overflow on both sides we always bounce from the side the sprites points to
             if (vpEdges.top.overflow > 0.0 && vpEdges.bottom.overflow > 0.0) {
                 if (Math.abs(dir) <= 90.0)
-                    vpEdges.bottom.ignore = true;
+                    vpEdges.bottom.handled = false;
                 else
-                    vpEdges.top.ignore = true;
+                    vpEdges.top.handled = false;
             }
             if (vpEdges.left.overflow > 0.0 && vpEdges.right.overflow > 0.0) {
                 if (dir < 0.0)
-                    vpEdges.right.ignore = true;
+                    vpEdges.right.handled = false;
                 else
-                    vpEdges.left.ignore = true;
+                    vpEdges.left.handled = false;
             }
 
             //calc new positions and direction: we need this to compare new with existing properties to trigger the update event correctly
             var newDir = dir,
                 newX = x,
-                newY = y;//,
-            //bounce = { top: undefined, right: undefined, bottom: undefined, left: undefined };    //to store the current operation: we only bounce once at a time and recall this method
-            //var edgesToHandle;
-
-            //up to now, there are only 2 neigboured edges left at max (not ignored): let's call them p(rimus) and s(ecundus), where p (at least) is always inDirection (if one of them is)
-            var p, s;
-            if (vpEdges.top.overflow > 0.0 && !vpEdges.top.ignore) {
-                p = vpEdges.top;
-            }
-            if (vpEdges.right.overflow > 0.0 && !vpEdges.right.ignore) {
-                if (!p)
-                    p = vpEdges.right;
-                else if (p && vpEdges.right.inDirection) {
-                    s = p;
-                    p = vpEdges.right;
-                }
-                else
-                    s = vpEdges.right;
-            }
-            if (vpEdges.bottom.overflow > 0.0 && !vpEdges.bottom.ignore) {
-                if (!p)
-                    p = vpEdges.bottom;
-                else if (p && vpEdges.bottom.inDirection) {
-                    s = p;
-                    p = vpEdges.bottom;
-                }
-                else
-                    s = vpEdges.bottom;
-            }
-            if (vpEdges.left.overflow > 0.0 && !vpEdges.left.ignore) {
-                if (!p)
-                    p = vpEdges.left;
-                else if (p && vpEdges.left.inDirection) {
-                    s = p;
-                    p = vpEdges.left;
-                }
-                else
-                    s = vpEdges.left;
-            }
+                newY = y;
 
             //calc positions and rotations
-            if (p && p.inDirection)
-                newDir = p.calcDirection(newDir);
-            if (s && s.inDirection)
-                newDir = s.calcDirection(newDir);
+            for (var e in vpEdges) {
+                var edge = vpEdges[e];
+                if (edge.handled && edge.inDirection)
+                    newDir = edge.calcDirection(newDir);
+            }
 
             var updateBoundary = false;
             if (newDir != dir) {
@@ -1161,43 +1036,31 @@ PocketCode.Model.Sprite = (function () {
                     y: (boundary.top + boundary.bottom) / 2.0,
                 };
 
-                boundary = look.getBoundary(scaling, rotationCW, flipX, true);//imgStore.getLookBoundary(this.id, lookId, scaling, rotation, flipX, true);    //recalculate
-                //center = {  //update center position of the current area
-                //    x: x + (boundary.right + boundary.left) / 2.0,
-                //    y: y + (boundary.top + boundary.bottom) / 2.0,
-                //};
-                //adjust: keep the area center during rotate
-
-                //var offsetX = centerOffset.x - (boundary.right + boundary.left) / 2.0,
-                //    offsetY = centerOffset.y - (boundary.top + boundary.bottom) / 2.0;
+                boundary = look.getBoundary(scaling, rotationCW, flipX, true);
                 newX += centerOffset.x - (boundary.right + boundary.left) / 2.0;
                 newY += centerOffset.y - (boundary.top + boundary.bottom) / 2.0;
 
                 //update overflows
-                collision = collisionMgr.checkSpriteEdgeCollision(newX, newY, boundary);//, boundary.pixelAccuracy);
+                collision = collisionMgr.checkSpriteEdgeCollision(newX, newY, boundary);
                 overflow = collision.overflow;
-                vpEdges.top.overflow = overflow.top;//newY + boundary.top - sh2;
-                vpEdges.right.overflow = overflow.right;//newX + boundary.right - sw2;
-                vpEdges.bottom.overflow = overflow.bottom;//-newY - boundary.bottom - sh2;
-                vpEdges.left.overflow = overflow.left;//-newX - boundary.left - sw2;
+                if (vpEdges.top.handled)
+                    newY -= overflow.top;
+                if (vpEdges.right.handled)
+                    newX -= overflow.right;
+                if (vpEdges.bottom.handled)
+                    newY += overflow.bottom;
+                if (vpEdges.left.handled)
+                    newX += overflow.left;
             }
 
             //set sprite values: avoid triggering multiple onChange events
             var props = {};
-            if (this.setDirection(newDir, false)) {
-                props.rotation = newDir - 90.0;
-                dir = this._direction;  //make sure we calculate the corrections using the new direction
+            if (this.setDirection(newDir, false)) { //setDirection return true if an UI update is required (or was triggered)
+                if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND)
+                    props.rotation = newDir - 90.0;
+                else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT)
+                    props.flipX = newDir < 0.0;
             }
-
-            //set position
-            newX += vpEdges.getXCorrection();
-            newY += vpEdges.getYCorrection();
-
-            //if (this._rotationsStyle == PocketCode.RotationStyle.ALL_AROUND && this.direction !== newDir) {
-            //    this.setDirection(newDir, false);
-            //    props.rotation = 90.0 - newDir;
-            //}
-            //TODO: include this._lookOffset_X/Y: make sure the update event is only dispatched once
 
             if (this.positionX !== newX) {
                 props.x = newX + this._lookOffsetX;
@@ -1208,11 +1071,7 @@ PocketCode.Model.Sprite = (function () {
             if (props.x || props.y)
                 this.setPosition(newX, newY, false);
 
-            //this._onSpriteUiChange.dispatchEvent({ id: this.id, properties: props }, this); //TODO
-            //if (!props.rotation && !props.x && !props.y)
-            //    return false;
             return this._triggerOnChange(props);
-            //return true;
         },
 
         /* override */
