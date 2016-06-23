@@ -497,6 +497,8 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._recalculateLookOffsets();
+            if (triggerEvent == false)
+                return true;
             return this._triggerOnChange({
                 rotation: this._direction - 90.0,
                 x: this._positionX + this._lookOffsetX,
@@ -522,7 +524,7 @@ PocketCode.Model.Sprite = (function () {
             if (offsetX === 0 && offsetY === 0)
                 return false;
 
-            return this.setDirection(90.0 - Math.atan2(offsetY, offsetX) * (180.0 / Math.PI));
+            return this.setDirection(90.0 - Math.atan2(offsetY, offsetX) * 180.0 / Math.PI);
         },
         //motion: layer
         /**
@@ -946,17 +948,17 @@ PocketCode.Model.Sprite = (function () {
 
             var collisionMgr = this._gameEngine.collisionManager;
 
-            var size = this._gameEngine.projectScreenSize,//;
+            var //size = this._gameEngine.projectScreenSize,//;
             //var sh2 = size.height / 2.0,    //TODO: should not be necessary anymore
             //    sw2 = size.width / 2.0,
             //    dir = this.direction,
-                x = this.positionX,
-                y = this.positionY;
+                x = this._positionX,// + this._lookOffsetX,
+            y = this._positionY;// + this._lookOffsetY;
 
             var dir = this.direction;
             var look = this._currentLook,
-                scaling = this.size / 100.0,
-                rotation = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? 90.0 - dir : 0.0,
+                scaling = this._scaling,//size / 100.0,
+                rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
                 //^^ sprite has a direction but is not rotated
                 flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
 
@@ -969,7 +971,7 @@ PocketCode.Model.Sprite = (function () {
             *  pixelAccuracy: might be true even if not requested -> if we already have exact values stored in the cache (to increase performance)
             */
 
-            var boundary = look.getBoundary(scaling, rotation, flipX, false);//imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, false);
+            var boundary = look.getBoundary(scaling, rotationCW, flipX, false);//imgStore.getLookBoundary(sprite.id, lookId, scaling, rotation, flipX, false);
             //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
             //quick check
@@ -985,7 +987,7 @@ PocketCode.Model.Sprite = (function () {
 
             //check based on pixels if not already done
             if (!boundary.pixelAccuracy) {
-                boundary = look.getBoundary(scaling, rotation, flipX, true);
+                boundary = look.getBoundary(scaling, rotationCW, flipX, true);
                 collision = collisionMgr.checkSpriteEdgeCollision(x, y, boundary);//, boundary.pixelAccuracy);
                 if (!collision.occurs)
                     return false;
@@ -1141,11 +1143,11 @@ PocketCode.Model.Sprite = (function () {
             var updateBoundary = false;
             if (newDir != dir) {
                 if (this.rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
-                    rotation = 90.0 - newDir;
+                    rotationCW = newDir - 90.0;
                     updateBoundary = true;
                 }
                 else if (this.rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
-                    rotation = 0.0;
+                    rotationCW = 0.0;
                     if ((newDir >= 0.0 && dir < 0.0) || (newDir < 0.0 && dir >= 0.0)) { //flipX changed
                         flipX = !flipX;
                         updateBoundary = true;
@@ -1159,7 +1161,7 @@ PocketCode.Model.Sprite = (function () {
                     y: (boundary.top + boundary.bottom) / 2.0,
                 };
 
-                boundary = look.getBoundary(scaling, rotation, flipX, true);//imgStore.getLookBoundary(this.id, lookId, scaling, rotation, flipX, true);    //recalculate
+                boundary = look.getBoundary(scaling, rotationCW, flipX, true);//imgStore.getLookBoundary(this.id, lookId, scaling, rotation, flipX, true);    //recalculate
                 //center = {  //update center position of the current area
                 //    x: x + (boundary.right + boundary.left) / 2.0,
                 //    y: y + (boundary.top + boundary.bottom) / 2.0,
@@ -1179,15 +1181,17 @@ PocketCode.Model.Sprite = (function () {
                 vpEdges.bottom.overflow = overflow.bottom;//-newY - boundary.bottom - sh2;
                 vpEdges.left.overflow = overflow.left;//-newX - boundary.left - sw2;
             }
-            //set position
-            newX += vpEdges.getXCorrection();
-            newY += vpEdges.getYCorrection();
 
             //set sprite values: avoid triggering multiple onChange events
             var props = {};
             if (this.setDirection(newDir, false)) {
                 props.rotation = newDir - 90.0;
+                dir = this._direction;  //make sure we calculate the corrections using the new direction
             }
+
+            //set position
+            newX += vpEdges.getXCorrection();
+            newY += vpEdges.getYCorrection();
 
             //if (this._rotationsStyle == PocketCode.RotationStyle.ALL_AROUND && this.direction !== newDir) {
             //    this.setDirection(newDir, false);
