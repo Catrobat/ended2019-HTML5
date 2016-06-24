@@ -143,19 +143,25 @@ QUnit.test("Sprite", function (assert) {
     assert.throws(function () { sprite.setGraphicEffect(null, 50) }, Error, "unknown graphic effect");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 210);
-    assert.equal(sprite._brightness, 200, "set brightness over 200");
+    assert.equal(sprite.brightness, 200, "set brightness over 200");
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -210);
-    assert.equal(sprite._brightness, 0, "set brightness under 0");
+    assert.equal(sprite.brightness, 0, "set brightness under 0");
 
     returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 110);
-    assert.equal(sprite._transparency, 100.0, "set transparency over 100");
+    assert.equal(sprite.transparency, 100.0, "set transparency over 100");
     assert.ok(returnVal, "update: transparency");
     returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 110);
     assert.ok(!returnVal, "update: transparency: not changed");
-
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, -110);
-    assert.equal(sprite._transparency, 0.0, "set transparency under 0");
+    assert.equal(sprite.transparency, 0.0, "set transparency under 0");
 
+    returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 110);
+    assert.equal(sprite.colorEffect, 100.0, "set colorEffect over 100");
+    assert.ok(returnVal, "update: colorEffect");
+    returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 110);
+    assert.ok(!returnVal, "update: colorEffect: not changed");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, -110);
+    assert.equal(sprite.colorEffect, 0.0, "set colorEffect under 0");
 
     assert.throws(function () { sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, "asdf") }, Error, "ERROR: invalid brightness percentage");
     assert.throws(function () { sprite.changeGraphicEffect(null, 50) }, Error, "ERROR: unknown graphic effect");
@@ -165,12 +171,17 @@ QUnit.test("Sprite", function (assert) {
     assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS); }, Error, "ERROR: set grafic effect: missing argument brightness");
 
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 110);
-    assert.equal(sprite._brightness, 200, "change brightness over 200");
+    assert.equal(sprite.brightness, 200, "change brightness over 200");
     sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 100);
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -110);
-    assert.equal(sprite._brightness, 0, "change brightness under 0");
+    assert.equal(sprite.brightness, 0, "change brightness under 0");
     returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, -110);
     assert.ok(!returnVal, "set brightness: no update on value");
+
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 50);
+    assert.equal(sprite.brightness, 50.0, "set brightness");
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 60);
+    assert.equal(sprite.brightness, 110, "change brightness");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
     assert.ok(!sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50), "set grafic effect: no change to transparency");
@@ -178,24 +189,33 @@ QUnit.test("Sprite", function (assert) {
     assert.throws(function () { sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST); }, Error, "ERROR: set grafic effect: missing argument transparency");
 
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, 60);
-    assert.equal(sprite._transparency, 100.0, "change transparency over 100");
+    assert.equal(sprite.transparency, 100.0, "change transparency over 100");
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
     returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, -60);
-    assert.equal(sprite._transparency, 0.0, "change transparency under 0");
+    assert.equal(sprite.transparency, 0.0, "change transparency under 0");
     assert.ok(returnVal, "change transparency: return value");
     returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, -60);
     assert.ok(!returnVal, "change transparency: return value (no change)");
 
     sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 50);
-    assert.equal(sprite._transparency, 50.0, "set transparency");
+    assert.equal(sprite.transparency, 50.0, "set transparency");
     sprite.changeGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
-    assert.equal(sprite._transparency, 60.0, "change transparency");
+    assert.equal(sprite.transparency, 60.0, "change transparency");
 
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 50);
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.COLOR, 60);
+    assert.equal(sprite.colorEffect, 100.0, "change colorEffect over 100");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 50);
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.COLOR, -60);
+    assert.equal(sprite.colorEffect, 0.0, "change colorEffect under 0");
+    assert.ok(returnVal, "change colorEffect: return value");
+    returnVal = sprite.changeGraphicEffect(PocketCode.GraphicEffect.COLOR, -60);
+    assert.ok(!returnVal, "change colorEffect: return value (no change)");
 
-    sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 50);
-    assert.equal(sprite._brightness, 50.0, "set brightness");
-    sprite.changeGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 60);
-    assert.equal(sprite._brightness, 110, "change brightness");
+    sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 50);
+    assert.equal(sprite.colorEffect, 50.0, "set colorEffect");
+    sprite.changeGraphicEffect(PocketCode.GraphicEffect.COLOR, 10);
+    assert.equal(sprite.colorEffect, 60.0, "change colorEffect");
 
     returnVal = sprite.setGraphicEffect(PocketCode.GraphicEffect.FISHEYE, 50);
     assert.ok(!returnVal, "setting an undefined effect");
@@ -203,10 +223,10 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(!returnVal, "changing an undefined effect");
 
     returnVal = sprite.clearGraphicEffects();
-    assert.ok(sprite._brightness == 100 && sprite._transparency == 0, "graphic effects cleared");
-    assert.ok(returnVal, "clear graphic effect: retrun value");
+    assert.ok(sprite.brightness == 100 && sprite.transparency == 0 && sprite.colorEffect == 0, "graphic effects cleared");
+    assert.ok(returnVal, "clear graphic effect: return value");
     returnVal = sprite.clearGraphicEffects();
-    assert.ok(!returnVal, "clear graphic effect: retrun value (no updates)");
+    assert.ok(!returnVal, "clear graphic effect: return value (no updates)");
 
     // *************************************************************
 
@@ -299,11 +319,11 @@ QUnit.test("Sprite", function (assert) {
         for(var i = 0, l = renderingProperties.graphicEffects.length; i < l; i++){
             if(renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.GHOST){
                 ghostSet++;
-                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._transparency, "renderingProperties: ghost set correctly");
+                assert.equal(renderingProperties.graphicEffects[i].value, testSprite.transparency, "renderingProperties: ghost set correctly");
             }
             else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS) {
                 brightnessSet++;
-                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._brightness - 100, "renderingProperties: brightness set correctly");
+                assert.equal(renderingProperties.graphicEffects[i].value, testSprite.brightness - 100, "renderingProperties: brightness set correctly");
             }
             else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.COLOR) {
                 colorSet++;
@@ -463,6 +483,10 @@ QUnit.test("Sprite", function (assert) {
     sprite.move(25);
     assert.ok(sprite.positionX == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
 
+    triggerEvent = false;
+    returnVal = sprite.setDirection(-90, triggerEvent);
+    assert.ok(returnVal, "setDirection return value = true even if events are suppressed");
+
     // *************************************************************
 
     // ********************* turn *********************
@@ -538,7 +562,8 @@ QUnit.test("Sprite", function (assert) {
     sprite.setDirection(-90, triggerEvent);
     sprite.turnLeft(-450); //-350 --> -10
     assert.equal(sprite._direction, 0, "turn left to 0°");
-    //console.log("direction : "+sprite._direction);
+    
+
 
     // *************************************************************
 
@@ -833,6 +858,13 @@ QUnit.test("Sprite: rotation style", function (assert) {
     var looks = [{ id: "s_1", resourceId: "s1", name: "look1" }, { id: "s_2", resourceId: "s2", name: "look2" }];
     var sprite = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "sprite", looks: looks });
 
+    //add event listener to verify triggered updates (UI)
+    var props;
+    var spriteOnChangeHandler = function (e) {
+        props = e.properties;
+    };
+    sprite._onChange.addEventListener(new SmartJs.Event.EventListener(spriteOnChangeHandler));
+
     //start tests
     var onLoadHandler = function () {
         sprite.initLooks();
@@ -845,28 +877,89 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite.setDirection(45); //make sure changing the rotationStyle triggers a UI update
         var result = sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
         assert.ok(result, "rotationStyle UI update triggered: return value");
+        assert.equal(props.rotation, 0.0, "onChange event triggered- rotation = 0");
         assert.equal(sprite.rotationStyle, PocketCode.RotationStyle.LEFT_TO_RIGHT, "rotation style: getter/setter");
+
         result = sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
         assert.notOk(result, "rotationStyle NOT changed");
         assert.throws(function () { sprite.setRotationStyle("invalid") }, Error, "ERROR: invalid argument/unknown rotation style");
 
+        result = sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        assert.equal(props.rotation, -45.0, "rotation set if rotation style is set to ALL_AROUND");
+        result = sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        assert.equal(props.rotation, 0.0, "rotation set if rotation style is set to DO_NOT_ROTATE");
+
+        props = undefined;
+        sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+        sprite._direction = -1.0;
+        result = sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        assert.deepEqual(props, { flipX: false }, "turn back to flipX = false when switch to DO_NOT_ROTATE")
+        props = undefined;
+
+        sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+        sprite._direction = -1.0;
+        result = sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        assert.ok(props.rotation == -91.0 && props.flipX == false, "turn back to flipX = false when switch to ALL_AROUND")
+
+
         //private method: _recalculateLookOffsets (we test this even it's private because this is a very importent method calculating rendering offsets due to look size != sprite size
+        sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        var savedCurrentLook = sprite._currentLook;
+        sprite._currentLook = undefined;
+        sprite._recalculateLookOffsets();
+        assert.ok(sprite._lookOffsetX == 0.0 && sprite._lookOffsetY == 0.0, "look offsets 0.0 if there is no look defined");
 
+        sprite._currentLook = savedCurrentLook;
+        sprite._direction = 90.0;   //make sure the sprite is not rotated
+        sprite._recalculateLookOffsets();
+        var ox = sprite._lookOffsetX,
+            oy = sprite._lookOffsetY;
+        assert.ok(ok != 0.0 && oy != 0.0, "offsets calculated for current look");
 
-        //direction
+        sprite._direction = 45.0;   //rotate
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite._recalculateLookOffsets();
+        assert.ok(ox == sprite._lookOffsetX && oy == sprite._lookOffsetY, "rotation style DO_NOT_ROTATE: offsets keep the same");
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        sprite._recalculateLookOffsets();
+        assert.ok(ox == sprite._lookOffsetX && oy == sprite._lookOffsetY, "rotation style LEFT_TO_RIGHT: offsets keep the same");
 
+        sprite._direction = -1.0;
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite._recalculateLookOffsets();
+        assert.ok(ox == sprite._lookOffsetX && oy == sprite._lookOffsetY, "rotation style DO_NOT_ROTATE: offsets keep the same: direction = -1");
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        sprite._recalculateLookOffsets();
+        assert.ok(ox == -sprite._lookOffsetX && oy == sprite._lookOffsetY, "rotation style LEFT_TO_RIGHT: offsetX fliped: direction = -1");
 
-        //change look: setLook, nextLook
+        //change direction
+        props = undefined;
+        sprite._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+        sprite._direction = 0.0;
 
+        result = sprite.setDirection(-45.0);
+        assert.ok(result, "direction changed: ALL_AROUND");
+        assert.ok(props.rotation == -135 && props.flipX == undefined, "rotation update triggered");
 
+        sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
+        sprite._direction = 20.0;
+        result = sprite.setDirection(-10.0);
+        assert.ok(result, "direction changed: LEFT_TO_RIGHT");
+        assert.ok(props.rotation === 0.0 && props.flipX === true, "rotation update triggered");
+        props = undefined;
+        result = sprite.setDirection(-15.0);
+        assert.deepEqual(props, undefined, "rotation update NOT triggered");
+        props = undefined;
+        result = sprite.setDirection(15.0);
+        assert.ok(props.rotation === 0.0 && props.flipX === false, "rotation update triggered: flipX only, rotation not changed");
 
-        assert.ok(false, "TODO");
+        props = undefined;
+        sprite._rotationStyle = PocketCode.RotationStyle.DO_NOT_ROTATE;
+        result = sprite.setDirection(-15.0);
+        assert.deepEqual(props, undefined, "rotation update triggered");
 
         done();
     };
-
-    //var rotationAngle = 180;
-    //sprite.setDirection(rotationAngle);
 
     //start loading
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));

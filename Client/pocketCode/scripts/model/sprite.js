@@ -494,23 +494,28 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             //check if sprite rotation changed: e.g. flipped/rotation
-            var flipXChanged = this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && (this._direction < 0.0 && nd >= 0.0 || this._direction >= 0.0 && nd < 0.0);
+            var old = this._direction;
             this._direction = nd;
+            var props = {};
 
-            if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE) //rotation == 0.0
+            if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE)  //rotation == 0.0
                 return false;
-            else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && !flipXChanged)
-                return false;
+            else if (this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT) {
+                if (old < 0.0 && nd >= 0.0 || old >= 0.0 && nd < 0.0)   //flipXChanged
+                    props.flipX = nd < 0.0;
+                else
+                    return false;
+            }
 
             this._recalculateLookOffsets();
             if (triggerEvent == false)
                 return true;
-            return this._triggerOnChange({
-                rotation: this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
-                flipX: flipXChanged ? this._rotationStyle == PocketCode.RotationStyle.LEFT_TO_RIGHT && this._direction < 0.0 : undefined,
-                x: this._positionX + this._lookOffsetX,
-                y: this._positionY + this._lookOffsetY,
-            });
+
+            props.rotation = this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0;
+            props.x = this._positionX + this._lookOffsetX;
+            props.y = this._positionY + this._lookOffsetY;
+
+            return this._triggerOnChange(props);
         },
         /**
          * sets the direction of current sprite so that it points to a given sprite
@@ -653,7 +658,7 @@ PocketCode.Model.Sprite = (function () {
                     return this._triggerOnChange(update);
                 }
             }
-            return false;
+            //return false;
         },
         /**
          * sets the size of the sprite with percentage "value"
