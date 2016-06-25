@@ -193,6 +193,8 @@ PocketCode.Model.Look = (function () {
             if (pixelAccuracy && !boundary.pixelAccuracy) {
                 //calc pixel-exact offsets & include them 
                 var precision = 2.0 / scaling; //means 2 pixel accuracy used for calculation
+                if (SmartJs.Device.isMobile)
+                    precision *= 2.0;
                 var trimOffsets = PocketCode.ImageHelper.getElementTrimOffsets(this.canvas, rotation, precision);
                 boundary.top -= Math.floor(trimOffsets.top * scaling);
                 boundary.right -= Math.floor(trimOffsets.right * scaling);
