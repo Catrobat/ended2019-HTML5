@@ -105,7 +105,7 @@ PocketCode.PlayerPageController = (function () {
         },
         //project handler
         _projectLoadingProgressHandler: function (e) {
-            this._view.updateLoadingProgress(e.progress);
+            this._view.setLoadingProgress(e.progress);
         },
         initOnLoad: function () {
             var screenSize = this._gameEngine.projectScreenSize;
