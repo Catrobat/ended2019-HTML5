@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 
 /// <reference path="../_resources/testDataFormula.js" />
