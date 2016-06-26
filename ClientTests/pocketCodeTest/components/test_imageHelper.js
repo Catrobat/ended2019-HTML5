@@ -127,6 +127,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done4 = assert.async();
     var done5 = assert.async();
     var done6 = assert.async();
+    var done7 = assert.async();
 
     //helper function to limit rounding errors
     var round1000 = function (value) {
@@ -605,7 +606,17 @@ QUnit.test("ImageHelper", function (assert) {
         }
 
         done6();
+        runTests_findObjects();
+
     };
+    var runTests_findObjects = function () {
+        var canvas = document.createElement('canvas');
+        var ctx=canvas.getContext("2d");
+        ctx.rect(20,20,10,5);
+        ctx.fill();
+
+        done7();
+    }
 });
 
 

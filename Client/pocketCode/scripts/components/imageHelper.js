@@ -864,6 +864,31 @@ PocketCode.ImageHelper = (function () {
             return {h: h, s: s, v: v};
         },
 
+        findObjects: function(pixels){
+            var equivilentRegions = [];
+            var regionCount = 0;
+
+            var currentPixel, alpha, currentGroup;
+
+            for (var row = 0, rowLength = pixels.length; row < rowLength; row++){
+                for (var col = 0, colLength = pixels[row].length; col < colLength; col++){
+
+                    currentPixel = pixels[row][col];
+                    alpha = currentPixel[3];
+
+                    if(alpha){
+                        currentGroup = pixels[row][col - 1][4]
+                            || pixels[row - 1][col - 1][4]
+                            || pixels[row - 1][col][4];
+
+                        //todo equivilent requions?
+                        currentPixel = currentGroup || regionCount++;
+                    }
+                }
+            }
+
+        },
+
         /* override */
         dispose: function () {
             //static class: cannot be disposed
