@@ -272,6 +272,8 @@ QUnit.test("RenderingImage", function (assert) {
         var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
 
         //draw tests
+        canvas.height = 20;
+        canvas.width = 10;
         var ctx = canvas.getContext("2d");
 
         renderingImageOpaque.draw(ctx);
