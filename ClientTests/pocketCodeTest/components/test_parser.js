@@ -354,6 +354,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     sprite._positionY = 4;
     sprite._transparency = 46;
     sprite._brightness = 123;
+    sprite._colorEffect = 126;
     sprite._scaling = 0.84;
     sprite._direction = 34;
 
@@ -374,6 +375,11 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     assert.equal(f.calculate(), 0.46, "transparency: formula");
     assert.equal(f.isStatic, false, "transparency: isStatic");
     assert.equal(f.uiString, "transparency ÷ 100", "transparency: toString");
+
+    f.json = colorEffect;
+    assert.equal(f.calculate(), 126, "colorEffect: formula");
+    assert.equal(f.isStatic, false, "transparency: isStatic");
+    assert.equal(f.uiString, "color", "color: toString");
 
     f.json = brightness;
     assert.equal(f.calculate(), 246, "brightness: formula");

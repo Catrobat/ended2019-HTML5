@@ -773,11 +773,11 @@ PocketCode.Model.Sprite = (function () {
 
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
-                    return this._changeTransparency(value);
+                    return this._setTransparency(this._transparency + value);
                 case PocketCode.GraphicEffect.BRIGHTNESS:
-                    return this._changeBrightness(value);
+                    return this._setBrightness(this._brightness + value);
                 case PocketCode.GraphicEffect.COLOR:
-                    return this._changeColorEffect(value);
+                    return this._setColorEffect(this._colorEffect + value);
                 case PocketCode.GraphicEffect.FISHEYE:
                 case PocketCode.GraphicEffect.MOSAIC:
                 case PocketCode.GraphicEffect.PIXELATE:
@@ -795,27 +795,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          * @private
          */
-        _setTransparency: function (percentage) {
-            if (percentage < 0.0)
-                percentage = 0.0;
-            if (percentage > 100.0)
-                percentage = 100.0;
-
-            if (this._transparency === percentage)
-                return false;
-
-            this._transparency = percentage;
-            return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: percentage }] });
-        },
-        /* set to private and called from set/change graphic effect*/
-        /**
-         * changes the transparency of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
-        _changeTransparency: function (value) {
-            value = this._transparency + value;
+        _setTransparency: function (value) {
             if (value < 0.0)
                 value = 0.0;
             if (value > 100.0)
@@ -834,27 +814,7 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          * @private
          */
-        _setBrightness: function (percentage) {
-            if (percentage < 0.0)
-                percentage = 0.0;
-            if (percentage > 200.0)
-                percentage = 200.0;
-
-            if (this._brightness === percentage)
-                return false;
-
-            this._brightness = percentage;
-            return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: percentage - 100.0 }] });  //send +-100 instead of 0..200
-        },
-        /* set to private and called from set/change graphic effect*/
-        /**
-         * changes the brightness of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
-        _changeBrightness: function (value) {
-            value = this._brightness + value;
+        _setBrightness: function (value) {
             if (value < 0.0)
                 value = 0.0;
             if (value > 200.0)
@@ -864,7 +824,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._brightness = value;
-            return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100.0 }] }); //send +-100 instead of 0..200
+            return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100.0 }] });  //send +-100 instead of 0..200
         },
         /* set to private and called from set/change graphic effect*/
         /**
@@ -873,31 +833,11 @@ PocketCode.Model.Sprite = (function () {
          * @returns {boolean}
          * @private
          */
-        _setColorEffect: function (percentage) {
-            if (percentage < 0.0)
-                percentage = 0.0;
-            if (percentage > 100.0)
-                percentage = 100.0;
-
-            if (this._colorEffect === percentage)
-                return false;
-
-            this._colorEffect = percentage;
-            return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.COLOR, value: percentage }] });
-        },
-        /* set to private and called from set/change graphic effect*/
-        /**
-         * changes the color effect of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
-        _changeColorEffect: function (value) {
-            value = this._colorEffect + value;
-            if (value < 0.0)
-                value = 0.0;
-            if (value > 100.0)
-                value = 100.0;
+        _setColorEffect: function (value) {
+            while (value < 0.0)
+                value += 200.0;
+            while (value > 200.0)
+                value -= 200.0;
 
             if (this._colorEffect === value)
                 return false;

@@ -62,6 +62,8 @@ var object_x = { "type": "OPERATOR", "value": "MULT", "right": { "type": "BRACKE
 var object_y = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_Y", "right": null, "left": null } };
 var ghostEffect = { "type": "OPERATOR", "value": "DIVIDE", "right": { "type": "NUMBER", "value": "100", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_GHOSTEFFECT", "right": null, "left": null } };
 var brightness = { "type": "OPERATOR", "value": "MULT", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_BRIGHTNESS", "right": null, "left": null } };
+var colorEffect = { "type": "SENSOR", "value": "OBJECT_COLOR", "left": null, "right": null };
+
 var object_size = { "type": "OPERATOR", "value": "DIVIDE", "right": { "type": "NUMBER", "value": "100", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_SIZE", "right": null, "left": null } };
 var object_rotation = { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "90", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_ROTATION", "right": null, "left": null } };
 var object_rotation2 = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "360", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_ROTATION", "right": null, "left": null } };
