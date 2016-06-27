@@ -12,6 +12,7 @@ PocketCode.Formula = (function () {
             throw new Error('invalid parameter: undeclared device or sprite');
         this._device = device;
         this._sprite = sprite;
+        this._userVariableHost = sprite;    //default
 
         if (jsonFormula)
             this.json = jsonFormula;
@@ -97,6 +98,8 @@ PocketCode.Formula = (function () {
                     velocityX: 0,
                     velocityY: 0,
                     velocityAngular: 0,
+                };
+                formula._userVariableHost = {
                     getVariable: function (id) { return { id: id, value: 0 }; },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                 };
@@ -109,6 +112,7 @@ PocketCode.Formula = (function () {
         dispose: function () {
             this._device = undefined;
             this._sprite = undefined;
+            this._userVariableHost = undefined;
             SmartJs.Core.Component.prototype.dispose.call(this);
         },
     });

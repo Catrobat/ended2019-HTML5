@@ -211,7 +211,13 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
+                return {
+                    calculate: new Function(
+                        'uvh',
+                        'if (uvh) this._userVariableHost = uvh;' +
+                        'return ' + formulaString + ';'),
+                    isStatic: this._isStatic
+                };
             },
 
             _parseJsonType: function (jsonFormula, uiString) {
@@ -248,7 +254,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getVariable("' + jsonFormula.value + '").value';
+                        return 'this._userVariableHost.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
                         if (uiString) {
@@ -257,7 +263,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getList("' + jsonFormula.value + '")';
+                        return 'this._userVariableHost.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
