@@ -232,7 +232,9 @@ PocketCode.GameEngine = (function () {
             this.author = header.author;
             this._originalScreenHeight = header.device.screenHeight;
             this._originalScreenWidth = header.device.screenWidth;
-            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);    //TODO: dispose before recreating (Benny)
+            if (this._collisionManager)
+                this._collisionManager.dispose();
+            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             //create objects
             if (this._background)

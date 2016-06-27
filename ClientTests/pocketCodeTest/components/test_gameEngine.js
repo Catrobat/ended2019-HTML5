@@ -9,6 +9,9 @@ QUnit.test("GameEngine", function (assert) {
 
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
+    assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
+    assert.ok(gameEngine.objClassName === "GameEngine", "objClassName check");
+
     gameEngine._executionState = PocketCode.ExecutionState.RUNNING; //should be stopped
     gameEngine.dispose();
     assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
