@@ -14,8 +14,8 @@ PocketCode.Stopwatch = (function () {
                 var ms = 0.0;
                 if (!this._startDateTime)
                     return ms;
-                if (this._lastPausedDateTime)   //currently paused
-                    ms = (this._lastPausedDateTime - this._startDateTime) - this._pausedTimespan;
+                if (this._pausedDateTime)   //currently paused
+                    ms = (this._pausedDateTime - this._startDateTime) - this._pausedTimespan;
                 else
                     ms = (new Date() - this._startDateTime) - this._pausedTimespan;
                 return ms / 1000.0;
@@ -27,7 +27,7 @@ PocketCode.Stopwatch = (function () {
     Stopwatch.prototype.merge({
         _init: function() {
             this._startDateTime = undefined;
-            this._lastPausedDateTime = undefined;   //only set if currently paused
+            this._pausedDateTime = undefined;   //only set if currently paused
             this._pausedTimespan = 0.0;
         },
         start: function () {
@@ -36,11 +36,11 @@ PocketCode.Stopwatch = (function () {
         },
         //restart: function () { this.start(); },
         pause: function () {
-            this._lastPausedDateTime = new Date();
+            this._pausedDateTime = new Date();
         },
         resume: function () {
-            this._pausedTimespan += new Date() - this._lastPausedDateTime;
-            this._lastPausedDateTime = undefined;
+            this._pausedTimespan += new Date() - this._pausedDateTime;
+            this._pausedDateTime = undefined;
         },
         stop: function () {
             this._init();

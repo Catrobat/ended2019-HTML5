@@ -157,9 +157,9 @@ PocketCode.GameEngine = (function () {
                 return this._collisionManager;
             },
         },
-        projectTimerValue: {
+        projectTimer: {
             get: function () {
-                return this._projectTimer.value;
+                return this._projectTimer;
             },
         },
     });
@@ -197,9 +197,6 @@ PocketCode.GameEngine = (function () {
 
     //methods
     GameEngine.prototype.merge({
-        resetProjectTimer: function() {
-            this._projectTimer.start();
-        },
         getVariablesAsPropertyList: function () {
             var obj = this.renderingVariables;  //global
             if (this._background)

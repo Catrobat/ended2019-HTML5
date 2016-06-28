@@ -195,7 +195,7 @@ PocketCode.Model.Sprite = (function () {
 
         projectTimerValue: {    //used in formula (gameEngine not accessible)
             get: function() {
-                return this._gameEngine.projectTimerValue;
+                return this._gameEngine.projectTimer.value;
             },
         },
         scripts: {

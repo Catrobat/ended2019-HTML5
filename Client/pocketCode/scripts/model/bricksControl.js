@@ -134,14 +134,14 @@ PocketCode.Model.merge({
     ResetTimerBrick: (function () {
         ResetTimerBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ResetTimerBrick(device, sprite, gameEngine) {
+        function ResetTimerBrick(device, sprite, projectTimer) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
-            this._gameEngine = gameEngine;
+            this._projectTimer = projectTimer;
         }
 
         ResetTimerBrick.prototype.merge({
             _execute: function () {
-                this._gameEngine.resetProjectTimer();
+                this._projectTimer.start();
                 this._return(true);
             },
             /* override */

@@ -98,6 +98,20 @@ PocketCode.merge({
                 var brick = undefined;
 
                 switch (type) {
+                    //in development
+                    case 'WhenCollisionBrick':
+                    case 'SetPhysicsObjectTypeBrick':
+                    case 'SetVelocityBrick':
+                    case 'TurnLeftSpeedBrick':
+                    case 'TurnRightSpeedBrick':
+                    case 'SetGravityBrick':
+                    case 'SetMassBrick':
+                    case 'SetBounceFactorBrick':
+                    case 'SetFrictionBrick':
+                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                        break;
+                    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+
                     case 'WhenProgramStartBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
                         break;
@@ -107,7 +121,7 @@ PocketCode.merge({
                         break;
 
                     case 'ResetTimerBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.projectTimer);
                         break;
 
                     case 'WhenBroadcastReceiveBrick':
