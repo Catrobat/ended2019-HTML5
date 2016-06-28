@@ -58,6 +58,7 @@ PocketCode.GameEngine = (function () {
         };
 
         this._collisionManager;// = new PocketCode.CollisionManager()
+        this._projectTimer = new PocketCode.Stopwatch();
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -156,6 +157,11 @@ PocketCode.GameEngine = (function () {
                 return this._collisionManager;
             },
         },
+        projectTimerValue: {
+            get: function () {
+                return this._projectTimer.value;
+            },
+        },
     });
 
     //events
@@ -191,6 +197,9 @@ PocketCode.GameEngine = (function () {
 
     //methods
     GameEngine.prototype.merge({
+        resetProjectTimer: function() {
+            this._projectTimer.start();
+        },
         getVariablesAsPropertyList: function () {
             var obj = this.renderingVariables;  //global
             if (this._background)
@@ -408,6 +417,8 @@ PocketCode.GameEngine = (function () {
 
                 this._resetVariables();  //global
             }
+
+            this._projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
             this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
@@ -416,12 +427,14 @@ PocketCode.GameEngine = (function () {
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
+            this._projectTimer.stop();
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
+            this._projectTimer.pause();
             this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
@@ -437,6 +450,7 @@ PocketCode.GameEngine = (function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
 
+            this._projectTimer.resume();
             this._soundManager.resumeSounds();
             if (this._background)
                 this._background.resumeScripts();
@@ -450,6 +464,8 @@ PocketCode.GameEngine = (function () {
         stopProject: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
+
+            this._projectTimer.stop();
             this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
             if (this._background) {

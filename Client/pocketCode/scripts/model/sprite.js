@@ -193,6 +193,11 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
+        projectTimerValue: {    //used in formula (gameEngine not accessible)
+            get: function() {
+                return this._gameEngine.projectTimerValue;
+            },
+        },
         scripts: {
             set: function (scripts) {
                 if (!(scripts instanceof Array))

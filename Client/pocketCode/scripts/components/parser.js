@@ -106,6 +106,10 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
                         break;
 
+                    case 'ResetTimerBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project);
+                        break;
+
                     case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
                     case 'BroadcastAndWaitBrick':
@@ -634,7 +638,7 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
-                        //sprite
+                    //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
@@ -684,6 +688,62 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    //time(r)
+                    case 'CURRENT_YEAR':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getFullYear()';
+
+                    case 'CURRENT_MONTH':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getMonth()';
+
+                    case 'CURRENT_DATE':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getDate()';
+
+                    case 'CURRENT_DAY_OF_WEEK':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getDay() + 1';
+
+                    case 'CURRENT_HOUR':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getHours()';
+
+                    case 'CURRENT_MINUTE':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getMinutes()';
+
+                    case 'CURRENT_SECOND':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getSeconds()';
+
+                    //case 'DAYS_SINCE_2000':
+                    //    if (uiString)
+                    //        return 'days_since_2000';
+
+                    //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
+
+                    //case 'TIMER':
+                    //    if (uiString)
+                    //        return 'timer';
+
+                    //    return 'this._sprite.projectTimerValue';
+
+                    //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -702,6 +762,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
+                    //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';
@@ -726,6 +787,7 @@ PocketCode.merge({
 
                         return 'this._device.nxt4';
 
+                    //phiro
                     case 'PHIRO_FRONT_LEFT':
                         if (uiString)
                             return 'phiro_front_left_sensor';
