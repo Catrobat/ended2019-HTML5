@@ -741,9 +741,9 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         setGraphicEffect: function (effect, value) {
-            if (value === undefined || isNaN(value)) {
-                throw new Error('invalid value ');
-            }
+            if (value === undefined || isNaN(value))
+                return false;
+
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
                     return this._setTransparency(value);
@@ -769,7 +769,7 @@ PocketCode.Model.Sprite = (function () {
          */
         changeGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value))
-                throw new Error('invalid value: ');
+                return false;
 
             switch (effect) {
                 case PocketCode.GraphicEffect.GHOST:    //=transparency
