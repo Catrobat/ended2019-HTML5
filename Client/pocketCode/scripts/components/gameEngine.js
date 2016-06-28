@@ -9,6 +9,7 @@
 /// <reference path="broadcastManager.js" />
 /// <reference path="collisionManager.js" />
 /// <reference path="soundManager.js" />
+/// <reference path="stopwatch.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {
@@ -234,7 +235,7 @@ PocketCode.GameEngine = (function () {
             this._originalScreenWidth = header.device.screenWidth;
             if (this._collisionManager)
                 this._collisionManager.dispose();
-            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
+            this._collisionManager = new PocketCode.CollisionManager(this._sprites, this._originalScreenWidth, this._originalScreenHeight);
 
             //create objects
             if (this._background)
