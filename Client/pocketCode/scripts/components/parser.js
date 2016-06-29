@@ -6,6 +6,7 @@
 /// <reference path="../model/bricksMotion.js" />
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksData.js" />
+/// <reference path="../model/userVariable.js" />
 /// <reference path="../component/sprite.js" />
 'use strict';
 
@@ -129,9 +130,9 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
                         break;
 
-                    case 'ResetTimerBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._project.projectTimer);
-                        break;
+                    //case 'ResetTimerBrick':
+                    //    brick = new PocketCode.Model[type](this._device, currentSprite, this._project.projectTimer);
+                    //    break;
 
                     case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
@@ -241,7 +242,7 @@ PocketCode.merge({
                 return {
                     calculate: new Function(
                         'uvh',
-                        'if (uvh) this._userVariableHost = uvh;' +
+                        'this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;' +
                         'return ' + formulaString + ';'),
                     isStatic: this._isStatic
                 };
@@ -276,7 +277,9 @@ PocketCode.merge({
 
                     case 'USER_VARIABLE':
                         if (uiString) {
-                            var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.global[jsonFormula.value];
+                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
+                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                                this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
 

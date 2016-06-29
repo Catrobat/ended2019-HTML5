@@ -16,7 +16,6 @@ PocketCode.Formula = (function () {
 
         if (jsonFormula)
             this.json = jsonFormula;
-        //this._uiString = '';
     }
 
     //accessors
@@ -44,15 +43,7 @@ PocketCode.Formula = (function () {
                     this.isStatic = false;
                     this.calculate = parsed.calculate;
                 }
-                this._uiString = undefined;
                 this._validateFormula();
-            },
-        },
-        uiString: {
-            get: function () {
-                if (!this._uiString)
-                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getAllVariables(), this._sprite.getAllLists());
-                return this._uiString;
             },
         },
     });
@@ -98,8 +89,6 @@ PocketCode.Formula = (function () {
                     velocityX: 0,
                     velocityY: 0,
                     velocityAngular: 0,
-                };
-                formula._userVariableHost = {
                     getVariable: function (id) { return { id: id, value: 0 }; },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                 };
@@ -108,6 +97,11 @@ PocketCode.Formula = (function () {
             catch (e) {
                 throw new Error('Error parsing formula: ' + e.message);
             }
+        },
+        toString: function (uvh) {
+            this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;
+
+            return PocketCode.FormulaParser.getUiString(this._json, this._userVariableHost.getAllVariables(), this._userVariableHost.getAllLists());
         },
         dispose: function () {
             this._device = undefined;

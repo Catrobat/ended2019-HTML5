@@ -13,8 +13,12 @@ PocketCode.Model.merge({
     UserScriptBrick: (function () { //TODO: make sure to use the logic from WhenBroadcastReceiveBrick to bind a event on subScripts
         UserScriptBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function UserScriptBrick(device, sprite, propObject, startEvent) {
+        function UserScriptBrick(device, sprite, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+            //we need a prototype object storing all procedure arguments to call fomula.toString(this._uvhPrototype)
+            //otherwide we are not able to show a formula including (variable) argument names
+            this._uvhPrototype = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
 
             //this._onStart = startEvent;
             //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));

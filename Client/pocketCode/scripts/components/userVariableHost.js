@@ -9,7 +9,9 @@ PocketCode.UserVariableHost = (function () {
 
     //ctr
     function UserVariableHost(scope, globalLookupHost) {
-        if (scope !== PocketCode.UserVariableScope.LOCAL && scope !== PocketCode.UserVariableScope.GLOBAL)
+        if (scope !== PocketCode.UserVariableScope.PROCEDURE &&
+            scope !== PocketCode.UserVariableScope.LOCAL &&
+            scope !== PocketCode.UserVariableScope.GLOBAL)
             throw new Error('invalid argument: scope');
         this.__variableScope = scope;
 
@@ -18,8 +20,9 @@ PocketCode.UserVariableHost = (function () {
                 throw new Error('invalid argument: global lookup host: expectet type = PocketCode.UserVariableHost');
             if (scope === PocketCode.UserVariableScope.GLOBAL)
                 throw new Error('invalid argument: a global lookup host cannot refer to another global variable definition');
-            if (globalLookupHost.__variableScope !== PocketCode.UserVariableScope.GLOBAL)
-                throw new Error('invalid argument: a global lookup host has to have a global scope');
+            if (scope == PocketCode.UserVariableScope.PROCEDURE && globalLookupHost.__variableScope !== PocketCode.UserVariableScope.LOCAL ||
+                scope == PocketCode.UserVariableScope.LOCAL && globalLookupHost.__variableScope !== PocketCode.UserVariableScope.GLOBAL)
+                throw new Error('invalid argument: a lookup host has to have a \'parent\' scope');
         }
         this.__variableLookupHost = globalLookupHost;
 
@@ -78,13 +81,18 @@ PocketCode.UserVariableHost = (function () {
             throw new Error('variable with id ' + id + ' not found');
         },
         getAllVariables: function () {
-            var tmp = {};
+            var tmp = {
+                //[PocketCode.UserVariableScope.GLOBAL]: {},
+                //[PocketCode.UserVariableScope.LOCAL]: {},
+                //[PocketCode.UserVariableScope.PROCEDURE]: {},
+                //^^not supported by blanket.js (code coverage)
+                global: {},
+                local: {},
+                procedure: {},
+            };
             tmp[this.__variableScope] = this.__variablesSimple.getVariables();
-            if (this.__variableScope === PocketCode.UserVariableScope.LOCAL) {
-                tmp[PocketCode.UserVariableScope.GLOBAL] = {};  //make sure a global property exists
-                if (this.__variableLookupHost)
-                    tmp.merge(this.__variableLookupHost.getAllVariables());
-            }
+            if (this.__variableLookupHost)
+                tmp.merge(this.__variableLookupHost.getAllVariables());
             return tmp;
         },
         _valueChangeHandler: function(e) {
@@ -113,13 +121,18 @@ PocketCode.UserVariableHost = (function () {
             throw new Error('list with id ' + id + ' not found');
         },
         getAllLists: function () {
-            var tmp = {};
+            var tmp = {
+                //[PocketCode.UserVariableScope.GLOBAL]: {},
+                //[PocketCode.UserVariableScope.LOCAL]: {},
+                //[PocketCode.UserVariableScope.PROCEDURE]: {},
+                //^^not supported by blanket.js (code coverage)
+                global: {},
+                local: {},
+                procedure: {},
+            };
             tmp[this.__variableScope] = this.__variablesList.getVariables();
-            if (this.__variableScope === PocketCode.UserVariableScope.LOCAL) {
-                tmp[PocketCode.UserVariableScope.GLOBAL] = {};
-                if (this.__variableLookupHost)
-                    tmp.merge(this.__variableLookupHost.getAllLists());
-            }
+            if (this.__variableLookupHost)
+                tmp.merge(this.__variableLookupHost.getAllLists());
             return tmp;
         },
         _resetVariables: function () {

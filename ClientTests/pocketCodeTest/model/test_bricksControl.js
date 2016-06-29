@@ -278,6 +278,12 @@ QUnit.test("WaitBrick", function (assert) {
 });
 
 
+QUnit.test("ResetTimerBrick", function (assert) {
+
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();

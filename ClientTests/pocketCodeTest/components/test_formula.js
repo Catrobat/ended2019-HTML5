@@ -27,16 +27,16 @@ QUnit.test("Formula", function (assert) {
     assert.equal(f.calculate(), 500, "json parsed to method calculate");
 
     assert.equal(json, f.json, "json getter");
-    var uiString = f.uiString;
+    var uiString = f.toString();
     assert.ok(typeof uiString === "string", "uiString getter");
-    try {
-        f.uiString = "asd";
-    }
-    catch (e) { }
-    assert.equal(f.uiString, uiString, "uiString setter");
+    //try {
+    //    f.uiString = "asd";
+    //}
+    //catch (e) { }
+    //assert.equal(f.toString(), uiString, "uiString setter");
+
 
     f.json = json2;
-    assert.equal(f._uiString, undefined, "uiString cleared when json setter called");
 
     assert.equal(json2, f.json, "json setter");
     assert.equal(f.calculate(), 20, "json setter: calculate update");
