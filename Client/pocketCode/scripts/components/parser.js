@@ -112,6 +112,7 @@ PocketCode.merge({
 
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
+                    case 'SetCameraTransparencyBrick':
 
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
