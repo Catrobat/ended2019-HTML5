@@ -251,9 +251,16 @@ PocketCode.ImageFilter = {
     //}
         return p;
     },
-    color: function (p, brightnessShift) {
-        if(!brightnessShift)
+    color: function (p, hueShift) {
+        if(!hueShift)
             return;
+
+        //convert to pocketCode interval
+        hueShift = hueShift % 200;
+        if(hueShift < 0)
+            hueShift += 200;
+
+        hueShift = hueShift / 200 * 360;
 
         for (var i = 0, l = p.length; i < l; i += 4) {
             var r = p[i],
@@ -265,9 +272,9 @@ PocketCode.ImageFilter = {
             var s = hsv.s;
             var v = hsv.v;
 
-            h = (h + brightnessShift) % 360;
-            if (h < 0)
-                h += 360;
+            h = (h + hueShift) % 360;
+            // if (h < 0)
+            //     h += 360;
 
             var rgb = PocketCode.ImageHelper.hsvToRgb(h, s, v);
 
