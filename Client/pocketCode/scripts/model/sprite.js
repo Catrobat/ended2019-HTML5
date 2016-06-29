@@ -995,15 +995,15 @@ PocketCode.Model.Sprite = (function () {
                 //update overflows
                 collision = collisionMgr.checkSpriteEdgeCollision(newX, newY, boundary);
                 overflow = collision.overflow;
-                if (vpEdges.top.handled)
-                    newY -= overflow.top;
-                if (vpEdges.right.handled)
-                    newX -= overflow.right;
-                if (vpEdges.bottom.handled)
-                    newY += overflow.bottom;
-                if (vpEdges.left.handled)
-                    newX += overflow.left;
             }
+            if (vpEdges.top.handled)
+                newY -= overflow.top;
+            if (vpEdges.right.handled)
+                newX -= overflow.right;
+            if (vpEdges.bottom.handled)
+                newY += overflow.bottom;
+            if (vpEdges.left.handled)
+                newX += overflow.left;
 
             //set sprite values: avoid triggering multiple onChange events
             var props = {};
