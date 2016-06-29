@@ -80,7 +80,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var canvas = this._canvas,
                 cw = Math.floor(ow * scaling / 2.0) * 2.0,
                 ch = Math.floor(oh * scaling / 2.0) * 2.0;
-            canvas.setDimensions(cw, ch, scaling);
+            canvas.setDimensions(cw, ch, scaling, scaling);
             canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
             canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
 

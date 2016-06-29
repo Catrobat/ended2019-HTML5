@@ -105,7 +105,6 @@ QUnit.test("Canvas", function (assert) {
 
         var target = canvas._getTargetAtPosition(mockPointer.x, mockPointer.y);
         assert.strictEqual(target.id, 4, '_getTargetAtPosition returns correct target');
-        assert.ok(scalingAppliedToPointer, 'scaling applied to pointer before checking');
 
         target.visible = false;
         target = canvas._getTargetAtPosition(mockPointer.x, mockPointer.y);
@@ -177,7 +176,7 @@ QUnit.test("Canvas", function (assert) {
         SmartJs.Device.isTouch = isTouchDevice;
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
-        canvas.setDimensions(80, 40, viewportScaling);
+        canvas.setDimensions(80, 40, viewportScaling, viewportScaling);
 
         assert.equal(canvas._lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
         assert.equal(canvas._lowerCanvasEl.width, 80, 'setDimensions sets width for lower canvas');
@@ -185,7 +184,8 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(canvas._upperCanvasEl.width, 80, 'setDimensions sets width for upper canvas');
         assert.equal(canvas._cacheCanvasEl.height, Math.floor(40 / viewportScaling), 'setDimensions sets height for cache canvas');
         assert.equal(canvas._cacheCanvasEl.width, Math.floor(80 / viewportScaling), 'setDimensions sets width for cache canvas');
-        assert.equal(canvas.scaling, viewportScaling, 'setDimensions sets scaling');
+        assert.equal(canvas._scalingX, viewportScaling, 'setDimensions sets scalingX');
+        assert.equal(canvas._scalingY, viewportScaling, 'setDimensions sets scalingY');
 
         var contextScaling = 0;
         var drawCalledRenderingImage = 0;
@@ -215,7 +215,6 @@ QUnit.test("Canvas", function (assert) {
         canvas.renderingImages = [mockRenderingImage];
         canvas.renderingTexts = [mockRenderingText];
 
-        viewportScaling = 1.5;
         canvas.scaling = 2;
 
         canvas.render(viewportScaling);
@@ -224,19 +223,18 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(drawCalledRenderingImage, 1, "renderingText draw called on rendering");
 
         canvas.render();
-        assert.equal(contextScaling, canvas.scaling, "canvas scaling used to scale context if no viewportScaling passed");
+        assert.equal(contextScaling, canvas._scalingX, "canvas scalingX used to scale context if no viewportScaling passed");
 
         canvas.renderingImages = [renderingImageOpaque];
 
         var scalingY = 50;
-        canvas.scalingY = scalingY;
-        assert.equal(canvas._scalingY, scalingY, "scalingY set correctly.");
-        assert.equal(canvas.scalingY, canvas._scalingY, "get scalingY");
-
         var scalingX = 10;
+
+        canvas.scale(scalingX, scalingY);
+        assert.equal(canvas._scalingY, scalingY, "scalingY set correctly.");
+
         canvas.scalingX = scalingX;
         assert.equal(canvas._scalingX, scalingX, "scalingX set correctly.");
-        assert.equal(canvas.scalingY, canvas._scalingY, "get scalingX");
 
         canvas._onMouseDown = "onMouseDown";
         assert.equal(canvas.onMouseDown, canvas._onMouseDown, "get onMouseDown");
