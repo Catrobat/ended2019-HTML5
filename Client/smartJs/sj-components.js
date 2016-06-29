@@ -191,7 +191,9 @@ SmartJs.Components = {
                 this._init();
                 this._startDateTime = new Date();
             },
-            //restart: function () { this.start(); },
+            reset: function () {
+                this._init();
+            },
             pause: function () {
                 this._pausedDateTime = new Date();
             },

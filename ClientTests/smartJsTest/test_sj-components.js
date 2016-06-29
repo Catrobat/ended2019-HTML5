@@ -239,6 +239,10 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
         assert.ok(sw._pausedTimespan == 0.0 && sw._startDateTime == undefined && sw._lastPausedDateTime == undefined, "reinit on stop");
         sw.start();
         assert.ok(delay > sw.value && sw.value < 100.0, "reset after restart");
+        sw.reset();
+        assert.equal(sw.value, 0, "reset: starts with 0");
+        assert.ok(sw._startDateTime === undefined && sw._pausedDateTime === undefined && sw._pausedTimespan === 0.0, "reset: all internal properties set to init state");
+
         done();
     };
 
