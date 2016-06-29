@@ -108,6 +108,12 @@ PocketCode.merge({
                     case 'SetMassBrick':
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
+
+                    case 'SelectCameraBrick':
+                    case 'CameraBrick':
+
+                    case 'UserScriptBrick':
+                    case 'CallUserScriptBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                     //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
