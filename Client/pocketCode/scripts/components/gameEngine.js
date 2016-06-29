@@ -58,7 +58,7 @@ PocketCode.GameEngine = (function () {
         };
 
         this._collisionManager;// = new PocketCode.CollisionManager()
-        this._projectTimer = new PocketCode.Stopwatch();
+        this._projectTimer = new SmartJs.Components.Stopwatch();
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
