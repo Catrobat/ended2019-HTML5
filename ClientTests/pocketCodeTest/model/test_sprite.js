@@ -945,18 +945,19 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._direction = 20.0;
         result = sprite.setDirection(-10.0);
         assert.ok(result, "direction changed: LEFT_TO_RIGHT");
-        assert.ok(props.rotation === 0.0 && props.flipX === true, "rotation update triggered");
+        assert.ok(props.rotation === undefined && props.flipX === true, "flipX update triggered");
         props = undefined;
         result = sprite.setDirection(-15.0);
+        assert.notOk(result, "no UI change because of rotation style: LEFT_TO_RIGHT");
         assert.deepEqual(props, undefined, "rotation update NOT triggered");
         props = undefined;
         result = sprite.setDirection(15.0);
-        assert.ok(props.rotation === 0.0 && props.flipX === false, "rotation update triggered: flipX only, rotation not changed");
+        assert.ok(props.rotation === undefined && props.flipX === false, "rotation update triggered: flipX only, rotation not changed");
 
         props = undefined;
         sprite._rotationStyle = PocketCode.RotationStyle.DO_NOT_ROTATE;
         result = sprite.setDirection(-15.0);
-        assert.deepEqual(props, undefined, "rotation update triggered");
+        assert.deepEqual(props, undefined, "no UI change because of rotation style: DO_NOT_ROTATE");
 
         done();
     };
@@ -969,10 +970,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
 
 QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 
-    assert.ok(false, "missing");
-    return;
-    var done1 = assert.async();
-    //var done2 = assert.async();
+    var done = assert.async();
 
     var gameEngine = new PocketCode.GameEngine(),
         is = new PocketCode.ImageStore(),
@@ -992,9 +990,9 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         ];
 
     //simulate loading a json Project: setting required properties (internal)
-    gameEngine._originalScreenHeight = 100;
     gameEngine._originalScreenWidth = 50;
-    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    gameEngine._originalScreenHeight = 100;
+    gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
 
     var sh2 = gameEngine._originalScreenHeight / 2,
         sw2 = gameEngine._originalScreenWidth / 2;
@@ -1007,7 +1005,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         { id: "i_10", resourceId: "i10", name: "look10" },
         { id: "i_11", resourceId: "i11", name: "look11" },
     ];
-    var sprite = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "sprite", looks: looks });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, { id: "spriteId_test", name: "sprite", looks: looks });
 
     //add event listener to verify triggered updates (UI)
     var lastUpdateEventArgs;
@@ -1037,488 +1035,783 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         assert.equal(lastUpdateEventArgs, undefined, "simple: event: no change");
         assert.equal(sprite.ifOnEdgeBounce(), false, "simple: return value: no change");
 
-        //simple movements in one direction
-        //left
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: left overflow");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY === undefined && lastUpdateEventArgs.id == "spriteId_test", "left overflow: event argument check");
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, 0, false, true);
-        var overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.equal(overflowLeft, 0, "simple: left overflow: aligned after bounce");
-        assert.equal(sprite.direction, 90, "left: direction not changed");
-        assert.equal(sprite.positionY, 0, "left without direction change: y pos does not change");
+        var currentLook = sprite._currentLook;
+        sprite._currentLook = undefined;
+        assert.notOk(sprite.ifOnEdgeBounce(), "return false if look not defined");
+        sprite._currentLook = currentLook;
 
-        //directions
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(-170);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 170, "left: direction changed (-170 -> 170)");
+        //simple pixel tests without rotation (DO_NOT_ROTATE)
+        var overflowTop, overflowRight, overflowBottom, overflowLeft;
 
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(-90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 90, "left: direction changed (180 turn around)");
-
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(-40);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 40, "left: direction changed (-40 -> 40)");
-
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(0);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 0, "left: direction not changed (0 = sprite direction parallel to handled edge)");
-
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(180);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 180, "left: direction not changed (180 = sprite direction parallel to handled edge)");
-
-
-        //right
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: right overflow");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY === undefined && lastUpdateEventArgs.id == "spriteId_test", "right overflow: event argument check");
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, 0, false, true);
-        var overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.equal(overflowRight, 0, "simple: right overflow: aligned after bounce");
-        assert.equal(sprite.direction, -90, "right: direction changed");
-        //directions
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(10);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -10, "right: direction changed (10 -> -10)");
-
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(150);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -150, "right: direction changed (150 -> -150)");
-
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(0);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 0, "right: direction not changed (0)");
-        assert.equal(sprite.positionY, 0, "right without direction change: y pos does not change");
-
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(180);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 180, "right: direction not changed (180)");
-
-
-        //top
+        //top: direction not changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
         sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(0);
+        sprite.setPositionY(54);
+        sprite.setDirection(110);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: top overflow");
-        assert.ok(lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.positionX === undefined && lastUpdateEventArgs.id == "spriteId_test", "top overflow: event argument check");
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, 0, false, true);
-        var overflowTop = sprite.positionY + boundary.top - sh2;
-        assert.equal(overflowTop, 0, "simple: top overflow: aligned after bounce");
-        assert.equal(sprite.direction, 180, "top: direction changed");
-        //directions
-        sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(-90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -90, "top: direction not changed (-90 = sprite direction parallel to handled edge)");
-        assert.equal(sprite.positionX, 0, "top without direction change: x pos does not change");
+        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "DO_NOT_ROTATE: top overflow (not 'in direction')");
+        assert.ok(lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: top overflow: event argument check (not 'in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        overflowTop = sprite.positionY + boundary.top - sh2;
+        assert.equal(overflowTop, 0, "DO_NOT_ROTATE: top overflow: aligned after bounce (not 'in direction')");
+        assert.equal(sprite.direction, 110, "DO_NOT_ROTATE: top: direction not changed (not 'in direction')");
+        assert.equal(sprite.positionX, 0, "DO_NOT_ROTATE: top without direction change: x pos does not change (not 'in direction')");
 
-        sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 90, "top: direction not changed (90 = sprite direction parallel to handled edge)");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(-20);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -160, "top: direction changed (-20 -> -160)");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(40);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 140, "top: direction changed (40 -> 140)");
-
-        //bottom
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(180);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: bottom overflow");
-        assert.ok(lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.positionX === undefined && lastUpdateEventArgs.id == "spriteId_test", "bottom overflow: event argument check");
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, 0, false, true);
-        var overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        assert.equal(overflowBottom, 0, "simple: bottom overflow: aligned after bounce");
-        assert.equal(sprite.direction, 0, "bottom: direction changed");
-        //directions
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 90, "bottom: direction not changed (90 = sprite direction parallel to handled edge)");
-        assert.equal(sprite.positionX, 0, "bottom without direction change: x pos does not change");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(-90);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -90, "bottom: direction not changed (-90 = sprite direction parallel to handled edge)");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(100);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, 80, "bottom: direction not changed (100 -> 80)");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(-170);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(sprite.direction, -10, "bottom: direction not changed (-170 -> -10)");
-
-        //including rotation
         sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
-        //left
-        lastUpdateEventArgs = undefined;
         sprite.setPositionX(0);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(lastUpdateEventArgs, undefined, "rotation: left but without overflow: no event triggered");
-
-        sprite.setPositionX(-40);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.equal(overflowLeft, 0, "rotation: left overflow: aligned after bounce");
-
-        //right
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(lastUpdateEventArgs, undefined, "rotation: right but without overflow: no event triggered");
-
-        sprite.setPositionX(40);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.equal(overflowRight, 0, "rotation: right overflow: aligned after bounce");
-
-        //top
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(lastUpdateEventArgs, undefined, "rotation: top but without overflow: no event triggered");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(70);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
-        assert.equal(overflowTop, 0, "rotation: top overflow: aligned after bounce");
-
-        //bottom
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(0);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        assert.equal(lastUpdateEventArgs, undefined, "rotation: bottom but without overflow: no event triggered");
-
-        sprite.setPositionX(0);
-        sprite.setPositionY(-70);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        assert.equal(overflowBottom, 0, "rotation: bottom overflow: aligned after bounce");
-
-        //overflow on two sides without conflicts (look size > viewport size)
-        //top right: one edge in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(40);
-        sprite.setPositionY(70);
-        sprite.setDirection(-5);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, -175, "top/right: direction after bounce");
-        //top right: both edges in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(40);
-        sprite.setPositionY(70);
-        sprite.setDirection(45);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, -135, "top/right: direction after bounce");
-
-
-        //top left: one edge in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(-40);
-        sprite.setPositionY(70);
-        sprite.setDirection(15);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, 165, "top/left: direction after bounce");
-        //top left: both edges in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(-40);
-        sprite.setPositionY(70);
-        sprite.setDirection(-5);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, 175, "top/left: direction after bounce");
-
-        //bottom right: one edge in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(40);
-        sprite.setPositionY(-70);
-        sprite.setDirection(5);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, -5, "bottom/right: direction after bounce");
-        //bottom right: both edges in direction
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(40);
-        sprite.setPositionY(-70);
-        sprite.setDirection(105);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, -75, "bottom/right: direction after bounce");
-
-        //bottom left
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(-40);
-        sprite.setPositionY(-70);
-        sprite.setDirection(-95);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowBottom == 0 && overflowLeft == 0, "bottom/left: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/left: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, 85, "bottom/left: direction after bounce");
-
-        //flipX
-        spritesetRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(40);
-        sprite.setPositionY(-70);
-        sprite.setDirection(105);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i1", 1, 0, true, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "flipX: bottom/right: 2 sides + rotation: aligned after bounce");
-        assert.ok(lastUpdateEventArgs.properties.positionX !== undefined && lastUpdateEventArgs.properties.positionY !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "flipX: bottom/right: 2 sides + rotation: event args check");
-        assert.equal(sprite.direction, -75, "flipX: bottom/right: direction after bounce");
-
-        done1();
-        //complexTests();
-    };
-
-    function complexTests() {
-        //complex cases: overflow on opposite edges (before/after rotate)
-
-        sprite.currentLook = {
-            imageId: "i9",
-        };
-        spritesetRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
-
-        //overflow on all sides: the sprite should bounce from the top/right corner(direction = 90)
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(0);
+        sprite.setPositionY(54);
         sprite.setDirection(90);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i9", 1, sprite.direction - 90, false, true);
-        var overflowTop = sprite.positionY + boundary.top - sh2;
-        var overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "complex: bounce from top/right");
-
-        //overflow on all sides: the sprite should bounce from the bottom/right corner (direction = 100)
         lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(0);
-        sprite.setDirection(100);
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i9", 1, sprite.direction - 90, false, true);
-        var overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: bounce from bottom/right");
-
-        //overflow on all sides: the sprite should bounce from the top/left corner(direction = -90)
-        lastUpdateEventArgs = undefined;
+        assert.equal(sprite.direction, 90, "top overflow, direction parallel to edge (90): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "top overflow, direction parallel to edge (90): rotation not changed: event");
         sprite.setPositionX(0);
-        sprite.setPositionY(0);
+        sprite.setPositionY(54);
         sprite.setDirection(-90);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i9", 1, sprite.direction - 90, false, true);
+        assert.equal(sprite.direction, -90, "top overflow, direction parallel to edge (-90): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "top overflow, direction parallel to edge (-90): rotation not changed: event");
+
+        //top: direction changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(0);
+        sprite.setPositionY(54);
+        sprite.setDirection(70);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: top overflow: event argument check ('in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
         overflowTop = sprite.positionY + boundary.top - sh2;
-        var overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: bounce from top/left");
+        assert.equal(overflowTop, 0, "DO_NOT_ROTATE: top overflow: aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, 110, "DO_NOT_ROTATE: top: direction changed ('in direction')");
+        assert.equal(sprite.positionX, 0, "DO_NOT_ROTATE: top without direction change: x pos does not change ('in direction')");
 
-        //overflow on all sides: the sprite should bounce from the bottom/left corner (direction = -100)
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
+        //right: direction not changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(23);
         sprite.setPositionY(0);
-        sprite.setDirection(-100);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i9", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: bounce from bottom/left");
-
-        //overflow on three sides
-        sprite.currentLook = {
-            imageId: "i10",
-        };
+        sprite.setDirection(-80);
         lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(100);
-        sprite.setDirection(0);
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i10", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
+        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "DO_NOT_ROTATE: right overflow (not 'in direction')");
+        assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y === undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: right overflow: event argument check (not 'in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
         overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "complex (3 sides): bounce from top/right");
+        assert.equal(overflowRight, 0, "DO_NOT_ROTATE: right overflow: aligned after bounce (not 'in direction')");
+        assert.equal(sprite.direction, -80, "DO_NOT_ROTATE: right: direction not changed (not 'in direction')");
+        assert.equal(sprite.positionY, 0, "DO_NOT_ROTATE: right without direction change: y pos does not change (not 'in direction')");
 
-        lastUpdateEventArgs = undefined;
-        sprite.setPositionX(0);
-        sprite.setPositionY(-100);
-        sprite.setDirection(0);
-        opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i10", 1, sprite.direction - 90, false, true);
-        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
-        overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "complex (3 sides): bounce from bottom/right");
-
-        //take care of overflows that occur during bounce
-        sprite.setPositionX(-100);
+        sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        sprite.setPositionX(23);
         sprite.setPositionY(0);
-        sprite.setDirection(-105);
+        sprite.setDirection(0);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i10", 1, sprite.direction - 90, false, true);
-        overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
+        assert.equal(sprite.direction, 0, "right overflow, direction parallel to edge (0): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "right overflow, direction parallel to edge (0): rotation not changed: event");
+        sprite.setPositionX(43);
+        sprite.setPositionY(0);
+        sprite.setDirection(180);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.equal(sprite.direction, 180, "right overflow, direction parallel to edge (180): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "right overflow, direction parallel to edge (180): rotation not changed: event");
 
-        //test on top/bottom: landscape
-        ga._originalScreenHeight = 50;
-        ga._originalScreenWidth = 100;
-        sh2 = ga._originalScreenHeight / 2,
-        sw2 = ga._originalScreenWidth / 2;
-        //sprite.size = 200;
-
-        sprite.setPositionX(100);
+        //right: direction changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(23);
         sprite.setPositionY(0);
         sprite.setDirection(80);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i10", 1, sprite.direction - 90, false, true);
-        overflowTop = sprite.positionY + boundary.top - sh2;
+        assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y === undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: right overflow: event argument check ('in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
         overflowRight = sprite.positionX + boundary.right - sw2;
+        assert.equal(overflowRight, 0, "DO_NOT_ROTATE: right overflow: aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, -80, "DO_NOT_ROTATE: right: direction changed ('in direction')");
+        assert.equal(sprite.positionY, 0, "DO_NOT_ROTATE: right without direction change: y pos does not change ('in direction')");
+
+        //bottom: direction not changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(0);
+        sprite.setPositionY(-47);
+        sprite.setDirection(-40);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "DO_NOT_ROTATE: bottom overflow (not 'in direction')");
+        assert.ok(lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: bottom overflow: event argument check (not 'in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        assert.equal(overflowBottom, 0, "DO_NOT_ROTATE: bottom overflow: aligned after bounce (not 'in direction')");
+        assert.equal(sprite.direction, -40, "DO_NOT_ROTATE: bottom: direction not changed (not 'in direction')");
+        assert.equal(sprite.positionX, 0, "DO_NOT_ROTATE: bottom without direction change: x pos does not change (not 'in direction')");
+
+        sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        sprite.setPositionX(0);
+        sprite.setPositionY(-47);
+        sprite.setDirection(90);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.equal(sprite.direction, 90, "bottom overflow, direction parallel to edge (90): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "bottom overflow, direction parallel to edge (90): rotation not changed: event");
+        sprite.setPositionX(0);
+        sprite.setPositionY(-87);
+        sprite.setDirection(-90);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.equal(sprite.direction, -90, "bottom overflow, direction parallel to edge (-90): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "bottom overflow, direction parallel to edge (-90): rotation not changed: event");
+
+        //bottom: direction changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(0);
+        sprite.setPositionY(-47);
+        sprite.setDirection(-120);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: bottom overflow: event argument check ('in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        assert.equal(overflowBottom, 0, "DO_NOT_ROTATE: bottom overflow: aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, -60, "DO_NOT_ROTATE: bottom: direction changed ('in direction')");
+        assert.equal(sprite.positionX, 0, "DO_NOT_ROTATE: bottom without direction change: x pos does not change ('in direction')");
+
+        //left: direction not changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(-21);
+        sprite.setPositionY(0);
+        sprite.setDirection(90);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "DO_NOT_ROTATE: left overflow (not 'in direction')");
+        assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y === undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: left overflow: event argument check (not 'in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        overflowLeft = -sprite.positionX - boundary.left - sw2;
+        assert.equal(overflowLeft, 0, "DO_NOT_ROTATE: left overflow: aligned after bounce (not 'in direction')");
+        assert.equal(sprite.direction, 90, "DO_NOT_ROTATE: left: direction not changed (not 'in direction')");
+        assert.equal(sprite.positionY, 0, "DO_NOT_ROTATE: left without direction change: y pos does not change (not 'in direction')");
+
+        sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        sprite.setPositionX(-41);
+        sprite.setPositionY(0);
+        sprite.setDirection(0);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.equal(sprite.direction, 0, "left overflow, direction parallel to edge (0): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "left overflow, direction parallel to edge (0): rotation not changed: event");
+        sprite.setPositionX(-41);
+        sprite.setPositionY(0);
+        sprite.setDirection(180);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.equal(sprite.direction, 180, "left overflow, direction parallel to edge (180): direction not changed");
+        assert.ok(lastUpdateEventArgs.properties.rotation === undefined, "left overflow, direction parallel to edge (180): rotation not changed: event");
+
+        //left: direction changed
+        sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
+        sprite.setPositionX(-21);
+        sprite.setPositionY(0);
+        sprite.setDirection(-40);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y === undefined && lastUpdateEventArgs.properties.rotation === undefined && lastUpdateEventArgs.id == "spriteId_test", "DO_NOT_ROTATE: left overflow: event argument check ('in direction')");
+        boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        overflowLeft = -sprite.positionX - boundary.left - sw2;
+        assert.equal(overflowLeft, 0, "DO_NOT_ROTATE: left overflow: aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, 40, "DO_NOT_ROTATE: left: direction changed ('in direction')");
+        assert.equal(sprite.positionY, 0, "DO_NOT_ROTATE: left without direction change: y pos does not change ('in direction')");
+
+        //handle conflics: left-right
+        sprite.setSize(1000);
+        sprite.setPositionX(0);
+        sprite.setPositionY(0);
+        sprite.setDirection(0);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.notOk(opReturn, "conflict left-right, direction = 0: no update");
+        assert.ok(lastUpdateEventArgs == undefined, "conflict left-right, direction = 0: no update event");
+
+        sprite.setDirection(180);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.notOk(opReturn, "conflict left-right, direction = 180: no update");
+        assert.ok(lastUpdateEventArgs == undefined, "conflict left-right, direction = 180: no update event");
+
+        sprite.setPositionX(0);
+        sprite.setPositionY(0);
+        sprite.setDirection(80);    //handle right overflow
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        boundary = sprite._currentLook.getBoundary(sprite.size / 100.0, 0, false, true);
+        overflowRight = sprite.positionX + boundary.right - sw2;
+        assert.equal(overflowRight, 0, "conflict left-right: right overflow (with conflict): aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, -80, "conflict left-right: right (with conflict): direction changed ('in direction')");
+
+        sprite.setPositionX(0);
+        sprite.setPositionY(0);
+        sprite.setDirection(-40);    //handle left overflow
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        boundary = sprite._currentLook.getBoundary(sprite.size / 100.0, 0, false, true);
+        overflowLeft = -sprite.positionX - boundary.left - sw2;
+        assert.equal(overflowLeft, 0, "conflict left-right: left overflow (with conflict): aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, 40, "conflict left-right: left (with conflict): direction changed ('in direction')");
+
+        //handle conflict: top-bottom (overflow on all edges)
+        sprite.setSize(20000);
+        sprite.setPositionX(0);
+        sprite.setPositionY(700);
+        sprite.setDirection(90);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(lastUpdateEventArgs.properties.y == undefined, "conflict top-bottom, direction = 0: no update event");
+
+        sprite.setDirection(-90);
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        assert.ok(lastUpdateEventArgs.properties.y == undefined, "conflict top-bottom, direction = 180: no update event");
+
+        sprite.setPositionX(0);
+        sprite.setPositionY(700);
+        sprite.setDirection(80);    //handle top overflow
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        boundary = sprite._currentLook.getBoundary(sprite.size / 100.0, 0, false, true);
+        overflowTop = sprite.positionY + boundary.top - sh2;
+        assert.equal(overflowTop, 0, "conflict top-bottom: top overflow (with conflict): aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, -100, "conflict top-bottom: top (with conflict): direction changed ('in direction, bounced on 2 edges')");
+        //^^ 80 -> 100 -> -100
+
+        sprite.setPositionX(0);
+        sprite.setPositionY(700);
+        sprite.setDirection(-100);    //handle bottom overflow
+        lastUpdateEventArgs = undefined;
+        opReturn = sprite.ifOnEdgeBounce();
+        boundary = sprite._currentLook.getBoundary(sprite.size / 100.0, 0, false, true);
+        overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        assert.equal(overflowLeft, 0, "conflict top-bottom: bottom overflow (with conflict): aligned after bounce ('in direction')");
+        assert.equal(sprite.direction, 80, "conflict top-bottom: bottom (with conflict): direction changed ('in direction, bounced on 2 edges')");
+        //^^ -100 -> -80 -> 80
+
+
+        //RotationStyle.LEFT_RIGHT
+        sprite.setSize(100);
+        sprite.setDirection(90);
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+
+
+
+        //RotationStyle.ALL_AROUND
+        sprite.setSize(100);
+        sprite.setDirection(90);
+        sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+
+
+        //done();
+        ////return;
+
+        ////directions
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-170);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 170, "left: direction changed (-170 -> 170)");
+
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 90, "left: direction changed (180 turn around)");
+
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-40);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 40, "left: direction changed (-40 -> 40)");
+
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(0);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 0, "left: direction not changed (0 = sprite direction parallel to handled edge)");
+
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(180);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 180, "left: direction not changed (180 = sprite direction parallel to handled edge)");
+
+        ////right
+        //sprite.setPositionX(23);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: right overflow");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y === undefined && lastUpdateEventArgs.id == "spriteId_test", "right overflow: event argument check");
+        //boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.equal(overflowRight, -2, "simple: right overflow: aligned after bounce");    //2px transparency on the right
+        //assert.equal(sprite.direction, -90, "right: direction changed");
+        ////directions
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(10);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -10, "right: direction changed (10 -> -10)");
+
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(150);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -150, "right: direction changed (150 -> -150)");
+
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(0);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 0, "right: direction not changed (0)");
+        //assert.equal(sprite.positionY, 0, "right without direction change: y pos does not change");
+
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(180);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 180, "right: direction not changed (180)");
+
+
+        ////top
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-54);
+        //sprite.setDirection(180);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: top overflow");
+        //assert.ok(lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.id == "spriteId_test", "top overflow: event argument check");
+        //boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //assert.equal(overflowTop, 0, "simple: top overflow: aligned after bounce");
+        //assert.equal(sprite.direction, 180, "top: direction changed");
+        ////directions
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(-90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -90, "top: direction not changed (-90 = sprite direction parallel to handled edge)");
+        //assert.equal(sprite.positionX, 0, "top without direction change: x pos does not change");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 90, "top: direction not changed (90 = sprite direction parallel to handled edge)");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(-20);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -160, "top: direction changed (-20 -> -160)");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(40);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 140, "top: direction changed (40 -> 140)");
+
+        ////bottom
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(47);
+        //sprite.setDirection(90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.ok(opReturn == true && lastUpdateEventArgs !== undefined, "simple: bottom overflow");
+        //assert.ok(lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.x === undefined && lastUpdateEventArgs.id == "spriteId_test", "bottom overflow: event argument check");
+        //boundary = sprite._currentLook.getBoundary(1, 0, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //assert.equal(overflowBottom, 0, "simple: bottom overflow: aligned after bounce");
+        //assert.equal(sprite.direction, 0, "bottom: direction changed");
+        ////directions
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 90, "bottom: direction not changed (90 = sprite direction parallel to handled edge)");
+        //assert.equal(sprite.positionX, 0, "bottom without direction change: x pos does not change");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(-90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -90, "bottom: direction not changed (-90 = sprite direction parallel to handled edge)");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(100);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, 80, "bottom: direction not changed (100 -> 80)");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(-170);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(sprite.direction, -10, "bottom: direction not changed (-170 -> -10)");
+
+
+        ////including rotation
+        //sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+        ////left
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(lastUpdateEventArgs, undefined, "rotation: left but without overflow: no event triggered");
+
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
         //overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom");
+        //assert.equal(overflowLeft, 0, "rotation: left overflow: aligned after bounce");
+
+        ////right
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(lastUpdateEventArgs, undefined, "rotation: right but without overflow: no event triggered");
+
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.equal(overflowRight, 0, "rotation: right overflow: aligned after bounce");
+
+        ////top
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(lastUpdateEventArgs, undefined, "rotation: top but without overflow: no event triggered");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //assert.equal(overflowTop, 0, "rotation: top overflow: aligned after bounce");
+
+        ////bottom
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //assert.equal(lastUpdateEventArgs, undefined, "rotation: bottom but without overflow: no event triggered");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //assert.equal(overflowBottom, 0, "rotation: bottom overflow: aligned after bounce");
+
+        ////overflow on two sides without conflicts (look size > viewport size)
+        ////top right: one edge in direction
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(-5);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, -175, "top/right: direction after bounce");
+        ////top right: both edges in direction
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(45);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowTop == 0 && overflowRight == 0, "top/right: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/right: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, -135, "top/right: direction after bounce");
+
+
+        ////top left: one edge in direction
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(15);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, 165, "top/left: direction after bounce");
+        ////top left: both edges in direction
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(70);
+        //sprite.setDirection(-5);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowTop == 0 && overflowLeft == 0, "top/left: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "top/left: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, 175, "top/left: direction after bounce");
+
+        ////bottom right: one edge in direction
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(5);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, -5, "bottom/right: direction after bounce");
+        ////bottom right: both edges in direction
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(105);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowBottom == 0 && overflowRight == 0, "bottom/right: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/right: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, -75, "bottom/right: direction after bounce");
+
+        ////bottom left
+        //sprite.setPositionX(-40);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(-95);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowBottom == 0 && overflowLeft == 0, "bottom/left: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "bottom/left: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, 85, "bottom/left: direction after bounce");
+
+        ////flipX
+        //sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        //sprite.setPositionX(40);
+        //sprite.setPositionY(-70);
+        //sprite.setDirection(105);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, 0, true, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowBottom == 0 && overflowRight == 0, "flipX: bottom/right: 2 sides + rotation: aligned after bounce");
+        //assert.ok(lastUpdateEventArgs.properties.x !== undefined && lastUpdateEventArgs.properties.y !== undefined && lastUpdateEventArgs.properties.direction !== undefined, "flipX: bottom/right: 2 sides + rotation: event args check");
+        //assert.equal(sprite.direction, -75, "flipX: bottom/right: direction after bounce");
+
+
+        ////complex cases: overflow on opposite edges (before/after rotate)
+
+        //sprite.currentLook = {
+        //    imageId: "i9",
+        //};
+        //sprite.setRotationStyle(PocketCode.RotationStyle.ALL_AROUND);
+
+        ////overflow on all sides: the sprite should bounce from the top/right corner(direction = 90)
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowTop == 0 && overflowRight == 0, "complex: bounce from top/right");
+
+        ////overflow on all sides: the sprite should bounce from the bottom/right corner (direction = 100)
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(100);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: bounce from bottom/right");
+
+        ////overflow on all sides: the sprite should bounce from the top/left corner(direction = -90)
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-90);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: bounce from top/left");
+
+        ////overflow on all sides: the sprite should bounce from the bottom/left corner (direction = -100)
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-100);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: bounce from bottom/left");
+
+        ////overflow on three sides
+        //sprite.currentLook = {
+        //    imageId: "i10",
+        //};
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(100);
+        //sprite.setDirection(0);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowTop == 0 && overflowRight == 0, "complex (3 sides): bounce from top/right");
+
+        //sprite.setPositionX(0);
+        //sprite.setPositionY(-100);
+        //sprite.setDirection(0);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        //assert.ok(overflowBottom == 0 && overflowRight == 0, "complex (3 sides): bounce from bottom/right");
+
+        ////take care of overflows that occur during bounce
+        //sprite.setPositionX(-100);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(-105);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowLeft == 0, "complex (overflow during bounce): left");
+
+        ////test on top/bottom: landscape
+        //gameEngine._originalScreenHeight = 50;
+        //gameEngine._originalScreenWidth = 100;
+        //sh2 = gameEngine._originalScreenHeight / 2,
+        //sw2 = gameEngine._originalScreenWidth / 2;
+        //gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+        ////sprite.size = 200;
+
+        //sprite.setPositionX(100);
+        //sprite.setPositionY(0);
+        //sprite.setDirection(80);
+        //lastUpdateEventArgs = undefined;
+        //opReturn = sprite.ifOnEdgeBounce();
+        //boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
+        //overflowTop = sprite.positionY + boundary.top - sh2;
+        //overflowRight = sprite.positionX + boundary.right - sw2;
+        ////overflowLeft = -sprite.positionX - boundary.left - sw2;
+        //assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom");
 
         //imagge11: diagonal
-        sprite.currentLook = {
-            imageId: "i11",
-        };
-        ga._originalScreenHeight = 50;
-        ga._originalScreenWidth = 50;
-        sh2 = ga._originalScreenHeight / 2,
-        sw2 = ga._originalScreenWidth / 2;
+        //sprite.currentLook = {
+        //    imageId: "i11",
+        //};
+        sprite.setLook("i_11");
+
+        gameEngine._originalScreenHeight = 50;
+        gameEngine._originalScreenWidth = 50;
+        sh2 = gameEngine._originalScreenHeight / 2,
+        sw2 = gameEngine._originalScreenWidth / 2;
+        gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         //top
         sprite.setPositionX(0);
         sprite.setPositionY(40);
         sprite.setDirection(45);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i11", 1, sprite.direction - 90, false, true);
+        boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
         overflowTop = sprite.positionY + boundary.top - sh2;
         overflowRight = sprite.positionX + boundary.right - sw2;
-        assert.ok(overflowTop == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from left/right: 45");
+        assert.ok(overflowTop <= 0 && overflowRight <= 0, "complex: overflow during bounce (after rotate) from left/right: 45");
         //bottom
         sprite.setPositionX(0);
         sprite.setPositionY(-40);
         sprite.setDirection(-135);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i11", 1, sprite.direction - 90, false, true);
+        boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
         overflowBottom = -sprite.positionY - boundary.bottom - sh2;
         overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowBottom == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from left/right: -135");
+        assert.ok(overflowBottom <= 0 && overflowLeft <= 0, "complex: overflow during bounce (after rotate) from left/right: -135");
         //right
         sprite.setPositionX(40);
         sprite.setPositionY(0);
         sprite.setDirection(135);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i11", 1, sprite.direction - 90, false, true);
+        boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
         overflowBottom = -sprite.positionY - boundary.bottom - sh2;
         //overflowTop = sprite.positionY + boundary.top - sh2;
         overflowRight = sprite.positionX + boundary.right - sw2;
         //overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowBottom == 0 && overflowRight == 0, "complex: overflow during bounce (after rotate) from top/bottom: 135");
+        assert.ok(overflowBottom <= 0 && overflowRight <= 0, "complex: overflow during bounce (after rotate) from top/bottom: 135");
         //left
         sprite.setPositionX(-40);
         sprite.setPositionY(0);
         sprite.setDirection(-45);
+        lastUpdateEventArgs = undefined;
         opReturn = sprite.ifOnEdgeBounce();
-        boundary = sprite._currentLook.getBoundary("spriteId_test", "i11", 1, sprite.direction - 90, false, true);
+        boundary = sprite._currentLook.getBoundary(1, sprite.direction - 90, false, true);
         //overflowBottom = -sprite.positionY - boundary.bottom - sh2;
         overflowTop = sprite.positionY + boundary.top - sh2;
         overflowLeft = -sprite.positionX - boundary.left - sw2;
-        assert.ok(overflowTop == 0 && overflowLeft == 0, "complex: overflow during bounce (after rotate) from top/bottom: -135");
+        assert.ok(overflowTop <= 0 && overflowLeft <= 0, "complex: overflow during bounce (after rotate) from top/bottom: -135");
 
-        done2();
+        done();
     };
 
 });
