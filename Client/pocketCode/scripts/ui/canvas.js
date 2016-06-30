@@ -30,15 +30,8 @@ PocketCode.Ui.Canvas = (function () {
 
         this._renderingObjects = [];
         this._renderingTexts = [];
-        this._scaling = 1.0;   //initial
         this._scalingX = 1.0;
         this._scalingY = 1.0;
-        //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
-
-        //this.setDimensions(this._lowerCanvasEl.width, this._lowerCanvasEl.height, this.scaling);
-
-        //args = args || {};
-        //SmartJs.Ui.Control.call(this, this.wrapperEl, args); //the wrapper div becomes our _dom root element
     }
 
     //properties
@@ -58,32 +51,6 @@ PocketCode.Ui.Canvas = (function () {
                 this._renderingTexts = list;  //TODO: exception handling, argument check
             },
         },
-        scaling: {
-            set: function (value) {
-                this._scaling = value;
-                this._scalingX = value;
-                this._scalingY = value;
-            },
-            get: function () {
-                return this._scaling;
-            }
-        },
-        scalingX: {
-            set: function (value) {
-                this._scalingX = value;
-            },
-            get: function () {
-                return this._scalingX;
-            }
-        },
-        scalingY: {
-            set: function (value) {
-                this._scalingY = value;
-            },
-            get: function () {
-                return this._scalingY;
-            }
-        }
     });
 
     //events
@@ -98,7 +65,7 @@ PocketCode.Ui.Canvas = (function () {
     //methods
     Canvas.prototype.merge({
 
-        setDimensions: function (width, height, scaling) {
+        setDimensions: function (width, height, scalingX, scalingY) {
             width = Math.floor(width / 2.0) * 2.0;
             height = Math.floor(height / 2.0) * 2.0;
 
@@ -110,10 +77,17 @@ PocketCode.Ui.Canvas = (function () {
             this._upperCanvasEl.height = height;
             this._upperCanvasEl.width = width;
 
-            this.scaling = scaling;
+            this._scalingX = scalingX;
+            this._scalingY = scalingY;
 
-            this._cacheCanvasEl.setAttribute('width', width / scaling);
-            this._cacheCanvasEl.setAttribute('height', height / scaling);
+            this._cacheCanvasEl.setAttribute('width', width / scalingX);
+            this._cacheCanvasEl.setAttribute('height', height / scalingY);
+        },
+
+        scale: function(x, y) {
+            this._scalingX = x;
+            this._scalingY = y;
+            this.render();
         },
 
         clear: function () {
@@ -164,7 +138,7 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         _getTargetAtPosition: function (x, y) {
-            var pointer = { x: x / this.scalingX, y: y / this.scalingY };
+            var pointer = { x: x / this._scalingX, y: y / this._scalingY };
             var objects = this._renderingObjects;
             var i = objects.length;
             var object, target;
@@ -179,16 +153,14 @@ PocketCode.Ui.Canvas = (function () {
             return target;
         },
 
-        render: function (viewportScaling) {
-
+        render: function () {
             var ctx = this._contextContainer;
-
             ctx.clearRect(0, 0, this.width, this.height);
 
-            var ro = this._renderingObjects,
-                scaling = viewportScaling || this.scaling;
+            var ro = this._renderingObjects;
             ctx.save();
-            ctx.scale(scaling, scaling);
+            ctx.scale(this._scalingX, this._scalingY);
+
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
 
@@ -200,14 +172,16 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         toDataURL: function (width, height) {
-            var cw = this.width,
-                ch = this.height;
+            var currentWidth = this.width,
+                currentHeight = this.height,
+                currentScaleX = this._scalingX,
+                currentScaleY = this._scalingY;
 
-            this.setDimensions(width, height, this.scaling);
+            this.setDimensions(width, height, this._scalingX, this._scalingY);
             this._cacheCanvasEl.width = width;
             this._cacheCanvasEl.height = height;
 
-            this.render(width * this.scaling / cw);
+            this.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
             this._contextCache.save();
             this._contextCache.fillStyle = "#ffffff";
@@ -218,8 +192,8 @@ PocketCode.Ui.Canvas = (function () {
             var data = this._cacheCanvasEl.toDataURL('image/png');
 
             this._contextCache.restore();
-            this.setDimensions(cw, ch, this.scaling);
-            this.render();
+            this.setDimensions(currentWidth, currentHeight, this._scalingX, this._scalingY);
+            this.scale(currentScaleX, currentScaleY);
 
             return data;
         },

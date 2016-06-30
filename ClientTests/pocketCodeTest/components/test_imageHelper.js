@@ -54,6 +54,7 @@ QUnit.test("ImageFilter: color", function (assert) {
     PocketCode.ImageFilter.color(modifiedData, colorShift);
 
     var checkData = function () {
+        var expectedColorShift = (colorShift % 200) / 200 * 360;
         var dataAsExpected = true;
         for (var i = 0, l = modifiedData.length; i < l; i++) {
             //only h value shifted
@@ -61,11 +62,11 @@ QUnit.test("ImageFilter: color", function (assert) {
                 if(originalPixelData[i] !== modifiedData[i]){
                     dataAsExpected = false;
                 }
-            } else if ((originalPixelData[i] + colorShift) < 0){
-                if(modifiedData[i] !== (originalPixelData[i] + colorShift + 360))
+            } else if ((originalPixelData[i] + expectedColorShift) < 0){
+                if(modifiedData[i] !== (originalPixelData[i] + expectedColorShift + 360))
                     dataAsExpected = false
             } else {
-                if (modifiedData[i] !== ((originalPixelData[i] + colorShift) % 360))
+                if (modifiedData[i] !== ((originalPixelData[i] + expectedColorShift) % 360))
                     dataAsExpected = false;
             }
         }
