@@ -58,6 +58,31 @@ QUnit.test("NextLookBrick", function (assert) {
 
 });
 
+QUnit.test("PreviousLookBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.PreviousLookBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.PreviousLookBrick, "instance check");
+    assert.ok(b.objClassName === "PreviousLookBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
 QUnit.test("SelectCameraBrick", function (assert) {
 
     var done1 = assert.async();
