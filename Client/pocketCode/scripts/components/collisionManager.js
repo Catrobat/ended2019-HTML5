@@ -4,9 +4,10 @@
 'use strict';
 
 PocketCode.CollisionManager = (function () {
+    CollisionManager.extends(SmartJs.Core.Component);
 
-    function CollisionManager(projectScreenWidth, projectScreenHeight) {
-
+    function CollisionManager(sprites, projectScreenWidth, projectScreenHeight) {
+        this._sprites = sprites;
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
 

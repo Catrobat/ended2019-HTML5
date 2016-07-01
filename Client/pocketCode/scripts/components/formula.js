@@ -12,10 +12,10 @@ PocketCode.Formula = (function () {
             throw new Error('invalid parameter: undeclared device or sprite');
         this._device = device;
         this._sprite = sprite;
+        this._userVariableHost = sprite;    //default
 
         if (jsonFormula)
             this.json = jsonFormula;
-        //this._uiString = '';
     }
 
     //accessors
@@ -43,15 +43,7 @@ PocketCode.Formula = (function () {
                     this.isStatic = false;
                     this.calculate = parsed.calculate;
                 }
-                this._uiString = undefined;
                 this._validateFormula();
-            },
-        },
-        uiString: {
-            get: function () {
-                if (!this._uiString)
-                    this._uiString = PocketCode.FormulaParser.getUiString(this._json, this._sprite.getAllVariables(), this._sprite.getAllLists());
-                return this._uiString;
             },
         },
     });
@@ -106,9 +98,15 @@ PocketCode.Formula = (function () {
                 throw new Error('Error parsing formula: ' + e.message);
             }
         },
+        toString: function (uvh) {
+            this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;
+
+            return PocketCode.FormulaParser.getUiString(this._json, this._userVariableHost.getAllVariables(), this._userVariableHost.getAllLists());
+        },
         dispose: function () {
             this._device = undefined;
             this._sprite = undefined;
+            this._userVariableHost = undefined;
             SmartJs.Core.Component.prototype.dispose.call(this);
         },
     });

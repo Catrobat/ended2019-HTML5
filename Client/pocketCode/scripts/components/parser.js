@@ -6,6 +6,7 @@
 /// <reference path="../model/bricksMotion.js" />
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksData.js" />
+/// <reference path="../model/userVariable.js" />
 /// <reference path="../component/sprite.js" />
 'use strict';
 
@@ -98,6 +99,30 @@ PocketCode.merge({
                 var brick = undefined;
 
                 switch (type) {
+                    //in development
+                    case 'WhenCollisionBrick':
+                    case 'SetPhysicsObjectTypeBrick':
+                    case 'SetVelocityBrick':
+                    case 'TurnLeftSpeedBrick':
+                    case 'TurnRightSpeedBrick':
+                    case 'SetGravityBrick':
+                    case 'SetMassBrick':
+                    case 'SetBounceFactorBrick':
+                    case 'SetFrictionBrick':
+
+                    case 'SelectCameraBrick':
+                    case 'CameraBrick':
+                    case 'SetCameraTransparencyBrick':
+
+                    case 'UserScriptBrick':
+                    case 'CallUserScriptBrick':
+
+                    case 'PlaySoundAndWaitBrick':
+                    case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                        break;
+                    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+
                     case 'WhenProgramStartBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
                         break;
@@ -105,6 +130,10 @@ PocketCode.merge({
                     case 'WhenActionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
                         break;
+
+                    //case 'ResetTimerBrick':
+                    //    brick = new PocketCode.Model[type](this._device, currentSprite, this._project.projectTimer);
+                    //    break;
 
                     case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
@@ -211,7 +240,13 @@ PocketCode.merge({
             parseJson: function (jsonFormula) {
                 this._isStatic = true;
                 var formulaString = this._parseJsonType(jsonFormula);
-                return { calculate: new Function('return ' + formulaString + ';'), isStatic: this._isStatic };
+                return {
+                    calculate: new Function(
+                        'uvh',
+                        'this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;' +
+                        'return ' + formulaString + ';'),
+                    isStatic: this._isStatic
+                };
             },
 
             _parseJsonType: function (jsonFormula, uiString) {
@@ -243,12 +278,14 @@ PocketCode.merge({
 
                     case 'USER_VARIABLE':
                         if (uiString) {
-                            var variable = this._variableNames.local[jsonFormula.value] || this._variableNames.global[jsonFormula.value];
+                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
+                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                                this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getVariable("' + jsonFormula.value + '").value';
+                        return 'this._userVariableHost.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
                         if (uiString) {
@@ -257,7 +294,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._sprite.getList("' + jsonFormula.value + '")';
+                        return 'this._userVariableHost.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
                         //if (!jsonFormula.right)
@@ -628,7 +665,7 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
-                        //sprite
+                    //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
@@ -678,6 +715,62 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    //time(r)
+                    case 'CURRENT_YEAR':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getFullYear()';
+
+                    case 'CURRENT_MONTH':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getMonth()';
+
+                    case 'CURRENT_DATE':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getDate()';
+
+                    case 'CURRENT_DAY_OF_WEEK':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getDay() + 1';
+
+                    case 'CURRENT_HOUR':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getHours()';
+
+                    case 'CURRENT_MINUTE':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getMinutes()';
+
+                    case 'CURRENT_SECOND':    //TODO
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getSeconds()';
+
+                    //case 'DAYS_SINCE_2000':
+                    //    if (uiString)
+                    //        return 'days_since_2000';
+
+                    //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
+
+                    //case 'TIMER':
+                    //    if (uiString)
+                    //        return 'timer';
+
+                    //    return 'this._sprite.projectTimerValue';
+
+                    //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -696,6 +789,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
+                    //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';
@@ -720,6 +814,7 @@ PocketCode.merge({
 
                         return 'this._device.nxt4';
 
+                    //phiro
                     case 'PHIRO_FRONT_LEFT':
                         if (uiString)
                             return 'phiro_front_left_sensor';

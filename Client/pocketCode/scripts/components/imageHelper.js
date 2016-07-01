@@ -600,7 +600,7 @@ PocketCode.ImageHelper = (function () {
 
             var centerOffsetX = 0,
                 centerOffsetY = 0;
-            var trimOffsets = this.getElementTrimOffsets(element, 1, 0);
+            var trimOffsets = this.getElementTrimOffsets(element, 0);
 
             //if (rotationCenterX !== undefined || rotationCenterY !== undefined) {
             //    if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
@@ -749,9 +749,10 @@ PocketCode.ImageHelper = (function () {
 
             return offsets;
         },
-        getElementTrimOffsets: function (element, scaling, rotation) {
+        getElementTrimOffsets: function (element, rotation, /*optional*/ precision) {
             this._checkInitialized();
             var h, w;
+            precision = precision || 1.0;
             if (element instanceof HTMLImageElement) {
                 h = element.naturalHeight;
                 w = element.naturalWidth;
@@ -771,30 +772,28 @@ PocketCode.ImageHelper = (function () {
             else {
                 var renderedSize = rotation ? this.getBoundingSize(element, 1, rotation) : { height: h, width: w };
 
-                var ch = Math.ceil(renderedSize.height),
-                    cw = Math.ceil(renderedSize.width);
+                var ch = Math.ceil(renderedSize.height / precision),
+                    cw = Math.ceil(renderedSize.width / precision);
 
                 var canvas = document.createElement('canvas');
                 canvas.height = ch;
                 canvas.width = cw;
-
                 var ctx = canvas.getContext('2d');
                 ctx.translate(cw / 2, ch / 2);
+                ctx.scale(1.0 / precision, 1.0 / precision);
+
                 if (rotation)
                     ctx.rotate(rotation * Math.PI / 180);
                 ctx.drawImage(element, -w / 2, -h / 2);
-
                 offsets = this.getDataTrimOffsets(ctx.getImageData(0, 0, cw, ch), true, true, true, true);
             }
 
-            //apply scaling if defined and not included right now
-            if (scaling) {
-                offsets.top = Math.floor(offsets.top * scaling);
-                offsets.right = Math.floor(offsets.right * scaling);
-                offsets.bottom = Math.floor(offsets.bottom * scaling);
-                offsets.left = Math.floor(offsets.left * scaling);
-            }
-            return offsets;
+            return {
+                top: Math.floor(offsets.top * precision),
+                right: Math.floor(offsets.right * precision),
+                bottom: Math.floor(offsets.bottom * precision),
+                left: Math.floor(offsets.left * precision),
+            };
         },
         getBoundingSize: function (element, scaling, rotation) {
             var h, w;

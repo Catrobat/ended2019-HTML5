@@ -5,6 +5,7 @@ class SpriteDto {
     public $id;		//used for e.g. PointToBrick
     public $name;
     public $scripts = array();	//scripts
+    public $userScripts = array();	//user defined scripts
 
     public $looks = array();	//of type LookDto : ResourceReferenceDto
     public $sounds = array();	//of type ResourceReferenceDto
