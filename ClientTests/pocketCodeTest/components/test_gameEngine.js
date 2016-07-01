@@ -83,7 +83,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
     var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
-    assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopScripts == "function", "mock: valid sprite interface");
+    assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopAllScripts == "function", "mock: valid sprite interface");
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
@@ -108,7 +108,7 @@ QUnit.test("GameEngine", function (assert) {
             resumeScripts: function () {
                 this.status = PocketCode.ExecutionState.RUNNING;
             },
-            stopScripts: function () {
+            stopAllScripts: function () {
                 this.status = PocketCode.ExecutionState.STOPPED;
                 this.timesStopped++;
             },
