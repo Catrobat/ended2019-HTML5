@@ -608,6 +608,31 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.nextLook();
     assert.ok(!returnVal, "next look if only one is defined");
 
+    //previous
+    sprite.looks = [];
+    returnVal = sprite.previousLook();
+    assert.ok(!returnVal, "previous look on nonexisting look");
+
+    sprite.looks = looks;
+    //apply center to internal looks to run these tests
+    sprite._looks[0]._center = { length: 0, angle: 0 };
+    sprite._looks[0]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
+    sprite._looks[1]._center = { length: 0, angle: 0 };
+    sprite._looks[1]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
+
+    returnVal = sprite.setLook("second");
+    returnVal = sprite.previousLook();
+    assert.ok(sprite._currentLook.name == "look1", "previous look");
+    assert.ok(returnVal, "last look is set after first");
+    assert.ok(lastOnChangeArgs.look !== undefined, "previous look event args");
+    returnVal = sprite.previousLook();
+    assert.ok(sprite._currentLook.name == "look2", "previous look 2");
+    assert.ok(returnVal, "previous look is set correctly");
+
+    sprite._looks.pop();    //only one left
+    returnVal = sprite.previousLook();
+    assert.ok(!returnVal, "previous look if only one is defined");
+
     looks[1] = look2;   //add again
     var look3 = { name: "look3", id: "third", resourceId: "s3" };
     looks[2] = look3;
@@ -707,7 +732,7 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.scriptsRunning, "scrips running: running");
     assert.ok(!isPaused(), "script resumed correctly: deep check (timer)");
 
-    sprite.stopScripts();
+    sprite.stopAllScripts();
     assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
     assert.ok(function () {
         for (var p in testBrick._pendingOps)

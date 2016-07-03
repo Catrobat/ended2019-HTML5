@@ -58,7 +58,6 @@ PocketCode.GameEngine = (function () {
         };
 
         this._collisionManager;// = new PocketCode.CollisionManager()
-        this._projectTimer = new SmartJs.Components.Stopwatch();
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -158,9 +157,7 @@ PocketCode.GameEngine = (function () {
             },
         },
         projectTimer: {
-            get: function () {
-                return this._projectTimer;
-            },
+            value: new SmartJs.Components.Stopwatch(),
         },
     });
 
@@ -415,7 +412,7 @@ PocketCode.GameEngine = (function () {
                 this._resetVariables();  //global
             }
 
-            this._projectTimer.start();
+            this.projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
             this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
             this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
@@ -424,14 +421,14 @@ PocketCode.GameEngine = (function () {
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
-            this._projectTimer.stop();
+            this.projectTimer.stop();
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
-            this._projectTimer.pause();
+            this.projectTimer.pause();
             this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
@@ -447,7 +444,7 @@ PocketCode.GameEngine = (function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
 
-            this._projectTimer.resume();
+            this.projectTimer.resume();
             this._soundManager.resumeSounds();
             if (this._background)
                 this._background.resumeScripts();
@@ -462,15 +459,15 @@ PocketCode.GameEngine = (function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
 
-            this._projectTimer.stop();
+            this.projectTimer.stop();
             this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
             if (this._background) {
-                this._background.stopScripts();
+                this._background.stopAllScripts();
             }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].stopScripts();
+                sprites[i].stopAllScripts();
             }
 
             this._executionState = PocketCode.ExecutionState.STOPPED;

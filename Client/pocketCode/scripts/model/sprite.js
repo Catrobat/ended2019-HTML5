@@ -304,9 +304,25 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         /**
-         * calls stop() on every script as long as method is available
+         * calls stop() on every scripts
          */
-        stopScripts: function () {
+        stopScript: function (scriptId) {
+            var scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                if (scripts[i].id === scriptId) {
+                    scripts[i].stop();
+                    return;
+                }
+            }
+        },
+        stopOtherScripts: function (scriptId) {
+            var scripts = this._scripts;
+            for (var i = 0, l = scripts.length; i < l; i++) {
+                if (scripts[i].id !== scriptId)
+                    scripts[i].stop();
+            }
+        },
+        stopAllScripts: function () {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].stop)
@@ -636,6 +652,35 @@ PocketCode.Model.Sprite = (function () {
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
         /**
+         * sets the current look of the sprite to the previous one in the list
+         * @returns {boolean}
+         */
+        previousLook: function () {
+            if (this._currentLook == undefined || this._looks.length == 0)
+                return false;
+
+            var looks = this._looks,
+                update;
+            var count = looks.length;
+            if (count < 2)
+                return false;
+
+            for (var i = 0; i < count; i++) {
+                if (this._currentLook === looks[i]) {
+                    if ((i - 1) >= 0)
+                        this._currentLook = looks[i - 1];
+                    else
+                        this._currentLook = looks[count - 1];
+
+                    this._recalculateLookOffsets();
+                    update = { look: this._currentLook.canvas };
+                    update.x = Math.round(this._positionX + this._lookOffsetX);
+                    update.y = Math.round(this._positionY + this._lookOffsetY);
+                    return this._triggerOnChange(update);
+                }
+            }
+        },
+        /**
          * sets the current look of the sprite to the next one in the list
          * @returns {boolean}
          */
@@ -651,13 +696,11 @@ PocketCode.Model.Sprite = (function () {
 
             for (var i = 0; i < count; i++) {
                 if (this._currentLook === looks[i]) {
-                    if ((i + 1) < count) {  //1+1=2 < 2    2<2
-                        var j = i + 1;
-                        this._currentLook = looks[j];
-                    }
-                    else {
+                    if ((i + 1) < count)
+                        this._currentLook = looks[i + 1];
+                    else
                         this._currentLook = looks[0];
-                    }
+
                     this._recalculateLookOffsets();
                     update = { look: this._currentLook.canvas };
                     update.x = Math.round(this._positionX + this._lookOffsetX);
@@ -665,7 +708,6 @@ PocketCode.Model.Sprite = (function () {
                     return this._triggerOnChange(update);
                 }
             }
-            //return false;
         },
         /**
          * sets the size of the sprite with percentage "value"
@@ -1066,6 +1108,41 @@ PocketCode.Model.Sprite = (function () {
                 if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
                     props.rotation = Math.round(this._direction - 90.0);
 
+                    //align sprite to edges not in directory: max correction = movement without triggering an overflow on the opposit edge
+                    var correction;
+                    if (vpEdges.top.overflow > 0.0 && !vpEdges.top.inDirection) {
+                        correction = Math.min(vpEdges.top.overflow, -vpEdges.bottom.overflow);
+                        if (correction > 0.0) {
+                            newY -= correction;
+                            vpEdges.top.overflow -= correction;
+                            vpEdges.bottom.overflow += correction;
+                        }
+                    }
+                    if (vpEdges.right.overflow > 0.0 && !vpEdges.right.inDirection) {
+                        correction = Math.min(vpEdges.right.overflow, -vpEdges.left.overflow);
+                        if (correction > 0.0) {
+                            newX -= correction;
+                            vpEdges.right.overflow -= correction;
+                            vpEdges.left.overflow += correction;
+                        }
+                    }
+                    if (vpEdges.bottom.overflow > 0.0 && !vpEdges.bottom.inDirection) {
+                        correction = Math.min(vpEdges.bottom.overflow, -vpEdges.top.overflow);
+                        if (correction > 0.0) {
+                            newY += correction;
+                            vpEdges.top.overflow += correction;
+                            vpEdges.bottom.overflow -= correction;
+                        }
+                    }
+                    if (vpEdges.left.overflow > 0.0 && !vpEdges.left.inDirection) {
+                        correction = Math.min(vpEdges.left.overflow, -vpEdges.right.overflow);
+                        if (correction > 0.0) {
+                            newX += correction;
+                            vpEdges.top.overflow += correction;
+                            vpEdges.bottom.overflow -= correction;
+                        }
+                    }
+
                     //other edges to be handled: only required if the sprite was rotated (in this case the sprite may have another conflict due to rotation)
                     vpEdges.top.inWork = vpEdges.top.overflow > 0.0 && vpEdges.top.inDirection;
                     vpEdges.right.inWork = vpEdges.right.overflow > 0.0 && vpEdges.right.inDirection;
@@ -1094,7 +1171,7 @@ PocketCode.Model.Sprite = (function () {
 
         /* override */
         dispose: function () {
-            this.stopScripts();
+            this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
             var script,

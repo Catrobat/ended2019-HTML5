@@ -2,8 +2,8 @@
 
 class WhenStartAsCloneBrickDto extends ScriptBlockDto {
 
-  public function __construct() {
-	parent::__construct("WhenStartAsClone");
-  }
-  
+    public function __construct($id) {
+        parent::__construct("WhenStartAsClone", $id);
+    }
+
 }
