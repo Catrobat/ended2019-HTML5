@@ -1103,7 +1103,7 @@ PocketCode.Model.Sprite = (function () {
 
             //set sprite values: avoid triggering multiple onChange events
             var props = changes || {};
-            this.setDirection(newDir, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update
+            this.setDirection(newDir, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update 
             if (this._direction !== dir) { //direction changed
                 if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
                     props.rotation = Math.round(this._direction - 90.0);

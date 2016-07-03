@@ -88,6 +88,9 @@ class I18nController extends BaseController
         }
 
         $zipDir = getcwd() . str_replace("/", DIRECTORY_SEPARATOR, "/i18nResources/zips/");
+        if (!file_exists($zipDir)) {
+            mkdir($zipDir, 0777, true);
+        }
         foreach($crowdinLangCodes as $langCode) {
             $url = $this->api . $langCode. ".zip" . $this->apiKey;
             $zip = file_get_contents($url);
@@ -116,6 +119,8 @@ class I18nController extends BaseController
             if (!copy($cFile, $file))
                 return false;
         }
+        FileHelper::deleteDirectory($zipDir);
+
         return true;
     }
 
