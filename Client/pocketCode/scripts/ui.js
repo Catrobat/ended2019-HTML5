@@ -14,8 +14,8 @@ PocketCode.Ui = {
         circle: '<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z"/>',
     },
     Direction: {
-        LTR: 'LTR',
-        RTL: 'RTL',
+        LTR: 'ltr',
+        RTL: 'rtl',
     },
     PageNavigation: {
         FORWARD: 0,
@@ -153,14 +153,19 @@ PocketCode.Ui.merge({
         //cntr
         function Viewport() {
             SmartJs.Ui.Viewport.call(this, {className: 'pc-playerViewport'});
+            this._dom.dir = 'ltr';
 
             this._disableBrowserGestures();
         }
 
-        ////properties
-        //Object.defineProperties(Viewport.prototype, {
-
-        //});
+        //properties
+        Object.defineProperties(Viewport.prototype, {
+            uiDirection: {
+                set: function (direction) {
+                    this._dom.dir = direction;
+                },
+            },
+        });
 
         ////events
         //Object.defineProperties(Viewport.prototype, {

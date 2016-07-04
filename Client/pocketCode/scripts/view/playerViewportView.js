@@ -13,6 +13,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
     function PlayerViewportView() {
 
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-playerViewportView' });
+        this._dom.dir = 'ltr';  //canvas text positions are always ltr
 
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
@@ -78,11 +79,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             //size = even int number: without white border (background visible due to sub-pixel rendering)
             var canvas = this._canvas,
-                cw = Math.floor(ow * scaling / 2.0) * 2.0,
-                ch = Math.floor(oh * scaling / 2.0) * 2.0;
+                cw = Math.ceil(ow * scaling / 2.0) * 2.0,
+                ch = Math.ceil(oh * scaling / 2.0) * 2.0;
             canvas.setDimensions(cw, ch, scaling, scaling);
-            canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';
-            canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
+            //canvas.style.margin = 'auto'
+            if (SmartJs.Device.isMobile) {  //canvas != viewport
+                canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';  //including border
+                canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
+            }
 
             //this.onResize.dispatchEvent();
             this.render();

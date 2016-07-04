@@ -284,6 +284,7 @@ PocketCode.Web = {
 			//this._dom
 			var overlay = document.createElement('div');
 			overlay.className = 'pc-webOverlay';
+			overlay.dir = 'ltr';
 			overlay.innerHTML = '<div class="pc-webOpacity"></div>' +
 									'<div class="pc-logo">' +
 									'<img src="' + PocketCode.logoUrl + '" alt="PocketCode" /></div>';
@@ -455,7 +456,9 @@ PocketCode.Web = {
 				//update UI
 				this._onResizeHandler();
 			},
-
+			setUiDirection: function (dir) {
+			    this._dom.dir = dir;
+			},
 		};
 
 		return WebOverlay;
@@ -546,6 +549,7 @@ PocketCode.Web = {
 
 			var dom = document.createElement('div');
 			dom.className = 'pc-webLayout pc-splashScreen';
+			dom.dir = 'ltr';
 			var row = document.createElement('div');
 			row.className = 'pc-webLayoutRow';
 			dom.appendChild(row);
@@ -910,6 +914,7 @@ PocketCode.Web = {
 		        var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
 		        this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066, mobileInitialized);
 		        this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+		        this._player.onUiDirectionChange.addEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
 		        this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 
 		        if (this._isMobile) {
@@ -958,6 +963,10 @@ PocketCode.Web = {
 		        this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 		        if (this._webOverlay)
 		            this._webOverlay.muteButton.disabled = false;
+		    },
+		    _uiDirectionChangeHandler: function(e) {
+		        if (this._webOverlay)
+		            this._webOverlay.setUiDirection(e.direction);
 		    },
 		    _applicationRatioChangetHandler: function (e) {
 		        if (this._webOverlay)
@@ -1009,6 +1018,7 @@ PocketCode.Web = {
 		        if (this._player) {  //handle close before initialize
 		            try {
 		                this._player.onInit.removeEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
+		                this._player.onUiDirectionChange.removeEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
 		                this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
 		                this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 		                this._player.dispose();
