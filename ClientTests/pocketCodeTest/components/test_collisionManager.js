@@ -17,22 +17,36 @@ QUnit.test("CollisionManager", function (assert) {
         {id: "s4"}
     ];
 
+    cm.subscribe();
+    assert.deepEqual({}, cm._registeredCollisions, "Subscribe does nothing if no sprites passed");
+
     cm.subscribe(cm._sprites[2], cm._sprites[0]);
     assert.ok(cm._registeredCollisions[cm._sprites[2].id], "added subscribed sprite to registered sprites");
-    assert.ok(cm._registeredCollisions[cm._sprites[2].id].indexOf(cm._sprites[0].id) >= 0, "added subscribed sprite to registered sprites");
+    assert.ok(cm._registeredCollisions[cm._sprites[2].id][cm._sprites[0].id], "added subscribed sprite to registered sprites");
 
     cm.subscribe(cm._sprites[0], cm._sprites[2]);
     assert.ok(!cm._registeredCollisions[cm._sprites[0].id], "duplicate subscription not added");
 
     cm.subscribe(cm._sprites[0], cm._sprites[1]);
     assert.ok(cm._registeredCollisions[cm._sprites[0].id], "added non duplicate subscribed sprite to registered sprites");
-    assert.ok(cm._registeredCollisions[cm._sprites[0].id].indexOf(cm._sprites[1].id) >= 0, "added subscribed sprite to registered sprites");
+    assert.ok(cm._registeredCollisions[cm._sprites[0].id][cm._sprites[1].id], "added subscribed sprite to registered sprites");
 
-    cm.subscribe(cm._sprites[0], cm._sprites[3]);
-    assert.equal(cm._registeredCollisions[cm._sprites[0].id].length, 2, "further collision added to the correct sprite");
+    var handlerReturnValue = "h1";
+    var handler = function() { return handlerReturnValue; };
+    cm.subscribe(cm._sprites[0], cm._sprites[3], handler);
+    assert.ok(cm._registeredCollisions[cm._sprites[0].id][cm._sprites[3].id], "further collision added to the correct sprite");
+    assert.equal(cm._registeredCollisions[cm._sprites[0].id][cm._sprites[3].id][0](), handlerReturnValue, "correct handler added");
 
-    cm.unsubscribe(cm._sprites[0], cm._sprites[2]);
-    assert.ok(!cm._registeredCollisions[cm._sprites[2]], "Sprite with no registered collisions removed from registered collisions");
-    assert.equal(cm._registeredCollisions[cm._sprites[0].id].length, 2, "collisions that are still needed are not removed");
+    var handlerReturnValue2 = "h2";
+    var handler2 = function() { return handlerReturnValue2; };
+    cm.subscribe(cm._sprites[0], cm._sprites[3], handler2);
+    assert.equal(cm._registeredCollisions[cm._sprites[0].id][cm._sprites[3].id][1](), handlerReturnValue2, "correct handler added to same collision");
+
+    cm.subscribe();
+
+    assert.equal(cm._getSprite("s4"), cm._sprites[3], "getSpriteById");
+
+    assert.throws(function() {cm._getSprite()}, Error, "getSprite missing argument");
+    assert.throws(function() {cm._getSprite("noSprite")}, Error, "getSprite sprite not found");
 
 });
