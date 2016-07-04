@@ -5,10 +5,13 @@
 
 PocketCode.CollisionManager = (function () {
 
-    function CollisionManager(projectScreenWidth, projectScreenHeight) {
+    function CollisionManager(projectScreenWidth, projectScreenHeight, sprites) {
 
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
+        //todo check if array
+        this._sprites = sprites;
+        this._registeredCollisions = {};
 
         //this._onCollision = new SmartJs.Event.Event(this);  //maybe another event strategy is neede here, e.g. subscribe with handler?
     }
@@ -29,15 +32,48 @@ PocketCode.CollisionManager = (function () {
             this._projectScreenHeight = height;
         },
         subscribe: function (sprite1, sprite2, handler) {
-            var anything = sprite2 ? true : false;
-            //TODO: subscribe a collisions check: make sure (sprite1 vs sprite2) -> handler1 & (sprite2 vs sprite1) -> handler2 does not check the collision twice before calling both handlers 
+            if(!sprite1 || !sprite2)
+                return;
+
+            if(this._registeredCollisions[sprite2.id] && this._registeredCollisions[sprite2.id][sprite1.id]){
+                this._registeredCollisions[sprite2.id][sprite1.id].push(handler);
+                return;
+            } else if (this._registeredCollisions[sprite1.id] && this._registeredCollisions[sprite1.id][sprite2.id]){
+                this._registeredCollisions[sprite1.id][sprite2.id].push(handler);
+                return;
+            }
+
+            this._registeredCollisions[sprite1.id] || (this._registeredCollisions[sprite1.id] = {});
+            this._registeredCollisions[sprite1.id][sprite2.id] || (this._registeredCollisions[sprite1.id][sprite2.id] = []);
+            this._registeredCollisions[sprite1.id][sprite2.id].push(handler);
+
+            //todo what happens if collisions are turned off? check physics type in collision check or unreg?
+
+            //TODO: subscribe a collisions check: make sure (sprite1 vs sprite2) -> handler1 & (sprite2 vs sprite1) -> handler2 does not check the collision twice before calling both handlers
         },
         _publish: function () {
             //private here: call registered handlers on collisions
         },
-        checkRegisteredCollisions: function (/* TODO */) {    //called to periodically check registered collisions after movements 
-            //TODO
-            return false;
+        _getSprite: function (spriteId) {
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].id === spriteId)
+                    return sprites[i];
+            }
+            throw new Error('unknown sprite with id: ' + spriteId);
+        },
+        checkRegisteredCollisions: function (/* TODO */) {    //called to periodically check registered collisions after movements
+            for (var spriteId1 in this._registeredCollisions){
+                if(this._registeredCollisions.hasOwnProperty(spriteId1)){
+                    var sprite1 = this._getSprite(spriteId1);
+                    for(var spriteId2 in this._registeredCollisions[spriteId1]){
+                        if(this._registeredCollisions[spriteId1].hasOwnProperty(spriteId2)){
+                            var sprite2 = this._getSprite(spriteId2);
+                            this.checkSpriteCollision(sprite1, sprite2);
+                        }
+                    }
+                }
+            }
         },
         checkSpritePointerCollision: function (sprite) {
             //TODO
