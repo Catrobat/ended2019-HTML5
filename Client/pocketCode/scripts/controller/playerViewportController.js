@@ -20,15 +20,48 @@ PocketCode.PlayerViewportController = (function () {
     //properties
     Object.defineProperties(PlayerViewportController.prototype, {
         renderingImages: {
-            get: function () {
-                return this._renderingImages;
+            //get: function () {
+            //    return this._renderingImages;
+            //},
+            set: function (rimgs) {
+                if (!(rimgs instanceof Array))
+                    throw new Error('invalid argument: rendering images');
+                    ////adjust coord system to top/left
+                    //var img;
+                    //for (var i = 0, l = rimgs.length; i < l; i++) {
+                    //    img = rimgs[i];
+                    //    img.x = this._transformXCoordinate(img.x);
+                    //    img.y = this._transformYCoordinate(img.y);
+
+                    //    //update positions: top/left positioning
+                    //    if (img.look)    //there are imgs without look
+                            this._renderingImages = rimgs;//.push(new PocketCode.RenderingImage(img));//r);
+                    //}
+
+                    this._view.renderingImages = rimgs;//this._renderingImages;
+                //},
+                },
+        },
+        //initRenderingVariables: function (variables) {
+        renderingTexts: {
+            set: function (variables) {
+                if (!(variables instanceof Array))
+                    throw new Error('invalid argument: variables');
+                //var _var;
+                //for (var i = 0, l = variables.length; i < l; i++) {
+                //    _var = variables[i];
+                //    _var.x = this._transformXCoordinate(_var.x);
+                //    _var.y = this._transformYCoordinate(_var.y);
+                    this._renderingVariables = variables;//.push(new PocketCode.RenderingText(_var));
+                //}
+                this._view.renderingVariables = variables;//this._renderingVariables;
             },
         },
-        renderingVariables: {
-            get: function () {
-                return this._renderingVariables;
-            },
-        },
+        //renderingVariables: {
+        //    get: function () {
+        //        return this._renderingVariables;
+        //    },
+        //},
         dimensions: {
             get: function () {
                 return {width: this._projectScreenWidth,
@@ -48,40 +81,23 @@ PocketCode.PlayerViewportController = (function () {
 
     //methods
     PlayerViewportController.prototype.merge({
-        _transformXCoordinate : function(wx) {
-            return wx + this._projectScreenWidth / 2.0;
-        },
-        _transformYCoordinate : function(wy) {
-            return this._projectScreenHeight / 2. - wy;
-        },
-        initRenderingImages: function (sprites) {
-            if (!(sprites instanceof Array))
-                throw new Error('invalid argument: sprites');
-            //var renderingImages = [];
-            var sprite;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprite = sprites[i];
-                sprite.x = this._transformXCoordinate(sprite.x);
-                sprite.y = this._transformYCoordinate(sprite.y);
-
-                //update positions: top/left positioning
-                if (sprite.look)    //there are sprites without look
-                    this._renderingImages.push(new PocketCode.RenderingImage(sprite));//r);
-            }
-
-            this._view.renderingImages = this._renderingImages;
-        },
+        //_transformXCoordinate : function(wx) {
+        //    return wx + this._projectScreenWidth / 2.0;
+        //},
+        //_transformYCoordinate : function(wy) {
+        //    return this._projectScreenHeight / 2. - wy;
+        //},
         updateSprite: function (spriteId, properties) {
             var img,
                 imgs = this._renderingImages,
                 visible;
 
             //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined){
-                properties.y = this._transformYCoordinate(properties.y);
-            }
+            //if (properties.x !== undefined)
+            //    properties.x = this._transformXCoordinate(properties.x);
+            //if (properties.y !== undefined){
+            //    properties.y = this._transformYCoordinate(properties.y);
+            //}
 
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
@@ -99,27 +115,15 @@ PocketCode.PlayerViewportController = (function () {
                 }
             }
         },
-        initRenderingVariables: function (variables) {
-            if (!(variables instanceof Array))
-                throw new Error('invalid argument: variables');
-            var _var;
-            for (var i = 0, l = variables.length; i < l; i++) {
-                _var = variables[i];
-                _var.x = this._transformXCoordinate(_var.x);
-                _var.y = this._transformYCoordinate(_var.y);
-                this._renderingVariables.push(new PocketCode.RenderingText(_var));
-            }
-            this._view.renderingVariables = this._renderingVariables;
-        },
         updateVariable: function (varId, properties) {  //properties: {text: , x: , y: , visible: }
             var _var,
                 _vars = this._renderingVariables,
                 _visible;
             //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined)
-                properties.y = this._transformYCoordinate(properties.y);
+            //if (properties.x !== undefined)
+            //    properties.x = this._transformXCoordinate(properties.x);
+            //if (properties.y !== undefined)
+            //    properties.y = this._transformYCoordinate(properties.y);
 
             for (var i = 0, l = _vars.length; i < l; i++) {
                 _var = _vars[i];

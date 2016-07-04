@@ -81,21 +81,29 @@ PocketCode.GameEngine = (function () {
     //properties
     Object.defineProperties(GameEngine.prototype, {
         //rendering
-        spritesAsPropertyList: {
-            get: function () {
-                var prop,
-                    props = this._background ? [this._background.renderingProperties] : [],
-                    sprites = this._sprites;
+        renderingImages: {
+            get: function () {  //rendering images are created but not stored!
+                var imgs = this._background ? [this._background.renderingImage] : [],
+                    sprites = this._sprites,
+                    ri;
 
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    ri = sprites[i].renderingImage;
+                    if (ri.look)    //ignore sprites without looks
+                        imgs.push(ri);
+                }
+                return imgs;
+            },
+        },
+        renderingTexts: {
+            get: function () {
+                var vars = this.renderingVariables;  //global
+                if (this._background)
+                    vars = vars.concat(this._background.renderingVariables);
+                var sprites = this._sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)
-                    props.push(sprites[i].renderingProperties);
-                //adjust positions including viewport width/height: 
-                //for (var i = 0, l = props.length; i < l; i++) {
-                //    prop = props[i];
-                //    prop.x += this._originalScreenWidth / 2.0;
-                //    prop.y = this._originalScreenHeight / 2.0 - prop.y;
-                //}
-                return props;
+                    vars = vars.concat(sprites[i].renderingVariables);
+                return vars;
             },
         },
         //project execution
@@ -194,15 +202,6 @@ PocketCode.GameEngine = (function () {
 
     //methods
     GameEngine.prototype.merge({
-        getVariablesAsPropertyList: function () {
-            var obj = this.renderingVariables;  //global
-            if (this._background)
-                obj = obj.concat(this._background.renderingVariables);
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++)
-                obj = obj.concat(sprites[i].renderingVariables);
-            return obj;
-        },
         reloadProject: function () {
             if (!this._jsonProject)
                 throw new Error('no project loaded');

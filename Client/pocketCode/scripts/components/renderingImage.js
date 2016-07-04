@@ -13,6 +13,10 @@ PocketCode.RenderingImage = (function () {
         this._scaling = 1.0;
         this._flipX = false;
         this._rotation = 0.0;
+        this._x = 0.0;
+        this._y = 0.0;
+
+        this._visible = true;
 
         this.graphicEffects = args.graphicEffects || [];    //TODO: store effects and use canvas = ImageHelper.setFilters(canvas filter[]);
         this.merge(args);   //NOTICE: all parameters have the same names as the public interface of this object- merge will set all ogf these
@@ -20,11 +24,11 @@ PocketCode.RenderingImage = (function () {
 
     //properties
     Object.defineProperties(RenderingImage.prototype, {
-        object: {
-            get: function () {
-                return this._canvasElement;
-            },
-        },
+        //object: {
+        //    get: function () {
+        //        return this._canvasElement;
+        //    },
+        //},
         id: {
             get: function () {
                 return this._id;
@@ -34,15 +38,15 @@ PocketCode.RenderingImage = (function () {
             },
         },
         look: {
+            get: function () {
+                return this._originalElement;
+            },
             set: function (value) {
-                if (!(value instanceof HTMLCanvasElement)) {
-                    this._canvasElement = document.createElement('canvas');
-                    this._originalElement = document.createElement('canvas');
-
-                    this._width = 0.0;
-                    this._height = 0.0;
+                if (!value)
                     return;
-                }
+                else if (!(value instanceof HTMLCanvasElement))
+                    throw new Error('invalid look setter: HTMLCanvasElement expected');
+
                 this._canvasElement = value;
                 this._originalElement = value;
 
@@ -54,12 +58,20 @@ PocketCode.RenderingImage = (function () {
             },
         },
         x: {
-            value: 0.0,
-            writable: true,
+            get: function () {
+                return this._x;
+            },
+            set: function (value) {
+                this._x = value;
+            },
         },
         y: {
-            value: 0.0,
-            writable: true,
+            get: function () {
+                return this._y;
+            },
+            set: function (value) {
+                this._y = value;
+            },
         },
         scaling: {
             set: function (value) {
@@ -77,8 +89,14 @@ PocketCode.RenderingImage = (function () {
             }
         },
         visible: {
-            value: true,
-            writable: true,
+            get: function() {
+                if (!this._originalElement)
+                    return false;
+                return this._visible;
+            },
+            set: function (bool) {
+                this._visible = bool;
+            },
         },
 
         graphicEffects: {
@@ -116,14 +134,16 @@ PocketCode.RenderingImage = (function () {
             }
 
             //rotate point back
-            var rad = -(this._rotation * (Math.PI / 180.0));
+            var rad = -this._rotation * (Math.PI / 180.0);
             var centerToPoint = { x: point.x - this.x, y: point.y - this.y };
             point = {
                 x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
                 y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y
             };
 
-            return (point.x.toFixed(4) >= tl.x && point.x.toFixed(4) <= tr.x && point.y.toFixed(4) >= tl.y && point.y.toFixed(4) <= bl.y);
+            //return (point.x.toFixed(4) >= tl.x && point.x.toFixed(4) <= tr.x && point.y.toFixed(4) >= tl.y && point.y.toFixed(4) <= bl.y);
+            //please notice: toFixed() string formatting function and returns a string- try not to convert numbers to strings to number during calculations
+            return (point.x >= tl.x && point.x <= tr.x && point.y >= tl.y && point.y <= bl.y);
         },
 
         draw: function (context) {
@@ -132,7 +152,7 @@ PocketCode.RenderingImage = (function () {
             }
 
             context.save();
-            context.translate(this.x, this.y);
+            context.translate(this.x, -this.y);
 
             context.rotate(this._rotation * (Math.PI / 180.0));
             context.scale(
@@ -140,12 +160,12 @@ PocketCode.RenderingImage = (function () {
                 this._scaling
             );
 
-            context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;;
+            //context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;   //set twice as filter and here?
 
-            var x = -this._width / 2.0;
-            var y = -this._height / 2.0;
+            //var x = -this._width / 2.0;
+            //var y = -this._height / 2.0;
 
-            this._canvasElement && context.drawImage(this._canvasElement, x, y, this._width, this._height);
+            this._canvasElement && context.drawImage(this._canvasElement, -this._width / 2.0, -this._height / 2.0, this._width, this._height);
 
             context.restore();
         }

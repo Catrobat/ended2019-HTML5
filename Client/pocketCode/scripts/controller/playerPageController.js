@@ -110,10 +110,8 @@ PocketCode.PlayerPageController = (function () {
         initOnLoad: function () {
             var screenSize = this._gameEngine.projectScreenSize;
             this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
-            //console.log('project loaded');// + JSON.stringify(e));
-            // TODO create renderingImages from gameEngine.spritesAsPropertyList
-            this._playerViewportController.initRenderingImages(this._gameEngine.spritesAsPropertyList);
-            this._playerViewportController.initRenderingVariables(this._gameEngine.getVariablesAsPropertyList());
+            this._playerViewportController.renderingImages = this._gameEngine.renderingImages;
+            this._playerViewportController.renderingTexts = this._gameEngine.renderingTexts;
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine

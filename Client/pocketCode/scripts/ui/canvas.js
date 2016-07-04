@@ -15,20 +15,21 @@ PocketCode.Ui.Canvas = (function () {
 
         this._lowerCanvasEl = document.createElement('canvas');
         this._dom.appendChild(this._lowerCanvasEl);
-        this._contextContainer = this._lowerCanvasEl.getContext('2d');
+        this._lowerCanvasCtx = this._lowerCanvasEl.getContext('2d');
+        this._translation = { x: Math.round(this._lowerCanvasEl.width / 2.0), y: Math.round(this._lowerCanvasEl.height / 2.0) };
 
         this._upperCanvasEl = document.createElement('canvas');
         this._dom.appendChild(this._upperCanvasEl);
-        this._contextTop = this._upperCanvasEl.getContext('2d');
+        this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
         this._cacheCanvasEl = document.createElement('canvas');
-        this._contextCache = this._cacheCanvasEl.getContext('2d');
+        this._cacheCanvasCtx = this._cacheCanvasEl.getContext('2d');
 
         this._onMouseDown = new SmartJs.Event.Event(this);
         this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
         this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
 
-        this._renderingObjects = [];
+        this._renderingImages = [];
         this._renderingTexts = [];
         this._scalingX = 1.0;
         this._scalingY = 1.0;
@@ -38,12 +39,12 @@ PocketCode.Ui.Canvas = (function () {
     Object.defineProperties(Canvas.prototype, {
         contextTop: {
             get: function () {
-                return this._contextTop;
+                return this._upperCanvasCtx;
             },
         },
         renderingImages: {
             set: function (list) {
-                this._renderingObjects = list;  //TODO: exception handling, argument check
+                this._renderingImages = list;  //TODO: exception handling, argument check
             },
         },
         renderingTexts: {
@@ -64,7 +65,6 @@ PocketCode.Ui.Canvas = (function () {
 
     //methods
     Canvas.prototype.merge({
-
         setDimensions: function (width, height, scalingX, scalingY) {
             width = Math.floor(width / 2.0) * 2.0;
             height = Math.floor(height / 2.0) * 2.0;
@@ -74,27 +74,23 @@ PocketCode.Ui.Canvas = (function () {
 
             this._lowerCanvasEl.height = height;
             this._lowerCanvasEl.width = width;
+            this._translation = { x: Math.round(width / 2.0), y: Math.round(height / 2.0) };
             this._upperCanvasEl.height = height;
             this._upperCanvasEl.width = width;
-
-            this._scalingX = scalingX;
-            this._scalingY = scalingY;
-
-            this._cacheCanvasEl.setAttribute('width', width / scalingX);
-            this._cacheCanvasEl.setAttribute('height', height / scalingY);
+            this._cacheCanvasEl.height = height;
+            this._cacheCanvasEl.width = width;
+            
+            this.scale(scalingX, scalingY);
         },
-
-        scale: function(x, y) {
+        scale: function (x, y) {
             this._scalingX = x;
             this._scalingY = y;
             this.render();
         },
-
         clear: function () {
-            this._contextTop.clearRect(0, 0, this.width, this.height);
-            this._contextContainer.clearRect(0, 0, this.width, this.height);
+            this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
-
         __onMouseDown: function (e) {
             var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
 
@@ -105,62 +101,63 @@ PocketCode.Ui.Canvas = (function () {
             var pointerX, pointerY;
             var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
-            if (SmartJs.Device.isTouch && (e.touches && e.touches[0])){
+            if (SmartJs.Device.isTouch && (e.touches && e.touches[0])) {
                 var touch = e.touches[0];
-                pointerX = (touch.clientX ? touch.clientX - boundingClientRect.left : e.clientX);
-                pointerY = (touch.clientY ? touch.clientY - boundingClientRect.top : e.clientY);
-            } else {
+                pointerX = (touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x);
+                pointerY = (touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            }
+            else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
-                pointerX = e.clientX ? e.clientX - boundingClientRect.left : 0;
-                pointerY = e.clientY ? e.clientY - boundingClientRect.top : 0;
+                pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;
+                pointerY = e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y;
             }
 
             var target = this._getTargetAtPosition(pointerX, pointerY);
-            if (target){
+            if (target) {
                 this._onMouseDown.dispatchEvent({ id: target.id });
             }
         },
-
-        _isTargetTransparent: function (target, x, y) {
-            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
-            this._contextCache.save();
-            target.draw(this._contextCache);
-            this._contextCache.restore();
-
-            //imageData.data contains rgba values - here we look at the alpha value
-            var imageData = this._contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
-            var hasTransparentAlpha = !imageData.data || !imageData.data[3];
-
-            //clear
-            imageData = null;
-            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
-            return hasTransparentAlpha;
-        },
-
         _getTargetAtPosition: function (x, y) {
             var pointer = { x: x / this._scalingX, y: y / this._scalingY };
-            var objects = this._renderingObjects;
-            var i = objects.length;
+            var objects = this._renderingImages;
             var object, target;
 
-            while (i--){
+            for (var i = objects.length - 1; i >= 0; i--) {
                 object = objects[i];
-                if (object && object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, pointer.x, pointer.y)) {
+                if (object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, pointer.x, pointer.y)) {
                     target = object;
                     break;
                 }
             }
             return target;
         },
+        _isTargetTransparent: function (target, x, y) {
+            //this._cacheCanvasEl.width, this._cacheCanvasEl.height
+            var ctx = this._cacheCanvasCtx;
+            ctx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
+            ctx.save();
+            ctx.translate(this._translation.x, this._translation.y);
+            target.draw(ctx);
+            ctx.restore();
 
+            //imageData.data contains rgba values - here we look at the alpha value
+            var imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1);
+            var hasTransparentAlpha = !imageData.data || !imageData.data[3];
+
+            //clear
+            imageData = undefined;
+            //this._cacheCanvasCtx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
+            return hasTransparentAlpha;
+        },
         render: function () {
-            var ctx = this._contextContainer;
+            var ctx = this._lowerCanvasCtx;
             ctx.clearRect(0, 0, this.width, this.height);
 
-            var ro = this._renderingObjects;
             ctx.save();
+            ctx.translate(this._translation.x, this._translation.y);
             ctx.scale(this._scalingX, this._scalingY);
 
+            var ro = this._renderingImages;
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
 
@@ -173,27 +170,30 @@ PocketCode.Ui.Canvas = (function () {
 
         toDataURL: function (width, height) {
             var currentWidth = this.width,
-                currentHeight = this.height,
-                currentScaleX = this._scalingX,
-                currentScaleY = this._scalingY;
+                currentHeight = this.height;
 
-            this.setDimensions(width, height, this._scalingX, this._scalingY);
             this._cacheCanvasEl.width = width;
             this._cacheCanvasEl.height = height;
 
-            this.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
+            var ctx = this._cacheCanvasCtx;
+            ctx.save();
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.translate(width / 2.0, height / 2.0);
+            ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
-            this._contextCache.save();
-            this._contextCache.fillStyle = "#ffffff";
-            this._contextCache.fillRect(0,0, this.width, this.height);
+            var ro = this._renderingImages;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
 
-            this._contextCache.drawImage(this._lowerCanvasEl, 0, 0);
+            ro = this._renderingTexts;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+            ctx.restore();
 
             var data = this._cacheCanvasEl.toDataURL('image/png');
-
-            this._contextCache.restore();
-            this.setDimensions(currentWidth, currentHeight, this._scalingX, this._scalingY);
-            this.scale(currentScaleX, currentScaleY);
+            this._cacheCanvasEl.width = currentWidth;
+            this._cacheCanvasEl.height = currentHeight;
 
             return data;
         },
