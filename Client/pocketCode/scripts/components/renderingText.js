@@ -7,9 +7,9 @@
 
         this._id = propObject.id;
         this.text = propObject.text;
-        this._x = propObject.x;
-        this._y = propObject.y;
-        this._visible = propObject.visible;
+        this.x = propObject.x;
+        this.y = propObject.y;
+        this.visible = propObject.visible;
 
         this._fontFamily = 'Arial';
         this._fontSize = 50;
@@ -26,20 +26,12 @@
             },
         },
         x: {
-            get: function () {
-                return this._x;
-            },
-            set: function (value) {
-                this._x = value;
-            },
+            value: 0.0,
+            writable: true,
         },
         y: {
-            get: function () {
-                return this._y;
-            },
-            set: function (value) {
-                this._y = value;
-            },
+            value: 0.0,
+            writable: true,
         },
         text: {
             set: function (value) {
@@ -47,12 +39,8 @@
             },
         },
         visible: {
-            get: function () {
-                return this._visible;
-            },
-            set: function (value) {
-                this._visible = value;
-            },
+            value: true,
+            writable: true,
         },
     });
 

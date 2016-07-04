@@ -14,6 +14,16 @@ PocketCode.CollisionManager = (function () {
         //this._onCollision = new SmartJs.Event.Event(this);  //maybe another event strategy is neede here, e.g. subscribe with handler?
     }
 
+    //properties
+    Object.defineProperties(CollisionManager.prototype, {
+        sprites: {
+            set: function (sprites) {
+                //TODO: validation
+                this._sprites = sprites;
+            },
+        },
+    });
+
     //events
     //Object.defineProperties(CollisionManager.prototype, {
     //    onCollision: {
@@ -79,6 +89,11 @@ PocketCode.CollisionManager = (function () {
         checkColorColorCollision: function (color1, color2) {
             //TODO
             return false;
+        },
+        /* override */
+        dispose: function () {
+            this._sprites = []; //do not dispose sprites
+            SmartJs.Core.Component.prototype.dispose.call(this);    //call super
         },
     });
 

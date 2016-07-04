@@ -98,18 +98,19 @@ PocketCode.Ui.Canvas = (function () {
                 return;
             }
 
-            var pointerX, pointerY;
+            var pointerX,// = this._lowerCanvasEl.width / 2.0,
+                pointerY;// = this._lowerCanvasEl.height / 2.0;
             var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
             if (SmartJs.Device.isTouch && (e.touches && e.touches[0])) {
                 var touch = e.touches[0];
-                pointerX = (touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x);
-                pointerY = (touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+                pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+                pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
             }
             else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
                 pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;
-                pointerY = e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y;
+                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
             }
 
             var target = this._getTargetAtPosition(pointerX, pointerY);
@@ -124,7 +125,7 @@ PocketCode.Ui.Canvas = (function () {
 
             for (var i = objects.length - 1; i >= 0; i--) {
                 object = objects[i];
-                if (object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, pointer.x, pointer.y)) {
+                if (object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, x, y)) {
                     target = object;
                     break;
                 }
@@ -133,15 +134,18 @@ PocketCode.Ui.Canvas = (function () {
         },
         _isTargetTransparent: function (target, x, y) {
             //this._cacheCanvasEl.width, this._cacheCanvasEl.height
+            //document.body.appendChild(this._cacheCanvasEl);
+            //this._cacheCanvasEl.style.position = 'absolute';
             var ctx = this._cacheCanvasCtx;
             ctx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
             ctx.save();
             ctx.translate(this._translation.x, this._translation.y);
+            ctx.scale(this._scalingX, this._scalingY);
             target.draw(ctx);
             ctx.restore();
 
             //imageData.data contains rgba values - here we look at the alpha value
-            var imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1);
+            var imageData = ctx.getImageData(this._translation.x + Math.floor(x), this._translation.y - Math.floor(y), 1, 1);
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
 
             //clear

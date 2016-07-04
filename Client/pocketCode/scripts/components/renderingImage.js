@@ -13,10 +13,6 @@ PocketCode.RenderingImage = (function () {
         this._scaling = 1.0;
         this._flipX = false;
         this._rotation = 0.0;
-        this._x = 0.0;
-        this._y = 0.0;
-
-        this._visible = true;
 
         this.graphicEffects = args.graphicEffects || [];    //TODO: store effects and use canvas = ImageHelper.setFilters(canvas filter[]);
         this.merge(args);   //NOTICE: all parameters have the same names as the public interface of this object- merge will set all ogf these
@@ -58,20 +54,12 @@ PocketCode.RenderingImage = (function () {
             },
         },
         x: {
-            get: function () {
-                return this._x;
-            },
-            set: function (value) {
-                this._x = value;
-            },
+            value: 0.0,
+            writable: true,
         },
         y: {
-            get: function () {
-                return this._y;
-            },
-            set: function (value) {
-                this._y = value;
-            },
+            value: 0.0,
+            writable: true,
         },
         scaling: {
             set: function (value) {
@@ -89,14 +77,8 @@ PocketCode.RenderingImage = (function () {
             }
         },
         visible: {
-            get: function() {
-                if (!this._originalElement)
-                    return false;
-                return this._visible;
-            },
-            set: function (bool) {
-                this._visible = bool;
-            },
+            value: true,
+            writable: true,
         },
 
         graphicEffects: {
@@ -160,7 +142,7 @@ PocketCode.RenderingImage = (function () {
                 this._scaling
             );
 
-            //context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;   //set twice as filter and here?
+            context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;   //set twice as filter and here?
 
             //var x = -this._width / 2.0;
             //var y = -this._height / 2.0;

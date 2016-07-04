@@ -237,13 +237,12 @@ PocketCode.GameEngine = (function () {
             this._originalScreenWidth = header.device.screenWidth;
             if (this._collisionManager)
                 this._collisionManager.dispose();
-            this._collisionManager = new PocketCode.CollisionManager(this._sprites, this._originalScreenWidth, this._originalScreenHeight);
 
             //create objects
             if (this._background)
                 this._background.dispose();// = undefined;
-            this._sprites.dispose();
             this._originalSpriteOrder = [];
+            this._sprites.dispose();
 
             //resource sizes
             this._resourceTotalSize = 0;
@@ -297,6 +296,7 @@ PocketCode.GameEngine = (function () {
                 this._sprites.push(sprite);
                 this._originalSpriteOrder.push(sprite);
             }
+            this._collisionManager = new PocketCode.CollisionManager(this._sprites, this._originalScreenWidth, this._originalScreenHeight);
         },
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
@@ -400,6 +400,8 @@ PocketCode.GameEngine = (function () {
                 }
 
                 this._sprites = this._originalSpriteOrder;  //reset sprite order
+                this._collisionManager.sprites = this._originalSpriteOrder;
+
                 var sprites = this._sprites,
                     sprite;
                 for (var i = 0, l = sprites.length; i < l; i++) {
