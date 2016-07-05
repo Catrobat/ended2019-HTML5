@@ -113,7 +113,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.updateSprite("id0", { layer: 8 });
     assert.equal(controller._renderingImages.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of rear-bound");
 
-    updatedLayer = 0;
+    updatedLayer = 1;
     controller.updateSprite("id0", { layer: -2 });
     assert.equal(controller._renderingImages.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of front-bound");
 

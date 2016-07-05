@@ -74,8 +74,8 @@ PocketCode.PlayerViewportController = (function () {
                         imgs.remove(img);
                         if (layer > imgs.length)
                             imgs.push(img);
-                        else if (layer < 0)
-                            imgs.insert(0, img);
+                        else if (layer < 1)         //ignore background = idx[0]
+                            imgs.insert(1, img);    //this may change as soon we support the camera
                         imgs.insert(layer, img);
                     }
                     if (img.visible || visible != img.visible)   //visible or visibility changed

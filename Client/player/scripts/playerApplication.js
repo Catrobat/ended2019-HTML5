@@ -80,7 +80,7 @@ PocketCode.merge({
             //init i18n
             PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
             PocketCode.I18nProvider.onDirectionChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._vp.uiDirection = e.direction; }, this));
-            if (PocketCode.I18nProvider.currentLanguage != rfc3066) {   //do not load twice on mobile reinit or opening the same player overlay twice on the same page
+            if (!mobileInitialized || rfc3066 && PocketCode.I18nProvider.currentLanguage != rfc3066) {   //do not load twice on mobile reinit or opening the same player overlay twice on the same page
                 PocketCode.I18nProvider.loadSuppordetLanguages();
                 PocketCode.I18nProvider.loadDictionary(rfc3066);
             }
