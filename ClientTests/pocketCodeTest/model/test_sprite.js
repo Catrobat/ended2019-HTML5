@@ -668,7 +668,7 @@ QUnit.test("Sprite", function (assert) {
     };
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, programAsync.onProgramStart);
-    brick1.id = "first";
+    brick1._id = "first";
     var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, programAsync.onProgramStart);
     //adding a test brick to the internal brick container
     var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });

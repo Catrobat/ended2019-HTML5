@@ -34,16 +34,14 @@ PocketCode.Ui.PlayerViewportView = (function () {
         axisVisible: {
             get: function () {
                 return this._axesVisible;
-            }
-            //enumerable: false,
-            //configurable: true,
+            },
         },
         renderingImages: {
             set: function (value) {
                 this._canvas.renderingImages = value;
             },
         },
-        renderingVariables: {
+        renderingTexts: {
             set: function (value) {
                 this._canvas.renderingTexts = value;
             },
@@ -88,7 +86,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
             }
 
-            //this.onResize.dispatchEvent();
             this.render();
             this._drawAxes();
         },
@@ -147,7 +144,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         getCanvasDataURL: function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
-            this._drawAxes();   // a resize may be triggered and upper canvas cleared
             return url;
         },
 

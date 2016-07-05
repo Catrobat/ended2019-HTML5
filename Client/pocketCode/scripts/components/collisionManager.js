@@ -7,7 +7,8 @@ PocketCode.CollisionManager = (function () {
     CollisionManager.extends(SmartJs.Core.Component);
 
     function CollisionManager(sprites, projectScreenWidth, projectScreenHeight) {
-        this._sprites = sprites;
+        this._sprites = [];
+        this.sprites = sprites;
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
 
@@ -20,6 +21,8 @@ PocketCode.CollisionManager = (function () {
             set: function (sprites) {
                 //TODO: validation
                 this._sprites = sprites;
+                //TODO: add event listener to onSpriteUiChange: this is a shared event between gameEngine and sprite- maybe we have to rethink our implementation
+                //we have to check for spriteId, look, visible, rotation, x, y, ? event arguments in the handler
             },
         },
     });
@@ -86,7 +89,7 @@ PocketCode.CollisionManager = (function () {
             //TODO
             return false;
         },
-        checkColorColorCollision: function (color1, color2) {
+        checkColorColorCollision: function (sprite1, color1, color2) {
             //TODO
             return false;
         },

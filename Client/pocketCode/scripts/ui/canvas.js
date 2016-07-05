@@ -25,14 +25,19 @@ PocketCode.Ui.Canvas = (function () {
         this._cacheCanvasEl = document.createElement('canvas');
         this._cacheCanvasCtx = this._cacheCanvasEl.getContext('2d');
 
-        this._onMouseDown = new SmartJs.Event.Event(this);
-        this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
-        this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
-
         this._renderingImages = [];
         this._renderingTexts = [];
         this._scalingX = 1.0;
         this._scalingY = 1.0;
+
+        //events
+        this._onMouseDown = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
+        this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
+
+        this._onMouseUp = new SmartJs.Event.Event(this);
+        //this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseUp);
+        //this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseUp);
     }
 
     //properties
@@ -44,12 +49,46 @@ PocketCode.Ui.Canvas = (function () {
         },
         renderingImages: {
             set: function (list) {
-                this._renderingImages = list;  //TODO: exception handling, argument check
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expectes type: list');
+                this._renderingImages = list;
             },
         },
         renderingTexts: {
             set: function (list) {
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expected type: list');
                 this._renderingTexts = list;  //TODO: exception handling, argument check
+            },
+        },
+        /* override: we do not calculate borders here, with/height are returned based on internal canvas elements even if control is not in DOM */
+        width: {
+            get: function () {
+                return this._lowerCanvasEl.width;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._lowerCanvasEl.width = value;
+                this._translation = { x: Math.round(value / 2.0), y: Math.round(this.height / 2.0) };
+                this._upperCanvasEl.width = value;
+                this._cacheCanvasEl.width = value;
+            },
+        },
+        /* override */
+        height: {
+            get: function () {
+                return this._lowerCanvasEl.height;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._lowerCanvasEl.height = value;
+                this._translation = { x: Math.round(this.width / 2.0), y: Math.round(value / 2.0) };
+                this._upperCanvasEl.height = value;
+                this._cacheCanvasEl.height = value;
             },
         },
     });
@@ -60,7 +99,12 @@ PocketCode.Ui.Canvas = (function () {
             get: function () {
                 return this._onMouseDown;
             },
-        }
+        },
+        onMouseUp: {
+            get: function () {
+                return this._onMouseUp;
+            },
+        },
     });
 
     //methods
@@ -72,14 +116,6 @@ PocketCode.Ui.Canvas = (function () {
             this.height = height;
             this.width = width;
 
-            this._lowerCanvasEl.height = height;
-            this._lowerCanvasEl.width = width;
-            this._translation = { x: Math.round(width / 2.0), y: Math.round(height / 2.0) };
-            this._upperCanvasEl.height = height;
-            this._upperCanvasEl.width = width;
-            this._cacheCanvasEl.height = height;
-            this._cacheCanvasEl.width = width;
-            
             this.scale(scalingX, scalingY);
         },
         scale: function (x, y) {
@@ -113,7 +149,7 @@ PocketCode.Ui.Canvas = (function () {
                 pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
             }
 
-            var target = this._getTargetAtPosition(pointerX, pointerY);
+            var target = this._getTargetAtPosition(pointerX, pointerY); //TODO: should we include scaling here? for multi-click + check target using a scaled canvas too
             if (target) {
                 this._onMouseDown.dispatchEvent({ id: target.id });
             }

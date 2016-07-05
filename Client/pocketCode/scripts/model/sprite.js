@@ -1181,6 +1181,7 @@ PocketCode.Model.Sprite = (function () {
             this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
+            this._onChange = undefined;     //make sure the game engines event is not disposed (shared event)
             var script,
                 scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers

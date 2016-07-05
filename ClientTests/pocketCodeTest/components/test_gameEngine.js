@@ -402,7 +402,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
-    var variables = gameEngine.getVariablesAsPropertyList();
+    var variables = gameEngine.renderingTexts;
     assert.ok(variables instanceof Array && variables.length == 0, "empty variable array");
 
     gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //gloable
@@ -419,7 +419,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
     gameEngine._sprites.push(sp1);
     gameEngine._sprites.push(sp2);
 
-    variables = gameEngine.getVariablesAsPropertyList();
+    variables = gameEngine.renderingTexts;
 
     assert.equal(variables.length, 8, "array length (number of variables)");
 

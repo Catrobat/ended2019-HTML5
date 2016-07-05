@@ -38,10 +38,11 @@ QUnit.test("RenderingText", function (assert) {
 
     text = 5;
     renderingText.text = text;
-    assert.equal(renderingText._text, text.toString(), "Numeric Text set correctly");
+    assert.equal(renderingText.text, text.toString(), "Numeric Text set correctly");
+    assert.ok(typeof renderingText.text == "string", "numbers are converted: typecheck");
 
     renderingText.text = text;
-    assert.equal(renderingText._text, text, "String set to text correctly");
+    assert.equal(renderingText.text, text, "String set to text correctly");
 
     var visibility = 5;
     renderingText.visible = visibility;

@@ -35,7 +35,7 @@ PocketCode.RenderingImage = (function () {
         },
         look: {
             get: function () {
-                return this._originalElement;
+                return this._canvasElement; //inlcuding filters: needed for drawing sprites for collision detection
             },
             set: function (value) {
                 if (!value)
@@ -87,6 +87,8 @@ PocketCode.RenderingImage = (function () {
                     throw new Error('invalid argument: effects');
 
                 this._graphicEffects = filters;
+                if (!this._originalElement || filters.length == 0)
+                    return;
 
                 if (!this._canvasElement || !filters.length)
                     return;
@@ -106,6 +108,9 @@ PocketCode.RenderingImage = (function () {
     //methods
     RenderingImage.prototype.merge({
         containsPoint: function (point) {
+            if (!this._originalElement || !this.visible || (this._width === 0 && this._height === 0))
+                return false;
+
             var tl = { x: (this.x - this._scaling * this._width / 2.0), y: (this.y - this._scaling * this._height / 2.0) };
             var bl = { x: (this.x - this._scaling * this._width / 2.0), y: (this.y + this._scaling * this._height / 2.0) };
             var tr = { x: (this.x + this._scaling * this._width / 2.0), y: (this.y - this._scaling * this._height / 2.0) };
@@ -129,9 +134,8 @@ PocketCode.RenderingImage = (function () {
         },
 
         draw: function (context) {
-            if ((this._width === 0 && this._height === 0) || !this.visible) {
+            if (!this._originalElement || !this.visible || (this._width === 0 && this._height === 0))
                 return;
-            }
 
             context.save();
             context.translate(this.x, -this.y);
@@ -142,13 +146,8 @@ PocketCode.RenderingImage = (function () {
                 this._scaling
             );
 
-            context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;   //set twice as filter and here?
-
-            //var x = -this._width / 2.0;
-            //var y = -this._height / 2.0;
-
+            context.globalAlpha = this._canvasElement.getContext('2d').globalAlpha;
             this._canvasElement && context.drawImage(this._canvasElement, -this._width / 2.0, -this._height / 2.0, this._width, this._height);
-
             context.restore();
         }
     });

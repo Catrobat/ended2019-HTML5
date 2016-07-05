@@ -11,16 +11,7 @@ QUnit.module("components/renderingImage.js");
 
 QUnit.test("RenderingImage", function (assert) {
 
-    //var img = {
-    //    canvas: document.createElement("canvas"),
-    //    originalWidth: 10,
-    //    originalHeight: 10,
-    //    center: {},
-    //    tl: {},
-    //    tr: {},
-    //    bl: {},
-    //    br: {},
-    //};
+    var done = assert.async();
 
     var ALPHA_CHANNEL = 3;
     var alphaAtPoint = function (x, y) {
@@ -96,8 +87,8 @@ QUnit.test("RenderingImage", function (assert) {
                     // was original pixel within rect?
                     if (pixelWithinBoundaries(originalX, originalY, rect)) {
                         if (!pixelIsSet && !pixelNearEdge(originalX, originalY, rect)) {
-                            console.log(currentX, currentY, "orig", rotatedPoint.x, rotatedPoint.y);
-                            console.log("source px inside bounds but destination px not set");
+                            //console.log(currentX, currentY, "orig", rotatedPoint.x, rotatedPoint.y);
+                            //console.log("source px inside bounds but destination px not set");
                             return false;
                         }
                     }
@@ -106,8 +97,8 @@ QUnit.test("RenderingImage", function (assert) {
                         if (pixelIsSet) {
                             if (pixelNearEdge(originalX, originalY, rect))
                                 continue;
-                            console.log(currentX, currentY, "orig", originalX, originalY);
-                            console.log("source px outside bounds but destination px set to", alphaAtPoint(currentX, currentY));
+                            //console.log(currentX, currentY, "orig", originalX, originalY);
+                            //console.log("source px outside bounds but destination px set to", alphaAtPoint(currentX, currentY));
                             return false;
                         }
                     }
@@ -117,7 +108,7 @@ QUnit.test("RenderingImage", function (assert) {
                     if (pixelWithinBoundaries(currentX, currentY, rect)) {
                         // pixel is within boundaries, is it set?
                         if (!pixelIsSet && !pixelNearEdge(currentX, currentY, rect, true)) {
-                            console.log("pixel not set, but it should be", currentX, currentY);
+                            //console.log("pixel not set, but it should be", currentX, currentY);
                             return false;
                         }
                     }
@@ -125,7 +116,7 @@ QUnit.test("RenderingImage", function (assert) {
                     else {
                         // pixel not inside boundaries, is it set?
                         if (pixelIsSet && !pixelNearEdge(currentX, currentY, rect, true)) {
-                            console.log("pixel set, but it shouldnt be", currentX, currentY);
+                            //console.log("pixel set, but it shouldnt be", currentX, currentY);
                             return false;
                         }
                     }
@@ -135,69 +126,27 @@ QUnit.test("RenderingImage", function (assert) {
         return true;
     };
 
-    // var gameEngine = new PocketCode.GameEngine();
-    //
-    // // taken from test_sprite.js, overwrite game engine look getter
-    // assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
-    // var initialScaling = 0.5;
-    // gameEngine.getLookImage = function () {
-    //     return { canvas: document.createElement("canvas"), center: { length: 0, angle: 0 }, initialScaling: initialScaling };
-    // };
-    //
-    // var id = "id0";
-    // var testLook = {id: id, name:"firstlook"};
-    // var x, y;
-    // x = y = 24;
-    // var rotationAngle = 90;
-    // var brightness = 31;
-    // var transparency = 63;
-    // var opacity = 100 - transparency;
-    // var sprite = new PocketCode.Model.Sprite(gameEngine, {id: "id0", name: "sprite0", looks: [testLook]});
-    // sprite.init();
-    // sprite.setPosition(x,y);
-    // sprite.setDirection(rotationAngle);
-    // sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, brightness);
-    // sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, transparency);
-    //
-    // assert.throws(function() {new PocketCode.RenderingImage()}, Error, "missing constructor argument");
-    //
-    // var renderingImage = new PocketCode.RenderingImage(sprite.renderingProperties);
-    //
-    // assert.ok(renderingImage instanceof  PocketCode.RenderingImage, "Instance check");
-    //
-    // var image = renderingImage.object;
-    // assert.ok(image.perPixelTargetFind == true, "perpixeltargetfind setup correctly");
-    // assert.ok(image.selectable == false, "selection setup correctly");
-    // assert.ok(image.hasControls == false, "controls setup correctly");
-    // assert.ok(image.hasBorders == false, "borders setup correctly");
-    // assert.ok(image.hasRotatingPoint == false, "rotation point setup correctly");
-    // assert.ok(image.originX == "center", "origin x setup correctly");
-    // assert.ok(image.originY == "center", "origin y setup correctly");
-    // assert.ok(image.centeredScaling == true, "centeredscaling setup correctly");
-    //
-    // assert.ok(renderingImage.id == id, "id set correctly");
-    // assert.ok(renderingImage.x == x, "x set correctly");
-    // assert.ok(renderingImage.y == y, "y set correctly");
-    // assert.ok(image.scaleX == 1. / initialScaling, "x scaling set correctly");
-    // assert.ok(image.scaleY == 1. / initialScaling, "y scaling set correctly");
-    //
-    // assert.ok(image.angle == rotationAngle - 90., "rotation angle set correctly");
-    // assert.ok(image.flipX == false, "flipX set correctly");
-    // assert.ok(image.visible == true, "visibility set correctly");
-    //
-    // // needs restructuring if more filters become available
-    // assert.ok(image.filters.length == 1, "filter is set");
-    // assert.ok(image.filters[0].brightness == Math.round((brightness - 100) * 2.55), "filter value correct");
-    // renderingImage.graphicEffects = [{effect:PocketCode.GraphicEffect.BRIGHTNESS, value:0}];
-    // assert.ok(image.filters.length == 0, "setting brightness to 100% removes filter");
-    //
-    // assert.ok(image.opacity == opacity / 100., "opacity set correctly");
-    // var setGraphicEffects = function () {renderingImage.graphicEffects = 1;};
-    // assert.throws(function() {setGraphicEffects()}, Error, "set effects to non-array type");
+    //init tests to start
+    var baseUrl = "_resources/images/",
+        images = [
+            { id: "s1", url: "imgHelper14.png", size: 1 },  //100% opaque red square
+            { id: "s2", url: "imgHelper15.png", size: 1 }   //green square inside transparent area
+        ];
 
-    var asyncTestsDone = assert.async();
+    var imagesScaling = [
+            { id: "s3", url: "imgHelper14.png", size: 1 },
+            { id: "s4", url: "imgHelper15.png", size: 1 }];
 
-    var runTests = function () {
+    var gameEngine = new PocketCode.GameEngine();
+    var canvas = document.createElement("canvas");
+
+    var is = new PocketCode.ImageStore();
+    gameEngine._imageStore = is;
+
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(runTests));
+    is.loadImages(baseUrl, images);
+
+    function runTests() {
 
         var canvasElement = document.createElement('canvas');
         canvasElement.height = 20;
@@ -206,7 +155,7 @@ QUnit.test("RenderingImage", function (assert) {
         var renderingImage = new PocketCode.RenderingImage({ look: canvasElement });
 
         assert.ok(renderingImage instanceof PocketCode.RenderingImage, "instance check");
-        assert.equal(renderingImage.object, canvasElement, "RenderingImage.object returns canvas element");
+        assert.equal(renderingImage.look, canvasElement, "RenderingImage.look returns canvas element");
 
         assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "missing arguments");
         assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "argument not an object");
@@ -289,8 +238,8 @@ QUnit.test("RenderingImage", function (assert) {
         //  ************** TESTS WITH 100% opaque SPRITE ******************************************************************
         //  test simple rendering on origin
         var estimatedCenterX, estimatedCenterY, rotationAngle;
-        var opaqueImageWidth = renderingImageOpaque.object.width;
-        var opaqueImageHeight = renderingImageOpaque.object.height;
+        var opaqueImageWidth = renderingImageOpaque.look.width;
+        var opaqueImageHeight = renderingImageOpaque.look.height;
         var canvasWidth = canvas.width;
         var canvasHeight = canvas.height;
 
@@ -385,8 +334,8 @@ QUnit.test("RenderingImage", function (assert) {
         // 5x5 area of 10x10 image
 
         // simple rendering in origin
-        var transparentImageWidth = renderingImageTransparent.object.width;
-        var transparentImageHeight = renderingImageTransparent.object.height;
+        var transparentImageWidth = renderingImageTransparent.look.width;
+        var transparentImageHeight = renderingImageTransparent.look.height;
 
         estimatedCenterX = estimatedCenterY = renderingImageTransparent.x = renderingImageTransparent.y = 5;
         renderingImageTransparent.draw(ctx);
@@ -485,7 +434,7 @@ QUnit.test("RenderingImage", function (assert) {
         reconfigureTestSettings();
     };
 
-    var runScaledImagesTests = function () {
+    function runScaledImagesTests() {
         //var lookOpaque = new PocketCode.Model.Look({ name: "look3", id: "sid3", resourceId: "s3" });
         //var lookTransparent = new PocketCode.Model.Look({ name: "look4", id: "sid4", resourceId: "s4" });
 
@@ -502,8 +451,8 @@ QUnit.test("RenderingImage", function (assert) {
         canvasWidth = canvas.width;
         canvasHeight = canvas.height;
 
-        var opaqueImageWidth = renderingImageOpaque.object.width;
-        var opaqueImageHeight = renderingImageOpaque.object.height;
+        var opaqueImageWidth = renderingImageOpaque.look.width;
+        var opaqueImageHeight = renderingImageOpaque.look.height;
 
         // ****************** TEST OPAQUE SPRITE SCALED RENDERING ******************************************************
 
@@ -555,10 +504,10 @@ QUnit.test("RenderingImage", function (assert) {
         //     ctx.clearRect(0, 0, canvas.width, canvas.height);
         // }
 
-        asyncTestsDone();
+        done();
     };
 
-    var reconfigureTestSettings = function () {
+    function reconfigureTestSettings() {
         is.onLoad.removeEventListener(new SmartJs.Event.EventListener(runTests));
         is.onLoad.addEventListener(new SmartJs.Event.EventListener(runScaledImagesTests));
         is.loadImages(baseUrl, imagesScaling);
@@ -569,27 +518,6 @@ QUnit.test("RenderingImage", function (assert) {
         canvas.width = 80;
         canvas.height = 40;
     };
-
-
-    //init tests to start
-    var baseUrl = "_resources/images/",
-        images = [
-            { id: "s1", url: "imgHelper14.png", size: 1 },  //100% opaque red square
-            { id: "s2", url: "imgHelper15.png", size: 1 }   //green square inside transparent area
-        ];
-
-    var imagesScaling = [
-            { id: "s3", url: "imgHelper14.png", size: 1 },
-            { id: "s4", url: "imgHelper15.png", size: 1 }];
-
-    var gameEngine = new PocketCode.GameEngine();
-    var canvas = document.createElement("canvas");
-
-    var is = new PocketCode.ImageStore();
-    gameEngine._imageStore = is;
-
-    is.onLoad.addEventListener(new SmartJs.Event.EventListener(runTests));
-    is.loadImages(baseUrl, images);
 
 });
 

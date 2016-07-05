@@ -34,6 +34,9 @@
             writable: true,
         },
         text: {
+            get: function (value) {
+                return this._text;
+            },
             set: function (value) {
                 this._text = value.toString();
             },

@@ -57,7 +57,7 @@ PocketCode.GameEngine = (function () {
             deviceLockRequired: false,
         };
 
-        this._collisionManager;// = new PocketCode.CollisionManager()
+        this._collisionManager = new PocketCode.CollisionManager()
 
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
@@ -495,6 +495,10 @@ PocketCode.GameEngine = (function () {
                 this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
             }.bind(this), 100);  //delay neede to allow other scripts to start
         },
+        getLookImage: function (id) {
+            //used by the sprite to access an image during look init
+            return this._imageStore.getImage(id);
+        },
 
         //brick-sprite interaction
         getSpriteById: function (spriteId) {
@@ -504,7 +508,7 @@ PocketCode.GameEngine = (function () {
                     return sprites[i];
             }
 
-            if (spriteId == this._background.id)
+            if (this._background && spriteId == this._background.id)
                 return this._background;
 
             throw new Error('unknown sprite with id: ' + spriteId);
@@ -516,10 +520,6 @@ PocketCode.GameEngine = (function () {
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
             return idx + 1;
-        },
-        getLookImage: function (id) {
-            //used by the sprite to access an image during look init
-            return this._imageStore.getImage(id);
         },
         setSpriteLayerBack: function (sprite, layers) {
             var sprites = this._sprites;
@@ -533,7 +533,7 @@ PocketCode.GameEngine = (function () {
             idx = Math.max(idx - layers, 0);
             sprites.insert(idx, sprite);
 
-            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //including background
             return true;
         },
         setSpriteLayerToFront: function (sprite) {
@@ -545,7 +545,7 @@ PocketCode.GameEngine = (function () {
                 return false;
             sprites.push(sprite);
 
-            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
             return true;
         },
         handleSpriteTap: function (id) {
