@@ -6,9 +6,9 @@
 PocketCode.CollisionManager = (function () {
     CollisionManager.extends(SmartJs.Core.Component);
 
-    function CollisionManager(sprites, projectScreenWidth, projectScreenHeight) {
+    function CollisionManager(projectScreenWidth, projectScreenHeight) {
         this._sprites = [];
-        this.sprites = sprites;
+        this._background = undefined;
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
 
@@ -17,6 +17,12 @@ PocketCode.CollisionManager = (function () {
 
     //properties
     Object.defineProperties(CollisionManager.prototype, {
+        background: {
+            set: function (bg) {
+                //TODO: validation
+                this._background = bg;
+            },
+        },
         sprites: {
             set: function (sprites) {
                 //TODO: validation

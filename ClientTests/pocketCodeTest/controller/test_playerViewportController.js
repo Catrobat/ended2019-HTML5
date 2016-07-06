@@ -5,8 +5,7 @@
 /// <reference path="../../../Client/smartJs/sj-components.js" />
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/renderingImage.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/renderingText.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/renderingItem.js" />
 /// <reference path="../../../Client/pocketCode/scripts/controller/playerViewportController.js" />
 "use strict";
 

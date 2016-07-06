@@ -52,7 +52,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
     Object.defineProperties(PlayerViewportView.prototype, {
         onSpriteClicked: {
             get: function () {
-                return this._canvas.onMouseDown;
+                return this._canvas.onRenderingImageTouched;
             }
         },
 

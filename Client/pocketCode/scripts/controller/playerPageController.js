@@ -115,6 +115,8 @@ PocketCode.PlayerPageController = (function () {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
+            if (e.reinit)
+                this.initOnLoad();
             this._view.hideStartScreen();
         },
         _projectExecutedHandler: function (e) {

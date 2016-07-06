@@ -6,6 +6,9 @@
 /// <reference path="../ui.js" />
 'use strict';
 
+
+//TODO:
+//helpful? http://www.html5rocks.com/de/mobile/touch/
 PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
@@ -30,14 +33,23 @@ PocketCode.Ui.Canvas = (function () {
         this._scalingX = 1.0;
         this._scalingY = 1.0;
 
-        //events
-        this._onMouseDown = new SmartJs.Event.Event(this);
-        this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
-        this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
+        //handling click/touch/multi-touch
+        this._activeTouchEvents = {};
 
-        this._onMouseUp = new SmartJs.Event.Event(this);
-        //this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseUp);
-        //this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseUp);
+        //events
+        this._onRenderingImageTouched = new SmartJs.Event.Event(this);
+        this._onTouchStart = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
+
+        this._onTouchMove = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousemove', this._touchMoveHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchmove', this._touchMoveHandler);
+
+        this._onTouchEnd = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mouseup', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'mouseout', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchend', this._touchEndHandler);
     }
 
     //properties
@@ -95,14 +107,24 @@ PocketCode.Ui.Canvas = (function () {
 
     //events
     Object.defineProperties(Canvas.prototype, {
-        onMouseDown: {
+        onRenderingImageTouched: {
             get: function () {
-                return this._onMouseDown;
+                return this._onRenderingImageTouched;
             },
         },
-        onMouseUp: {
+        onTouchStart: {
             get: function () {
-                return this._onMouseUp;
+                return this._onTouchStart;
+            },
+        },
+        onTouchMove: {
+            get: function () {
+                return this._onTouchMove;
+            },
+        },
+        onTouchEnd: {
+            get: function () {
+                return this._onTouchEnd;
             },
         },
     });
@@ -127,11 +149,60 @@ PocketCode.Ui.Canvas = (function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
-        __onMouseDown: function (e) {
+        _touchStartHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+
+            //TODO: map system event to custom event
+            // touchStart does not only listen for left-mouseButton events
+
+            //var isLeftClick = e.which ? e.which === 1 : e.button === 1;
+            //if (!isLeftClick && !SmartJs.Device.isTouch)
+            //    return;
+
+            //var pointerX,// = this._lowerCanvasEl.width / 2.0,
+            //    pointerY;// = this._lowerCanvasEl.height / 2.0;
+            //var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+
+            //if (SmartJs.Device.isTouch && (e.touches && e.touches[0])) {
+            //    var touch = e.touches[0];
+            //    pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+            //    pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            //}
+            //else {
+            //    boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+            //    pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;
+            //    pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
+            //}
+
+            //var target = this._getTargetAtPosition(pointerX, pointerY); //TODO: should we include scaling here? for multi-click + check target using a scaled canvas too
+            //if (target) {
+            //    this._onRenderingImageTouched.dispatchEvent({ id: target.id });
+            //}
+
+            //check: rendering image clicked
+            this._checkRenderingImageClicked(e);    //TODO: should be called for left-mouseButton or touch events only
+            return false;
+        },
+        _touchMoveHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //TODO: map system event to custom event
+            return false;
+        },
+        _touchEndHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //TODO: map system event to custom event
+            return false;
+        },
+        _checkRenderingImageClicked: function (e) {
+            //TODO: make sure to move code to the handler calling this method as soon it is implemented (do we need this method after refactoring?)
             var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
 
             if (!isLeftClick && !SmartJs.Device.isTouch) {
-                return;
+                return; 
             }
 
             var pointerX,// = this._lowerCanvasEl.width / 2.0,
@@ -149,29 +220,28 @@ PocketCode.Ui.Canvas = (function () {
                 pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
             }
 
-            var target = this._getTargetAtPosition(pointerX, pointerY); //TODO: should we include scaling here? for multi-click + check target using a scaled canvas too
-            if (target) {
-                this._onMouseDown.dispatchEvent({ id: target.id });
-            }
+            var pointer = {
+                x: pointerX / this._scalingX,
+                y: pointerY / this._scalingY,
+            };
+            var target = this._getTargetAt(pointer);
+            if (target)
+                this._onRenderingImageTouched.dispatchEvent({ id: target.id });
         },
-        _getTargetAtPosition: function (x, y) {
-            var pointer = { x: x / this._scalingX, y: y / this._scalingY };
+        _getTargetAt: function (point) {
             var objects = this._renderingImages;
             var object, target;
 
             for (var i = objects.length - 1; i >= 0; i--) {
                 object = objects[i];
-                if (object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, x, y)) {
+                if (object.visible && object.containsPoint(point) && !this._isTargetTransparent(object, point)) {
                     target = object;
                     break;
                 }
             }
             return target;
         },
-        _isTargetTransparent: function (target, x, y) {
-            //this._cacheCanvasEl.width, this._cacheCanvasEl.height
-            //document.body.appendChild(this._cacheCanvasEl);
-            //this._cacheCanvasEl.style.position = 'absolute';
+        _isTargetTransparent: function (target, point) {
             var ctx = this._cacheCanvasCtx;
             ctx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
             ctx.save();
@@ -181,12 +251,11 @@ PocketCode.Ui.Canvas = (function () {
             ctx.restore();
 
             //imageData.data contains rgba values - here we look at the alpha value
-            var imageData = ctx.getImageData(this._translation.x + Math.floor(x), this._translation.y - Math.floor(y), 1, 1);
+            var imageData = ctx.getImageData(this._translation.x + Math.floor(point.x * this._scalingX), this._translation.y - Math.floor(point.y * this._scalingY), 1, 1);
             var hasTransparentAlpha = !imageData.data || !imageData.data[3];
 
             //clear
             imageData = undefined;
-            //this._cacheCanvasCtx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
             return hasTransparentAlpha;
         },
         render: function () {
@@ -238,8 +307,8 @@ PocketCode.Ui.Canvas = (function () {
             return data;
         },
         dispose: function () {
-            this._removeDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
-            this._removeDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
+            this._removeDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
             SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
         }
     });

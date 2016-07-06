@@ -245,7 +245,7 @@ QUnit.test("Sprite", function (assert) {
 
     //mock _currentLook
     var look = new PocketCode.Model.Look({ id: "s1", resourceId: "img1", name: "testLook" });
-    look._canvas = "canvas";    //we have to set this to maek sure a renderingImage returns this properties
+    look._canvas = document.createElement("canvas");    //we have to set this to make sure a renderingImage returns this properties
     testSprite._currentLook = look;
 
     testSprite._flipX = false;
@@ -254,35 +254,36 @@ QUnit.test("Sprite", function (assert) {
     testSprite._lookOffsetX = lookOffsetX;
     testSprite._lookOffsetY = lookOffsetY;
 
-    var renderingProperties = testSprite.renderingProperties;
+    var renderingImage = testSprite.renderingImage;
 
-    assert.strictEqual(renderingProperties.id, testSprite.id, "renderingProperties: id set correctly");
-    assert.strictEqual(renderingProperties.x, testSprite._positionY + lookOffsetX, "renderingProperties: x set correctly");
-    assert.strictEqual(renderingProperties.y, testSprite._positionY + lookOffsetY, "renderingProperties: y set correctly");
-    assert.strictEqual(renderingProperties.rotation, testSprite._direction - 90, "renderingProperties: rotation set correctly");
-    assert.strictEqual(renderingProperties.flipX, testSprite._flipX, "renderingProperties: flipX set correctly");
-    assert.strictEqual(renderingProperties.scaling, testSprite.size / 100.0, "renderingProperties: scaling set correctly");
-    assert.strictEqual(renderingProperties.visible, testSprite._visible, "renderingProperties: visible set correctly");
-    assert.equal(renderingProperties.look, look.canvas, "renderingProperties: look set correctly");
+    assert.strictEqual(renderingImage.id, testSprite.id, "renderingImage: id set correctly");
+    assert.strictEqual(renderingImage.x, testSprite._positionY + lookOffsetX, "renderingImage: x set correctly");
+    assert.strictEqual(renderingImage.y, testSprite._positionY + lookOffsetY, "renderingImage: y set correctly");
+    assert.strictEqual(renderingImage._rotation, testSprite._direction - 90, "renderingImage: rotation set correctly");
+    assert.strictEqual(renderingImage._flipX, testSprite._flipX, "renderingImage: flipX set correctly");
+    assert.strictEqual(renderingImage._scaling, testSprite.size / 100.0, "renderingImage: scaling set correctly");
+    assert.strictEqual(renderingImage.visible, testSprite._visible, "renderingImage: visible set correctly");
+    assert.equal(renderingImage._originalCanvas, look.canvas, "renderingImage: look set correctly");
+    //^^ the look setter sets the original look, the getter returns the cached look including filters
 
-    var graphicEffectsSet = renderingProperties.graphicEffects && renderingProperties.graphicEffects instanceof Array;
-    assert.ok(graphicEffectsSet, "renderingProperties: graphicEffects created as array");
+    var graphicEffectsSet = renderingImage._graphicEffects && renderingImage._graphicEffects instanceof Array;
+    assert.ok(graphicEffectsSet, "renderingImage: graphicEffects created as array");
     if (graphicEffectsSet) {
         var ghostSet = 0;
         var brightnessSet = 0;
         var colorSet = 0;
-        for (var i = 0, l = renderingProperties.graphicEffects.length; i < l; i++) {
-            if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.GHOST) {
+        for (var i = 0, l = renderingImage._graphicEffects.length; i < l; i++) {
+            if (renderingImage._graphicEffects[i].effect === PocketCode.GraphicEffect.GHOST) {
                 ghostSet++;
-                assert.equal(renderingProperties.graphicEffects[i].value, testSprite.transparency, "renderingProperties: ghost set correctly");
+                assert.equal(renderingImage._graphicEffects[i].value, testSprite.transparency, "renderingImage: ghost set correctly");
             }
-            else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS) {
+            else if (renderingImage._graphicEffects[i].effect === PocketCode.GraphicEffect.BRIGHTNESS) {
                 brightnessSet++;
-                assert.equal(renderingProperties.graphicEffects[i].value, testSprite.brightness - 100, "renderingProperties: brightness set correctly");
+                assert.equal(renderingImage._graphicEffects[i].value, testSprite.brightness - 100, "renderingImage: brightness set correctly");
             }
-            else if (renderingProperties.graphicEffects[i].effect === PocketCode.GraphicEffect.COLOR) {
+            else if (renderingImage._graphicEffects[i].effect === PocketCode.GraphicEffect.COLOR) {
                 colorSet++;
-                assert.equal(renderingProperties.graphicEffects[i].value, testSprite._colorEffect, "renderingProperties: colorEffect set correctly");
+                assert.equal(renderingImage._graphicEffects[i].value, testSprite._colorEffect, "renderingImage: colorEffect set correctly");
             }
         }
     }
@@ -290,11 +291,11 @@ QUnit.test("Sprite", function (assert) {
     testSprite._currentLook = null;
     testSprite._recalculateLookOffsets();   //resetting looks (=private) for tests include calling this calculation update method to ensure internal offsets are reset as well
 
-    renderingProperties = testSprite.renderingProperties;
-    assert.strictEqual(renderingProperties.x, testSprite.positionX, "renderingProperties: x set correctly without currentLook");
-    assert.strictEqual(renderingProperties.y, testSprite.positionY, "renderingProperties: y set correctly without currentLook");
-    assert.strictEqual(renderingProperties.scaling, 1, "renderingProperties: scaling set correctly without currentLook");
-    assert.ok(renderingProperties.look == undefined, "renderingProperties: no look set if there is no current look");
+    renderingImage = testSprite.renderingImage;
+    assert.strictEqual(renderingImage.x, testSprite.positionX, "renderingImage: x set correctly without currentLook");
+    assert.strictEqual(renderingImage.y, testSprite.positionY, "renderingImage: y set correctly without currentLook");
+    assert.strictEqual(renderingImage._scaling, 1, "renderingImage: scaling set correctly without currentLook");
+    assert.ok(renderingImage.look == undefined, "renderingImage: no look set if there is no current look");
 
     var rotationStyle = "someRotationStyle";
     testSprite._rotationStyle = rotationStyle;

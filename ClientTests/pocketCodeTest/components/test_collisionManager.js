@@ -8,8 +8,7 @@ QUnit.module("components/collisionManager.js");
 
 QUnit.test("CollisionManager", function (assert) {
     
-    var sprites = [];
-    var cm = new PocketCode.CollisionManager(sprites, 10, 20);
+    var cm = new PocketCode.CollisionManager(10, 20);
     assert.ok(cm._projectScreenWidth == 10 && cm._projectScreenHeight == 20, "ctr parameters set");
     assert.ok(cm instanceof PocketCode.CollisionManager && cm instanceof SmartJs.Core.Component, "instance check");
     assert.ok(cm.objClassName === "CollisionManager", "objClassName check");
@@ -18,7 +17,7 @@ QUnit.test("CollisionManager", function (assert) {
     assert.ok(cm._disposed, "disposed: inherited");
 
     //recreate
-    cm = new PocketCode.CollisionManager(sprites, 10, 20);
+    cm = new PocketCode.CollisionManager(10, 20);
 
     //checkSpriteEdgeCollision
     var boundary = {

@@ -4,9 +4,132 @@
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-components.js" />
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
-"use strict";
+/// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/renderingItem.js" />
+'use strict';
 
-QUnit.module("components/renderingImage.js");
+QUnit.module("components/renderingItem.js");
+
+
+QUnit.test("RenderingItem", function (assert) {
+
+    var ri = new PocketCode.RenderingItem({ id: "s01" });
+    assert.ok(ri instanceof PocketCode.RenderingItem, "instance check");
+
+    assert.throws(function () { ri = new PocketCode.RenderingItem(); }, Error, "ERROR: cntr call without parameter");
+    assert.throws(function () { ri = new PocketCode.RenderingItem({ visible: true }); }, Error, "ERROR: cntr call without id");
+
+    assert.ok(ri._id == "s01" && ri.x == 0.0 && ri.y == 0.0 && ri.visible == true, "cntr default args check");
+    ri = new PocketCode.RenderingItem({ id: "s02", x: 10, y: 20, visible: false });
+    assert.ok(ri._id == "s02" && ri.x == 10.0 && ri.y == 20.0 && ri.visible == false, "cntr args check");
+
+    //getter setter
+    assert.equal(ri.id, "s02", "id getter");
+    ri.x = 5;
+    assert.equal(ri.x, 5, "x getter/setter");
+    ri.y = 7;
+    assert.equal(ri.y, 7, "y getter/setter");
+    ri.visible = true;
+    assert.equal(ri.visible, true, "visible getter/setter");
+
+    //draw
+    assert.throws(function () { ri.draw(); }, Error, "ERROR: calling draw() on base class");
+    ri.visible = false;
+
+    var called = 0, context;
+    ri._draw = function (ctx) {
+        called++;
+        context = ctx;
+    };
+
+    var testCtx = { context: "test" };  //we define an object to assert.equal the output
+    ri.draw(testCtx);  //no error if not visible
+    assert.equal(called, 0, "_draw not called on invisisble items");
+
+    ri.visible = true;
+    ri.draw(testCtx);
+    assert.equal(testCtx, context, "context passed to private render method");
+});
+
+
+QUnit.test("RenderingText", function (assert) {
+
+    var rt = new PocketCode.RenderingText({ id: "s01" });
+    assert.ok(rt instanceof PocketCode.RenderingText && rt instanceof PocketCode.RenderingItem, "instance check");
+
+    assert.throws(function () { new PocketCode.RenderingText(); }, Error, 'fail on missing constructor argument');
+    // underlying vars are defined in uservariablehost
+    var id = 'id0',
+        x = 20,
+        y = 16,
+        text = 'Hello, world!',
+        visible = true;
+
+    var props = { id: id, text: text, x: x, y: y, visible: visible };
+    var renderingText = new PocketCode.RenderingText(props);
+
+    assert.ok(renderingText instanceof PocketCode.RenderingText, 'correct instance');
+
+    // test default config
+    text = 5.333;
+    renderingText.text = text;
+    assert.equal(renderingText._text, text.toString(), "Text set correctly");
+    assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
+
+    renderingText.text = 4;
+    assert.equal(renderingText._text, "4.0", "include 1 decimal as default for integers");
+
+    //rendering
+    var fillTextCalled = 0;
+    var context = {
+        fillText: function () {
+            fillTextCalled++;
+        }
+    };
+
+    renderingText.text = "";
+    renderingText.draw(context);
+    assert.ok(!fillTextCalled, "No text drawn on canvas if text is empty");
+    fillTextCalled = 0;
+
+    var numberOfNewlines = 5;
+    text = "Hello world";
+
+    for (var i = 0, l = numberOfNewlines; i < l; i++) {
+        text = text + "\n test";
+    }
+
+    renderingText.text = text;
+    renderingText.visible = true;
+    renderingText.draw(context);
+    assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
+
+    //rendering and font size
+    var canvas = document.createElement("canvas");
+    canvas.height = 100;
+    canvas.width = 200;
+    var ctx = canvas.getContext("2d");
+    //for test only
+    //document.body.appendChild(canvas);
+    //canvas.style.position = "absolute";
+
+    renderingText.text = 42;
+    renderingText.x = 0;
+    renderingText.y = 0;
+    renderingText.draw(ctx);
+
+    var img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    assert.equal(img.canvas.height, 33, "rendering Text original height: based on screenshot (2016-07-06)");
+
+    var topLeft = {
+        x: 100 + Math.round(Math.cos(img.tl.angle) * img.tl.length),
+        y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
+    };
+
+    assert.equal(topLeft.x, 0, "rendered to left");
+    assert.ok(topLeft.y < 10, "rendered to top: based on the font size there is an offset");
+});
 
 
 QUnit.test("RenderingImage", function (assert) {
@@ -152,10 +275,10 @@ QUnit.test("RenderingImage", function (assert) {
         canvasElement.height = 20;
         canvasElement.width = 10;
 
-        var renderingImage = new PocketCode.RenderingImage({ look: canvasElement });
+        var renderingImage = new PocketCode.RenderingImage({ id: "id", look: canvasElement });
 
-        assert.ok(renderingImage instanceof PocketCode.RenderingImage, "instance check");
-        assert.equal(renderingImage.look, canvasElement, "RenderingImage.look returns canvas element");
+        assert.ok(renderingImage instanceof PocketCode.RenderingImage && renderingImage instanceof PocketCode.RenderingItem, "instance check");
+        //assert.equal(renderingImage.look, canvasElement, "RenderingImage.look returns canvas element");
 
         assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "missing arguments");
         assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "argument not an object");
@@ -217,8 +340,8 @@ QUnit.test("RenderingImage", function (assert) {
         sprite2.initLooks();
         sprite2.init();
 
-        var renderingImageOpaque = new PocketCode.RenderingImage(sprite1.renderingProperties);
-        var renderingImageTransparent = new PocketCode.RenderingImage(sprite2.renderingProperties);
+        var renderingImageOpaque = sprite1.renderingImage; //new PocketCode.RenderingImage(sprite1.renderingProperties);
+        var renderingImageTransparent = sprite2.renderingImage; //new PocketCode.RenderingImage(sprite2.renderingProperties);
 
         //draw tests
         canvas.height = 20;
@@ -238,8 +361,8 @@ QUnit.test("RenderingImage", function (assert) {
         //  ************** TESTS WITH 100% opaque SPRITE ******************************************************************
         //  test simple rendering on origin
         var estimatedCenterX, estimatedCenterY, rotationAngle;
-        var opaqueImageWidth = renderingImageOpaque.look.width;
-        var opaqueImageHeight = renderingImageOpaque.look.height;
+        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
         var canvasWidth = canvas.width;
         var canvasHeight = canvas.height;
 
@@ -334,8 +457,8 @@ QUnit.test("RenderingImage", function (assert) {
         // 5x5 area of 10x10 image
 
         // simple rendering in origin
-        var transparentImageWidth = renderingImageTransparent.look.width;
-        var transparentImageHeight = renderingImageTransparent.look.height;
+        var transparentImageWidth = renderingImageTransparent._cacheCanvas.width;
+        var transparentImageHeight = renderingImageTransparent._cacheCanvas.height;
 
         estimatedCenterX = estimatedCenterY = renderingImageTransparent.x = renderingImageTransparent.y = 5;
         renderingImageTransparent.draw(ctx);
@@ -444,15 +567,15 @@ QUnit.test("RenderingImage", function (assert) {
         var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
         spriteTransparent.initLooks();
         spriteTransparent.init();
-        var renderingImageOpaque = new PocketCode.RenderingImage(spriteOpaque.renderingProperties);
-        // var renderingImageTransparent = new PocketCode.RenderingImage(spriteTransparent.renderingProperties);
+        var renderingImageOpaque = spriteOpaque.renderingImage; //new PocketCode.RenderingImage(spriteOpaque.renderingProperties);
+        //var renderingImageTransparent = spriteTransparent.renderingImage; //new PocketCode.RenderingImage(spriteTransparent.renderingProperties);
 
         var estimatedCenterX, estimatedCenterY, rotationAngle, canvasWidth, canvasHeight;
         canvasWidth = canvas.width;
         canvasHeight = canvas.height;
 
-        var opaqueImageWidth = renderingImageOpaque.look.width;
-        var opaqueImageHeight = renderingImageOpaque.look.height;
+        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
 
         // ****************** TEST OPAQUE SPRITE SCALED RENDERING ******************************************************
 
@@ -520,5 +643,4 @@ QUnit.test("RenderingImage", function (assert) {
     };
 
 });
-
 

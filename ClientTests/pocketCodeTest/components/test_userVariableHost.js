@@ -143,8 +143,8 @@ QUnit.test("UserVariableHost", function (assert) {
     //test ui rendering + updates
     var renderingVars = uvhl.renderingVariables;
     var r0 = renderingVars[0], r1 = renderingVars[1];
-    assert.ok(r0.id === "id1" && r0.text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
-    assert.ok(r1.id === "id2" && r1.text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
+    assert.ok(r0.id === "id1" && r0._text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
+    assert.ok(r1.id === "id2" && r1._text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
 
     var varChangeCalled = 0;
     var onVarChange = function (e) {

@@ -3,8 +3,7 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
 /// <reference path="../components/userVariableHost.js" />
-/// <reference path="../components/renderingImage.js" />
-/// <reference path="../components/renderingText.js" />
+/// <reference path="../components/renderingItem.js" />
 /// <reference path="../components/gameEngine.js" />
 'use strict';
 
@@ -82,9 +81,29 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
-        renderingProperties: {   //all rendering propeties as object
+        //renderingProperties: {   //all rendering propeties as object
+        //    get: function () {
+        //        return {
+        //            id: this._id,
+        //            x: Math.round(this._positionX + this._lookOffsetX),
+        //            y: Math.round(this._positionY + this._lookOffsetY),
+        //            rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
+        //            flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
+        //            look: this._currentLook ? this._currentLook.canvas : undefined,
+        //            scaling: this._scaling,
+        //            visible: this._visible,
+        //            graphicEffects: [
+        //                { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
+        //                { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100.0 },  //send +-100 instead of 0..200
+        //                { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
+        //                //TODO: add other filters as soon as available
+        //            ],
+        //        };
+        //    },
+        //},
+        renderingImage: {   //rendering image is created but not stored!
             get: function () {
-                return {
+                return new PocketCode.RenderingImage({
                     id: this._id,
                     x: Math.round(this._positionX + this._lookOffsetX),
                     y: Math.round(this._positionY + this._lookOffsetY),
@@ -99,12 +118,7 @@ PocketCode.Model.Sprite = (function () {
                         { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
                         //TODO: add other filters as soon as available
                     ],
-                };
-            },
-        },
-        renderingImage: {   //rendering image is created but not stored!
-            get: function () {
-                return new PocketCode.RenderingImage(this.renderingProperties);
+                });
             },
         },
         id: {

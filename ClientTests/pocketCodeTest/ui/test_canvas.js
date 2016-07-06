@@ -5,8 +5,7 @@
 /// <reference path="../../../Client/smartJs/sj-components.js" />
 /// <reference path="../../../Client/smartJs/sj-ui.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/sprite.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/renderingImage.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/renderingText.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/renderingItem.js" />
 /// <reference path="../../../Client/pocketCode/scripts/ui/canvas.js" />
 'use strict';
 
@@ -57,7 +56,10 @@ QUnit.test("Canvas", function (assert) {
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(runTests));
     var canvas = new PocketCode.Ui.Canvas();
     assert.ok(canvas instanceof PocketCode.Ui.Canvas && canvas instanceof SmartJs.Ui.Control, "instance check");
-    assert.ok(canvas.onMouseDown instanceof SmartJs.Event.Event && canvas.onMouseUp instanceof SmartJs.Event.Event, "event accessors");
+    assert.ok(canvas.onRenderingImageTouched instanceof SmartJs.Event.Event &&
+        canvas.onTouchStart instanceof SmartJs.Event.Event &&
+        canvas.onTouchMove instanceof SmartJs.Event.Event &&
+        canvas.onTouchEnd instanceof SmartJs.Event.Event, "event accessors");
 
     assert.equal(canvas.contextTop, canvas._upperCanvasCtx, "upper context accessor");
 
@@ -77,13 +79,12 @@ QUnit.test("Canvas", function (assert) {
         var renderingImageOpaque = sprite1.renderingImage;
         var renderingImageTransparent = sprite2.renderingImage;
 
-        var opaqueImageWidth = renderingImageOpaque.look.width;
-        var opaqueImageHeight = renderingImageOpaque.look.height;
+        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
 
         //for tests only
-        document.body.appendChild(canvas._lowerCanvasEl);
-        canvas._lowerCanvasEl.style.position = 'absolute';
-        canvas._lowerCanvasEl.style.zIndex = 10000;
+        //document.body.appendChild(canvas._lowerCanvasEl);
+        //canvas._lowerCanvasEl.style.position = 'absolute';
 
         //move to top left
         renderingImageOpaque.x -= canvas.width / 2.0;
@@ -91,7 +92,7 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.renderingImages = [renderingImageOpaque];
         canvas.render();
-        assert.notOk(canvas._isTargetTransparent(renderingImageOpaque, renderingImageOpaque.x, renderingImageOpaque.y), "target not transparent");
+        assert.notOk(canvas._isTargetTransparent(renderingImageOpaque, renderingImageOpaque), "target not transparent");
 
         assert.equal(countPixels(), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
         //check position
@@ -115,19 +116,19 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.render();
 
-        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, 3, 3), "isTargetTransparent returns true for transparent pixels");
-        assert.ok(!canvas._isTargetTransparent(renderingImageTransparent, 2, 2), "isTargetTransparent returns false for non transparent pixel");
-        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, 8, 3), "isTargetTransparent returns true for transparent pixels");
+        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, { x: 3, y: 3 }), "isTargetTransparent returns true for transparent pixels");
+        assert.ok(!canvas._isTargetTransparent(renderingImageTransparent, { x: 2, y: 2 }), "isTargetTransparent returns false for non transparent pixel");
+        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, { x: 8, y: 3 }), "isTargetTransparent returns true for transparent pixels");
         canvas.clear();
 
         //TODO: testing the canvas rendering Text does not only mean to check the setter but to render a text and check the output
         var renderingText = new PocketCode.RenderingText({ id: "rt_id", text: "TEXT", visible: true, x: 0, y: 0 });
-        assert.throws(function () { canvas.renderingTexts = renderingText; }, Error, "ERROR: invalid argument: rendering text setter");
+        assert.throws(function () { canvas.renderingTexts = renderingText; }, Error, "ERROR: invalid argument: rendering texts setter");
         canvas.renderingTexts = [renderingText];
         assert.equal(canvas._renderingTexts[0], renderingText, "renderingTexts: setter");
         canvas.renderingTexts = [];
 
-        //_getTargetAtPosition
+        //_getTargetAt
         var scalingAppliedToPointer = false;
 
         var previousScaling = { x: canvas._scalingX, y: canvas._scalingY };
@@ -167,74 +168,74 @@ QUnit.test("Canvas", function (assert) {
         canvas._renderingImages.push(createMockRenderingObject(2, false));
         canvas._renderingImages.push(createMockRenderingObject(4, true));
 
-        var target = canvas._getTargetAtPosition(mockPointer.x, mockPointer.y);
-        assert.strictEqual(target.id, 4, '_getTargetAtPosition returns correct target');
+        var target = canvas._getTargetAt(mockPointer);
+        assert.strictEqual(target.id, 4, '_getTargetAt returns correct target');
 
         target.visible = false;
-        target = canvas._getTargetAtPosition(mockPointer.x, mockPointer.y);
+        target = canvas._getTargetAt(mockPointer);
         assert.ok(!target, "target not found if invisible");
 
         canvas._renderingImages.push(createMockRenderingObject(5, false));
         canvas._renderingImages.push(createMockRenderingObject(6, false));
         canvas._renderingImages.push(createMockRenderingObject(7, true));
 
-        assert.strictEqual(canvas._getTargetAtPosition(mockPointer.x, mockPointer.y).id, 7, '_getTargetAtPosition returns last correct target in renderingObjects');
+        assert.strictEqual(canvas._getTargetAt(mockPointer).id, 7, '_getTargetAt returns last correct target in renderingObjects');
 
         canvas._renderingImages = [];
-        assert.ok(!canvas._getTargetAtPosition(mockPointer.x, mockPointer.y), 'no target found if there are no rendering objects');
+        assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no rendering objects');
 
         canvas._renderingImages.push(createMockRenderingObject(1, false));
-        assert.ok(!canvas._getTargetAtPosition(mockPointer.x, mockPointer.y), 'no target found if there are no target rendering objects');
+        assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no target rendering objects');
 
         canvas._renderingImages = previousRenderingObjects;
         canvas.scale(previousScaling.x, previousScaling.y);
 
-        // _onMouseDown tests
-        var onMouseDownTriggered = 0, getTargetCalled = 0;
-        canvas._getTargetAtPosition = function () {
+        // onRenderingImageTouched tests
+        var onRiTouchedTriggered = 0, getTargetCalled = 0;
+        canvas._getTargetAt = function () {
             getTargetCalled++;
             return { id: 'testTarget' };
         };
-        canvas._onMouseDown.dispatchEvent = function () {
-            onMouseDownTriggered++;
+        canvas.onRenderingImageTouched.dispatchEvent = function () {
+            onRiTouchedTriggered++;
         };
 
         var isTouchDevice = SmartJs.Device.isTouch;
         SmartJs.Device.isTouch = false;
 
         var event = {};
-        canvas.__onMouseDown(event);
+        canvas._checkRenderingImageClicked(event);
 
-        assert.strictEqual(onMouseDownTriggered, 0, 'onMouseDown was not triggered by event without left click');
+        assert.strictEqual(onRiTouchedTriggered, 0, 'onMouseDown was not triggered by event without left click');
         assert.strictEqual(getTargetCalled, 0, 'does not search for a target if no left click registered');
 
         event.button = 1;
 
-        canvas.__onMouseDown(event);
-        assert.strictEqual(onMouseDownTriggered, 1, 'onMouseDown triggered if button in event is 1');
-        assert.strictEqual(onMouseDownTriggered, 1, 'searchTargets triggered if button in event is 1');
+        canvas._checkRenderingImageClicked(event);
+        assert.strictEqual(onRiTouchedTriggered, 1, 'onMouseDown triggered if button in event is 1');
+        assert.strictEqual(onRiTouchedTriggered, 1, 'searchTargets triggered if button in event is 1');
 
         event.button = 0;
-        canvas.__onMouseDown(event);
-        assert.strictEqual(onMouseDownTriggered, 1, 'onMouseDown not triggered if button in event is 0');
-        assert.strictEqual(onMouseDownTriggered, 1, 'searchTargets not triggered if button in event is 0');
+        canvas._checkRenderingImageClicked(event);
+        assert.strictEqual(onRiTouchedTriggered, 1, 'onMouseDown not triggered if button in event is 0');
+        assert.strictEqual(onRiTouchedTriggered, 1, 'searchTargets not triggered if button in event is 0');
 
         event.which = 1;
-        canvas.__onMouseDown(event);
-        assert.strictEqual(onMouseDownTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
-        assert.strictEqual(onMouseDownTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
+        canvas._checkRenderingImageClicked(event);
+        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
+        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
 
         event.which = 0;
         event.button = 1;
-        canvas.__onMouseDown(event);
-        assert.strictEqual(onMouseDownTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
-        assert.strictEqual(onMouseDownTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
+        canvas._checkRenderingImageClicked(event);
+        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
+        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
 
         SmartJs.Device.isTouch = true;
         event = { touches: [{}] };
-        canvas.__onMouseDown(event);
+        canvas._checkRenderingImageClicked(event);
 
-        assert.strictEqual(onMouseDownTriggered, 3, 'onMouseDown triggered if touch event');
+        assert.strictEqual(onRiTouchedTriggered, 3, 'onMouseDown triggered if touch event');
 
         //restore to previous setting
         SmartJs.Device.isTouch = isTouchDevice;
