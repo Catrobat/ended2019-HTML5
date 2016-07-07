@@ -83,15 +83,17 @@ PocketCode.GameEngine = (function () {
         //rendering
         renderingImages: {
             get: function () {  //rendering images are created but not stored!
-                var imgs = this._background ? [this._background.renderingImage] : [],
-                    sprites = this._sprites,
-                    ri;
-
-                for (var i = 0, l = sprites.length; i < l; i++) {
-                    ri = sprites[i].renderingImage;
-                    if (ri.look)    //ignore sprites without looks
-                        imgs.push(ri);
-                }
+                //var imgs = this._background ? [this._background.renderingImage] : [],
+                //    sprites = this._sprites,
+                //    ri;
+                var imgs = [this._background.renderingImage],
+                    sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)// {
+                    //ri = sprites[i].renderingImage;
+                    //if (ri.look)    //ignore sprites without looks
+                    //    imgs.push(ri);
+                    imgs.push(sprites[i].renderingImage);
+                //}
                 return imgs;
             },
         },

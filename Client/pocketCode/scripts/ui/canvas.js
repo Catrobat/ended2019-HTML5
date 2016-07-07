@@ -82,6 +82,7 @@ PocketCode.Ui.Canvas = (function () {
                 if (typeof value !== 'number')
                     throw new Error('invalid argument: expected "value" typeof "number" (px)');
 
+                this._dom.style.width = (value + 'px');
                 this._lowerCanvasEl.width = value;
                 this._translation = { x: Math.round(value / 2.0), y: Math.round(this.height / 2.0) };
                 this._upperCanvasEl.width = value;
@@ -97,6 +98,7 @@ PocketCode.Ui.Canvas = (function () {
                 if (typeof value !== 'number')
                     throw new Error('invalid argument: expected "value" typeof "number" (px)');
 
+                this._dom.style.height = (value + 'px');
                 this._lowerCanvasEl.height = value;
                 this._translation = { x: Math.round(this.width / 2.0), y: Math.round(value / 2.0) };
                 this._upperCanvasEl.height = value;
