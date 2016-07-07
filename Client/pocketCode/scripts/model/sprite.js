@@ -2,8 +2,9 @@
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="userVariableHost.js" />
-/// <reference path="gameEngine.js" />
+/// <reference path="../components/userVariableHost.js" />
+/// <reference path="../components/renderingItem.js" />
+/// <reference path="../components/gameEngine.js" />
 'use strict';
 
 /**
@@ -80,12 +81,32 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
-        renderingProperties: {   //all rendering propeties as object
+        //renderingProperties: {   //all rendering propeties as object
+        //    get: function () {
+        //        return {
+        //            id: this._id,
+        //            x: Math.round(this._positionX + this._lookOffsetX),
+        //            y: Math.round(this._positionY + this._lookOffsetY),
+        //            rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
+        //            flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
+        //            look: this._currentLook ? this._currentLook.canvas : undefined,
+        //            scaling: this._scaling,
+        //            visible: this._visible,
+        //            graphicEffects: [
+        //                { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
+        //                { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100.0 },  //send +-100 instead of 0..200
+        //                { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
+        //                //TODO: add other filters as soon as available
+        //            ],
+        //        };
+        //    },
+        //},
+        renderingImage: {   //rendering image is created but not stored!
             get: function () {
-                return {
+                return new PocketCode.RenderingImage({
                     id: this._id,
                     x: Math.round(this._positionX + this._lookOffsetX),
-                        y: Math.round(this._positionY + this._lookOffsetY),
+                    y: Math.round(this._positionY + this._lookOffsetY),
                     rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
                     flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
                     look: this._currentLook ? this._currentLook.canvas : undefined,
@@ -93,11 +114,11 @@ PocketCode.Model.Sprite = (function () {
                     visible: this._visible,
                     graphicEffects: [
                         { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
-                        { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100 },  //send +-100 instead of 0..200
+                        { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100.0 },  //send +-100 instead of 0..200
                         { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
                         //TODO: add other filters as soon as available
                     ],
-                };
+                });
             },
         },
         id: {
@@ -1103,7 +1124,7 @@ PocketCode.Model.Sprite = (function () {
 
             //set sprite values: avoid triggering multiple onChange events
             var props = changes || {};
-            this.setDirection(newDir, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update
+            this.setDirection(newDir, false);   //setDirection return true if an UI update is required (or was triggered), not when the direction is changed without UI update 
             if (this._direction !== dir) { //direction changed
                 if (this._rotationStyle == PocketCode.RotationStyle.ALL_AROUND) {
                     props.rotation = Math.round(this._direction - 90.0);
@@ -1174,6 +1195,7 @@ PocketCode.Model.Sprite = (function () {
             this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
+            this._onChange = undefined;     //make sure the game engines event is not disposed (shared event)
             var script,
                 scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers

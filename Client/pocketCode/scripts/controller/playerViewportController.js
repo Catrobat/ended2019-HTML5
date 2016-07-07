@@ -8,7 +8,7 @@ PocketCode.PlayerViewportController = (function () {
     function PlayerViewportController() {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
         this._renderingImages = [];
-        this._renderingVariables = [];
+        this._renderingTexts = [];
         this._redrawRequired = false;
         this._redrawInProgress = false;
 
@@ -20,21 +20,31 @@ PocketCode.PlayerViewportController = (function () {
     //properties
     Object.defineProperties(PlayerViewportController.prototype, {
         renderingImages: {
-            get: function () {
-                return this._renderingImages;
+            set: function (rimgs) {
+                if (!(rimgs instanceof Array))
+                    throw new Error('invalid argument: rendering images');
+
+                this._renderingImages = rimgs;
+                this._view.renderingImages = rimgs;
             },
         },
-        renderingVariables: {
-            get: function () {
-                return this._renderingVariables;
+        renderingTexts: {
+            set: function (texts) {
+                if (!(texts instanceof Array))
+                    throw new Error('invalid argument: texts');
+
+                this._renderingTexts = texts;
+                this._view.renderingTexts = texts;
             },
         },
         dimensions: {
             get: function () {
-                return {width: this._projectScreenWidth,
-                        height: this._projectScreenHeight}
-            }
-        }
+                return {
+                    width: this._projectScreenWidth,
+                    height: this._projectScreenHeight
+                };
+            },
+        },
     });
 
     //events
@@ -42,46 +52,16 @@ PocketCode.PlayerViewportController = (function () {
         onSpriteClicked: {
             get: function () {
                 return this._view.onSpriteClicked;
-            }
-        }
+            },
+        },
     });
 
     //methods
     PlayerViewportController.prototype.merge({
-        _transformXCoordinate : function(wx) {
-            return wx + this._projectScreenWidth / 2.0;
-        },
-        _transformYCoordinate : function(wy) {
-            return this._projectScreenHeight / 2. - wy;
-        },
-        initRenderingImages: function (sprites) {
-            if (!(sprites instanceof Array))
-                throw new Error('invalid argument: sprites');
-            //var renderingImages = [];
-            var sprite;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprite = sprites[i];
-                sprite.x = this._transformXCoordinate(sprite.x);
-                sprite.y = this._transformYCoordinate(sprite.y);
-
-                //update positions: top/left positioning
-                if (sprite.look)    //there are sprites without look
-                    this._renderingImages.push(new PocketCode.RenderingImage(sprite));//r);
-            }
-
-            this._view.renderingImages = this._renderingImages;
-        },
         updateSprite: function (spriteId, properties) {
             var img,
                 imgs = this._renderingImages,
                 visible;
-
-            //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined){
-                properties.y = this._transformYCoordinate(properties.y);
-            }
 
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
@@ -90,8 +70,13 @@ PocketCode.PlayerViewportController = (function () {
                     img.merge(properties);
 
                     if (properties.layer !== undefined) {
+                        var layer = properties.layer;
                         imgs.remove(img);
-                        imgs.insert(properties.layer, img);
+                        if (layer > imgs.length)
+                            imgs.push(img);
+                        else if (layer < 1)         //ignore background = idx[0]
+                            imgs.insert(1, img);    //this may change as soon we support the camera
+                        imgs.insert(layer, img);
                     }
                     if (img.visible || visible != img.visible)   //visible or visibility changed
                         this._view.render();
@@ -99,40 +84,22 @@ PocketCode.PlayerViewportController = (function () {
                 }
             }
         },
-        initRenderingVariables: function (variables) {
-            if (!(variables instanceof Array))
-                throw new Error('invalid argument: variables');
-            var _var;
-            for (var i = 0, l = variables.length; i < l; i++) {
-                _var = variables[i];
-                _var.x = this._transformXCoordinate(_var.x);
-                _var.y = this._transformYCoordinate(_var.y);
-                this._renderingVariables.push(new PocketCode.RenderingText(_var));
-            }
-            this._view.renderingVariables = this._renderingVariables;
-        },
         updateVariable: function (varId, properties) {  //properties: {text: , x: , y: , visible: }
-            var _var,
-                _vars = this._renderingVariables,
+            var _text,
+                _texts = this._renderingTexts,
                 _visible;
-            //update positions: top/left positioning
-            if (properties.x !== undefined)
-                properties.x = this._transformXCoordinate(properties.x);
-            if (properties.y !== undefined)
-                properties.y = this._transformYCoordinate(properties.y);
 
-            for (var i = 0, l = _vars.length; i < l; i++) {
-                _var = _vars[i];
-                _visible = _var.visible;
-                if (_var.id === varId) {
-                    _var.merge(properties);
-                    if (_var.visible != false || _visible != _var.visible)   //visible or visibility changed
-                        this._view.render(); //this.render();
+            for (var i = 0, l = _texts.length; i < l; i++) {
+                _text = _texts[i];
+                _visible = _text.visible;
+                if (_text.id === varId) {
+                    _text.merge(properties);
+                    if (_text.visible != false || _visible != _text.visible)   //visible or visibility changed
+                        this._view.render();
                     break;
                 }
             }
         },
-
         setProjectScreenSize: function (width, height) {
             this._projectScreenWidth = width;
             this._projectScreenHeight = height;

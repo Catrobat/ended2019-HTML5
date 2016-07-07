@@ -8,178 +8,184 @@
 
 /* viewport */
 .pc-playerViewport {
-	border: 0;
-	width: 100%;
-	height: 100%;
-	position: relative;
-	font-family: Arial, sans-serif;
-	font-size: 10px;
-	/*background-color: #003041;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    /*background-color: #003041;
 	background-color: #002D3E;*/
-	background-color: #04222C;
+    background-color: #04222C;
 }
 
-	.pc-playerViewport button {
-		border: 0;
-		border-radius: 0;
-		display: inline-block;
-		padding: 0;
-		margin: 0;
-		background: none;
-		font-weight: normal;
-		text-decoration: none;
-		text-shadow: none;
-		/*text-align: initial;*/
-		text-transform: none;
-	}
+    .pc-playerViewport button {
+        border: 0;
+        border-radius: 0;
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        background: none;
+        font-weight: normal;
+        text-decoration: none;
+        text-shadow: none;
+        /*text-align: initial;*/
+        text-transform: none;
+    }
 
 /* inner player screens */
 .pc-playerStartScreen {
-	font-size: 10px;
-	font-family: Arial, sans-serif;
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
-	background-color: #003041;
-	overflow: hidden;
-	box-sizing: border-box;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #003041;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
-	.pc-playerStartScreen img {
-		height: 100%;
-		width: 100%;
-		margin: 0px;
-		background-color: #A5A5A5;
-		opacity: 0.6;
-		filter: alpha(opacity = 60);
-	}
+    .pc-playerStartScreen img {
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+        background-color: #A5A5A5;
+        opacity: 0.6;
+        filter: alpha(opacity = 60);
+    }
 
-	.pc-playerStartScreen .disabled {
-		background-color: #A5A5A5;
-		opacity: 0.3;
-		filter: alpha(opacity = 30);
-	}
+    .pc-playerStartScreen .disabled {
+        background-color: #A5A5A5;
+        opacity: 0.3;
+        filter: alpha(opacity = 30);
+    }
 
-	.pc-playerStartScreen .pc-title {
-		position: absolute;
-		width: 100%;
-		top: 0;
-		left: 0;
-		background-color: #00475E;
-		background-color: rgba(0,71,94,.8);
-	}
+    .pc-playerStartScreen .pc-title {
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        background-color: #00475E;
+        background-color: rgba(0,71,94,.8);
+    }
 
-		.pc-playerStartScreen .pc-title div {
-			color: #A9DCF1;
-			font-size: 3.8em;
-			font-weight: 700;
-			padding: 0.37em;
-		}
+        .pc-playerStartScreen .pc-title div {
+            color: #A9DCF1;
+            font-size: 3.8em;
+            font-weight: 700;
+            padding: 0.37em;
+        }
 
-	.pc-playerStartScreen .pc-loadingIndicatorLayout {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		padding-top: 1em;
-		padding-bottom: 1em;
-		color: #ef7716;
-		width: 100%;
-		text-align: center;
-		background-color: #003041;
-	}
+    .pc-playerStartScreen .pc-loadingIndicatorLayout {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding-top: 1em;
+        padding-bottom: 1em;
+        color: #ef7716;
+        width: 100%;
+        text-align: center;
+        background-color: #003041;
+    }
 
-		.pc-playerStartScreen .pc-loadingIndicatorLayout span {
-			font-size: 1.8em;
-			font-weight: 700;
-		}
+        .pc-playerStartScreen .pc-loadingIndicatorLayout span {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
 
-		.pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
-			display: table;
-			margin: 0 auto;
-			width: 19em;
-		}
+        .pc-playerStartScreen .pc-loadingIndicatorLayout .pc-loadingIndicator {
+            display: table;
+            margin: 0 auto;
+            width: 19em;
+        }
 
-	.pc-playerStartScreen .pc-liContainer {
-		margin-top: 0.5em;
-	}
+    .pc-playerStartScreen .pc-liContainer {
+        margin-top: 0.5em;
+    }
 
-	.pc-playerStartScreen .pc-liProgress {
-		background-color: #ef7716;
-	}
+    .pc-playerStartScreen .pc-liProgress {
+        background-color: #ef7716;
+    }
 
-	.pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
-		top: 0;
-		left: 0;
-	}
+    .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
+        top: 0;
+    }
+    [dir='rtl'] .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
+        right: 0;
+    }
 
-	.pc-playerStartScreen .pc-liProgressStyle div {
-		display: table-cell;
-		width: 2.5em;
-	}
+    .pc-playerStartScreen .pc-liProgressStyle div {
+        display: table-cell;
+        width: 2.5em;
+    }
 
-	.pc-playerStartScreen button, .pc-playerStartScreen button:active {
-		background: none;
-		border: medium none;
-		color: #A9DCF1;
-		cursor: pointer;
-		fill: #A9DCF1;
-		height: 100%;
-		margin: 0;
-		outline: medium none;
-		padding: 0;
-		position: absolute;
-		width: 100%;
-		top: 0px;
-		left: 0px;
-	}
+    .pc-playerStartScreen button, .pc-playerStartScreen button:active {
+        background: none;
+        border: medium none;
+        color: #A9DCF1;
+        cursor: pointer;
+        fill: #A9DCF1;
+        height: 100%;
+        margin: 0;
+        outline: medium none;
+        padding: 0;
+        position: absolute;
+        width: 100%;
+        top: 0px;
+        left: 0px;
+    }
 
-		.pc-playerStartScreen button svg {
-			height: 44%;
-			left: 28%;
-			top: 28%;
-			width: 44%;
-			margin: 0;
-			padding: 0;
-			position: absolute;
-		}
+        .pc-playerStartScreen button svg {
+            height: 44%;
+            left: 28%;
+            top: 28%;
+            width: 44%;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+        }
 
-		.pc-playerStartScreen button:hover {
-			fill: #FFFFFF;
-		}
+[dir='rtl'] .pc-playerStartScreen button svg {
+    transform: rotate(180deg);
+}
 
-		.pc-playerStartScreen button:active {
-			fill: #17A5B8;
-			margin: 0;
-			padding: 0;
-		}
+.pc-playerStartScreen button:hover {
+    fill: #FFFFFF;
+}
 
-		.pc-playerStartScreen button:disabled {
-			fill: #A5A5A5;
-			cursor: default;
-		}
+.pc-playerStartScreen button:active {
+    fill: #17A5B8;
+    margin: 0;
+    padding: 0;
+}
+
+.pc-playerStartScreen button:disabled {
+    fill: #A5A5A5;
+    cursor: default;
+}
 
 
 /* page */
 .pc-page {
-	height: 100%;
-	position: absolute;
-	font-size: 10px;
+    height: 100%;
+    position: absolute;
+    font-size: 10px;
 }
 
 .pc-page, .pc-pageHeader, .pc-pageBodyLayout, .pc-pageBody, .pc-pageFooter {
-	width: 100%;
+    width: 100%;
 }
 
 .pc-pageHeader {
-	height: 4.8em;
-	border-bottom: solid 1px #385F6E;
-	background-color: #003041;
-	/*display: table;
+    height: 4.8em;
+    border-bottom: solid 1px #385F6E;
+    background-color: #003041;
+    /*display: table;
 	*/ border-spacing: 0;
 }
-	/*	.pc-pageHeader div {
+    /*	.pc-pageHeader div {
 		display: table-cell;
 		vertical-align: middle;
 	}
@@ -200,457 +206,511 @@
 		overflow: hidden;
 	}
 */
-	.pc-pageHeader .pc-menuButton {
-		width: 4.8em;
-		min-width: 4.8em;
-	}
+    .pc-pageHeader .pc-menuButton {
+        width: 4.8em;
+        min-width: 4.8em;
+    }
 
 .pc-pageBodyLayout, .pc-pageBody {
-	position: relative;
-	height: 100%;
+    position: relative;
+    height: 100%;
 }
 
 .pc-pageFooter {
-	height: 4.8em;
-	border-top: solid 1px #4D7F8F;
-	background-color: #003041; /*#01485F;*/
-	position: absolute;
-	bottom: 0;
-	/*display: table;*/
+    height: 4.8em;
+    border-top: solid 1px #4D7F8F;
+    background-color: #003041; /*#01485F;*/
+    position: absolute;
+    bottom: 0;
+    /*display: table;*/
 }
 
 
 /* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
-	margin: 0;
-	width: 60px;
-	height: 60px;
-	border: solid 2px;
-	border-radius: 10%;
+    margin: 0;
+    width: 60px;
+    height: 60px;
+    border: solid 2px;
+    border-radius: 10%;
 }
 
-	.pc-cursorButton svg {
-		position: absolute;
-		width: 60%;
-		height: 60%;
-		padding: 20%;
-		margin: 0;
-		top: 0;
-		left: 0;
-	}
+    .pc-cursorButton svg {
+        position: absolute;
+        width: 60%;
+        height: 60%;
+        padding: 20%;
+        margin: 0;
+        top: 0;
+        left: 0;
+    }
 
 .pc-cursorTable {
-	display: table;
-	border-collapse: separate;
-	border-spacing: 4px;
+    display: table;
+    border-collapse: separate;
+    border-spacing: 4px;
 }
 
 .pc-cursorTableRow {
-	display: table-row;
+    display: table-row;
 }
 
 .pc-cursorTableCell {
-	display: table-cell;
+    display: table-cell;
 }
 
 
 /* overlay */
 .pc-overlay {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: #000;
-	-moz-opacity: 0.6;
-	opacity: 0.6;
-	filter: alpha(opacity = 60);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+    filter: alpha(opacity = 60);
 }
 
 
 /* player toolbar */
 .pc-playerMenuH, .pc-playerMenuV {
-	font-size: 10px;
-	height: 100%;
-	width: 100%;
-	position: absolute;
-	bottom: 0;
+    font-size: 10px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
 }
 
 .pc-playerMenuOverlay, .pc-playerMenuPlayOverlay {
-	position: absolute;
-	overflow: hidden;
+    position: absolute;
+    overflow: hidden;
 }
 
-	.pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
-		background-color: #00475E;
-		-moz-opacity: 0.8;
-		opacity: 0.8;
-		filter: alpha(opacity = 80);
-	}
+    .pc-playerMenuOverlay, .pc-playerMenuPlayOverlay div {
+        background-color: #00475E;
+        -moz-opacity: 0.8;
+        opacity: 0.8;
+        filter: alpha(opacity = 80);
+    }
 
-	.pc-playerMenuPlayOverlay div {
-		height: 9.6em;
-		width: 9.6em;
-		border-radius: 4.8em;
-	}
+    .pc-playerMenuPlayOverlay div {
+        height: 9.6em;
+        width: 9.6em;
+        border-radius: 4.8em;
+    }
+
+[dir='rtl'] .pc-playerMenuPlayOverlay div {
+    transform: rotate(180deg);
+}
 
 .pc-playerMenuH .pc-playerMenuOverlay {
-	height: 9.4em;
-	width: 100%;
-	bottom: 0;
+    height: 9.4em;
+    width: 100%;
+    bottom: 0;
 }
 
 .pc-playerMenuH .pc-playerMenuPlayOverlay {
-	height: 3em;
-	width: 9.2em;
-	bottom: 9.4em;
-	left: 50%;
-	margin-left: -4.6em;
+    height: 3em;
+    width: 9.2em;
+    bottom: 9.4em;
+    left: 50%;
+    margin-left: -4.6em;
 }
 
-	.pc-playerMenuH .pc-playerMenuPlayOverlay div {
-		position: absolute;
-		left: -0.3em;
-	}
+    .pc-playerMenuH .pc-playerMenuPlayOverlay div {
+        position: absolute;
+        left: -0.3em;
+    }
 
 .pc-playerMenuH .pc-alignedCell {
-	margin-left: -0.3em;
+    margin-left: -0.3em;
 }
 
 .pc-playerMenuV .pc-playerMenuOverlay {
-	height: 100%;
-	width: 9.4em;
-	left: 0;
+    height: 100%;
+    width: 9.4em;
+    left: 0;
+}
+
+[dir='rtl'] .pc-playerMenuV .pc-playerMenuOverlay {
+    left: auto;
+    right: 0;
 }
 
 .pc-playerMenuV .pc-playerMenuPlayOverlay {
-	height: 9.2em;
-	width: 3em;
-	left: 9.37em;
-	top: 50%;
-	margin-top: -4.6em;
+    height: 9.2em;
+    width: 3em;
+    left: 9.37em;
+    top: 50%;
+    margin-top: -4.6em;
 }
 
-	.pc-playerMenuV .pc-playerMenuPlayOverlay div {
-		position: absolute;
-		top: -0.3em;
-		right: 1.8em;
-	}
+[dir='rtl'] .pc-playerMenuV .pc-playerMenuPlayOverlay {
+    left: auto;
+    right: 9.37em;
+}
+
+.pc-playerMenuV .pc-playerMenuPlayOverlay div {
+    position: absolute;
+    top: -0.3em;
+    right: 1.8em;
+}
+
+[dir='rtl'] .pc-playerMenuV .pc-playerMenuPlayOverlay div {
+    right: auto;
+    left: 1.8em;
+}
 
 .pc-playerMenuV .pc-iOsClosed {
-	left: 0;
+    left: 0;
+}
+[dir='rtl'] .pc-playerMenuV .pc-iOsClosed {
+    left: auto;
+    right: 0;
 }
 
-	.pc-playerMenuV .pc-iOsClosed div {
-		right: 0;
-	}
+    .pc-playerMenuV .pc-iOsClosed div {
+        right: 0;
+    }
+    [dir='rtl'] .pc-playerMenuV .pc-iOsClosed div {
+        right: auto;
+        left: 0;
+    }
 
 /* menu toolbar & buttons */
 .pc-playerMenuContainer {
-	display: table;
-	position: absolute;
-	overflow: hidden;
-	font-family: Arial, sans-serif;
+    display: table;
+    position: absolute;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
 }
 
-	.pc-playerMenuContainer button {
-		font-style: inherit;
-		font-size: inherit;
-	}
+    .pc-playerMenuContainer button {
+        font-style: inherit;
+        font-size: inherit;
+    }
 
 .pc-playerMenuV .pc-playerMenuContainer {
-	top: 0px;
-	left: 1.15em;
-	width: 9.3em;
-	height: 100%;
+    top: 0px;
+    left: 1.15em;
+    width: 9.3em;
+    height: 100%;
+}
+[dir='rtl'] .pc-playerMenuV .pc-playerMenuContainer {
+    left: auto;
+    right: 1.15em;
 }
 
 .pc-playerMenuV .pc-playerMenuOutside {
-	left: -7.3em;
-	width: 6.8em;
+    left: -7.3em;
+    width: 6.8em;
+}
+
+[dir='rtl'] .pc-playerMenuV .pc-playerMenuOutside {
+    right: -7.1em;
 }
 
 .pc-playerMenuV .pc-alignedCell {
-	display: table-cell;
-	vertical-align: middle;
-	margin: 0 auto;
-	padding-top: 1.6em;
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0 auto;
+    padding-top: 1.6em;
 }
 
 .pc-playerMenuH .pc-playerMenuContainer {
-	height: 11.7em;
-	width: 100%;
-	left: 0;
-	bottom: 0;
-	text-align: center;
+    height: 11.7em;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    text-align: center;
 }
 
 /* svg buttons */
 .pc-playerButton, .pc-playerButton:active, .pc-menuBigButton, .pc-menuBigButton:active {
-	padding: 0;
-	margin: 0;
-	background-color: transparent;
-	cursor: pointer;
-	position: relative;
-	width: 6.7em;
-	height: 8.5em;
-	border: none;
-	fill: #A9DCF1;
-	color: #A9DCF1;
-	border-color: #A9DCF1;
-	outline: none;
-	vertical-align: bottom;
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    width: 6.7em;
+    height: 8.5em;
+    border: none;
+    fill: #A9DCF1;
+    color: #A9DCF1;
+    border-color: #A9DCF1;
+    outline: none;
+    vertical-align: bottom;
 }
 
-	.pc-playerButton:focus {
-		outline: none;
-	}
+[dir='rtl'] .pc-rtl svg {
+    transform: rotate(180deg);
+}
 
-	.pc-playerButton::-moz-focus-inner {
-		border: 0;
-	}
+.pc-playerButton:focus {
+    outline: none;
+}
+
+.pc-playerButton::-moz-focus-inner {
+    border: 0;
+}
 
 .pc-playerMenuV .pc-menuBigButton {
-	margin-left: -1.1em;
-	margin-top: 0.7em;
+    margin-left: -1.1em;
+    margin-top: 0.7em;
+}
+[dir='rtl'] .pc-playerMenuV .pc-menuBigButton {
+    margin-right: -1.1em;
 }
 
 .pc-menuBigButton, .pc-menuBigButton:active {
-	width: 9.1em;
-	height: 10.8em;
+    width: 9.1em;
+    height: 10.8em;
 }
 
 .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
-	width: 6.7em;
-	margin-left: 0em;
-	height: 10.8em;
+    width: 6.7em;
+    margin-left: 0em;
+    height: 10.8em;
+}
+[dir='rtl'] .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
+    margin-left: auto;
+    margin-right: 0em;
 }
 
 .pc-playerButton svg {
-	position: absolute;
-	width: 3.2em;
-	height: 3.2em;
-	padding: 0;
-	margin: 0;
-	margin-left: 1.75em;
-	left: 0;
-	bottom: 3.4em;
+    position: absolute;
+    width: 3.2em;
+    height: 3.2em;
+    padding: 0;
+    margin: 0;
+    margin-left: 1.75em;
+    left: 0;
+    bottom: 3.4em;
+    direction: ltr;
 }
+
 .pc-menuBigButton svg {
-	width: 6.4em;
-	height: 6.4em;
-	margin-left: 1.4em;
+    width: 6.4em;
+    height: 6.4em;
+    margin-left: 1.4em;
 }
+
 .pc-playerMenuOutside .pc-menuBigButton svg {
-	margin-left: 0.15em;
+    margin-left: 0.15em;
 }
 
 .pc-playerButton span {
-	position: absolute;
-	font-size: 1.1em;
-	font-weight: 600;
-	bottom: 0.6em;
-	left: 0;
-	right: 0;
+    position: absolute;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-align: center;
+    bottom: 0.6em;
+    left: 0;
+    right: 0;
 }
 
 .pc-playerButton:hover {
-	color: #FFF;
-	fill: #FFFFFF;
-	border-color: #FFF;
+    color: #FFF;
+    fill: #FFFFFF;
+    border-color: #FFF;
 }
 
 .pc-playerButton:active {
-	padding: 0;
-	color: #17A5B8;
-	fill: #17A5B8;
-	border-color: #17A5B8;
+    padding: 0;
+    color: #17A5B8;
+    fill: #17A5B8;
+    border-color: #17A5B8;
 }
 
 .pc-playerButton:disabled {
-	color: #A5A5A5;
-	fill: #A5A5A5;
-	border-color: #A5A5A5;
-	cursor: default;
+    color: #A5A5A5;
+    fill: #A5A5A5;
+    border-color: #A5A5A5;
+    cursor: default;
 }
 
 .pc-playerButtonChecked {
-	color: #ef7716;
-	fill: #ef7716;
-	border-color: #ef7716;
+    color: #ef7716;
+    fill: #ef7716;
+    border-color: #ef7716;
 }
 
-	.pc-playerButtonChecked:hover {
-		color: #E8CCB9;
-		fill: #E8CCB9;
-		border-color: #E8CCB9;
-	}
+    .pc-playerButtonChecked:hover {
+        color: #E8CCB9;
+        fill: #E8CCB9;
+        border-color: #E8CCB9;
+    }
 
 
 /* player viewport view*/
 .pc-playerViewportView {
-	border: 0;
-	width: 100%;
-	height: 100%;
-	position: relative;
-	overflow: hidden;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
 }
 
 
 /* canvas */
 .pc-canvasContainer {
     position: relative;
-	background-color: #FFF;
+    background-color: #FFF;
 }
-.pc-canvasContainer canvas {
-	position: absolute;
-	top: 0;
-	left: 0;
-	border: 0;
-	padding: 0;
-	margin: 0;
-}
+
+    .pc-canvasContainer canvas {
+        position: absolute;
+        top: 0;
+        border: 0;
+        padding: 0;
+        margin: 0;
+    }
 
 
 /* dialog */
 .pc-dialogOverlay {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: #555;
-	-moz-opacity: 0.6;
-	opacity: 0.6;
-	filter: alpha(opacity = 60);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #555;
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+    filter: alpha(opacity = 60);
 }
+
 .pc-dialog {
-	max-width: 310px;
-	border-radius: 2px;
-	border-top: 1px solid #3F3F3F;
-	background-color: #282828;
-	position: relative;
-	overflow: hidden;
-	font-size: 15px;
-	color: #D3D3D3;
-	-webkit-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
-	-moz-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
-	box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+    max-width: 310px;
+    border-radius: 2px;
+    border-top: 1px solid #3F3F3F;
+    background-color: #282828;
+    position: relative;
+    overflow: hidden;
+    font-size: 15px;
+    color: #D3D3D3;
+    -webkit-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+    -moz-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+    box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
 }
 
 .pc-dialogCol {
-	display: table-cell;
-	min-width: 15px;
-	width: 50%;
+    display: table-cell;
+    min-width: 15px;
+    width: 50%;
 }
 
 .pc-dialog > div {
-	position: relative;
-	width: 100%;
-	float: left;
-	box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
 }
 
 .pc-dialogHeader {
-	border-bottom: solid 2px #33B5E5;
-	color: #33B5E5;
-	font-size: 21px;
-	font-weight: 500;
-	padding: 19px 15px;
+    border-bottom: solid 2px #33B5E5;
+    color: #33B5E5;
+    font-size: 21px;
+    font-weight: 500;
+    padding: 19px 15px;
 }
 
 .pc-dialogWarning {
-	border-bottom-color: #EF7716;
-	color: #EF7716;
+    border-bottom-color: #EF7716;
+    color: #EF7716;
 }
 
 .pc-dialogError {
-	border-bottom-color: #A31515;
-	color: #A31515;
+    border-bottom-color: #A31515;
+    color: #A31515;
 }
 
 .pc-dialogBody {
-	text-align: center;
-	font-weight: 500;
-	overflow:hidden;
-	/*overflow-x: hidden;
+    text-align: center;
+    font-weight: 500;
+    overflow: hidden;
+    /*overflow-x: hidden;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;*/
-	padding: 0px 17px;
-	border: solid 1px #282828;
+    padding: 0px 17px;
+    border: solid 1px #282828;
 }
 
-	.pc-dialogBody .pc-dialogContent {
-		padding-top: 14px;
-		padding-bottom: 14px;
-		cursor: default;
-		overflow: hidden;
-	}
+    .pc-dialogBody .pc-dialogContent {
+        padding-top: 14px;
+        padding-bottom: 14px;
+        cursor: default;
+        overflow: hidden;
+    }
 
-	.pc-dialogBody .pc-dialogContent ul {
-		list-style-type: square;
-		padding-left: 18px;
-		padding-right: 0px;
-		margin-top: 4px;
-		margin-bottom: 8px;
-	}
-	.pc-dialogBody .pc-dialogContent ul li {
-		list-style-position: outside;
-	}
+        .pc-dialogBody .pc-dialogContent ul {
+            list-style-type: square;
+            padding-left: 18px;
+            padding-right: 0px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+            .pc-dialogBody .pc-dialogContent ul li {
+                list-style-position: outside;
+            }
 
 .pc-dialogFooter {
-	border: solid 1px #282828;
-	border-top: solid 1px #484848;
-	height: 47px;
-	float: none;
+    border: solid 1px #282828;
+    border-top: solid 1px #484848;
+    height: 47px;
+    float: none;
 }
 
-	.pc-dialogFooter button {
-		height: 100%;
-		color: inherit;
-		font-size: 13px;
-		font-weight: bold;
-		cursor: pointer;
-		padding: 0;
-		margin: 0;
-	}
+    .pc-dialogFooter button {
+        height: 100%;
+        color: inherit;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+    }
 
-		.pc-dialogFooter button:hover {
-			text-decoration: underline;
-		}
-		.pc-dialogFooter button:active {
-			text-decoration: underline;
-			background-color: #2F7D99;
-		}
-		.pc-dialogFooter button:focus {
-			outline: none;
-		}
-		.pc-dialogFooter button:disabled {
-			color: #484848;
-			cursor: default;
-			text-decoration: none;
-		}
+        .pc-dialogFooter button:hover {
+            text-decoration: underline;
+        }
 
-		.pc-dialogFooter button::-moz-focus-inner {
-			border: 0;
-		}
+        .pc-dialogFooter button:active {
+            text-decoration: underline;
+            background-color: #2F7D99;
+        }
+
+        .pc-dialogFooter button:focus {
+            outline: none;
+        }
+
+        .pc-dialogFooter button:disabled {
+            color: #484848;
+            cursor: default;
+            text-decoration: none;
+        }
+
+        .pc-dialogFooter button::-moz-focus-inner {
+            border: 0;
+        }
 
 /* scroll container: iScroll */
 .iScrollVerticalScrollbar {
-	background-image: url('../img/scrollbarBackground.gif');
-	position: absolute;
-	z-index: 9999;
-	width: 7px;
-	bottom: 2px;
-	top: 2px;
-	right: 3px;
-	overflow: hidden;
+    background-image: url('../img/scrollbarBackground.gif');
+    position: absolute;
+    z-index: 9999;
+    width: 7px;
+    bottom: 2px;
+    top: 2px;
+    right: 3px;
+    overflow: hidden;
 }
 
 .iScrollIndicator {
-	width: 7px;
-	position: absolute;
-	border-radius: 1px;
-	background-color: #00475E;
-	-moz-opacity: 0.8;
-	opacity: 0.8;
-	filter: alpha(opacity = 80);
+    width: 7px;
+    position: absolute;
+    border-radius: 1px;
+    background-color: #00475E;
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
 }
-

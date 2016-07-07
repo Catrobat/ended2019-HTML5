@@ -2,14 +2,14 @@
 /* crowdinRequestCode = name of zip file, crowdinZipCode = name of internal json file */
 {
   "languages" : [
-    { "languageCode" : "en", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English", "direction":  "LTR", "visible": true },
-    { "languageCode" : "en-GB", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (UK)", "direction":  "LTR", "visible": false },
-    { "languageCode" : "en-US", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (US)", "direction":  "LTR", "visible": false },
-    { "languageCode" : "de", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch", "direction":  "LTR", "visible": true },
-    { "languageCode" : "de-AT", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Österreich)", "direction":  "LTR", "visible": false },
-    { "languageCode" : "de-CH", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Schweiz)", "direction":  "LTR", "visible": false },
-    { "languageCode" : "de-DE", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Deutschland)", "direction":  "LTR", "visible": false },
-    { "languageCode" : "ml", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "മലയാളം", "direction":  "LTR", "visible": true },                 /* Malayalam: change crowdin code to ml as soon as supported */
-    { "languageCode" : "fa", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "فارسی", "direction":  "RTL", "visible": true }                     /* Persian: change crowdin code to fa as soon as supported */
+    { "languageCode" : "en", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English", "direction":  "ltr", "visible": true },
+    { "languageCode" : "en-GB", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (UK)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "en-US", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (US)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "de", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch", "direction":  "ltr", "visible": true },
+    { "languageCode" : "de-AT", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Österreich)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "de-CH", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Schweiz)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "de-DE", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Deutschland)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "ml", "crowdinRequestCode": "ml-IN", "crowdinZipCode":  "ml-IN", "uiString" : "മലയാളം", "direction":  "ltr", "visible": true },    /* Malayalam: change crowdin code to ml as soon as supported */
+    { "languageCode" : "fa", "crowdinRequestCode": "fa", "crowdinZipCode":  "fa-IR", "uiString" : "فارسی", "direction":  "rtl", "visible": true }           /* Persian: change crowdin code to fa as soon as supported */
   ]
 }

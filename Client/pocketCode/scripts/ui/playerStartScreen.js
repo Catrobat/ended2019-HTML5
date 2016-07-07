@@ -17,6 +17,7 @@ PocketCode.Ui.merge({
             PocketCode.Ui.I18nControl.call(this, 'div');
 
             this._dom.className = 'pc-playerStartScreen';
+            this._dom.dir = 'ltr';
             this._titleTextNode = new SmartJs.Ui.TextNode('');
             if (title)
                 this.title = title;
@@ -28,7 +29,7 @@ PocketCode.Ui.merge({
                 this.previewImage = PocketCode.domain + '/images/default/screenshot.png';
 
             this._progressLayout = new SmartJs.Ui.Control('div');
-            this._progressTextNode = new SmartJs.Ui.TextNode(PocketCode.I18nProvider.getLocString('lblLoadingResources'));
+            this._progressTextNode = new PocketCode.Ui.I18nTextNode('lblLoadingResources');
             this._progressBar = new PocketCode.Web.LoadingIndicator();
 
             this._startButton = document.createElement('button');
@@ -125,6 +126,7 @@ PocketCode.Ui.merge({
                 var tmp = document.createElement('div');
                 tmp.className = 'pc-title';
                 var text = document.createElement('div');
+                text.dir = 'auto';
                 tmp.appendChild(text);
                 text.appendChild(this._titleTextNode._dom);
                 this._dom.appendChild(tmp);
