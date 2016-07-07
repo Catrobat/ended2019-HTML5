@@ -79,9 +79,16 @@ PocketCode.merge({
 
             //init i18n
             PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
-            PocketCode.I18nProvider.loadSuppordetLanguages();
-            PocketCode.I18nProvider.loadDictionary(rfc3066);
-
+            PocketCode.I18nProvider.onDirectionChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._vp.uiDirection = e.direction; }, this));
+            if (!mobileInitialized || rfc3066 && PocketCode.I18nProvider.currentLanguage != rfc3066) {   //do not load twice on mobile reinit or opening the same player overlay twice on the same page
+                PocketCode.I18nProvider.loadSuppordetLanguages();
+                PocketCode.I18nProvider.loadDictionary(rfc3066);
+            }
+            else {
+                //if the language is not (re)loaded we have to check for rtl as our default direction is ltr
+                if (PocketCode.I18nProvider.currentLanguageDirection === PocketCode.Ui.Direction.RTL)
+                    PocketCode.I18nProvider.onDirectionChange.dispatchEvent({ direction: PocketCode.Ui.Direction.RTL });
+            }
             //init
             if (SmartJs.Device.isMobile && !mobileInitialized) {    //do not initialize the UI if app needs to be recreated for mobile 
                 var state = history.state;
@@ -121,6 +128,15 @@ PocketCode.merge({
             }
         }
 
+        //accessors
+        Object.defineProperties(PlayerApplication.prototype, {
+            hasOpenDialogs: {
+                get: function () {
+                    return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
+                }
+            },
+        });
+
         //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
         Object.defineProperties(PlayerApplication.prototype, {
             onInit: {
@@ -143,9 +159,9 @@ PocketCode.merge({
                     return this._onExit;
                 }
             },
-            hasOpenDialogs: {
+            onUiDirectionChange: {
                 get: function () {
-                    return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
+                    return PocketCode.I18nProvider.onDirectionChange;
                 }
             },
         });

@@ -2,8 +2,8 @@
 
 class WhenProgramStartBrickDto extends ScriptBlockDto {
 
-  public function __construct() {
-	parent::__construct("WhenProgramStart");
-  }
-  
+    public function __construct($id) {
+        parent::__construct("WhenProgramStart", $id);
+    }
+
 }

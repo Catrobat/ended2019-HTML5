@@ -6,6 +6,7 @@
 
 
 PocketCode.UserVariableScope = {
+    PROCEDURE: 'procedure', //function is a protected name and may cause errors
     LOCAL: 'local',
     GLOBAL: 'global',
 };
@@ -25,7 +26,7 @@ PocketCode.Model.merge({
                 throw new Error('invalid argument: type');
             this._type = type;
 
-            if (!scope || (scope !== PocketCode.UserVariableScope.LOCAL && scope !== PocketCode.UserVariableScope.GLOBAL))
+            if (!scope || (scope !== PocketCode.UserVariableScope.PROCEDURE && scope !== PocketCode.UserVariableScope.LOCAL && scope !== PocketCode.UserVariableScope.GLOBAL))
                 throw new Error('invalid argument: scope');
             this._scope = scope;
 
@@ -109,7 +110,7 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
-                    value = this._toTypedValue(value);
+                    value = this._toTypedValue(value);  //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
                     if (this._value == value)
                         return;
                     this._value = value;
@@ -137,7 +138,7 @@ PocketCode.Model.merge({
             _toTypedValue: function (value) {
                 if (value instanceof PocketCode.Model.UserVariableSimple)
                     return value.value;
-                else if (value instanceof PocketCode.Model.UserVariableList)
+                else if (value instanceof PocketCode.Model.UserVariableList)    //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
                     return this._toTypedValue(value.toString());
                 else if (typeof value === 'string') {
                     var num = parseFloat(value);

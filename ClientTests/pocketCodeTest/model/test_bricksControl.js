@@ -1,7 +1,7 @@
 /// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -275,6 +275,12 @@ QUnit.test("WaitBrick", function (assert) {
     //assert.ok(true, "brick stopped");
     done3();    //this will throw an error if called more than once
 
+});
+
+
+QUnit.test("ResetTimerBrick", function (assert) {
+
+    assert.ok(false, "TODO");
 });
 
 

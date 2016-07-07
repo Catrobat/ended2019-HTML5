@@ -9,6 +9,9 @@ QUnit.test("GameEngine", function (assert) {
 
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
+    assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
+    assert.ok(gameEngine.objClassName === "GameEngine", "objClassName check");
+
     gameEngine._executionState = PocketCode.ExecutionState.RUNNING; //should be stopped
     gameEngine.dispose();
     assert.equal(gameEngine.executionState, undefined, "gameEngine stopped during dispose- property deleted");
@@ -80,7 +83,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
     var spriteInterface = new PocketCode.Model.Sprite(gameEngine, { id: "id", name: "name" });
-    assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopScripts == "function", "mock: valid sprite interface");
+    assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopAllScripts == "function", "mock: valid sprite interface");
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
     var TestSprite = (function () {
@@ -105,7 +108,7 @@ QUnit.test("GameEngine", function (assert) {
             resumeScripts: function () {
                 this.status = PocketCode.ExecutionState.RUNNING;
             },
-            stopScripts: function () {
+            stopAllScripts: function () {
                 this.status = PocketCode.ExecutionState.STOPPED;
                 this.timesStopped++;
             },
@@ -399,7 +402,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
-    var variables = gameEngine.getVariablesAsPropertyList();
+    var variables = gameEngine.renderingTexts;
     assert.ok(variables instanceof Array && variables.length == 0, "empty variable array");
 
     gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //gloable
@@ -416,7 +419,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
     gameEngine._sprites.push(sp1);
     gameEngine._sprites.push(sp2);
 
-    variables = gameEngine.getVariablesAsPropertyList();
+    variables = gameEngine.renderingTexts;
 
     assert.equal(variables.length, 8, "array length (number of variables)");
 

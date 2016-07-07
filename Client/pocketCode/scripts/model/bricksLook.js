@@ -87,6 +87,22 @@ PocketCode.Model.merge({
     })(),
 
 
+    PreviousLookBrick: (function () {
+        PreviousLookBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function PreviousLookBrick(device, sprite) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+        }
+
+        PreviousLookBrick.prototype._execute = function () {
+            this._return(this._sprite.previousLook());
+        };
+
+        return PreviousLookBrick;
+    })(),
+
+
     SelectCameraBrick: (function () {
         SelectCameraBrick.extends(PocketCode.Model.BaseBrick, false);
 

@@ -2,10 +2,10 @@
 
 class I18nSupportedLanguagesDto
 {
-  public $supportedLanguages;
+    public $supportedLanguages;
 
-  public function __construct($list)
-  {
-    $this->supportedLanguages = $list;
-  }
+    public function __construct($list)
+    {
+        $this->supportedLanguages = $list;
+    }
 }

@@ -54,6 +54,7 @@ QUnit.test("ImageFilter: color", function (assert) {
     PocketCode.ImageFilter.color(modifiedData, colorShift);
 
     var checkData = function () {
+        var expectedColorShift = (colorShift % 200) / 200 * 360;
         var dataAsExpected = true;
         for (var i = 0, l = modifiedData.length; i < l; i++) {
             //only h value shifted
@@ -61,11 +62,11 @@ QUnit.test("ImageFilter: color", function (assert) {
                 if(originalPixelData[i] !== modifiedData[i]){
                     dataAsExpected = false;
                 }
-            } else if ((originalPixelData[i] + colorShift) < 0){
-                if(modifiedData[i] !== (originalPixelData[i] + colorShift + 360))
+            } else if ((originalPixelData[i] + expectedColorShift) < 0){
+                if(modifiedData[i] !== (originalPixelData[i] + expectedColorShift + 360))
                     dataAsExpected = false
             } else {
-                if (modifiedData[i] !== ((originalPixelData[i] + colorShift) % 360))
+                if (modifiedData[i] !== ((originalPixelData[i] + expectedColorShift) % 360))
                     dataAsExpected = false;
             }
         }
@@ -258,42 +259,29 @@ QUnit.test("ImageHelper", function (assert) {
         offsets = ih.getElementTrimOffsets(img9);
         assert.ok(offsets.top == 243 && offsets.right == 106 && offsets.bottom == 339 && offsets.left == 143, "simple: large");
 
-        //scaled
-        var offsets = ih.getElementTrimOffsets(img1, 0.5);
-        assert.ok(offsets.top == 3 && offsets.right == 1 && offsets.bottom == 0 && offsets.left == 0, "scaled: combined");
-        offsets = ih.getElementTrimOffsets(img6, 0.25);  //full
-        assert.ok(offsets.top == 0 && offsets.right == 0 && offsets.bottom == 0 && offsets.left == 0, "scaled: filled");
-        offsets = ih.getElementTrimOffsets(img7, 2);  //transparent
-        assert.ok(offsets.top == 16 && offsets.right == 20 && offsets.bottom == 16 && offsets.left == 20, "scaled: transparent");
-        offsets = ih.getElementTrimOffsets(img8, 0.5);  //centered
-        assert.ok(offsets.top == 1 && offsets.right == 1 && offsets.bottom == 1 && offsets.left == 1, "scaled: centered");
-        offsets = ih.getElementTrimOffsets(img9, 0.1);
-        assert.ok(offsets.top == 24 && offsets.right == 10 && offsets.bottom == 33 && offsets.left == 14, "scaled: large");
-
         //rotate: 90
-        var offsets = ih.getElementTrimOffsets(img1, 1, 90);
+        var offsets = ih.getElementTrimOffsets(img1, 90);
         assert.ok(offsets.top == 0 && offsets.right == 7 && offsets.bottom == 2 && offsets.left == 0, "rotate: 90: combined");
-        offsets = ih.getElementTrimOffsets(img6, 1, 90);  //full
+        offsets = ih.getElementTrimOffsets(img6, 90);  //full
         assert.ok(offsets.top == 0 && offsets.right == 0 && offsets.bottom == 0 && offsets.left == 0, "rotate: 90: filled");
-        offsets = ih.getElementTrimOffsets(img7, 1, 90);  //transparent
+        offsets = ih.getElementTrimOffsets(img7, 90);  //transparent
         assert.ok(offsets.top == 10 && offsets.right == 8 && offsets.bottom == 10 && offsets.left == 8, "rotate: 90: transparent");
-        offsets = ih.getElementTrimOffsets(img8, 1, 90);  //centered
+        offsets = ih.getElementTrimOffsets(img8, 90);  //centered
         assert.ok(offsets.top == 3 && offsets.right == 2 && offsets.bottom == 3 && offsets.left == 2, "rotate: 90: centered (may be a scaling issue in mozilla?)");
-        offsets = ih.getElementTrimOffsets(img9, 1, 90);
+        offsets = ih.getElementTrimOffsets(img9, 90);
         assert.ok(offsets.top == 143 && offsets.right == 243 && offsets.bottom == 106 && offsets.left == 339, "rotate: 90: large");
 
-        //rotate:180 + scaled
-        offsets = ih.getElementTrimOffsets(img1, 0.5, 180);
-        assert.ok(offsets.top == 0 && offsets.right == 0 && offsets.bottom == 3 && offsets.left == 1, "rotate:180 + scaled: combined");
-        offsets = ih.getElementTrimOffsets(img6, 0.25, 180);  //full
-        assert.ok(offsets.top == 0 && offsets.right == 0 && offsets.bottom == 0 && offsets.left == 0, "rotate:180 + scaled: filled");
-        //this is a special case: due to roundings the image gets larger: 11*9 + scaling multiplies this effect, so the output can be 18 & 22
-        offsets = ih.getElementTrimOffsets(img7, 2, 180);  //transparent:
-        assert.ok(offsets.top == 18 && offsets.right == 22 && offsets.bottom == 18 && offsets.left == 22, "rotate:180 + scaled: transparent");
-        offsets = ih.getElementTrimOffsets(img8, 0.5, 180);  //centered
-        assert.ok(offsets.top == 1 && offsets.right == 1 && offsets.bottom == 1 && offsets.left == 1, "rotate:180 + scaled: centered");
-        offsets = ih.getElementTrimOffsets(img9, 0.1, 180);
-        assert.ok(offsets.top == 33 && offsets.right == 14 && offsets.bottom == 24 && offsets.left == 10, "rotate:180 + scaled: large");
+        //precision
+        var offsets = ih.getElementTrimOffsets(img1, 90, 0.5);
+        assert.ok(offsets.top == 0 && offsets.right <= 7 && offsets.bottom <= 2 && offsets.left == 0, "precision: rotate: 90: combined");
+        offsets = ih.getElementTrimOffsets(img6, 90, 0.5);  //full
+        assert.ok(offsets.top == 0 && offsets.right == 0 && offsets.bottom == 0 && offsets.left == 0, "precision: rotate: 90: filled");
+        offsets = ih.getElementTrimOffsets(img7, 90, 0.5);  //transparent
+        assert.ok(offsets.top == 10 && offsets.right == 8 && offsets.bottom == 10 && offsets.left == 8, "precision: rotate: 90: transparent");
+        offsets = ih.getElementTrimOffsets(img8, 90, 0.5);  //centered
+        assert.ok(offsets.top <= 3 && offsets.right <= 2 && offsets.bottom <= 3 && offsets.left <= 2, "precision: rotate: 90: centered (may be a scaling issue in mozilla?)");
+        offsets = ih.getElementTrimOffsets(img9, 90, 0.5);
+        assert.ok(offsets.top <= 143 && offsets.right <= 243 && offsets.bottom <= 106 && offsets.left <= 339, "precision: rotate: 90: large");
 
         done3();
         runTests_adjustCenterAndTrim();

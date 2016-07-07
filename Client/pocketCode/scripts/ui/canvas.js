@@ -6,6 +6,9 @@
 /// <reference path="../ui.js" />
 'use strict';
 
+
+//TODO:
+//helpful? http://www.html5rocks.com/de/mobile/touch/
 PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
@@ -15,180 +18,257 @@ PocketCode.Ui.Canvas = (function () {
 
         this._lowerCanvasEl = document.createElement('canvas');
         this._dom.appendChild(this._lowerCanvasEl);
-        this._contextContainer = this._lowerCanvasEl.getContext('2d');
+        this._lowerCanvasCtx = this._lowerCanvasEl.getContext('2d');
+        this._translation = { x: Math.round(this._lowerCanvasEl.width / 2.0), y: Math.round(this._lowerCanvasEl.height / 2.0) };
 
         this._upperCanvasEl = document.createElement('canvas');
         this._dom.appendChild(this._upperCanvasEl);
-        this._contextTop = this._upperCanvasEl.getContext('2d');
+        this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
         this._cacheCanvasEl = document.createElement('canvas');
-        this._contextCache = this._cacheCanvasEl.getContext('2d');
+        this._cacheCanvasCtx = this._cacheCanvasEl.getContext('2d');
 
-        this._onMouseDown = new SmartJs.Event.Event(this);
-        this._addDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
-        this._addDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
-
-        this._renderingObjects = [];
+        this._renderingImages = [];
         this._renderingTexts = [];
-        this._scaling = 1.0;   //initial
         this._scalingX = 1.0;
         this._scalingY = 1.0;
-        //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
 
-        //this.setDimensions(this._lowerCanvasEl.width, this._lowerCanvasEl.height, this.scaling);
+        //handling click/touch/multi-touch
+        this._activeTouchEvents = {};
 
-        //args = args || {};
-        //SmartJs.Ui.Control.call(this, this.wrapperEl, args); //the wrapper div becomes our _dom root element
+        //events
+        this._onRenderingImageTouched = new SmartJs.Event.Event(this);
+        this._onTouchStart = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
+
+        this._onTouchMove = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousemove', this._touchMoveHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchmove', this._touchMoveHandler);
+
+        this._onTouchEnd = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mouseup', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'mouseout', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchend', this._touchEndHandler);
     }
 
     //properties
     Object.defineProperties(Canvas.prototype, {
         contextTop: {
             get: function () {
-                return this._contextTop;
+                return this._upperCanvasCtx;
             },
         },
         renderingImages: {
             set: function (list) {
-                this._renderingObjects = list;  //TODO: exception handling, argument check
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expectes type: list');
+                this._renderingImages = list;
             },
         },
         renderingTexts: {
             set: function (list) {
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expected type: list');
                 this._renderingTexts = list;  //TODO: exception handling, argument check
             },
         },
-        scaling: {
-            set: function (value) {
-                this._scaling = value;
-                this._scalingX = value;
-                this._scalingY = value;
-            },
+        /* override: we do not calculate borders here, with/height are returned based on internal canvas elements even if control is not in DOM */
+        width: {
             get: function () {
-                return this._scaling;
-            }
+                return this._lowerCanvasEl.width;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._dom.style.width = (value + 'px');
+                this._lowerCanvasEl.width = value;
+                this._translation = { x: Math.round(value / 2.0), y: Math.round(this.height / 2.0) };
+                this._upperCanvasEl.width = value;
+                this._cacheCanvasEl.width = value;
+            },
         },
-        scalingX: {
-            set: function (value) {
-                this._scalingX = value;
-            },
+        /* override */
+        height: {
             get: function () {
-                return this._scalingX;
-            }
+                return this._lowerCanvasEl.height;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._dom.style.height = (value + 'px');
+                this._lowerCanvasEl.height = value;
+                this._translation = { x: Math.round(this.width / 2.0), y: Math.round(value / 2.0) };
+                this._upperCanvasEl.height = value;
+                this._cacheCanvasEl.height = value;
+            },
         },
-        scalingY: {
-            set: function (value) {
-                this._scalingY = value;
-            },
-            get: function () {
-                return this._scalingY;
-            }
-        }
     });
 
     //events
     Object.defineProperties(Canvas.prototype, {
-        onMouseDown: {
+        onRenderingImageTouched: {
             get: function () {
-                return this._onMouseDown;
+                return this._onRenderingImageTouched;
             },
-        }
+        },
+        onTouchStart: {
+            get: function () {
+                return this._onTouchStart;
+            },
+        },
+        onTouchMove: {
+            get: function () {
+                return this._onTouchMove;
+            },
+        },
+        onTouchEnd: {
+            get: function () {
+                return this._onTouchEnd;
+            },
+        },
     });
 
     //methods
     Canvas.prototype.merge({
-
-        setDimensions: function (width, height, scaling) {
+        setDimensions: function (width, height, scalingX, scalingY) {
             width = Math.floor(width / 2.0) * 2.0;
             height = Math.floor(height / 2.0) * 2.0;
 
             this.height = height;
             this.width = width;
 
-            this._lowerCanvasEl.height = height;
-            this._lowerCanvasEl.width = width;
-            this._upperCanvasEl.height = height;
-            this._upperCanvasEl.width = width;
-
-            this.scaling = scaling;
-
-            this._cacheCanvasEl.setAttribute('width', width / scaling);
-            this._cacheCanvasEl.setAttribute('height', height / scaling);
+            this.scale(scalingX, scalingY);
         },
-
+        scale: function (x, y) {
+            this._scalingX = x;
+            this._scalingY = y;
+            this.render();
+        },
         clear: function () {
-            this._contextTop.clearRect(0, 0, this.width, this.height);
-            this._contextContainer.clearRect(0, 0, this.width, this.height);
+            this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
+        _touchStartHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        __onMouseDown: function (e) {
+
+            //TODO: map system event to custom event
+            // touchStart does not only listen for left-mouseButton events
+
+            //var isLeftClick = e.which ? e.which === 1 : e.button === 1;
+            //if (!isLeftClick && !SmartJs.Device.isTouch)
+            //    return;
+
+            //var pointerX,// = this._lowerCanvasEl.width / 2.0,
+            //    pointerY;// = this._lowerCanvasEl.height / 2.0;
+            //var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+
+            //if (SmartJs.Device.isTouch && (e.touches && e.touches[0])) {
+            //    var touch = e.touches[0];
+            //    pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+            //    pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            //}
+            //else {
+            //    boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+            //    pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;
+            //    pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
+            //}
+
+            //var target = this._getTargetAtPosition(pointerX, pointerY); //TODO: should we include scaling here? for multi-click + check target using a scaled canvas too
+            //if (target) {
+            //    this._onRenderingImageTouched.dispatchEvent({ id: target.id });
+            //}
+
+            //check: rendering image clicked
+            this._checkRenderingImageClicked(e);    //TODO: should be called for left-mouseButton or touch events only
+            return false;
+        },
+        _touchMoveHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //TODO: map system event to custom event
+            return false;
+        },
+        _touchEndHandler: function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            //TODO: map system event to custom event
+            return false;
+        },
+        _checkRenderingImageClicked: function (e) {
+            //TODO: make sure to move code to the handler calling this method as soon it is implemented (do we need this method after refactoring?)
             var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
 
             if (!isLeftClick && !SmartJs.Device.isTouch) {
-                return;
+                return; 
             }
 
-            var pointerX, pointerY;
+            var pointerX,// = this._lowerCanvasEl.width / 2.0,
+                pointerY;// = this._lowerCanvasEl.height / 2.0;
             var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
-            if (SmartJs.Device.isTouch && (e.touches && e.touches[0])){
+            if (SmartJs.Device.isTouch && (e.touches && e.touches[0])) {
                 var touch = e.touches[0];
-                pointerX = (touch.clientX ? touch.clientX - boundingClientRect.left : e.clientX);
-                pointerY = (touch.clientY ? touch.clientY - boundingClientRect.top : e.clientY);
-            } else {
+                pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+                pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            }
+            else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
-                pointerX = e.clientX ? e.clientX - boundingClientRect.left : 0;
-                pointerY = e.clientY ? e.clientY - boundingClientRect.top : 0;
+                pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
+                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //include scoll offsets to make sure this control also works in another app
             }
 
-            var target = this._getTargetAtPosition(pointerX, pointerY);
-            if (target){
-                this._onMouseDown.dispatchEvent({ id: target.id });
-            }
+            var pointer = {
+                x: pointerX / this._scalingX,
+                y: pointerY / this._scalingY,
+            };
+            var target = this._getTargetAt(pointer);
+            if (target)
+                this._onRenderingImageTouched.dispatchEvent({ id: target.id });
         },
-
-        _isTargetTransparent: function (target, x, y) {
-            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
-            this._contextCache.save();
-            target.draw(this._contextCache);
-            this._contextCache.restore();
-
-            //imageData.data contains rgba values - here we look at the alpha value
-            var imageData = this._contextCache.getImageData(Math.floor(x), Math.floor(y), 1, 1);
-            var hasTransparentAlpha = !imageData.data || !imageData.data[3];
-
-            //clear
-            imageData = null;
-            this._contextCache.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
-            return hasTransparentAlpha;
-        },
-
-        _getTargetAtPosition: function (x, y) {
-            var pointer = { x: x / this.scalingX, y: y / this.scalingY };
-            var objects = this._renderingObjects;
-            var i = objects.length;
+        _getTargetAt: function (point) {
+            var objects = this._renderingImages;
             var object, target;
 
-            while (i--){
+            for (var i = objects.length - 1; i >= 0; i--) {
                 object = objects[i];
-                if (object && object.visible && object.containsPoint(pointer) && !this._isTargetTransparent(object, pointer.x, pointer.y)) {
+                if (object.visible && object.containsPoint(point) && !this._isTargetTransparent(object, point)) {
                     target = object;
                     break;
                 }
             }
             return target;
         },
+        _isTargetTransparent: function (target, point) {
+            var ctx = this._cacheCanvasCtx;
+            ctx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
+            ctx.save();
+            ctx.translate(this._translation.x, this._translation.y);
+            ctx.scale(this._scalingX, this._scalingY);
+            target.draw(ctx);
+            ctx.restore();
 
-        render: function (viewportScaling) {
+            //imageData.data contains rgba values - here we look at the alpha value
+            var imageData = ctx.getImageData(this._translation.x + Math.floor(point.x * this._scalingX), this._translation.y - Math.floor(point.y * this._scalingY), 1, 1);
+            var hasTransparentAlpha = !imageData.data || !imageData.data[3];
 
-            var ctx = this._contextContainer;
-
+            //clear
+            imageData = undefined;
+            return hasTransparentAlpha;
+        },
+        render: function () {
+            var ctx = this._lowerCanvasCtx;
             ctx.clearRect(0, 0, this.width, this.height);
 
-            var ro = this._renderingObjects,
-                scaling = viewportScaling || this.scaling;
             ctx.save();
-            ctx.scale(scaling, scaling);
+            ctx.translate(this._translation.x, this._translation.y);
+            ctx.scale(this._scalingX, this._scalingY);
+
+            var ro = this._renderingImages;
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
 
@@ -200,32 +280,37 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         toDataURL: function (width, height) {
-            var cw = this.width,
-                ch = this.height;
+            var currentWidth = this.width,
+                currentHeight = this.height;
 
-            this.setDimensions(width, height, this.scaling);
             this._cacheCanvasEl.width = width;
             this._cacheCanvasEl.height = height;
 
-            this.render(width * this.scaling / cw);
+            var ctx = this._cacheCanvasCtx;
+            ctx.save();
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.translate(width / 2.0, height / 2.0);
+            ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
-            this._contextCache.save();
-            this._contextCache.fillStyle = "#ffffff";
-            this._contextCache.fillRect(0,0, this.width, this.height);
+            var ro = this._renderingImages;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
 
-            this._contextCache.drawImage(this._lowerCanvasEl, 0, 0);
+            ro = this._renderingTexts;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+            ctx.restore();
 
             var data = this._cacheCanvasEl.toDataURL('image/png');
-
-            this._contextCache.restore();
-            this.setDimensions(cw, ch, this.scaling);
-            this.render();
+            this._cacheCanvasEl.width = currentWidth;
+            this._cacheCanvasEl.height = currentHeight;
 
             return data;
         },
         dispose: function () {
-            this._removeDomListener(this._upperCanvasEl, 'mousedown', this.__onMouseDown);
-            this._removeDomListener(this._upperCanvasEl, 'touchstart', this.__onMouseDown);
+            this._removeDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
             SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
         }
     });

@@ -71,6 +71,7 @@ PocketCode.Ui.merge({
             //buttons
             // i18n: btnBack
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'btnBack');
+            this._backButton.addClassName('pc-rtl');
             this._backButtonDisabled = false;
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
             this._menuContainerAlign.appendChild(this._backButton);
@@ -80,6 +81,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._restartButton);
             // i18n: btnStart
             this._startButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PLAY, 'btnStart', true);
+            this._startButton.addClassName('pc-rtl');
             this._startButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.START }); }, this));
             this._menuContainerAlign.appendChild(this._startButton);
             // i18n: btnPause

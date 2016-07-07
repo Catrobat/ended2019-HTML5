@@ -114,7 +114,7 @@ PocketCode.Ui.PlayerPageView = (function () {
             this._startScreen.hide();
             this.hideHeader();
         },
-        updateLoadingProgress: function (progress) {
+        setLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);
         },
     });

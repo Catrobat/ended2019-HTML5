@@ -50,6 +50,11 @@ PocketCode.I18nProvider = (function (propObject) {
                 return this._currentLanguage;
             },
         },
+        currentLanguageDirection: {
+            get: function () {
+                return this._direction;
+            },
+        },
         supportedLanguages: {
             get: function () {
                 return this._supportedLanguages;
@@ -133,6 +138,19 @@ PocketCode.I18nProvider = (function (propObject) {
 
             return this._dictionary[key];
         },
+        //reset: function () {
+        //    this._direction = PocketCode.Ui.Direction.LTR;
+        //    if (this._onLanguageChange)
+        //        this._onLanguageChange.dispose();
+        //    this._onLanguageChange = new SmartJs.Event.Event(this);
+        //    if (this._onDirectionChange)
+        //        this._onDirectionChange.dispose();
+        //    this._onDirectionChange = new SmartJs.Event.Event(this);
+        //    if (this._onError)
+        //        this._onError.dispose();
+        //    this._onError = new SmartJs.Event.Event(this);
+
+        //},
         /* override */
         dispose: function () {
             //static class: cannot be disposed

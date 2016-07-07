@@ -131,6 +131,31 @@ PocketCode.Model.merge({
     })(),
 
 
+    ResetTimerBrick: (function () {
+        ResetTimerBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function ResetTimerBrick(device, sprite, projectTimer) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            this._projectTimer = projectTimer;
+        }
+
+        ResetTimerBrick.prototype.merge({
+            _execute: function () {
+                this._projectTimer.start();
+                this._return(true);
+            },
+            /* override */
+            dispose: function () {
+                this._gameEngine = undefined;
+                //call super
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
+
+        return ResetTimerBrick;
+    })(),
+
+
     WhenBroadcastReceiveBrick: (function () {
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 

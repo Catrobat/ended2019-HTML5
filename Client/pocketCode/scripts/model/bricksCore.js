@@ -341,6 +341,7 @@ PocketCode.Model.ScriptBlock = (function () {
         PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
 
         if (propObject) {   //can be null
+            this._id = propObject.id;
             this._x = propObject.x;
             this._y = propObject.y;
         }
@@ -350,12 +351,15 @@ PocketCode.Model.ScriptBlock = (function () {
 
     //properties
     Object.defineProperties(ScriptBlock.prototype, {
+        id: {
+            get: function () {
+                return this._id;
+            },
+        },
         executionState: {
             get: function () {
                 return this._executionState;
             },
-            //enumerable: false,
-            //configurable: true,
         },
     });
 

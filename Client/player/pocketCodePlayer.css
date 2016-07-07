@@ -49,8 +49,7 @@
 
 .pc-logo {
     position: absolute;
-    top: 15px;
-    left: 15px;
+    margin: 15px;
     height: 53px;
 }
 
@@ -133,6 +132,11 @@
     margin: 10px;
     margin-left: 5px;
 }
+[dir='rtl'] .pc-webMenu {
+    float: left;
+    margin: 10px;
+    margin-right: 5px;
+}
 
 .pc-webButton { /*}, .pc-webButton:active {*/
     padding: 0;
@@ -200,6 +204,12 @@
     .pc-backButton svg {
         width: 30px;
     }
+    [dir='rtl'] .pc-backButton svg {
+        transform: rotate(180deg);
+        left: auto;
+        right: 0px;
+    }
+
     .pc-backButton span {
         position: relative;
         float: left;
@@ -208,6 +218,11 @@
         line-height: 32px;
         /*color: #A9DCF1;
         */cursor: pointer;
+    }
+    [dir='rtl'] .pc-backButton span {
+        float: right;
+        left: auto;
+        right: 34px;
     }
 
 /* splashScreen */
