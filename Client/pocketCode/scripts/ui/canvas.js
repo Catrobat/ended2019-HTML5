@@ -218,8 +218,8 @@ PocketCode.Ui.Canvas = (function () {
             }
             else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
-                pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;
-                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);
+                pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
+                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //include scoll offsets to make sure this control also works in another app
             }
 
             var pointer = {
