@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title></title>
+    <link href="menuAndControls.css" rel="stylesheet" />
+    <link href="../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
+    <link href="../../Client/player/pocketCodePlayer.css" rel="stylesheet" />
+    <script src="../../Client/pocketCode/libs/iscroll/iscroll-5.3.1.custom.js"></script>
+    <style>
+        html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+            html body {
+                background-color: #04222C;
+                color: #D3D3D3;
+                font-family: sans-serif;
+                line-height: 1;
+                font-size: 15px;
+                font-weight: 500;
+                height: 100%;
+                overflow: hidden;
+            }
+/*
+            body * {
+                box-sizing: border-box;
+            }*/
+    </style>
+    <script>
+        window.onload = function (e) {
+            //the scripts are only for iScroll related functionality
+            //please notice that the subMenu container size was set to max-height: 370px; for tests only: the max-size property has to be set in the control onResize - simulated below
+            var sc = document.getElementsByClassName('pc-submenu')[0];
+            var iScroll = new IScroll(sc, {
+                mouseWheel: true,
+                //scrollbars: true,
+                //fadeScrollbars: true,         //on mobile
+                interactiveScrollbars: true,    //on desktop ^^use this exclusive?
+                scrollbars: 'custom',
+                bounce: true,   //default
+                shrinkScrollbars: 'clip',
+                //invertWheelDirection: true,
+                preventDefault: true,
+            });
+
+            //test: update scroll container on open/close accordion control
+            var acc1 = document.getElementById('acId14');
+            acc1.onclick = function () {
+                iScroll.refresh();
+                setTimeout(function () {
+                    sc.style.maxHeight = (document.documentElement.clientHeight - 40) + 'px';
+                    iScroll.refresh();
+                }, 300);   //wait until animation has finished
+            };
+            var acc2 = document.getElementById('acId15');
+            acc2.onclick = function () {
+                iScroll.refresh();
+                setTimeout(function () {
+                    sc.style.maxHeight = (document.documentElement.clientHeight - 40) + 'px';
+                    iScroll.refresh();
+                }, 300);   //wait until animation has finished
+            };
+
+            window.onresize = function (e) {
+                sc.style.maxHeight = (document.documentElement.clientHeight -40) + 'px';
+            };
+        };
+    </script>
+</head>
+<body>
+    <div style="width: 400px; margin: 10px auto 30px auto; text-align: left; background: #303030;">
+        <div class="pc-accordion">
+            <input id="acId1" name="accordion-1" type="checkbox" />
+            <label for="acId1"><span>About us</span></label>
+            <section>
+                <p>Well, the way they make shows is, they make one show. That show's called a pilot. Then they show that show to the people who make shows, and on the strength of that one show they decide if they're going to make more shows.</p>
+            </section>
+        </div>
+        <div class="pc-accordion">
+            <input id="acId2" name="accordion-2" type="checkbox" />
+            <label for="acId2"><span>How we work</span></label>
+            <section>
+                <p>Like you, I used to think the world was this great place where everybody lived by the same standards I did, then some kid with a nail showed me I was living in his world, a world where chaos rules not order, a world where righteousness is not rewarded. That's Cesar's world, and if you're not willing to play by his rules, then you're gonna have to pay the price. </p>
+            </section>
+        </div>
+        <div class="pc-accordion">
+            <input id="acId3" name="accordion-3" type="checkbox" />
+            <label for="acId3"><span>References</span></label>
+            <section>
+                <p>You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man. </p>
+            </section>
+        </div>
+        <div class="pc-accordion">
+            <input id="acId4" name="accordion-4" type="checkbox" />
+            <label for="acId4"><span>Contact us</span></label>
+            <section>
+                <p>You see? It's curious. Ted did figure it out - time travel. And when we get back, we gonna tell everyone. How it's possible, how it's done, what the dangers are. But then why fifty years in the future when the spacecraft encounters a black hole does the computer call it an 'unknown entry event'? Why don't they know? If they don't know, that means we never told anyone. And if we never told anyone it means we never made it back. Hence we die down here. Just as a matter of deductive logic. </p>
+            </section>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div style="width: 400px; margin: 10px auto 30px auto; text-align: left; background: blue;">
+        <div class="pc-menuAlign">
+            <ul class="pc-mainMenu">
+                <li class="pc-menuContainer">
+                    <div class="pc-menu">
+                        <div class="pc-menuTitle">Menu</div>
+                        <div class="pc-submenu" ><!-- style="max-height: 370px;">
+                            to simulate scrolling -->
+                            <div><!--div>< class="pc-scrollContainer"-->
+                                <ul>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                    <li>
+                                        <div class="pc-accordion">
+                                            <input id="acId14" name="accordion-14" type="checkbox" />
+                                            <label for="acId14"><span>test text</span></label>
+                                            <section>
+                                                <div class="pc-checkbox">
+                                                    <input id="cbId21" type="checkbox" name="21" value="21"><label for="cbId21">CheckBox 21</label>
+                                                </div>
+                                                <div class="pc-checkbox">
+                                                    <input id="cbId22" type="checkbox" name="22" value="22"><label for="cbId22">CheckBox 22</label>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </li>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                    <li>
+                                        <div class="pc-accordion">
+                                            <input id="acId15" name="accordion-15" type="checkbox" />
+                                            <label for="acId15"><span>test radio</span></label>
+                                            <section>
+                                                <div class="pc-radio">
+                                                    <input id="rdId21" type="radio" name="radioGroup21" value="21"><label for="rdId21">Radio 11</label>
+                                                </div>
+                                                <div class="pc-radio">
+                                                    <input id="rdId22" type="radio" name="radioGroup21" value="22"><label for="rdId22">Radio 11</label>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId11" type="radio" name="radioGroup11" value="11"><label for="rdId11">Radio 11</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId12" type="radio" name="radioGroup11" value="12"><label for="rdId12">Radio 12</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId13" type="radio" name="radioGroup11" value="13" checked="checked"><label for="rdId13">Radio 13</label>
+                                        </div>
+                                    </li>
+                                    <li class="pc-menuItemSep"><hr /></li>
+                                    <li>
+                                        <div class="pc-checkbox">
+                                            <input id="cbId11" type="checkbox" name="11" value="11"><label for="cbId11">CheckBox 11</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-checkbox">
+                                            <input id="cbId12" type="checkbox" name="12" value="12" checked="checked"><label for="cbId12">CheckBox 12</label>
+                                        </div>
+                                    </li>
+                                    <li class="pc-menuItemSep"><hr /></li>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
