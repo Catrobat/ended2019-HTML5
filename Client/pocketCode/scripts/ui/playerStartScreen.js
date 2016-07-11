@@ -126,7 +126,7 @@ PocketCode.Ui.merge({
                 var tmp = document.createElement('div');
                 tmp.className = 'pc-title';
                 var text = document.createElement('div');
-                text.dir = 'auto';
+                //text.dir = 'auto';    //not supported in IE/Edge
                 tmp.appendChild(text);
                 text.appendChild(this._titleTextNode._dom);
                 this._dom.appendChild(tmp);
