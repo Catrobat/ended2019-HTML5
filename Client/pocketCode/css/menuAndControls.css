@@ -76,7 +76,9 @@
 	border: 0;
 	text-align: left;
 	color: #ffffff;
+	display: block;
 }
+
 /*
 .pc-menuItem {
 	cursor: pointer;
