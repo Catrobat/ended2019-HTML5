@@ -322,7 +322,7 @@ PocketCode.merge({
                     errorJson = e.responseJson;
 
                 if (errorStatus)  //got a response
-                    type = errorJson.type || 'InternalServerError';
+                    type = errorJson ? errorJson.type || 'InternalServerError' : 'InternalServerError';
                 else
                     type = 'ServerConnectionError';
 
