@@ -176,11 +176,11 @@ PocketCode.Model.Sprite = (function () {
                 return this._looks;
             },
         },
-        //currentLook: {
-        //    get: function () {
-        //        return this._currentLook;
-        //    },
-        //},
+        currentLook: {
+            get: function () {
+                return this._currentLook;
+            },
+        },
         size: {     //percentage
             get: function () {
                 return Math.round(this._scaling * 100.0);

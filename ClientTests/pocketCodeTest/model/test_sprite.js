@@ -25,6 +25,8 @@ QUnit.test("Sprite", function (assert) {
     //triggerOnChange
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
+    //timer
+    assert.equal(sprite.projectTimerValue, prog.projectTimer.value, "timer getter");
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
@@ -247,6 +249,7 @@ QUnit.test("Sprite", function (assert) {
     var look = new PocketCode.Model.Look({ id: "s1", resourceId: "img1", name: "testLook" });
     look._canvas = document.createElement("canvas");    //we have to set this to make sure a renderingImage returns this properties
     testSprite._currentLook = look;
+    assert.equal(testSprite.currentLook, look, "current look getter");
 
     testSprite._flipX = false;
     var lookOffsetX = 1;
