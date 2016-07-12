@@ -16,6 +16,8 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
+    program._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+
     program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 

@@ -287,7 +287,7 @@ PocketCode.GameEngine = (function () {
             //recreate collision manager            
             if (this._collisionManager)
                 this._collisionManager.dispose();
-            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
+            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             if (jsonProject.background) {
                 this._background = this._spriteFactory.create(jsonProject.background);
