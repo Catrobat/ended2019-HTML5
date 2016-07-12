@@ -205,13 +205,14 @@ PocketCode.merge({
                 set: function (value) {
                     if (value && !(value instanceof HTMLCanvasElement))
                         throw new Error('invalid look setter: HTMLCanvasElement expected');
-
-                    this._originalCanvas = value;
-
                     if (!value)
                         return;
+
+                    this._originalCanvas = value;
                     this._width = value.width;
                     this._height = value.height;
+                    this._cacheCanvas.width = value.width;
+                    this._cacheCanvas.height = value.height;
 
                     this.graphicEffects = this._graphicEffects;
                 },
