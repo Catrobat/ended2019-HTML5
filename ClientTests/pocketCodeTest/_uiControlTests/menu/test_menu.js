@@ -7,11 +7,18 @@ window.onload = function () {
   var layoutContainer = document.getElementById('layoutContainer');
 
   var menu = new PocketCode.Ui.Menu();
+
+  layoutContainer.appendChild(menu._dom);
+
   var separator = new PocketCode.Ui.MenuSeparator();
   var separator2 = new PocketCode.Ui.MenuSeparator();
   var button1 = new PocketCode.Ui.MenuItem("example");
   var button2 = new PocketCode.Ui.MenuItem("example");
   var button3 = new PocketCode.Ui.MenuItem("example");
+  var button32 = new PocketCode.Ui.MenuItem("example32");
+
+  var submenu = new PocketCode.Ui.SubMenu();
+
 
 
   var separator3 = new PocketCode.Ui.MenuSeparator();
@@ -30,32 +37,38 @@ window.onload = function () {
   var cb1 = new PocketCode.Ui.Checkbox("lblOk");
   var radio1 = new PocketCode.Ui.Radio('key1', 'val1');
   var radio2 = new PocketCode.Ui.Radio('key2', 'val2');
+  var dc = new PocketCode.Ui.RadioGroup();
+  dc.add( radio1 );
+  dc.add( radio2 );
 
 
-  menu.addElement( button1 );
+  menu.appendChild( button1 );
 
-  menu.addElement( separator );
-  menu.addElement( button2 );
-  menu.addElement( separator2 );
-  menu.addElement( button3 );
-
-  menu.addElement( button4 );
-  menu.addElement( separator3 );
-  menu.addElement( cb1 );
-  menu.addElement( separator5 );
-  menu.addElement( radio1 );
-  menu.addElement( separator6 );
-  menu.addElement( radio2 );
-
-  menu.addElement( button5 );
-  menu.addElement( separator4 );
-  menu.addElement( button6 );
-
-  menu.addElement( button7 );
+  menu.appendChild( separator );
+  menu.appendChild( button2 );
+  menu.appendChild( separator2 );
+  menu.appendChild( button3 );
+  menu.appendChild( button32 );
 
 
+  //menu.appendChild( submenu );
 
-  layoutContainer.appendChild(menu._dom);
+  menu.appendChild( button4 );
+  menu.appendChild( separator3 );
+  menu.appendChild( cb1 );
+  menu.appendChild( separator5 );
+  menu.appendChild( radio1 );
+  menu.appendChild( separator6 );
+  menu.appendChild( radio2 );
+
+  menu.appendChild( button5 );
+  menu.appendChild( separator4 );
+  menu.appendChild( button6 );
+
+  menu.appendChild( button7 );
+  menu.removeChild( radio2 );
+
+
 
 
 
@@ -63,6 +76,7 @@ window.onload = function () {
     menu._onResize.dispatchEvent();
   };
   menu._onResize.dispatchEvent();  //once at the beginning
+
 
 
   //click handler
@@ -76,5 +90,19 @@ window.onload = function () {
     outputContainer.innerHTML += '<br />Button 2 clicked';
   };
   button2.onClick.addEventListener(new SmartJs.Event.EventListener(onClick2EventFired, this));
+
+
+  //click handler
+  var onClick3EventFired = function () {
+    outputContainer.innerHTML += '<br />Button 3 clicked';
+  };
+  button3.onClick.addEventListener(new SmartJs.Event.EventListener(onClick3EventFired, this));
+
+
+  //click handler
+  var onClick32EventFired = function () {
+    outputContainer.innerHTML += '<br />Button 32 clicked';
+  };
+  button32.onClick.addEventListener(new SmartJs.Event.EventListener(onClick32EventFired, this));
 
 };

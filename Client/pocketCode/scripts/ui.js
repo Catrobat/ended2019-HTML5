@@ -63,6 +63,12 @@ PocketCode.Ui.merge({
             var icon = '<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416"/>';
             return svgs.tagStart + svgs.circle + text1 + text2 + icon + svgs.tagEnd;
         }(),
+        MENU: function () {
+            var svgs = PocketCode.Ui._svgs;
+            var text1 = '<path d="M0 0h48v48h-48z" fill="none"/>';
+            var text2 = '<path d="M6 36h36v-4h-36v4zm0-10h36v-4h-36v4zm0-14v4h36v-4h-36z"/>';
+            return svgs.tagStart + text1 + text2 + svgs.tagEnd;
+        }(),
     },
 
     I18nTextNode: (function () {
