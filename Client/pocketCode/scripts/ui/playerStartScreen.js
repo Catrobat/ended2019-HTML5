@@ -19,10 +19,11 @@ PocketCode.Ui.merge({
 
             this._dom.className = 'pc-playerStartScreen';
             this._titleTextNode = new SmartJs.Ui.TextNode('');
-            if (title)
-                this.title = title;
+
             this._domHeader = document.createElement('div');
             this._domHeader.className = 'pc-title';
+            if (title)
+                this.title = title;
 
             this._previewImage = new Image();
             if (base64previewImage)
