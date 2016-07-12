@@ -4,6 +4,7 @@
 /// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../PocketCodePlayer/_startup/pocketCodePlayer.js" />
+/// <reference path="../components/i18nProvider.js" />
 /// <reference path="../core.js" />
 /// <reference path="../ui.js" />
 'use strict';
@@ -17,10 +18,11 @@ PocketCode.Ui.merge({
             PocketCode.Ui.I18nControl.call(this, 'div');
 
             this._dom.className = 'pc-playerStartScreen';
-            this._dom.dir = 'ltr';
             this._titleTextNode = new SmartJs.Ui.TextNode('');
             if (title)
                 this.title = title;
+            this._domHeader = document.createElement('div');
+            this._domHeader.className = 'pc-title';
 
             this._previewImage = new Image();
             if (base64previewImage)
@@ -54,6 +56,8 @@ PocketCode.Ui.merge({
                     if (typeof value !== 'string')
                         throw new error('invalid argument: title: expected type = string');
                     this._titleTextNode.text = value;
+                    var dir = PocketCode.I18nProvider.getTextDirection(value);
+                    this._domHeader.dir = dir;
                 },
             },
             previewImage: {
@@ -123,18 +127,15 @@ PocketCode.Ui.merge({
                 //img
                 this._dom.appendChild(this._previewImage);
                 //title
-                var tmp = document.createElement('div');
-                tmp.className = 'pc-title';
                 var text = document.createElement('div');
-                //text.dir = 'auto';    //not supported in IE/Edge
-                tmp.appendChild(text);
+                this._domHeader.appendChild(text);
                 text.appendChild(this._titleTextNode._dom);
-                this._dom.appendChild(tmp);
+                this._dom.appendChild(this._domHeader);
                 //loading indicator
                 this._progressLayout.className = 'pc-loadingIndicatorLayout';
                 this._appendChild(this._progressLayout);
 
-                tmp = document.createElement('div');
+                var tmp = document.createElement('div');
                 tmp.className = 'pc-loadingIndicator';
                 this._progressLayout._dom.appendChild(tmp);
 
