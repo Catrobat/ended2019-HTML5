@@ -1021,7 +1021,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
     //simulate loading a json Project: setting required properties (internal)
     gameEngine._originalScreenWidth = 50;
     gameEngine._originalScreenHeight = 100;
-    gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
 
     var sh2 = gameEngine._originalScreenHeight / 2,
         sw2 = gameEngine._originalScreenWidth / 2;
@@ -1771,7 +1771,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         //gameEngine._originalScreenWidth = 100;
         //sh2 = gameEngine._originalScreenHeight / 2,
         //sw2 = gameEngine._originalScreenWidth / 2;
-        //gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+        //gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         ////sprite.size = 200;
 
         //sprite.setPositionX(100);
@@ -1795,7 +1795,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         gameEngine._originalScreenWidth = 50;
         sh2 = gameEngine._originalScreenHeight / 2,
         sw2 = gameEngine._originalScreenWidth / 2;
-        gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+        gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         //top
         sprite.setPositionX(0);
         sprite.setPositionY(40);
