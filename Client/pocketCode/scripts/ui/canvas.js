@@ -105,10 +105,33 @@ PocketCode.Ui.Canvas = (function () {
                 this._cacheCanvasEl.height = value;
             },
         },
+        /* override */
+        style: {
+            get: function () {
+                this._throwUnsupportedCssError();
+            },
+            set: function() {
+                this._throwUnsupportedCssError();
+            },
+        },
+        /* override */
+        //className: {
+        //    get: function () {
+        //        this._throwUnsupportedCssError();
+        //    },
+        //    set: function () {
+        //        this._throwUnsupportedCssError();
+        //    },
+        //},
     });
 
     //events
     Object.defineProperties(Canvas.prototype, {
+        _throwUnsupportedCssError: function() {
+            var msg = 'setting styles on canvas not supprted at runtime: please use a parent container instead. ';
+            msg += 'Notice: setting styles like border, margin, padding, .. may cause issues due to re-positioning on mouse/tab events';
+            throw new Error(msg);
+        },
         onRenderingImageTouched: {
             get: function () {
                 return this._onRenderingImageTouched;
@@ -153,7 +176,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         _touchStartHandler: function (e) {
             e.preventDefault();
-            e.stopPropagation();
+            e.stopPropagation();    //TODO: use .offsetX for mouse events (check support)
 
 
             //TODO: map system event to custom event
@@ -219,7 +242,7 @@ PocketCode.Ui.Canvas = (function () {
             else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
                 pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
-                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //include scoll offsets to make sure this control also works in another app
+                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //or: include scoll offsets to make sure this control also works in another app/page
             }
 
             var pointer = {

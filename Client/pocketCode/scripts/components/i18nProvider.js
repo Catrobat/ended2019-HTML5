@@ -1,4 +1,5 @@
-﻿'use strict';
+﻿/// <reference path="../ui.js" />
+'use strict';
 
 //RFC 3066 implementation: as singleton
 PocketCode.I18nProvider = (function (propObject) {
@@ -45,6 +46,9 @@ PocketCode.I18nProvider = (function (propObject) {
 
     //properties
     Object.defineProperties(I18nProvider.prototype, {
+        _rtlRegExp: {
+            value: new RegExp('^[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFE00-\uFE6F\uFEFD-\uFFFF]*[\u0591-\u07FF\uFB1D-\uFDFF\uFE70-\uFEFC]'),
+        },
         currentLanguage: {
             get: function () {
                 return this._currentLanguage;
@@ -127,16 +131,71 @@ PocketCode.I18nProvider = (function (propObject) {
             }
             this._dictionary.merge(json.dictionary); //using merge: so we can provide an initial dict for loading and errors
             this._currentLanguage = json.languageCode;
-            this._onLanguageChange.dispatchEvent();
+            this._onLanguageChange.dispatchEvent({ language: json.languageCode });
         },
         _loadErrorHandler: function (e) {
             this.onError.dispatchEvent(e);
         },
         getLocString: function (key) {
-            if (!this._dictionary[key])
+            var string = this._dictionary[key];
+            if (!string)
                 return '[' + key + ']';
 
-            return this._dictionary[key];
+            return string;
+        },
+        getTextDirection: function(string) {
+            //var input = this._textValidationInput,
+            //    dir = PocketCode.Ui.Direction.LTR;  //default
+
+            //if (!input && this._dirAutoSupported != false) {
+            //    input = document.createElement('input');
+            //    input.type = 'text';
+            //    input.dir = 'auto';
+            //    input.style.position = 'absolute';
+            //    input.style.height = 0;
+            //    input.style.width = 0;
+            //    input.style.top = -20;
+            //    try {
+            //        document.body.appendChild(input);
+            //    }
+            //    catch (exc) { /* silent catch */ }
+
+            //    this._dirAutoSupported = false;
+
+            //    input.value = 'test';
+            //    if (window.getComputedStyle)
+            //        this._dirAutoSupported = window.getComputedStyle(input, null).direction == PocketCode.Ui.Direction.LTR;
+            //    else if (input.currentStyle)
+            //        this._dirAutoSupported = input.currentStyle.direction == PocketCode.Ui.Direction.LTR;
+
+            //    if (this._dirAutoSupported) {
+            //        input.value = 'زمایش';
+            //        if (window.getComputedStyle)
+            //            this._dirAutoSupported = window.getComputedStyle(input, null).direction == PocketCode.Ui.Direction.RTL;
+            //        else if (input.currentStyle)
+            //            this._dirAutoSupported = input.currentStyle.direction == PocketCode.Ui.Direction.RTL;
+            //    }
+
+            //    if (this._dirAutoSupported)
+            //        this._textValidationInput = input;
+            //}
+
+            //if (this._dirAutoSupported) {
+            //    input.value = string;
+
+            //    if (window.getComputedStyle)
+            //        dir = window.getComputedStyle(input, null).direction;
+            //    else if (input.currentStyle)
+            //        dir = input.currentStyle.direction;
+            //}
+            //else {
+            //    //checking first char with strong dir (like the input control above should do)
+            //    var rtlRegex = new RegExp('^[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFE00-\uFE6F\uFEFD-\uFFFF]*' +
+            //        '[\u0591-\u07FF\uFB1D-\uFDFF\uFE70-\uFEFC]');
+            //    dir = rtlRegex.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
+            //}
+            //return dir;
+            return this._rtlRegExp.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
         },
         //reset: function () {
         //    this._direction = PocketCode.Ui.Direction.LTR;

@@ -25,6 +25,8 @@ QUnit.test("Sprite", function (assert) {
     //triggerOnChange
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
+    //timer
+    assert.equal(sprite.projectTimerValue, prog.projectTimer.value, "timer getter");
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
@@ -247,6 +249,7 @@ QUnit.test("Sprite", function (assert) {
     var look = new PocketCode.Model.Look({ id: "s1", resourceId: "img1", name: "testLook" });
     look._canvas = document.createElement("canvas");    //we have to set this to make sure a renderingImage returns this properties
     testSprite._currentLook = look;
+    assert.equal(testSprite.currentLook, look, "current look getter");
 
     testSprite._flipX = false;
     var lookOffsetX = 1;
@@ -1018,7 +1021,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
     //simulate loading a json Project: setting required properties (internal)
     gameEngine._originalScreenWidth = 50;
     gameEngine._originalScreenHeight = 100;
-    gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
 
     var sh2 = gameEngine._originalScreenHeight / 2,
         sw2 = gameEngine._originalScreenWidth / 2;
@@ -1768,7 +1771,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         //gameEngine._originalScreenWidth = 100;
         //sh2 = gameEngine._originalScreenHeight / 2,
         //sw2 = gameEngine._originalScreenWidth / 2;
-        //gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+        //gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         ////sprite.size = 200;
 
         //sprite.setPositionX(100);
@@ -1792,7 +1795,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         gameEngine._originalScreenWidth = 50;
         sh2 = gameEngine._originalScreenHeight / 2,
         sw2 = gameEngine._originalScreenWidth / 2;
-        gameEngine._collisionManager = new PocketCode.CollisionManager([], gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+        gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         //top
         sprite.setPositionX(0);
         sprite.setPositionY(40);

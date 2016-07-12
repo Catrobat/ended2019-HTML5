@@ -727,7 +727,7 @@ class ProjectFileParser
         switch($brickType)
         {
             case "StartScript":
-                $brick = new WhenProgramStartBrickDto(getNewId());
+                $brick = new WhenProgramStartBrickDto($this->getNewId());
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -750,7 +750,7 @@ class ProjectFileParser
                     $id = $res->id;
                 }
 
-                $brick = new WhenBroadcastReceiveBrickDto(getNewId(), $id);
+                $brick = new WhenBroadcastReceiveBrickDto($this->getNewId(), $id);
 
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
@@ -762,7 +762,7 @@ class ProjectFileParser
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto(getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
