@@ -106,14 +106,14 @@ PocketCode.Ui.Canvas = (function () {
             },
         },
         /* override */
-        style: {
-            get: function () {
-                this._throwUnsupportedCssError();
-            },
-            set: function() {
-                this._throwUnsupportedCssError();
-            },
-        },
+        //style: {
+        //    get: function () {
+        //        this._throwUnsupportedCssError();
+        //    },
+        //    set: function() {
+        //        this._throwUnsupportedCssError();
+        //    },
+        //},
         /* override */
         //className: {
         //    get: function () {
@@ -127,11 +127,11 @@ PocketCode.Ui.Canvas = (function () {
 
     //events
     Object.defineProperties(Canvas.prototype, {
-        _throwUnsupportedCssError: function() {
-            var msg = 'setting styles on canvas not supprted at runtime: please use a parent container instead. ';
-            msg += 'Notice: setting styles like border, margin, padding, .. may cause issues due to re-positioning on mouse/tab events';
-            throw new Error(msg);
-        },
+        //_throwUnsupportedCssError: function() {
+        //    var msg = 'setting styles on canvas not supprted at runtime: please use a parent container instead. ';
+        //    msg += 'Notice: setting styles like border, margin, padding, .. may cause issues due to re-positioning on mouse/tab events';
+        //    throw new Error(msg);
+        //},
         onRenderingImageTouched: {
             get: function () {
                 return this._onRenderingImageTouched;
