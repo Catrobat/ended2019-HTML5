@@ -101,11 +101,13 @@ PocketCode.CollisionManager = (function () {
         },
         /* override */
         dispose: function () {
-            this._sprites = []; //do not dispose sprites
+            //do not dispose sprites
+            this._background = undefined;
+            this._sprites = [];
+
             SmartJs.Core.Component.prototype.dispose.call(this);    //call super
         },
     });
-
 
     return CollisionManager;
 })();
