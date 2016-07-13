@@ -79,6 +79,14 @@
 	display: block;
 }
 
+.pc-menuSymbol {
+
+}
+
+.pc-menuSymbol span {
+	display: none;
+}
+
 /*
 .pc-menuItem {
 	cursor: pointer;

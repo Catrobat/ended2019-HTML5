@@ -28,6 +28,7 @@ PocketCode.Ui.Menu = (function () {
 
     //var img_tag = new SmartJs.Ui.Image({ style: { width: '100%' } });
     var img_tag = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.MENU, null, false);
+    img_tag.className += ' pc-menuSymbol';
 
     var topContainer = new SmartJs.Ui.ContainerControl({ className: 'pc-menuAlign' });
     var wholeMenuContainer = new SmartJs.Ui.ContainerControl({ className: 'pc-mainMenu' });

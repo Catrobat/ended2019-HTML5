@@ -65,9 +65,8 @@ PocketCode.Ui.merge({
         }(),
         MENU: function () {
             var svgs = PocketCode.Ui._svgs;
-            var text1 = '<path d="M0 0h48v48h-48z" fill="none"/>';
-            var text2 = '<path d="M6 36h36v-4h-36v4zm0-10h36v-4h-36v4zm0-14v4h36v-4h-36z"/>';
-            return svgs.tagStart + text1 + text2 + svgs.tagEnd;
+            var icon = '<path d="M26 13 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/> <path d="M26 32 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/> <path d="M26 51 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/>';
+            return svgs.tagStart + icon + svgs.tagEnd;
         }(),
     },
 
