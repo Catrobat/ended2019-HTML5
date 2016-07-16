@@ -63,6 +63,7 @@ PocketCode.GameEngine = (function () {
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
         this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
+        this._physicsWorld = new PocketCode.PhysicsWorld(this);
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
@@ -277,7 +278,7 @@ PocketCode.GameEngine = (function () {
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
-            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime, this._collisionManager);
+            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime, this._physicsWorld);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
@@ -286,6 +287,10 @@ PocketCode.GameEngine = (function () {
                 return;
             }
 
+            // //recreate collision manager
+            // if (this._collisionManager)
+            //     this._collisionManager.dispose();
+            // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             if (jsonProject.background) {
                 this._background = this._spriteFactory.create(jsonProject.background);

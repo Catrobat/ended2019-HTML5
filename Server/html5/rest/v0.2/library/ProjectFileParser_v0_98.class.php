@@ -15,7 +15,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         switch($brickType)
         {
             case "StartScript":
-                $brick = new WhenProgramStartBrickDto(getNewId());
+                $brick = new WhenProgramStartBrickDto($this->getNewId());
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -38,7 +38,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                     $id = $res->id;
                 }
 
-                $brick = new WhenBroadcastReceiveBrickDto(getNewId(), $id);
+                $brick = new WhenBroadcastReceiveBrickDto($this->getNewId(), $id);
 
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
@@ -50,7 +50,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto(getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -67,9 +67,9 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $name = $items[1];
                 //$brick;
                 if ($name == "ANYTHING")
-                    $brick = new WhenCollisionBrickDto(getNewId());
+                    $brick = new WhenCollisionBrickDto($this->getNewId());
                 else if ($name == "Background")
-                    $brick = new WhenCollisionBrickDto(getNewId(), $this->background->id);
+                    $brick = new WhenCollisionBrickDto($this->getNewId(), $this->background->id);
                 else {
                     //find sprite by name
                     for($i = 0; $i < count($this->sprites); $i++)
@@ -77,7 +77,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                         if($this->sprites[$i]->name == $name)
                         {
                             $id = $this->sprites[$i]->id;
-                            $brick = new WhenCollisionBrickDto(getNewId(), $id);
+                            $brick = new WhenCollisionBrickDto($this->getNewId(), $id);
                             break;
                         }
                     }

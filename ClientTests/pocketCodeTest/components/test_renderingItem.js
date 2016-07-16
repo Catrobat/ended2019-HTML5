@@ -81,15 +81,18 @@ QUnit.test("RenderingText", function (assert) {
     assert.equal(renderingText._text, "4.0", "include 1 decimal as default for integers");
 
     //rendering
+    var canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 100;
+    var ctx = canvas.getContext("2d");
+
     var fillTextCalled = 0;
-    var context = {
-        fillText: function () {
-            fillTextCalled++;
-        }
+    ctx.fillText = function () {    //overide fillText to assert number of calls
+        fillTextCalled++;
     };
 
     renderingText.text = "";
-    renderingText.draw(context);
+    renderingText.draw(ctx);
     assert.ok(!fillTextCalled, "No text drawn on canvas if text is empty");
     fillTextCalled = 0;
 
@@ -102,33 +105,66 @@ QUnit.test("RenderingText", function (assert) {
 
     renderingText.text = text;
     renderingText.visible = true;
-    renderingText.draw(context);
+    renderingText.draw(ctx);
     assert.equal(fillTextCalled, numberOfNewlines + 1, "Create Text on Canvas with fillText for each line of text");
 
     //rendering and font size
-    var canvas = document.createElement("canvas");
-    canvas.height = 100;
+    canvas = document.createElement("canvas");
     canvas.width = 200;
+    canvas.height = 100;
     var ctx = canvas.getContext("2d");
     //for test only
     //document.body.appendChild(canvas);
     //canvas.style.position = "absolute";
 
+    ctx.clearRect(0, 0, 200, 100);
     renderingText.text = 42;
     renderingText.x = 0;
     renderingText.y = 0;
     renderingText.draw(ctx);
 
     var img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
-    assert.equal(img.canvas.height, 33, "rendering Text original height: based on screenshot (2016-07-06)");
+    assert.equal(img.canvas.height, 33, "rendering Text original height (numbers): based on screenshot (2016-07-06)");
 
+    ctx.clearRect(0, 0, 200, 100);
+    renderingText.text = "ÖÄÜ";
+    renderingText.draw(ctx);
+
+    img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
     var topLeft = {
         x: 100 + Math.round(Math.cos(img.tl.angle) * img.tl.length),
         y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
     };
 
-    assert.equal(topLeft.x, 0, "rendered to left");
-    assert.ok(topLeft.y < 10, "rendered to top: based on the font size there is an offset");
+    assert.ok(topLeft.x < 2, "rendered to left (center)");
+    assert.ok(topLeft.y < 2, "rendered to top (center)");
+
+    ctx.clearRect(0, 0, 200, 100);
+    renderingText.x = 10;
+    renderingText.y = 10;
+    renderingText.draw(ctx);
+
+    img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    topLeft = {
+        x: 100 + Math.round(Math.cos(img.tl.angle) * img.tl.length),
+        y: 50 - Math.round(Math.sin(img.tl.angle) * img.tl.length),
+    };
+    assert.ok(topLeft.x > 10 && topLeft.x < 12, "rendered to left (x offset)");
+    assert.ok(topLeft.y > 10 && topLeft.y < 12, "rendered to top (y offset)");
+
+    ctx.clearRect(0, 0, 200, 100);
+    canvas.with = 400;
+    canvas.height = 400;
+    renderingText.text = "This is my ...\n\nThis is my ...";
+    renderingText.x = 10;
+    renderingText.y = 10;
+    renderingText.draw(ctx);
+
+    img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
+    var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
+        bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
+    assert.ok(Math.abs(top + bottom -220) < 2, "rendering Text line height: based on screenshot (2016-07-11)");
+
 });
 
 
@@ -280,8 +316,26 @@ QUnit.test("RenderingImage", function (assert) {
         assert.ok(renderingImage instanceof PocketCode.RenderingImage && renderingImage instanceof PocketCode.RenderingItem, "instance check");
         //assert.equal(renderingImage.look, canvasElement, "RenderingImage.look returns canvas element");
 
-        assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "missing arguments");
-        assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "argument not an object");
+        assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "ERROR: missing arguments");
+        assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "ERROR: argument not an object");
+
+        //getter, setter
+        assert.throws(function () { renderingImage.look = "look"; }, Error, "ERROR: look setter: wrong type");
+        renderingImage.scaling = 2;
+        assert.equal(renderingImage._scaling, 2, "scaling: setter");
+        renderingImage.rotation = 3;
+        assert.equal(renderingImage._rotation, 3, "rotation: setter");
+        renderingImage.flipX = false;
+        assert.equal(renderingImage._flipX, false, "flipX: setter");
+        renderingImage.shadow = true;
+        assert.equal(renderingImage._shadow, true, "shadow: setter");
+
+        assert.throws(function () { renderingImage.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
+        renderingImage.graphicEffects = [];
+        assert.deepEqual(renderingImage._graphicEffects, [], "graphicEffects setter");
+
+        //reinit
+        renderingImage = new PocketCode.RenderingImage({ id: "id", look: canvasElement });
 
         renderingImage.x = 10;
         renderingImage.y = 15;
@@ -644,3 +698,14 @@ QUnit.test("RenderingImage", function (assert) {
 
 });
 
+
+QUnit.test("RenderingBubble", function (assert) {
+
+    var rb = new PocketCode.RenderingBubble({ id: "s01" });
+    assert.ok(rb instanceof PocketCode.RenderingBubble && rb instanceof PocketCode.RenderingText, "instance check");
+
+    assert.throws(function () { new PocketCode.RenderingBubble(); }, Error, 'fail on missing constructor argument');
+
+    assert.ok(false, "TODO");
+
+});

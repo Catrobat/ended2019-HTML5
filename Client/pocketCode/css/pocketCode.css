@@ -648,6 +648,10 @@
             margin-top: 4px;
             margin-bottom: 8px;
         }
+        [dir='rtl'] .pc-dialogBody .pc-dialogContent ul {
+            padding-left: 0px;
+            padding-right: 18px;
+        }
 
             .pc-dialogBody .pc-dialogContent ul li {
                 list-style-position: outside;
