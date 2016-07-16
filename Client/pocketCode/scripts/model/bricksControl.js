@@ -275,17 +275,20 @@ PocketCode.Model.merge({
     WhenCollisionBrick: (function () {
         WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenCollisionBrick(device, sprite, collisionMgr, propObject) {//todo neeed collisionmgr
+        function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+            //console.log(propObject);
             //console.log("me", sprite.id, "id to collide with", propObject.spriteId);
 
-            collisionMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
+            var collider = propObject.any ? 'any' : propObject.spriteId;
+            physicsWorld.subscribeCollision(sprite.id, propObject.spriteId, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
 
             //broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
 
         WhenCollisionBrick.prototype.merge({
             _onCollisionHandler:function(e){
+                console.log('collision!', e);
 
             }
             //_onBroadcastHandler: function (e) {
