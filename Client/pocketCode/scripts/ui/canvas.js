@@ -268,7 +268,6 @@ PocketCode.Ui.Canvas = (function () {
 
             var target = this._getTargetAt(pointer);
             if (target) {
-                console.log("target "+target.id+" found");
                 this._onRenderingImageTouched.dispatchEvent({id: target.id, x: pointer.x, y:pointer.y});
             }
 
