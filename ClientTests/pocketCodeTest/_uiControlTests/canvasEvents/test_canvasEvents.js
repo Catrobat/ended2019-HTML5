@@ -9,14 +9,20 @@ gameEngine._imageStore = is;
 var outputContainer;
 //create canvas
 var canvas = new PocketCode.Ui.Canvas();
-canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onRiTouch));
+canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouch));
+//canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouch));
+//canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouch));
+//canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouch));
 
-function onRiTouch(e) {
-    outputContainer.innerHTML += ('<br />touched sprite: ' + e.id);
+function onTouch(e) {
+    console.log(e);
+
+    outputContainer.innerHTML += ('<br />touch event: id:' + e.id+' x:'+e.x+' y:'+e.y);
 };
 
-canvas.width = 500;
-canvas.height = 800;
+
+canvas.width = 200;
+canvas.height = 200;
 
 //window onLoad
 function init() {
