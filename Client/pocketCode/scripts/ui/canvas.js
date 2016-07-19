@@ -249,15 +249,28 @@ PocketCode.Ui.Canvas = (function () {
             }
 
             else if (SmartJs.Device.isTouch && e.touches){
+                var coordinates = [];
                 for(var i=0; i<e.touches.length;i++){
                     var touch = e.touches[i];
                     var pointer =this._getTouchEventPosition(e,touch);
-                    eventHandle.dispatchEvent({id:'t'+touch.identifier,x:pointer.x,y:pointer.y});
+                    coordinates.push(pointer);
+
                     if(this._isTouchEvent(e)){
                         this._checkRenderingImageClicked(pointer);//TODO: should be called for left-mouseButton or touch events only
 
                     }
                 }
+                if(coordinates.length > 1 ){
+                    eventHandle.dispatchEvent({id:'multitouch',coordinates:coordinates});
+                }
+
+                    else if ( coordinates.length  == 1) {
+                    eventHandle.dispatchEvent({id:'touch',x:coordinates[0].x,y:coordinates[0].y});
+                }
+                else{
+                    // do nothing :)
+                }
+
             }
 
         },

@@ -9,10 +9,10 @@ gameEngine._imageStore = is;
 var outputContainer;
 //create canvas
 var canvas = new PocketCode.Ui.Canvas();
-//canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouch));
-//canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouch));
+canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouch));
+canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouch));
 //canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouch));
-canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouch));
+//canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouch));
 
 function onTouch(e) {
 
@@ -20,8 +20,8 @@ function onTouch(e) {
 };
 
 
-canvas.width = 200;
-canvas.height = 200;
+canvas.width = 500;
+canvas.height = 700;
 
 //window onLoad
 function init() {
