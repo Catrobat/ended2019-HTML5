@@ -277,34 +277,19 @@ PocketCode.Model.merge({
 
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
-            //console.log(propObject);
-            //console.log("me", sprite.id, "id to collide with", propObject.spriteId);
 
             var collider = propObject.any ? 'any' : propObject.spriteId;
-            physicsWorld.subscribeCollision(sprite.id, propObject.spriteId, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
-
-            //broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
+            physicsWorld.subscribeCollision(sprite.id, collider, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
         }
 
         WhenCollisionBrick.prototype.merge({
-            _onCollisionHandler:function(e){
-                console.log('collision!', e);
-
+            _onCollisionHandler: function(e){
+                this.execute();
             }
-            //_onBroadcastHandler: function (e) {
-            //    if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-            //        PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
-            //    }
-            //    else {
-            //        //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
-            //        this.execute();
-            //    }
-            //},
         });
 
         return WhenCollisionBrick;
     })(),
-
 
     NoteBrick: (function () {
         NoteBrick.extends(PocketCode.Model.BaseBrick, false);

@@ -34,6 +34,8 @@ PocketCode.PhysicsWorld = (function () {
             this._projectScreenWidth = width;
             this._projectScreenHeight = height;
         },
+        subscribe: function (){
+        },
         subscribeCollision: function (sprite1, sprite2, listener) {
             //console.log(sprite1, sprite2, listener);
             if(!sprite1 || !sprite2)
@@ -50,21 +52,35 @@ PocketCode.PhysicsWorld = (function () {
             this._registeredCollisions[sprite1.id] || (this._registeredCollisions[sprite1.id] = {});
             this._registeredCollisions[sprite1.id][sprite2.id] || (this._registeredCollisions[sprite1.id][sprite2.id] = []);
             this._registeredCollisions[sprite1.id][sprite2.id].push(listener);
+            this.checkPotentialCollisions();
+
+        },
+        _handleDetectedCollision: function (listeners) {
+            //todo typecheck
+            for(var i = 0, l = listeners.length; i < l; i++){
+                //console.log(i, listeners[i]);
+                listeners[i].handler.call(listeners[i].scope, {});
+            }
         },
         checkPotentialCollisions: function () {
             for (var spriteId1 in this._registeredCollisions){
                 if (!this._registeredCollisions.hasOwnProperty(spriteId1))
                     continue;
 
-                for (var spriteId2 in this._registeredCollisions) {
-                    if (!this._registeredCollisions.hasOwnProperty(spriteId2))
+                for (var spriteId2 in this._registeredCollisions[spriteId1]) {
+                    if (!this._registeredCollisions[spriteId1].hasOwnProperty(spriteId2))
                         continue;
 
                     if (spriteId2 === 'any'){
-                        //for (var physicsSprite in this._physicsSprites)
-                        //todo
+                        for (var physicsSprite in this._physicsSprites){
+                            if (!this._physicsSprites.hasOwnProperty(physicsSprite))
+                                continue;
+                            if (this._collisionManager.checkSpriteCollision(spriteId1, physicsSprite)){
+                                this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
+                            }
+                        }
                     } else if (this._collisionManager.checkSpriteCollision(spriteId1, spriteId2)) {
-
+                        this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
                     }
                 }
             }
