@@ -489,11 +489,17 @@ PocketCode.Model.merge({
         function SetGravityBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._gravity = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         SetGravityBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var gravity = this._gravity.calculate();
+
+            if(isNaN(gravity))
+                this._return(false);
+
+            this._sprite.setGravity(gravity);
+            this._return();
         };
 
         return SetGravityBrick;
