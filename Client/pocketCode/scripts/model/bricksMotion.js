@@ -524,11 +524,17 @@ PocketCode.Model.merge({
         function SetMassBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._mass = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
         SetMassBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var mass = this._mass.calculate();
+
+            if(isNaN(mass))
+                this._return(false);
+
+            this._sprite.mass = mass;
+            this._return();
         };
 
         return SetMassBrick;
