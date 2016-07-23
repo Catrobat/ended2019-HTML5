@@ -455,11 +455,17 @@ PocketCode.Model.merge({
         function TurnLeftSpeedBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
         TurnLeftSpeedBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var degreesPerSecond = this._degreesPerSecond.calculate();
+
+            if(isNaN(degreesPerSecond))
+                this._return(false);
+
+            this._sprite.turnNDegreePerSecond(-degreesPerSecond);
+            this._return();
         };
 
         return TurnLeftSpeedBrick;
@@ -472,11 +478,17 @@ PocketCode.Model.merge({
         function TurnRightSpeedBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
         TurnRightSpeedBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var degreesPerSecond = this._degreesPerSecond.calculate();
+
+            if(isNaN(degreesPerSecond))
+                this._return(false);
+
+            this._sprite.turnNDegreePerSecond(degreesPerSecond);
+            this._return();
         };
 
         return TurnRightSpeedBrick;

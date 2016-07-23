@@ -1232,6 +1232,7 @@ PocketCode.Model.PhysicsSprite = (function () {
         this._velocityY = 0;
         this._friction = 0;
         this._bounceFactor = 0;
+        this._turnNDegreePerSecond = 0;
     }
 
     //properties
@@ -1244,13 +1245,9 @@ PocketCode.Model.PhysicsSprite = (function () {
                 this._mass = value
             }
         },
-        velocity: {
-            get: function() {
-                return this._velocity;
-            },
-            set: function (x, y) {
-                this._velocity.x = x;
-                this._velocity.y = y;
+        turnNDegreePerSecond: {
+            set: function (value) {
+                this._turnNDegreePerSecond = value;
             }
         },
         friction: {
