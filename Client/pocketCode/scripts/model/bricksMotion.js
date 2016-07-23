@@ -533,11 +533,16 @@ PocketCode.Model.merge({
         function SetFrictionBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._friction = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
         SetFrictionBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var friction = this._friction.calculate();
+            if(isNaN(friction))
+                this._return(false);
+
+            this._sprite.friction = friction;
+            this._return();
         };
 
         return SetFrictionBrick;
