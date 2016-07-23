@@ -431,11 +431,18 @@ PocketCode.Model.merge({
         function SetVelocityBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._x = new PocketCode.Formula(device, sprite, propObject.x);
+            this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
 
         SetVelocityBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var x = this._x.calculate(),
+                y = this._y.calculate();
+            if (isNaN(x) || isNaN(y))
+                this._return(false);
+
+            this._sprite.setVelocity(x, y);
+            this._return();
         };
 
         return SetVelocityBrick;

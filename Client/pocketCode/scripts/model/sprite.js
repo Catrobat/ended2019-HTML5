@@ -1228,7 +1228,8 @@ PocketCode.Model.PhysicsSprite = (function () {
         //todo check default values
         this._mass = 0;
         this._movementStyle = PocketCode.MovementStyle.NO_BOUNCING;
-        this._velocity = {x: 0, y: 0};
+        this._velocityX = 0;
+        this._velocityY = 0;
         this._friction = 0;
         this._bounceFactor = 0;
     }
@@ -1272,8 +1273,18 @@ PocketCode.Model.PhysicsSprite = (function () {
             set: function(value) {
                 this._movementStyle = value;
             }
-        },
+        }
+    });
 
+    //methods
+    PhysicsSprite.prototype.merge({
+        setGravity: function(value) {
+            this._gameEngine.setGravity(value);
+        },
+        setVelocity: function (x, y) {
+            this._velocityX = x;
+            this._velocityY = y;
+        }
     });
 
     return PhysicsSprite;
