@@ -516,11 +516,17 @@ PocketCode.Model.merge({
         function SetBounceFactorBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            this._bounceFactor = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
         SetBounceFactorBrick.prototype._execute = function () {
-            //TODO:
-            this._return(false);
+            var bounceFactor = this._bounceFactor.calculate();
+
+            if(isNaN(bounceFactor))
+                this._return(false);
+
+            this._sprite.bounceFactor = bounceFactor;
+            this._return();
         };
 
         return SetBounceFactorBrick;
