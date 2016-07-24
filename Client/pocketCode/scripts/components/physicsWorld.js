@@ -9,19 +9,17 @@ PocketCode.PhysicsWorld = (function () {
     function PhysicsWorld(gameEngine) {
         this._physicsSprites = {};
         this._registeredCollisions = {};
+
+        //TODO: default value in pocketCode?
         this._gravityX = 1;
         this._gravityY = 1;
-        //todo maybe just ge?
         this._collisionManager = gameEngine.collisionManager;
+        this._gameEngine = gameEngine;
     }
 
     //properties
     Object.defineProperties(PhysicsWorld.prototype, {
-        // gravity: {
-        //     set: function (value) {
-        //         this._gravity = value;
-        //     }
-        // }
+
     });
 
     //events
@@ -31,39 +29,44 @@ PocketCode.PhysicsWorld = (function () {
 
     //methods
     PhysicsWorld.prototype.merge({
-        setProjectScreen: function (width, height) {
-            this._projectScreenWidth = width;
-            this._projectScreenHeight = height;
-        },
-        subscribe: function (){
+        subscribe: function (spriteId, physicsEnabled){
+            this._physicsSprites[spriteId] = physicsEnabled;
         },
         subscribeCollision: function (sprite1, sprite2, listener) {
-            //console.log(sprite1, sprite2, listener);
-            if(!sprite1 || !sprite2)
+            console.log(sprite1, sprite2, listener);
+            if(!sprite1 || !sprite2 || !listener)
                 return;
 
-            if(this._registeredCollisions[sprite2.id] && this._registeredCollisions[sprite2.id][sprite1.id]){
-                this._registeredCollisions[sprite2.id][sprite1.id].push(listener);
+            if(this._registeredCollisions[sprite2] && this._registeredCollisions[sprite2][sprite1]){
+                this._registeredCollisions[sprite2][sprite1].push(listener);
                 return;
-            } else if (this._registeredCollisions[sprite1.id] && this._registeredCollisions[sprite1.id][sprite2.id]){
-                this._registeredCollisions[sprite1.id][sprite2.id].push(listener);
+            } else if (this._registeredCollisions[sprite1] && this._registeredCollisions[sprite1][sprite2]){
+                this._registeredCollisions[sprite1][sprite2].push(listener);
                 return;
             }
 
-            this._registeredCollisions[sprite1.id] || (this._registeredCollisions[sprite1.id] = {});
-            this._registeredCollisions[sprite1.id][sprite2.id] || (this._registeredCollisions[sprite1.id][sprite2.id] = []);
-            this._registeredCollisions[sprite1.id][sprite2.id].push(listener);
-            this.checkPotentialCollisions();
-
+            this._registeredCollisions[sprite1] || (this._registeredCollisions[sprite1] = {});
+            this._registeredCollisions[sprite1][sprite2] || (this._registeredCollisions[sprite1][sprite2] = []);
+            this._registeredCollisions[sprite1][sprite2].push(listener);
         },
         _handleDetectedCollision: function (listeners) {
-            //todo typecheck
-            for(var i = 0, l = listeners.length; i < l; i++){
-                //console.log(i, listeners[i]);
+            if (!(listeners instanceof Array))
+                throw new Error('invalid argument: expected listeners type of array');
+
+            for (var i = 0, l = listeners.length; i < l; i++) {
                 listeners[i].handler.call(listeners[i].scope, {});
             }
         },
-        checkPotentialCollisions: function () {
+        _testCollisionWithAnyPhysicsSprite: function (spriteId) {
+            for (var physicsSprite in this._physicsSprites){
+                if (!this._physicsSprites.hasOwnProperty(physicsSprite))
+                    continue;
+                if (this._collisionManager.checkSpriteCollision(spriteId, physicsSprite)){
+                    this._handleDetectedCollision(this._registeredCollisions[spriteId]['any']);
+                }
+            }
+        },
+        _checkPotentialCollisions: function () {
             for (var spriteId1 in this._registeredCollisions){
                 if (!this._registeredCollisions.hasOwnProperty(spriteId1))
                     continue;
@@ -73,13 +76,7 @@ PocketCode.PhysicsWorld = (function () {
                         continue;
 
                     if (spriteId2 === 'any'){
-                        for (var physicsSprite in this._physicsSprites){
-                            if (!this._physicsSprites.hasOwnProperty(physicsSprite))
-                                continue;
-                            if (this._collisionManager.checkSpriteCollision(spriteId1, physicsSprite)){
-                                this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
-                            }
-                        }
+                        this._testCollisionWithAnyPhysicsSprite(spriteId1);
                     } else if (this._collisionManager.checkSpriteCollision(spriteId1, spriteId2)) {
                         this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
                     }

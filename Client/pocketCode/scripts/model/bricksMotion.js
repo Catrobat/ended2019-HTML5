@@ -411,8 +411,9 @@ PocketCode.Model.merge({
     SetPhysicsObjectTypeBrick: (function () {
         SetPhysicsObjectTypeBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetPhysicsObjectTypeBrick(device, sprite, propObject) {
+        function SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
+            this._physicsWorld = physicsWorld;
 
             if (!propObject){
                 this._physicsType = PocketCode.MovementStyle.NONE;
@@ -433,7 +434,11 @@ PocketCode.Model.merge({
 
         SetPhysicsObjectTypeBrick.prototype._execute = function () {
             //TODO:
+            var physicsEnabled = this._physicsType !== PocketCode.MovementStyle.NONE;
+
+            this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
             this._sprite.movementStyle = this._physicsType;
+
             this._return(false);
         };
 
