@@ -18,9 +18,9 @@ PocketCode.RotationStyle = {
 };
 
 PocketCode.MovementStyle = {
-    NO_BOUNCING: 'no bouncing',
-    OTHERS_BOUNCE: 'others bounce off it',
-    BOUNCING_WITH_GRAVITY: 'bouncing with gravity'
+    NONE: 'no bouncing',
+    FIXED: 'others bounce off it',
+    DYNAMIC: 'bouncing with gravity'
 };
 
 
@@ -1227,7 +1227,7 @@ PocketCode.Model.PhysicsSprite = (function () {
 
         //todo check default values
         this._mass = 0;
-        this._movementStyle = PocketCode.MovementStyle.NO_BOUNCING;
+        this._movementStyle = PocketCode.MovementStyle.NONE;
         this._velocityX = 0;
         this._velocityY = 0;
         this._friction = 0;
@@ -1264,11 +1264,9 @@ PocketCode.Model.PhysicsSprite = (function () {
             }
         },
         movementStyle: {
-            get: function () {
-                return this._movementStyle;
-            },
             set: function(value) {
                 this._movementStyle = value;
+                //todo
             }
         }
     });

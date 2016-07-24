@@ -414,10 +414,26 @@ PocketCode.Model.merge({
         function SetPhysicsObjectTypeBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite);
 
+            if (!propObject){
+                this._physicsType = PocketCode.MovementStyle.NONE;
+            } else {
+                switch (propObject.physicsType) {
+                    case "FIXED":
+                        this._physicsType = PocketCode.MovementStyle.FIXED;
+                        break;
+                    case "DYNAMIC":
+                        this._physicsType = PocketCode.MovementStyle.DYNAMIC;
+                        break;
+                    default:
+                        this._physicsType = PocketCode.MovementStyle.NONE;
+                        break;
+                }
+            }
         }
 
         SetPhysicsObjectTypeBrick.prototype._execute = function () {
             //TODO:
+            this._sprite.movementStyle = this._physicsType;
             this._return(false);
         };
 
