@@ -551,22 +551,23 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
 
     var done1 = assert.async();
 
+    var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite);
+    var b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld);
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPhysicsObjectTypeBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "SetPhysicsObjectTypeBrick", "objClassName check");
 
     assert.equal(b._physicsType, PocketCode.MovementStyle.NONE, "default style: no bouncing: not defined");
-    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, { physicsType: "FIXED" });
+    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "FIXED" });
     assert.equal(b._physicsType, PocketCode.MovementStyle.FIXED, "style: fixed");
-    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, { physicsType: "DYNAMIC" });
+    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "DYNAMIC" });
     assert.equal(b._physicsType, PocketCode.MovementStyle.DYNAMIC, "style: dynamic");
-    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, { physicsType: "non-existent type" });
+    b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "non-existent type" });
     assert.equal(b._physicsType, PocketCode.MovementStyle.NONE, "default style: no bouncing: non-existent type");
 
     //execute
