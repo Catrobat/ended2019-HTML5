@@ -10,9 +10,8 @@ PocketCode.PhysicsWorld = (function () {
         this._physicsSprites = {};
         this._registeredCollisions = {};
 
-        //TODO: default value in pocketCode?
-        this._gravityX = 1;
-        this._gravityY = 1;
+        this._gravityX = 0.0;
+        this._gravityY = -10.0;
         this._collisionManager = gameEngine.collisionManager;
         this._gameEngine = gameEngine;
     }

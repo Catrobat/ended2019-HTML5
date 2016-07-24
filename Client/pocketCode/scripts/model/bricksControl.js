@@ -278,8 +278,8 @@ PocketCode.Model.merge({
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            var collider = propObject.any ? 'any' : propObject.spriteId;
-            physicsWorld.subscribeCollision(sprite.id, collider, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
+            var spriteId2 = propObject.any ? 'any' : propObject.spriteId;
+            physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
         }
 
         WhenCollisionBrick.prototype.merge({

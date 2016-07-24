@@ -1225,13 +1225,13 @@ PocketCode.Model.PhysicsSprite = (function () {
 
         PocketCode.Model.Sprite.call(this, gameEngine, propObject);
 
-        //todo check default values
-        this._mass = 0;
+        this._mass = 1.0;
+        this._density = 1.0;
         this._movementStyle = PocketCode.MovementStyle.NONE;
         this._velocityX = 0;
         this._velocityY = 0;
-        this._friction = 0;
-        this._bounceFactor = 0;
+        this._friction = 0.2;
+        this._bounceFactor = 0.8;
         this._turnNDegreePerSecond = 0;
     }
 
