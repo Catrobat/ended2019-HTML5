@@ -458,7 +458,7 @@ PocketCode.Model.merge({
                 this._return(false);
 
             this._sprite.setVelocity(x, y);
-            this._return();
+            this._return(false);
         };
 
         return SetVelocityBrick;
@@ -480,8 +480,8 @@ PocketCode.Model.merge({
             if(isNaN(degreesPerSecond))
                 this._return(false);
 
-            this._sprite.turnNDegreePerSecond(-degreesPerSecond);
-            this._return();
+            this._sprite.turnNDegreePerSecond = -degreesPerSecond;
+            this._return(false);
         };
 
         return TurnLeftSpeedBrick;
@@ -503,8 +503,8 @@ PocketCode.Model.merge({
             if(isNaN(degreesPerSecond))
                 this._return(false);
 
-            this._sprite.turnNDegreePerSecond(degreesPerSecond);
-            this._return();
+            this._sprite.turnNDegreePerSecond = degreesPerSecond;
+            this._return(false);
         };
 
         return TurnRightSpeedBrick;
@@ -551,7 +551,7 @@ PocketCode.Model.merge({
                 this._return(false);
 
             this._sprite.mass = mass;
-            this._return();
+            this._return(false);
         };
 
         return SetMassBrick;
@@ -574,7 +574,7 @@ PocketCode.Model.merge({
                 this._return(false);
 
             this._sprite.bounceFactor = bounceFactor;
-            this._return();
+            this._return(false);
         };
 
         return SetBounceFactorBrick;
@@ -596,7 +596,7 @@ PocketCode.Model.merge({
                 this._return(false);
 
             this._sprite.friction = friction;
-            this._return();
+            this._return(false);
         };
 
         return SetFrictionBrick;
