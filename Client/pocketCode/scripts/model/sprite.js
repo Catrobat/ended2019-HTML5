@@ -1275,8 +1275,8 @@ PocketCode.Model.PhysicsSprite = (function () {
 
     //methods
     PhysicsSprite.prototype.merge({
-        setGravity: function(value) {
-            this._gameEngine.setGravity(value);
+        setGravity: function(x, y) {
+            this._gameEngine.setGravity(x, y);
         },
         setVelocity: function (x, y) {
             this._velocityX = x;

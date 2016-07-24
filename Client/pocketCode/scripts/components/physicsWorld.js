@@ -9,18 +9,19 @@ PocketCode.PhysicsWorld = (function () {
     function PhysicsWorld(gameEngine) {
         this._physicsSprites = {};
         this._registeredCollisions = {};
-        this._gravity = 1;
+        this._gravityX = 1;
+        this._gravityY = 1;
         //todo maybe just ge?
         this._collisionManager = gameEngine.collisionManager;
     }
 
     //properties
     Object.defineProperties(PhysicsWorld.prototype, {
-        gravity: {
-            set: function (value) {
-                this._gravity = value;
-            }
-        }
+        // gravity: {
+        //     set: function (value) {
+        //         this._gravity = value;
+        //     }
+        // }
     });
 
     //events
@@ -84,6 +85,10 @@ PocketCode.PhysicsWorld = (function () {
                     }
                 }
             }
+        },
+        setGravity: function (x, y) {
+            this._gravityX = x;
+            this._gravityY = y;
         }
     });
 

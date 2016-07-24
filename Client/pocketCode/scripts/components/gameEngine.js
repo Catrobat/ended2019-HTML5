@@ -569,7 +569,9 @@ PocketCode.GameEngine = (function () {
                 this._onTabbedAction.dispatchEvent({ sprite: sprite });
 
         },
-
+        setGravity: function (x, y) {
+            this._physicsWorld.setGravity(x, y);
+        },
         /* override */
         dispose: function () {
             if (this._disposed)
