@@ -13,7 +13,6 @@ PocketCode.PhysicsWorld = (function () {
         this._gravityX = 0.0;
         this._gravityY = -10.0;
         this._collisionManager = gameEngine.collisionManager;
-        this._gameEngine = gameEngine;
     }
 
     //properties
