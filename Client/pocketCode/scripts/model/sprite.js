@@ -1238,9 +1238,6 @@ PocketCode.Model.PhysicsSprite = (function () {
     //properties
     Object.defineProperties(PhysicsSprite.prototype, {
         mass: {
-            get: function() {
-                return this._mass;
-            },
             set: function (value) {
                 this._mass = value
             }
@@ -1251,9 +1248,6 @@ PocketCode.Model.PhysicsSprite = (function () {
             }
         },
         friction: {
-            get: function() {
-                return this._friction;
-            },
             set: function (value) {
                 this._friction = value
             }

@@ -1842,6 +1842,47 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 
         done();
     };
-
 });
 
+QUnit.test("Sprite: physics", function (assert) {
+
+    var gameEngine = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, { id: "id", name: "name" });
+
+    //setter/getter tests
+    var value = 234;
+    sprite.mass = value;
+    assert.equal(sprite._mass, value, "mass set correctly");
+
+    value = 213;
+    sprite.turnNDegreePerSecond = value;
+    assert.equal(sprite._turnNDegreePerSecond, value, "turnNDegreePerSecond set correctly");
+
+    value = 42;
+    sprite.friction = value;
+    assert.equal(sprite._friction, value, "friction set correctly");
+
+    value = 1;
+    sprite.bounceFactor = value;
+    assert.equal(sprite._bounceFactor, value, "bounceFactor set correctly");
+
+    sprite.movementStyle = value;
+    assert.equal(sprite._movementStyle, value, "movementStyle set correctly");
+
+    var x = 23;
+    var y = 234;
+    var setGravityCalled = false;
+    sprite._gameEngine.setGravity = function (gravityX, gravityY) {
+        setGravityCalled = gravityX === x && gravityY === y;
+    };
+
+    sprite.setGravity(x, y);
+    assert.ok(setGravityCalled, "set gravity sets gravity in GE");
+
+    x = 84;
+    y = 2;
+
+    sprite.setVelocity(x, y);
+    assert.equal(sprite._velocityX, x, "velocityX set correctly");
+    assert.equal(sprite._velocityY, y, "velocityY set correctly");
+});
