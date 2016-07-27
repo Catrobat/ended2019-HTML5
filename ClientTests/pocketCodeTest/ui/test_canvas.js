@@ -306,6 +306,22 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(canvas._scalingX, scalingX, "scalingX set correctly.");
         assert.equal(canvas._scalingY, scalingY, "scalingY set correctly.");
 
+        var screenshotCanvas = document.createElement('canvas');
+        var screenshotCanvasContext = screenshotCanvas.getContext('2d');
+
+        screenshotCanvas.width = 80;
+        screenshotCanvas.height = 40;
+        screenshotCanvasContext.fillStyle = '#ffffff';
+        screenshotCanvasContext.fillRect(0, 0, screenshotCanvas.width, screenshotCanvas.height);
+
+        canvas.setDimensions(80, 40, 1, 1);
+        canvas.render();
+
+        // draw the image at pc-canvas coordinates on standard canvas
+        var imageWidth = renderingImageOpaque._width, imageHeight = renderingImageOpaque._height;
+        screenshotCanvasContext.drawImage(renderingImageOpaque._cacheCanvas,-imageWidth/ 2.0, -imageHeight / 2.0);
+        assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
+
         canvas.dispose();
         assert.equal(canvas._disposed, true, "disposed");
 
