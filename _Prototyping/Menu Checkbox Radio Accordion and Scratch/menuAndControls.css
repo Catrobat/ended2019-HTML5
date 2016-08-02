@@ -17,7 +17,7 @@
 
 [dir='rtl'] .pc-mainMenu {
 	left: 0;
-	right: auto ;
+	right: auto ; /* important, otherwise overwriting is not working */
 }
 
 .pc-menuContainer {
