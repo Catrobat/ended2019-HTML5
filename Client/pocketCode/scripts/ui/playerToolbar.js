@@ -103,13 +103,6 @@ PocketCode.Ui.merge({
             PocketCode.Menu = new PocketCode.Ui.Menu();
             var button1 = new PocketCode.Ui.MenuItem("example");
             console.log( PocketCode.I18nProvider);
-            var lang_arr = PocketCode.I18nProvider._supportedLanguages; // array of supported languages
-            console.log( lang_arr );
-            console.log( "size" + lang_arr.length );
-            for( var i = 0; i < lang_arr.size; i++ ) {
-                var btn = new PocketCode.Ui.MenuItem(i);
-                PocketCode.Menu.appendChild( btn );
-            }
 
             PocketCode.Menu.appendChild( button1 );
             //this.MenuDisabled = false;

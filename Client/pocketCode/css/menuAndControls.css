@@ -25,6 +25,10 @@
 	color: #D3D3D3;
 }
 
+[dir='rtl'] .pc-mainMenu {
+	left: 132px;
+}
+
 .pc-menuContainer {
 	display: inline-block;
 	vertical-align: middle;
@@ -51,6 +55,11 @@
 		background: transparent;
 		float: right;
 	}
+
+[dir='rtl'] .pc-menu .pc-menuTitle {
+
+	float: left;
+}
 
 .pc-menu, .gh-sublayer {
 	display: inline;
