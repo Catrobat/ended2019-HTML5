@@ -105,8 +105,26 @@ PocketCode.I18nProvider = (function (propObject) {
                     throw new Error('invalid language file');
             }
             this._supportedLanguages = languages;
+            console.log( languages );
+
+            // Add menu elements
+            for( i = 0; i < languages.length; i++ ) {
+                (function () {
+                    var btn;
+                    var lang = languages[i];
+
+                    btn = new PocketCode.Ui.MenuItem(lang.uiString);
+                    btn.onClick.addEventListener(new SmartJs.Event.EventListener(function () {
+                        PocketCode.I18nProvider.loadDictionary(lang.languageCode)
+                    }));
+
+                    PocketCode.Menu.appendChild(btn);
+                }());
+            }
         },
         loadDictionary: function (rfc3066) {
+            console.log( "try to load new dictionary" );
+            console.log( rfc3066 );
             if (rfc3066)
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N, SmartJs.RequestMethod.GET, { rfc3066: rfc3066 });
             else

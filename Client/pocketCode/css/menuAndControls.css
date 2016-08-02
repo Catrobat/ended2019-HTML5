@@ -8,16 +8,18 @@
 	}
 
 	.pc-topElement {
-		width: 400px;
-		margin: 10px auto 30px auto;
+		margin: 0 0 0 0;
 		text-align: left;
-		background: blue;
+		height: 38px;
+		width: 38px;
 	}
 
 .pc-mainMenu {
-	position: absolute;
+	/*position: absolute;
 	top: 1px;
-	right: 0;
+	right: 0;*/
+	position: relative;
+	left: -132px;
 	z-index: 99999;
 	zoom: 1;
 	color: #D3D3D3;
@@ -28,7 +30,7 @@
 	vertical-align: middle;
 	position: relative;
 	white-space: nowrap;
-	margin: 0 3px;
+	margin: 0 0;
 }
 
 .pc-menu {
@@ -37,15 +39,16 @@
 
 	.pc-menu .pc-menuTitle {
 		position: relative;
-		padding: 5px 10px 6px;
+		padding: 0;
+		padding-right: 2px;
 		display: inline-block;
 		border: 1px solid transparent;
 		border-width: 1px 1px 0;
 		text-decoration: none !important;
-		border-color: #484848;
+		border-color: transparent;
 		border-radius: 2px 2px 0 0;
 		z-index: 10000;
-		background: #303030;
+		background: transparent;
 		float: right;
 	}
 
@@ -61,7 +64,7 @@
 		margin-top: -1px;
 		float: right;
 		background: #303030;
-		border: 1px solid #484848;
+		border: 0 solid #484848;
 		border-radius: 2px 0px 2px 2px;
 	}
 
@@ -80,6 +83,7 @@
 }
 
 .pc-menuSymbol {
+	margin-right: 0 !important;
 
 }
 

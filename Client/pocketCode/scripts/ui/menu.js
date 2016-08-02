@@ -27,7 +27,7 @@ PocketCode.Ui.Menu = (function () {
 
 
     //var img_tag = new SmartJs.Ui.Image({ style: { width: '100%' } });
-    var img_tag = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.MENU, null, false);
+    var img_tag = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.MENU, null, false, true);
     img_tag.className += ' pc-menuSymbol';
 
     var topContainer = new SmartJs.Ui.ContainerControl({ className: 'pc-menuAlign' });
@@ -110,11 +110,11 @@ PocketCode.Ui.Menu = (function () {
     },
     _resizeHandler: function (e) {
       console.log('resize...');
-      console.log( this._menuLabel.height );
+      //console.log( this._menuLabel.height );
       var availableHeight = document.documentElement.clientHeight - this._menuLabel.height - 20;
       var minHeight = this._minHeight - (this._menuLabel.height);
 
-      console.log(availableHeight);
+      //console.log(availableHeight);
       if (availableHeight > minHeight)
         this._container.style.maxHeight = availableHeight + 'px';
       else

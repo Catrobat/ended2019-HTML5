@@ -30,6 +30,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
         }
+        console.log( this );
         this.appendChild(this._toolbar);
 
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();

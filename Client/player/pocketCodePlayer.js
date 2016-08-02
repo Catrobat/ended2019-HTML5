@@ -281,6 +281,13 @@ PocketCode.Web = {
 							'</svg>';
 			this.muteButton = btn;
 
+
+			//var menu = new PocketCode.Ui.Menu();
+			// var menu2 = PocketCode.Ui.Menu();
+			// var m = PocketCode.Web.ExitButton();
+			//console.log( this );
+			//this.menuButton = btn;
+
 			//this._dom
 			var overlay = document.createElement('div');
 			overlay.className = 'pc-webOverlay';
@@ -877,6 +884,7 @@ PocketCode.Web = {
 		        this._addDomListener(ol.muteButton, 'touchend', this._muteHandler);
 		        this._webOverlay = ol;
 
+
 		        ol.appendControl(this._splashScreen);
 		        var fapi = PocketCode.Web.FullscreenApi;
 		        fapi.onFullscreenChange = function (state) {
@@ -1100,6 +1108,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/button.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/input.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/menu.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/scrollContainer.js', type: 'js' },
