@@ -344,6 +344,7 @@
 		right: 0;
 	}
 
+
 /* menu toolbar & buttons */
 .pc-playerMenuContainer {
 	display: table;
@@ -352,10 +353,10 @@
 	font-family: Arial, sans-serif;
 }
 
-	.pc-playerMenuContainer button {
-		font-style: inherit;
-		font-size: inherit;
-	}
+.pc-playerMenuContainer button {
+	font-style: inherit;
+	font-size: inherit;
+}
 
 .pc-playerMenuV .pc-playerMenuContainer {
 	top: 0px;
@@ -401,13 +402,13 @@
 	vertical-align: bottom;
 }
 
-	.pc-playerButton:focus {
-		outline: none;
-	}
+.pc-playerButton:focus {
+	outline: none;
+}
 
-	.pc-playerButton::-moz-focus-inner {
-		border: 0;
-	}
+.pc-playerButton::-moz-focus-inner {
+	border: 0;
+}
 
 .pc-playerMenuV .pc-menuBigButton {
 	margin-left: -1.1em;
@@ -479,11 +480,11 @@
 	border-color: #ef7716;
 }
 
-	.pc-playerButtonChecked:hover {
-		color: #E8CCB9;
-		fill: #E8CCB9;
-		border-color: #E8CCB9;
-	}
+.pc-playerButtonChecked:hover {
+	color: #E8CCB9;
+	fill: #E8CCB9;
+	border-color: #E8CCB9;
+}
 
 
 /* player viewport view*/
@@ -497,7 +498,7 @@
 }
 
 
-/* canvas 
+/* canvas
 .pc-canvas {
 	border: 0;
 	padding: 0;
@@ -576,23 +577,23 @@
 	border: solid 1px #282828;
 }
 
-	.pc-dialogBody .pc-dialogContent {
-		padding-top: 14px;
-		padding-bottom: 14px;
-		cursor: default;
-		overflow: hidden;
-	}
+.pc-dialogBody .pc-dialogContent {
+	padding-top: 14px;
+	padding-bottom: 14px;
+	cursor: default;
+	overflow: hidden;
+}
 
-	.pc-dialogBody .pc-dialogContent ul {
-		list-style-type: square;
-		padding-left: 18px;
-		padding-right: 0px;
-		margin-top: 4px;
-		margin-bottom: 8px;
-	}
-	.pc-dialogBody .pc-dialogContent ul li {
-		list-style-position: outside;
-	}
+.pc-dialogBody .pc-dialogContent ul {
+	list-style-type: square;
+	padding-left: 18px;
+	padding-right: 0px;
+	margin-top: 4px;
+	margin-bottom: 8px;
+}
+.pc-dialogBody .pc-dialogContent ul li {
+	list-style-position: outside;
+}
 
 .pc-dialogFooter {
 	border: solid 1px #282828;
@@ -601,35 +602,36 @@
 	float: none;
 }
 
-	.pc-dialogFooter button {
-		height: 100%;
-		color: inherit;
-		font-size: 13px;
-		font-weight: bold;
-		cursor: pointer;
-		padding: 0;
-		margin: 0;
-	}
+.pc-dialogFooter button {
+	height: 100%;
+	color: inherit;
+	font-size: 13px;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 0;
+	margin: 0;
+}
 
-		.pc-dialogFooter button:hover {
-			text-decoration: underline;
-		}
-		.pc-dialogFooter button:active {
-			text-decoration: underline;
-			background-color: #2F7D99;
-		}
-		.pc-dialogFooter button:focus {
-			outline: none;
-		}
-		.pc-dialogFooter button:disabled {
-			color: #484848;
-			cursor: default;
-			text-decoration: none;
-		}
+.pc-dialogFooter button:hover {
+	text-decoration: underline;
+}
+.pc-dialogFooter button:active {
+	text-decoration: underline;
+	background-color: #2F7D99;
+}
+.pc-dialogFooter button:focus {
+	outline: none;
+}
+.pc-dialogFooter button:disabled {
+	color: #484848;
+	cursor: default;
+	text-decoration: none;
+}
 
-		.pc-dialogFooter button::-moz-focus-inner {
-			border: 0;
-		}
+.pc-dialogFooter button::-moz-focus-inner {
+	border: 0;
+}
+
 
 /* scroll container: iScroll */
 .iScrollVerticalScrollbar {
@@ -641,6 +643,10 @@
 	top: 2px;
 	right: 3px;
 	overflow: hidden;
+}
+
+[dir='rtl'] .iScrollVerticalScrollbar {
+	left: 3px;
 }
 
 .iScrollIndicator {
