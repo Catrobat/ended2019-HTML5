@@ -89,8 +89,8 @@ PocketCode.GameEngine = (function () {
                 //var imgs = this._background ? [this._background.renderingImage] : [],
                 //    sprites = this._sprites,
                 //    ri;
-                var imgs = [this._background.renderingImage],
-                    sprites = this._sprites;
+                var imgs = [this._currentScene.background.renderingImage],
+                    sprites = this._currentScene.sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)// {
                     //ri = sprites[i].renderingImage;
                     //if (ri.look)    //ignore sprites without looks
@@ -103,9 +103,9 @@ PocketCode.GameEngine = (function () {
         renderingTexts: {
             get: function () {
                 var vars = this.renderingVariables;  //global
-                if (this._background)
-                    vars = vars.concat(this._background.renderingVariables);
-                var sprites = this._sprites;
+                if (this._currentScene.background)
+                    vars = vars.concat(this._currentScene.background.renderingVariables);
+                var sprites = this._currentScene.sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)
                     vars = vars.concat(sprites[i].renderingVariables);
                 return vars;
@@ -250,6 +250,7 @@ PocketCode.GameEngine = (function () {
             //resource sizes
             this._resourceTotalSize = 0;
             this._resourceLoadedSize = 0;
+            var i, l;
             for (i = 0, l = jsonProject.images.length; i < l; i++) {
                 this._resourceTotalSize += jsonProject.images[i].size;
             }
@@ -292,22 +293,28 @@ PocketCode.GameEngine = (function () {
             //     this._collisionManager.dispose();
             // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
-            if (jsonProject.background) {
-                this._background = this._spriteFactory.create(jsonProject.background);
-                this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-            }
-            var sp = jsonProject.sprites;
-            var sprite, i, l;
-            for (i = 0, l = sp.length; i < l; i++) {
-                sprite = this._spriteFactory.create(sp[i]);
-                sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-                this._sprites.push(sprite);
-                this._originalSpriteOrder.push(sprite);
-            }
+            //todo for all scenes
+            //todo collisionManager per scene
+            var scene = new PocketCode.Scene(this._spriteFactory, this._collisionManager);
+            scene.load(jsonProject);
+            this._currentScene = scene;
+
+            // if (jsonProject.background) {
+            //     this._background = this._spriteFactory.create(jsonProject.background);
+            //     this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            // }
+            // var sp = jsonProject.sprites;
+            // var sprite, i, l;
+            // for (i = 0, l = sp.length; i < l; i++) {
+            //     sprite = this._spriteFactory.create(sp[i]);
+            //     sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            //     this._sprites.push(sprite);
+            //     this._originalSpriteOrder.push(sprite);
+            // }
 
             //add sprites created to collisionManager
-            this._collisionManager.background = this._background;
-            this._collisionManager.sprites = this._sprites; //TODO: should we try to work with renderingImages inside CM (we currently do not store them)?
+            // this._collisionManager.background = this._background;
+            // this._collisionManager.sprites = this._sprites; //TODO: should we try to work with renderingImages inside CM (we currently do not store them)?
         },
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
@@ -332,8 +339,8 @@ PocketCode.GameEngine = (function () {
         },
         _initSprites: function () {
             // init sprites after all looks were loaded (important for look offsets)
-            var bg = this._background,
-                sprites = this._sprites;
+            var bg = this._currentScene._background,
+                sprites = this._currentScene._sprites;
 
             if (bg) {
                 bg.initLooks();
@@ -517,27 +524,27 @@ PocketCode.GameEngine = (function () {
 
         //brick-sprite interaction
         getSpriteById: function (spriteId) {
-            var sprites = this._sprites;
+            var sprites = this._currentScene.sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
                     return sprites[i];
             }
 
-            if (this._background && spriteId == this._background.id)
-                return this._background;
+            if (this._currentScene.background && spriteId == this._currentScene.background.id)
+                return this._currentScene.background;
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
                 return 0;
-            var idx = this._sprites.indexOf(sprite);
+            var idx = this._currentScene.sprites.indexOf(sprite);
             if (idx < 0)
                 throw new Error('sprite not found: getSpriteLayer');
             return idx + 1;
         },
         setSpriteLayerBack: function (sprite, layers) {
-            var sprites = this._sprites;
+            var sprites = this._currentScene.sprites;
             var idx = sprites.indexOf(sprite);
             if (idx == 0)
                 return false;
@@ -552,7 +559,7 @@ PocketCode.GameEngine = (function () {
             return true;
         },
         setSpriteLayerToFront: function (sprite) {
-            var sprites = this._sprites;
+            var sprites = this._currentScene.sprites;
             if (sprites.indexOf(sprite) === sprites.length - 1)
                 return false;
             var count = sprites.remove(sprite);
@@ -597,7 +604,8 @@ PocketCode.GameEngine = (function () {
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
 
             delete this._originalSpriteOrder;
-            var sprites = this._sprites;
+            //todo unneeded
+            var sprites = this._currentScene._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
             }
