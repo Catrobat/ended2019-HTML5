@@ -11,6 +11,7 @@ PocketCode.CollisionManager = (function () {
         this._background = undefined;
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
+        this._registeredCollisions = {};
 
         //this._onCollision = new SmartJs.Event.Event(this);  //maybe another event strategy is neede here, e.g. subscribe with handler?
     }
@@ -27,6 +28,7 @@ PocketCode.CollisionManager = (function () {
             set: function (sprites) {
                 //TODO: validation
                 this._sprites = sprites;
+                
                 //TODO: add event listener to onSpriteUiChange: this is a shared event between gameEngine and sprite- maybe we have to rethink our implementation
                 //we have to check for spriteId, look, visible, rotation, x, y, ? event arguments in the handler
             },
@@ -48,16 +50,16 @@ PocketCode.CollisionManager = (function () {
             this._projectScreenWidth = width;
             this._projectScreenHeight = height;
         },
-        subscribe: function (sprite1, sprite2, handler) {
-            var anything = sprite2 ? true : false;
-            //TODO: subscribe a collisions check: make sure (sprite1 vs sprite2) -> handler1 & (sprite2 vs sprite1) -> handler2 does not check the collision twice before calling both handlers 
-        },
         _publish: function () {
             //private here: call registered handlers on collisions
         },
-        checkRegisteredCollisions: function (/* TODO */) {    //called to periodically check registered collisions after movements 
-            //TODO
-            return false;
+        _getSprite: function (spriteId) {
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].id === spriteId)
+                    return sprites[i];
+            }
+            throw new Error('unknown sprite with id: ' + spriteId);
         },
         checkSpritePointerCollision: function (sprite) {
             //TODO
