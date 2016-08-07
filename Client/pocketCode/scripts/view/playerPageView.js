@@ -30,9 +30,17 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
         }
-        console.log( this );
+        //console.log( this );
         this.appendChild(this._toolbar);
-
+        if (PocketCode.Player.Ui.Menu) {    //only loaded for player
+            this._menu = new PocketCode.Player.Ui.Menu();
+            if (SmartJs.Device.isMobile)
+                this.appendChild(this._menu);
+            else {
+                this._menu.addClassName('pc-menuDesktop');  //TODO: add/change class name + ccs styles for desktop
+                this._menu.addToDom();
+            }
+        }
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
         this._startScreen.hide();
@@ -85,6 +93,14 @@ PocketCode.Ui.PlayerPageView = (function () {
         onToolbarButtonClicked: {
             get: function () {
                 return this._toolbar.onButtonClicked;
+            },
+        },
+        onMenuAction: {
+            get: function () {
+                if (this._menu)
+                    return this._menu.onMenuAction;
+                else
+                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
             },
         },
         onStartClicked: {

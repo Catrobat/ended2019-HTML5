@@ -920,13 +920,13 @@ PocketCode.Web = {
 		            return;
 
 		        var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-		        this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066, mobileInitialized);
+		        this._player = new PocketCode.Player.Application(vpc, this._rfc3066, mobileInitialized);
 		        this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		        this._player.onUiDirectionChange.addEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
 		        this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 
 		        if (this._isMobile) {
-		            //this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
+		            //this._player = new PocketCode.Player.Application();//this._splashScreen, this._webOverlay);
 		            //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		            this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
 		            //this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
@@ -944,7 +944,7 @@ PocketCode.Web = {
 		            //	return;
 		            //the whole framework is already loaded
 		            //var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-		            //this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);
+		            //this._player = new PocketCode.Player.Application(vpc, this._rfc3066);
 		            //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		            this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
 		            //this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
@@ -958,7 +958,7 @@ PocketCode.Web = {
 
 		        this._player.dispose();
 		        this._initApplication(true);
-		        //this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
+		        //this._player = new PocketCode.Player.Application(undefined, undefined, true);
 		        //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		        //this._player.loadProject(this._projectId);
 		    },
@@ -1124,6 +1124,7 @@ PocketCode.Web.resources = {
 
 		//TODO: insert player scripts
 		{ url: 'player/scripts/playerApplication.js', type: 'js' },
+		{ url: 'player/scripts/ui/playerMenu.js', type: 'js' },
 	],
 };
 

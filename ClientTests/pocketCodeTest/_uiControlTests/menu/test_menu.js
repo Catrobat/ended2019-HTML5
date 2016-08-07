@@ -17,7 +17,7 @@ window.onload = function () {
   var button3 = new PocketCode.Ui.MenuItem("example");
   var button32 = new PocketCode.Ui.MenuItem("example32");
 
-  var submenu = new PocketCode.Ui.SubMenu();
+  //var submenu = new PocketCode.Ui.SubMenu();
 
 
 

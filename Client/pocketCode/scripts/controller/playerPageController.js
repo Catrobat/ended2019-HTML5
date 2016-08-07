@@ -15,6 +15,7 @@ PocketCode.PlayerPageController = (function () {
 
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
+        this._view.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
@@ -180,6 +181,16 @@ PocketCode.PlayerPageController = (function () {
                     }
                     break;
                 default:
+            }
+        },
+        _menuActionHandler: function(e) {
+            switch (e.command) {
+                case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
+                    PocketCode.I18nProvider.loadDictionary(e.language);
+                    break;
+                case PocketCode.Player.MenuCommand.TERMS_OF_USE:
+                    //TODO: Julia
+                    break;
             }
         },
         _spriteClickedHandler: function (e) {

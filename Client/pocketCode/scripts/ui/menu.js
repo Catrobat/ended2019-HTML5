@@ -1,6 +1,3 @@
-/**
- * Created by Michael Pittner on 17.06.2016.
- */
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
