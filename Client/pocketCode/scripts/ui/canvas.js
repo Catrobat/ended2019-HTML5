@@ -34,7 +34,7 @@ PocketCode.Ui.Canvas = (function () {
         this._scalingY = 1.0;
 
         //handling click/touch/multi-touch
-        this._activeTouchEvents = {};
+        this._activeTouchEvents = [];
 
         //events
         this._onRenderingImageTouched = new SmartJs.Event.Event(this);
@@ -174,10 +174,41 @@ PocketCode.Ui.Canvas = (function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
+        _getTouchData: function (e) {
+            var pointer;
+            if (!e.touches) {   //mouse event
+                pointer = this._getTouchEventPosition(e);
+                return [{ id: 'm' + (e.which || e.button), x: pointer.x, y: pointer.y }];
+            }
+            //else: touch event
+            var touch,
+                touches = e.changedTouches,
+                touchData = [];
+            for (var i = 0, l = touches.length; i < l; i++) {
+                touch = touches[i];
+                pointer = this._getTouchEventPosition(e, touch);
+                touchData.push({ id: 't' + touch.identifier, x: pointer.x, y: pointer.y });
+            }
+            return touchData;
+        },
         _touchStartHandler: function (e) {
             e.preventDefault();
             e.stopPropagation();    //TODO: use .offsetX for mouse events (check support)
 
+            var touchData = this._getTouchData(e);
+            for (var i = 0, l = touchData.length; i < l; i++) {
+                this._activeTouchEvents.push(touchData[i].id);
+                this._onTouchStart.dispatchEvent(touchData[i]);
+            }
+
+            if (e.touches || e.which == 1 || e.button == 0)
+                for (var i = 0, l = touchData.length; i < l; i++) {
+                    //this._checkRenderingImageClicked(pointer);
+                    var target = this._getTargetAt({ x: touchData[i].x, y: touchData[i].y });
+                    if (target) {
+                        this._onRenderingImageTouched.dispatchEvent(touchData[i].merge({ targetId: target.id }));
+                    }
+                }
 
             //TODO: map system event to custom event
             // touchStart does not only listen for left-mouseButton events
@@ -209,7 +240,7 @@ PocketCode.Ui.Canvas = (function () {
             //check: rendering image clicked
 
 
-            this._touchHandler(this._onTouchStart,e,true);
+            //this._touchHandler(this._onTouchStart, e, true);
 
 
 
@@ -222,131 +253,143 @@ PocketCode.Ui.Canvas = (function () {
             e.preventDefault();
             e.stopPropagation();
 
-            this._touchHandler(this._onTouchMove,e,false);
+            if (!e.touches && !(e.which || e.button))
+                return; //move event, no button pressed
+
+            var touchData = this._getTouchData(e);
+            for (var i = 0, l = touchData.length; i < l; i++)
+                if (this._activeTouchEvents.indexOf(touchData[i].id) >= 0)
+                    this._onTouchMove.dispatchEvent(touchData[i]);
+
             return false;
         },
         _touchEndHandler: function (e) {
             e.preventDefault();
             e.stopPropagation();
-            //TODO: map system event to custom event
 
-            this._touchHandler(this._onTouchEnd,e,false);
+            var touchData = this._getTouchData(e);
+            for (var i = 0, l = touchData.length; i < l; i++)
+                if (this._activeTouchEvents.indexOf(touchData[i].id) >= 0) {
+                    this._activeTouchEvents.remove(touchData[i].id);
+                    this._onTouchEnd.dispatchEvent(touchData[i]);
+                }
+
             return false;
         },
 
-        _touchHandler:function(eventHandle,e,checkRenderingImage){
+        //_touchHandler: function (eventHandle, e, checkRenderingImage) {
 
-            var mouseKey = this._getMouseKeyPressed(e);
+        //    var mouseKey = this._getMouseKeyPressed(e);
 
-            if(mouseKey){
-                var pointer = this._getTouchEventPosition(e);
-                eventHandle.dispatchEvent({id:'m'+mouseKey,x:pointer.x,y:pointer.y});
+        //    if (mouseKey) {
+        //        var pointer = this._getTouchEventPosition(e);
+        //        eventHandle.dispatchEvent({ id: 'm' + mouseKey, x: pointer.x, y: pointer.y });
 
-                if(this._isTouchEvent(e) && checkRenderingImage){
-                    this._checkRenderingImageClicked(pointer);//TODO: should be called for left-mouseButton or touch events only
+        //        if (this._isTouchEvent(e) && checkRenderingImage) {
+        //            this._checkRenderingImageClicked(pointer);//TODO: should be called for left-mouseButton or touch events only
 
-                }
-            }
+        //        }
+        //    }
 
-            else if (SmartJs.Device.isTouch && e.touches){
-                var coordinates = [];
-                for(var i=0; i<e.touches.length;i++){
-                    var touch = e.touches[i];
-                    var pointer =this._getTouchEventPosition(e,touch);
-                    coordinates.push(pointer);
+        //    else if (SmartJs.Device.isTouch && e.touches) {
+        //        var coordinates = [];
+        //        for (var i = 0; i < e.touches.length; i++) {
+        //            var touch = e.touches[i];
+        //            var pointer = this._getTouchEventPosition(e, touch);
+        //            coordinates.push(pointer);
 
-                    if(this._isTouchEvent(e)){
-                        this._checkRenderingImageClicked(pointer);//TODO: should be called for left-mouseButton or touch events only
+        //            if (this._isTouchEvent(e)) {
+        //                this._checkRenderingImageClicked(pointer);//TODO: should be called for left-mouseButton or touch events only
 
-                    }
-                }
-                if(coordinates.length > 1 ){
-                    eventHandle.dispatchEvent({id:'multitouch',coordinates:coordinates});
-                }
+        //            }
+        //        }
+        //        if (coordinates.length > 1) {
+        //            eventHandle.dispatchEvent({ id: 'multitouch', coordinates: coordinates });
+        //        }
 
-                    else if ( coordinates.length  == 1) {
-                    eventHandle.dispatchEvent({id:'touch',x:coordinates[0].x,y:coordinates[0].y});
-                }
-                else{
-                    // do nothing :)
-                }
+        //        else if (coordinates.length == 1) {
+        //            eventHandle.dispatchEvent({ id: 'touch', x: coordinates[0].x, y: coordinates[0].y });
+        //        }
+        //        else {
+        //            // do nothing :)
+        //        }
 
-            }
+        //    }
 
-        },
-        _checkRenderingImageClicked: function (pointer) {
-            //TODO: make sure to move code to the handler calling this method as soon it is implemented (do we need this method after refactoring?)
-
-
-
-            var target = this._getTargetAt(pointer);
-            if (target) {
-                this._onRenderingImageTouched.dispatchEvent({id: target.id, x: pointer.x, y:pointer.y});
-            }
-
-        },
-
-        _isTouchEvent(e){
-
-           var mouseKey = this._getMouseKeyPressed(e);
-            var isLeftClick = mouseKey === 'left';
-            if (isLeftClick  || SmartJs.Device.isTouch) {
-                return true;
-            }
-            return false;
-        },
-
-        _getMouseKeyPressed(e){
-
-            var hasWhich = 'which' in e;
-            if(hasWhich){
-                switch(e.which){
-                    case 0:
-                        return false;
-                    case 1:
-                    {
-                        return 'left';
-                    }
-                    case 2:{
-                        return 'middle';
-                    }
-                    case 3: {
-                        return 'right';
-                    }
-                    default:{
-                        return false;
-                    }
-
-                }
-            }
-            else {
-                switch (e.button){
-                    case 0:{
-                        return 'left';
-                    }
-                    case 1: {
-                        return 'middle';
-                    }
-                    case 2: {
-                        return 'right';
-                    }
-                    default:{
-                        return false;
-                    }
-                }
-            }
-
-        },
+        //},
+        //_checkRenderingImageClicked: function (pointer) {
+        //    //TODO: make sure to move code to the handler calling this method as soon it is implemented (do we need this method after refactoring?)
 
 
 
-        _getTouchEventPosition: function(e,touch){
+        //    var target = this._getTargetAt(pointer);
+        //    if (target) {
+        //        this._onRenderingImageTouched.dispatchEvent({ targetId: target.id, x: pointer.x, y: pointer.y });
+        //    }
+
+        //},
+
+        //_isTouchEvent(e) {
+
+        //    var mouseKey = this._getMouseKeyPressed(e);
+        //    var isLeftClick = mouseKey === 'left';
+        //    if (isLeftClick || SmartJs.Device.isTouch) {
+        //        return true;
+        //    }
+        //    return false;
+        //},
+
+        //_getMouseKeyPressed(e) {
+
+        //    var hasWhich = 'which' in e;
+        //    if (hasWhich) {
+        //        switch (e.which) {
+        //            case 0:
+        //                return false;
+        //            case 1:
+        //                {
+        //                    return 'left';
+        //                }
+        //            case 2: {
+        //                return 'middle';
+        //            }
+        //            case 3: {
+        //                return 'right';
+        //            }
+        //            default: {
+        //                return false;
+        //            }
+
+        //        }
+        //    }
+        //    else {
+        //        switch (e.button) {
+        //            case 0: {
+        //                return 'left';
+        //            }
+        //            case 1: {
+        //                return 'middle';
+        //            }
+        //            case 2: {
+        //                return 'right';
+        //            }
+        //            default: {
+        //                return false;
+        //            }
+        //        }
+        //    }
+
+        //},
+
+
+
+        _getTouchEventPosition: function (e, touch) {
             var pointerX,// = this._lowerCanvasEl.width / 2.0,
                 pointerY;// = this._lowerCanvasEl.height / 2.0;
             var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
 
-            if (SmartJs.Device.isTouch && touch != undefined ) {
+            if (SmartJs.Device.isTouch && touch != undefined) {
                 pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
                 pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
             }
@@ -445,6 +488,12 @@ PocketCode.Ui.Canvas = (function () {
         dispose: function () {
             this._removeDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
             this._removeDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mousemove', this._touchMoveHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchmove', this._touchMoveHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mouseup', this._touchEndHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mouseout', this._touchEndHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchend', this._touchEndHandler);
+
             SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
         }
     });
