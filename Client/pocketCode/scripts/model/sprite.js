@@ -17,6 +17,13 @@ PocketCode.RotationStyle = {
     ALL_AROUND: 'all around',
 };
 
+PocketCode.MovementStyle = {
+    NONE: 'no bouncing',
+    FIXED: 'others bounce off it',
+    DYNAMIC: 'bouncing with gravity'
+};
+
+
 PocketCode.Model.Sprite = (function () {
     Sprite.extends(PocketCode.UserVariableHost, false);
 
@@ -1210,4 +1217,64 @@ PocketCode.Model.Sprite = (function () {
     });
 
     return Sprite;
+})();
+
+PocketCode.Model.PhysicsSprite = (function () {
+    PhysicsSprite.extends(PocketCode.Model.Sprite, false);
+    function PhysicsSprite(gameEngine, propObject) {
+
+        PocketCode.Model.Sprite.call(this, gameEngine, propObject);
+
+        this._mass = 1.0;
+        this._density = 1.0;
+        this._movementStyle = PocketCode.MovementStyle.NONE;
+        this._velocityX = 0;
+        this._velocityY = 0;
+        this._friction = 0.2;
+        this._bounceFactor = 0.8;
+        this._turnNDegreePerSecond = 0;
+    }
+
+    //properties
+    Object.defineProperties(PhysicsSprite.prototype, {
+        mass: {
+            set: function (value) {
+                this._mass = value
+            }
+        },
+        turnNDegreePerSecond: {
+            set: function (value) {
+                this._turnNDegreePerSecond = value;
+            }
+        },
+        friction: {
+            set: function (value) {
+                this._friction = value
+            }
+        },
+        bounceFactor: {
+            set: function(value) {
+                this._bounceFactor = value;
+            }
+        },
+        movementStyle: {
+            set: function(value) {
+                this._movementStyle = value;
+                //todo
+            }
+        }
+    });
+
+    //methods
+    PhysicsSprite.prototype.merge({
+        setGravity: function(x, y) {
+            this._gameEngine.setGravity(x, y);
+        },
+        setVelocity: function (x, y) {
+            this._velocityX = x;
+            this._velocityY = y;
+        }
+    });
+
+    return PhysicsSprite;
 })();

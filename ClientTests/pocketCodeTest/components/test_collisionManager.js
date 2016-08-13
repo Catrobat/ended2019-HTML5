@@ -70,6 +70,5 @@ QUnit.test("CollisionManager", function (assert) {
     collision = cm.checkSpriteEdgeCollision(0, 0, boundary);
     assert.deepEqual(collision, { occurs: true, overflow: { top: 1, right: 2, bottom: 3, left: 4 } }, "check with collision incl. pixelAccuracy: all sides");
 
-    assert.ok(false, "TODO");
-
+    
 });

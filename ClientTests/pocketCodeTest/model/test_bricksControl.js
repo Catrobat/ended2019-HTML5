@@ -451,7 +451,8 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
 
 QUnit.test("WhenCollisionBrick", function (assert) {
 
-    var b = new PocketCode.Model.WhenCollisionBrick("device", "sprite", {});
+    var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
+    var b = new PocketCode.Model.WhenCollisionBrick("device", "sprite", physicsWorld, {});
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  //TODO: add new properties
     assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
