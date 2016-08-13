@@ -31,7 +31,6 @@ PocketCode.PhysicsWorld = (function () {
             this._physicsSprites[spriteId] = physicsEnabled;
         },
         subscribeCollision: function (sprite1, sprite2, listener) {
-            console.log(sprite1, sprite2, listener);
             if(!sprite1 || !sprite2 || !listener)
                 return;
 
