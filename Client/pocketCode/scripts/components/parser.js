@@ -738,7 +738,7 @@ PocketCode.merge({
                         if (uiString)
                             return 'year';
 
-                        return '(new Date()).getDay() + 1';
+                        return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':    //TODO
                         if (uiString)
@@ -769,6 +769,31 @@ PocketCode.merge({
                     //        return 'timer';
 
                     //    return 'this._sprite.projectTimerValue';
+
+                    //geo location
+                    case 'LATITUDE':
+                        if (uiString)
+                            return 'latitude';  //TODO: check UI string
+
+                        return 'this._device.geoLatitude';
+
+                    case 'LONGITUDE':
+                        if (uiString)
+                            return 'longitude';  //TODO: check UI string
+
+                        return 'this._device.geoLongitude';
+
+                    case 'ALTITUDE':
+                        if (uiString)
+                            return 'altitude';  //TODO: check UI string
+
+                        return 'this._device.geoAltitude';
+
+                    case 'ACCURACY':
+                        if (uiString)
+                            return 'accuracy';  //TODO: check UI string
+
+                        return 'this._device.geoAccuracy';
 
                     //physics
                     case 'OBJECT_X_VELOCITY':

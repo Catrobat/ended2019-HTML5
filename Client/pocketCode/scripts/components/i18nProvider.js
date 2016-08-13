@@ -35,6 +35,10 @@ PocketCode.I18nProvider = (function (propObject) {
             "lblProjectLoadingErrorCaption": "Loading failed",
             "msgProjectLoadingError": "There was an error loading the project's resources.",
             //TODO: only add strings required if i18n strings fail to load at startup
+
+            //new:
+            "lblDeviceGeoLocation": "? device feature geo location ?",
+            //TODO: make sure to add btnTermsOfUse or other buttons for menu
         };  
 
         this._supportedLanguages = [];

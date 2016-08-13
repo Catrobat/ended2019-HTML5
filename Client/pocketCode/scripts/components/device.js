@@ -76,6 +76,11 @@ PocketCode.Device = (function () {
                 inUse: false,
                 supported: false,
             },
+            GEO_LOCATION: {
+                i18nKey: 'lblDeviceGeoLocation',
+                inUse: false,
+                supported: navigator.geolocation ? true : false,
+            },
         };
 
         this._sensorData = {
@@ -88,6 +93,14 @@ PocketCode.Device = (function () {
             //X_ROTATION_RATE: 0.0,
             //Y_ROTATION_RATE: 0.0,
             //LOUDNESS: 0.0,
+        };
+
+        this._geoLocationData = {
+            INITIALIZED: false,
+            LATITUDE: 0,
+            LONGITUDE: 0,
+            ALTITUDE: 0,
+            ACCURACY: 0,
         };
 
         //bind events
@@ -132,7 +145,7 @@ PocketCode.Device = (function () {
             },
         },
         mobileLockRequired: {
-            get: function() {
+            get: function () {
                 if (!this.isMobile)
                     return false;
                 var tmp = this._features
@@ -426,6 +439,31 @@ PocketCode.Device = (function () {
                 return 0.0; //not supported
             },
         },
+        //geo location
+        geoLatitude: {
+            get: function () {
+                this._initGeoLocation();
+                return this._geoLocationData.LATITUDE;
+            },
+        },
+        geoLongitude: {
+            get: function () {
+                this._initGeoLocation();
+                return this._geoLocationData.LONGITUDE;
+            },
+        },
+        geoAltitude: {
+            get: function () {
+                this._initGeoLocation();
+                return this._geoLocationData.ALTITUDE;
+            },
+        },
+        geoAccuracy: {
+            get: function () {
+                this._initGeoLocation();
+                return this._geoLocationData.ACCURACY;
+            },
+        },
     });
 
     //methods
@@ -510,6 +548,25 @@ PocketCode.Device = (function () {
         _orientationChangeHandler: function () {
             this._windowOrientation = window.orientation;
         },
+        _initGeoLocation: function () {
+            this._features.GEO_LOCATION.inUse = true;
+
+            if (navigator.geolocation)
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {   //success handler
+                        var coords = position.coords;
+                        this._geoLocationData = {
+                            INITIALIZED: true,
+                            LATITUDE: coords.latitude,
+                            LONGITUDE: coords.longitude,
+                            ALTITUDE: coords.altitude,  //already in meters
+                            ACCURACY: coords.accuracy,  //already in meters
+                        };
+                    }//,
+                    //function () {   //error handler
+                    //}
+                );
+        },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
             if (typeof duration != 'number') //isNaN('') = false
@@ -525,7 +582,7 @@ PocketCode.Device = (function () {
             this._features.ARDUINO.inUse = true;
             return 0.0; //not supported
         },
-        getArduinoDigitalPin: function(pin) {
+        getArduinoDigitalPin: function (pin) {
             this._features.ARDUINO.inUse = true;
             return 0.0; //not supported
         },
@@ -756,6 +813,26 @@ PocketCode.DeviceEmulator = (function () {
                 if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
             }
+        },
+        /* override */
+        _initGeoLocation: function () {
+            this._features.GEO_LOCATION.inUse = true;
+
+            if (navigator.geolocation && !this._geoLocationData.INITIALIZED)    //we only request the geoLocation once on desktop
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {   //success handler
+                        var coords = position.coords;
+                        this._geoLocationData = {
+                            INITIALIZED: true,
+                            LATITUDE: coords.latitude,
+                            LONGITUDE: coords.longitude,
+                            ALTITUDE: coords.altitude,  //already in meters
+                            ACCURACY: coords.accuracy,  //already in meters
+                        };
+                    }//,
+                    //function () {   //error handler
+                    //}
+                );
         },
         /* override */
         dispose: function () {
