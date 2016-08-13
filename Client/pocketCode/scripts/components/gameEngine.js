@@ -390,7 +390,8 @@ PocketCode.GameEngine = (function () {
         },
 
         _deviceOnSpaceKeyDownHandler: function (e) {
-            this._onTabbedAction.dispatchEvent({ sprite: this._background });
+            if (this._executionState === PocketCode.ExecutionState.RUNNING)
+                this._onTabbedAction.dispatchEvent({ sprite: this._background });
         },
         //project interaction
         runProject: function (reinitSprites) {
