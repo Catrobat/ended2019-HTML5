@@ -128,6 +128,18 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(canvas._renderingTexts[0], renderingText, "renderingTexts: setter");
         canvas.renderingTexts = [];
 
+        var width = canvas.width;
+        assert.throws(function () { canvas.width = "invalid"; }, Error, "ERROR: width setter");
+        canvas.width = 45;
+        assert.equal(canvas.width, 45, "width: getter/setter");
+        canvas.width = width;
+
+        var height = canvas.height;
+        assert.throws(function () { canvas.height = "invalid"; }, Error, "ERROR: height setter");
+        canvas.height = 50;
+        assert.equal(canvas.height, 50, "height: getter/setter");
+        canvas.height = height;
+
         //_getTargetAt
         var scalingAppliedToPointer = false;
 
@@ -190,62 +202,53 @@ QUnit.test("Canvas", function (assert) {
         canvas._renderingImages = previousRenderingObjects;
         canvas.scale(previousScaling.x, previousScaling.y);
 
-        // onRenderingImageTouched tests
-        var onRiTouchedTriggered = 0, getTargetCalled = 0;
-        canvas._getTargetAt = function () {
-            getTargetCalled++;
-            return { id: 'testTarget' };
+        //event tests
+        var imageTouchedEventArgs,
+            touchStartEventArgs,
+            touchMoveEventArgs,
+            touchEndEventArgs;
+
+        canvas.onRenderingImageTouched.dispatchEvent = function (e) {
+            imageTouchedEventArgs = e;
         };
-        canvas.onRenderingImageTouched.dispatchEvent = function () {
-            onRiTouchedTriggered++;
+        canvas.onTouchStart.dispatchEvent = function (e) {
+            touchStartEventArgs = e;
+        };
+        canvas.onTouchMove.dispatchEvent = function (e) {
+            touchMoveEventArgs = e;
+        };
+        canvas.onTouchEnd.dispatchEvent = function (e) {
+            touchEndEventArgs = e;
         };
 
-        var isTouchDevice = SmartJs.Device.isTouch;
-        SmartJs.Device.isTouch = false;
+        canvas._touchStartHandler({ button: 2, clientX: 0, clientY: 0, preventDefault: function () { }, stopPropagation: function () { } });   //mouse
+        assert.equal(touchStartEventArgs.id, "m2", "touch start: mouse");
+        assert.ok(canvas._activeTouchEvents.indexOf("m2") >= 0, "touch start added: mouse");
+        canvas._touchStartHandler({ changedTouches: [{ identifier: 2, clientX: 0, clientY: 0 }], touches: [{ identifier: 2, clientX: 0, clientY: 0 }], preventDefault: function () { }, stopPropagation: function () { } });   //tab
+        assert.equal(touchStartEventArgs.id, "t2", "touch start: touch");
+        assert.ok(canvas._activeTouchEvents.indexOf("t2") >= 0, "touch start added: touch");
 
-        var event = {};
-        canvas._checkRenderingImageClicked(event);
+        canvas._activeTouchEvents = []; //reset
+        canvas._touchStartHandler({ changedTouches: [{ identifier: 2, clientX: 40, clientY: 20 }], touches: [{ identifier: 2, clientX: 0, clientY: 0 }], preventDefault: function () { }, stopPropagation: function () { } });   //tab
+        assert.equal(imageTouchedEventArgs.targetId, "id1", "image touched");
 
-        assert.strictEqual(onRiTouchedTriggered, 0, 'onMouseDown was not triggered by event without left click');
-        assert.strictEqual(getTargetCalled, 0, 'does not search for a target if no left click registered');
+        canvas._touchMoveHandler({ button: 2, clientX: 0, clientY: 0, preventDefault: function () { }, stopPropagation: function () { } });   //mouse move
+        assert.equal(touchMoveEventArgs, undefined, "mouse move: not registered");
 
-        event.button = 1;
+        canvas._activeTouchEvents.push("m2");   //init mouse clicked
+        canvas._touchMoveHandler({ button: 2, clientX: 0, clientY: 0, preventDefault: function () { }, stopPropagation: function () { } });   //mouse move
+        assert.equal(touchMoveEventArgs.id, "m2", "mouse move: registered");
 
-        canvas._checkRenderingImageClicked(event);
-        assert.strictEqual(onRiTouchedTriggered, 1, 'onMouseDown triggered if button in event is 1');
-        assert.strictEqual(onRiTouchedTriggered, 1, 'searchTargets triggered if button in event is 1');
+        canvas._touchMoveHandler({ button: 2, clientX: -60, clientY: -60, preventDefault: function () { }, stopPropagation: function () { } });   //mouse out
+        assert.equal(touchEndEventArgs.id, "m2", "mose move: out");
+        assert.ok(canvas._activeTouchEvents.indexOf("m2") == -1, "mouse event removed from active events list");
 
-        event.button = 0;
-        canvas._checkRenderingImageClicked(event);
-        assert.strictEqual(onRiTouchedTriggered, 1, 'onMouseDown not triggered if button in event is 0');
-        assert.strictEqual(onRiTouchedTriggered, 1, 'searchTargets not triggered if button in event is 0');
+        canvas._activeTouchEvents.push("m2");   //init mouse clicked
+        touchMoveEventArgs = undefined;
+        canvas._touchMoveHandler({ which: 0, clientX: 0, clientY: 0, preventDefault: function () { }, stopPropagation: function () { } });   //mouse move
+        assert.equal(touchMoveEventArgs, undefined, "mouse move without button pressed");
 
-        event.which = 1;
-        canvas._checkRenderingImageClicked(event);
-        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
-        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown triggered if "which" in event is 1');
 
-        event.which = 0;
-        event.button = 1;
-        canvas._checkRenderingImageClicked(event);
-        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
-        assert.strictEqual(onRiTouchedTriggered, 2, 'onMouseDown not triggered if "which" in event is not 1 (no matter what button is set)');
-
-        SmartJs.Device.isTouch = true;
-        event = { touches: [{}] };
-        canvas._checkRenderingImageClicked(event);
-
-        assert.strictEqual(onRiTouchedTriggered, 3, 'onMouseDown triggered if touch event');
-
-        //restore to previous setting
-        SmartJs.Device.isTouch = isTouchDevice;
-
-        canvas.height = 45;
-        assert.equal(canvas.height, 45, "height getter/setter");
-        assert.throws(function () { canvas.height = "45px"; }, Error, "ERROR: height setter argument check");
-        canvas.width = 25;
-        assert.equal(canvas.width, 25, "width getter/setter");
-        assert.throws(function () { canvas.width = "45px"; }, Error, "ERROR: width setter argument check");
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.setDimensions(80, 40, viewportScaling, viewportScaling);

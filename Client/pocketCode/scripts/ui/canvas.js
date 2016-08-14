@@ -7,8 +7,6 @@
 'use strict';
 
 
-//TODO:
-//helpful? http://www.html5rocks.com/de/mobile/touch/
 PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
@@ -185,14 +183,13 @@ PocketCode.Ui.Canvas = (function () {
                         this._onRenderingImageTouched.dispatchEvent(touchData[i].merge({ targetId: target.id }));
                     }
                 }
-
             return false;
         },
         _touchMoveHandler: function (e) {
             e.preventDefault();
             e.stopPropagation();
 
-            if (!e.touches && !(e.which || e.button))
+            if (!e.changedTouches && !e.which && isNaN(e.button))
                 return; //move event, no button pressed
 
             var touchData = this._getTouchData(e);
@@ -238,21 +235,19 @@ PocketCode.Ui.Canvas = (function () {
 
             return false;
         },
-
         _getTouchEventPosition: function (e, touch) {
             var pointerX,
                 pointerY;
             var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
 
-
-            if (SmartJs.Device.isTouch && touch != undefined) {
-                pointerX = touch.clientX ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
-                pointerY = -(touch.clientY ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            if (touch != undefined) {
+                pointerX = touch.clientX != undefined ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+                pointerY = -(touch.clientY != undefined ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
             }
             else {
                 boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
-                pointerX = e.clientX ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
-                pointerY = -(e.clientY ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //or: include scroll offsets to make sure this control also works in another app/page
+                pointerX = e.clientX != undefined ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
+                pointerY = -(e.clientY != undefined ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //or: include scroll offsets to make sure this control also works in another app/page
             }
 
             var pointer = {
@@ -310,7 +305,6 @@ PocketCode.Ui.Canvas = (function () {
 
             ctx.restore();
         },
-
         toDataURL: function (width, height) {
             var currentWidth = this.width,
                 currentHeight = this.height;
