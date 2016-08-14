@@ -27,6 +27,21 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () {
             window.setTimeout(this._updateCanvasSize.bind(this), 120);
         }, this));
+
+        //canvas events
+        this._onUserAction = new SmartJs.Event.Event(this);
+        this._canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_CLICKED }));
+        }, this));
+        this._canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_START }));
+        }, this));
+        this._canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_MOVE }));
+        }, this));
+        this._canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(function (e) {
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_END }));
+        }, this));
     }
 
     //properties
@@ -50,12 +65,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     // events
     Object.defineProperties(PlayerViewportView.prototype, {
-        onSpriteClicked: {
+        onUserAction: {
             get: function () {
-                return this._canvas.onRenderingImageTouched;
+                return this._onUserAction;
             }
         },
-
     });
 
     //methods

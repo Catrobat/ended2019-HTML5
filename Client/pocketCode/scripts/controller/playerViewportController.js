@@ -49,9 +49,9 @@ PocketCode.PlayerViewportController = (function () {
 
     //events
     Object.defineProperties(PlayerViewportController.prototype, {
-        onSpriteClicked: {
+        onUserAction: {
             get: function () {
-                return this._view.onSpriteClicked;
+                return this._view.onUserAction;
             },
         },
     });

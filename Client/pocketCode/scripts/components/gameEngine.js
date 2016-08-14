@@ -564,11 +564,26 @@ PocketCode.GameEngine = (function () {
             this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
             return true;
         },
-        handleSpriteTap: function (id) {
-            var sprite = this.getSpriteById(id);
-            if (sprite)
-                this._onTabbedAction.dispatchEvent({ sprite: sprite });
-
+        handleUserAction: function (e) {
+            var id = e.id,
+                x = e.x,
+                y = e.y;
+            switch (e.action) {
+                case PocketCode.UserActionType.SPRITE_CLICKED:
+                    var sprite = this.getSpriteById(e.targetId);
+                    if (sprite)
+                        this._onTabbedAction.dispatchEvent({ sprite: sprite });
+                    break;
+                case PocketCode.UserActionType.TOUCH_START:
+                    //TODO
+                    break;
+                case PocketCode.UserActionType.TOUCH_Move:
+                    //TODO
+                    break;
+                case PocketCode.UserActionType.TOUCH_END:
+                    //TODO
+                    break;
+            }
         },
         setGravity: function (x, y) {
             this._physicsWorld.setGravity(x, y);

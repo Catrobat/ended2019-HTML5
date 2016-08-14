@@ -188,7 +188,6 @@ PocketCode.Ui.Canvas = (function () {
 
             return false;
         },
-
         _touchMoveHandler: function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -197,6 +196,15 @@ PocketCode.Ui.Canvas = (function () {
                 return; //move event, no button pressed
 
             var touchData = this._getTouchData(e);
+            if (!e.touches) {   //get all data for mouse events
+                var mouseData = [];
+                for (var i = 0, l = this._activeTouchEvents.length; i < l; i++) {
+                    var id = this._activeTouchEvents[i];
+                    if (id[0] == 'm')
+                        mouseData.push({ id: id, x: touchData[0].x, y: touchData[0].y });
+                }
+                touchData = mouseData;
+            }
             for (var i = 0, l = touchData.length; i < l; i++) {
                 if (Math.abs(touchData[i].x) > this._lowerCanvasEl.width * 0.5 / this._scalingX ||
                     Math.abs(touchData[i].y) > this._lowerCanvasEl.height * 0.5 / this._scalingY) {  //ouside
@@ -213,6 +221,15 @@ PocketCode.Ui.Canvas = (function () {
             e.stopPropagation();
 
             var touchData = this._getTouchData(e);
+            if (!e.touches) {   //get all data for mouse events
+                var mouseData = [];
+                for (var i = 0, l = this._activeTouchEvents.length; i < l; i++) {
+                    var id = this._activeTouchEvents[i];
+                    if (id[0] == 'm')
+                        mouseData.push({ id: id, x: touchData[0].x, y: touchData[0].y });
+                }
+                touchData = mouseData;
+            }
             for (var i = 0, l = touchData.length; i < l; i++)
                 if (this._activeTouchEvents.indexOf(touchData[i].id) >= 0) {
                     this._activeTouchEvents.remove(touchData[i].id);
@@ -242,7 +259,7 @@ PocketCode.Ui.Canvas = (function () {
                 x: pointerX / this._scalingX,
                 y: pointerY / this._scalingY,
             };
-            
+
             return pointer;
         },
         _getTargetAt: function (point) {

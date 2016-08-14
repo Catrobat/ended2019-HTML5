@@ -18,7 +18,7 @@ QUnit.test("PlayerViewportController", function (assert) {
 
     // check instance types
     assert.ok(controller instanceof PocketCode.PlayerViewportController, "Instance check");
-    assert.ok(controller.onSpriteClicked instanceof SmartJs.Event.Event, "Clicked Event check");
+    assert.ok(controller.onUserAction instanceof SmartJs.Event.Event, "Clicked Event check");
 
     // check screen size
     var screenWidth = 100;
