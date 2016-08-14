@@ -269,8 +269,8 @@ PocketCode.merge({
                 if (!this._originalCanvas || !this.visible || (this._width === 0 && this._height === 0))
                     return false;
 
-                var w2 = this._scaling * this._width / 2.0,
-                    h2 = this._scaling * this._height / 2.0,
+                var w2 = this._scaling * this._width * 0.5,
+                    h2 = this._scaling * this._height * 0.5,
                     top = this.y + h2,
                     right = this.x + w2,
                     bottom = this.y - h2,
@@ -310,7 +310,7 @@ PocketCode.merge({
                     ctx.shadowBlur = 0.5;
                     ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
                 }
-                this._cacheCanvas && ctx.drawImage(this._cacheCanvas, -this._width / 2.0, -this._height / 2.0, this._width, this._height);
+                this._cacheCanvas && ctx.drawImage(this._cacheCanvas, -this._width * 0.5, -this._height * 0.5, this._width, this._height);
                 ctx.restore();
             },
         });

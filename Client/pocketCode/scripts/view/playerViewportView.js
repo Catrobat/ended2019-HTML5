@@ -91,13 +91,13 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
             //size = even int number: without white border (background visible due to sub-pixel rendering)
             var canvas = this._canvas,
-                cw = Math.ceil(ow * scaling / 2.0) * 2.0,
-                ch = Math.ceil(oh * scaling / 2.0) * 2.0;
+                cw = Math.ceil(ow * scaling * 0.5) * 2.0,
+                ch = Math.ceil(oh * scaling * 0.5) * 2.0;
             canvas.setDimensions(cw, ch, scaling, scaling);
             //canvas.style.margin = 'auto'
             if (SmartJs.Device.isMobile) {  //canvas != viewport
-                canvas.style.left = Math.floor((w - cw) / 2.0) + 'px';  //including border
-                canvas.style.top = Math.floor((h - ch) / 2.0) + 'px';
+                canvas.style.left = Math.floor((w - cw) * 0.5) + 'px';  //including border
+                canvas.style.top = Math.floor((h - ch) * 0.5) + 'px';
             }
 
             this.render();
@@ -134,24 +134,24 @@ PocketCode.Ui.PlayerViewportView = (function () {
             ctx.save();
 
             ctx.beginPath();
-            ctx.moveTo(Math.round(width / 2), 0);   //avoid sub pixel rendering
-            ctx.lineTo(Math.round(width / 2), height);
+            ctx.moveTo(Math.round(width * 0.5), 0);   //avoid sub pixel rendering
+            ctx.lineTo(Math.round(width * 0.5), height);
 
-            ctx.moveTo(0, Math.round(height / 2));
-            ctx.lineTo(width, Math.round(height / 2));
+            ctx.moveTo(0, Math.round(height * 0.5));
+            ctx.lineTo(width, Math.round(height * 0.5));
 
             ctx.strokeStyle = color;
             ctx.lineWidth = pixelRatio;
             ctx.font = (12 * pixelRatio) + 'px Arial';
             ctx.fillStyle = color;
             //center
-            ctx.fillText('0', width / 2 + 5, height / 2 + 15);
+            ctx.fillText('0', width * 0.5 + 5, height * 0.5 + 15);
             //width
-            ctx.fillText('-' + this._originalWidth / 2, 5, height / 2 + 15);
-            ctx.fillText(this._originalWidth / 2, width - 25, height / 2 + 15);
+            ctx.fillText('-' + this._originalWidth * 0.5, 5, height * 0.5 + 15);
+            ctx.fillText(this._originalWidth * 0.5, width - 25, height * 0.5 + 15);
             //height
-            ctx.fillText(this._originalHeight / 2, width / 2 + 5, 15);
-            ctx.fillText('-' + this._originalHeight / 2, width / 2 + 5, height - 5);
+            ctx.fillText(this._originalHeight * 0.5, width * 0.5 + 5, 15);
+            ctx.fillText('-' + this._originalHeight * 0.5, width * 0.5 + 5, height - 5);
 
             ctx.stroke();
             ctx.restore();

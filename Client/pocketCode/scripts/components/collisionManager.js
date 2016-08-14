@@ -67,8 +67,8 @@ PocketCode.CollisionManager = (function () {
         },
         checkSpriteEdgeCollision: function (x, y, spriteBoundary) {
             //returns { occurs: true/false, overflow: { top: ?, right: ?, bottom: ?, left: ? } }
-            var sw2 = this._projectScreenWidth / 2.0,
-                sh2 = this._projectScreenHeight / 2.0,
+            var sw2 = this._projectScreenWidth * 0.5,
+                sh2 = this._projectScreenHeight * 0.5,
                 collision = { occurs: false, overflow: {} };
 
             //check

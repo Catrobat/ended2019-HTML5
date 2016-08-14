@@ -1109,14 +1109,14 @@ PocketCode.Model.Sprite = (function () {
 
             if (updateBoundary) {   //if flipped or rotated
                 var centerOffset = {  //store the center position of the current area
-                    x: (boundary.right + boundary.left) / 2.0,
-                    y: (boundary.top + boundary.bottom) / 2.0,
+                    x: (boundary.right + boundary.left) * 0.5,
+                    y: (boundary.top + boundary.bottom) * 0.5,
                 };
 
                 //reposition: keep the AOI center
                 boundary = look.getBoundary(scaling, rotationCW, flipX, true);
-                newX += centerOffset.x - (boundary.right + boundary.left) / 2.0;
-                newY += centerOffset.y - (boundary.top + boundary.bottom) / 2.0;
+                newX += centerOffset.x - (boundary.right + boundary.left) * 0.5;
+                newY += centerOffset.y - (boundary.top + boundary.bottom) * 0.5;
 
                 //update overflows due to new center (x/y position)
                 collision = collisionMgr.checkSpriteEdgeCollision(newX, newY, boundary);

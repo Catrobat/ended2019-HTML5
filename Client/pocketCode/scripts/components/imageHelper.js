@@ -76,8 +76,8 @@ PocketCode.ImageFilter = {
         //    scaleY = srcWidth / srcHeight;
         //}
         //whirlShader.data.whirlRadians.value = [radians];
-        //whirlShader.data.center.value = [srcWidth / 2, srcHeight / 2];
-        //whirlShader.data.radius.value = [Math.min(srcWidth, srcHeight) / 2];
+        //whirlShader.data.center.value = [srcWidth * 0.5, srcHeight * 0.5];
+        //whirlShader.data.radius.value = [Math.min(srcWidth, srcHeight) * 0.5];
         //whirlShader.data.scale.value = [scaleX, scaleY];
         //newFilters.push(new ShaderFilter(whirlShader));
 
@@ -140,7 +140,7 @@ PocketCode.ImageFilter = {
         //// range: -100..infinity
         //n = Math.max(0, (filterDict["fisheye"] + 100) / 100);
         //fisheyeShader.data.scaledPower.value = [n];
-        //fisheyeShader.data.center.value = [srcWidth / 2, srcHeight / 2];
+        //fisheyeShader.data.center.value = [srcWidth * 0.5, srcHeight * 0.5];
         //newFilters.push(new ShaderFilter(fisheyeShader));
 
     //    kernel Fisheye
@@ -606,12 +606,12 @@ PocketCode.ImageHelper = (function () {
             //    if (typeof rotationCenterX !== 'number' || typeof rotationCenterY !== 'number')
             //        throw new Error('if applied, both, rotationCenterX & rotationCenterY have to be numeric');
 
-            //    centerOffsetX = w / 2 - rotationCenterX;
-            //    centerOffsetY = -h / 2 + rotationCenterY;
+            //    centerOffsetX = w * 0.5 - rotationCenterX;
+            //    centerOffsetY = -h * 0.5 + rotationCenterY;
             //}
 
-            centerOffsetX += (trimOffsets.left - trimOffsets.right) / 2;    //offsets between old and new rotation center
-            centerOffsetY += (trimOffsets.bottom - trimOffsets.top) / 2;
+            centerOffsetX += (trimOffsets.left - trimOffsets.right) * 0.5;    //offsets between old and new rotation center
+            centerOffsetY += (trimOffsets.bottom - trimOffsets.top) * 0.5;
 
             var ch = h - trimOffsets.top - trimOffsets.bottom,
                 cw = w - trimOffsets.left - trimOffsets.right;
@@ -642,8 +642,8 @@ PocketCode.ImageHelper = (function () {
                 //bl: { length: undefined, angle: undefined }, 
                 //br: { length: undefined, angle: undefined } };
 
-                var mx = cw / 2,    //new rotation center
-                    my = ch / 2,
+                var mx = cw * 0.5,    //new rotation center
+                    my = ch * 0.5,
                     x = centerOffsetX - mx,
                     y = centerOffsetY + my;
                 returnValue.tl = { length: Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), angle: Math.atan2(y, x) };
@@ -779,12 +779,12 @@ PocketCode.ImageHelper = (function () {
                 canvas.height = ch;
                 canvas.width = cw;
                 var ctx = canvas.getContext('2d');
-                ctx.translate(cw / 2, ch / 2);
+                ctx.translate(cw * 0.5, ch * 0.5);
                 ctx.scale(1.0 / precision, 1.0 / precision);
 
                 if (rotation)
                     ctx.rotate(rotation * Math.PI / 180);
-                ctx.drawImage(element, -w / 2, -h / 2);
+                ctx.drawImage(element, -w * 0.5, -h * 0.5);
                 offsets = this.getDataTrimOffsets(ctx.getImageData(0, 0, cw, ch), true, true, true, true);
             }
 

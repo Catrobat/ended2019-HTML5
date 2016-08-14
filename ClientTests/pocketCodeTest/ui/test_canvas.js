@@ -87,8 +87,8 @@ QUnit.test("Canvas", function (assert) {
         //canvas._lowerCanvasEl.style.position = 'absolute';
 
         //move to top left
-        renderingImageOpaque.x -= canvas.width / 2.0;
-        renderingImageOpaque.y += canvas.height / 2.0;
+        renderingImageOpaque.x -= canvas.width * 0.5;
+        renderingImageOpaque.y += canvas.height * 0.5;
 
         canvas.renderingImages = [renderingImageOpaque];
         canvas.render();
@@ -319,7 +319,7 @@ QUnit.test("Canvas", function (assert) {
 
         // draw the image at pc-canvas coordinates on standard canvas
         var imageWidth = renderingImageOpaque._width, imageHeight = renderingImageOpaque._height;
-        screenshotCanvasContext.drawImage(renderingImageOpaque._cacheCanvas,-imageWidth/ 2.0, -imageHeight / 2.0);
+        screenshotCanvasContext.drawImage(renderingImageOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
         assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
 
         canvas.dispose();
