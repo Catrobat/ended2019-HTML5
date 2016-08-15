@@ -78,7 +78,8 @@ PocketCode.GameEngine = (function () {
         //map the base class (global variable host) to our public event
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
 
-        this._onTabbedAction = new SmartJs.Event.Event(this);
+        this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
+        this._onTouchStartAction = new SmartJs.Event.Event(this);
     }
 
     //properties
@@ -200,8 +201,11 @@ PocketCode.GameEngine = (function () {
         onVariableUiChange: {
             get: function () { return this._onVariableUiChange; },
         },
-        onTabbedAction: {
-            get: function () { return this._onTabbedAction; },
+        onSpriteTabbedAction: {
+            get: function () { return this._onSpriteTabbedAction; },
+        },
+        onTouchStartAction: {
+            get: function () { return this._onTouchStartAction; },
         },
     });
 
@@ -388,10 +392,9 @@ PocketCode.GameEngine = (function () {
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
-
         _deviceOnSpaceKeyDownHandler: function (e) {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
-                this._onTabbedAction.dispatchEvent({ sprite: this._background });
+                this._onSpriteTabbedAction.dispatchEvent({ sprite: this._background });
         },
         //project interaction
         runProject: function (reinitSprites) {
@@ -403,6 +406,7 @@ PocketCode.GameEngine = (function () {
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
+            this._device.clearTouchHistory();
             reinitSprites = reinitSprites || true;
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites == true && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
@@ -494,7 +498,7 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(function () {
                 if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once 
                     return;
-                if (this._onTabbedAction.listenersAttached)
+                if (this._onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
                 if (this._soundManager.isPlaying)
@@ -565,6 +569,9 @@ PocketCode.GameEngine = (function () {
             return true;
         },
         handleUserAction: function (e) {
+            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+                return;
+
             var id = e.id,
                 x = e.x,
                 y = e.y;
@@ -572,17 +579,10 @@ PocketCode.GameEngine = (function () {
                 case PocketCode.UserActionType.SPRITE_CLICKED:
                     var sprite = this.getSpriteById(e.targetId);
                     if (sprite)
-                        this._onTabbedAction.dispatchEvent({ sprite: sprite });
+                        this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
                     break;
-                case PocketCode.UserActionType.TOUCH_START:
-                    //TODO
-                    break;
-                case PocketCode.UserActionType.TOUCH_Move:
-                    //TODO
-                    break;
-                case PocketCode.UserActionType.TOUCH_END:
-                    //TODO
-                    break;
+                default:
+                    this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
             }
         },
         setGravity: function (x, y) {

@@ -44,16 +44,16 @@ PocketCode.Model.merge({
             this._action = propObject.action;
             //listen to 'when tabbed'
             this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
+            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
         }
 
         WhenActionBrick.prototype.merge({
-            _onTabbedHandler: function (e) {
+            _onActionHandler: function (e) {
                 if (e.sprite === this._sprite)
                     this.execute();
             },
             dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onTabbedHandler, this));
+                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },

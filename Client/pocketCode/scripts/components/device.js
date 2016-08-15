@@ -103,6 +103,11 @@ PocketCode.Device = (function () {
             ACCURACY: 0,
         };
 
+        this._touchEvents = {
+            active: {},
+            history: [],
+        };
+
         //bind events
         if (!isNaN(window.orientation)) {
             if (window.DeviceOrientationEvent)
@@ -305,6 +310,28 @@ PocketCode.Device = (function () {
                 return this._soundMgr.volume;
             },
         },
+        //touch
+        //touchX: {
+        //    get: function () {
+        //        return this.getTouchX(this.lastTouchIndex);
+        //    },
+        //},
+        //touchY: {
+        //    get: function () {
+        //        return this.getTouchY(this.lastTouchIndex);
+        //    },
+        //},
+        //isTouched: {
+        //    get: function () {
+        //        return this.isTouched(this.lastTouchIndex);
+        //    },
+        //},
+        lastTouchIndex: {
+            get: function () {
+                return this._touchEvents.history.length;
+            },
+        },
+
         //camera
         selectedCamera: {
             get: function () {
@@ -579,6 +606,42 @@ PocketCode.Device = (function () {
 
             return true;
         },
+        //touch
+        updateTouchEvent: function (type, id, x, y) {
+            switch (type) {
+                case PocketCode.UserActionType.TOUCH_START:
+                    var e = { active: true, x: x, y: y };
+                    this._touchEvents.active[id] = e;
+                    this._touchEvents.history.push(e);
+                    break;
+                case PocketCode.UserActionType.TOUCH_MOVE:
+                    var e = this._touchEvents.active[id];
+                    e.x = x;
+                    e.y = y;
+                    break;
+                case PocketCode.UserActionType.TOUCH_END:
+                    var e = this._touchEvents.active[id];
+                    e.active = false;
+                    delete this._touchEvents.active[id];
+                    break;
+            }
+        },
+        clearTouchHistory: function() {
+            this._touchEvents = {
+                active: {},
+                history: [],
+            };
+        },
+        getTouchX: function (idx) {
+            return this._touchEvents.history[idx - 1].x;
+        },
+        getTouchY: function (idx) {
+            return this._touchEvents.history[idx - 1].y;
+        },
+        isTouched: function (idx) {
+            return this._touchEvents.history[idx - 1].active;
+        },
+
         //arduino
         getArduinoAnalogPin: function (pin) {
             this._features.ARDUINO.inUse = true;
