@@ -10,6 +10,62 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
     }
 
+    protected function parseIfThenLogicBeginBrickScript($script)
+    {
+        $condition = $script->formulaList;
+        array_push($this->cpp, $condition);
+        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        array_pop($this->cpp);
+        return $brick;
+    }
+
+    protected function parseIfThenLogicBeginBrick($brickList, $idx)
+    {
+        $brick = $this->parseIfThenLogicBeginBrickScript($brickList[$idx]);
+        $nestedCounter = 0;
+        $parsed = false;
+
+        //search for associated end brick
+        $innerIfBricks = [];
+        $inElse = false;
+        while($idx < count($brickList) - 1)
+        {
+            //skip begin brick
+            $idx++;
+
+            $name = $this->getBrickType($brickList[$idx]);
+            if($name === "IfThenLogicBeginBrick")
+            {
+                $nestedCounter++;
+            }
+            else if($name === "IfThenLogicEndBrick")
+            {
+                if($nestedCounter === 0)
+                {
+                    //parse recursive
+                    $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
+                    $parsed = true;
+                    $this->bricksCount -= 2;
+                    break;
+                }
+                else
+                {
+                    $nestedCounter--;
+                    array_push($innerIfBricks, $brickList[$idx]);
+                }
+            }
+            else
+            {
+                array_push($innerIfBricks, $brickList[$idx]);
+            }
+        }
+
+        if (!$parsed)
+            throw new InvalidProjectFileException("IfThenLogicBeginBrick: missing IfThenLogicEndBrick");
+
+        return array("brick" => $brick, "idx" => $idx);
+    }
+
     protected function parseFirstLevelBricks($brickType, $script)
     {
         switch($brickType)

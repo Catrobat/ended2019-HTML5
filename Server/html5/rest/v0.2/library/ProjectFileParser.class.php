@@ -572,6 +572,16 @@ class ProjectFileParser
         return array("brick" => $brick, "idx" => $idx);
     }
 
+    protected function parseIfThenLogicBeginBrickScript($script)
+    {
+        //placeHolder only
+    }
+
+    protected function parseIfThenLogicBeginBrick($brickList, $idx)
+    {
+        throw new InvalidProjectFileException("IfThenLogicBeginBrick: not supported in this fIle parser version"); //placeHolder only
+    }
+
     protected function parseIfLogicBeginBrickScript($script)
     {
         $condition = $script->ifCondition;
@@ -688,6 +698,12 @@ class ProjectFileParser
 
                     case "RepeatBrick":
                         $result = $this->parseRepeatBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    case "IfThenLogicBeginBrick":
+                        $result = $this->parseIfThenLogicBeginBrick($brickList, $idx);
                         array_push($bricks, $result["brick"]);
                         $idx = $result["idx"];
                         break;
