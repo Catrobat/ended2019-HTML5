@@ -60,6 +60,17 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_pop($this->cpp);
                 break;
 
+            case "WhenTouchDownScript":
+                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
             //physics
             case "CollisionScript":
                 $msg = (string)$script->receivedMessage;
