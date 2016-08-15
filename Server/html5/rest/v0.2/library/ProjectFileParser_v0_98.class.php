@@ -10,18 +10,168 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
     }
 
-    protected function parseIfThenLogicBeginBrickScript($script)
+    protected function parseForeverBrick($brickList, $idx)
     {
+        $brick = new ForeverBrickDto();
+        //use a counter to compare nested elements with same names, as objects using equal
+        // or operator (===) is not available in simpleXML
+        $nestedCounter = 0;
+        $parsed = false;
+
+        //search for associated end brick
+        $innerBricks = [];
+        while($idx < count($brickList) - 1)
+        {
+            $idx++;
+
+            $name = $this->getBrickType($brickList[$idx]);
+            if($name === "ForeverBrick")
+            {
+                $nestedCounter++;
+            }
+            else if($name === "LoopEndlessBrick")
+            {
+                if($nestedCounter === 0)
+                {
+                    //parse recursive
+                    $brick->bricks = $this->parseInnerBricks($innerBricks);
+                    $parsed = true;
+                    $this->bricksCount -= 1;
+                    break;
+                }
+                else
+                {
+                    $nestedCounter--;
+                    //add inner loop as sub brick
+                    array_push($innerBricks, $brickList[$idx]);
+                }
+            }
+            else
+            {
+                //add sub bricks
+                array_push($innerBricks, $brickList[$idx]);
+            }
+        }
+
+        if(!$parsed)
+        {
+            throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
+        }
+
+        return array("brick" => $brick, "idx" => $idx);
+    }
+
+    protected function parseRepeatBrick($brickList, $idx)
+    {
+        $script = $brickList[$idx];
+        $ttr = $script->timesToRepeat;
+        $brick = new RepeatBrickDto($this->parseFormula($ttr->formulaTree));
+
+        $nestedCounter = 0;
+        $parsed = false;
+
+        //search for associated end brick
+        $innerBricks = [];
+        while($idx < count($brickList) - 1)
+        {
+            $idx++;
+
+            $name = $this->getBrickType($brickList[$idx]);
+            if($name === "RepeatBrick" || $name === "RepeatUntilBrick")
+            {
+                $nestedCounter++;
+            }
+
+            if($name === "LoopEndBrick")
+            {
+                if($nestedCounter === 0)
+                {
+                    //parse recursive
+                    $brick->bricks = $this->parseInnerBricks($innerBricks);
+                    $parsed = true;
+                    $this->bricksCount -= 1;
+                    break;
+                }
+                else
+                {
+                    $nestedCounter--;
+                    //add inner loop as sub brick
+                    array_push($innerBricks, $brickList[$idx]);
+                }
+            }
+            else
+            {
+                //add sub bricks
+                array_push($innerBricks, $brickList[$idx]);
+            }
+        }
+
+        if (!$parsed)
+            throw new InvalidProjectFileException("RepeatBrick: missing LoopEndBrick");
+
+        return array("brick" => $brick, "idx" => $idx);
+    }
+
+    protected function parseRepeatUntilBrick($brickList, $idx)
+    {
+        $script = $brickList[$idx];
         $condition = $script->formulaList;
         array_push($this->cpp, $condition);
-        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        $brick = new RepeatUntilBrickDto($this->parseFormula($condition->formula));
         array_pop($this->cpp);
-        return $brick;
+
+        $nestedCounter = 0;
+        $parsed = false;
+
+        //search for associated end brick
+        $innerBricks = [];
+        while($idx < count($brickList) - 1)
+        {
+            $idx++;
+
+            $name = $this->getBrickType($brickList[$idx]);
+            if($name === "RepeatBrick" || $name === "RepeatUntilBrick")
+            {
+                $nestedCounter++;
+            }
+            else if($name === "LoopEndBrick")
+            {
+                if($nestedCounter === 0)
+                {
+                    //parse recursive
+                    $brick->bricks = $this->parseInnerBricks($innerBricks);
+                    $parsed = true;
+                    $this->bricksCount -= 1;
+                    break;
+                }
+                else
+                {
+                    $nestedCounter--;
+                    //add inner loop as sub brick
+                    array_push($innerBricks, $brickList[$idx]);
+                }
+            }
+            else
+            {
+                //add sub bricks
+                array_push($innerBricks, $brickList[$idx]);
+            }
+        }
+
+        if (!$parsed)
+            throw new InvalidProjectFileException("RepeatUntilBrick: missing LoopEndBrick");
+
+        return array("brick" => $brick, "idx" => $idx);
     }
 
     protected function parseIfThenLogicBeginBrick($brickList, $idx)
     {
-        $brick = $this->parseIfThenLogicBeginBrickScript($brickList[$idx]);
+        $script = $brickList[$idx];
+        $condition = $script->formulaList;
+        array_push($this->cpp, $condition);
+        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        array_pop($this->cpp);
+
         $nestedCounter = 0;
         $parsed = false;
 
@@ -45,7 +195,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                     //parse recursive
                     $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
                     $parsed = true;
-                    $this->bricksCount -= 2;
+                    $this->bricksCount -= 1;
                     break;
                 }
                 else
@@ -64,6 +214,80 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
             throw new InvalidProjectFileException("IfThenLogicBeginBrick: missing IfThenLogicEndBrick");
 
         return array("brick" => $brick, "idx" => $idx);
+    }
+
+    protected function parseInnerBricks($brickList)
+    {
+        try
+        {
+            $bricks = [];
+            $idx = 0;
+
+            while($idx < count($brickList))
+            {
+                //special logic for loops: forever, repeat and if-then-else
+                //to restructure the *.catrobat/code.xml document to our needs
+                $script = $brickList[$idx];
+                if(isset($script["reference"]))
+                {
+                    $brick = $this->getBrickType($script);
+                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                }
+
+                switch($this->getBrickType($script))
+                {
+                    case "ForeverBrick":
+                        $result = $this->parseForeverBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    case "RepeatBrick":
+                        $result = $this->parseRepeatBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    case "RepeatUntilBrick":
+                        $result = $this->parseRepeatUntilBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    case "IfThenLogicBeginBrick":
+                        $result = $this->parseIfThenLogicBeginBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    case "IfLogicBeginBrick":
+                        $result = $this->parseIfLogicBeginBrick($brickList, $idx);
+                        array_push($bricks, $result["brick"]);
+                        $idx = $result["idx"];
+                        break;
+
+                    default:
+                        array_push($bricks, $this->parseScript($script));
+                }
+
+                $idx++;
+            }
+
+            return $bricks;
+        }
+        catch(FileParserException $e)
+        {
+            throw $e;
+        }
+        catch(InvalidProjectFileException $e)
+        {
+            throw $e;
+        }
+        catch(Exception $e)
+        {
+            /** @noinspection PhpUndefinedVariableInspection */
+            throw new FileParserException($e . ", xml: " . $script->asXML());
+        }
     }
 
     protected function parseFirstLevelBricks($brickType, $script)
@@ -158,6 +382,66 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $this->bricksCount += count($brickList->children()) + 1;
                 $brick->bricks = $this->parseInnerBricks($brickList->children());
 
+                array_pop($this->cpp);
+                break;
+
+            default:
+                return false;
+        }
+        return $brick;
+    }
+
+    protected function parseControlBricks($brickType, $script)
+    {
+        switch($brickType)
+        {
+            case "WaitBrick":
+                $duration = $script->formulaList;
+                array_push($this->cpp, $duration);
+                $brick = new WaitBrickDto($this->parseFormula($duration->formula));
+                array_pop($this->cpp);
+                break;
+
+            case "BroadcastBrick":
+                $msg = (string)$script->broadcastMessage;
+                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
+                if($res === false)
+                {
+                    $id = $this->getNewId();
+                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                }
+                else
+                {
+                    $id = $res->id;
+                }
+
+                $brick = new BroadcastBrickDto($id);
+                break;
+
+            case "BroadcastWaitBrick":
+                $msg = (string)$script->broadcastMessage;
+                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
+                if($res === false)
+                {
+                    $id = $this->getNewId();
+                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                }
+                else
+                {
+                    $id = $res->id;
+                }
+
+                $brick = new BroadcastAndWaitBrickDto($id);
+                break;
+
+            case "NoteBrick":
+                $brick = new NoteBrickDto((string)$script->note);
+                break;
+
+            case "WaitUntilBrick":
+                $condition = $script->formulaList;
+                array_push($this->cpp, $condition);
+                $brick = new WaitUntilBrickDto($this->parseFormula($condition->formula));
                 array_pop($this->cpp);
                 break;
 

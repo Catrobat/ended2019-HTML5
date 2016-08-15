@@ -481,7 +481,7 @@ class ProjectFileParser
                 $nestedCounter++;
             }
 
-            if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
+            if($endless && $name === "LoopEndlessBrick" || !$endless && $name === "LoopEndBrick")
             {
                 if($nestedCounter === 0)
                 {
@@ -505,11 +505,11 @@ class ProjectFileParser
             }
         }
 
-        if(! $parsed && $endless)
+        if(!$parsed && $endless)
         {
             throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
         }
-        else if(! $parsed && ! $endless)
+        else if(!$parsed && !$endless)
         {
             throw new InvalidProjectFileException("ForeverBrick: missing LoopEndBrick");
         }
@@ -570,16 +570,6 @@ class ProjectFileParser
             throw new InvalidProjectFileException("RepeatBrick: missing LoopEndBrick");
 
         return array("brick" => $brick, "idx" => $idx);
-    }
-
-    protected function parseIfThenLogicBeginBrickScript($script)
-    {
-        //placeHolder only
-    }
-
-    protected function parseIfThenLogicBeginBrick($brickList, $idx)
-    {
-        throw new InvalidProjectFileException("IfThenLogicBeginBrick: not supported in this fIle parser version"); //placeHolder only
     }
 
     protected function parseIfLogicBeginBrickScript($script)
@@ -698,12 +688,6 @@ class ProjectFileParser
 
                     case "RepeatBrick":
                         $result = $this->parseRepeatBrick($brickList, $idx);
-                        array_push($bricks, $result["brick"]);
-                        $idx = $result["idx"];
-                        break;
-
-                    case "IfThenLogicBeginBrick":
-                        $result = $this->parseIfThenLogicBeginBrick($brickList, $idx);
                         array_push($bricks, $result["brick"]);
                         $idx = $result["idx"];
                         break;
