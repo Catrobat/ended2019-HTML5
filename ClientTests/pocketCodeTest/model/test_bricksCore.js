@@ -380,12 +380,13 @@ QUnit.test("ScriptBlock", function (assert) {
 
     var done1 = assert.async();
 
-    var b = new PocketCode.Model.ScriptBlock("device", "sprite", { x: 10, y: 20 });
+    var b = new PocketCode.Model.ScriptBlock("device", "sprite", { id: "newId", x: 10, y: 20 });
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._x == 10 && b._y == 20, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ScriptBlock && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "ScriptBlock", "objClassName check");
 
+    assert.equal(b.id, "newId", "id accessor");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
 
     //advanced tests using brick with delay
