@@ -388,6 +388,44 @@ PocketCode.Model.merge({
     })(),
 
 
+    WaitUntilBrick: (function () {
+        WaitUntilBrick.extends(PocketCode.Model.LoopBrick, false);
+
+        function WaitUntilBrick(device, sprite, propObject, minLoopCycleTime) {
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+
+            this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+        }
+
+        WaitUntilBrick.prototype.merge({
+            /* override */
+            _loopConditionMet: function () {
+                if (this._condition.calculate())    //break on condition = true
+                    return false;
+                return true;
+            },
+            _endOfLoopHandler: function (e) {
+                var id = e.id;
+                var op = this._pendingOps[id];
+                if (!op)// || op.paused)  //stopped
+                    return;
+                if (this._paused) { //set them paused when end of loop is reached
+                    op.paused = true;
+                    return;
+                }
+
+                if (this._loopConditionMet(id)) {   //bricks checked already in execute()
+                    window.setTimeout(this._execute.bind(this, id), this._minLoopCycleTime);
+                }
+                else
+                    this._return(id);
+            },
+        });
+
+        return WaitUntilBrick;
+    })(),
+
+
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
@@ -421,6 +459,28 @@ PocketCode.Model.merge({
         });
 
         return RepeatBrick;
+    })(),
+
+
+    RepeatUntilBrick: (function () {
+        RepeatUntilBrick.extends(PocketCode.Model.LoopBrick, false);
+
+        function RepeatUntilBrick(device, sprite, propObject, minLoopCycleTime) {
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+
+            this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+        }
+
+        RepeatUntilBrick.prototype.merge({
+            /* override */
+            _loopConditionMet: function () {
+                if (this._condition.calculate())    //break on condition = true
+                    return false;
+                return true;
+            },
+        });
+
+        return RepeatUntilBrick;
     })(),
 
 });

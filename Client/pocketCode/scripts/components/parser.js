@@ -160,7 +160,9 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime);
                         break;
 
+                    case 'WaitUntilBrick':
                     case 'RepeatBrick':
+                    case 'RepeatUntilBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._minLoopCycleTime);
                         break;
 
