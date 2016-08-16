@@ -311,21 +311,6 @@ PocketCode.Device = (function () {
             },
         },
         //touch
-        //touchX: {
-        //    get: function () {
-        //        return this.getTouchX(this.lastTouchIndex);
-        //    },
-        //},
-        //touchY: {
-        //    get: function () {
-        //        return this.getTouchY(this.lastTouchIndex);
-        //    },
-        //},
-        //isTouched: {
-        //    get: function () {
-        //        return this.isTouched(this.lastTouchIndex);
-        //    },
-        //},
         lastTouchIndex: {
             get: function () {
                 return this._touchEvents.history.length;
@@ -633,13 +618,22 @@ PocketCode.Device = (function () {
             };
         },
         getTouchX: function (idx) {
-            return this._touchEvents.history[idx - 1].x;
+            idx--;  //mapping ind = 1..n to 0..(n-1)
+            if (idx < 0 || idx >= this._touchEvents.history.length)
+                return 0.0;
+            return this._touchEvents.history[idx].x;
         },
         getTouchY: function (idx) {
-            return this._touchEvents.history[idx - 1].y;
+            idx--;
+            if (idx < 0 || idx >= this._touchEvents.history.length)
+                return 0.0;
+            return this._touchEvents.history[idx].y;
         },
         isTouched: function (idx) {
-            return this._touchEvents.history[idx - 1].active;
+            idx--;
+            if (idx < 0 || idx >= this._touchEvents.history.length)
+                return false;
+            return this._touchEvents.history[idx].active;
         },
 
         //arduino
