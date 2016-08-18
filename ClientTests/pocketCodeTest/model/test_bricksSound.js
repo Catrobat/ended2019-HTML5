@@ -34,6 +34,14 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
 });
 
+QUnit.test("PlaySoundAndWaitBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    assert.ok(false, "TODO")
+    done1();
+});
+
 QUnit.test("StopAllSoundsBrick", function (assert) {
 
     var done1 = assert.async();
@@ -153,6 +161,14 @@ QUnit.test("SpeakBrick", function (assert) {
     };
     b2.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
 
+});
+
+QUnit.test("SpeakAndWaitBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    assert.ok(false, "TODO")
+    done1();
 });
 
 

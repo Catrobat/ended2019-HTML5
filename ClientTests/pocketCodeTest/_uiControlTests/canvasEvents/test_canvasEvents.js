@@ -9,14 +9,22 @@ gameEngine._imageStore = is;
 var outputContainer;
 //create canvas
 var canvas = new PocketCode.Ui.Canvas();
-canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouch));
-canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouch));
-//canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouch));
-//canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouch));
+canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouched));
+canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouchStart));
+canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouchMove));
+canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouchEnd));
 
-function onTouch(e) {
-
-    outputContainer.innerHTML += ('<br />touch event: id:' + e.id+' x:'+e.x+' y:'+e.y);
+function onTouched(e) {
+    outputContainer.innerHTML = 'touch: targetId:' + e.targetId + ' x:' + e.x + ' y:' + e.y + '<br />' + outputContainer.innerHTML;
+};
+function onTouchStart(e) {
+    outputContainer.innerHTML = 'touchStart: id:' + e.id + ' x:' + e.x + ' y:' + e.y + '<br />' + outputContainer.innerHTML;
+};
+function onTouchMove(e) {
+    outputContainer.innerHTML = 'touchMove: id:' + e.id + ' x:' + e.x + ' y:' + e.y + '<br />' + outputContainer.innerHTML;
+};
+function onTouchEnd(e) {
+    outputContainer.innerHTML = 'touchEnd: id:' + e.id + ' x:' + e.x + ' y:' + e.y + '<br />' + outputContainer.innerHTML;
 };
 
 

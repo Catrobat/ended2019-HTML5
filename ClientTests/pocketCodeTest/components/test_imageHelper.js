@@ -410,7 +410,7 @@ QUnit.test("ImageHelper", function (assert) {
         assert.ok(round1000(x) == 0 && round1000(y) == 0, "calling method using canvas element: resized- make sure there is no trim-area after first trim");
 
         ////individual rotation center applied
-        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
+        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width * 0.5, img9.height * 0.5);
         //oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
         //oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
         //oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);

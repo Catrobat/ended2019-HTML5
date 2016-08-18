@@ -33,31 +33,6 @@ QUnit.test("SetLookBrick", function (assert) {
 
 });
 
-QUnit.test("NextLookBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = "device";
-    var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-
-    var b = new PocketCode.Model.NextLookBrick(device, sprite);
-
-    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.NextLookBrick, "instance check");
-    assert.ok(b.objClassName === "NextLookBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
 QUnit.test("PreviousLookBrick", function (assert) {
 
     var done1 = assert.async();
@@ -65,6 +40,11 @@ QUnit.test("PreviousLookBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var called = false;
+    sprite.previousLook = function () {
+        called = true;
+        return false;   //make sure to return a bool value: look not changed
+    };
 
     var b = new PocketCode.Model.PreviousLookBrick(device, sprite);
 
@@ -75,8 +55,39 @@ QUnit.test("PreviousLookBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.loopDelay, false, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.ok(called, "sprite method called");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+QUnit.test("NextLookBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var called = false;
+    sprite.nextLook = function () {
+        called = true;
+        return true;   //make sure to return a bool value: look changed
+    };
+    var b = new PocketCode.Model.NextLookBrick(device, sprite);
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.NextLookBrick, "instance check");
+    assert.ok(b.objClassName === "NextLookBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.ok(called, "sprite method called");
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");

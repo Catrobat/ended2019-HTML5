@@ -67,8 +67,8 @@ PocketCode.CollisionManager = (function () {
         },
         checkSpriteEdgeCollision: function (x, y, spriteBoundary) {
             //returns { occurs: true/false, overflow: { top: ?, right: ?, bottom: ?, left: ? } }
-            var sw2 = this._projectScreenWidth / 2.0,
-                sh2 = this._projectScreenHeight / 2.0,
+            var sw2 = this._projectScreenWidth * 0.5,
+                sh2 = this._projectScreenHeight * 0.5,
                 collision = { occurs: false, overflow: {} };
 
             //check
@@ -103,11 +103,13 @@ PocketCode.CollisionManager = (function () {
         },
         /* override */
         dispose: function () {
-            this._sprites = []; //do not dispose sprites
+            //do not dispose sprites
+            this._background = undefined;
+            this._sprites = [];
+
             SmartJs.Core.Component.prototype.dispose.call(this);    //call super
         },
     });
-
 
     return CollisionManager;
 })();

@@ -1023,8 +1023,8 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
     gameEngine._originalScreenHeight = 100;
     gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
 
-    var sh2 = gameEngine._originalScreenHeight / 2,
-        sw2 = gameEngine._originalScreenWidth / 2;
+    var sh2 = gameEngine._originalScreenHeight * 0.5,
+        sw2 = gameEngine._originalScreenWidth * 0.5;
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;    //inject image store
 
@@ -1769,8 +1769,8 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         ////test on top/bottom: landscape
         //gameEngine._originalScreenHeight = 50;
         //gameEngine._originalScreenWidth = 100;
-        //sh2 = gameEngine._originalScreenHeight / 2,
-        //sw2 = gameEngine._originalScreenWidth / 2;
+        //sh2 = gameEngine._originalScreenHeight * 0.5,
+        //sw2 = gameEngine._originalScreenWidth * 0.5;
         //gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         ////sprite.size = 200;
 
@@ -1793,8 +1793,8 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 
         gameEngine._originalScreenHeight = 50;
         gameEngine._originalScreenWidth = 50;
-        sh2 = gameEngine._originalScreenHeight / 2,
-        sw2 = gameEngine._originalScreenWidth / 2;
+        sh2 = gameEngine._originalScreenHeight * 0.5,
+        sw2 = gameEngine._originalScreenWidth * 0.5;
         gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
         //top
         sprite.setPositionX(0);
