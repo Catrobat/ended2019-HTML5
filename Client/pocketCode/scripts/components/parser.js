@@ -538,7 +538,7 @@ PocketCode.merge({
                             return 'FALSE';
                         return 'false';
 
-                        //string
+                    //string
                     case 'LENGTH':
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -560,7 +560,7 @@ PocketCode.merge({
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                        //list functions
+                    //list
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -582,6 +582,29 @@ PocketCode.merge({
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
+                    //touch
+                    case 'MULTI_FINGER_X':
+                        if (uiString)
+                            return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'MULTI_FINGER_Y':
+                        if (uiString)
+                            return 'screen_touch_y( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'MULTI_FINGER_TOUCHED':
+                        if (uiString)
+                            return 'screen_is_touched( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    //arduino
                     case 'ARDUINOANALOG':
                         if (uiString)
                             return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
@@ -797,24 +820,6 @@ PocketCode.merge({
                             return 'screen_is_touched';
 
                         return 'this._device.isTouched(this._device.lastTouchIndex)';
-
-                    case 'MULTI_FINGER_X':
-                        if (uiString)
-                            return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-
-                        return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left) + ')';
-
-                    case 'MULTI_FINGER_Y':
-                        if (uiString)
-                            return 'screen_touch_y( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-
-                        return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left) + ')';
-
-                    case 'MULTI_FINGER_TOUCHED':
-                        if (uiString)
-                            return 'screen_is_touched( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
-
-                        return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'LAST_FINGER_INDEX':
                         if (uiString)

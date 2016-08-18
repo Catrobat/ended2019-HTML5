@@ -110,6 +110,15 @@ var logicalOr = { "type": "OPERATOR", "value": "LOGICAL_OR", "right": { "type": 
 var not = { "type": "OPERATOR", "value": "NOT_EQUAL", "right": { "type": "OPERATOR", "value": "LOGICAL_NOT", "right": { "type": "FUNCTION", "value": "TRUE", "right": null, "left": null }, "left": null }, "left": { "type": "FUNCTION", "value": "TRUE", "right": null, "left": null } };
 var greaterOrEqual = { "type": "OPERATOR", "value": "GREATER_OR_EQUAL", "right": { "type": "NUMBER", "value": "3", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "6", "right": null, "left": null } };
 
+//touch 
+var finger_x = { "type": "SENSOR", "value": "FINGER_X", "left": null, "right": null };
+var finger_y = { "type": "SENSOR", "value": "FINGER_Y", "left": null, "right": null };
+var finger_touched = { "type": "SENSOR", "value": "FINGER_TOUCHED", "left": null, "right": null };
+var multi_finger_x = { "type": "FUNCTION", "value": "MULTI_FINGER_X", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": null };
+var multi_finger_y = { "type": "FUNCTION", "value": "MULTI_FINGER_Y", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": null };
+var multi_finger_touched = { "type": "FUNCTION", "value": "MULTI_FINGER_TOUCHED", "left": { "type": "NUMBER", "value": "8", "left": null, "right": null }, "right": null };
+var last_finger_index = { "type": "SENSOR", "value": "LAST_FINGER_INDEX", "left": null, "right": null };
+
 //bool to number conversion
 bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"NUMBER","value":"1","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"2","left":null,"right":null}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"2","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"3","left":null,"right":null}}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"4","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"4","left":null,"right":null}}}}};
 
