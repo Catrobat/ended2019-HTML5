@@ -10,7 +10,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
     }
 
-    protected function parseForeverBrick($brickList, $idx, $endloess)   //the $endloess isn't used anymore in this version
+    protected function parseForeverBrick($brickList, $idx, $endless = false)   //the $endloess isn't used anymore in this version
     {
         $brick = new ForeverBrickDto();
         //use a counter to compare nested elements with same names, as objects using equal
@@ -354,12 +354,12 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
             //physics
             case "CollisionScript":
                 $msg = (string)$script->receivedMessage;
-                $items = explode("<->", $msg);
+                $items = explode(">", $msg);  //"<->"
                 $name = $items[1];
                 //$brick;
-                if ($name == "ANYTHING")
+                if (strpos($name, "ANYTHING") !== false)   //\tANYTHING\t   ->found
                     $brick = new WhenCollisionBrickDto($this->getNewId());
-                else if ($name == "Background")
+                else if (strpos($name, "Background") !== false)
                     $brick = new WhenCollisionBrickDto($this->getNewId(), $this->background->id);
                 else {
                     //find sprite by name
