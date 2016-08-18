@@ -10,7 +10,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         parent::__construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml);
     }
 
-    protected function parseForeverBrick($brickList, $idx)
+    protected function parseForeverBrick($brickList, $idx, $endloess)   //the $endloess isn't used anymore in this version
     {
         $brick = new ForeverBrickDto();
         //use a counter to compare nested elements with same names, as objects using equal
