@@ -160,6 +160,22 @@ PocketCode.Model.merge({
         return IfOnEdgeBounceBrick;
     })(),
 
+    //-------------------------------------------------------------------------------------
+    IfOnSpriteBounceBrick: (function () {
+        IfOnSpriteBounceBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function IfOnSpriteBounceBrick(device, sprite) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+        }
+
+        IfOnSpriteBounceBrick.prototype._execute = function () {
+            this._return(this._sprite.ifOnSpriteBounce());
+        };
+
+        return IfOnSpriteBounceBrick;
+    })(),
+    //-------------------------------------------------------------------------------------
 
     MoveNStepsBrick: (function () {
         MoveNStepsBrick.extends(PocketCode.Model.BaseBrick, false);
