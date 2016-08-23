@@ -9,7 +9,7 @@
 
 	.pc-topElement {
 		margin: 0 0 0 0;
-		text-align: left;
+		text-align: right;
 		height: 38px;
 		width: 38px;
 	}
@@ -19,14 +19,17 @@
 	top: 1px;
 	right: 0;*/
 	position: relative;
-	left: -132px;
+	left: 130px;
+	float: right;
 	z-index: 99999;
 	zoom: 1;
 	color: #D3D3D3;
 }
 
 [dir='rtl'] .pc-mainMenu {
-	left: 132px;
+	float: right;
+	left: auto;
+	right: 232px;
 }
 
 .pc-menuContainer {
@@ -57,7 +60,6 @@
 	}
 
 [dir='rtl'] .pc-menu .pc-menuTitle {
-
 	float: left;
 }
 

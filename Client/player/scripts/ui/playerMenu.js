@@ -21,12 +21,24 @@ PocketCode.Player.merge({
             //cntr
             function Menu(args) {
                 PocketCode.Ui.Menu.call(this);
+                //  if smartjs.device = mobile, dann full-screen-button
+                // bei mobile transparenter hintergrund wie unten
+                //styles anpassen
+                // on resize überschreiben ?!? varifyresize
+                //refactoring namen
+                //parentcontainer rausschmeißen
 
                 this._languageRadioGroup = new PocketCode.Ui.RadioGroup();
                 this._sep = new PocketCode.Ui.MenuSeparator();
                 this.appendChild(this._sep);
-                this._btnTerms = new PocketCode.Ui.MenuItem("termsOfUse");
+                this._btnTerms = new PocketCode.Ui.MenuItem("menutermsOfUse");
                 this.appendChild(this._btnTerms);
+                this._btnImp = new PocketCode.Ui.MenuItem("menuImpressum");
+                this.appendChild(this._btnImp);
+                this._btnHelp = new PocketCode.Ui.MenuItem("menuHelp");
+                this.appendChild(this._btnHelp);
+
+
 
                 //events
                 this._onMenuAction = new SmartJs.Event.Event(this);
@@ -55,9 +67,23 @@ PocketCode.Player.merge({
                     if (this._languageRadioGroup.radios.length == 0) {  //ui buttons not created
                         var langs = PocketCode.I18nProvider.supportedLanguages;
 
+
+                        
+                           this._btnlanguage = new PocketCode.Ui.MenuItem("currentLanguage");
+                            this.appendChild(this._btnlanguage);
+
+                        
+                        //Todo for each language add radio button
+                        //for each: this._insertBefore(*new*, this._sep);
+
+
                     }
-                    //for each: this._insertBefore(*new*, this._sep);
-                    //TODO: rebuilt language menu items or change 
+
+
+                    //TODO: rebuilt language menu items or change
+                    // current language --> radio button selected
+                    //radio button hat UI-string
+                    //String als name, property als value
                 },
                 addToDom: function (domElement) {
                     domElement = domElement || document.body;
