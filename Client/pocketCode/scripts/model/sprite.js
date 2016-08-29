@@ -188,6 +188,7 @@ PocketCode.Model.Sprite = (function () {
                 return this._currentLook;
             },
         },
+
         size: {     //percentage
             get: function () {
                 return Math.round(this._scaling * 100.0);
@@ -208,7 +209,6 @@ PocketCode.Model.Sprite = (function () {
                 return this._colorEffect;
             },
         },
-
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -220,7 +220,6 @@ PocketCode.Model.Sprite = (function () {
                 return this._sounds;
             },
         },
-
         projectTimerValue: {    //used in formula (gameEngine not accessible)
             get: function() {
                 return this._gameEngine.projectTimer.value;
@@ -1196,226 +1195,6 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(props);    //returns false for empty objects
         },
-
-
-        //-----------------------------------------------------------------------------------------------
-        calcOffset: function (sprite1, sprite2) {
-
-            var s1Look = sprite1._currentLook,
-                s1Scaling = sprite1._scaling,
-                s1RotationCW = sprite1.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
-                s1FlipX = sprite1.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false,
-                s2Look = sprite2._currentLook,
-                s2Scaling = sprite2._scaling,
-                s2RotationCW = sprite2.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
-                s2FlipX = sprite2.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
-
-            var s1Boundary = s1Look.getBoundary(s1Scaling, s1RotationCW, s1FlipX, true),
-                s2Boundary = s2Look.getBoundary(s2Scaling, s2RotationCW, s2FlipX, true);
-
-            var offset = {};
-
-            // calculation of the offset
-            // Sprite2 in Sprite1
-            if (s1Boundary.top >= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            // Sprite1 in Sprite2
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with top side of Sprite1
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite1 collides with top side of Sprite2
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with right side of Sprite1
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite1 collides with right side of Sprite2
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with right side of Sprite1 above top side
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite2 collides with right side of Sprite1  under bottom side
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite1 collides with right side of Sprite2 above top side
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite1 collides with right side of Sprite2 under bottom side
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with bottom side of Sprite1
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite1 collides with bottom side of Sprite2
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with left side of Sprite1
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite1 collides with left side of Sprite2
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite2 collides with left side of Sprite1 above top side
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite2 collides with left side of Sprite1  under bottom side
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right >= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left <= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: s1Boundary.right - s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: - s1Boundary.left + s2Boundary.left
-                };
-            }
-            //Sprite1 collides with left side of Sprite2 above top side
-            else if (s1Boundary.top >= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom <= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: s1Boundary.top - s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: - s1Boundary.bottom + s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            //Sprite1 collides with left side of Sprite2 under bottom side
-            else if (s1Boundary.top <= s2Boundary.top & s1Boundary.right <= s2Boundary.right &
-                s1Boundary.bottom >= s2Boundary.bottom & s1Boundary.left >= s2Boundary.left) {
-                offset = {
-                    top: - s1Boundary.top + s2Boundary.top,
-                    right: - s1Boundary.right + s2Boundary.right,
-                    bottom: s1Boundary.bottom - s2Boundary.bottom,
-                    left: s1Boundary.left - s2Boundary.left
-                };
-            }
-            return offset;
-        },
-
-        ifOnSpriteBounce: function (sprite1, sprite2){
-
-            var collisionMgr = this._gameEngine.collisionManager;
-
-            var collision = collisionMgr.checkSpriteCollision(sprite1, sprite2);
-            var offset = {};
-
-            if (!collision.occurs) {
-                return false;
-            }
-            else {
-                offset.calcOffset(sprite1, sprite2);
-            }
-        },
-        //-----------------------------------------------------------------------------------------------
-
-
         /* override */
         dispose: function () {
             this.stopAllScripts();
