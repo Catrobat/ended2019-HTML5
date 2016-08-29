@@ -158,20 +158,39 @@ PocketCode.CollisionManager = (function () {
             var ctx = this._ctx;
             ctx.clearRect(0, 0, width, height);
             ctx.save();
+            ctx.rotate(l1ri.rotation * (Math.PI / 180.0));
+            ctx.scale(
+                l1ri.scaling / precision * (l1ri.flipX ? -1.0 : 1.0),
+                l1ri.scaling / precision
+            );
+
             ctx.translate(-area.l, -area.t);
 
-            ctx.scale(
-                1.0 / precision,
-                1.0 / precision
-            );
+            //ctx.scale(
+            //    1.0 / precision,
+            //    1.0 / precision
+            //);
             //draw sprite1
-            l1ri.draw(ctx);
+            //l1ri.draw(ctx);
+            ctx.drawImage(l1ri, sx, sy, width, height, 0, 0, width, height);
+
             var imageData = ctx.getImageData(0, 0, width, height);
             var pixels1 = imageData.data;
+            ctx.restore();
 
             //draw sprite2
             ctx.clearRect(0, 0, width, height);
-            l2ri.draw(ctx);
+            ctx.save();
+            ctx.rotate(l2ri.rotation * (Math.PI / 180.0));
+            ctx.scale(
+                l2ri.scaling / precision * (l2ri.flipX ? -1.0 : 1.0),
+                l2ri.scaling / precision
+            );
+
+            ctx.translate(-area.l, -area.t);
+
+            //l2ri.draw(ctx);
+            ctx.drawImage(l2ri, sx, sy, width, height, 0, 0, width, height);
             imageData = ctx.getImageData(0, 0, width, height);
             var pixels2 = imageData.data;
             ctx.restore();
