@@ -21,6 +21,7 @@ PocketCode.Ui.Menu = (function () {
     // Object parameters
     this._state = this._states.OPEN;
     this._minHeight = 200;
+    this._dom.disabled = false;
 
 
     //var img_tag = new SmartJs.Ui.Image({ style: { width: '100%' } });
@@ -101,8 +102,9 @@ PocketCode.Ui.Menu = (function () {
       this._onResize.dispatchEvent();
     },
     addElement: function(element) {
-      //console.log( element );
-      this._container.appendChild( element );
+      console.log( "add element" );
+      this._container.appendChild( element )
+      console.log( this._container );
       this._container.onResize.dispatchEvent();
     },
     _resizeHandler: function (e) {
