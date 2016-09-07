@@ -320,6 +320,7 @@ PocketCode.Web = {
 			rc.className = 'pc-rightCol';
 			wlr.appendChild(rc);
 			var wm = document.createElement('div');
+			this.menuContainer = wm;
 			wm.className = 'pc-webMenu';
 			rc.appendChild(wm);
 
@@ -962,11 +963,14 @@ PocketCode.Web = {
 		        //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		        //this._player.loadProject(this._projectId);
 		    },
-		    _applicationInitHandler: function () {
+		    _applicationInitHandler: function (e) {
 		        this._splashScreen.hide();
 		        if (this._exitButton) {
 		            document.body.removeChild(this._exitButton.dom);
 		            delete this._exitButton;
+		        }
+		        if (e.menu) {
+		            e.menu.addToDom(this._webOverlay.menuContainer);
 		        }
 		        this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 		        if (this._webOverlay)
