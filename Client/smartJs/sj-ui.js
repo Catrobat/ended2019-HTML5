@@ -647,9 +647,6 @@ SmartJs.Ui.merge({
                     this._parent.onLayoutChange.dispatchEvent({}, this);
                 this.verifyResize(this);
             },
-            setDomAttribute: function (key, value) {
-                this._dom.setAttribute(key, value);
-            },
 
             dispose: function () {
                 if (this._parent)
@@ -696,6 +693,12 @@ SmartJs.Ui.merge({
         }
 
         HtmlTag.prototype.merge({
+            setDomAttribute: function (key, value) {
+                this._dom.setAttribute(key, value);
+            },
+            getDomAttribute: function (key) {
+                return this._dom.getAttribute(key);
+            },
             addDomListener: function (eventName, eventHandler, args) {
                 return this._addDomListener(this._dom, eventName, eventHandler, args);
             },

@@ -158,9 +158,6 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
     catch (e) { }
     assert.equal(id, cp.id, "control id write protected");
 
-    cp.setDomAttribute("id", cp.id + "new Id");
-    assert.equal(cp._dom.id, cp.id + "new Id", "Control id getter: setDomAttribute setter");
-
     assert.ok(cp.rendered, "check rendering state (dom based construction)");
     var cp = new SmartJs.Ui.Control("div");
     assert.ok(!cp.rendered, "check rendering state (new)");
@@ -743,6 +740,9 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
     var tag = new SmartJs.Ui.HtmlTag('br');
     assert.ok(tag instanceof SmartJs.Ui.Control, "instance check");
     assert.equal(tag.objClassName, "HtmlTag", "objClassName check");
+
+    tag.setDomAttribute("id", tag.id + "new Id");
+    assert.equal(tag.getDomAttribute("id"), tag.id + "new Id", "DOM Attribute getter/setter");
 
     //override internal functions to test interface
     var lastMethod = -1;
