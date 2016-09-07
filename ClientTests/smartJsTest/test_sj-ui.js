@@ -158,6 +158,9 @@ QUnit.test("SmartJs.Ui.Control", function (assert) {
     catch (e) { }
     assert.equal(id, cp.id, "control id write protected");
 
+    cp.setDomAttribute("id", cp.id + "new Id");
+    assert.equal(cp._dom.id, cp.id + "new Id", "Control id getter: setDomAttribute setter");
+
     assert.ok(cp.rendered, "check rendering state (dom based construction)");
     var cp = new SmartJs.Ui.Control("div");
     assert.ok(!cp.rendered, "check rendering state (new)");
@@ -743,6 +746,12 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
 
     //override internal functions to test interface
     var lastMethod = -1;
+    tag._addDomListener = function () {
+        lastMethod = 6;
+    };
+    tag._removeDomListener = function () {
+        lastMethod = 7;
+    };
     tag._appendChild = function () {
         lastMethod = 0;
     };
@@ -774,6 +783,10 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
     assert.equal(lastMethod, 4, "replaceChild");
     tag.removeChild();
     assert.equal(lastMethod, 5, "removeChild");
+    tag.addDomListener();
+    assert.equal(lastMethod, 6, "add DOM listener");
+    tag.removeDomListener();
+    assert.equal(lastMethod, 7, "remove DOM listener");
 
 });
 
