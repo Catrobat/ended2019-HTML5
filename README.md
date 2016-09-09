@@ -7,7 +7,6 @@ Catrobat programs can be written by using the Catroid programming system on Andr
 
 For more information [oriented towards developers], check out our [developers page](http://developer.catrobat.org/).
 
-**The HTML5 player** (this project) is a single-page javascript client using a restful PHP backend and allows users to run catrobat projects inside of your desktop or mobile browsers.
 
 # Issues #
 
