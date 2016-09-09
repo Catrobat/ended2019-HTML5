@@ -14,7 +14,7 @@ PocketCode.CollisionManager = (function () {
         this._registeredCollisions = {};
 
         this._canvas = document.createElement('canvas');
-        this._ctx = canvas.getContext('2d');
+        this._ctx = this._canvas.getContext('2d');
 
         //this._onCollision = new SmartJs.Event.Event(this);  //maybe another event strategy is neede here, e.g. subscribe with handler?
     }
