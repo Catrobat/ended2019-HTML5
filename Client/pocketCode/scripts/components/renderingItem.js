@@ -147,9 +147,9 @@ PocketCode.merge({
                 ctx.textBaseline = 'top';   //'hanging';
                 ctx.font = this._fontStyle + ' ' + this._fontWeight + ' ' + this._fontSize + 'px' + ' ' + this._fontFamily;
 
-                var text = this._text,
-                    lineFeeds = text.split(/\r?\n/).length > 1,
-                    rtl = PocketCode.I18nProvider.getTextDirection == PocketCode.Ui.Direction.RTL;
+                var text = this._text;
+                var lineFeeds = text.split(/\r?\n/).length > 1,
+                    rtl = PocketCode.I18nProvider.getTextDirection(text) == PocketCode.Ui.Direction.RTL;
 
                 if (lineFeeds || maxWidth) {
                     //if (rtl) {
