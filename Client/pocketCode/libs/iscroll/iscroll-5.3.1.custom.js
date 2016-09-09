@@ -416,7 +416,7 @@
             //if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
             //    e.preventDefault();
             //}
-            if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e, this.options.preventDefaultExceptions)) {
+            if (this.options.preventDefault && !utils.isBadAndroid && !utils.preventDefaultException(e, this.options.preventDefaultExceptions) && e.cancelable) {
                 e.preventDefault();
             }
 
@@ -460,7 +460,7 @@
                 return;
             }
 
-            if (this.options.preventDefault) {	// increases performance on Android? TODO: check!
+            if (this.options.preventDefault && e.cancelable) {	// increases performance on Android? TODO: check!
                 e.preventDefault();
             }
 

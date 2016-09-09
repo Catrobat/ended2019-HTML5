@@ -167,7 +167,8 @@ PocketCode.Ui.Canvas = (function () {
             return touchData;
         },
         _touchStartHandler: function (e) {
-            e.preventDefault();
+            if (e.cancelable)
+                e.preventDefault();
             e.stopPropagation();    //TODO: use .offsetX for mouse events (check support)
 
             var touchData = this._getTouchData(e);
@@ -186,7 +187,8 @@ PocketCode.Ui.Canvas = (function () {
             return false;
         },
         _touchMoveHandler: function (e) {
-            e.preventDefault();
+            if (e.cancelable)
+                e.preventDefault();
             e.stopPropagation();
 
             if (!e.changedTouches && !e.which && isNaN(e.button))
@@ -214,7 +216,8 @@ PocketCode.Ui.Canvas = (function () {
             return false;
         },
         _touchEndHandler: function (e) {
-            e.preventDefault();
+            if (e.cancelable)
+                e.preventDefault();
             e.stopPropagation();
 
             var touchData = this._getTouchData(e);

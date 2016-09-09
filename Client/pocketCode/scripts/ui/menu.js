@@ -100,6 +100,8 @@ PocketCode.Ui.MenuItem = (function () {
     //cntr
     function MenuItem(i18nKey) {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-menuItem' });
+
+        this._removeDomListener(this._dom, 'touchstart', this._btnListener);    //make sure events for scrolling get passed
     }
 
 
