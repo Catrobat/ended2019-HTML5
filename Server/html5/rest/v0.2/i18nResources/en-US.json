@@ -61,5 +61,8 @@
   "lblDeviceVibrate":"Device vibration",
   "lblDeviceLegoNXT":"Lego Mindstorms NXT bricks or sensors",
   "lblDevicePhiro":"PHIRO bricks or sensors",
-  "lblDeviceArduino":"Arduino bricks or sensors"
+  "lblDeviceArduino":"Arduino bricks or sensors",
+  "menutermsOfUse":"Terms of Use",
+  "menuImpressum":"Impressum",
+  "menuHelp":"Help"
 }

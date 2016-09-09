@@ -1,6 +1,7 @@
 ﻿/// <reference path="../core.js" />
 /// <reference path="../ui/dialog.js" />
 /// <reference path="../view/playerPageView.js" />
+/// <reference path="../../../player/scripts/ui/playerMenu.js" />
 'use strict';
 
 PocketCode.PlayerPageController = (function () {
@@ -15,6 +16,8 @@ PocketCode.PlayerPageController = (function () {
 
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
+        this._view.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
+        this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._pauseProject, this));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         this._playerViewportController.onUserAction.addEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
@@ -49,6 +52,11 @@ PocketCode.PlayerPageController = (function () {
 
     //properties
     Object.defineProperties(PlayerPageController.prototype, {
+        menu: {
+            get: function () {
+                return this._view.menu;
+            },
+        },
         projectDetails: {
             set: function (json) {
                 this._view.showStartScreen(json.title, json.baseUrl + json.thumbnailUrl);
@@ -133,6 +141,7 @@ PocketCode.PlayerPageController = (function () {
         },
         //user
         _buttonClickedHandler: function (e) {
+            this._view.closeMenu();
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
                     history.back();
@@ -180,6 +189,31 @@ PocketCode.PlayerPageController = (function () {
                     }
                     break;
                 default:
+            }
+        },
+        _menuActionHandler: function (e) {
+            switch (e.command) {
+                case PocketCode.Player.MenuCommand.FULLSCREEN:
+                    this._playerViewportController.zoomToFit = e.checked;
+                    break;
+                case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
+                    PocketCode.I18nProvider.loadDictionary(e.languageCode);
+                    break;
+                case PocketCode.Player.MenuCommand.TERMS_OF_USE:
+                    var win = window.open('https://share.catrob.at/pocketcode/termsOfUse', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
+                    break;
+                case PocketCode.Player.MenuCommand.IMPRINT:
+                    var win = window.open('http://developer.catrobat.org/imprint', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
+                    break;
+                case PocketCode.Player.MenuCommand.HELP:
+                    var win = window.open('https://share.catrob.at/pocketcode/help', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
+                    break;
             }
         },
         _onUserActionHandler: function (e) {

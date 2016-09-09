@@ -13,6 +13,7 @@ PocketCode.I18nProvider = (function (propObject) {
             "lblOk": "OK",
             "lblCancel": "Cancel",
             "lblConfirm": "Confirm",
+            "lblRetry": "Retry",
             "lblGlobalErrorCaption": "Global Error",
             "msgGlobalError": "A global exception was detected.",
             "lblBrowserNotSupportedErrorCaption": "Browser Not Supported",
@@ -37,8 +38,9 @@ PocketCode.I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new:
+            menuFullscreen: "fullscreen",
+            menuTermsOfUse: "terms of use", //renamed to camel case
             "lblDeviceGeoLocation": "? device feature geo location ?",
-            //TODO: make sure to add btnTermsOfUse or other buttons for menu
         };  
 
         this._supportedLanguages = [];
@@ -91,12 +93,23 @@ PocketCode.I18nProvider = (function (propObject) {
 
     //methods
     I18nProvider.prototype.merge({
-        loadSuppordetLanguages: function () {
-            var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
-            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
-            req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
-            PocketCode.Proxy.send(req);
+        init: function (rfc3066) {
+            if (this._supportedLanguages.length == 0) {
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(function () { this.loadDictionary(rfc3066); }.bind(this)));
+                req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
+                PocketCode.Proxy.send(req);
+            }
+            else
+                this.loadDictionary(rfc3066);
         },
+        //loadSuppordetLanguages: function () {
+        //    var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
+        //    req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
+        //    req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
+        //    PocketCode.Proxy.send(req);
+        //},
         _loadSuppordetLanguagesLoadHandler: function (e) {
             var languages = e.responseJson.supportedLanguages;
             if (!(languages instanceof Array))
@@ -109,10 +122,29 @@ PocketCode.I18nProvider = (function (propObject) {
                     throw new Error('invalid language file');
             }
             this._supportedLanguages = languages;
+            //console.log( languages );
+
+            //// Add menu elements
+            //for( i = 0; i < languages.length; i++ ) {
+            //    (function () {
+            //        var btn;
+            //        var lang = languages[i];
+
+            //        btn = new PocketCode.Ui.MenuItem(lang.uiString);
+            //        btn.onClick.addEventListener(new SmartJs.Event.EventListener(function () {
+            //            PocketCode.I18nProvider.loadDictionary(lang.languageCode)
+            //        }));
+
+            //        PocketCode.Menu.appendChild(btn);
+            //    }());
+            //}
         },
         loadDictionary: function (rfc3066) {
-            if (rfc3066)
+            if (rfc3066) {
+                if (rfc3066 == this._currentLanguage)
+                    return;
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N, SmartJs.RequestMethod.GET, { rfc3066: rfc3066 });
+            }
             else
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_AUTO, SmartJs.RequestMethod.GET);
 
@@ -134,8 +166,8 @@ PocketCode.I18nProvider = (function (propObject) {
                 this._onDirectionChange.dispatchEvent({ direction: this._direction });
             }
             this._dictionary.merge(json.dictionary); //using merge: so we can provide an initial dict for loading and errors
-            this._currentLanguage = json.languageCode;
-            this._onLanguageChange.dispatchEvent({ language: json.languageCode });
+            this._currentLanguage = json.languageCode.substring(0, 2);
+            this._onLanguageChange.dispatchEvent({ language: this._currentLanguage });
         },
         _loadErrorHandler: function (e) {
             this.onError.dispatchEvent(e);
