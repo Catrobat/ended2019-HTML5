@@ -4,374 +4,352 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../core.js" />
 /// <reference path="../ui.js" />
-/// <reference path="../../libs/fabric/fabric-1.6.0-rc.1.js" />
 'use strict';
+
 
 PocketCode.Ui.Canvas = (function () {
     Canvas.extends(SmartJs.Ui.Control, false);
 
-    //cntr
     function Canvas(args) {
+        args = args || { className: 'pc-canvasContainer' };
+        SmartJs.Ui.Control.call(this, 'div', args);
 
-        var config = {
-            //width: cwidth,
-            //height: cheight,
-            //containerClass: 'canvas-container',
-            selection: false,
-            skipTargetFind: false,
-            perPixelTargetFind: true,
-            renderOnAddRemove: false,
-            //stateful: false,  //TODO: ??? check this again
-            //?centerTransform (= centeredRotation, centeredScaling in current version)
-        };
+        this._lowerCanvasEl = document.createElement('canvas');
+        this._dom.appendChild(this._lowerCanvasEl);
+        this._lowerCanvasCtx = this._lowerCanvasEl.getContext('2d');
+        this._translation = { x: Math.round(this._lowerCanvasEl.width * 0.5), y: Math.round(this._lowerCanvasEl.height * 0.5) };
 
-        //create internal fabricJs canvas adapter
-        this._fcAdapter = new ((function () {
-            FCAdapter.extends(fabric.Canvas, false);
+        this._upperCanvasEl = document.createElement('canvas');
+        this._dom.appendChild(this._upperCanvasEl);
+        this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
-            function FCAdapter(canvasElement) {
-                fabric.Canvas.call(this, canvasElement, config);
-                this._renderingObjects = [];
-                this._renderingTexts = [];
-                this.scaling = 1.0;   //initial
-                //TODO: throw exception if internal canvas list changes and set as a public property: including methods?
-            }
+        this._cacheCanvasEl = document.createElement('canvas');
+        this._cacheCanvasCtx = this._cacheCanvasEl.getContext('2d');
 
-            //properties
-            Object.defineProperties(FCAdapter.prototype, {
-                renderingObjects: {
-                    set: function (list) {
-                        this._renderingObjects = list;  //TODO: exception handling, argument check
-                    },
-                },
-                renderingTexts: {
-                    set: function (list) {
-                        this._renderingTexts = list;  //TODO: exception handling, argument check
-                    },
-                },
-            });
+        this._renderingImages = [];
+        this._renderingTexts = [];
+        this._scalingX = 1.0;
+        this._scalingY = 1.0;
 
-            //methods
-            FCAdapter.prototype.merge({
-                findItemById: function (id) {
-                    var items = this._renderingObjects;
-                    if (items === undefined)
-                        return;
-
-                    for (var i = 0, l = items.length; i < l; i++) {
-                        if (items[i].object.id == id)
-                            return items[i];
-                    }
-                },
-                setDimensionsWr: function (width, height, scaling) {   //without rerendering
-                    width = Math.floor(width / 2.0) * 2.0;
-                    height = Math.floor(height / 2.0) * 2.0;
-
-                    this._setBackstoreDimension('width', width);
-                    this._setCssDimension('width', width + 'px');
-                    this._setBackstoreDimension('height', height);
-                    this._setCssDimension('height', height + 'px');
-                    this.scaling = scaling;
-                    this.calcOffset();
-                    this._createCacheCanvas();  //make sure our cahce canvas has the full size to search for click events
-                },
-                _createCacheCanvas: function () {
-                    this.cacheCanvasEl = this._createCanvasElement();
-                    this.cacheCanvasEl.setAttribute('width', this.width / this.scaling);
-                    this.cacheCanvasEl.setAttribute('height', this.height / this.scaling);
-                    this.contextCache = this.cacheCanvasEl.getContext('2d');
-                },
-                clear: function () {
-                    this.clearContext(this.contextTop);
-                    this.clearContext(this.contextContainer);
-                },
-                __onMouseDown: function (e) {
-
-                    var isLeftClick = 'which' in e ? e.which === 1 : e.button === 1;
-                    if (!isLeftClick && !SmartJs.Device.isTouch) {
-                        return;
-                    }
-
-                    var target = this.findTarget(e),
-                        pointer = this.getPointer(e, true);
-
-                    // save pointer for check in __onMouseUp event
-                    this._previousPointer = pointer;
-
-                    var shouldRender = this._shouldRender(target, pointer),
-                        shouldGroup = this._shouldGroup(e, target);
-
-                    if (this._shouldClearSelection(e, target)) {
-                        this._clearSelection(e, target, pointer);
-                    }
-                    else if (shouldGroup) {
-                        this._handleGrouping(e, target);
-                        target = this.getActiveGroup();
-                    }
-
-                    if (target && target.selectable && !shouldGroup) {
-                        this._beforeTransform(e, target);
-                        this._setupCurrentTransform(e, target);
-                    }
-                    // we must renderAll so that active image is placed on the top canvas
-                    shouldRender && this.renderAll();
-
-                    this.fire('mouse:down', { target: target, e: e });
-                    target && target.fire('mousedown', { e: e });
-                },
-                _getTouchPointer: function (event, pageProp, clientProp) {
-                    var touchProp = event.type === 'touchend' ? 'changedTouches' : 'touches';
-
-                    return (event[touchProp] && event[touchProp][0] ?
-                        (event[touchProp][0][pageProp] - (event[touchProp][0][pageProp] - event[touchProp][0][clientProp])) || event[clientProp] :
-                        event[clientProp]);
-                },
-                _getEventPointer: function (event) {
-                    event || (event = fabric.window.event);
-
-                    var element = event.target || (typeof event.srcElement !== unknown ? event.srcElement : null),
-                        scroll = fabric.util.getScrollLeftTop(element),
-                        x = 0,
-                        y = 0;
-
-                    if (SmartJs.Device.isTouch) {
-                        x = this._getTouchPointer(event, 'pageX', 'clientX');
-                        y = this._getTouchPointer(event, 'pageY', 'clientY');
-                    }
-                    else {
-                        x = event.clientX ? event.clientX : 0;
-                        y = event.clientY ? event.clientY : 0;
-                    }
-                    return {
-                        x: x + scroll.left,
-                        y: y + scroll.top
-                    };
-                },
-                getPointer: function (e, ignoreZoom, upperCanvasEl) {
-                    if (!upperCanvasEl) {
-                        upperCanvasEl = this.upperCanvasEl;
-                    }
-                    var pointer = this._getEventPointer(e),
-                        bounds = upperCanvasEl.getBoundingClientRect(),
-                        boundsWidth = bounds.width || 0,
-                        boundsHeight = bounds.height || 0,
-                        cssScale;
-
-                    if (!boundsWidth || !boundsHeight) {
-                        if ('top' in bounds && 'bottom' in bounds) {
-                            boundsHeight = Math.abs(bounds.top - bounds.bottom);
-                        }
-                        if ('right' in bounds && 'left' in bounds) {
-                            boundsWidth = Math.abs(bounds.right - bounds.left);
-                        }
-                    }
-
-                    //this.calcOffset();    //are calculated during resize
-
-                    pointer.x = pointer.x - this._offset.left;
-                    pointer.y = pointer.y - this._offset.top;
-                    if (!ignoreZoom) {
-                        pointer = fabric.util.transformPoint(
-                          pointer,
-                          fabric.util.invertTransform(this.viewportTransform)
-                        );
-                    }
-
-                    if (boundsWidth === 0 || boundsHeight === 0) {
-                        // If bounds are not available (i.e. not visible), do not apply scale.
-                        cssScale = { width: 1, height: 1 };
-                    }
-                    else {
-                        cssScale = {
-                            width: upperCanvasEl.width / boundsWidth,
-                            height: upperCanvasEl.height / boundsHeight
-                        };
-                    }
-
-                    return {
-                        x: pointer.x * cssScale.width,
-                        y: pointer.y * cssScale.height,
-                    };
-                },
-                _checkTarget: function (obj, pointer) {
-                    obj.setCoords();
-                    if (obj && obj.visible && obj.evented && obj.containsPoint(pointer)) {
-                        if ((this.perPixelTargetFind || obj.perPixelTargetFind) && !obj.isEditing) {
-                            var isTransparent = this.isTargetTransparent(obj, pointer.x, pointer.y);
-                            if (!isTransparent) {
-                                return true;
-                            }
-                        }
-                        else {
-                            return true;
-                        }
-                    }
-                    return false;
-                },
-                _searchPossibleTargets: function (e, skipGroup) {
-                    // Cache all targets where their bounding box contains point.
-                    if (e.type != 'mousedown' && e.type != 'touchstart')
-                        return;
-                    //this.calcOffset();    //calculated onResize
-                    var target,
-                        pointer = this.getPointer(e, true),
-                        objs = this._renderingObjects,
-                        obj;
-                    var i = objs.length;
-                    pointer = { //include our canvas scaling for search only
-                        x: pointer.x / this.scaling,
-                        y: pointer.y / this.scaling,
-                    }
-                    while (i--) {
-                        obj = objs[i].object;
-                        if (this._checkTarget(obj, pointer)) {
-                            this.relatedTarget = obj;
-                            target = obj;
-                            break;
-                        }
-                    }
-                    return target;
-                },
-                renderAll: function (viewportScaling) {
-                    var ctx = this.contextContainer;
-                    this.clearContext(ctx);
-
-                    this._renderBackground(ctx);
-
-                    var ro = this._renderingObjects,
-                        scaling = viewportScaling || this.scaling;
-                    ctx.save();
-                    ctx.scale(scaling, scaling);
-
-                    for (var i = 0, l = ro.length; i < l; i++)
-                        ro[i].draw(ctx);
-
-                    ro = this._renderingTexts;
-                    for (var i = 0, l = ro.length; i < l; i++)
-                        ro[i].draw(ctx);
-
-                    ctx.restore();
-                    this.fire('after:render');
-                },
-                toDataURL: function (width, height) {//format, quality) {
-                    var cw = this.getWidth(),
-                        ch = this.getHeight();
-
-                    this.setWidth(width).setHeight(height);//Math.floor(origWidth / this.scaling / 2.0) * 2.0).setHeight(Math.floor(origHeight / this.scaling / 2.0) * 2.0);
-                    
-                    this.renderAll(width * this.scaling / cw);//1.0);
-                    //format = format || 'png';
-                    //if (format === 'jpg') {
-                    //    format = 'jpeg';
-                    //}
-                    //quality = quality || 1;
-
-                    //var data = (fabric.StaticCanvas.supports('toDataURLWithQuality'))
-                    //    ? this.lowerCanvasEl.toDataURL('image/' + format, quality)
-                    //    : this.lowerCanvasEl.toDataURL('image/' + format);
-                    var data = this.lowerCanvasEl.toDataURL('image/png');
-
-                    //restore
-                    this.setDimensionsWr(cw, ch, this.scaling);
-                    this.renderAll();
-
-                    return data;
-                }
-            });
-
-            return FCAdapter;
-        })())(document.createElement('canvas'), config);
-
-        args = args || {};
-        SmartJs.Ui.Control.call(this, this._fcAdapter.wrapperEl, args); //the fabricJs wrapper div becomes our _dom root element
-
-        this._fcAdapter.on('mouse:down', (function (e) {
-            if (e.target)
-                this._onMouseDown.dispatchEvent({ id: e.target.id });
-        }).bind(this));
-        this._fcAdapter.on('after:render', (function (e) {
-            this._onAfterRender.dispatchEvent();
-        }).bind(this));
+        //handling click/touch/multi-touch
+        this._activeTouchEvents = [];
 
         //events
-        this._onMouseDown = new SmartJs.Event.Event(this);
-        this._onAfterRender = new SmartJs.Event.Event(this);
+        this._onRenderingImageTouched = new SmartJs.Event.Event(this);
+        this._onTouchStart = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
+
+        this._onTouchMove = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mousemove', this._touchMoveHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchmove', this._touchMoveHandler);
+
+        this._onTouchEnd = new SmartJs.Event.Event(this);
+        this._addDomListener(this._upperCanvasEl, 'mouseup', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'mouseout', this._touchEndHandler);
+        this._addDomListener(this._upperCanvasEl, 'touchend', this._touchEndHandler);
     }
 
     //properties
     Object.defineProperties(Canvas.prototype, {
-        /* override */
-        height: {
-            //set: function (value) {
-            //    this._fcAdapter.setHeight(value);
-            //},
-            get: function () {
-                return this._fcAdapter.getHeight();
-            },
-        },
-        /* override */
-        width: {
-            //set: function (value) {
-            //    this._fcAdapter.setWidth(value);
-            //},
-            get: function () {
-                return this._fcAdapter.getWidth();
-            },
-        },
         contextTop: {
             get: function () {
-                return this._fcAdapter.contextTop;
+                return this._upperCanvasCtx;
             },
         },
         renderingImages: {
             set: function (list) {
-                this._fcAdapter.renderingObjects = list;
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expectes type: list');
+                this._renderingImages = list;
             },
         },
         renderingTexts: {
             set: function (list) {
-                this._fcAdapter.renderingTexts = list;
+                if (!(list instanceof Array))
+                    throw new Error('invalid argument: expected type: list');
+                this._renderingTexts = list;  //TODO: exception handling, argument check
+            },
+        },
+        /* override: we do not calculate borders here, with/height are returned based on internal canvas elements even if control is not in DOM */
+        width: {
+            get: function () {
+                return this._lowerCanvasEl.width;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._dom.style.width = (value + 'px');
+                this._lowerCanvasEl.width = value;
+                this._translation = { x: Math.round(value * 0.5), y: Math.round(this.height * 0.5) };
+                this._upperCanvasEl.width = value;
+                this._cacheCanvasEl.width = value;
+            },
+        },
+        /* override */
+        height: {
+            get: function () {
+                return this._lowerCanvasEl.height;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: expected "value" typeof "number" (px)');
+
+                this._dom.style.height = (value + 'px');
+                this._lowerCanvasEl.height = value;
+                this._translation = { x: Math.round(this.width * 0.5), y: Math.round(value * 0.5) };
+                this._upperCanvasEl.height = value;
+                this._cacheCanvasEl.height = value;
             },
         },
     });
 
     //events
     Object.defineProperties(Canvas.prototype, {
-        onMouseDown: {
+        onRenderingImageTouched: {
             get: function () {
-                return this._onMouseDown;
+                return this._onRenderingImageTouched;
             },
         },
-        //onAfterRender: {
-        //    get: function () {
-        //        return this._onAfterRender;
-        //    },
-        //},
+        onTouchStart: {
+            get: function () {
+                return this._onTouchStart;
+            },
+        },
+        onTouchMove: {
+            get: function () {
+                return this._onTouchMove;
+            },
+        },
+        onTouchEnd: {
+            get: function () {
+                return this._onTouchEnd;
+            },
+        },
     });
 
     //methods
     Canvas.prototype.merge({
-        setDimensions: function (width, height, scaling) {
-            this._fcAdapter.setDimensionsWr(width, height, scaling);
+        setDimensions: function (width, height, scalingX, scalingY) {
+            width = Math.floor(width * 0.5) * 2.0;
+            height = Math.floor(height * 0.5) * 2.0;
+
+            this.height = height;
+            this.width = width;
+
+            this.scale(scalingX, scalingY);
+        },
+        scale: function (x, y) {
+            this._scalingX = x;
+            this._scalingY = y;
+            this.render();
         },
         clear: function () {
-            this._fcAdapter.clear();
+            this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
+        },
+        _getTouchData: function (e) {
+            var pointer;
+            if (!e.touches) {   //mouse event
+                pointer = this._getTouchEventPosition(e);
+                return [{ id: 'm' + (e.which || e.button), x: pointer.x, y: pointer.y }];
+            }
+            //else: touch event
+            var touch,
+                touches = e.changedTouches,
+                touchData = [];
+            for (var i = 0, l = touches.length; i < l; i++) {
+                touch = touches[i];
+                pointer = this._getTouchEventPosition(e, touch);
+                touchData.push({ id: 't' + touch.identifier, x: pointer.x, y: pointer.y });
+            }
+            return touchData;
+        },
+        _touchStartHandler: function (e) {
+            if (e.cancelable)
+                e.preventDefault();
+            e.stopPropagation();    //TODO: use .offsetX for mouse events (check support)
+
+            var touchData = this._getTouchData(e);
+            for (var i = 0, l = touchData.length; i < l; i++) {
+                this._activeTouchEvents.push(touchData[i].id);
+                this._onTouchStart.dispatchEvent(touchData[i]);
+            }
+
+            if (e.touches || e.which == 1 || e.button == 0)
+                for (var i = 0, l = touchData.length; i < l; i++) {
+                    var target = this._getTargetAt({ x: touchData[i].x, y: touchData[i].y });
+                    if (target) {
+                        this._onRenderingImageTouched.dispatchEvent(touchData[i].merge({ targetId: target.id }));
+                    }
+                }
+            return false;
+        },
+        _touchMoveHandler: function (e) {
+            if (e.cancelable)
+                e.preventDefault();
+            e.stopPropagation();
+
+            if (!e.changedTouches && !e.which && isNaN(e.button))
+                return; //move event, no button pressed
+
+            var touchData = this._getTouchData(e);
+            if (!e.touches) {   //get all data for mouse events
+                var mouseData = [];
+                for (var i = 0, l = this._activeTouchEvents.length; i < l; i++) {
+                    var id = this._activeTouchEvents[i];
+                    if (id[0] == 'm')
+                        mouseData.push({ id: id, x: touchData[0].x, y: touchData[0].y });
+                }
+                touchData = mouseData;
+            }
+            for (var i = 0, l = touchData.length; i < l; i++) {
+                if (Math.abs(touchData[i].x) > this._lowerCanvasEl.width * 0.5 / this._scalingX ||
+                    Math.abs(touchData[i].y) > this._lowerCanvasEl.height * 0.5 / this._scalingY) {  //ouside
+                    this._touchEndHandler(e);
+                    continue;
+                }
+                if (this._activeTouchEvents.indexOf(touchData[i].id) >= 0)
+                    this._onTouchMove.dispatchEvent(touchData[i]);
+            }
+            return false;
+        },
+        _touchEndHandler: function (e) {
+            if (e.cancelable)
+                e.preventDefault();
+            e.stopPropagation();
+
+            var touchData = this._getTouchData(e);
+            if (!e.touches) {   //get all data for mouse events
+                var mouseData = [];
+                for (var i = 0, l = this._activeTouchEvents.length; i < l; i++) {
+                    var id = this._activeTouchEvents[i];
+                    if (id[0] == 'm')
+                        mouseData.push({ id: id, x: touchData[0].x, y: touchData[0].y });
+                }
+                touchData = mouseData;
+            }
+            for (var i = 0, l = touchData.length; i < l; i++)
+                if (this._activeTouchEvents.indexOf(touchData[i].id) >= 0) {
+                    this._activeTouchEvents.remove(touchData[i].id);
+                    this._onTouchEnd.dispatchEvent(touchData[i]);
+                }
+
+            return false;
+        },
+        _getTouchEventPosition: function (e, touch) {
+            var pointerX,
+                pointerY;
+            var boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+
+            if (touch != undefined) {
+                pointerX = touch.clientX != undefined ? touch.clientX - boundingClientRect.left - this._translation.x : e.clientX - this._translation.x;
+                pointerY = -(touch.clientY != undefined ? touch.clientY - boundingClientRect.top - this._translation.y : e.clientY - this._translation.y);
+            }
+            else {
+                //boundingClientRect = this._lowerCanvasEl.getBoundingClientRect();
+                pointerX = e.clientX != undefined ? e.clientX - boundingClientRect.left - this._translation.x : -this._translation.x;    //TODO: use .offsetX for mouse events (check support)
+                pointerY = -(e.clientY != undefined ? e.clientY - boundingClientRect.top - this._translation.y : -this._translation.y);  //or: include scroll offsets to make sure this control also works in another app/page
+            }
+
+            var pointer = {
+                x: pointerX / this._scalingX,
+                y: pointerY / this._scalingY,
+            };
+
+            return pointer;
+        },
+        _getTargetAt: function (point) {
+            var objects = this._renderingImages;
+            var object, target;
+
+            for (var i = objects.length - 1; i >= 0; i--) {
+                object = objects[i];
+                if (object.visible && object.containsPoint(point) && !this._isTargetTransparent(object, point)) {
+                    target = object;
+                    break;
+                }
+            }
+            return target;
+        },
+        _isTargetTransparent: function (target, point) {
+            var ctx = this._cacheCanvasCtx;
+            ctx.clearRect(0, 0, this._cacheCanvasEl.width, this._cacheCanvasEl.height);
+            ctx.save();
+            ctx.translate(this._translation.x, this._translation.y);
+            ctx.scale(this._scalingX, this._scalingY);
+            target.draw(ctx);
+            ctx.restore();
+
+            //imageData.data contains rgba values - here we look at the alpha value
+            var imageData = ctx.getImageData(this._translation.x + Math.floor(point.x * this._scalingX), this._translation.y - Math.floor(point.y * this._scalingY), 1, 1);
+            var hasTransparentAlpha = !imageData.data || !imageData.data[3];
+
+            //clear
+            imageData = undefined;
+            return hasTransparentAlpha;
         },
         render: function () {
-            this._fcAdapter.renderAll();
+            var ctx = this._lowerCanvasCtx;
+            ctx.clearRect(0, 0, this.width, this.height);
+
+            ctx.save();
+            ctx.translate(this._translation.x, this._translation.y);
+            ctx.scale(this._scalingX, this._scalingY);
+
+            var ro = this._renderingImages;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+
+            ro = this._renderingTexts;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+
+            ctx.restore();
         },
-        toDataURL: function (width, height) {//backgroundColor) {
-            // TODO Check alpha channel value range
-            //backgroundColor = backgroundColor || 'rgba(255, 255, 255, 1)';
-            this._fcAdapter.setBackgroundColor('rgba(255, 255, 255, 1)');//backgroundColor);   //setting background temporarly without triggering a render
-            var dataUrl = this._fcAdapter.toDataURL(width, height);
-            this._fcAdapter.setBackgroundColor('');
-            return dataUrl;
+        toDataURL: function (width, height) {
+            var currentWidth = this.width,
+                currentHeight = this.height;
+
+            this._cacheCanvasEl.width = width;
+            this._cacheCanvasEl.height = height;
+
+            var ctx = this._cacheCanvasCtx;
+            ctx.save();
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.translate(width * 0.5, height * 0.5);
+            ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
+
+            var ro = this._renderingImages;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+
+            ro = this._renderingTexts;
+            for (var i = 0, l = ro.length; i < l; i++)
+                ro[i].draw(ctx);
+            ctx.restore();
+
+            var data = this._cacheCanvasEl.toDataURL('image/png');
+            this._cacheCanvasEl.width = currentWidth;
+            this._cacheCanvasEl.height = currentHeight;
+
+            return data;
         },
+        dispose: function () {
+            this._removeDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mousemove', this._touchMoveHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchmove', this._touchMoveHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mouseup', this._touchEndHandler);
+            this._removeDomListener(this._upperCanvasEl, 'mouseout', this._touchEndHandler);
+            this._removeDomListener(this._upperCanvasEl, 'touchend', this._touchEndHandler);
+
+            SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
+        }
     });
 
     return Canvas;
 })();
-
-
 

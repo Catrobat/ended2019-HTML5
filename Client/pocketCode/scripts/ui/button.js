@@ -14,12 +14,12 @@ PocketCode.Ui.Button = (function () {
         SmartJs.Ui.Control.call(this, 'button', args);
 
         this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
-        this._dom.appendChild(this._textNode._dom);
+        this._appendChild(this._textNode);
 
         //events
         this._onClick = new SmartJs.Event.Event(this);
         this._addDomListener(this._dom, 'click', this._clickHandler);
-        this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
+        this._btnListener = this._addDomListener(this._dom, 'touchstart', function (e) { }, { cancelBubble: true, stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
         //this._addDomListener(this._dom, 'touchend', this._clickHandler, { cancelBubble: true });//function (e) { this._dom.click(); });
     }
 
@@ -73,12 +73,16 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.Button, false);
 
     //cntr
-    function PlayerSvgButton(icon, i18nKey, big) {
+    function PlayerSvgButton(icon, i18nKey, big, menuButton) {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-playerButton' });
 
         //this.className = 'pc-playerButton';
         if (big)
             this.addClassName('pc-menuBigButton');
+        if(menuButton) {
+            this.removeClassName('pc-playerButton');
+            this.addClassName('pc-webButton');
+        }
 
         if (!icon)
             throw new Error('invalid argument: icon');

@@ -79,6 +79,12 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
+    UserActionType: {
+        SPRITE_CLICKED: 0,
+        TOUCH_START: 1,
+        TOUCH_MOVE: 2,
+        TOUCH_END: 3,
+    },
     ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
         INITIALIZED: -1,
         STOPPED: 0,
@@ -186,7 +192,7 @@ PocketCode.Core = {
                 },
             },
         });
-        
+
         //methods
         I18nString.prototype.merge({
             /* override */

@@ -70,6 +70,8 @@ QUnit.test("I18nProvider", function (assert) {
 
         var languageChangeHandler2 = function (e) {
             assert.ok(true, "language change fired: using parameter");
+            assert.equal(e.language, "en-GB", "language change event argeument check");
+            assert.equal(i18n.currentLanguageDirection, "ltr", "language getter");
 
             done3();
         };
@@ -81,6 +83,11 @@ QUnit.test("I18nProvider", function (assert) {
     //disposing without effect on the object
     i18n.dispose();
     assert.ok(i18n.supportedLanguages instanceof Array && !i18n._disposed, "dispose: no effect");
+
+    //getTextDirection
+    assert.equal(i18n.getTextDirection("Россия"), "ltr", "check direction: ltr");
+    assert.equal(i18n.getTextDirection("۱ آزمایش. 2 آزمایش، سه آزمایش & Foo آزمایش!"), "rtl", "check direction: rtl");
+
     done4();
 });
 

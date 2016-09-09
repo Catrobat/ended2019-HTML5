@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PocketCode Player Unit Tests</title>
+    <link href="../qunit/qunit-1.23.0.css" rel="stylesheet" />
+    <script src="../qunit/qunit-1.23.0.js"></script>
+    <script src="../qunit/blanket-1.2.2.min.js"></script>
+
+    <!-- core -->
+    <script src="../../Client/player/pocketCodePlayer.js" data-cover></script>
+
+    <!-- smart js -->
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-animation.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+    <!--script src="../../Client/smartJs/sj-error.js"></script-->
+
+    <!-- scripts -->
+    <script src="../../Client/player/scripts/Application.js" data-cover></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <script src="test_core.js"></script>
+    <script src="test_ui.js"></script>
+
+    <!-- core -->
+    <script src="test_pocketCodePlayer.js"></script>
+
+    <!-- scripts -->
+    <script src="scripts/test_Application.js"></script>
+
+</body>
+</html>

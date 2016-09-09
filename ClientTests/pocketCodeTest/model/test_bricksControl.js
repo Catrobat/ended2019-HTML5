@@ -1,7 +1,7 @@
 /// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -10,20 +10,25 @@
 QUnit.module("model/bricksControl.js");
 
 
-QUnit.test("ProgramStartBrick", function (assert) {
+QUnit.test("WhenProgramStartBrick", function (assert) {
 
     //assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
+    program._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+
     program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
-    var b = new PocketCode.Model.ProgramStartBrick("device", "sprite", program.onProgramStart);
-
+    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
+    b.dispose();
+    assert.equal(b._disposed, true, "disposed");
+    
+    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ProgramStartBrick, "instance check");
-    assert.ok(b.objClassName === "ProgramStartBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
@@ -89,10 +94,14 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WhenActionBrick("device", sprite, program.onTabbedAction, { action: "action" });
+    var b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onSpriteTabbedAction);
 
+    b.dispose();
+    assert.equal(b._disposed, true, "dispose called");
+
+    b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onSpriteTabbedAction);
     assert.ok(b._device === "device" && b._sprite === sprite && b._action === "action", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenActionBrick, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenActionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenActionBrick", "objClassName check");
 
     //test empty container
@@ -102,7 +111,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     };
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    program._onTabbedAction.dispatchEvent({ sprite: sprite });
+    program._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
     assert.equal(handlerCalled, 1, "executed handler called (once)");
 
     //add a brick container
@@ -141,7 +150,7 @@ QUnit.test("WhenActionBrick", function (assert) {
         done1();
     };
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
-    program._onTabbedAction.dispatchEvent({ sprite: sprite });
+    program._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
 
 });
 
@@ -271,17 +280,24 @@ QUnit.test("WaitBrick", function (assert) {
 });
 
 
-QUnit.test("BroadcastReceiveBrick", function (assert) {
+//currently not supported by android
+//QUnit.test("ResetTimerBrick", function (assert) {
+
+//    assert.ok(false, "TODO: add tests for ResetTimerBrick as soon as this brick is supported");
+//});
+
+
+QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
+    var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.BroadcastReceiveBrick, "instance check");
-    assert.ok(b.objClassName === "BroadcastReceiveBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenBroadcastReceiveBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;
@@ -431,6 +447,19 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
     broadcastMgr.subscribe("s12", new SmartJs.Event.EventListener(_returnHandler, this));
     b.execute(new SmartJs.Event.EventListener(h, this), "sdf");
 
+});
+
+
+QUnit.test("WhenCollisionBrick", function (assert) {
+
+    var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
+    var b = new PocketCode.Model.WhenCollisionBrick("device", "sprite", physicsWorld, {});
+
+    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  //TODO: add new properties
+    assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenCollisionBrick", "objClassName check");
+
+    assert.ok(false, "TODO: add tests for WhenCollisionBrick");
 });
 
 
@@ -682,6 +711,62 @@ QUnit.test("IfThenElseBrick", function (assert) {
 });
 
 
+QUnit.test("WaitUntilBrick", function (assert) {
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+
+    var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, { condition: conditionFalse }, 24);
+
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._delay === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b instanceof PocketCode.Model.WaitUntilBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
+    assert.ok(b.objClassName === "WaitUntilBrick", "objClassName check");
+
+    //validation = false
+    var dateTime;
+
+    var testFinishedHandler1 = function (e) {   //simulating 1st thread
+        assert.equal(e.id, "id_1", "thread 1: event argument: id");
+        assert.equal(e.loopDelay, false, "thread 1: event argument: loopDelay");
+
+        b._condition = conditionFalse;    //make sure both threads get executed even the condition is not met any more
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "id_1");
+
+    var testFinishedHandler2 = function (e) {   //simulating 2nd thread
+        assert.equal(e.id, "id_2", "thread 2: event argument: id");
+        assert.equal(e.loopDelay, false, "thread 2: event argument: loopDelay");
+        assert.ok((new Date() - dateTime) > 50, "paused and resumed");
+        
+        b._condition = conditionFalse;    //make sure both threads get executed even the condition is not met any more
+        done2();
+    };
+    b.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "id_2");
+
+    window.setTimeout(function () {
+        b.pause();
+    }, 10);
+
+    dateTime = new Date();
+    window.setTimeout(function () {
+        //set Condition to true: internally
+        var conditionTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
+        var formulaTrue = new PocketCode.Formula("device", sprite, conditionTrue);
+
+        b._condition = formulaTrue;
+    }, 20);
+
+    window.setTimeout(function () {
+        b.resume();
+    }, 50);
+
+});
+
+
 QUnit.test("RepeatBrick", function (assert) {
 
     assert.expect(9);   //init async asserts (to wait for)
@@ -691,7 +776,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.RepeatBrick("device", sprite, 24, { timesToRepeat: nTimes });
+    var b = new PocketCode.Model.RepeatBrick("device", sprite, { x: 1, y: 2, timesToRepeat: nTimes }, 24);
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.RepeatBrick, "instance check");
@@ -769,7 +854,7 @@ QUnit.test("RepeatBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
+    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, { timesToRepeat: nTimes }, 25);
     var tb2 = new TestBrick2("device", "sprite");
     tb2.loopDelay = true;
     bca = [];
@@ -780,6 +865,70 @@ QUnit.test("RepeatBrick", function (assert) {
     //tb2.onTestFinished.addEventListener(new SmartJs.Event.EventListener(testFinishedHandler2, this));
 
     b2.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "n_times2");
+
+});
+
+
+QUnit.test("RepeatUntilBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var b = new PocketCode.Model.RepeatUntilBrick("device", sprite, { condition: conditionFalse }, 24);
+
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
+    assert.ok(b instanceof PocketCode.Model.RepeatUntilBrick && b instanceof PocketCode.Model.LoopBrick, "instance check");
+    assert.ok(b.objClassName === "RepeatUntilBrick", "objClassName check");
+
+    //validation = false
+    var TestBrick = (function () {
+        TestBrick.extends(PocketCode.Model.ThreadedBrick, false);
+
+        function TestBrick(device, sprite) {
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            this.executed = 0;
+            this._delay = 10;
+            this.loopDelay = false;
+        }
+
+        TestBrick.prototype.merge({
+            _execute: function (id) {
+                this.executed++;
+                this._return(id, this.loopDelay);
+            },
+            start: function () {
+                this._stopped = false;
+            },
+            stop: function () {
+                this._stopped = true;
+            }
+        });
+
+        return TestBrick;
+    })();
+
+    var testBrick1 = new TestBrick("device", sprite);
+    var innerBricks = [testBrick1, new TestBrick("device", sprite)];
+    b.bricks = new PocketCode.Model.BrickContainer(innerBricks);
+    
+    var testFinishedHandler1 = function (e) {
+        assert.equal(e.id, "n_times", "event argument: id");
+        assert.equal(e.loopDelay, false, "event argument: loopDelay");
+        assert.ok(testBrick1.executed > 0, "inner bricks executed until condition = true");
+
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "n_times");
+
+    window.setTimeout(function () {
+        //set Condition to true: internally
+        var conditionTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
+        var formulaTrue = new PocketCode.Formula("device", sprite, conditionTrue);
+
+        b._condition = formulaTrue;
+    }, 20);
 
 });
 

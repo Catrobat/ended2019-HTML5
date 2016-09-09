@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ui tests: input controls</title>
+    <link href="../../../../Client/player/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../../../../Client/pocketCode/css/pocketCode.css" rel="stylesheet" />
+    <link href="../../../../Client/pocketCode/css/menuAndControls.css" rel="stylesheet" />
+
+    <style type="text/css">
+        /* defining some style for the test page layout onnly */
+        html, body {
+            background-color: #04222C;
+            color: #D3D3D3;
+            font-family: sans-serif;
+            line-height: 1;
+            font-size: 15px;
+            font-weight: 500;       
+        }
+        body * {
+            box-sizing: border-box;
+        }
+        table {
+            height: 100%;
+            width: 100%;
+        }
+
+        #layoutContainer {
+            position: relative;
+            width: 100%;
+            height: 600px;
+        }
+
+        #outputContainer {
+            overflow: scroll;
+            width: 400px;
+            height: 200px;
+        }
+    </style>
+
+    <script src="../../../../Client/smartJs/sj.js"></script>
+    <script src="../../../../Client/smartJs/sj-core.js"></script>
+    <script src="../../../../Client/smartJs/sj-components.js"></script>
+    <script src="../../../../Client/smartJs/sj-event.js"></script>
+    <script src="../../../../Client/smartJs/sj-ui.js"></script>
+
+    <script src="../../../../Client/player/pocketCodePlayer.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/ui.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/i18nProvider.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/ui/input.js"></script>
+    <script src="test_input.js"></script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td width="30%"><div id="settingsContainer"></div></td>
+            <td width="70%" rowspan="2"><div id="layoutContainer"></div></td>
+        </tr>
+        <tr>
+            <td><div id="outputContainer"></div></td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /// <reference path="../../qunit/qunit-1.23.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksSound.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -17,7 +17,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
     var soundId = "soundId";
 
-    var b = new PocketCode.Model.PlaySoundBrick(device, sprite, program._soundManager, { soundId: soundId });
+    var b = new PocketCode.Model.PlaySoundBrick(device, sprite, program._soundManager, { resourceId: soundId });
 
     assert.ok(b._device === device && b._sprite === sprite && b._soundManager === program._soundManager && b._soundId === soundId, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.PlaySoundBrick, "instance check");
@@ -32,6 +32,14 @@ QUnit.test("PlaySoundBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
+});
+
+QUnit.test("PlaySoundAndWaitBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    assert.ok(false, "TODO")
+    done1();
 });
 
 QUnit.test("StopAllSoundsBrick", function (assert) {
@@ -153,6 +161,14 @@ QUnit.test("SpeakBrick", function (assert) {
     };
     b2.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
 
+});
+
+QUnit.test("SpeakAndWaitBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    assert.ok(false, "TODO")
+    done1();
 });
 
 
