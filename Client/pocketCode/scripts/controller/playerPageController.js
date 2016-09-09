@@ -17,7 +17,7 @@ PocketCode.PlayerPageController = (function () {
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         this._view.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
-        this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler.bind(this, { command: PocketCode.Ui.PlayerBtnCommand.PAUSE })));
+        this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._pauseProject, this));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         this._playerViewportController.onUserAction.addEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
@@ -141,6 +141,7 @@ PocketCode.PlayerPageController = (function () {
         },
         //user
         _buttonClickedHandler: function (e) {
+            this._view.closeMenu();
             switch (e.command) {
                 case PocketCode.Ui.PlayerBtnCommand.BACK:
                     history.back();

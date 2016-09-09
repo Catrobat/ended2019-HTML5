@@ -156,6 +156,9 @@ PocketCode.Ui.PlayerPageView = (function () {
         setLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);
         },
+        closeMenu: function () {
+            this._menu.close();
+        },
     });
 
     return PlayerPageView;
