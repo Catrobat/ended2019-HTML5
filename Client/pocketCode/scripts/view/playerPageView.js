@@ -30,16 +30,12 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
         }
-        //console.log( this );
+        
         this.appendChild(this._toolbar);
         if (PocketCode.Player.Ui.Menu) {    //only loaded for player
             this._menu = new PocketCode.Player.Ui.Menu();
             if (SmartJs.Device.isMobile)
                 this.appendChild(this._menu);
-            else {
-                this._menu.addClassName('pc-menuDesktop');  //TODO: add/change class name + ccs styles for desktop
-                this._menu.addToDom();
-            }
         }
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
@@ -52,12 +48,26 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
+        menu: {
+            get: function (){
+                return this._menu;
+            },
+        },
         executionState: {
             get: function (){
                 return this._toolbar.executionState;
             },
             set: function (value) {
                 this._toolbar.executionState = value;
+                switch (value) {
+                    case PocketCode.ExecutionState.PAUSED:
+                    case PocketCode.ExecutionState.STOPPED:
+                        this._menu.show();
+                        break;
+                    default:
+                        this._menu.hide();
+                        break;
+                }
             },
         },
         disabled: {
@@ -99,6 +109,14 @@ PocketCode.Ui.PlayerPageView = (function () {
             get: function () {
                 if (this._menu)
                     return this._menu.onMenuAction;
+                else
+                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
+            },
+        },
+        onMenuOpen: {
+            get: function () {
+                if (this._menu)
+                    return this._menu.onOpen;
                 else
                     return new SmartJs.Event.Event(this);   //create event object if no menu is defined
             },

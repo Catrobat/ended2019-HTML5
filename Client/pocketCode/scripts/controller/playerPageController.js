@@ -1,6 +1,7 @@
 ﻿/// <reference path="../core.js" />
 /// <reference path="../ui/dialog.js" />
 /// <reference path="../view/playerPageView.js" />
+/// <reference path="../../../player/scripts/ui/playerMenu.js" />
 'use strict';
 
 PocketCode.PlayerPageController = (function () {
@@ -16,6 +17,7 @@ PocketCode.PlayerPageController = (function () {
         //bind events
         this._view.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler, this));
         this._view.onMenuAction.addEventListener(new SmartJs.Event.EventListener(this._menuActionHandler, this));
+        this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler.bind(this, { command: PocketCode.Ui.PlayerBtnCommand.PAUSE })));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
         this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
@@ -50,6 +52,11 @@ PocketCode.PlayerPageController = (function () {
 
     //properties
     Object.defineProperties(PlayerPageController.prototype, {
+        menu: {
+            get: function () {
+                return this._view.menu;
+            },
+        },
         projectDetails: {
             set: function (json) {
                 this._view.showStartScreen(json.title, json.baseUrl + json.thumbnailUrl);
@@ -183,12 +190,28 @@ PocketCode.PlayerPageController = (function () {
                 default:
             }
         },
-        _menuActionHandler: function(e) {
+        _menuActionHandler: function (e) {
+            //e.target.close();
             switch (e.command) {
+                case PocketCode.Player.MenuCommand.FULLSCREEN:
+                    if (e.checked) {
+
+                    }
+                    else {
+
+                    }
+                    //TODO: Julia
+                    break;
                 case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
-                    PocketCode.I18nProvider.loadDictionary(e.language);
+                    PocketCode.I18nProvider.loadDictionary(e.languageCode);
                     break;
                 case PocketCode.Player.MenuCommand.TERMS_OF_USE:
+                    //TODO: Julia
+                    break;
+                case PocketCode.Player.MenuCommand.IMPRINT:
+                    //TODO: Julia
+                    break;
+                case PocketCode.Player.MenuCommand.HELP:
                     //TODO: Julia
                     break;
             }

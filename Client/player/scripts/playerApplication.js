@@ -82,8 +82,9 @@ PocketCode.merge({
                 PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
                 PocketCode.I18nProvider.onDirectionChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._vp.uiDirection = e.direction; }, this));
                 if (!mobileInitialized || rfc3066 && PocketCode.I18nProvider.currentLanguage != rfc3066) {   //do not load twice on mobile reinit or opening the same player overlay twice on the same page
-                    PocketCode.I18nProvider.loadSuppordetLanguages();
-                    PocketCode.I18nProvider.loadDictionary(rfc3066);
+                    PocketCode.I18nProvider.init(rfc3066);  //make sure all supported are loaded before loading dictionary
+                    //PocketCode.I18nProvider.loadSuppordetLanguages();
+                    //PocketCode.I18nProvider.loadDictionary(rfc3066);
                 }
                 else {
                     //if the language is not (re)loaded we have to check for rtl as our default direction is ltr
@@ -257,7 +258,10 @@ PocketCode.merge({
                     if (this._disposing || this._disposed)
                         return;
                     var json = e.target.responseJson;
-                    this._onInit.dispatchEvent();
+                    if (SmartJs.Device.isMobile)
+                        this._onInit.dispatchEvent();
+                    else
+                        this._onInit.dispatchEvent({ menu: this._pages.PlayerPageController.menu });
                     this._pages.PlayerPageController.projectDetails = json;
                     this._viewport.show();
                     this._requestProject();
@@ -265,7 +269,6 @@ PocketCode.merge({
                 _projectDetailsRequestErrorHandler: function (e) {
                     if (this._disposing || this._disposed)
                         return;
-                    this._onInit.dispatchEvent();
 
                     var d, type;
                     var errorStatus = e.statusCode,
