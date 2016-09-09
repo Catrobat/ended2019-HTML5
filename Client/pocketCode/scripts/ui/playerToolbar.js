@@ -133,7 +133,7 @@ PocketCode.Ui.merge({
                 set: function (value) {
                     switch (value) {
                         case PocketCode.ExecutionState.ERROR:
-                            //TODO: disable all buttons? only play + pause?
+                            this.disabled = true;
                             break;
                         case PocketCode.ExecutionState.RUNNING:
                             this._startButton.hide();
