@@ -63,6 +63,7 @@
     z-index: 1;
     top: 45px;
     right: 3px;
+    padding: 1px 0px;
     float: right;
     background-color: #282828;
     border: 1px solid #484848;
@@ -79,7 +80,7 @@
 .pc-menuItem, .pc-checkbox, .pc-radio {
     position: relative;
     white-space: nowrap;
-    padding: 10px 14px 10px 11px;
+    padding: 10px 16px 10px 11px;
     width: 100%;
     background-color: transparent;
     border: 0;
@@ -113,7 +114,7 @@
 
 .pc-menuSeparator hr {
     border: 0;
-    margin: 1px 11px 1px 2px;
+    margin: 1px 12px 1px 2px;
     color: #484848;
     background-color: #484848;
     height: 1px;

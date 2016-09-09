@@ -31,12 +31,14 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
         }
-        
+
         this.appendChild(this._toolbar);
         if (PocketCode.Player.Ui.Menu) {    //only loaded for player
             this._menu = new PocketCode.Player.Ui.Menu();
             if (SmartJs.Device.isMobile)
                 this.appendChild(this._menu);
+            else //desktop
+                this.onResize.addEventListener(new SmartJs.Event.EventListener(function () { this._menu.verifyResize(); }, this));
         }
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
@@ -50,25 +52,26 @@ PocketCode.Ui.PlayerPageView = (function () {
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
         menu: {
-            get: function (){
+            get: function () {
                 return this._menu;
             },
         },
         executionState: {
-            get: function (){
+            get: function () {
                 return this._toolbar.executionState;
             },
             set: function (value) {
                 this._toolbar.executionState = value;
-                switch (value) {
-                    case PocketCode.ExecutionState.PAUSED:
-                    case PocketCode.ExecutionState.STOPPED:
-                        this._menu.show();
-                        break;
-                    default:
-                        this._menu.hide();
-                        break;
-                }
+                if (SmartJs.Device.isMobile)
+                    switch (value) {
+                        case PocketCode.ExecutionState.PAUSED:
+                        case PocketCode.ExecutionState.STOPPED:
+                            this._menu.show();
+                            break;
+                        default:
+                            this._menu.hide();
+                            break;
+                    }
             },
         },
         disabled: {

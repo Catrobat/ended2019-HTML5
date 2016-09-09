@@ -430,6 +430,11 @@ SmartJs.Ui.merge({
                     return true;
                 },
             },
+            clientRect: {
+                get: function () {
+                    return this._dom.getBoundingClientRect();
+                },
+            },
         });
 
         //events

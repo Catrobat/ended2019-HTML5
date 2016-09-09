@@ -55,22 +55,27 @@ PocketCode.Ui.Menu = (function () {
         _openCloseHandler: function (e) {
             if (this._subMenu.hidden) {
                 this._subMenu.show();
+                this.verifyResize();
                 this._menuButton.addClassName('pc-menuButtonOpened');
                 this._onOpen.dispatchEvent();
             } else {
                 this.close();
             }
-            this._dom.blur();   //???
         },
         close: function (e) {
             this._subMenu.hide();
             this._menuButton.removeClassName('pc-menuButtonOpened');
         },
-        addElement: function (element) {
-            console.log("add element");
-            this._container.appendChild(element)
-            console.log(this._container);
-            this._container.onResize.dispatchEvent();
+        /* override */
+        verifyResize: function () {
+            if (!this._subMenu) //called during constructor call
+                return;
+            var clientRect = this._subMenu.clientRect,
+                parentHeight = this._parent ? this._parent.height : document.body.clientHeight;
+            this._container.style.maxHeight = (parentHeight - clientRect.top - 10) + 'px';
+
+            SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
+            this._container.verifyResize();
         },
     });
 
