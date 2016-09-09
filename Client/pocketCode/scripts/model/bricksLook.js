@@ -71,22 +71,6 @@ PocketCode.Model.merge({
     })(),
 
 
-    NextLookBrick: (function () {
-        NextLookBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function NextLookBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
-
-        }
-
-        NextLookBrick.prototype._execute = function () {
-            this._return(this._sprite.nextLook());
-        };
-
-        return NextLookBrick;
-    })(),
-
-
     PreviousLookBrick: (function () {
         PreviousLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -100,6 +84,22 @@ PocketCode.Model.merge({
         };
 
         return PreviousLookBrick;
+    })(),
+
+
+    NextLookBrick: (function () {
+        NextLookBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function NextLookBrick(device, sprite) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+        }
+
+        NextLookBrick.prototype._execute = function () {
+            this._return(this._sprite.nextLook());
+        };
+
+        return NextLookBrick;
     })(),
 
 

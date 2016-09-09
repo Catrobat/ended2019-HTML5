@@ -20,7 +20,7 @@ PocketCode.PlayerPageController = (function () {
         this._view.onMenuOpen.addEventListener(new SmartJs.Event.EventListener(this._buttonClickedHandler.bind(this, { command: PocketCode.Ui.PlayerBtnCommand.PAUSE })));
         this._view.onStartClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.START })); }, this));
         this._view.onExitClicked.addEventListener(new SmartJs.Event.EventListener(function (e) { this._buttonClickedHandler(e.merge({ command: PocketCode.Ui.PlayerBtnCommand.BACK })); }, this));
-        this._playerViewportController.onSpriteClicked.addEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+        this._playerViewportController.onUserAction.addEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
         SmartJs.Ui.Window.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._visibilityChangeHandler, this));
 
         this._playerViewportController.setProjectScreenSize(200, 320);
@@ -191,7 +191,6 @@ PocketCode.PlayerPageController = (function () {
             }
         },
         _menuActionHandler: function (e) {
-            //e.target.close();
             switch (e.command) {
                 case PocketCode.Player.MenuCommand.FULLSCREEN:
                     if (e.checked) {
@@ -216,8 +215,8 @@ PocketCode.PlayerPageController = (function () {
                     break;
             }
         },
-        _spriteClickedHandler: function (e) {
-            this._gameEngine.handleSpriteTap(e.id);
+        _onUserActionHandler: function (e) {
+            this._gameEngine.handleUserAction(e);
         },
         _pauseProject: function () {
             if (this._gameEngine && this._gameEngine.pauseProject())   //may be undefined when triggered on onVisibilityChange
@@ -261,7 +260,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
                 this._gameEngine = undefined;
             }
-            this._playerViewportController.onSpriteClicked.removeEventListener(new SmartJs.Event.EventListener(this._spriteClickedHandler, this));
+            this._playerViewportController.onUserAction.removeEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
             PocketCode.PageController.prototype.dispose.call(this);
         },
     });

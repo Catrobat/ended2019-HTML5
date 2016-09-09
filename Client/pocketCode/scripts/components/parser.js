@@ -121,14 +121,21 @@ PocketCode.merge({
                     case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
-                    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+                        //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
                     case 'WhenProgramStartBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
                         break;
 
                     case 'WhenActionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTabbedAction);
+                        switch (jsonBrick.action) {
+                            case 'Tapped':
+                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onSpriteTabbedAction);
+                                break;
+                            case 'TouchStart':
+                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTouchStartAction);
+                                break;
+                        }
                         break;
 
                     //case 'ResetTimerBrick':
@@ -153,7 +160,9 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime);
                         break;
 
+                    case 'WaitUntilBrick':
                     case 'RepeatBrick':
+                    case 'RepeatUntilBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._minLoopCycleTime);
                         break;
 
@@ -278,8 +287,8 @@ PocketCode.merge({
 
                     case 'USER_VARIABLE':
                         if (uiString) {
-                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
-                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
                                 this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
@@ -551,7 +560,7 @@ PocketCode.merge({
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                    //list functions
+                    //list
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -573,6 +582,29 @@ PocketCode.merge({
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
+                    //touch
+                    case 'MULTI_FINGER_X':
+                        if (uiString)
+                            return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'MULTI_FINGER_Y':
+                        if (uiString)
+                            return 'screen_touch_y( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'MULTI_FINGER_TOUCHED':
+                        if (uiString)
+                            return 'screen_is_touched( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
+
+                        this._isStatic = false;
+                        return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    //arduino
                     case 'ARDUINOANALOG':
                         if (uiString)
                             return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
@@ -738,7 +770,7 @@ PocketCode.merge({
                         if (uiString)
                             return 'year';
 
-                        return '(new Date()).getDay() + 1';
+                        return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':    //TODO
                         if (uiString)
@@ -769,6 +801,56 @@ PocketCode.merge({
                     //        return 'timer';
 
                     //    return 'this._sprite.projectTimerValue';
+
+                    //touch
+                    case 'FINGER_X':
+                        if (uiString)
+                            return 'screen_touch_x';
+
+                        return 'this._device.getTouchX(this._device.lastTouchIndex)';
+
+                    case 'FINGER_Y':
+                        if (uiString)
+                            return 'screen_touch_y';
+
+                        return 'this._device.getTouchY(this._device.lastTouchIndex)';
+
+                    case 'FINGER_TOUCHED':
+                        if (uiString)
+                            return 'screen_is_touched';
+
+                        return 'this._device.isTouched(this._device.lastTouchIndex)';
+
+                    case 'LAST_FINGER_INDEX':
+                        if (uiString)
+                            return 'last_screen_touch_index';
+
+                        return 'this._device.lastTouchIndex';
+
+                    //geo location
+                    case 'LATITUDE':
+                        if (uiString)
+                            return 'latitude';  //TODO: check UI string
+
+                        return 'this._device.geoLatitude';
+
+                    case 'LONGITUDE':
+                        if (uiString)
+                            return 'longitude';  //TODO: check UI string
+
+                        return 'this._device.geoLongitude';
+
+                    case 'ALTITUDE':
+                        if (uiString)
+                            return 'altitude';  //TODO: check UI string
+
+                        return 'this._device.geoAltitude';
+
+                    case 'ACCURACY':
+                        if (uiString)
+                            return 'accuracy';  //TODO: check UI string
+
+                        return 'this._device.geoAccuracy';
 
                     //physics
                     case 'OBJECT_X_VELOCITY':

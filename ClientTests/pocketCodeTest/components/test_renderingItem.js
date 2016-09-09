@@ -227,8 +227,8 @@ QUnit.test("RenderingImage", function (assert) {
         // ..---x---... ->  ..-------...
         // ..-------...     ..-------...
         // ............     ............
-        var topLeftX = Math.round(centerX - width / 2.);
-        var topLeftY = Math.round(centerY - height / 2.);
+        var topLeftX = Math.round(centerX - width * 0.5);
+        var topLeftY = Math.round(centerY - height * 0.5);
 
         rect = { tlX: topLeftX, tlY: topLeftY, width: width, height: height };
 
@@ -353,14 +353,14 @@ QUnit.test("RenderingImage", function (assert) {
             renderingImage.rotation = rotationAngle;
             var rad = (-rotationAngle + 90) * (Math.PI / 180.0);
 
-            var xOffset = renderingImage._height / 2 * Math.cos(rad);
-            var yOffset = renderingImage._height / 2 * Math.sin(rad);
+            var xOffset = renderingImage._height * 0.5 * Math.cos(rad);
+            var yOffset = renderingImage._height * 0.5 * Math.sin(rad);
             var centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             var centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = renderingImage._width / 2 * Math.cos(rad);
-            yOffset = renderingImage._width / 2 * Math.sin(rad);
+            xOffset = renderingImage._width * 0.5 * Math.cos(rad);
+            yOffset = renderingImage._width * 0.5 * Math.sin(rad);
             var centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             var centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
@@ -368,14 +368,14 @@ QUnit.test("RenderingImage", function (assert) {
                 && renderingImage.containsPoint(centerLeft) && renderingImage.containsPoint(centerRight), "Contains Points on boundaries with rotation: " + rotationAngle);
 
             rad = (-rotationAngle + 90) * (Math.PI / 180.0);
-            xOffset = ((renderingImage._height / 2) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage._height / 2) + 1) * Math.sin(rad);
+            xOffset = ((renderingImage._height * 0.5) + 1) * Math.cos(rad);
+            yOffset = ((renderingImage._height * 0.5) + 1) * Math.sin(rad);
             centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = ((renderingImage._width / 2) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage._width / 2) + 1) * Math.sin(rad);
+            xOffset = ((renderingImage._width * 0.5) + 1) * Math.cos(rad);
+            yOffset = ((renderingImage._width * 0.5) + 1) * Math.sin(rad);
             centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
             centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
 
@@ -427,8 +427,8 @@ QUnit.test("RenderingImage", function (assert) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test centered rendering
-        estimatedCenterX = renderingImageOpaque.x = canvasWidth / 2.;
-        estimatedCenterY = renderingImageOpaque.y = canvasHeight / 2.;
+        estimatedCenterX = renderingImageOpaque.x = canvasWidth * 0.5;
+        estimatedCenterY = renderingImageOpaque.y = canvasHeight * 0.5;
         renderingImageOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (center)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -521,8 +521,8 @@ QUnit.test("RenderingImage", function (assert) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // render in center
-        estimatedCenterX = renderingImageTransparent.x = canvasWidth / 2.;
-        estimatedCenterY = renderingImageTransparent.y = canvasHeight / 2.;
+        estimatedCenterX = renderingImageTransparent.x = canvasWidth * 0.5;
+        estimatedCenterY = renderingImageTransparent.y = canvasHeight * 0.5;
 
         renderingImageTransparent.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight), "transparent sprite (center)");
@@ -568,8 +568,8 @@ QUnit.test("RenderingImage", function (assert) {
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling), "opaque sprite (canvas 1.5x, origin)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        renderingImageOpaque.x = canvasWidth / 2.;
-        renderingImageOpaque.y = canvasHeight / 2.;
+        renderingImageOpaque.x = canvasWidth * 0.5;
+        renderingImageOpaque.y = canvasHeight * 0.5;
         estimatedCenterX = renderingImageOpaque.x * viewportScaling;
         estimatedCenterY = renderingImageOpaque.y * viewportScaling;
 

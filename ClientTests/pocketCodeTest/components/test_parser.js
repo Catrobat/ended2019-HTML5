@@ -559,6 +559,92 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     //TODO: recheck sensor strings
 });
 
+QUnit.test("FormulaParser: sensors: timer", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(false, "TODO: sensors: timer");
+});
+
+QUnit.test("FormulaParser: sensors: touch", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    f.json = finger_x;
+    assert.ok(typeof f.calculate() === 'number', "FINGER_X: formula return type");
+    assert.equal(f.isStatic, false, "FINGER_X: isStatic");
+    assert.equal(f.toString(), "screen_touch_x", "FINGER_X: toString");
+
+    f.json = finger_y;
+    assert.ok(typeof f.calculate() === 'number', "FINGER_Y: formula return type");
+    assert.equal(f.isStatic, false, "FINGER_Y: isStatic");
+    assert.equal(f.toString(), "screen_touch_y", "FINGER_Y: toString");
+
+    f.json = finger_touched;
+    assert.ok(typeof f.calculate() === 'boolean', "FINGER_TOUCHED: formula return type");
+    assert.equal(f.isStatic, false, "FINGER_TOUCHED: isStatic");
+    assert.equal(f.toString(), "screen_is_touched", "FINGER_TOUCHED: toString");
+
+    f.json = multi_finger_x;
+    assert.ok(typeof f.calculate() === 'number', "MULTI_FINGER_X: formula return type");
+    assert.equal(f.isStatic, false, "MULTI_FINGER_X: isStatic");
+    assert.equal(f.toString(), "screen_touch_x( 1 )", "MULTI_FINGER_X: toString");
+
+    f.json = multi_finger_y;
+    assert.ok(typeof f.calculate() === 'number', "MULTI_FINGER_Y: formula return type");
+    assert.equal(f.isStatic, false, "MULTI_FINGER_Y: isStatic");
+    assert.equal(f.toString(), "screen_touch_y( 1 )", "MULTI_FINGER_Y: toString");
+
+    f.json = multi_finger_touched;
+    assert.ok(typeof f.calculate() === 'boolean', "MULTI_FINGER_TOUCHED: formula return type");
+    assert.equal(f.isStatic, false, "MULTI_FINGER_TOUCHED: isStatic");
+    assert.equal(f.toString(), "screen_is_touched( 8 )", "MULTI_FINGER_TOUCHED: toString");
+
+    f.json = last_finger_index;
+    assert.ok(typeof f.calculate() === 'number', "LAST_FINGER_INDEX: formula return type");
+    assert.equal(f.isStatic, false, "LAST_FINGER_INDEX: isStatic");
+    assert.equal(f.toString(), "last_screen_touch_index", "LAST_FINGER_INDEX: toString");
+
+});
+
+QUnit.test("FormulaParser: sensors: geo location", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(false, "TODO: sensors: geo location");
+});
+
+QUnit.test("FormulaParser: sensors: physics", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.Device(soundManager);
+
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(false, "TODO: sensors: physics");
+});
+
 QUnit.test("FormulaParser: logic", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);

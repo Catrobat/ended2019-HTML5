@@ -481,7 +481,7 @@ class ProjectFileParser
                 $nestedCounter++;
             }
 
-            if($endless && $name === "LoopEndlessBrick" || ! $endless && $name === "LoopEndBrick")
+            if($endless && $name === "LoopEndlessBrick" || !$endless && $name === "LoopEndBrick")
             {
                 if($nestedCounter === 0)
                 {
@@ -505,11 +505,11 @@ class ProjectFileParser
             }
         }
 
-        if(! $parsed && $endless)
+        if(!$parsed && $endless)
         {
             throw new InvalidProjectFileException("ForeverBrick: missing LoopEndlessBrick");
         }
-        else if(! $parsed && ! $endless)
+        else if(!$parsed && !$endless)
         {
             throw new InvalidProjectFileException("ForeverBrick: missing LoopEndBrick");
         }
