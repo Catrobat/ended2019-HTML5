@@ -8,10 +8,13 @@
 'use strict';
 
 PocketCode.Player.merge({
-    
+
     MenuCommand: {
+        FULLSCREEN: 1,
         LANGUAGE_CHANGE: 2,
         TERMS_OF_USE: 3,
+        IMPRINT: 4,
+        HELP: 5,
     },
 
     Ui: {
@@ -21,78 +24,71 @@ PocketCode.Player.merge({
             //cntr
             function Menu(args) {
                 PocketCode.Ui.Menu.call(this);
-                //  if smartjs.device = mobile, dann full-screen-button
-                // bei mobile transparenter hintergrund wie unten
-                //styles anpassen
-                // on resize überschreiben ?!? varifyresize
-                //refactoring namen
-                //parentcontainer rausschmeißen
+
+                var item;
+                if (SmartJs.Device.isMobile) {
+                    this.hide();
+                    item = new PocketCode.Ui.I18nCheckbox("menuFullscreen");
+                    this.appendChild(item);
+                    item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                        this.close();
+                        this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: e.checked });
+                    }, this));
+                    this.appendChild(new PocketCode.Ui.MenuSeparator());
+                }
 
                 this._languageRadioGroup = new PocketCode.Ui.RadioGroup();
+                this._languageRadioGroup.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    this.close();
+                    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.LANGUAGE_CHANGE, languageCode: e.value }, this);
+                }, this));
+
                 this._sep = new PocketCode.Ui.MenuSeparator();
                 this.appendChild(this._sep);
-                this._btnTerms = new PocketCode.Ui.MenuItem("menutermsOfUse");
-                this.appendChild(this._btnTerms);
-                this._btnImp = new PocketCode.Ui.MenuItem("menuImpressum");
-                this.appendChild(this._btnImp);
-                this._btnHelp = new PocketCode.Ui.MenuItem("menuHelp");
-                this.appendChild(this._btnHelp);
+                item = new PocketCode.Ui.MenuItem("menuTermsOfUse");
+                this.appendChild(item);
+                item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.TERMS_OF_USE }); }, this));
+                item = new PocketCode.Ui.MenuItem("menuImpressum");
+                this.appendChild(item);
+                item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.IMPRINT }); }, this));
+                item = new PocketCode.Ui.MenuItem("menuHelp");
+                this.appendChild(item);
+                item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
 
-
-
-                //events
-                this._onMenuAction = new SmartJs.Event.Event(this);
-                this._btnTerms.onClick.addEventListener(new SmartJs.Event.EventListener(this._onMenuAction.dispatchEvent.bind(this._onMenuAction, { command: PocketCode.Player.MenuCommand.TERMS_OF_USE }), this));
                 PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._onLanguageChange, this));   //dispatched onLoad too
+                this._onLanguageChange({ language: PocketCode.I18nProvider.currentLanguage });   //mobile: menu may be created after loading languages
             }
-
-            //properties
-            //Object.defineProperties(Menu.prototype, {
-            //});
-
-            //events
-            Object.defineProperties(Menu.prototype, {
-                onMenuAction: {
-                    get: function () {
-                        return this._onMenuAction;
-                    }
-                },
-            });
 
             //methods
             Menu.prototype.merge({
                 _onLanguageChange: function (e) {
-                    var currentLang = e.language;
+                    var currentLang = e.language,
+                        radios = this._languageRadioGroup.radios;
 
-                    if (this._languageRadioGroup.radios.length == 0) {  //ui buttons not created
-                        var langs = PocketCode.I18nProvider.supportedLanguages;
+                    if (radios.length == 0) {  //ui buttons not created
+                        var langs = PocketCode.I18nProvider.supportedLanguages,
+                            lang,
+                            radio;
 
-
-                        
-                           this._btnlanguage = new PocketCode.Ui.MenuItem("currentLanguage");
-                            this.appendChild(this._btnlanguage);
-
-                        
-                        //Todo for each language add radio button
-                        //for each: this._insertBefore(*new*, this._sep);
-
-
+                        for (var i = 0, l = langs.length; i < l; i++) {
+                            lang = langs[i];
+                            radio = new PocketCode.Ui.Radio(lang.uiString, lang.languageCode);
+                            this.insertBefore(radio, this._sep);
+                            this._languageRadioGroup.add(radio);
+                        }
                     }
 
-
-                    //TODO: rebuilt language menu items or change
-                    // current language --> radio button selected
-                    //radio button hat UI-string
-                    //String als name, property als value
+                    for (var i = 0, l = radios.length; i < l; i++)
+                        if (radios[i].value == currentLang) {
+                            radios[i].checked = true;
+                            break;
+                        }
                 },
                 addToDom: function (domElement) {
-                    domElement = domElement || document.body;
+                    if (!domElement || !(domElement instanceof HTMLElement))
+                        throw new Error('invalid argument: dom element');
                     domElement.appendChild(this._dom);
                 },
-                //dispose: function () {
-                //    PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._onLanguageChange, this));
-                //    PocketCode.Ui.Menu.prototype.dispose.call(this);    //call super
-                //}
             });
 
             return Menu;
