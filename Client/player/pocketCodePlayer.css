@@ -141,7 +141,7 @@
 .pc-webButton { /*}, .pc-webButton:active {*/
     padding: 0;
     margin: 6px;
-    margin-bottom: 10px;
+    /*margin-bottom: 10px;*/
     border-radius: 0;
     cursor: pointer;
     position: relative;
