@@ -743,6 +743,7 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
 
     tag.setDomAttribute("id", tag.id + "new Id");
     assert.equal(tag.getDomAttribute("id"), tag.id + "new Id", "DOM Attribute getter/setter");
+    assert.equal(tag.dom, tag._dom, "public accessor for dom");
 
     //override internal functions to test interface
     var lastMethod = -1;

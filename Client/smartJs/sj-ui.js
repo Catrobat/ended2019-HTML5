@@ -692,6 +692,16 @@ SmartJs.Ui.merge({
             SmartJs.Ui.Control.call(this, element, propObject);
         }
 
+        //properties
+        Object.defineProperties(HtmlTag.prototype, {
+            dom: {
+                get: function () {
+                    return this._dom;
+                },
+            },
+        });
+
+        //methods
         HtmlTag.prototype.merge({
             setDomAttribute: function (key, value) {
                 this._dom.setAttribute(key, value);
