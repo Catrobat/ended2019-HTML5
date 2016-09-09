@@ -194,25 +194,25 @@ PocketCode.PlayerPageController = (function () {
         _menuActionHandler: function (e) {
             switch (e.command) {
                 case PocketCode.Player.MenuCommand.FULLSCREEN:
-                    if (e.checked) {
-
-                    }
-                    else {
-
-                    }
-                    //TODO: Julia
+                    this._playerViewportController.zoomToFit = e.checked;
                     break;
                 case PocketCode.Player.MenuCommand.LANGUAGE_CHANGE:
                     PocketCode.I18nProvider.loadDictionary(e.languageCode);
                     break;
                 case PocketCode.Player.MenuCommand.TERMS_OF_USE:
-                    //TODO: Julia
+                    var win = window.open('https://share.catrob.at/pocketcode/termsOfUse', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
                     break;
                 case PocketCode.Player.MenuCommand.IMPRINT:
-                    //TODO: Julia
+                    var win = window.open('http://developer.catrobat.org/imprint', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
                     break;
                 case PocketCode.Player.MenuCommand.HELP:
-                    //TODO: Julia
+                    var win = window.open('https://share.catrob.at/pocketcode/help', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
                     break;
             }
         },
