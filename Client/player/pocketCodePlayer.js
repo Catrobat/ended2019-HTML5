@@ -413,11 +413,17 @@ PocketCode.Web = {
 			},
 			show: function () {
 				this.hidden = false;
-				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
+				this._clickHandler = this._addDomListener(document, 'click', function (e) {
+				    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string'))
+    				    e.preventDefault();
+				});
 				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
-				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) {
+				    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string'))
+				        e.preventDefault();
+				});
+				//this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				//this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
 				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
@@ -443,8 +449,8 @@ PocketCode.Web = {
 				this._removeDomListener(document, 'click', this._clickHandler);
 				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-				this._removeDomListener(document, 'touchend', this._touchEndHandler);
-				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				//this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				//this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
 				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 
@@ -622,8 +628,8 @@ PocketCode.Web = {
 				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
 				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
 				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				//this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				//this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
 				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
@@ -635,8 +641,8 @@ PocketCode.Web = {
 				this._removeDomListener(document, 'click', this._clickHandler);
 				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-				this._removeDomListener(document, 'touchend', this._touchEndHandler);
-				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				//this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				//this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
 				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 

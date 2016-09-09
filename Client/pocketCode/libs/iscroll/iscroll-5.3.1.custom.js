@@ -157,7 +157,7 @@
             var el = event.target;
 
             for (var i = 0, l = exceptions.length; i < l; i++) {
-                if ((exceptions[i].tagNames).test(el.tagName) && exceptions[i].eventNames && (exceptions[i].eventNames).test(event.type))
+                if ((exceptions[i].tagNames).test(el.tagName) && (!exceptions[i].eventNames || (exceptions[i].eventNames).test(event.type)))
                     return true;
             }
 
@@ -285,12 +285,18 @@
             preventDefault: true,
             preventDefaultExceptions: [
                 {
-                    tagNames: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/,
+                    tagNames: /^(INPUT|TEXTAREA|BUTTON|SELECT|LABEL)$/,
                     eventNames: undefined,
-                }, {
+                },
+                {
                     tagNames: /^(IMG)$/,
                     eventNames: /^(touchstart)$/,
-                }],
+                },
+                //{
+                //    tagNames: /^(LABEL)$/,
+                //    eventNames: /^(touchend)$/,
+                //},
+            ],
             //preventDefaultException: { tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT)$/ },
 
             HWCompositing: true,
@@ -554,7 +560,7 @@
             //if (this.options.preventDefault && !utils.preventDefaultException(e.target, this.options.preventDefaultException)) {
             //    e.preventDefault();
             //}
-            if (this.options.preventDefault && !utils.preventDefaultException(e, this.options.preventDefaultExceptions)) {
+            if (this.options.preventDefault && !utils.preventDefaultException(e, this.options.preventDefaultExceptions) && e.cancelable) {
                 e.preventDefault();
             }
 
