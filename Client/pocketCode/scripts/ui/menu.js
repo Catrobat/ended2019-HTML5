@@ -102,6 +102,7 @@ PocketCode.Ui.MenuItem = (function () {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-menuItem' });
 
         this._removeDomListener(this._dom, 'touchstart', this._btnListener);    //make sure events for scrolling get passed
+        this._addDomListener(this._dom, 'touchstart', function (e) { }, { stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
     }
 
 
