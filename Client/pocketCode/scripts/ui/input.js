@@ -7,35 +7,35 @@
 'use strict';
 
 
-PocketCode.Ui.Checkbox = (function () {
-    Checkbox.extends(SmartJs.Ui.Control, false);
+PocketCode.Ui.I18nCheckbox = (function () {
+    I18nCheckbox.extends(SmartJs.Ui.Control, false);
 
     //cntr
-    function Checkbox(i18nKey, value) {
-        SmartJs.Ui.Control.call(this, 'div', { className: 'pc-checkbox' });
+    function I18nCheckbox(i18nKey, value, props) {
+        SmartJs.Ui.Control.call(this, 'div', props || { className: 'pc-checkbox' });
 
-        this._input = document.createElement('input');
-        this._input.setAttribute('type', 'checkbox');
-        this._input.id = this.id + '-cb';
-        this._dom.appendChild(this._input);
-
-        var label = document.createElement('label');
-        label.setAttribute('for', this._input.id)
-        label.appendChild((new PocketCode.Ui.I18nTextNode(i18nKey))._dom);
-        this._dom.appendChild(label);
-
-        this.name = SmartJs.getNewId();
-        this._value = value;
-        this._onCheckedChangeListener = this._addDomListener(this._input, 'change', function (e) {
+        this._input = new SmartJs.Ui.HtmlTag('input');
+        this._input.setDomAttribute('type', 'checkbox');
+        this._onCheckedChangeListener = this._input.addDomListener('change', function (e) {
             this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
         }.bind(this));
+        this._appendChild(this._input);
+
+        this._label = new SmartJs.Ui.HtmlTag('label');
+        this._label.setDomAttribute('for', this._input.id);
+        this._label.setDomAttribute('onclick', ''); //fix: IOS4+
+        this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
+        this._label.appendChild(this._textNode);
+        this._appendChild(this._label);
+
+        this._value = value;
 
         //events
         this._onCheckedChange = new SmartJs.Event.Event(this);
     }
 
     //properties
-    Object.defineProperties(Checkbox.prototype, {
+    Object.defineProperties(I18nCheckbox.prototype, {
         value: {
             get: function () {
                 return this._value;
@@ -46,22 +46,22 @@ PocketCode.Ui.Checkbox = (function () {
         },
         checked: {
             get: function () {
-                return this._input.checked;
+                return this._input.dom.checked;
             },
             set: function (bool) {
                 if (typeof bool != 'boolean')
                     throw new Error('invalid argument: expected type: boolean');
 
-                if (this._input.checked == bool)
+                if (this._input.dom.checked == bool)
                     return;
-                this._input.checked = bool;
+                this._input.dom.checked = bool;
                 this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
             },
         },
     });
 
     //events
-    Object.defineProperties(Checkbox.prototype, {
+    Object.defineProperties(I18nCheckbox.prototype, {
         onCheckedChange: {
             get: function () {
                 return this._onCheckedChange;
@@ -70,14 +70,14 @@ PocketCode.Ui.Checkbox = (function () {
     });
 
     //methods
-    Checkbox.prototype.merge({
+    I18nCheckbox.prototype.merge({
         dispose: function () {
-            this._removeDomListener(this._input, 'change', this._onCheckedChangeListener);
+            this._input.removeDomListener('change', this._onCheckedChangeListener);
             SmartJs.Ui.Control.prototype.dispose.call(this);    //call super
         },
     });
 
-    return Checkbox;
+    return I18nCheckbox;
 })();
 
 
@@ -199,33 +199,22 @@ PocketCode.Ui.merge({
     })(),
 
     Radio: (function () {
-        Radio.extends(PocketCode.Ui.Checkbox);
+        Radio.extends(PocketCode.Ui.I18nCheckbox, false);
 
         //cntr
-        function Radio(i18nKey, value) {
-            SmartJs.Ui.Control.call(this, 'div', { className: 'pc-radio' });
+        function Radio(text, value, props) {
+            PocketCode.Ui.I18nCheckbox.call(this, '', value, props || { className: 'pc-radio' });
 
-            this._input = document.createElement('input');
-            this._input.setAttribute('type', 'radio');
-            this._input.id = this.id + '-rd';
-            this._dom.appendChild(this._input);
-
-            var label = document.createElement('label');
-            label.setAttribute('for', this._input.id);
-            label.appendChild((new PocketCode.Ui.I18nTextNode(i18nKey))._dom);
-            this._dom.appendChild(label);
+            this._input.setDomAttribute('type', 'radio');
+            this._textNode.dispose();
+            this._textNode = new SmartJs.Ui.TextNode(text);
+            this._label.appendChild(this._textNode);
+            this._label.setDomAttribute('dir', PocketCode.I18nProvider.getTextDirection(text));
 
             this._group = undefined;
-            this.name = SmartJs.getNewId();
+            //this.name = SmartJs.getNewId();
             this._value = value;
 
-            this._onCheckedChangeListener = this._addDomListener(this._input, 'change', function (e) {
-                //please notice: a radio buttons change event is only fired when set to true
-                this._onCheckedChange.dispatchEvent({ value: this._value, checked: this.checked });
-            }.bind(this));
-
-            //events
-            this._onCheckedChange = new SmartJs.Event.Event(this);
         }
 
         //properties
@@ -255,11 +244,31 @@ PocketCode.Ui.merge({
         Radio.prototype.merge({
             dispose: function () {
                 this._group = undefined;
-                PocketCode.Ui.Checkbox.prototype.dispose.call(this);    //call super
+                PocketCode.Ui.I18nCheckbox.prototype.dispose.call(this);    //call super
             },
         });
 
         return Radio;
+    })(),
+});
+
+PocketCode.Ui.merge({
+    I18nRadio: (function () {
+        I18nRadio.extends(PocketCode.Ui.Radio, false);
+
+        //cntr
+        function I18nRadio(i18nKey, value, props) {
+            PocketCode.Ui.Radio.call(this, '', value, props);
+
+            this._textNode.dispose();
+            this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
+            this._label.appendChild(this._textNode);
+
+            this._group = undefined;
+            this._value = value;
+        }
+
+        return I18nRadio;
     })(),
 
 });

@@ -9,7 +9,7 @@
 QUnit.module("ui/input.js");
 
 
-QUnit.test("Checkbox", function (assert) {
+QUnit.test("I18nCheckbox", function (assert) {
 
     //var done = assert.async;
 
@@ -17,13 +17,13 @@ QUnit.test("Checkbox", function (assert) {
     var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
     dom.appendChild(container._dom);
 
-    var ctrl = new PocketCode.Ui.Checkbox("i18nKey");
+    var ctrl = new PocketCode.Ui.I18nCheckbox("i18nKey");
 
-    assert.ok(ctrl instanceof PocketCode.Ui.Checkbox && ctrl instanceof SmartJs.Ui.Control, "instance check + inheritance");
-    assert.ok(ctrl.objClassName === "Checkbox", "objClassName check");
+    assert.ok(ctrl instanceof PocketCode.Ui.I18nCheckbox && ctrl instanceof SmartJs.Ui.Control, "instance check + inheritance");
+    assert.ok(ctrl.objClassName === "I18nCheckbox", "objClassName check");
 
     assert.equal(ctrl.value, undefined, "value getter (uninitialized)");
-    ctrl = new PocketCode.Ui.Checkbox("i18nKey", "value1");
+    ctrl = new PocketCode.Ui.I18nCheckbox("i18nKey", "value1");
 
     assert.equal(ctrl.value, "value1", "value getter (initialized)");
     ctrl.value = "value2";
@@ -167,8 +167,6 @@ QUnit.test("RadioGroup", function (assert) {
 
 QUnit.test("Radio", function (assert) {
 
-    //var done = assert.async;
-
     var dom = document.getElementById("qunit-fixture");
     var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
     dom.appendChild(container._dom);
@@ -176,7 +174,7 @@ QUnit.test("Radio", function (assert) {
     var ctrl = new PocketCode.Ui.Radio("i18nKey");
     container.appendChild(ctrl);
 
-    assert.ok(ctrl instanceof PocketCode.Ui.Radio && ctrl instanceof PocketCode.Ui.Checkbox, "instance check + inheritance");
+    assert.ok(ctrl instanceof PocketCode.Ui.Radio && ctrl instanceof PocketCode.Ui.I18nCheckbox, "instance check + inheritance");
     assert.ok(ctrl.objClassName === "Radio", "objClassName check");
 
     assert.ok(ctrl.onCheckedChange instanceof SmartJs.Event.Event, "event accessor");
@@ -206,4 +204,16 @@ QUnit.test("Radio", function (assert) {
 
 });
 
+QUnit.test("I18nRadio", function (assert) {
 
+    var dom = document.getElementById("qunit-fixture");
+    var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
+    dom.appendChild(container._dom);
+
+    var ctrl = new PocketCode.Ui.I18nRadio("i18nKey");
+    container.appendChild(ctrl);
+
+    assert.ok(ctrl instanceof PocketCode.Ui.I18nRadio && ctrl instanceof PocketCode.Ui.Radio, "instance check + inheritance");
+    assert.ok(ctrl.objClassName === "I18nRadio", "objClassName check");
+
+});
