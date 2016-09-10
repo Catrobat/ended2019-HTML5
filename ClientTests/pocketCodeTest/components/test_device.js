@@ -103,6 +103,50 @@ QUnit.test("Device", function (assert) {
 });
 
 
+QUnit.test("Device: Touch", function (assert) {
+
+    var sm = new PocketCode.SoundManager();
+    var dev = new PocketCode.Device(sm);
+
+    assert.equal(dev.lastTouchIndex, 0, "initial: no touch");
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 0);
+    assert.equal(dev.lastTouchIndex, 1, "touch added on touch start");
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_MOVE, "m1", 1, 1);
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_END, "m1", 2, 2);
+    assert.equal(dev.lastTouchIndex, 1, "no touch added on move/end");
+
+    dev.clearTouchHistory();
+    assert.equal(dev.lastTouchIndex, 0, "initial: no touch (after clear/restart)");
+
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 1);
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_MOVE, "m1", 2, 3);
+
+    assert.ok(dev.isTouched(1), "active touch");
+    dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_END, "m1", 4, 5);
+    assert.notOk(dev.isTouched(1), "active touch = false");
+
+    assert.equal(dev.getTouchX(1), 2, "x position, last edit (touch end positions ignored)");
+    assert.equal(dev.getTouchY(1), 3, "y position, last edit (touch end positions ignored)");
+
+    //out of range
+    assert.notOk(dev.isTouched(2), "isTouched: out of range (idx >= length)");
+
+    assert.equal(dev.getTouchX(2), 0.0, "x position: out of range (idx >= length)");
+    assert.equal(dev.getTouchY(2), 0.0, "y position: out of range (idx >= length)");
+
+    assert.notOk(dev.isTouched(0), "isTouched: out of range (idx <= 0)");
+
+    assert.equal(dev.getTouchX(0), 0.0, "x position: out of range (idx <= 0)");
+    assert.equal(dev.getTouchY(0), 0.0, "y position: out of range (idx <= 0)");
+
+});
+
+
+QUnit.test("Device: GeoLoacation", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("DeviceEmulator", function (assert) {
 
     var sm = new PocketCode.SoundManager();
@@ -134,3 +178,4 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.equal(dev.unsupportedFeatures[0], "lblDeviceAcceleration", "property and access check");
 
 });
+

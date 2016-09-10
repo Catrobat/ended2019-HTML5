@@ -128,7 +128,7 @@ QUnit.test("ImageHelper", function (assert) {
     var done4 = assert.async();
     var done5 = assert.async();
     var done6 = assert.async();
-    var done7 = assert.async();
+    //var done7 = assert.async();
 
     //helper function to limit rounding errors
     var round1000 = function (value) {
@@ -410,7 +410,7 @@ QUnit.test("ImageHelper", function (assert) {
         assert.ok(round1000(x) == 0 && round1000(y) == 0, "calling method using canvas element: resized- make sure there is no trim-area after first trim");
 
         ////individual rotation center applied
-        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width / 2, img9.height / 2);
+        //oImg9 = ih.adjustCenterAndTrim(img9, img9.width * 0.5, img9.height * 0.5);
         //oImg8 = ih.adjustCenterAndTrim(img8, img8.width, 0);
         //oImg7 = ih.adjustCenterAndTrim(img7, 3, 3);
         //oImg6 = ih.adjustCenterAndTrim(img6, img6.width, img6.height);
@@ -594,18 +594,17 @@ QUnit.test("ImageHelper", function (assert) {
         }
 
         done6();
-        runTests_findObjects();
+        //runTests_findObjects();
 
     };
-    var runTests_findObjects = function () {
-        var canvas = document.createElement('canvas');
-        var ctx=canvas.getContext("2d");
-        ctx.rect(20,20,10,5);
-        ctx.fill();
+    //var runTests_findObjects = function () {
+    //    var canvas = document.createElement('canvas');
+    //    var ctx=canvas.getContext("2d");
+    //    ctx.rect(20,20,10,5);
+    //    ctx.fill();
 
-        done7();
-    }
+    //    done7();
+    //}
+
 });
-
-
 

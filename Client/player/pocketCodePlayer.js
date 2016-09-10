@@ -281,6 +281,13 @@ PocketCode.Web = {
 							'</svg>';
 			this.muteButton = btn;
 
+
+			//var menu = new PocketCode.Ui.Menu();
+			// var menu2 = PocketCode.Ui.Menu();
+			// var m = PocketCode.Web.ExitButton();
+			//console.log( this );
+			//this.menuButton = btn;
+
 			//this._dom
 			var overlay = document.createElement('div');
 			overlay.className = 'pc-webOverlay';
@@ -313,6 +320,7 @@ PocketCode.Web = {
 			rc.className = 'pc-rightCol';
 			wlr.appendChild(rc);
 			var wm = document.createElement('div');
+			this.menuContainer = wm;
 			wm.className = 'pc-webMenu';
 			rc.appendChild(wm);
 
@@ -405,11 +413,17 @@ PocketCode.Web = {
 			},
 			show: function () {
 				this.hidden = false;
-				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
+				this._clickHandler = this._addDomListener(document, 'click', function (e) {
+				    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string'))
+    				    e.preventDefault();
+				});
 				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
-				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) {
+				    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string'))
+				        e.preventDefault();
+				});
+				//this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				//this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
 				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
@@ -435,8 +449,8 @@ PocketCode.Web = {
 				this._removeDomListener(document, 'click', this._clickHandler);
 				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-				this._removeDomListener(document, 'touchend', this._touchEndHandler);
-				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				//this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				//this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
 				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 
@@ -614,8 +628,8 @@ PocketCode.Web = {
 				this._clickHandler = this._addDomListener(document, 'click', function (e) { e.preventDefault(); });
 				this._dblClickHandler = this._addDomListener(document, 'dblclick', function (e) { e.preventDefault(); });
 				this._touchStartHandler = this._addDomListener(document, 'touchstart', function (e) { e.preventDefault(); }); //e.stopPropagation(); return false; 
-				this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
-				this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
+				//this._touchEndHandler = this._addDomListener(document, 'touchend', function (e) { e.preventDefault(); });
+				//this._touchCancelHandler = this._addDomListener(document, 'touchcancel', function (e) { e.preventDefault(); });
 				this._touchLeaveandler = this._addDomListener(document, 'touchleave', function (e) { e.preventDefault(); });
 				this._touchMoveHandler = this._addDomListener(document, 'touchmove', function (e) { e.preventDefault(); });
 
@@ -627,8 +641,8 @@ PocketCode.Web = {
 				this._removeDomListener(document, 'click', this._clickHandler);
 				this._removeDomListener(document, 'dblclick', this._dblClickHandler);
 				this._removeDomListener(document, 'touchstart', this._touchStartHandler);
-				this._removeDomListener(document, 'touchend', this._touchEndHandler);
-				this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
+				//this._removeDomListener(document, 'touchend', this._touchEndHandler);
+				//this._removeDomListener(document, 'touchcancel', this._touchCancelHandler);
 				this._removeDomListener(document, 'touchleave', this._touchLeaveandler);
 				this._removeDomListener(document, 'touchmove', this._touchMoveHandler);
 
@@ -877,6 +891,7 @@ PocketCode.Web = {
 		        this._addDomListener(ol.muteButton, 'touchend', this._muteHandler);
 		        this._webOverlay = ol;
 
+
 		        ol.appendControl(this._splashScreen);
 		        var fapi = PocketCode.Web.FullscreenApi;
 		        fapi.onFullscreenChange = function (state) {
@@ -912,13 +927,13 @@ PocketCode.Web = {
 		            return;
 
 		        var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-		        this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066, mobileInitialized);
+		        this._player = new PocketCode.Player.Application(vpc, this._rfc3066, mobileInitialized);
 		        this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		        this._player.onUiDirectionChange.addEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
 		        this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
 
 		        if (this._isMobile) {
-		            //this._player = new PocketCode.PlayerApplication();//this._splashScreen, this._webOverlay);
+		            //this._player = new PocketCode.Player.Application();//this._splashScreen, this._webOverlay);
 		            //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		            this._player.onMobileInitRequired.addEventListener(new SmartJs.Event.EventListener(this._reinitMobileHandler, this));
 		            //this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
@@ -936,7 +951,7 @@ PocketCode.Web = {
 		            //	return;
 		            //the whole framework is already loaded
 		            //var vpc = this._webOverlay ? this._webOverlay.viewportContainer : undefined;
-		            //this._player = new PocketCode.PlayerApplication(vpc, this._rfc3066);
+		            //this._player = new PocketCode.Player.Application(vpc, this._rfc3066);
 		            //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		            this._player.onHWRatioChange.addEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
 		            //this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
@@ -950,15 +965,18 @@ PocketCode.Web = {
 
 		        this._player.dispose();
 		        this._initApplication(true);
-		        //this._player = new PocketCode.PlayerApplication(undefined, undefined, true);
+		        //this._player = new PocketCode.Player.Application(undefined, undefined, true);
 		        //this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
 		        //this._player.loadProject(this._projectId);
 		    },
-		    _applicationInitHandler: function () {
+		    _applicationInitHandler: function (e) {
 		        this._splashScreen.hide();
 		        if (this._exitButton) {
 		            document.body.removeChild(this._exitButton.dom);
 		            delete this._exitButton;
+		        }
+		        if (e.menu) {
+		            e.menu.addToDom(this._webOverlay.menuContainer);
 		        }
 		        this._splashScreen.setProgress(0, PocketCode.Web.resources.files.length);  //reinit- if the overlay is opened again
 		        if (this._webOverlay)
@@ -1102,6 +1120,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/button.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/input.js', type: 'js' },
+		{ url: 'pocketCode/scripts/ui/menu.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/scrollContainer.js', type: 'js' },
@@ -1116,6 +1136,7 @@ PocketCode.Web.resources = {
 
 		//TODO: insert player scripts
 		{ url: 'player/scripts/playerApplication.js', type: 'js' },
+		{ url: 'player/scripts/ui/playerMenu.js', type: 'js' },
 	],
 };
 

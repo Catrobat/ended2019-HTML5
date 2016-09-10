@@ -65,9 +65,8 @@ PocketCode.Ui.merge({
         }(),
         MENU: function () {
             var svgs = PocketCode.Ui._svgs;
-            var text1 = '<path d="M0 0h48v48h-48z" fill="none"/>';
-            var text2 = '<path d="M6 36h36v-4h-36v4zm0-10h36v-4h-36v4zm0-14v4h36v-4h-36z"/>';
-            return svgs.tagStart + text1 + text2 + svgs.tagEnd;
+            var icon = '<path d="M26 13 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/><path d="M26 32 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/><path d="M26 51 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/>';
+            return svgs.tagStart + icon + svgs.tagEnd;
         }(),
     },
 
@@ -81,7 +80,7 @@ PocketCode.Ui.merge({
             if (i18n && typeof i18n != 'string' && !(i18n instanceof PocketCode.Core.I18nString))
                 throw new Error('invalid argument: i18nKey or i18nString');
 
-            this._i18n = i18n || 'undefined';
+            this._i18n = i18n;// || 'undefined';
             this._insertBefore = insertBefore || '';
             this._insertAfter = insertAfter || '';
 
@@ -181,23 +180,36 @@ PocketCode.Ui.merge({
         //methods
         Viewport.prototype.merge({
             _disableBrowserGestures: function () {
-                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); });
-                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
-                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
-                    if (!e.systemAllowed)
+                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) {
+                    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string') && e.cancelable)
                         e.preventDefault();
                 });
-                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); });
-                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); });
-                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); });
-                this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
+                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
+                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
+                    if (!e.systemAllowed && (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string')) && e.cancelable)
+                        e.preventDefault();
+                });
+                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) {
+                //    e.preventDefault();
+                //});
+                //this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) {
+                //    e.preventDefault();
+                //});
+                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) {
+                    if (e.cancelable)
+                        e.preventDefault();
+                });
+                this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) {
+                    if (e.cancelable)
+                        e.preventDefault();
+                });
             },
             _enableBrowserGestures: function () {
                 this._removeDomListener(this._dom, 'click', this._clickHandler);
                 this._removeDomListener(this._dom, 'dblclick', this._dblClickHandler);
                 this._removeDomListener(this._dom, 'touchstart', this._touchStartHandler);
                 //this._removeDomListener(this._dom, 'touchend', this._touchEndHandler);
-                this._removeDomListener(this._dom, 'touchcancel', this._touchCancelHandler);
+                //this._removeDomListener(this._dom, 'touchcancel', this._touchCancelHandler);
                 this._removeDomListener(this._dom, 'touchleave', this._touchLeaveandler);
                 this._removeDomListener(this._dom, 'touchmove', this._touchMoveHandler);
             },

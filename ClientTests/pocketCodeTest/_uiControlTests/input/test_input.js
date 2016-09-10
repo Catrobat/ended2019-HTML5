@@ -11,7 +11,7 @@ window.onload = function () {
     var rg = new PocketCode.Ui.RadioGroup();
     var ctrl1 = new PocketCode.Ui.Radio('key1', 'val1');
     var ctrl2 = new PocketCode.Ui.Radio('key2', 'val2');
-    var ctrl3 = new PocketCode.Ui.Radio('key3', 'val3');
+    var ctrl3 = new PocketCode.Ui.I18nRadio('key3', 'val3');
 
     rg.add(ctrl1);
     var arr = [];
@@ -28,9 +28,9 @@ window.onload = function () {
     rg2.add(ctrl1);
     rg.add(ctrl1);
 
-    var cb1 = new PocketCode.Ui.Checkbox('cb1', 1);
-    var cb2 = new PocketCode.Ui.Checkbox('cb2', 2);
-    var cb3 = new PocketCode.Ui.Checkbox('cb3', 3);
+    var cb1 = new PocketCode.Ui.I18nCheckbox('cb1', 1);
+    var cb2 = new PocketCode.Ui.I18nCheckbox('cb2', 2);
+    var cb3 = new PocketCode.Ui.I18nCheckbox('cb3', 3);
 
     layoutContainer.appendChild(cb1._dom);
     layoutContainer.appendChild(cb2._dom);

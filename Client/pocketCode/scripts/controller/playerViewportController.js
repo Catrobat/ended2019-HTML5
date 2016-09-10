@@ -15,6 +15,7 @@ PocketCode.PlayerViewportController = (function () {
         //init default values
         this._projectScreenWidth = 200;
         this._projectScreenHeight = 380;
+        this._zoomToFit = false;    //TODO: set canvas scaling
     }
 
     //properties
@@ -45,13 +46,18 @@ PocketCode.PlayerViewportController = (function () {
                 };
             },
         },
+        zoomToFit: {
+            set: function (bool) {
+                this._zoomToFit = bool;    //TODO: set canvas scaling
+            },
+        },
     });
 
     //events
     Object.defineProperties(PlayerViewportController.prototype, {
-        onSpriteClicked: {
+        onUserAction: {
             get: function () {
-                return this._view.onSpriteClicked;
+                return this._view.onUserAction;
             },
         },
     });

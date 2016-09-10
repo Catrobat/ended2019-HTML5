@@ -741,8 +741,18 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
     assert.ok(tag instanceof SmartJs.Ui.Control, "instance check");
     assert.equal(tag.objClassName, "HtmlTag", "objClassName check");
 
+    tag.setDomAttribute("id", tag.id + "new Id");
+    assert.equal(tag.getDomAttribute("id"), tag.id + "new Id", "DOM Attribute getter/setter");
+    assert.equal(tag.dom, tag._dom, "public accessor for dom");
+
     //override internal functions to test interface
     var lastMethod = -1;
+    tag._addDomListener = function () {
+        lastMethod = 6;
+    };
+    tag._removeDomListener = function () {
+        lastMethod = 7;
+    };
     tag._appendChild = function () {
         lastMethod = 0;
     };
@@ -774,6 +784,10 @@ QUnit.test("SmartJs.Ui.HtmlTag", function (assert) {
     assert.equal(lastMethod, 4, "replaceChild");
     tag.removeChild();
     assert.equal(lastMethod, 5, "removeChild");
+    tag.addDomListener();
+    assert.equal(lastMethod, 6, "add DOM listener");
+    tag.removeDomListener();
+    assert.equal(lastMethod, 7, "remove DOM listener");
 
 });
 

@@ -58,11 +58,13 @@ QUnit.test("I18nProvider", function (assert) {
 
         TestCallWithParam();
         done2();
+
+        i18n.loadDictionary(i18n.currentLanguage);  //make sure not loaded again- code coverage only
     };
     i18n.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler, this));
 
-    i18n.loadSuppordetLanguages();
-    i18n.loadDictionary();
+    i18n.init();
+    //i18n.init(i18n.currentLanguage);
 
     function TestCallWithParam() {
         //make sure no other listeners are registered
@@ -70,7 +72,7 @@ QUnit.test("I18nProvider", function (assert) {
 
         var languageChangeHandler2 = function (e) {
             assert.ok(true, "language change fired: using parameter");
-            assert.equal(e.language, "en-GB", "language change event argeument check");
+            assert.equal(e.language, "en", "language change event argument check"); //language is "en" even "en-GB" was loaded
             assert.equal(i18n.currentLanguageDirection, "ltr", "language getter");
 
             done3();

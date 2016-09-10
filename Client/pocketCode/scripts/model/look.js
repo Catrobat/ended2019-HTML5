@@ -90,8 +90,8 @@ PocketCode.Model.Look = (function () {
                     throw new Error('rotationCenterX & rotationCenterY have to be numeric');
 
                 //adjust center vector
-                var centerOffsetX = img.originalWidth / 2.0 - this._rotationCenterX,
-                    centerOffsetY = -img.originalHeight / 2.0 - this._rotationCenterY;
+                var centerOffsetX = img.originalWidth * 0.5 - this._rotationCenterX,
+                    centerOffsetY = -img.originalHeight * 0.5 - this._rotationCenterY;
                 centerOffsetX += center.length * Math.cos(center.angle);// - centerOffsetX,
                 centerOffsetY += center.length * Math.sin(center.angle);// + centerOffsetY;
 
@@ -101,8 +101,8 @@ PocketCode.Model.Look = (function () {
                 };
 
                 //adjust corner vectors
-                var mx = this._canvas.width / 2.0,    //new rotation center
-                    my = this._canvas.height / 2.0,
+                var mx = this._canvas.width * 0.5,    //new rotation center
+                    my = this._canvas.height * 0.5,
                     x = centerOffsetX - mx,
                     y = centerOffsetY + my;
                 this._tl = { length: Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)), angle: Math.atan2(y, x) };
