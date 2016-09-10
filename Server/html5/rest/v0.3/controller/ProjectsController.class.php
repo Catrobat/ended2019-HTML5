@@ -1,7 +1,5 @@
 <?php
 
-require_once("BaseController.class.php");
-
 class ProjectsController extends BaseController
 {
     const CACHING_ENABLED = false;    //true;//
@@ -20,11 +18,9 @@ class ProjectsController extends BaseController
         $this->BASE_URL = $this->API;
         $this->API = $this->API . "pocketcode/";
 
-        if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']))
+        if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) // is localhost
         {
-            // is localhost
-            $local_path = str_replace("html5\\rest\\" . $this->request->serviceVersion, "", getcwd());
-            $this->SERVER_ROOT = $local_path;
+            $this->SERVER_ROOT = str_replace("html5\\rest\\" . $this->request->serviceVersion, "", getcwd());
         }
     }
 

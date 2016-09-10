@@ -4,11 +4,10 @@ class ProjectDto {
 
   public $id;
   public $header;
-  
-  public $background;			//object
-  public $sprites = array();	//objects
+
+  public $scenes = array();
   public $resourceBaseUrl;
-  
+
   public $images = array();
   public $sounds =  array();
   public $variables =  array();
@@ -19,5 +18,5 @@ class ProjectDto {
     $this->id = $id;
     $this->resourceBaseUrl = $resourceBaseUrl;
   }
-    
+
 }

@@ -1,7 +1,5 @@
 <?php
 
-require_once("BaseController.class.php");
-
 class I18nController extends BaseController
 {
     private $api = "https://api.crowdin.com/api/project/catrobat/download/";

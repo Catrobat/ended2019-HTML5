@@ -1,6 +1,4 @@
 <?php
-require_once("BaseController.class.php");
-require_once("ProjectsController.class.php");
 
 /** @noinspection PhpInconsistentReturnPointsInspection */
 /** @noinspection PhpUndefinedClassInspection */

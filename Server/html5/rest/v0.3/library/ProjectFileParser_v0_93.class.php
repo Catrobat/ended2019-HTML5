@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "ProjectFileParser.class.php";
-
 class ProjectFileParser_v0_93 extends ProjectFileParser
 {
     public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml)

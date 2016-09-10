@@ -1,7 +1,5 @@
 <?php
 
-include_once "ChangeGraphicEffectBrickDto.class.php";
-
 class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto
 {
   public function __construct($value)
