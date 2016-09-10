@@ -17,5 +17,4 @@ class SpriteDto {
         $this->id = $id;
         $this->name = $name;
     }
-
 }

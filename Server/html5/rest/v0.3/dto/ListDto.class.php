@@ -1,7 +1,7 @@
 <?php
 
-class ListDto
-{
+class ListDto {
+
     public $id;
     public $name;
 

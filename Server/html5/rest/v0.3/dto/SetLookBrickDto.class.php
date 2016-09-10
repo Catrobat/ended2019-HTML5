@@ -9,5 +9,4 @@ class SetLookBrickDto extends BaseBrickDto {
 
         $this->lookId = $lookId;
     }
-
 }

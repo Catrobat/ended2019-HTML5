@@ -9,5 +9,4 @@ class StopScriptDto extends BaseBrickDto {
 
         $this->value = $value;
     }
-
 }

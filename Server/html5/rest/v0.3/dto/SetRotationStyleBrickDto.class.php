@@ -9,5 +9,4 @@ class SetRotationStyleBrickDto extends BaseBrickDto {
 
         $this->selected = $selected;	//{0: left-right, 1: all around, 2: don't rotate}
     }
-
 }

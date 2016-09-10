@@ -1,7 +1,7 @@
 <?php
 
-class BaseBrickDto
-{
+class BaseBrickDto {
+
     public $type;
     public $commentedOut;
 

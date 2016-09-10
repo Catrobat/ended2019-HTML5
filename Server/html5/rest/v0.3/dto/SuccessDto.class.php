@@ -7,5 +7,4 @@ class SuccessDto {
     public function __construct($success) {
         $this->success = $success;
     }
-
 }

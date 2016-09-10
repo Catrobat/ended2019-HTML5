@@ -9,5 +9,4 @@ class TurnLeftSpeedBrickDto extends BaseBrickDto {
 
         $this->degreesPerSec = $degreesPerSec;
     }
-
 }

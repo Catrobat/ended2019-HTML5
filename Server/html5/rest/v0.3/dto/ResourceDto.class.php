@@ -11,5 +11,4 @@ class ResourceDto {
         $this->url = $url;
         $this->size = $size;
     }
-
 }

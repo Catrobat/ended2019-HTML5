@@ -1,7 +1,7 @@
 <?php
 
-class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto
-{
+class ChangeBrightnessBrickDto extends ChangeGraphicEffectBrickDto {
+
     public function __construct($value, $commentedOut = false) {
         parent::__construct(EGraphicEffect::BRIGHTNESS, $value, $commentedOut);
 

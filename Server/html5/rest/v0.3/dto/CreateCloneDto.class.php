@@ -13,5 +13,4 @@ class CreateCloneBrickDto extends BaseBrickDto {	//TODO: delete self and include
             $this->spriteId = $spriteId;
         }
     }
-
 }

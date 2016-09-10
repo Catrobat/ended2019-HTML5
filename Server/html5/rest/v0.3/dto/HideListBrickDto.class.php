@@ -1,7 +1,6 @@
 <?php
 
-class HideListBrickDto extends HideVariableBrickDto
-{
+class HideListBrickDto extends HideVariableBrickDto {
 
     public function __construct($resourceId, $commentedOut = false) {
         parent::__construct($resourceId, $commentedOut);

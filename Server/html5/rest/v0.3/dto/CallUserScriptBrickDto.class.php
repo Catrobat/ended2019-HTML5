@@ -10,5 +10,4 @@ class CallUserScriptBrickDto extends BaseBrickDto {
 
         $this->id = $id;
     }
-
 }

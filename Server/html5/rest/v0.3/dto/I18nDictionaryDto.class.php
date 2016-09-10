@@ -1,7 +1,7 @@
 <?php
 
-class I18nDictionaryDto
-{
+class I18nDictionaryDto {
+
     public $languageCode;
     public $direction;
     public $dictionary;

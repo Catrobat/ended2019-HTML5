@@ -9,5 +9,4 @@ class SetMassBrickDto extends BaseBrickDto {
 
         $this->value = $value;
     }
-
 }

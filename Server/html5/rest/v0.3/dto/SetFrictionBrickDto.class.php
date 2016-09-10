@@ -9,5 +9,4 @@ class SetFrictionBrickDto extends BaseBrickDto {
 
         $this->percentage = $percentage;
     }
-
 }

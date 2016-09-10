@@ -11,5 +11,4 @@ class UserScriptHeaderItem {
         $this->name = $name;
         $this->id = $id;
     }
-
 }

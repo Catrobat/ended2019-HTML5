@@ -1,5 +1,4 @@
 <?php
-//ChangeGhostEffect
 
 class ChangeTransparencyBrickDto extends ChangeGraphicEffectBrickDto {
 
@@ -7,7 +6,5 @@ class ChangeTransparencyBrickDto extends ChangeGraphicEffectBrickDto {
 		parent::__construct(EGraphicEffect::GHOST, $value, $commentedOut);
 
 		$this->type = "ChangeTransparency";
-
     }
-
 }

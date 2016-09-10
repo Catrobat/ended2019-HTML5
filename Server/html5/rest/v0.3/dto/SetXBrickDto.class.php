@@ -9,5 +9,4 @@ class SetXBrickDto extends BaseBrickDto {
 
         $this->value = $value;
     }
-
 }

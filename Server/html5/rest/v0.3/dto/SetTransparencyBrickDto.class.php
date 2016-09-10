@@ -7,7 +7,5 @@ class SetTransparencyBrickDto extends SetGraphicEffectBrickDto {
 		parent::__construct(EGraphicEffect::GHOST, $value, $commentedOut);
 
 		$this->type = "SetTransparency";
-
     }
-
 }

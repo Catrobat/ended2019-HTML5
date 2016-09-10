@@ -7,7 +7,6 @@ class ScriptBlockDto extends BaseBrickDto {
     public $y = null;
     public $bricks = array();
 
-
     public function __construct($type, $id, $commentedOut, $x = null, $y = null) {
         parent::__construct($type, $commentedOut);
 
@@ -15,5 +14,4 @@ class ScriptBlockDto extends BaseBrickDto {
         $this->x = $x;
         $this->y = $y;
     }
-
 }

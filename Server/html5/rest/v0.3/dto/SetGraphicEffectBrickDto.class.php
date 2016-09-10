@@ -12,5 +12,4 @@ class SetGraphicEffectBrickDto extends BaseBrickDto {
 		$this->effect = $effect;
 		$this->value = $value;
     }
-
 }

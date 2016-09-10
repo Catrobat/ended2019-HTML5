@@ -6,7 +6,7 @@ class AskAndWaitBrickDto extends BaseBrickDto {
 
     public function __construct($question, $commentedOut = false) {
         parent::__construct("AskAndWait", $commentedOut);
+
         $this->question = $question;
     }
-
 }

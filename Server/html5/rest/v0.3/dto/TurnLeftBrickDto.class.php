@@ -9,5 +9,4 @@ class TurnLeftBrickDto extends BaseBrickDto {
 
         $this->degrees = $degrees;
     }
-
 }

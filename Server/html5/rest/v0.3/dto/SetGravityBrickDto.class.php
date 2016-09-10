@@ -10,5 +10,4 @@ class SetGravityBrickDto extends BaseBrickDto {
         $this->x = $x;
         $this->y = $y;
     }
-
 }

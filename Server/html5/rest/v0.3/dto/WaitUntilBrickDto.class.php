@@ -10,5 +10,4 @@ class WaitUntilBrickDto extends BaseBrickDto {
 
         $this->condition = $condition;
     }
-
 }

@@ -6,7 +6,5 @@ class SetColorEffectBrickDto extends SetGraphicEffectBrickDto {
 		parent::__construct(EGraphicEffect::COLOR, $value, $commentedOut);
 
 		$this->type = "SetColorEffect";
-
     }
-
 }

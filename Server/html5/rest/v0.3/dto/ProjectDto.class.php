@@ -18,5 +18,4 @@ class ProjectDto {
         $this->id = $id;
         $this->resourceBaseUrl = $resourceBaseUrl;
     }
-
 }

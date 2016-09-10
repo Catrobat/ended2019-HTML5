@@ -11,5 +11,4 @@ class UnsupportedBrickDto extends BaseBrickDto {
         $this->xml = $xml;
         $this->brickType = $brickType;
     }
-
 }

@@ -9,5 +9,4 @@ class SpeakBrickDto extends BaseBrickDto {
 
         $this->text = $text;
     }
-
 }

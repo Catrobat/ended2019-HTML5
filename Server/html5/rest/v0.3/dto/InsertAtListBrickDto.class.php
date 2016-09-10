@@ -1,7 +1,7 @@
 <?php
 
-class InsertAtListBrickDto extends BaseBrickDto
-{
+class InsertAtListBrickDto extends BaseBrickDto {
+
     public $resourceId;
     public $index;  //type of FormulaDto
     public $value;  //type of FormulaDto

@@ -7,5 +7,4 @@ class UserScriptBrickDto extends ScriptBlockDto {
     public function __construct($id) {
         parent::__construct("UserScript", $id);
     }
-
 }

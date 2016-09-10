@@ -9,5 +9,4 @@ class SetVolumeBrickDto extends BaseBrickDto {
 
         $this->percentage = $percentage;
     }
-
 }

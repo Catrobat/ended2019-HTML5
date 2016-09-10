@@ -9,5 +9,4 @@ class WhenBroadcastReceiveBrickDto extends ScriptBlockDto {
 
         $this->receiveMsgId = $receiveMsgId;
     }
-
 }

@@ -7,20 +7,14 @@ class ProjectDetailsDto {
     public $description;
     public $baseUrl;
     public $thumbnailUrl;
-    //public $languageVersion;
     public $author;
-    //public $authorProfileUrl;
 
-
-    public function __construct($id, $title, $description, $baseUrl, $thumbnailUrl, /*$languageVersion,*/ $author/*, $authorProfileUrl*/) {
+    public function __construct($id, $title, $description, $baseUrl, $thumbnailUrl, $author) {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->baseUrl = $baseUrl;
         $this->thumbnailUrl = $thumbnailUrl;
-        //$this->languageVersion = $languageVersion;
         $this->author = $author;
-        //$this->authorProfileUrl = $authorProfileUrl;
     }
-
 }

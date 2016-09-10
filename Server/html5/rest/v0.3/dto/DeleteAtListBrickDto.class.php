@@ -1,7 +1,7 @@
 <?php
 
-class DeleteAtListBrickDto extends BaseBrickDto
-{
+class DeleteAtListBrickDto extends BaseBrickDto {
+
     public $resourceId;
     public $index;  //type of FormulaDto
 

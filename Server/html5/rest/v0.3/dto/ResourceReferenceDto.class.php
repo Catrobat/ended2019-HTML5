@@ -9,5 +9,4 @@ class ResourceReferenceDto {
         $this->resourceId = $resourceId;
         $this->name = $name;
     }
-
 }

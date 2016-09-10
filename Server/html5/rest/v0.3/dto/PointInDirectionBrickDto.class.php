@@ -9,5 +9,4 @@ class PointInDirectionBrickDto extends BaseBrickDto {
 
         $this->degrees = $degrees;
     }
-
 }

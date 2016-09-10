@@ -6,7 +6,6 @@ class GlideToBrickDto extends BaseBrickDto {
     public $y;		//FormulaDto
     public $duration;	//FormulaDto
 
-
     public function __construct($x, $y, $duration, $commentedOut = false) {
         parent::__construct("GlideTo", $commentedOut);
 
@@ -14,5 +13,4 @@ class GlideToBrickDto extends BaseBrickDto {
         $this->y = $y;
         $this->duration = $duration;
     }
-
 }

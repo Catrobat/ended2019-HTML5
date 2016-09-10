@@ -1,7 +1,7 @@
 <?php
 
-class ChangeVariableBrickDto extends BaseBrickDto
-{
+class ChangeVariableBrickDto extends BaseBrickDto {
+
     public $resourceId;
     public $value;  //type of FormulaDto
 

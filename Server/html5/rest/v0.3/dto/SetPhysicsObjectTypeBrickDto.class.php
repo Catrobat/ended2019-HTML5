@@ -9,5 +9,4 @@ class SetPhysicsObjectTypeBrickDto extends BaseBrickDto {
 
         $this->physicsType = $type;
     }
-
 }

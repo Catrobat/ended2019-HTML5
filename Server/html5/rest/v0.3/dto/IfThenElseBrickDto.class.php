@@ -13,5 +13,4 @@ class IfThenElseBrickDto extends BaseBrickDto {
         $this->condition = $condition;
         $this->showElse = $showElse;
     }
-
 }

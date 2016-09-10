@@ -9,5 +9,4 @@ class WaitBrickDto extends BaseBrickDto {
 
         $this->duration = $duration;
     }
-
 }

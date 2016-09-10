@@ -13,5 +13,4 @@ class PointToBrickDto extends BaseBrickDto {
             $this->spriteId = $spriteId;
         }
     }
-
 }

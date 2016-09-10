@@ -9,5 +9,4 @@ class UuidDto extends SessionIdDto {
 
         $this->uuid = $uuid;
     }
-
 }

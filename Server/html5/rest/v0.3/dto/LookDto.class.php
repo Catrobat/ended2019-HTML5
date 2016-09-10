@@ -13,5 +13,4 @@ class LookDto extends ResourceReferenceDto {
         $this->rotationCenterX = $rotationCenterX;
         $this->rotationCenterY = $rotationCenterY;
     }
-
 }
