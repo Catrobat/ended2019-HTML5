@@ -2,13 +2,12 @@
 
 class StopScriptDto extends BaseBrickDto {
 
-  public $value;	//all, this, otherScriptsInSprite
+    public $value;	//all, this, otherScriptsInSprite
 
-  
-  public function __construct($value) {
-	parent::__construct("StopScript");
-	
-	$this->value = $value;
-  }
-  
+    public function __construct($value, $commentedOut = false) {
+        parent::__construct("StopScript", $commentedOut);
+
+        $this->value = $value;
+    }
+
 }

@@ -2,8 +2,8 @@
 
 class PreviousLookBrickDto extends BaseBrickDto {
 
-  public function __construct() {
-      parent::__construct("PreviousLook");
-  }
+    public function __construct($commentedOut = false) {
+        parent::__construct("PreviousLook", $commentedOut);
+    }
 
 }

@@ -4,8 +4,8 @@ class SetLookBrickDto extends BaseBrickDto {
 
     public $lookId;
 
-    public function __construct($lookId) {
-        parent::__construct("SetLook");
+    public function __construct($lookId, $commentedOut = false) {
+        parent::__construct("SetLook", $commentedOut);
 
         $this->lookId = $lookId;
     }

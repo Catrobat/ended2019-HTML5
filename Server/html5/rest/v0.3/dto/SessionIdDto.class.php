@@ -2,11 +2,11 @@
 
 class SessionIdDto {
 
-  public $sid;
-  
-  
-  public function __construct($sid) {
-     $this->sid = $sid;
-  }
-    
+    public $sid;
+
+
+    public function __construct($sid) {
+        $this->sid = $sid;
+    }
+
 }

@@ -2,13 +2,12 @@
 
 class TurnLeftBrickDto extends BaseBrickDto {
 
-  public $degrees;	//FormulaDto
+    public $degrees;	//FormulaDto
 
-  
-  public function __construct($degrees) {
-	parent::__construct("TurnLeft");
-	
-	$this->degrees = $degrees;
-  }
-  
+    public function __construct($degrees, $commentedOut = false) {
+        parent::__construct("TurnLeft", $commentedOut);
+
+        $this->degrees = $degrees;
+    }
+
 }

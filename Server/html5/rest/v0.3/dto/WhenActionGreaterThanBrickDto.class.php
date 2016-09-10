@@ -5,8 +5,8 @@ class WhenActionGreaterThanBrickDto extends ScriptBlockDto {
     public $value;
     //action: "video motion", "timer", "loudness"
 
-    public function __construct($id, $action, $value) {
-        parent::__construct("WhenActionGreaterThan", $id);
+    public function __construct($id, $action, $value, $commentedOut = false) {
+        parent::__construct("WhenActionGreaterThan", $id, $commentedOut);
         $this->value = $value;
     }
 

@@ -2,13 +2,13 @@
 
 class ChangeVolumeBrickDto extends BaseBrickDto {
 
-  public $value;	//type of FormulaDto
-  
-  
-  public function __construct($value) {
-	parent::__construct("ChangeVolume");
+    public $value;	//type of FormulaDto
 
-	$this->value = $value;
-  }
-  
+
+    public function __construct($value, $commentedOut = false) {
+        parent::__construct("ChangeVolume", $commentedOut);
+
+        $this->value = $value;
+    }
+
 }

@@ -2,13 +2,12 @@
 
 class SetFrictionBrickDto extends BaseBrickDto {
 
-  public $percentage;	//FormulaDto
+    public $percentage;	//FormulaDto
 
-  
-  public function __construct($percentage) {
-	parent::__construct("SetFriction");
-	
-	$this->percentage = $percentage;
-  }
-  
+    public function __construct($percentage, $commentedOut = false) {
+        parent::__construct("SetFriction", $commentedOut);
+
+        $this->percentage = $percentage;
+    }
+
 }

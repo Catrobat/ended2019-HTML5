@@ -2,13 +2,12 @@
 
 class SetMassBrickDto extends BaseBrickDto {
 
-  public $value;	//FormulaDto
+    public $value;	//FormulaDto
 
-  
-  public function __construct($value) {
-	parent::__construct("SetMass");
-	
-	$this->value = $value;
-  }
-  
+    public function __construct($value, $commentedOut = false) {
+        parent::__construct("SetMass", $commentedOut);
+
+        $this->value = $value;
+    }
+
 }

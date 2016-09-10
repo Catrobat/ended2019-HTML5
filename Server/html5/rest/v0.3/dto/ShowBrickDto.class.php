@@ -2,9 +2,8 @@
 
 class ShowBrickDto extends BaseBrickDto {
 
-  
-  public function __construct() {
-	parent::__construct("Show");
-  }
-  
+    public function __construct($commentedOut = false) {
+        parent::__construct("Show", $commentedOut);
+    }
+
 }

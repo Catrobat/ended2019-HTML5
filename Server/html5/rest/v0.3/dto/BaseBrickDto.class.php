@@ -2,10 +2,11 @@
 
 class BaseBrickDto
 {
-  public $type;
+    public $type;
+    public $commentedOut;
 
-  public function __construct($type)
-  {
-    $this->type = $type;
-  }
+    public function __construct($type, $commentedOut = false) {
+        $this->type = $type;
+        $this->commentedOut = $commentedOut;
+    }
 }

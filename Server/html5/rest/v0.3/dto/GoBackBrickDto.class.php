@@ -2,13 +2,13 @@
 
 class GoBackBrickDto extends BaseBrickDto {
 
-  public $layers;	//FormulaDto
+    public $layers;	//FormulaDto
 
-  
-  public function __construct($layers) {
-	parent::__construct("GoBack");
-	
-	$this->layers = $layers;
-  }
-  
+
+    public function __construct($layers, $commentedOut = false) {
+        parent::__construct("GoBack", $commentedOut);
+
+        $this->layers = $layers;
+    }
+
 }

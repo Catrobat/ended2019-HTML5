@@ -2,21 +2,21 @@
 
 class ProjectDto {
 
-  public $id;
-  public $header;
+    public $id;
+    public $header;
 
-  public $scenes = array();
-  public $resourceBaseUrl;
+    public $scenes = array();
+    public $resourceBaseUrl;
 
-  public $images = array();
-  public $sounds =  array();
-  public $variables =  array();
-  public $lists = array();
-  public $broadcasts =  array();
+    public $images = array();
+    public $sounds =  array();
+    public $variables = array();
+    public $lists = array();
+    public $broadcasts = array();
 
-  public function __construct($id, $resourceBaseUrl) {
-    $this->id = $id;
-    $this->resourceBaseUrl = $resourceBaseUrl;
-  }
+    public function __construct($id, $resourceBaseUrl) {
+        $this->id = $id;
+        $this->resourceBaseUrl = $resourceBaseUrl;
+    }
 
 }

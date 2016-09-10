@@ -2,13 +2,13 @@
 
 class NoteBrickDto extends BaseBrickDto {
 
-  public $text;
-  
-  
-  public function __construct($text) {
-	parent::__construct("Note");
+    public $text;
 
-	$this->text = $text;
-  }
-  
+
+    public function __construct($text, $commentedOut = false) {
+        parent::__construct("Note", $commentedOut);
+
+        $this->text = $text;
+    }
+
 }

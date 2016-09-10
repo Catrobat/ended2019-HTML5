@@ -3,15 +3,15 @@
 
 class ChangeGraphicEffectBrickDto extends BaseBrickDto {
 
-  public $value;	//type of FormulaDto
-  public $effect;
-	
-  
-  public function __construct($effect, $value) {
-		parent::__construct("ChangeGraphicEffect");
+    public $value;	//type of FormulaDto
+    public $effect;
+
+
+    public function __construct($effect, $value, $commentedOut = false) {
+		parent::__construct("ChangeGraphicEffect", $commentedOut);
 
 		$this->effect = $effect;
 		$this->value = $value;
-  }
+    }
 
 }

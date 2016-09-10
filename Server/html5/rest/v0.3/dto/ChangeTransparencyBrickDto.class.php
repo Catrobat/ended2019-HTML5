@@ -3,11 +3,11 @@
 
 class ChangeTransparencyBrickDto extends ChangeGraphicEffectBrickDto {
 
-  public function __construct($value) {
-		parent::__construct(EGraphicEffect::GHOST, $value);
-		
+    public function __construct($value, $commentedOut = false) {
+		parent::__construct(EGraphicEffect::GHOST, $value, $commentedOut);
+
 		$this->type = "ChangeTransparency";
-		
-  }
+
+    }
 
 }

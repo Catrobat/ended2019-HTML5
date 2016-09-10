@@ -2,13 +2,13 @@
 
 class WaitUntilBrickDto extends BaseBrickDto {
 
-  public $condition;	//formula
-  public $bricks = array(); //inner scripts: always empty
+    public $condition;	//formula
+    public $bricks = array(); //inner scripts: always empty
 
-  public function __construct($condition) {
-	parent::__construct("WaitUntil");
+    public function __construct($condition, $commentedOut = false) {
+        parent::__construct("WaitUntil", $commentedOut);
 
-	$this->condition = $condition;
-  }
+        $this->condition = $condition;
+    }
 
 }

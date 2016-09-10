@@ -2,13 +2,13 @@
 
 class ChangeXBrickDto extends BaseBrickDto {
 
-  public $value;	//type of FormulaDto
-  
-  
-  public function __construct($value) {
-	parent::__construct("ChangeX");
+    public $value;	//type of FormulaDto
 
-	$this->value = $value;
-  }
+
+    public function __construct($value, $commentedOut = false) {
+        parent::__construct("ChangeX", $commentedOut);
+
+        $this->value = $value;
+    }
 
 }

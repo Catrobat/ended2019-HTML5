@@ -2,12 +2,12 @@
 
 class SpeakAndWaitBrickDto extends BaseBrickDto {
 
-  public $text;	//formula
+    public $text;	//formula
 
-  public function __construct($text) {
-      parent::__construct("SpeakAndWait");
+    public function __construct($text, $commentedOut = false) {
+        parent::__construct("SpeakAndWait", $commentedOut);
 
-	$this->text = $text;
-  }
+        $this->text = $text;
+    }
 
 }

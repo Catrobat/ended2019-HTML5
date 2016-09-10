@@ -2,12 +2,12 @@
 
 class SetPhysicsObjectTypeBrickDto extends BaseBrickDto {
 
-  public $physicsType;	//"DYNAMIC", "FIXED", "NONE"
+    public $physicsType;	//"DYNAMIC", "FIXED", "NONE"
 
-  public function __construct($type) {
-	parent::__construct("SetPhysicsObjectType");
+    public function __construct($type, $commentedOut = false) {
+        parent::__construct("SetPhysicsObjectType", $commentedOut);
 
-	$this->physicsType = $type;
-  }
+        $this->physicsType = $type;
+    }
 
 }
