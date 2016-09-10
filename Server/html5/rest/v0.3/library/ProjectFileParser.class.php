@@ -70,6 +70,7 @@ class ProjectFileParser
 
             //header
             $project->header = $this->parseHeader();
+            array_push($project->scenes, new SceneDto($this->getNewId(), "Scene 1", $project->header->device->screenHeight, $project->header->device->screenWidth));
 
             //global variables
             $this->includeGlobalData();
@@ -90,7 +91,7 @@ class ProjectFileParser
                 if($bg === true)
                 {
                     $this->background = new SpriteDto($this->getNewId(), $this->getName($sprite));
-                    $project->background = $this->background;
+                    $project->scenes[0]->background = $this->background;
                     $bg = false;
                 }
                 else
@@ -113,7 +114,7 @@ class ProjectFileParser
 
                 if($bg === true)
                 {
-                    $project->background = $this->parseSprite($sprite, $project->background->id);
+                    $project->scenes[0]->background = $this->parseSprite($sprite, $this->background->id);
                     $bg = false;
                 }
                 else
@@ -141,7 +142,7 @@ class ProjectFileParser
 
             array_pop($this->cpp);
 
-            $project->sprites = $this->sprites;
+            $project->scenes[0]->sprites = $this->sprites;
 
             //set total number of bricks in header
             $project->header->bricksCount = $this->bricksCount;
@@ -195,8 +196,7 @@ class ProjectFileParser
         $xmlh = $this->simpleXml->header;
 
         //device
-        $device = new ProjectDeviceDto(intval($xmlh->screenHeight), intval($xmlh->screenWidth), (string)$this->getProperty($xmlh,
-                                                                            "screenMode"));
+        $device = new ProjectDeviceDto(intval($xmlh->screenHeight), intval($xmlh->screenWidth), (string)$this->getProperty($xmlh, "screenMode"));
 
         //header
         $header = new ProjectHeaderDto((string)$xmlh->programName, (string)$xmlh->description,
