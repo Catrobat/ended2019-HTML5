@@ -71,7 +71,7 @@ PocketCode.GameEngine = (function () {
         this._onLoad = new SmartJs.Event.Event(this);
 
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
-        this._onProgramStart = new SmartJs.Event.Event(this);
+        //this._onProgramStart = new SmartJs.Event.Event(this);
         this._onProgramExecuted = new SmartJs.Event.Event(this);
         this._onSpriteUiChange = new SmartJs.Event.Event(this);
         this._onVariableUiChange = new SmartJs.Event.Event(this);
@@ -80,6 +80,7 @@ PocketCode.GameEngine = (function () {
 
         this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
+        this._currentScene = new PocketCode.Model.Scene();
     }
 
     //properties
@@ -173,6 +174,11 @@ PocketCode.GameEngine = (function () {
         projectTimer: {
             value: new SmartJs.Components.Stopwatch(),
         },
+        currentScene: {
+            get: function () {
+                return this._currentScene;
+            }
+        }
     });
 
     //events
@@ -187,10 +193,10 @@ PocketCode.GameEngine = (function () {
             get: function () { return this._onLoadingError; },
         },
         onBeforeProgramStart: {
-            get: function () { return this._onBeforeProgramStart; },
+            get: function () { return this._currentScene.onBeforeProgramStart; }, //todo quickfix
         },
         onProgramStart: {
-            get: function () { return this._onProgramStart; },
+            get: function () { return this._currentScene.onProgramStart; }, //todo
         },
         onProgramExecuted: {
             get: function () { return this._onProgramExecuted; },
@@ -299,9 +305,8 @@ PocketCode.GameEngine = (function () {
 
             //todo for all scenes
             //todo collisionManager per scene
-            var scene = new PocketCode.Scene(this._spriteFactory, this._collisionManager);
-            scene.load(jsonProject);
-            this._currentScene = scene;
+            this._currentScene.init(this._spriteFactory, this._collisionManager, this.projectTimer, this._spriteOnExecutedHandler,this);
+            this._currentScene.load(jsonProject);
 
             // if (jsonProject.background) {
             //     this._background = this._spriteFactory.create(jsonProject.background);
@@ -342,6 +347,7 @@ PocketCode.GameEngine = (function () {
             //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
         _initSprites: function () {
+            //todo move
             // init sprites after all looks were loaded (important for look offsets)
             var bg = this._currentScene._background,
                 sprites = this._currentScene._sprites;
@@ -405,48 +411,52 @@ PocketCode.GameEngine = (function () {
         },
         //project interaction
         runProject: function (reinitSprites) {
-            if (this._executionState === PocketCode.ExecutionState.RUNNING)
-                return;
-            if (!this.projectLoaded) {
-                throw new Error('no project loaded');
-            }
-            if (this._executionState === PocketCode.ExecutionState.PAUSED)
-                return this.resumeProject();
+            //todo
+            this._currentScene.start(reinitSprites);
+            //return;
 
-            if (this._device)   //not defined if project lot loaded
-                this._device.clearTouchHistory();
-            reinitSprites = reinitSprites || true;
-            //if reinit: all sprites properties have to be set to their default values: default true
-            if (reinitSprites == true && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
-                var bg = this._background;
-                if (bg) {
-                    bg.init();
-                    //this._onSpriteUiChange.dispatchEvent({ id: bg.id, properties: bg.renderingProperties }, bg);
-                }
-
-                this._sprites = this._originalSpriteOrder;  //reset sprite order
-                this._collisionManager.sprites = this._originalSpriteOrder;
-
-                var sprites = this._sprites,
-                    sprite;
-                for (var i = 0, l = sprites.length; i < l; i++) {
-                    sprite = sprites[i];
-                    sprite.init();
-                    //this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: sprite.renderingProperties }, sprite);
-                }
-
-                this._resetVariables();  //global
-                this._onBeforeProgramStart.dispatchEvent({ reinit: true });
-            }
-            else
-                this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
-
-            this.projectTimer.start();
-            this._executionState = PocketCode.ExecutionState.RUNNING;
-            //^^ we create them onProjectLoaded at the first start
-            this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
-            if (!bg)
-                this._spriteOnExecutedHandler();    //make sure an empty program terminates
+            // if (this._executionState === PocketCode.ExecutionState.RUNNING)
+            //     return;
+            // if (!this.projectLoaded) {
+            //     throw new Error('no project loaded');
+            // }
+            // if (this._executionState === PocketCode.ExecutionState.PAUSED)
+            //     return this.resumeProject();
+            //
+            // if (this._device)   //not defined if project lot loaded
+            //     this._device.clearTouchHistory();
+            // reinitSprites = reinitSprites || true;
+            // //if reinit: all sprites properties have to be set to their default values: default true
+            // if (reinitSprites == true && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
+            //     var bg = this._background;
+            //     if (bg) {
+            //         bg.init();
+            //         //this._onSpriteUiChange.dispatchEvent({ id: bg.id, properties: bg.renderingProperties }, bg);
+            //     }
+            //
+            //     this._sprites = this._originalSpriteOrder;  //reset sprite order
+            //     this._collisionManager.sprites = this._originalSpriteOrder;
+            //
+            //     var sprites = this._sprites,
+            //         sprite;
+            //     for (var i = 0, l = sprites.length; i < l; i++) {
+            //         sprite = sprites[i];
+            //         sprite.init();
+            //         //this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: sprite.renderingProperties }, sprite);
+            //     }
+            //
+            //     this._resetVariables();  //global
+            //     this._onBeforeProgramStart.dispatchEvent({ reinit: true });
+            // }
+            // else
+            //     this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
+            //
+            // this.projectTimer.start();
+            // this._executionState = PocketCode.ExecutionState.RUNNING;
+            // //^^ we create them onProjectLoaded at the first start
+            // this.onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
+            // if (!bg)
+            //     this._spriteOnExecutedHandler();    //make sure an empty program terminates
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
@@ -504,7 +514,7 @@ PocketCode.GameEngine = (function () {
 
         _spriteOnExecutedHandler: function (e) {
             window.setTimeout(function () {
-                if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once 
+                if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
                     return;
                 if (this._onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
@@ -622,7 +632,7 @@ PocketCode.GameEngine = (function () {
 
             delete this._originalSpriteOrder;
             //todo unneeded
-            var sprites = this._currentScene._sprites;
+            var sprites = this._currentScene.sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
             }
