@@ -14,8 +14,9 @@ class ProjectDto {
     public $lists = array();
     public $broadcasts = array();
 
-    public function __construct($id, $resourceBaseUrl) {
+    public function __construct($id, $resourceBaseUrl, $header = null) {
         $this->id = $id;
         $this->resourceBaseUrl = $resourceBaseUrl;
+        $this->header = $header;
     }
 }
