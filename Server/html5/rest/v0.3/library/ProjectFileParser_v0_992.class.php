@@ -584,6 +584,9 @@ class ProjectFileParser_v0_992
 
             array_pop($this->cpp);
 
+            //global handling of comment out
+            $brick->commentedOut = (string)$script->commentedOut == "true";
+
             return $brick;
         }
         catch(FileParserException $e)
@@ -836,9 +839,9 @@ class ProjectFileParser_v0_992
         return $brick;
     }
 
-    protected function parseForeverBrick($brickList, $idx, $endless = false)   //the $endloess isn't used anymore in this version
+    protected function parseForeverBrick($brickList, $idx)
     {
-        $brick = new ForeverBrickDto();
+        $brick = new ForeverBrickDto((string)$brickList[$idx]->commentedOut == "true");
         //use a counter to compare nested elements with same names, as objects using equal
         // or operator (===) is not available in simpleXML
         $nestedCounter = 0;
@@ -892,7 +895,7 @@ class ProjectFileParser_v0_992
         $script = $brickList[$idx];
         $ttr = $script->formulaList;
         array_push($this->cpp, $ttr);
-        $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
+        $brick = new RepeatBrickDto($this->parseFormula($ttr->formula), (string)$script->commentedOut == "true");
         array_pop($this->cpp);
 
         $nestedCounter = 0;
@@ -945,7 +948,7 @@ class ProjectFileParser_v0_992
         $script = $brickList[$idx];
         $condition = $script->formulaList;
         array_push($this->cpp, $condition);
-        $brick = new RepeatUntilBrickDto($this->parseFormula($condition->formula));
+        $brick = new RepeatUntilBrickDto($this->parseFormula($condition->formula), (string)$script->commentedOut == "true");
         array_pop($this->cpp);
 
         $nestedCounter = 0;
@@ -997,7 +1000,7 @@ class ProjectFileParser_v0_992
         $script = $brickList[$idx];
         $condition = $script->formulaList;
         array_push($this->cpp, $condition);
-        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false, (string)$script->commentedOut == "true");
         array_pop($this->cpp);
 
         $nestedCounter = 0;
@@ -1048,7 +1051,7 @@ class ProjectFileParser_v0_992
         $script = $brickList[$idx];
         $condition = $script->formulaList;
         array_push($this->cpp, $condition);
-        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), true, (string)$script->commentedOut == "true");
         array_pop($this->cpp);
 
         $nestedCounter = 0;
