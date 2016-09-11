@@ -1,6 +1,6 @@
 <?php
 
-class UserScriptHeaderItem {
+class UserScriptHeaderItemDto {
 
     public $type;   //text, var, linebreak
     public $name;   //var name or text content

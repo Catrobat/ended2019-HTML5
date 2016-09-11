@@ -2,7 +2,7 @@
 
 class GoToBrickDto extends BaseBrickDto {
 
-    public $destinationType; //"mousePointer", "random", "sprite"
+    public $destinationType; //mouseTouchPointer, random, sprite
     public $spriteId;
 
     public function __construct($destinationType, $spriteId = null, $commentedOut = false) {

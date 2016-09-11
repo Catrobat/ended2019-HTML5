@@ -474,6 +474,61 @@ class ProjectFileParser_v0_992
         }
         array_pop($this->cpp);
 
+        //user script definitions
+        array_push($this->cpp, $sprite->userBricks);
+
+        //store path to continue each definition request with the same root
+        $storedPath = $this->cpp;
+
+        foreach($sprite->userBricks->children() as $userScript)
+        {
+            array_push($this->cpp, $userScript);
+
+            $id = $this->getNewId();
+            $brick = new UserScriptBrickDto($id);
+            //$string = (string) $userScript->definitionBrick->asXML();
+            $definition = $this->getObject($userScript->definitionBrick, $this->cpp, true); //follow path to parse internal scripts correctly
+            $definition->addAttribute("userScriptId", $id);
+            //$string = (string) $definition->asXML();
+
+            foreach ($definition->userBrickElements->children() as $headerItem)
+            {
+                switch ((string)$headerItem->elementType) {
+                    case "TEXT":
+                        array_push($brick->header, new UserScriptHeaderItemDto("text", (string)$headerItem->text));
+                        break;
+                    case "VARIABLE":
+                        $varId = $this->getNewId();
+                        $headerItem->addAttribute("variableId", $varId);
+                        array_push($brick->header, new UserScriptHeaderItemDto("var", (string)$headerItem->text, $varId));
+                        break;
+                    case "LINEBREAK":
+                        array_push($brick->header, new UserScriptHeaderItemDto("linebreak"));
+                        break;
+                }
+            }
+
+            array_push($this->cpp, $definition);
+            $script = $definition->script;
+            array_push($this->cpp, $script);
+            $brickList = $script->brickList;
+            array_push($this->cpp, $brickList);
+
+            $this->bricksCount += count($brickList->children()) + 1;
+            $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+            array_pop($this->cpp);
+
+            array_pop($this->cpp);
+            array_pop($this->cpp);
+
+            array_push($sp->userScripts, $brick);
+            array_pop($this->cpp);  //not really necessary
+
+            $this->cpp = $storedPath;   //restore after userScript definitions parsed
+        }
+        array_pop($this->cpp);
+
         //bricks, including broadcasts and variables
         if(property_exists($sprite, "scriptList"))
         {
@@ -1120,6 +1175,69 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
+            case "SceneTransitionBrick":
+                $sceneId = null;
+                $sceneName = (string)$script->sceneForTransition;
+                foreach($this->scenes as $scene)
+                {
+                    if ($scene->name == $sceneName) {
+                        $sceneId = $scene->id;
+                        break;
+                    }
+                }
+
+                if(!$sceneId)
+                    throw new InvalidProjectFileException("SceneTransitionBrick: invalid properties");
+
+                $brick = new SceneTransitionBrickDto($sceneId);
+                break;
+
+            case "SceneStartBrick":
+                $sceneId = null;
+                $sceneName = (string)$script->sceneToStart;
+                foreach($this->scenes as $scene)
+                {
+                    if ($scene->name == $sceneName) {
+                        $sceneId = $scene->id;
+                        break;
+                    }
+                }
+
+                if(!$sceneId)
+                    throw new InvalidProjectFileException("SceneStartBrick: invalid properties");
+
+                $brick = new StartSceneBrickDto($sceneId);
+                break;
+
+            case "CloneBrick":
+                $brick = new CloneBrickDto();
+                break;
+
+            case "DeleteThisCloneBrick":
+                $brick = new DeleteCloneBrickDto();
+                break;
+
+            case "StopScriptBrick":
+                $scriptType = null; //"mouseTouchPointer", "random", "sprite"
+
+                switch((string)$script->spinnerSelection) {
+                    case "0":
+                        $scriptType = "this";
+                        break;
+                    case "1":
+                        $scriptType = "all";
+                        break;
+                    case "2":
+                        $scriptType = "other";
+                        break;
+                }
+
+                if(!$scriptType)
+                    throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
+
+                $brick = new StopScriptBrickDto($scriptType);
+                break;
+
             default:
                 return false;
         }
@@ -1183,10 +1301,44 @@ class ProjectFileParser_v0_992
                 $brick = new ChangeYBrickDto($y);
                 break;
 
-            case "SetRotationStyleBrick":
-                $brick = new SetRotationStyleBrickDto();
-                TODO: $brick->selected = (string)$script->selection;
+            case "GoToBrick":
+                $destinationType = null; //"mouseTouchPointer", "random", "sprite"
+                $spriteId = null;
+
+                switch((string)$script->spinnerSelection) {
+                    case "80":
+                        $destinationType = "pointer";
+                        break;
+                    case "81":
+                        $destinationType = "random";
+                        break;
+                    case "82":
+                        $destinationType = "sprite";
+                        $pointedTo = $this->getObject($script->destinationSprite, $this->cpp);
+                        $name = $this->getName($pointedTo);
+
+                        //detect id by object name (unique): all sprites are already pre-parsed with id and name
+                        foreach($this->currentScene->sprites as $s)
+                        {
+                            if($s->name === $name)
+                            {
+                                $spriteId = $s->id;
+                                break;
+                            }
+                        }
+                        break;
+                }
+
+                if(!$destinationType || ($destinationType == "sprite" && !$spriteId))
+                    throw new InvalidProjectFileException("GoToBrick: invalid properties");
+
+                $brick = new GoToBrickDto($destinationType, $spriteId);
                 break;
+
+            //case "SetRotationStyleBrick":
+            //    $brick = new SetRotationStyleBrickDto();
+            //    TODO: $brick->selected = (string)$script->selection;
+            //    break;
 
             case "IfOnEdgeBounceBrick":
                 $brick = new IfOnEdgeBounceBrickDto();
@@ -1233,6 +1385,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "PointToBrick":
+                $spriteId = null;
                 if(property_exists($script, "pointedObject"))
                 {
                     //type of Sprite = <object />
@@ -1249,12 +1402,7 @@ class ProjectFileParser_v0_992
                         }
                     }
                 }
-                else
-                {
-                    $spriteId = null;
-                }
 
-                /** @noinspection PhpUndefinedVariableInspection */
                 $brick = new PointToBrickDto($spriteId);
                 break;
 
@@ -1571,11 +1719,12 @@ class ProjectFileParser_v0_992
                 $duration = null;
                 foreach($fl->children() as $formula)
                 {
-                    if($formula["category"] == "STRING")
+                    $cat = (string)$formula["category"];
+                    if($cat == "STRING")
                     {
                         $text = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "DURATION_IN_SECONDS")
+                    else if($cat == "DURATION_IN_SECONDS")
                     {
                         $duration = $this->parseFormula($formula);
                     }
@@ -1692,15 +1841,16 @@ class ProjectFileParser_v0_992
                 array_push($this->cpp, $fl);
                 foreach($fl->children() as $formula)
                 {
-                    if($formula["category"] == "PHIRO_LIGHT_RED")
+                    $cat = (string)$formula["category"];
+                    if($cat == "PHIRO_LIGHT_RED")
                     {
                         $r = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "PHIRO_LIGHT_GREEN")
+                    else if($cat == "PHIRO_LIGHT_GREEN")
                     {
                         $g = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "PHIRO_LIGHT_BLUE")
+                    else if($cat == "PHIRO_LIGHT_BLUE")
                     {
                         $b = $this->parseFormula($formula);
                     }
@@ -1797,11 +1947,12 @@ class ProjectFileParser_v0_992
 
                 foreach($fl->children() as $formula)
                 {
-                    if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_INDEX")
+                    $cat = (string)$formula["category"];
+                    if($cat == "INSERT_ITEM_INTO_USERLIST_INDEX")
                     {
                         $index = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_VALUE")
+                    else if($cat == "INSERT_ITEM_INTO_USERLIST_VALUE")
                     {
                         $value = $this->parseFormula($formula);
                     }
@@ -1829,11 +1980,12 @@ class ProjectFileParser_v0_992
 
                 foreach($fl->children() as $formula)
                 {
-                    if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_INDEX")
+                    $cat = (string)$formula["category"];
+                    if($cat == "REPLACE_ITEM_IN_USERLIST_INDEX")
                     {
                         $index = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_VALUE")
+                    else if($cat == "REPLACE_ITEM_IN_USERLIST_VALUE")
                     {
                         $value = $this->parseFormula($formula);
                     }
@@ -1862,11 +2014,12 @@ class ProjectFileParser_v0_992
 
                 foreach($fl->children() as $formula)
                 {
-                    if($formula["category"] == "X_POSITION")
+                    $cat = (string)$formula["category"];
+                    if($cat == "X_POSITION")
                     {
                         $x = $this->parseFormula($formula);
                     }
-                    else if($formula["category"] == "Y_POSITION")
+                    else if($cat == "Y_POSITION")
                     {
                         $y = $this->parseFormula($formula);
                     }
@@ -1900,20 +2053,37 @@ class ProjectFileParser_v0_992
 
     protected function parseUserBricks($brickType, $script)
     {
-        //switch($brickType)
-        //{
-        //    case "PenDownBrick":
-        //        //$brick = new SelectCameraBrickDto();
-        //        break;
+        switch($brickType)
+        {
+            case "UserBrick":
+                $definition = $this->getObject($script->definitionBrick, $this->cpp);
 
-        //    case "PenUpBrick":
-        //        //$brick = new SelectCameraBrickDto();
-        //        break;
+                $storedPath = $this->cpp;   //store path to navigate to element reference
+                $parameters = $this->getObject($script->userBrickParameters, $this->cpp, true);
+                array_push($this->cpp, $parameters);
 
-        //    default:
-        //        return false;
-        //}
-        //return $brick;
+                $brick = new CallUserScriptBrickDto((string)$definition["userScriptId"]);
+
+                foreach ($parameters->children() as $parameter) {
+                    array_push($this->cpp, $parameter);
+                    $variable = $this->getObject($parameter->element, $this->cpp);
+
+                    $fl = $parameter->formulaList;
+                    array_push($this->cpp, $fl);
+                    //add
+                    array_push($brick->parameters, new UserScriptArgumentDto((string)$variable["variableId"], $this->parseFormula($fl->formula)));
+                    array_pop($this->cpp);
+
+                    array_pop($this->cpp);
+                }
+
+                array_pop($this->cpp);  //to root: not necessars due to restore
+                //restore
+                $this->cpp = $storedPath;
+
+                break;
+        }
+        return $brick;
     }
 
     //formula
