@@ -64,8 +64,10 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
     protected function parseRepeatBrick($brickList, $idx)
     {
         $script = $brickList[$idx];
-        $ttr = $script->timesToRepeat;
-        $brick = new RepeatBrickDto($this->parseFormula($ttr->formulaTree));
+        $ttr = $script->formulaList;
+        array_push($this->cpp, $ttr);
+        $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
+        array_pop($this->cpp);
 
         $nestedCounter = 0;
         $parsed = false;

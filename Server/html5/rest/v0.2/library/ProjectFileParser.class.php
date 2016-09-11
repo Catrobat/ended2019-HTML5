@@ -579,7 +579,7 @@ class ProjectFileParser
         return $brick;
     }
 
-    private function parseIfLogicBeginBrick($brickList, $idx)
+    protected function parseIfLogicBeginBrick($brickList, $idx)
     {
         $brick = $this->parseIfLogicBeginBrickScript($brickList[$idx]);
         $nestedCounter = 0;
