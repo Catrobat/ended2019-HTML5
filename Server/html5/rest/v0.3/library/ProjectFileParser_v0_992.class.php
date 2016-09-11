@@ -79,9 +79,12 @@ class ProjectFileParser_v0_992
         return false;
     }
 
-    protected function findLookByResourceId($resourceId)
+    protected function findLookByResourceId($resourceId, $looks = null)
     {
-        foreach($this->currentSprite->looks as $item)
+        if ($looks == null)
+            $looks = $this->currentSprite->looks;   //set current sprite looks as default
+
+        foreach($looks as $item)
         {
             if($item->resourceId === $resourceId)
                 return $item;
@@ -115,6 +118,12 @@ class ProjectFileParser_v0_992
     protected function getBrickType($script)
     {
         return (string)$script["type"];
+    }
+
+    protected function getSceneDirName()
+    {
+        //TODO: name encoding for scene name eg. "//!;;:'...;-):'("
+        return $this->currentScene->name;
     }
 
     //search global and local variable by name and add local variable if not found
@@ -409,19 +418,19 @@ class ProjectFileParser_v0_992
         {
             $look = $this->getObject($look, $this->cpp);
 
-            $url = $this->currentScene->name . "/images/" . (string)$look->fileName;
+            $url = $this->getSceneDirName() . "/images/" . (string)$look->fileName;
             $res = $this->findItemInArrayByUrl($url, $this->images);
             if($res === false)
             {
                 $imageId = $this->getNewId();
-                $path = $this->cacheDir . $this->currentScene->name . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName;
+                $path = $this->cacheDir . $this->getSceneDirName() . DIRECTORY_SEPARATOR . "images" . DIRECTORY_SEPARATOR . (string)$look->fileName;
                 if(is_file($path))
                 {
                     $size = filesize($path);
                 }
                 else
                 {
-                    $size = 0;  //TODO: this si a fix until encoding was specified
+                    $size = 0;  //TODO: this is a fix until encoding was specified
                     //throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
                 }
                 array_push($this->images, new ResourceDto($imageId, $url, $size));
@@ -443,12 +452,12 @@ class ProjectFileParser_v0_992
             $sound = $this->getObject($sound, $this->cpp);
 
             //= false, if not found
-            $url = "sounds/" . (string)$sound->fileName;
+            $url = $this->getSceneDirName() . "/sounds/" . (string)$sound->fileName;
             $res = $this->findItemInArrayByUrl($url, $this->sounds, true);
             if($res === false)
             {
                 $id = $this->getNewId();
-                $path = $this->cacheDir . "sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName;
+                $path = $this->cacheDir . $this->getSceneDirName() . DIRECTORY_SEPARATOR . "sounds" . DIRECTORY_SEPARATOR . (string)$sound->fileName;
                 if(is_file($path))
                 {
                     $size = filesize($path);
@@ -490,9 +499,9 @@ class ProjectFileParser_v0_992
             $brickType = $this->getBrickType($script);
             if(isset($script["reference"]))
                 return new UnsupportedBrickDto((string)$script, "referenceError: TODO");
-                //TODO //throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
+            //TODO //throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
 
-            $brick = $this->parseFirstLevelBricks($brickType, $script);
+            $brick = $this->parseEventBricks($brickType, $script);
 
             if(!$brick)
                 $brick = $this->parseControlBricks($brickType, $script);
@@ -507,7 +516,13 @@ class ProjectFileParser_v0_992
                 $brick = $this->parseLookBricks($brickType, $script);
 
             if(!$brick)
+                $brick = $this->parsePenBricks($brickType, $script);
+
+            if(!$brick)
                 $brick = $this->parseDataBricks($brickType, $script);
+
+            if(!$brick)
+                $brick = $this->parseUserBricks($brickType, $script);
 
             if(!$brick)
                 $brick = new UnsupportedBrickDto($script->asXML(), $brickType);
@@ -606,12 +621,23 @@ class ProjectFileParser_v0_992
     }
 
     //parse bricks
-    protected function parseFirstLevelBricks($brickType, $script)
+    protected function parseEventBricks($brickType, $script)
     {
         switch($brickType)
         {
             case "StartScript":
                 $brick = new WhenProgramStartBrickDto($this->getNewId());
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            case "WhenClonedScript":
+                $brick = new WhenStartAsCloneBrickDto($this->getNewId());
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -658,6 +684,54 @@ class ProjectFileParser_v0_992
 
             case "WhenTouchDownScript":
                 $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            case "WhenConditionScript":
+                $condition = $script->formulaMap;
+                array_push($this->cpp, $condition);
+                $brick = new WhenConditionMetBrickDto($this->getNewId(), $this->parseFormula($condition->formula));
+                array_pop($this->cpp);
+
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            case "WhenBackgroundChangesScript":
+                $lookId = null; //if not defined
+
+                if(property_exists($script, "look"))
+                {
+                    $look = $this->getObject($script->look, $this->cpp);
+                    $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/images/" . (string)$look->fileName, $this->images, true);
+
+                    if($res === false)	//will only return false on invalid projects, as resources are registered already
+                    {
+                        throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+                    }
+                    else {
+                        //find id in sprite->looks[]
+                        $lookObject = $this->findLookByResourceId($res->id);
+                        if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
+                            throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
+                    }
+
+                    //the image has already been included in the resources & look[]
+                    $lookId = $lookObject->id;
+                }
+
+                $brick = new WhenBackgroundChangesToBrickDto($this->getNewId(), $lookId);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -761,8 +835,10 @@ class ProjectFileParser_v0_992
     protected function parseRepeatBrick($brickList, $idx)
     {
         $script = $brickList[$idx];
-        $ttr = $script->timesToRepeat;
-        $brick = new RepeatBrickDto($this->parseFormula($ttr->formulaTree));
+        $ttr = $script->formulaList;
+        array_push($this->cpp, $ttr);
+        $brick = new RepeatBrickDto($this->parseFormula($ttr->formula));
+        array_pop($this->cpp);
 
         $nestedCounter = 0;
         $parsed = false;
@@ -874,7 +950,6 @@ class ProjectFileParser_v0_992
 
         //search for associated end brick
         $innerIfBricks = [];
-        $inElse = false;
         while($idx < count($brickList) - 1)
         {
             //skip begin brick
@@ -909,6 +984,83 @@ class ProjectFileParser_v0_992
 
         if (!$parsed)
             throw new InvalidProjectFileException("IfThenLogicBeginBrick: missing IfThenLogicEndBrick");
+
+        return array("brick" => $brick, "idx" => $idx);
+    }
+
+    protected function parseIfLogicBeginBrick($brickList, $idx)
+    {
+        $script = $brickList[$idx];
+        $condition = $script->formulaList;
+        array_push($this->cpp, $condition);
+        $brick = new IfThenElseBrickDto($this->parseFormula($condition->formula), false);
+        array_pop($this->cpp);
+
+        $nestedCounter = 0;
+        $parsed = false;
+
+        //search for associated end brick
+        $innerIfBricks = [];
+        $innerElseBricks = [];
+        $inElse = false;
+        while($idx < count($brickList) - 1)
+        {
+            //skip begin brick
+            $idx++;
+
+            $name = $this->getBrickType($brickList[$idx]);
+            if($name === "IfLogicBeginBrick")
+            {
+                $nestedCounter++;
+            }
+
+            if($name === "IfLogicElseBrick" && $nestedCounter === 0)
+            {
+                $inElse = true;
+                continue;
+            }
+
+            if($name === "IfLogicEndBrick")
+            {
+                if($nestedCounter === 0)
+                {
+                    //parse recursive
+                    $brick->ifBricks = $this->parseInnerBricks($innerIfBricks);
+                    $brick->elseBricks = $this->parseInnerBricks($innerElseBricks);
+                    $parsed = true;
+                    $this->bricksCount -= 2;
+                    break;
+                }
+                else
+                {
+                    $nestedCounter--;
+                    if($inElse === false)
+                    {
+                        //add inner loop as sub brick
+                        array_push($innerIfBricks, $brickList[$idx]);
+                    }
+                    else
+                    {
+                        array_push($innerElseBricks, $brickList[$idx]);
+                    }
+                }
+            }
+            else
+            {
+                if($inElse === false)
+                {
+                    //add inner loop as sub brick
+                    array_push($innerIfBricks, $brickList[$idx]);
+                }
+                else
+                {
+                    array_push($innerElseBricks, $brickList[$idx]);
+                }
+            }
+        }
+
+        if (!$parsed)
+            throw new InvalidProjectFileException("IfLogicBeginBrick: missing IfLogicEndBrick");
 
         return array("brick" => $brick, "idx" => $idx);
     }
@@ -990,12 +1142,9 @@ class ProjectFileParser_v0_992
                     {
                         $x = $this->parseFormula($formula);
                     }
-                    else
+                    else if($cat === "Y_POSITION")
                     {
-                        if($cat === "Y_POSITION")
-                        {
-                            $y = $this->parseFormula($formula);
-                        }
+                        $y = $this->parseFormula($formula);
                     }
                 }
                 array_pop($this->cpp);
@@ -1123,19 +1272,13 @@ class ProjectFileParser_v0_992
                     {
                         $xDestination = $this->parseFormula($formula);
                     }
-                    else
+                    else if($cat === "Y_DESTINATION")
                     {
-                        if($cat === "Y_DESTINATION")
-                        {
-                            $yDestination = $this->parseFormula($formula);
-                        }
-                        else
-                        {
-                            if($cat === "DURATION_IN_SECONDS")
-                            {
-                                $duration = $this->parseFormula($formula);
-                            }
-                        }
+                        $yDestination = $this->parseFormula($formula);
+                    }
+                    else if($cat === "DURATION_IN_SECONDS")
+                    {
+                        $duration = $this->parseFormula($formula);
                     }
                 }
 
@@ -1174,12 +1317,9 @@ class ProjectFileParser_v0_992
                     {
                         $x = $this->parseFormula($formula);
                     }
-                    else
+                    else if($cat === "PHYSICS_VELOCITY_Y")
                     {
-                        if($cat === "PHYSICS_VELOCITY_Y")
-                        {
-                            $y = $this->parseFormula($formula);
-                        }
+                        $y = $this->parseFormula($formula);
                     }
                 }
                 array_pop($this->cpp);
@@ -1215,12 +1355,9 @@ class ProjectFileParser_v0_992
                     {
                         $x = $this->parseFormula($formula);
                     }
-                    else
+                    else if($cat === "PHYSICS_GRAVITY_Y")
                     {
-                        if($cat === "PHYSICS_GRAVITY_Y")
-                        {
-                            $y = $this->parseFormula($formula);
-                        }
+                        $y = $this->parseFormula($formula);
                     }
                 }
                 array_pop($this->cpp);
@@ -1262,21 +1399,22 @@ class ProjectFileParser_v0_992
         switch($brickType)
         {
             case "PlaySoundBrick":
-                if(!property_exists($script, "sound"))
-                {
-                    //play sound brick is initial set to "New.." and has no child tags per default
+            case "PlaySoundAndWaitBrick":
+                if ($brickType == "PlaySoundBrick")
                     $brick = new PlaySoundBrickDto(null);
+                else
+                    $brick = new PlaySoundAndWaitBrickDto(null);
+
+                if(!property_exists($script, "sound"))  //play sound brick is initial set to "New.." and has no child tags per default
                     break;
-                }
 
                 $sound = $this->getObject($script->sound, $this->cpp);
-                $res = $this->findItemInArrayByUrl("sounds/" . (string)$sound->fileName, $this->sounds, true);
+                $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/sounds/" . (string)$sound->fileName, $this->sounds, true);
 
                 if($res === false)	//will only return false on invalid projects, as resources are registered already
                     throw new InvalidProjectFileException("sound file '" . (string)$sound->fileName . "' does not exist");
 
-                $id = $res->id;
-                $brick = new PlaySoundBrickDto($id);
+                $brick->resourceId = $res->id;
                 break;
 
             case "StopAllSoundsBrick":
@@ -1306,6 +1444,13 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
+            case "SpeakAndWaitBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SpeakAndWaitBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
             default:
                 return false;
         }
@@ -1316,16 +1461,41 @@ class ProjectFileParser_v0_992
     {
         switch($brickType)
         {
-            case "SetLookBrick":
-                if(!property_exists($script, "look"))
-                {
-                    // when no look set, look => empty
-                    $brick = new SetLookBrickDto(null);
+            case "SetBackgroundBrick":
+            case "SetBackgroundAndWaitBrick":
+                if ($brickType == "SetBackgroundBrick")
+                    $brick = new SetBackgroundBrickDto(null);
+                else
+                    $brick = new SetBackgroundAndWaitBrickDto(null);
+
+                if(!property_exists($script, "look"))   // when no look set, look => empty
                     break;
-                }
 
                 $look = $this->getObject($script->look, $this->cpp);
-                $res = $this->findItemInArrayByUrl("images/" . (string)$look->fileName, $this->images, true);
+                $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/images/" . (string)$look->fileName, $this->images, true);
+
+                if($res === false)	//will only return false on invalid projects, as resources are registered already
+                {
+                    throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+                }
+                else {
+                    //find id in sprite->looks[]
+                    $lookObject = $this->findLookByResourceId($res->id, $this->currentScene->background->looks);
+                    if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
+                        throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
+                }
+
+                //the image has already been included in the resources & look[]
+                $brick->lookId = $lookObject->id;
+                break;
+
+            case "SetLookBrick":
+                $brick = new SetLookBrickDto(null);
+                if(!property_exists($script, "look"))   // when no look set, look => empty
+                    break;
+
+                $look = $this->getObject($script->look, $this->cpp);
+                $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/images/" . (string)$look->fileName, $this->images, true);
 
                 if($res === false)	//will only return false on invalid projects, as resources are registered already
                 {
@@ -1339,12 +1509,15 @@ class ProjectFileParser_v0_992
                 }
 
                 //the image has already been included in the resources & look[]
-                $id = $lookObject->id;
-                $brick = new SetLookBrickDto($id);
+                $brick->lookId = $lookObject->id;
                 break;
 
             case "NextLookBrick":
                 $brick = new NextLookBrickDto();
+                break;
+
+            case "PreviousLookBrick":
+                $brick = new PreviousLookBrickDto();
                 break;
 
             case "SetSizeToBrick":
@@ -1369,6 +1542,53 @@ class ProjectFileParser_v0_992
 
             case "ShowBrick":
                 $brick = new ShowBrickDto();
+                break;
+
+            case "AskBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new AskAndWaitBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
+            case "SayBubbleBrick":
+            case "ThinkBubbleBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                if ($brickType == "SayBubbleBrick")
+                    $brick = new SayBrickDto($this->parseFormula($fl->formula));
+                else
+                    $brick = new ThinkBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
+            case "SayForBubbleBrick":
+            case "ThinkForBubbleBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+
+                $text = null;   //formulas
+                $duration = null;
+                foreach($fl->children() as $formula)
+                {
+                    if($formula["category"] == "STRING")
+                    {
+                        $text = $this->parseFormula($formula);
+                    }
+                    else if($formula["category"] == "DURATION_IN_SECONDS")
+                    {
+                        $duration = $this->parseFormula($formula);
+                    }
+                }
+
+                array_pop($this->cpp);
+                if(!$text || !$duration)
+                    throw new InvalidProjectFileException("SayForBubbleBrick, ThinkForBubbleBrick: invalid properties");
+
+                if ($brickType == "SayForBubbleBrick")
+                    $brick = new SayForBrickDto($text, $duration);
+                else
+                    $brick = new ThinkForBrickDto($text, $duration);
                 break;
 
             case "SetTransparencyBrick":    /*name changed*/
@@ -1423,14 +1643,10 @@ class ProjectFileParser_v0_992
                 $brick = new ClearGraphicEffectBrickDto();
                 break;
 
-            case "FlashBrick":    /*name changed*/
+            case "FlashBrick":
                 $brick = new FlashBrickDto();   //spinnerSelectionID = 0/1 (off/on)
                 $brick->selected = (string)$script->spinnerSelectionID;
                 break;
-
-            // case "LedOnBrick":    /*name changed*/
-            // $brick = new LedOnBrickDto();
-            // break;
 
             case "CameraBrick":    /*new*/
                 $brick = new CameraBrickDto();   //spinnerSelectionID = 0/1 (off/on)
@@ -1440,6 +1656,68 @@ class ProjectFileParser_v0_992
             case "ChooseCameraBrick":    /*new*/
                 $brick = new SelectCameraBrickDto();   //spinnerSelectionID = 0/1 (back/front)
                 $brick->selected = (string)$script->spinnerSelectionID;
+                break;
+
+            default:
+                return false;
+        }
+        return $brick;
+    }
+
+    protected function parsePenBricks($brickType, $script)
+    {
+        switch($brickType)
+        {
+            case "PenDownBrick":
+                $brick = new PenDownBrickDto();
+                break;
+
+            case "PenUpBrick":
+                $brick = new PenUpBrickDto();
+                break;
+
+            case "SetPenSizeBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SetPenSizeBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
+            case "SetPenColorBrick":
+                $r = null;
+                $g = null;
+                $b = null;
+
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                foreach($fl->children() as $formula)
+                {
+                    if($formula["category"] == "PHIRO_LIGHT_RED")
+                    {
+                        $r = $this->parseFormula($formula);
+                    }
+                    else if($formula["category"] == "PHIRO_LIGHT_GREEN")
+                    {
+                        $g = $this->parseFormula($formula);
+                    }
+                    else if($formula["category"] == "PHIRO_LIGHT_BLUE")
+                    {
+                        $b = $this->parseFormula($formula);
+                    }
+                }
+
+                array_pop($this->cpp);
+                if(!$r || !$g|| !$b)
+                    throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
+                $brick = new SetPenColorBrickDto($r, $g, $b);
+                break;
+
+            case "StampBrick":
+                $brick = new StampBrickDto();
+                break;
+
+            case "ClearBackgroundBrick":
+                $brick = new ClearBackgroundBrickDto();
                 break;
 
             default:
@@ -1523,13 +1801,13 @@ class ProjectFileParser_v0_992
                     {
                         $index = $this->parseFormula($formula);
                     }
-                    if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_VALUE")
+                    else if($formula["category"] == "INSERT_ITEM_INTO_USERLIST_VALUE")
                     {
                         $value = $this->parseFormula($formula);
                     }
                 }
 
-                if(! $index || ! $value)
+                if(!$index || !$value)
                     throw new InvalidProjectFileException("InsertItemIntoUserListBrick: invalid properties");
 
                 $brick = new InsertAtListBrickDto($id, $index, $value);
@@ -1555,7 +1833,7 @@ class ProjectFileParser_v0_992
                     {
                         $index = $this->parseFormula($formula);
                     }
-                    if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_VALUE")
+                    else if($formula["category"] == "REPLACE_ITEM_IN_USERLIST_VALUE")
                     {
                         $value = $this->parseFormula($formula);
                     }
@@ -1588,7 +1866,7 @@ class ProjectFileParser_v0_992
                     {
                         $x = $this->parseFormula($formula);
                     }
-                    if($formula["category"] == "Y_POSITION")
+                    else if($formula["category"] == "Y_POSITION")
                     {
                         $y = $this->parseFormula($formula);
                     }
@@ -1618,6 +1896,24 @@ class ProjectFileParser_v0_992
         }
 
         return $brick;
+    }
+
+    protected function parseUserBricks($brickType, $script)
+    {
+        //switch($brickType)
+        //{
+        //    case "PenDownBrick":
+        //        //$brick = new SelectCameraBrickDto();
+        //        break;
+
+        //    case "PenUpBrick":
+        //        //$brick = new SelectCameraBrickDto();
+        //        break;
+
+        //    default:
+        //        return false;
+        //}
+        //return $brick;
     }
 
     //formula

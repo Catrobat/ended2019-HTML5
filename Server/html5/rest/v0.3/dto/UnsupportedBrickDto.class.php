@@ -6,7 +6,7 @@ class UnsupportedBrickDto extends BaseBrickDto {
     public $brickType;
 
     public function __construct($xml, $brickType) {
-        parent::__construct("Unsupported", true);	//, $commentedOut = true
+        parent::__construct("Unsupported");//, true);	//, $commentedOut = true
 
         $this->xml = $xml;
         $this->brickType = $brickType;

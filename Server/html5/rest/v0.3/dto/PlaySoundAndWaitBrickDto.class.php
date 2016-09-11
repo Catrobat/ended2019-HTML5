@@ -1,12 +1,10 @@
 <?php
 
-class PlaySoundAndWaitBrickDto extends BaseBrickDto {
-
-    public $resourceId;
+class PlaySoundAndWaitBrickDto extends PlaySoundBrickDto {
 
     public function __construct($resourceId, $commentedOut = false) {
-        parent::__construct("PlaySoundAndWait", $commentedOut);
+        parent::__construct($resourceId, $commentedOut);
 
-        $this->resourceId = $resourceId;
+        $this->type = "PlaySoundAndWait";
     }
 }
