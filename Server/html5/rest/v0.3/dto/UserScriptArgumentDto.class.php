@@ -2,11 +2,11 @@
 
 class UserScriptArgumentDto {
 
-    public $id;     //variableId
-    public $value;  //formula
+    public $referenceId;   //variableId
+    public $value;      //formula
 
-    public function __construct($variableId, $value) {
-        $this->id = $variableId;
+    public function __construct($referenceId, $value) {
+        $this->referenceId = $referenceId;
         $this->value = $value;
     }
 }

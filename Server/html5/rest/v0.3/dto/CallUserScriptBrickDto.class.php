@@ -2,12 +2,12 @@
 
 class CallUserScriptBrickDto extends BaseBrickDto {
 
-    public $id; //user script id
+    public $userScriptId;
     public $parameters = array();   //UserScriptArgumentDto
 
-    public function __construct($id, $commentedOut = false) {
+    public function __construct($userScriptId, $commentedOut = false) {
         parent::__construct("CallUserScript", $commentedOut);
 
-        $this->id = $id;
+        $this->userScriptId = $userScriptId;
     }
 }
