@@ -342,8 +342,8 @@ PocketCode.Model.ScriptBlock = (function () {
 
         if (propObject) {   //can be null
             this._id = propObject.id;
-            this._x = propObject.x;
-            this._y = propObject.y;
+            //this._x = propObject.x;   //removed because currently not in use (commented out in in project JSON as well)
+            //this._y = propObject.y;
         }
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
