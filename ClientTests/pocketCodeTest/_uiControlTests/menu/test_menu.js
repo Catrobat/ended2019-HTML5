@@ -17,7 +17,7 @@ window.onload = function () {
   var button3 = new PocketCode.Ui.MenuItem("example");
   var button32 = new PocketCode.Ui.MenuItem("example32");
 
-  var submenu = new PocketCode.Ui.SubMenu();
+  //var submenu = new PocketCode.Ui.SubMenu();
 
 
 
@@ -42,30 +42,30 @@ window.onload = function () {
   dc.add( radio2 );
 
 
-  menu.appendChild( button1 );
+  menu.addElement( button1 );
 
-  menu.appendChild( separator );
-  menu.appendChild( button2 );
-  menu.appendChild( separator2 );
-  menu.appendChild( button3 );
-  menu.appendChild( button32 );
+  menu.addElement( separator );
+  menu.addElement( button2 );
+  menu.addElement( separator2 );
+  menu.addElement( button3 );
+  menu.addElement( button32 );
 
 
-  //menu.appendChild( submenu );
+  //menu.addElement( submenu );
 
-  menu.appendChild( button4 );
-  menu.appendChild( separator3 );
-  menu.appendChild( cb1 );
-  menu.appendChild( separator5 );
-  menu.appendChild( radio1 );
-  menu.appendChild( separator6 );
-  menu.appendChild( radio2 );
+  menu.addElement( button4 );
+  menu.addElement( separator3 );
+  menu.addElement( cb1 );
+  menu.addElement( separator5 );
+  menu.addElement( radio1 );
+  menu.addElement( separator6 );
+  menu.addElement( radio2 );
 
-  menu.appendChild( button5 );
-  menu.appendChild( separator4 );
-  menu.appendChild( button6 );
+  menu.addElement( button5 );
+  menu.addElement( separator4 );
+  menu.addElement( button6 );
 
-  menu.appendChild( button7 );
+  menu.addElement( button7 );
   menu.removeChild( radio2 );
 
 
@@ -104,5 +104,7 @@ window.onload = function () {
     outputContainer.innerHTML += '<br />Button 32 clicked';
   };
   button32.onClick.addEventListener(new SmartJs.Event.EventListener(onClick32EventFired, this));
+
+  menu._dom.click();
 
 };

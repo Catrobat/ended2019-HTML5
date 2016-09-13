@@ -13,6 +13,7 @@ PocketCode.I18nProvider = (function (propObject) {
             "lblOk": "OK",
             "lblCancel": "Cancel",
             "lblConfirm": "Confirm",
+            "lblRetry": "Retry",
             "lblGlobalErrorCaption": "Global Error",
             "msgGlobalError": "A global exception was detected.",
             "lblBrowserNotSupportedErrorCaption": "Browser Not Supported",
@@ -37,8 +38,9 @@ PocketCode.I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new:
+            menuFullscreen: "fullscreen",
+            menuTermsOfUse: "terms of use", //renamed to camel case
             "lblDeviceGeoLocation": "? device feature geo location ?",
-            //TODO: make sure to add btnTermsOfUse or other buttons for menu
         };  
 
         this._supportedLanguages = [];
@@ -91,11 +93,16 @@ PocketCode.I18nProvider = (function (propObject) {
 
     //methods
     I18nProvider.prototype.merge({
-        loadSuppordetLanguages: function () {
-            var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
-            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
-            req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
-            PocketCode.Proxy.send(req);
+        init: function (rfc3066) {
+            if (this._supportedLanguages.length == 0) {
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_LANGUAGES, SmartJs.RequestMethod.GET);
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._loadSuppordetLanguagesLoadHandler, this));
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(function () { this.loadDictionary(rfc3066); }.bind(this)));
+                req.onError.addEventListener(new SmartJs.Event.EventListener(this._loadErrorHandler, this));
+                PocketCode.Proxy.send(req);
+            }
+            else
+                this.loadDictionary(rfc3066);
         },
         _loadSuppordetLanguagesLoadHandler: function (e) {
             var languages = e.responseJson.supportedLanguages;
@@ -111,8 +118,11 @@ PocketCode.I18nProvider = (function (propObject) {
             this._supportedLanguages = languages;
         },
         loadDictionary: function (rfc3066) {
-            if (rfc3066)
+            if (rfc3066) {
+                if (rfc3066 == this._currentLanguage)
+                    return;
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N, SmartJs.RequestMethod.GET, { rfc3066: rfc3066 });
+            }
             else
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.I18N_AUTO, SmartJs.RequestMethod.GET);
 
@@ -134,8 +144,8 @@ PocketCode.I18nProvider = (function (propObject) {
                 this._onDirectionChange.dispatchEvent({ direction: this._direction });
             }
             this._dictionary.merge(json.dictionary); //using merge: so we can provide an initial dict for loading and errors
-            this._currentLanguage = json.languageCode;
-            this._onLanguageChange.dispatchEvent({ language: json.languageCode });
+            this._currentLanguage = json.languageCode.substring(0, 2);
+            this._onLanguageChange.dispatchEvent({ language: this._currentLanguage });
         },
         _loadErrorHandler: function (e) {
             this.onError.dispatchEvent(e);
@@ -148,72 +158,8 @@ PocketCode.I18nProvider = (function (propObject) {
             return string;
         },
         getTextDirection: function(string) {
-            //var input = this._textValidationInput,
-            //    dir = PocketCode.Ui.Direction.LTR;  //default
-
-            //if (!input && this._dirAutoSupported != false) {
-            //    input = document.createElement('input');
-            //    input.type = 'text';
-            //    input.dir = 'auto';
-            //    input.style.position = 'absolute';
-            //    input.style.height = 0;
-            //    input.style.width = 0;
-            //    input.style.top = -20;
-            //    try {
-            //        document.body.appendChild(input);
-            //    }
-            //    catch (exc) { /* silent catch */ }
-
-            //    this._dirAutoSupported = false;
-
-            //    input.value = 'test';
-            //    if (window.getComputedStyle)
-            //        this._dirAutoSupported = window.getComputedStyle(input, null).direction == PocketCode.Ui.Direction.LTR;
-            //    else if (input.currentStyle)
-            //        this._dirAutoSupported = input.currentStyle.direction == PocketCode.Ui.Direction.LTR;
-
-            //    if (this._dirAutoSupported) {
-            //        input.value = 'زمایش';
-            //        if (window.getComputedStyle)
-            //            this._dirAutoSupported = window.getComputedStyle(input, null).direction == PocketCode.Ui.Direction.RTL;
-            //        else if (input.currentStyle)
-            //            this._dirAutoSupported = input.currentStyle.direction == PocketCode.Ui.Direction.RTL;
-            //    }
-
-            //    if (this._dirAutoSupported)
-            //        this._textValidationInput = input;
-            //}
-
-            //if (this._dirAutoSupported) {
-            //    input.value = string;
-
-            //    if (window.getComputedStyle)
-            //        dir = window.getComputedStyle(input, null).direction;
-            //    else if (input.currentStyle)
-            //        dir = input.currentStyle.direction;
-            //}
-            //else {
-            //    //checking first char with strong dir (like the input control above should do)
-            //    var rtlRegex = new RegExp('^[^A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF\u2C00-\uFB1C\uFE00-\uFE6F\uFEFD-\uFFFF]*' +
-            //        '[\u0591-\u07FF\uFB1D-\uFDFF\uFE70-\uFEFC]');
-            //    dir = rtlRegex.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
-            //}
-            //return dir;
             return this._rtlRegExp.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
         },
-        //reset: function () {
-        //    this._direction = PocketCode.Ui.Direction.LTR;
-        //    if (this._onLanguageChange)
-        //        this._onLanguageChange.dispose();
-        //    this._onLanguageChange = new SmartJs.Event.Event(this);
-        //    if (this._onDirectionChange)
-        //        this._onDirectionChange.dispose();
-        //    this._onDirectionChange = new SmartJs.Event.Event(this);
-        //    if (this._onError)
-        //        this._onError.dispose();
-        //    this._onError = new SmartJs.Event.Event(this);
-
-        //},
         /* override */
         dispose: function () {
             //static class: cannot be disposed

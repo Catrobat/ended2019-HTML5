@@ -5,8 +5,9 @@
 QUnit.module("scripts/playerApplication.js");
 
 
-QUnit.test("PlayerApplication", function (assert) {
+QUnit.test("Application", function (assert) {
 
+    var ctrl = new PocketCode.Player.Application();
     assert.ok(false, "TODO");
 });
 

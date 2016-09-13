@@ -31,8 +31,15 @@ PocketCode.Ui.PlayerPageView = (function () {
         else {
             this._toolbar = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
         }
-        this.appendChild(this._toolbar);
 
+        this.appendChild(this._toolbar);
+        if (PocketCode.Player.Ui.Menu) {    //only loaded for player
+            this._menu = new PocketCode.Player.Ui.Menu();
+            if (SmartJs.Device.isMobile)
+                this.appendChild(this._menu);
+            else //desktop
+                this.onResize.addEventListener(new SmartJs.Event.EventListener(function () { this._menu.verifyResize(); }, this));
+        }
         this._startScreen = new PocketCode.Ui.PlayerStartScreen();
         this.appendChild(this._startScreen);
         this._startScreen.hide();
@@ -44,12 +51,27 @@ PocketCode.Ui.PlayerPageView = (function () {
 
     //properties
     Object.defineProperties(PlayerPageView.prototype, {
+        menu: {
+            get: function () {
+                return this._menu;
+            },
+        },
         executionState: {
-            get: function (){
+            get: function () {
                 return this._toolbar.executionState;
             },
             set: function (value) {
                 this._toolbar.executionState = value;
+                if (SmartJs.Device.isMobile)
+                    switch (value) {
+                        case PocketCode.ExecutionState.PAUSED:
+                        case PocketCode.ExecutionState.STOPPED:
+                            this._menu.show();
+                            break;
+                        default:
+                            this._menu.hide();
+                            break;
+                    }
             },
         },
         disabled: {
@@ -87,6 +109,22 @@ PocketCode.Ui.PlayerPageView = (function () {
                 return this._toolbar.onButtonClicked;
             },
         },
+        onMenuAction: {
+            get: function () {
+                if (this._menu)
+                    return this._menu.onMenuAction;
+                else
+                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
+            },
+        },
+        onMenuOpen: {
+            get: function () {
+                if (this._menu)
+                    return this._menu.onOpen;
+                else
+                    return new SmartJs.Event.Event(this);   //create event object if no menu is defined
+            },
+        },
         onStartClicked: {
             get: function () {
                 return this._startScreen.onStartClicked;
@@ -117,6 +155,9 @@ PocketCode.Ui.PlayerPageView = (function () {
         },
         setLoadingProgress: function (progress) {
             this._startScreen.setProgress(progress);
+        },
+        closeMenu: function () {
+            this._menu.close();
         },
     });
 

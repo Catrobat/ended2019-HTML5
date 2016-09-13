@@ -99,6 +99,26 @@ PocketCode.Ui.merge({
             this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
             this._menuContainerAlign.appendChild(this._axesButton);
 
+            //// i18n: menuButton
+            //PocketCode.Menu = new PocketCode.Ui.Menu();
+            //var button1 = new PocketCode.Ui.MenuItem("example");
+            //console.log( PocketCode.I18nProvider);
+
+            //PocketCode.Menu.appendChild( button1 );
+            ////this.MenuDisabled = false;
+            ////this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
+            //// this._menuContainerAlign.appendChild(this.Menu);
+            //console.log( this );
+            //var asd = PocketCode.Web.PlayerInterface._webOverlay;
+            ////asd.Menu = this.Menu;
+            //console.log( asd.muteButton.parentNode );
+            //var p = document.createElement("p");
+            //asd.muteButton.parentNode.appendChild( PocketCode.Menu._dom );
+            //console.log( asd );
+
+            //console.log( asd );
+            //console.log( "---" );
+
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
             this._onResize.addEventListener(new SmartJs.Event.EventListener(function () { window.setTimeout(this._resizeHandler.bind(this, this), 120); }.bind(this), this));
@@ -113,7 +133,7 @@ PocketCode.Ui.merge({
                 set: function (value) {
                     switch (value) {
                         case PocketCode.ExecutionState.ERROR:
-                            //TODO: disable all buttons? only play + pause?
+                            this.disabled = true;
                             break;
                         case PocketCode.ExecutionState.RUNNING:
                             this._startButton.hide();
