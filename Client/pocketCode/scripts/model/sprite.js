@@ -209,6 +209,10 @@ PocketCode.Model.Sprite = (function () {
                 return this._colorEffect;
             },
         },
+        penDown: {
+            value: false,
+            writeable: true,
+        },
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
