@@ -20,12 +20,16 @@ PocketCode.Model.Scene = (function () {
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
 
         //events
-        this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         this._onProgramStart = new SmartJs.Event.Event(this);
     }
 
     //properties
     Object.defineProperties(Scene.prototype, {
+        executionState:{
+           get: function () {
+               return this._executionState;
+           }
+        },
         id: {
            get: function () {
                return this._id;
@@ -44,9 +48,6 @@ PocketCode.Model.Scene = (function () {
     });
 
     Object.defineProperties(Scene.prototype, {
-        onBeforeProgramStart: {
-            get: function () { return this._onBeforeProgramStart; },
-        },
         onProgramStart: {
             get: function () { return this._onProgramStart; },
         },
@@ -63,27 +64,16 @@ PocketCode.Model.Scene = (function () {
             this._projectTimer = projectTimer;
             this._originalSpriteOrder = [];
         },
-        start: function (reinitSprites) {
+        start: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return;
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resume();
-            //todo device and project loaded checks
-
-            reinitSprites = reinitSprites || true;
-            //if reinit: all sprites properties have to be set to their default values: default true
-            if (reinitSprites == true && this._executionState !== PocketCode.ExecutionState.INITIALIZED) {
-                this._reinitializeSprites();
-                //todo variables
-                //this._resetVariables();  //global
-                this._onBeforeProgramStart.dispatchEvent({ reinit: true });
-            }
-            else
-                this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
             this._projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
             //^^ we create them onProjectLoaded at the first start
+            //todo onSceneStart and onProgramstart back to ge?
             this._onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
@@ -120,10 +110,7 @@ PocketCode.Model.Scene = (function () {
         resume: function () {
             //todo
         },
-        reinitialize: function () {
-            //todo
-        },
-        _reinitializeSprites: function () {
+        reinitializeSprites: function () {
             var bg = this._background;
             if (bg) {
                 bg.init();
@@ -139,9 +126,6 @@ PocketCode.Model.Scene = (function () {
                 sprite = sprites[i];
                 sprite.init();
             }
-
-            this._resetVariables();  //global
-            this._onBeforeProgramStart.dispatchEvent({ reinit: true });
         },
 
         _loadSprites: function (sprites) {
