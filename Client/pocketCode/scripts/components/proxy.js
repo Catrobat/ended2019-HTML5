@@ -16,9 +16,9 @@ PocketCode.merge({
                 // To test with local projects
                 //return 'http://localhost/html5/rest/v0.2/';
             case "web-test.catrob.at":
-                return 'https://web-test.catrob.at/html5/rest/v0.2/';
+                return 'https://web-test.catrob.at/html5/rest/v0.3/';
             default:
-                return 'https://share.catrob.at/html5/rest/v0.2/';
+                return 'https://share.catrob.at/html5/rest/v0.3/';
         }
     }(),
 
