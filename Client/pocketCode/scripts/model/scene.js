@@ -44,7 +44,12 @@ PocketCode.Model.Scene = (function () {
             get: function () {
                 return this._background;
             }
-        }
+        },
+        collisionManager: {
+            get: function () {
+                return this._collisionManager;
+            },
+        },
     });
 
     Object.defineProperties(Scene.prototype, {
@@ -55,11 +60,11 @@ PocketCode.Model.Scene = (function () {
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, collisionManager, projectTimer, spriteOnExecutedHandler, gameEngine) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
-            this._collisionManager = collisionManager;
+            this._collisionManager = undefined;
             this._sprites = [];
             this._projectTimer = projectTimer;
             this._originalSpriteOrder = [];
@@ -81,6 +86,10 @@ PocketCode.Model.Scene = (function () {
         load: function (jsonScene) {
             if (!jsonScene)
                 throw new Error('invalid argument: jsonScene');
+
+            this._originalScreenWidth = jsonScene.screenWidth;
+            this._originalScreenHeight = jsonScene.screenHeight;
+            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             if (jsonScene.background)
                 this._loadBackground(jsonScene.background);

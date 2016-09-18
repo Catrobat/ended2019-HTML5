@@ -62,7 +62,7 @@ PocketCode.GameEngine = (function () {
         this._broadcasts = [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
-        this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
+        //  this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
 
         //events
@@ -168,8 +168,11 @@ PocketCode.GameEngine = (function () {
             },
         },
         collisionManager: {
-            get: function () {
-                return this._collisionManager;
+            get: function () { //todo quickfix
+                if(!this._currentScene)
+                    return undefined;
+
+                return this._currentScene.collisionManager;
             },
         },
         projectTimer: {
@@ -311,7 +314,7 @@ PocketCode.GameEngine = (function () {
                 var scene = new PocketCode.Model.Scene();
                 if (i === 0)
                     this._currentScene = scene;
-                scene.init(this._spriteFactory, this._collisionManager, this.projectTimer, this._spriteOnExecutedHandler, this);
+                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this);
                 scene.load(jsonProject.scenes[i]);
                 this._scenes.push(scene)
             }
