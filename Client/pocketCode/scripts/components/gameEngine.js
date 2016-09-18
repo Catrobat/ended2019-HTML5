@@ -503,20 +503,22 @@ PocketCode.GameEngine = (function () {
         },
         resumeProject: function () {
             this._currentScene.resume();
-            return;
-            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
-                return;
-
-            this.projectTimer.resume();
             this._soundManager.resumeSounds();
-            if (this._background)
-                this._background.resumeScripts();
 
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].resumeScripts();
-            }
-            this._executionState = PocketCode.ExecutionState.RUNNING;
+            return;
+            // if (this._executionState !== PocketCode.ExecutionState.PAUSED)
+            //     return;
+            //
+            // this.projectTimer.resume();
+            // this._soundManager.resumeSounds();
+            // if (this._background)
+            //     this._background.resumeScripts();
+            //
+            // var sprites = this._sprites;
+            // for (var i = 0, l = sprites.length; i < l; i++) {
+            //     sprites[i].resumeScripts();
+            // }
+            // this._executionState = PocketCode.ExecutionState.RUNNING;
         },
         stopProject: function () {
             // if (this._executionState === PocketCode.ExecutionState.STOPPED)
@@ -615,7 +617,8 @@ PocketCode.GameEngine = (function () {
             return true;
         },
         handleUserAction: function (e) {
-            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+            //todo move logic into scene
+            if (this.currentScene.executionState !== PocketCode.ExecutionState.RUNNING)
                 return;
 
             var id = e.id,
@@ -623,7 +626,6 @@ PocketCode.GameEngine = (function () {
                 y = e.y;
             switch (e.action) {
                 case PocketCode.UserActionType.SPRITE_CLICKED:
-                    console.log('click?');
                     var sprite = this.getSpriteById(e.targetId);
                     if (sprite)
                         this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
