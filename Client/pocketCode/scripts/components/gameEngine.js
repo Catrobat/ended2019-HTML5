@@ -519,21 +519,25 @@ PocketCode.GameEngine = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
         },
         stopProject: function () {
-            if (this._executionState === PocketCode.ExecutionState.STOPPED)
-                return;
+            // if (this._executionState === PocketCode.ExecutionState.STOPPED)
+            //     return;
 
-            this.projectTimer.stop();
+            //this.projectTimer.stop();
+            //todo move this
             this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
-            if (this._background) {
-                this._background.stopAllScripts();
-            }
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].stopAllScripts();
-            }
 
-            this._executionState = PocketCode.ExecutionState.STOPPED;
+            this._currentScene.stop();
+
+            // if (this._background) {
+            //     this._background.stopAllScripts();
+            // }
+            // var sprites = this._sprites;
+            // for (var i = 0, l = sprites.length; i < l; i++) {
+            //     sprites[i].stopAllScripts();
+            // }
+            //
+            // this._executionState = PocketCode.ExecutionState.STOPPED;
         },
 
         _spriteOnExecutedHandler: function (e) {

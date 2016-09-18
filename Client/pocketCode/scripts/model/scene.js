@@ -97,7 +97,22 @@ PocketCode.Model.Scene = (function () {
             this._loadSprites(jsonScene.sprites);
         },
         stop: function (){
-            //todo
+            if (this._executionState === PocketCode.ExecutionState.STOPPED)
+                return;
+
+            this._projectTimer.stop();
+            //todo broadcasts, sounds
+            //this._broadcastMgr.stop();
+            //this._soundManager.stopAllSounds();
+            if (this._background) {
+                this._background.stopAllScripts();
+            }
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].stopAllScripts();
+            }
+
+            this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         pause: function (){
             //todo
