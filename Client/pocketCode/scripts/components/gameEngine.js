@@ -308,8 +308,6 @@ PocketCode.GameEngine = (function () {
             // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             //todo if no scenes -> error
-            console.log(jsonProject);
-            console.log(jsonProject.scenes.length);
             for(var i = 0, l = jsonProject.scenes.length; i < l; i++){
                 var scene = new PocketCode.Model.Scene();
                 if (i === 0)
@@ -484,8 +482,12 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
+            //todo make sure all scenes are paused?
+            return this._currentScene.pause();
+
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
+
 
             this.projectTimer.pause();
             this._soundManager.pauseSounds();
@@ -500,6 +502,8 @@ PocketCode.GameEngine = (function () {
             return true;
         },
         resumeProject: function () {
+            this._currentScene.resume();
+            return;
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
 
@@ -615,6 +619,7 @@ PocketCode.GameEngine = (function () {
                 y = e.y;
             switch (e.action) {
                 case PocketCode.UserActionType.SPRITE_CLICKED:
+                    console.log('click?');
                     var sprite = this.getSpriteById(e.targetId);
                     if (sprite)
                         this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
@@ -651,7 +656,6 @@ PocketCode.GameEngine = (function () {
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
 
             delete this._originalSpriteOrder;
-            //todo unneeded
             var scenes = this._scenes;
             for (var j = 0, lengthScenes = scenes.length; j < lengthScenes; j++){
                 var sprites = scenes[j].sprites;

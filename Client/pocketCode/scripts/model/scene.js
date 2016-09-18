@@ -104,8 +104,9 @@ PocketCode.Model.Scene = (function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
-            this.projectTimer.pause();
-            this._soundManager.pauseSounds();
+            this._projectTimer.pause();
+            //todo sounds
+            //this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
 
@@ -117,6 +118,20 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         resume: function () {
+            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
+                return;
+
+            this._projectTimer.resume();
+            //todo sounds
+            //this._soundManager.resumeSounds();
+            if (this._background)
+                this._background.resumeScripts();
+
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].resumeScripts();
+            }
+            this._executionState = PocketCode.ExecutionState.RUNNING;
             //todo
         },
         reinitializeSprites: function () {
@@ -126,8 +141,7 @@ PocketCode.Model.Scene = (function () {
             }
 
             this._sprites = this._originalSpriteOrder;  //reset sprite order
-            //todo collision manager
-            //this._collisionManager.sprites = this._originalSpriteOrder;
+            this._collisionManager.sprites = this._originalSpriteOrder;
 
             var sprites = this._sprites,
                 sprite;
