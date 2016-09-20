@@ -195,6 +195,12 @@ PocketCode.merge({
 
             this.graphicEffects = propObject.graphicEffects || [];
 
+            this._penDown = false;
+            this._penSize = 4;
+            this._penColorBlue = 255.0;
+            this._penColorRed = 0.0;
+            this._penColorGreen = 0.0;
+
             delete propObject.id;   //already set, deleted to avaoid error on merge as id isn't a public property
             this.merge(propObject); //all parameters have the same names as the public interface (setter)- merge will set them all
         }
