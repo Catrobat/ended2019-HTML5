@@ -63,7 +63,6 @@ PocketCode.GameEngine = (function () {
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
         //  this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
-        this._physicsWorld = new PocketCode.PhysicsWorld(this);
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
@@ -170,7 +169,7 @@ PocketCode.GameEngine = (function () {
             },
         },
         collisionManager: {
-            get: function () { //todo quickfix
+            get: function () { //todo make collisionmanager static
                 if(!this._currentScene)
                     return undefined;
 
@@ -295,7 +294,7 @@ PocketCode.GameEngine = (function () {
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
-            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime, this._physicsWorld);
+            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
             this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
             this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
@@ -427,8 +426,6 @@ PocketCode.GameEngine = (function () {
         },
         //project interaction
         runProject: function (reinitSprites) {
-            //todo
-            //return;
             var currentScene = this._currentScene;
             if (currentScene.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
@@ -493,7 +490,6 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
-            //todo make sure all scenes are paused?
             return this._currentScene.pause();
 
             // if (this._executionState !== PocketCode.ExecutionState.RUNNING)
@@ -643,7 +639,23 @@ PocketCode.GameEngine = (function () {
             // }
         },
         setGravity: function (x, y) {
-            this._physicsWorld.setGravity(x, y);
+            this._currentScene.setGravity(x, y);
+        },
+        changeScene: function (sceneId) {
+            if (sceneId === this._currentScene.id)
+                return;
+            var sceneToStart = this.getSceneById();
+            this._currentScene.pause();
+            this._currentScene = sceneToStart;
+            this._currentScene.start();
+            //todo inform rendering
+        },
+        getSceneById: function (id) {
+            for (var i = 0, l = this._scenes.length; i < l; i++){
+                if (id === this._scenes[i].id)
+                    return this._scenes[i];
+            }
+            throw new Error('no Scene with id ' + id + ' found');
         },
         /* override */
         dispose: function () {

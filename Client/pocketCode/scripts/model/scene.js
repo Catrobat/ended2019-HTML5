@@ -18,6 +18,7 @@ PocketCode.Model.Scene = (function () {
     function Scene() {
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
+        this._physicsWorld = new PocketCode.PhysicsWorld(this);
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
@@ -38,6 +39,11 @@ PocketCode.Model.Scene = (function () {
                return this._id;
            }
         },
+        name: {
+           get: function () {
+                return this._name;
+            }
+        },
         sprites: {
             get: function () {
                 return this._sprites;
@@ -52,6 +58,11 @@ PocketCode.Model.Scene = (function () {
             get: function () {
                 return this._collisionManager;
             },
+        },
+        physicsWorld: {
+            get: function () {
+                return this._physicsWorld;
+            }
         },
         renderingImages: {
             get: function () {
@@ -110,6 +121,8 @@ PocketCode.Model.Scene = (function () {
             if (!jsonScene)
                 throw new Error('invalid argument: jsonScene');
 
+            this._name = jsonScene.name;
+            this._id = jsonScene.id;
             this._originalScreenWidth = jsonScene.screenWidth;
             this._originalScreenHeight = jsonScene.screenHeight;
             this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
@@ -139,7 +152,6 @@ PocketCode.Model.Scene = (function () {
                 return false;
 
             this._projectTimer.pause();
-            //todo this won't work when switching scenes. we will only want to pause scene specific sounds
             this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
@@ -154,6 +166,8 @@ PocketCode.Model.Scene = (function () {
         resume: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
+
+            //todo resume event?
 
             this._projectTimer.resume();
             this._soundManager.resumeSounds();
@@ -219,6 +233,9 @@ PocketCode.Model.Scene = (function () {
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
+        setGravity: function (x, y) {
+            this._physicsWorld.setGravity(x, y);
+        },
         _loadSprites: function (sprites) {
             //todo type check
             var sp = sprites;
@@ -229,7 +246,6 @@ PocketCode.Model.Scene = (function () {
                 this._sprites.push(sprite);
                 this._originalSpriteOrder.push(sprite);
             }
-            //todo collisionmanager will not need these in future
             this._collisionManager.sprites = this._sprites;
         },
         _loadBackground: function (background) {
