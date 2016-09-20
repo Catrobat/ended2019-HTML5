@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>catrobat: testing CORS</title>
+  <script type="text/javascript">
+
+    var invocation = new XMLHttpRequest();
+
+    function requestProject()
+    {
+      if (document.getElementById('projectID').value == '')
+      {
+        alert('project nr missing!');
+        return;
+      }
+
+      var remote = "https://web-test.catrob.at";
+      var local = "http://localhost";
+
+      var url = remote + '/rest/v0.1/projects/' + document.getElementById('projectID').value + '/';
+
+      if (invocation)
+      {
+          invocation.open('GET', url);//, true);
+        invocation.onreadystatechange = handler;
+        invocation.send();
+      }
+      else
+        document.getElementById("textDiv").innerHTML = "no invocation took place at all";
+    }
+    function handler(evtXHR)
+    {
+      switch (invocation.readyState)
+      {
+        case 0:
+          console.log('readyState 0: ...request not initialized...');
+          break;
+        case 1:
+          console.log('readyState 1: server connection established...');
+          break;
+        case 2:
+          console.log('readyState 2: request received...');
+          break;
+        case 3:
+          console.log('readyState 3: processing request...');
+          break;
+        case 4:
+          console.log('readyState 4: request finished and response is ready...!');
+          if (invocation.status == 200)
+          {
+            console.log('status 200: OK');
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
+            console.log('---------------------------');
+          }
+          else if(invocation.status == 404)
+          {
+            console.log("status 404: page not found...!");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
+            console.log('---------------------------');
+          }
+          else
+          {
+            console.log("status " + invocation.status + ": error, maybe project does not exist?");
+            document.getElementById("textDiv").innerHTML = invocation.responseText;
+            console.log('---------------------------');
+          }
+          break;
+        default:
+          console.log('readyState ' + invocation.readyState + ': error occured...!');
+      }
+    }
+
+  </script>
+</head>
+<body>
+  <h2>HTML5 server - testing CORS</h2>
+  <p>
+    project id: <input id="projectID" name="projectID" type="text" size="10" value="825"/>
+    <input type="button" value="request project" onclick="requestProject()"/>
+  </p>
+
+  <p>
+    <div id="textDiv">
+      CORS server response will be displayed here.
+    </div>
+</body>
+</html>
