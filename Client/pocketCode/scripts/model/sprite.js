@@ -209,10 +209,8 @@ PocketCode.Model.Sprite = (function () {
                 return this._colorEffect;
             },
         },
-        penDown: {
-            value: false,
-            writeable: true,
-        },
+
+
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -1199,6 +1197,22 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(props);    //returns false for empty objects
         },
+
+        penDown: function(penDown) {
+            if(this._penDown == penDown)
+                return false;
+            this._penDown = penDown;
+            return this._triggerOnChange({penDown:this._penDown});
+
+        },
+        penSize: function(penSize) {
+            if(this._penSize == penSize)
+                return false;
+            this._penSize = penSize;
+            return this._triggerOnChange({penSize:this._penSize});
+        },
+
+
         /* override */
         dispose: function () {
             this.stopAllScripts();
