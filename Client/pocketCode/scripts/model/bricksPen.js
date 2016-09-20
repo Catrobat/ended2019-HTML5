@@ -41,14 +41,15 @@ PocketCode.Model.merge({
 
     function SetPenSizeBrick(device, sprite, propObject) {
       PocketCode.Model.BaseBrick.call(this, device, sprite);
-      this._x = new PocketCode.Formula(device, sprite, propObject.value);
+      this._penSize = new PocketCode.Formula(device, sprite, propObject.value);
     }
 
     SetPenSizeBrick.prototype._execute = function () {
-      var penSize = this._x.calculate();
+      var penSize = this._penSize.calculate();
       if (!isNaN(penSize))
-        this._sprite.penSize(penSize);
-      this._return(false);
+        this._return( this._sprite.penSize(penSize) );
+      else
+        this._return(false);
     };
 
     return SetPenSizeBrick;
@@ -60,18 +61,19 @@ PocketCode.Model.merge({
     function SetPenColorBrick(device, sprite, propObject) {
       PocketCode.Model.BaseBrick.call(this, device, sprite);
 
-      this._blue = new PocketCode.Formula(device, sprite, propObject.blue);
-      this._red = new PocketCode.Formula(device, sprite, propObject.red);
-      this._green = new PocketCode.Formula(device, sprite, propObject.green);
+      this._penColorBlue = new PocketCode.Formula(device, sprite, propObject.blue);
+      this._penColorRed = new PocketCode.Formula(device, sprite, propObject.red);
+      this._penColorGreen = new PocketCode.Formula(device, sprite, propObject.green);
     }
 
     SetPenColorBrick.prototype._execute = function () {
-      var blue = this._blue.calculate(),
-          red = this._red.calculate(),
-          green = this._green.calculate();
+      var blue = this._penColorBlue.calculate(),
+          red = this._penColorRed.calculate(),
+          green = this._penColorGreen.calculate();
       if (!isNaN(blue) && !isNaN(red) && !isNaN(green))
         this._return(this._sprite.penColor(blue, red, green));
-      this._return(false);
+      else
+        this._return(false);
     };
 
     return SetPenColorBrick;

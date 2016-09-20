@@ -68,7 +68,7 @@ QUnit.test("SetPenSizeBrick", function (assert) {
 
     var b = new PocketCode.Model.SetPenSizeBrick(device, sprite, { value: x });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._penSize instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPenSizeBrick, "instance check");
     assert.ok(b.objClassName === "SetPenSizeBrick", "objClassName check");
 
@@ -90,14 +90,14 @@ QUnit.test("SetPenColorBrick", function (assert) {
     var device = "device";
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    var blue = JSON.parse('{"type":"NUMBER","value":"200","right":null,"left":null}');
-    var red = JSON.parse('{"type":"NUMBER","value":"145","right":null,"left":null}');
-    var green = JSON.parse('{"type":"NUMBER","value":"33","right":null,"left":null}');
+    var blue = JSON.parse('{"type":"NUMBER","value":"200.0","right":null,"left":null}');
+    var red = JSON.parse('{"type":"NUMBER","value":"145.0","right":null,"left":null}');
+    var green = JSON.parse('{"type":"NUMBER","value":"33.0","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetPenColorBrick(device, sprite, { blue: blue, red: red, green: green });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._penColorBlue  instanceof PocketCode.Formula && b._penColorRed  instanceof PocketCode.Formula
-        && b._penColorGreen  instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._penColorBlue instanceof PocketCode.Formula && b._penColorRed instanceof PocketCode.Formula
+        && b._penColorGreen instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPenColorBrick, "instance check");
     assert.ok(b.objClassName === "SetPenColorBrick", "objClassName check");
 
