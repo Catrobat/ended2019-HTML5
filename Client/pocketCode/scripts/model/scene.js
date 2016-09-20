@@ -76,12 +76,13 @@ PocketCode.Model.Scene = (function () {
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device, soundManager) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
             this._device = device;
+            this._soundManager = soundManager;
 
             if (this._background)
                 this._background.dispose();// = undefined;
@@ -123,9 +124,6 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             this._projectTimer.stop();
-            //todo broadcasts, sounds
-            //this._broadcastMgr.stop();
-            //this._soundManager.stopAllSounds();
             if (this._background) {
                 this._background.stopAllScripts();
             }
@@ -137,13 +135,12 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         pause: function (){
-            //todo
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
             this._projectTimer.pause();
-            //todo sounds
-            //this._soundManager.pauseSounds();
+            //todo this won't work when switching scenes. we will only want to pause scene specific sounds
+            this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
 
@@ -159,8 +156,7 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             this._projectTimer.resume();
-            //todo sounds
-            //this._soundManager.resumeSounds();
+            this._soundManager.resumeSounds();
             if (this._background)
                 this._background.resumeScripts();
 
@@ -169,7 +165,6 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].resumeScripts();
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            //todo
         },
         initializeSprites: function () {
             var bg = this._background,

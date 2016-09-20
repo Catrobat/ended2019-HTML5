@@ -258,7 +258,6 @@ PocketCode.GameEngine = (function () {
             this._originalScreenWidth = header.device.screenWidth;
 
             //create objects
-            //todo move to scene
             // if (this._background)
             //     this._background.dispose();// = undefined;
             // this._originalSpriteOrder = [];
@@ -310,12 +309,14 @@ PocketCode.GameEngine = (function () {
             //     this._collisionManager.dispose();
             // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
-            //todo if no scenes -> error
+            if(!jsonProject.scenes || jsonProject.scenes.length < 1)
+                 throw new Error('No scnene found in project');
+
             for(var i = 0, l = jsonProject.scenes.length; i < l; i++){
                 var scene = new PocketCode.Model.Scene();
                 if (i === 0)
                     this._currentScene = scene;
-                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device);
+                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device, this._soundManager);
                 scene.load(jsonProject.scenes[i]);
                 this._scenes.push(scene)
             }
@@ -513,8 +514,6 @@ PocketCode.GameEngine = (function () {
         },
         resumeProject: function () {
             this._currentScene.resume();
-            this._soundManager.resumeSounds();
-
             // return;
             // if (this._executionState !== PocketCode.ExecutionState.PAUSED)
             //     return;
@@ -535,10 +534,8 @@ PocketCode.GameEngine = (function () {
             //     return;
 
             //this.projectTimer.stop();
-            //todo move this
             this._broadcastMgr.stop();
             this._soundManager.stopAllSounds();
-
             this._currentScene.stop();
 
             // if (this._background) {
@@ -554,14 +551,14 @@ PocketCode.GameEngine = (function () {
 
         _spriteOnExecutedHandler: function (e) {
             window.setTimeout(function () {
-                if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
+                if (this._disposed || this._currentScene.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
                     return;
                 if (this._currentScene.onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
                 if (this._soundManager.isPlaying)
                     return;
-                if (this._background && this._background.scriptsRunning)
+                if (this._currentScene.background && this._currentScene.background.scriptsRunning)
                     return;
                 var sprites = this._currentScene.sprites;
                 for (var i = 0, l = sprites.length; i < l; i++) {
@@ -569,7 +566,7 @@ PocketCode.GameEngine = (function () {
                         return;
                 }
 
-                this._executionState = PocketCode.ExecutionState.STOPPED;
+                this._currentScene.executionState = PocketCode.ExecutionState.STOPPED;
                 this._onProgramExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
             }.bind(this), 100);  //delay neede to allow other scripts to start
         },
@@ -581,7 +578,7 @@ PocketCode.GameEngine = (function () {
         //brick-sprite interaction
         getSpriteById: function (spriteId) {
             return this._currentScene.getSpriteById(spriteId);
-        //     var sprites = this._currentScene.sprites; //todo move logic into scene
+        //     var sprites = this._currentScene.sprites;
         //     for (var i = 0, l = sprites.length; i < l; i++) {
         //         if (sprites[i].id === spriteId)
         //             return sprites[i];
