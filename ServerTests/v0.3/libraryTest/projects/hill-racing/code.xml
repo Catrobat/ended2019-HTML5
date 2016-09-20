@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<program>
+  <header>
+    <applicationBuildName/>
+    <applicationBuildNumber>0</applicationBuildNumber>
+    <applicationName>Pocket Code</applicationName>
+    <applicationVersion>0.9.17</applicationVersion>
+    <catrobatLanguageVersion>0.95</catrobatLanguageVersion>
+    <dateTimeUpload/>
+    <description>vk.com/stope_brat </description>
+    <deviceName>GT-I9190</deviceName>
+    <isPhiroProProject>false</isPhiroProProject>
+    <mediaLicense>http://developer.catrobat.org/ccbysa_v4</mediaLicense>
+    <platform>Android</platform>
+    <platformVersion>19.0</platformVersion>
+    <programLicense>http://developer.catrobat.org/agpl_v3</programLicense>
+    <programName>Hill racing drag</programName>
+    <remixOf/>
+    <screenHeight>960</screenHeight>
+    <screenMode>STRETCH</screenMode>
+    <screenWidth>540</screenWidth>
+    <tags/>
+    <url>/pocketcode/program/3751</url>
+    <userHandle>vladlensb</userHandle>
+  </header>
+  <objectList>
+    <object name="Фон">
+      <lookList>
+        <look name="костюм">
+          <fileName>00ceb020bb43ae896fa2b234a4c10a57_костюм.png</fileName>
+        </look>
+      </lookList>
+      <soundList/>
+      <scriptList>
+        <script type="StartScript">
+          <brickList>
+            <brick type="NoteBrick">
+              <formulaList>
+                <formula category="NOTE">
+                  <type>NUMBER</type>
+                  <value>25</value>
+                </formula>
+              </formulaList>
+            </brick>
+          </brickList>
+          <isUserScript>false</isUserScript>
+        </script>
+      </scriptList>
+      <userBricks/>
+    </object>
+  </objectList>
+  <data>
+    <objectListOfList>
+      <entry>
+        <object reference="../../../../objectList/object"/>
+        <list>
+          <userList>
+            <name>hdhp </name>
+          </userList>
+          <userList>
+            <name>same </name>
+          </userList>
+        </list>
+      </entry>
+    </objectListOfList>
+    <objectVariableList>
+      <entry>
+        <object reference="../../../../objectList/object"/>
+        <list/>
+      </entry>
+    </objectVariableList>
+    <programListOfLists/>
+    <programVariableList/>
+    <userBrickVariableList/>
+  </data>
+  <settings/>
+</program>
