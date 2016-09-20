@@ -12,7 +12,7 @@ spl_autoload_register(function ($className)
     $SEPARATOR = "/";
     PHP_OS == "Windows" ||
     PHP_OS == "WINNT" ? $SEPARATOR = "\\" : $SEPARATOR = "/";
-    $path_to_server =  dirname(__DIR__).$SEPARATOR."..".$SEPARATOR."Server".$SEPARATOR."html5".$SEPARATOR."rest".$SEPARATOR."v0.2".$SEPARATOR;
+    $path_to_server =  dirname(__DIR__).$SEPARATOR."..".$SEPARATOR."Server".$SEPARATOR."html5".$SEPARATOR."rest".$SEPARATOR."v0.3".$SEPARATOR;
     $className = ucfirst($className);
     if(preg_match('/[a-zA-Z]+Controller$/', $className))
     {
