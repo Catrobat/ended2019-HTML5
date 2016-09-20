@@ -104,12 +104,16 @@ QUnit.test("checkSpriteCollision: simple", function (assert) {
         positionY: 0,
         currentLook: {
             getBoundary: function() {
-                return boundary1;
+                return boundary2;
             },
-            renderingImage: {
-                scaling: 1.0,
-                flipX: 90.0,
-            },
+            canvas: document.createElement("canvas"),//.getContext('2d'),
+        },
+        renderingImage: {
+            x: 0.0,
+            y: 0.0,
+            rotation: 0.0,
+            scaling: 1.0,
+            flipX: false,
         },
     };
     var boundary2 = {
@@ -127,10 +131,14 @@ QUnit.test("checkSpriteCollision: simple", function (assert) {
             getBoundary: function() {
                 return boundary2;
             },
-            renderingImage: {
-                scaling: 1.0,
-                flipX: 90.0,
-            },
+            canvas: document.createElement("canvas"),//.getContext('2d'),
+        },
+        renderingImage: {
+            x: 0.0,
+            y: 0.0,
+            rotation: 0.0,
+            scaling: 1.0,
+            flipX: false,
         },
     };
 
@@ -210,6 +218,8 @@ QUnit.test("checkSpriteCollision: complex", function (assert) {
     var done = assert.async();
 
     var cm3 = new PocketCode.CollisionManager(10, 20);
+    //test only
+    document.body.appendChild(cm3._canvas);
 
     //init tests to start
     var baseUrl = "_resources/images/",
@@ -240,7 +250,9 @@ QUnit.test("checkSpriteCollision: complex", function (assert) {
         var jsonLook1 = { id: "id1", resourceId: "s1", name: "lookName" };    //without rotationCenter
         var jsonLook2 = { id: "id2", resourceId: "s2", name: "lookName" };
         var l1 = new PocketCode.Model.Look(jsonLook1);
+        //l1.init(gameEngine.getLookImage(l1.imageId));
         var l2 = new PocketCode.Model.Look(jsonLook2);
+        //l2.init(gameEngine.getLookImage(l2.imageId));
 
         var img = is.getImage("s1");
         l1.init(img); //loading from image store directly instead of handling through GameEngine
@@ -249,14 +261,22 @@ QUnit.test("checkSpriteCollision: complex", function (assert) {
         l2.init(img); //loading from image store directly instead of handling through GameEngine
 
         var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "sp1", name: "myName" });
-        sprite1.looks = [ l1, l2 ];
-        sprite1._visible = true;
-        sprite1._transparency = 100.0;
+        sprite1._looks = [ l1, l2 ];
+        sprite1._currentLook = l1;
+        //sprite1.setDirection(45);
+        sprite1.setSize(200);
+
+        //sprite1._visible = true;
+        //sprite1._transparency = 100.0;
         //gameEngine._sprites.push(sprite1);
         var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "sp2", name: "myName" });
-        sprite2.looks = [ l1, l2 ];
-        sprite2._visible = true;
-        sprite2._transparency = 100.0;
+        sprite2._looks = [ l1, l2 ];
+        sprite2._currentLook = l1;
+        //sprite2.setDirection(45);
+        sprite2.setSize(200);
+
+        //sprite2._visible = true;
+        //sprite2._transparency = 100.0;
         //gameEngine._sprites.push(sprite2);
 
         var test = cm3.checkSpriteCollision(sprite1, sprite2);

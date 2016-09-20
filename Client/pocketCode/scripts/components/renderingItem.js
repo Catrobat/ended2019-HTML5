@@ -218,19 +218,16 @@ PocketCode.merge({
                 },
             },
             scaling: {
-                set: function (value) {
-                    this._scaling = value;
-                },
+                value: 1.0,
+                writable: true,
             },
             rotation: {
-                set: function (value) {
-                    this._rotation = value;
-                },
+                value: 0.0,
+                writable: true,
             },
             flipX: {
-                set: function (value) {
-                    this._flipX = value;
-                },
+                value: false,
+                writable: true,
             },
             shadow: {
                 set: function (value) {

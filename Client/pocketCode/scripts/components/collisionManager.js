@@ -94,7 +94,7 @@ PocketCode.CollisionManager = (function () {
         },
         checkSpriteCollision: function (sprite1, sprite2) {
 
-            if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 0.0 || sprite2.transparency == 0.0) //!visible, transparent
+            if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 100.0 || sprite2.transparency == 100.0) //!visible, transparent
                 return 1; // return false;
 
             var l1 = sprite1.currentLook,
@@ -106,11 +106,11 @@ PocketCode.CollisionManager = (function () {
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
                 l1ri = sprite1.renderingImage,
-                l1b = l1.getBoundary(l1ri.scaling, l1ri.flipX, false),  //we do not calculate exact boundaries- less performant
+                l1b = l1.getBoundary(l1ri.scaling, l1ri.rotation, l1ri.flipX, false),  //we do not calculate exact boundaries- less performant
                 x2 = sprite2.positionX,
                 y2 = sprite2.positionY,
                 l2ri = sprite2.renderingImage,
-                l2b = l2.getBoundary(l2ri.scaling, l2ri.flipX, false);
+                l2b = l2.getBoundary(l2ri.scaling, l2ri.rotation, l2ri.flipX, false);
 
             //l1 = {
             //    t: y1 + l1b.top,
@@ -160,9 +160,9 @@ PocketCode.CollisionManager = (function () {
             var ctx = this._ctx;
             ctx.clearRect(0, 0, width, height);
             ctx.save();
-            ctx.translate(l1ri.x, -l1ri.y);
+            ctx.translate(-l1ri.x, -l1ri.y);
             ctx.rotate(l1ri.rotation * (Math.PI / 180.0));
-            ctx.translate(-area.l, -area.t);
+            ctx.translate(l1ri.x - area.l, l1ri.y + area.t);
             ctx.scale(
                 l1ri.scaling / precision * (l1ri.flipX ? -1.0 : 1.0),
                 l1ri.scaling / precision
@@ -184,9 +184,9 @@ PocketCode.CollisionManager = (function () {
             //draw sprite2
             ctx.clearRect(0, 0, width, height);
             ctx.save();
-            ctx.translate(l2ri.x, -l2ri.y);
+            ctx.translate(-l2ri.x, -l2ri.y);
             ctx.rotate(l2ri.rotation * (Math.PI / 180.0));
-            ctx.translate(-area.l, -area.t);
+            //ctx.translate(width * 0.5, height * 0.5);
             ctx.scale(
                 l2ri.scaling / precision * (l2ri.flipX ? -1.0 : 1.0),
                 l2ri.scaling / precision
@@ -204,9 +204,9 @@ PocketCode.CollisionManager = (function () {
             var length = width * height;
 
             //Loop to find the collision
-            for (var cnt = 0; cnt < length * 4; cnt += 4){
+            for (var cnt = 3; cnt < length * 4; cnt += 4){
 
-                if (pixels1[cnt] == pixels2[cnt]) {
+                if (pixels1[cnt] !== 0 && pixels2[cnt] !== 0) {
                     return 4; // return true;
                 }
             }
