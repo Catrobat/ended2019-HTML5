@@ -36,36 +36,45 @@ PocketCode.Model.merge({
     return PenUpBrick;
   })(),
 
-  SetPenSize: (function () {
-    SetPenSize.extends(PocketCode.Model.BaseBrick, false);
+  SetPenSizeBrick: (function () {
+    SetPenSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
-    function SetPenSize(device, sprite, propObject) {
+    function SetPenSizeBrick(device, sprite, propObject) {
       PocketCode.Model.BaseBrick.call(this, device, sprite);
       this._x = new PocketCode.Formula(device, sprite, propObject.value);
     }
 
-    SetPenSize.prototype._execute = function () {
+    SetPenSizeBrick.prototype._execute = function () {
       var penSize = this._x.calculate();
       if (!isNaN(penSize))
         this._sprite.penSize(penSize);
       this._return(false);
     };
 
-    return SetPenSize;
+    return SetPenSizeBrick;
   })(),
 
-  ClearPen: (function () {
-    ClearPen.extends(PocketCode.Model.BaseBrick, false);
+  SetPenColorBrick: (function () {
+    SetPenColorBrick.extends(PocketCode.Model.BaseBrick, false);
 
-    function ClearPen(device, sprite) {
+    function SetPenColorBrick(device, sprite, propObject) {
       PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+      this._blue = new PocketCode.Formula(device, sprite, propObject.blue);
+      this._red = new PocketCode.Formula(device, sprite, propObject.red);
+      this._green = new PocketCode.Formula(device, sprite, propObject.green);
     }
 
-    ClearPen.prototype._execute = function () {
-      this._return(this._sprite.hide());
+    SetPenColorBrick.prototype._execute = function () {
+      var blue = this._blue.calculate(),
+          red = this._red.calculate(),
+          green = this._green.calculate();
+      if (!isNaN(blue) && !isNaN(red) && !isNaN(green))
+        this._return(this._sprite.penColor(blue, red, green));
+      this._return(false);
     };
 
-    return ClearPen;
+    return SetPenColorBrick;
   })(),
 
 });
