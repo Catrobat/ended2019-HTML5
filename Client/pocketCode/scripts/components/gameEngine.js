@@ -33,8 +33,8 @@ PocketCode.GameEngine = (function () {
         this._originalScreenWidth = 0;
 
         //this._background = undefined;
-        this._sprites = [];
-        this._originalSpriteOrder = []; //neede to reinit layers on stop/restart
+        //this._sprites = [];
+        //this._originalSpriteOrder = []; //neede to reinit layers on stop/restart
 
         this.resourceBaseUrl = "";
 
@@ -78,7 +78,7 @@ PocketCode.GameEngine = (function () {
         //map the base class (global variable host) to our public event
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
 
-        this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
+        //this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
  //       this._currentScene = new PocketCode.Model.Scene();
         this._scenes = [];
@@ -88,7 +88,9 @@ PocketCode.GameEngine = (function () {
     Object.defineProperties(GameEngine.prototype, {
         //rendering
         renderingImages: {
-            get: function () {  //rendering images are created but not stored!
+            get: function () {
+                return this.currentScene.renderingImages;
+                //rendering images are created but not stored!
                 //var imgs = this._background ? [this._background.renderingImage] : [],
                 //    sprites = this._sprites,
                 //    ri;
@@ -117,7 +119,7 @@ PocketCode.GameEngine = (function () {
         //project execution
         executionState: {
             get: function () {
-                return this._executionState;
+                return this._currentScene._executionState;
             },
         },
         projectLoaded: {
@@ -212,7 +214,7 @@ PocketCode.GameEngine = (function () {
             get: function () { return this._onVariableUiChange; },
         },
         onSpriteTabbedAction: {
-            get: function () { return this._onSpriteTabbedAction; },
+            get: function () { return this._currentScene.onSpriteTabbedAction; },
         },
         onTouchStartAction: {
             get: function () { return this._onTouchStartAction; },
@@ -313,7 +315,7 @@ PocketCode.GameEngine = (function () {
                 var scene = new PocketCode.Model.Scene();
                 if (i === 0)
                     this._currentScene = scene;
-                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this);
+                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device);
                 scene.load(jsonProject.scenes[i]);
                 this._scenes.push(scene)
             }
@@ -419,8 +421,8 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
-            if (this._executionState === PocketCode.ExecutionState.RUNNING)
-                this._onSpriteTabbedAction.dispatchEvent({ sprite: this._background });
+            if (this.currentScene._executionState === PocketCode.ExecutionState.RUNNING)
+                this.currentScene.onSpriteTabbedAction.dispatchEvent({ sprite: this._currentScene.background });
         },
         //project interaction
         runProject: function (reinitSprites) {
@@ -554,7 +556,7 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(function () {
                 if (this._disposed || this._executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
                     return;
-                if (this._onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
+                if (this._currentScene.onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
                 if (this._soundManager.isPlaying)
@@ -578,16 +580,17 @@ PocketCode.GameEngine = (function () {
 
         //brick-sprite interaction
         getSpriteById: function (spriteId) {
-            var sprites = this._currentScene.sprites; //todo move logic into scene
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                if (sprites[i].id === spriteId)
-                    return sprites[i];
-            }
-
-            if (this._currentScene.background && spriteId == this._currentScene.background.id)
-                return this._currentScene.background;
-
-            throw new Error('unknown sprite with id: ' + spriteId);
+            return this._currentScene.getSpriteById(spriteId);
+        //     var sprites = this._currentScene.sprites; //todo move logic into scene
+        //     for (var i = 0, l = sprites.length; i < l; i++) {
+        //         if (sprites[i].id === spriteId)
+        //             return sprites[i];
+        //     }
+        //
+        //     if (this._currentScene.background && spriteId == this._currentScene.background.id)
+        //         return this._currentScene.background;
+        //
+        //     throw new Error('unknown sprite with id: ' + spriteId);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
@@ -625,22 +628,22 @@ PocketCode.GameEngine = (function () {
             return true;
         },
         handleUserAction: function (e) {
-            //todo move logic into scene
-            if (this.currentScene.executionState !== PocketCode.ExecutionState.RUNNING)
-                return;
-
-            var id = e.id,
-                x = e.x,
-                y = e.y;
-            switch (e.action) {
-                case PocketCode.UserActionType.SPRITE_CLICKED:
-                    var sprite = this.getSpriteById(e.targetId);
-                    if (sprite)
-                        this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
-                    break;
-                default:
-                    this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
-            }
+            this._currentScene.handleUserAction(e);
+            // if (this.currentScene.executionState !== PocketCode.ExecutionState.RUNNING)
+            //     return;
+            //
+            // var id = e.id,
+            //     x = e.x,
+            //     y = e.y;
+            // switch (e.action) {
+            //     case PocketCode.UserActionType.SPRITE_CLICKED:
+            //         var sprite = this.getSpriteById(e.targetId);
+            //         if (sprite)
+            //             this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
+            //         break;
+            //     default:
+            //         this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
+            // }
         },
         setGravity: function (x, y) {
             this._physicsWorld.setGravity(x, y);

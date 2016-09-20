@@ -21,6 +21,7 @@ PocketCode.Model.Scene = (function () {
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
+        this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
 
         this._sprites = [];
     }
@@ -52,21 +53,35 @@ PocketCode.Model.Scene = (function () {
                 return this._collisionManager;
             },
         },
+        renderingImages: {
+            get: function () {
+                var imgs = [this.background.renderingImage],
+                    sprites = this.sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)
+                    imgs.push(sprites[i].renderingImage);
+
+                return imgs;
+            }
+        },
     });
 
     Object.defineProperties(Scene.prototype, {
         onProgramStart: {
             get: function () { return this._onProgramStart; },
         },
+        onSpriteTabbedAction: {
+            get: function () { return this._onSpriteTabbedAction; },
+        },
     });
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
+            this._device = device;
 
             if (this._background)
                 this._background.dispose();// = undefined;
@@ -86,7 +101,6 @@ PocketCode.Model.Scene = (function () {
             this._projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
             //^^ we create them onProjectLoaded at the first start
-            //todo onSceneStart and onProgramstart back to ge?
             this._onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
@@ -187,7 +201,29 @@ PocketCode.Model.Scene = (function () {
                 sprite.init();
             }
         },
+        handleUserAction: function (e) {
+            switch (e.action) {
+                case PocketCode.UserActionType.SPRITE_CLICKED:
+                    var sprite = this.getSpriteById(e.targetId);
+                    if (sprite)
+                        this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
+                    break;
+                default:
+                    this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
+            }
+        },
+        getSpriteById: function (spriteId) {
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].id === spriteId)
+                    return sprites[i];
+            }
 
+            if (this._background && spriteId == this._background.id)
+                return this._background;
+
+            throw new Error('unknown sprite with id: ' + spriteId);
+        },
         _loadSprites: function (sprites) {
             //todo type check
             var sp = sprites;
@@ -198,6 +234,7 @@ PocketCode.Model.Scene = (function () {
                 this._sprites.push(sprite);
                 this._originalSpriteOrder.push(sprite);
             }
+            //todo collisionmanager will not need these in future
             this._collisionManager.sprites = this._sprites;
         },
         _loadBackground: function (background) {
