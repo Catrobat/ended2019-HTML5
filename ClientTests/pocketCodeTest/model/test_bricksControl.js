@@ -451,15 +451,64 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
 
 
 QUnit.test("WhenCollisionBrick", function (assert) {
+    var done1 = assert.async();
 
     var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
-    var b = new PocketCode.Model.WhenCollisionBrick("device", "sprite", physicsWorld, {});
+    var sprite = { id: "id1" };
+    var spriteId2 = "id2";
+    var b = new PocketCode.Model.WhenCollisionBrick("device", sprite, physicsWorld, {spriteId: spriteId2});
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");  //TODO: add new properties
+    assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenCollisionBrick", "objClassName check");
 
-    assert.ok(false, "TODO: add tests for WhenCollisionBrick");
+    var handlerCalled = 0;
+    var handler = function () {
+        handlerCalled++;
+    };
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    physicsWorld._handleDetectedCollision(physicsWorld._registeredCollisions[sprite.id][spriteId2]);
+
+    assert.equal(handlerCalled, 1, "brick executed on detected collision");
+
+    //add a brick container
+    var bricks = [];
+    var TestBrick2 = (function () {
+        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
+
+        function TestBrick2(device, sprite) {
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            this.executed = 0;
+        }
+
+        TestBrick2.prototype.merge({
+            _execute: function (id) {
+                this.executed++;
+                //var _self = this;
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
+                //this._return(id, false);    //LOOP DELAY = FALSE
+            },
+        });
+
+        return TestBrick2;
+    })();
+
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+    bricks.push(new TestBrick2("", ""));
+
+    b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
+
+    b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler, this));
+
+    var asyncHandler = function () {
+        assert.ok(true, "onExecuted called: including threaded bricks");
+        done1();
+    };
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
+    physicsWorld._handleDetectedCollision(physicsWorld._registeredCollisions[sprite.id][spriteId2]);
+
 });
 
 
