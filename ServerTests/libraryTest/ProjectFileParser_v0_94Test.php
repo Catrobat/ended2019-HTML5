@@ -1,6 +1,5 @@
 <?php
 
-require_once("Server/html5/rest/v0.2/library/ProjectFileParser_v0_94.class.php");
 
 class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 {
@@ -118,7 +117,7 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->assertNotEquals($json_empty, $json_result->background, "json: background is empty");
 
     // check validity
-    $expBaseUrl = "/html5/rest/v0.1/projects/" . $json_result->id . "/";
+    $expBaseUrl = "/html5/rest/v0.2/projects/" . $json_result->id . "/";
     $this->assertContains($expBaseUrl, $json_result->resourceBaseUrl, "json: wrong resourceBaseUrl");
 
     $this->checkHeader($xml->header, $json_result->header);
@@ -186,7 +185,8 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->assertTrue(isset($json->sounds), "json: sounds is missing");
     $this->assertTrue(isset($json->variables), "json: variables is missing");
     $this->assertTrue(isset($json->lists), "json: lists is missing");
-    $this->assertTrue(isset($json->bricks), "json: bricks is missing");
+    $this->assertTrue(isset($json->scripts), "json: scripts is missing");
+      $this->assertTrue(isset($json->userScripts), "json: userScripts is missing");
 
     // check validity
     $this->assertContains("s", $json->id);

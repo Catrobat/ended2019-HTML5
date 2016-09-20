@@ -95,13 +95,13 @@ PocketCode.CollisionManager = (function () {
         checkSpriteCollision: function (sprite1, sprite2) {
 
             if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 0.0 || sprite2.transparency == 0.0) //!visible, transparent
-                return false;
+                return 1; // return false;
 
             var l1 = sprite1.currentLook,
                 l2 = sprite2.currentLook;
 
             if (!l1 || !l2) //one of the sprites does not have a look
-                return false;
+                return 2; //return false;
 
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
@@ -142,7 +142,7 @@ PocketCode.CollisionManager = (function () {
             };
 
             if (area.t - area.b <= 0 || area.r - area.l <= 0)   //no overlapping
-                return false;
+                return 3; //return false;
 
             //check pixels in range
             var precision = 2.0;    //means 2 pixel accuracy used for calculation
@@ -197,88 +197,22 @@ PocketCode.CollisionManager = (function () {
 
             //TODO: check transparent pixels in pixels1 & 2 and return true if as soon as the current are both "not transparent"
 
-            return false;
+            //Length of the overlapping Rect
+            var length = width * height;
+
+            //Loop to fínd the collision
+            for (var cnt = 0; cnt < length * 4; cnt += 4){
+
+                if (pixels1[cnt] == pixels2[cnt]) {
+                    return 4; // return true;
+                }
+            }
+
+            return 5;
+            //return false;
 
 
-            //OLD CODE BELOW
 
-            var collision = { occurs: false, overflow: {} };
-
-            //check if any edge of the sprites are colliding
-            if (//Sprite2 in Sprite1
-            (sprite1.top >= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite1 in Sprite2
-            (sprite1.top <= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite2 collides with top side of Sprite1
-            (sprite1.top <= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite1 collides with top side of Sprite2
-            (sprite1.top >= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite2 collides with right side of Sprite1
-            (sprite1.top >= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite1 collides with right side of Sprite2
-            (sprite1.top <= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite2 collides with right side of Sprite1 above top side
-            (sprite1.top <= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite2 collides with right side of Sprite1  under bottom side
-            (sprite1.top >= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left >= sprite2.left) ||
-
-                //Sprite1 collides with right side of Sprite2 above top side
-            (sprite1.top >= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left <= sprite2.left) ||
-                //Sprite1 collides with right side of Sprite2 under bottom side
-            (sprite1.top <= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite2 collides with bottom side of Sprite1
-            (sprite1.top >= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite1 collides with bottom side of Sprite2
-            (sprite1.top <= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite2 collides with left side of Sprite1
-            (sprite1.top >= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left <= sprite2.left) ||
-                //Sprite1 collides with left side of Sprite2
-            (sprite1.top <= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left >= sprite2.left) ||
-
-                //Sprite2 collides with left side of Sprite1 above top side
-            (sprite1.top <= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left <= sprite2.left) ||
-                //Sprite2 collides with left side of Sprite1  under bottom side
-            (sprite1.top >= sprite2.top & sprite1.right >= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left <= sprite2.left) ||
-
-                //Sprite1 collides with left side of Sprite2 above top side
-            (sprite1.top >= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom <= sprite2.bottom & sprite1.left >= sprite2.left) ||
-                //Sprite1 collides with left side of Sprite2 under bottom side
-            (sprite1.top <= sprite2.top & sprite1.right <= sprite2.right &
-            sprite1.bottom >= sprite2.bottom & sprite1.left >= sprite2.left))
-                collision.occurs = true;
-
-            /*
-            //Check if no collision occurs
-            if (sprite1.top > sprite2.bottom || sprite1.right < sprite2.left ||
-                sprite1.bottom < sprite2.top || sprite1. left < sprite2.right)
-                collision.occurs = false;
-            else
-                collision.occurs = true;
-             */
-
-            return collision;
         },
         //-------------------------------------------------------------------------------------
         checkSpriteColorCollision: function (sprite, color) {

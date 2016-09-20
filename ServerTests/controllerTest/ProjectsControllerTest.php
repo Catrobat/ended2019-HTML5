@@ -1,6 +1,5 @@
 <?php
 
-require_once("Server/html5/rest/v0.1/controller/ProjectsController.class.php");
 
 class ProjectsControllerTest extends PHPUnit_Framework_TestCase
 {
