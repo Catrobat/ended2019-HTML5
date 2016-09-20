@@ -256,10 +256,11 @@ PocketCode.GameEngine = (function () {
             this._originalScreenWidth = header.device.screenWidth;
 
             //create objects
-            if (this._background)
-                this._background.dispose();// = undefined;
-            this._originalSpriteOrder = [];
-            this._sprites.dispose();
+            //todo move to scene
+            // if (this._background)
+            //     this._background.dispose();// = undefined;
+            // this._originalSpriteOrder = [];
+            // this._sprites.dispose();
 
             //resource sizes
             this._resourceTotalSize = 0;
@@ -355,20 +356,23 @@ PocketCode.GameEngine = (function () {
             this._loadingAlerts.unsupportedBricks = e.unsupportedBricks;
             //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
+        //todo this initsialises all spritest from all scenes -> might be too much
         _initSprites: function () {
-            //todo move
-            // init sprites after all looks were loaded (important for look offsets)
-            var bg = this._currentScene._background,
-                sprites = this._currentScene._sprites;
-
-            if (bg) {
-                bg.initLooks();
-                bg.init();
+            for (var i = 0, l = this._scenes.length; i < l; i++){
+                this._scenes[i].initializeSprites();
             }
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].initLooks();
-                sprites[i].init();
-            }
+            // // init sprites after all looks were loaded (important for look offsets)
+            // var bg = this._currentScene._background,
+            //     sprites = this._currentScene._sprites;
+            //
+            // if (bg) {
+            //     bg.initLooks();
+            //     bg.init();
+            // }
+            // for (var i = 0, l = sprites.length; i < l; i++) {
+            //     sprites[i].initLooks();
+            //     sprites[i].init();
+            // }
         },
         _resourceProgressChangeHandler: function (e) {
             if (!e.file || !e.file.size)
@@ -437,7 +441,11 @@ PocketCode.GameEngine = (function () {
             reinitSprites = reinitSprites || true;
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites == true && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
-                this._reinitSprites();
+               // this._reinitSprites();
+                var scenes = this._scenes;
+                for (var i = 0, l = scenes.length; i < l; i++){
+                    scenes[i].reinitializeSprites();
+                }
                 // var bg = this._background;
                 // if (bg) {
                 //     bg.init();
@@ -470,12 +478,12 @@ PocketCode.GameEngine = (function () {
             // if (!bg)
             //     this._spriteOnExecutedHandler();    //make sure an empty program terminates
         },
-        _reinitSprites: function(){
-            var scenes = this._scenes;
-            for (var i = 0, l = scenes.length; i < l; i++){
-                scenes[i].reinitializeSprites();
-            }
-        },
+        // _reinitSprites: function(){
+        //     var scenes = this._scenes;
+        //     for (var i = 0, l = scenes.length; i < l; i++){
+        //         scenes[i].reinitializeSprites();
+        //     }
+        // },
         restartProject: function (reinitSprites) {
             this.stopProject();
             this.projectTimer.stop();
@@ -485,27 +493,27 @@ PocketCode.GameEngine = (function () {
             //todo make sure all scenes are paused?
             return this._currentScene.pause();
 
-            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
-                return false;
-
-
-            this.projectTimer.pause();
-            this._soundManager.pauseSounds();
-            if (this._background)
-                this._background.pauseScripts();
-
-            var sprites = this._sprites;
-            for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].pauseScripts();
-            }
-            this._executionState = PocketCode.ExecutionState.PAUSED;
-            return true;
+            // if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+            //     return false;
+            //
+            //
+            // this.projectTimer.pause();
+            // this._soundManager.pauseSounds();
+            // if (this._background)
+            //     this._background.pauseScripts();
+            //
+            // var sprites = this._sprites;
+            // for (var i = 0, l = sprites.length; i < l; i++) {
+            //     sprites[i].pauseScripts();
+            // }
+            // this._executionState = PocketCode.ExecutionState.PAUSED;
+            // return true;
         },
         resumeProject: function () {
             this._currentScene.resume();
             this._soundManager.resumeSounds();
 
-            return;
+            // return;
             // if (this._executionState !== PocketCode.ExecutionState.PAUSED)
             //     return;
             //
@@ -553,7 +561,7 @@ PocketCode.GameEngine = (function () {
                     return;
                 if (this._background && this._background.scriptsRunning)
                     return;
-                var sprites = this._sprites;
+                var sprites = this._currentScene.sprites;
                 for (var i = 0, l = sprites.length; i < l; i++) {
                     if (sprites[i].scriptsRunning)
                         return;
@@ -570,7 +578,7 @@ PocketCode.GameEngine = (function () {
 
         //brick-sprite interaction
         getSpriteById: function (spriteId) {
-            var sprites = this._currentScene.sprites;
+            var sprites = this._currentScene.sprites; //todo move logic into scene
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
                     return sprites[i];

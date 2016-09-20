@@ -21,6 +21,8 @@ PocketCode.Model.Scene = (function () {
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
+
+        this._sprites = [];
     }
 
     //properties
@@ -65,7 +67,13 @@ PocketCode.Model.Scene = (function () {
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
-            this._sprites = [];
+
+            if (this._background)
+                this._background.dispose();// = undefined;
+            this._originalSpriteOrder = [];
+            this._sprites.dispose();
+
+           // this._sprites = [];
             this._projectTimer = projectTimer;
             this._originalSpriteOrder = [];
         },
@@ -148,6 +156,20 @@ PocketCode.Model.Scene = (function () {
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
             //todo
+        },
+        initializeSprites: function () {
+            var bg = this._background,
+                sprites = this._sprites;
+
+            if (bg) {
+                bg.initLooks();
+                bg.init();
+            }
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].initLooks();
+                sprites[i].init();
+            }
+
         },
         reinitializeSprites: function () {
             var bg = this._background;
