@@ -105,11 +105,11 @@ PocketCode.CollisionManager = (function () {
 
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
-                l1ri = l1.renderingImage,
+                l1ri = sprite1.renderingImage,
                 l1b = l1.getBoundary(l1ri.scaling, l1ri.flipX, false),  //we do not calculate exact boundaries- less performant
                 x2 = sprite2.positionX,
                 y2 = sprite2.positionY,
-                l2ri = l2.renderingImage,
+                l2ri = sprite2.renderingImage,
                 l2b = l2.getBoundary(l2ri.scaling, l2ri.flipX, false);
 
             //l1 = {
@@ -141,7 +141,7 @@ PocketCode.CollisionManager = (function () {
                 l: Math.max(x1 + l1b.left, x2 + l2b.left),
             };
 
-            if (area.t - area.b <= 0 || area.r - area.l <= 0)   //no overlapping
+            if ( area.t - area.b <= 0 || area.r - area.l <= 0 )   //no overlapping
                 return 3; //return false;
 
             //check pixels in range
@@ -149,6 +149,8 @@ PocketCode.CollisionManager = (function () {
             if (SmartJs.Device.isMobile)
                 precision *= 2.0;
 
+            // command test
+            precision = 1.0;
             var width = Math.ceil((area.r - area.l) / precision),
                 height = Math.ceil((area.t - area.b) / precision);
             this._canvas.width = width;
@@ -158,13 +160,13 @@ PocketCode.CollisionManager = (function () {
             var ctx = this._ctx;
             ctx.clearRect(0, 0, width, height);
             ctx.save();
+            ctx.translate(l1ri.x, -l1ri.y);
             ctx.rotate(l1ri.rotation * (Math.PI / 180.0));
+            ctx.translate(-area.l, -area.t);
             ctx.scale(
                 l1ri.scaling / precision * (l1ri.flipX ? -1.0 : 1.0),
                 l1ri.scaling / precision
             );
-
-            ctx.translate(-area.l, -area.t);
 
             //ctx.scale(
             //    1.0 / precision,
@@ -172,7 +174,8 @@ PocketCode.CollisionManager = (function () {
             //);
             //draw sprite1
             //l1ri.draw(ctx);
-            ctx.drawImage(l1ri, sx, sy, width, height, 0, 0, width, height);
+
+            ctx.drawImage(l1.canvas, 0, 0, width, height);
 
             var imageData = ctx.getImageData(0, 0, width, height);
             var pixels1 = imageData.data;
@@ -181,16 +184,16 @@ PocketCode.CollisionManager = (function () {
             //draw sprite2
             ctx.clearRect(0, 0, width, height);
             ctx.save();
+            ctx.translate(l2ri.x, -l2ri.y);
             ctx.rotate(l2ri.rotation * (Math.PI / 180.0));
+            ctx.translate(-area.l, -area.t);
             ctx.scale(
                 l2ri.scaling / precision * (l2ri.flipX ? -1.0 : 1.0),
                 l2ri.scaling / precision
             );
 
-            ctx.translate(-area.l, -area.t);
-
             //l2ri.draw(ctx);
-            ctx.drawImage(l2ri, sx, sy, width, height, 0, 0, width, height);
+            ctx.drawImage(l2.canvas, 0, 0, width, height);
             imageData = ctx.getImageData(0, 0, width, height);
             var pixels2 = imageData.data;
             ctx.restore();
@@ -200,7 +203,7 @@ PocketCode.CollisionManager = (function () {
             //Length of the overlapping Rect
             var length = width * height;
 
-            //Loop to fínd the collision
+            //Loop to find the collision
             for (var cnt = 0; cnt < length * 4; cnt += 4){
 
                 if (pixels1[cnt] == pixels2[cnt]) {
