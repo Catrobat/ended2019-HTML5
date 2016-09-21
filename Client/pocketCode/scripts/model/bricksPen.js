@@ -79,4 +79,32 @@ PocketCode.Model.merge({
     return SetPenColorBrick;
   })(),
 
+    ClearPenBrick: (function () {
+        ClearPenBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function ClearPenBrick(device, sprite, scene) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        }
+
+        ClearPenBrick.prototype._execute = function () {
+            this._return(scene.ClearPenStampCanvas());
+        };
+
+        return ClearPenBrick;
+    })(),
+
+    StampBrick: (function () {
+        StampBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function StampBrick(device, sprite) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        }
+
+        StampBrick.prototype._execute = function () {
+            this._return(this._sprite.penStamp());
+        };
+
+        return ClearPenBrick;
+    })(),
+
 });

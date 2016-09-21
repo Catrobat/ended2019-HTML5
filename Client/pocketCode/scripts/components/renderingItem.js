@@ -267,6 +267,31 @@ PocketCode.merge({
                         PocketCode.ImageHelper.setFilters(cache, filters);
                 },
             },
+            penDown: {
+                set: function (value) {
+                    this._penDown = value;
+                },
+            },
+            penSize: {
+                set: function (value) {
+                    this._penSize = value;
+                },
+            },
+            penColorBlue: {
+                set: function (value) {
+                    this._penColorBlue = value;
+                },
+            },
+            penColorRed: {
+                set: function (value) {
+                    this._penColorRed = value;
+                },
+            },
+            penColorGreen: {
+                set: function (value) {
+                    this._penColorGreen = value;
+                },
+            },
         });
 
         //methods

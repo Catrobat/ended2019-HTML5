@@ -62,6 +62,9 @@ PocketCode.Model.Sprite = (function () {
         //pen
         this._penDown = false;
         this._penSize = 4;
+        this._penColorBlue = 255.0;
+        this._penColorRed = 0.0;
+        this._penColorGreen = 0.0;
 
 
         //events
@@ -1228,6 +1231,9 @@ PocketCode.Model.Sprite = (function () {
             this._penColorRed = red;
             this._penColorGreen = green;
             return this._triggerOnChange({blue:this._penColorBlue, red: this._penColorRed, green: this._penColorGreen});
+        },
+        penStamp: function(){
+
         },
 
 
