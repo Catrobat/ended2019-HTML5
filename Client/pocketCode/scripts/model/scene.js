@@ -236,6 +236,9 @@ PocketCode.Model.Scene = (function () {
         setGravity: function (x, y) {
             this._physicsWorld.setGravity(x, y);
         },
+        clearPenStampCanvas: function() {
+            return true;
+        },
         _loadSprites: function (sprites) {
             //todo type check
             var sp = sprites;

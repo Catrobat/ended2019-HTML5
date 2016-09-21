@@ -71,6 +71,7 @@ PocketCode.PlayerPageController = (function () {
                 if (this._gameEngine) { //TODO: shouldn't we dispose an existing project before loading another?
                     //unbind existing project
                     this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
+                    this._gameEngine.onScenesInitalized.removeEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
@@ -78,6 +79,7 @@ PocketCode.PlayerPageController = (function () {
                 }
                 this._gameEngine = value;
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
+                this._gameEngine.onScenesInitalized.addEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
@@ -114,6 +116,11 @@ PocketCode.PlayerPageController = (function () {
         //project handler
         _projectLoadingProgressHandler: function (e) {
             this._view.setLoadingProgress(e.progress);
+        },
+        _scenesInitializedHandler: function(e) {
+            console.log( this._playerViewportController._view );
+            this._playerViewportController._view.initCanvasScenes(e.ids);
+            //this._view.initCanvasScenes(e.ids);
         },
         initOnLoad: function () {
             var screenSize = this._gameEngine.projectScreenSize;

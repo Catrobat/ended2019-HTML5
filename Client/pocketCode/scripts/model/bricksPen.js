@@ -104,7 +104,7 @@ PocketCode.Model.merge({
             this._return(this._sprite.penStamp());
         };
 
-        return ClearPenBrick;
+        return StampBrick;
     })(),
 
 });

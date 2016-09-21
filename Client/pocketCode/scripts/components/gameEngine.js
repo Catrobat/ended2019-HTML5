@@ -66,6 +66,7 @@ PocketCode.GameEngine = (function () {
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
+        this._onScenesInitialized = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
 
@@ -191,6 +192,9 @@ PocketCode.GameEngine = (function () {
         onLoadingProgress: {
             get: function () { return this._onLoadingProgress; },
         },
+        onScenesInitalized: {
+            get: function () { return this._onScenesInitialized; },
+        },
         onLoad: {
             get: function () { return this._onLoad; },
         },
@@ -308,6 +312,9 @@ PocketCode.GameEngine = (function () {
             //     this._collisionManager.dispose();
             // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
+            var scenes_ids = [];
+            //todo if no scenes -> error
+            console.log( "scenes: " + jsonProject.scenes.length );
             if(!jsonProject.scenes || jsonProject.scenes.length < 1)
                  throw new Error('No scnene found in project');
 
@@ -318,7 +325,12 @@ PocketCode.GameEngine = (function () {
                 scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device, this._soundManager);
                 scene.load(jsonProject.scenes[i]);
                 this._scenes.push(scene)
+                scenes_ids.push( scene.id );
             }
+
+            this._onScenesInitialized.dispatchEvent( { ids: scenes_ids } );   //update ui progress
+
+
 
             // if (jsonProject.background) {
             //     this._background = this._spriteFactory.create(jsonProject.background);
