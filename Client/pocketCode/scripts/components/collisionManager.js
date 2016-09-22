@@ -162,7 +162,7 @@ PocketCode.CollisionManager = (function () {
             ctx.save();
             ctx.translate(-l1ri.x, -l1ri.y);
             ctx.rotate(l1ri.rotation * (Math.PI / 180.0));
-            ctx.translate(l1ri.x - area.l, l1ri.y + area.t);
+            //ctx.translate(l1ri.x - area.l, l1ri.y + area.t);
             ctx.scale(
                 l1ri.scaling / precision * (l1ri.flipX ? -1.0 : 1.0),
                 l1ri.scaling / precision
@@ -176,6 +176,7 @@ PocketCode.CollisionManager = (function () {
             //l1ri.draw(ctx);
 
             ctx.drawImage(l1.canvas, 0, 0, width, height);
+            //ctx.drawImage(l1.canvas, l1ri.x, l1ri.y, width, height);
 
             var imageData = ctx.getImageData(0, 0, width, height);
             var pixels1 = imageData.data;
@@ -186,7 +187,7 @@ PocketCode.CollisionManager = (function () {
             ctx.save();
             ctx.translate(-l2ri.x, -l2ri.y);
             ctx.rotate(l2ri.rotation * (Math.PI / 180.0));
-            //ctx.translate(width * 0.5, height * 0.5);
+            //ctx.translate(l1ri.x - area.l, l1ri.y + area.t);
             ctx.scale(
                 l2ri.scaling / precision * (l2ri.flipX ? -1.0 : 1.0),
                 l2ri.scaling / precision

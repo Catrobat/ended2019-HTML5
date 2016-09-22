@@ -87,139 +87,13 @@ QUnit.test("checkSpriteEdgeCollision", function (assert) {
 });
 
 //------------------------------------------------------------------------------------------------------------------
-QUnit.test("checkSpriteCollision: simple", function (assert) {
-
-    var cm2 = new PocketCode.CollisionManager(10,20);
-
-    var boundary1 = {
-        top: 1,
-        right: 1,
-        bottom: 1,
-        left: 1,
-    };
-    var sprite1 = {
-        visible: true,
-        transparency: 100.0,
-        positionX: 0,
-        positionY: 0,
-        currentLook: {
-            getBoundary: function() {
-                return boundary2;
-            },
-            canvas: document.createElement("canvas"),//.getContext('2d'),
-        },
-        renderingImage: {
-            x: 0.0,
-            y: 0.0,
-            rotation: 0.0,
-            scaling: 1.0,
-            flipX: false,
-        },
-    };
-    var boundary2 = {
-        top: 1,
-        right: 1,
-        bottom: 1,
-        left: 1,
-    };
-    var sprite2 = {
-        visible: true,
-        transparency: 100.0,
-        positionX: 0,
-        positionY: 0,
-        currentLook: {
-            getBoundary: function() {
-                return boundary2;
-            },
-            canvas: document.createElement("canvas"),//.getContext('2d'),
-        },
-        renderingImage: {
-            x: 0.0,
-            y: 0.0,
-            rotation: 0.0,
-            scaling: 1.0,
-            flipX: false,
-        },
-    };
-
-    var collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    //Visibility and Transparency Tests
-    assert.deepEqual(collisionSprite, 3, "Both Sprites visible and not transparent - no collision");
-    sprite1.visible = false;
-    sprite2.visible = false;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Both Sprite invisible");
-    sprite2.visible = true;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Sprite1 is invisible");
-    sprite1.visible = true;
-    sprite2.visible = false;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Sprite2 is invisible");
-    sprite1.transparency = 0.0;
-    sprite2.visible = true;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Sprite1 is transparent");
-    sprite1.transparency = 10.0;
-    sprite2.transparency = 0.0;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Sprite2 is transparent");
-    sprite1.transparency = 0.0;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 1, "Both Sprites transparent");
-    sprite1.transparency = 100.0;
-    sprite2.transparency = 100.0;
-
-    //CurrentLook Tests
-    var sL1, sL2;
-    assert.throws(function () { cm2.checkSpriteCollision(sL1, sL2); }, Error,"Sprites undefined");
-    assert.throws(function () { cm2.checkSpriteCollision(sL1, sprite2); }, Error,"Sprite1 undefined");
-    assert.throws(function () { cm2.checkSpriteCollision(sprite1, sL2); }, Error,"Sprite2 undefined");
-
-    //Collision Tests
-    sprite2.positionY = 3;
-    boundary1 = {
-        top: 5,
-        right: 5,
-        bottom: 1,
-        left: 1,
-        };
-    boundary2 = {
-        top: 2,
-        right: 2,
-        bottom: 1,
-        left: 1,
-    };
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 4, "Collision Top");
-    sprite2.positionX = 3;
-    sprite2.positionY = 0;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 4, "Collision Right");
-    sprite2.positionX = 0;
-    sprite2.positionY = -3;
-    boundary2 = {
-        top: 5,
-        right: 5,
-        bottom: 1,
-        left:1
-    };
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 4, "Collision Bottom");
-    sprite2.positionX = -3;
-    sprite2.positionY = 0;
-    collisionSprite = cm2.checkSpriteCollision(sprite1, sprite2);
-    assert.deepEqual(collisionSprite, 4, "Collision Left");
-
-});
-
-QUnit.test("checkSpriteCollision: complex", function (assert) {
+QUnit.test("checkSpriteCollision", function (assert) {
 
     var done = assert.async();
 
-    var cm3 = new PocketCode.CollisionManager(10, 20);
+    var cm = new PocketCode.CollisionManager(10, 20);
     //test only
-    document.body.appendChild(cm3._canvas);
+    document.body.appendChild(cm._canvas);
 
     //init tests to start
     var baseUrl = "_resources/images/",
@@ -279,9 +153,68 @@ QUnit.test("checkSpriteCollision: complex", function (assert) {
         //sprite2._transparency = 100.0;
         //gameEngine._sprites.push(sprite2);
 
-        var test = cm3.checkSpriteCollision(sprite1, sprite2);
+        var test = cm.checkSpriteCollision(sprite1, sprite2);
 
         assert.deepEqual(test, 4, "Collision");
+
+        //Visibility and Transparency Tests
+        sprite1._visible = false;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Sprite1 invisible");
+        sprite1._visible = true;
+        sprite2._visible = false;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Sprite2 invisible");
+        sprite1._visible = false;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Both Sprites invisible");
+
+        sprite1._visible = true;
+        sprite2._visible = true;
+        sprite1._transparency = 100.0;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Sprite1 transparent");
+        sprite1._transparency = 0.0;
+        sprite2._transparency = 100.0;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Sprite2 transparent");
+        sprite1._transparency = 100.0;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 1, "Both Sprites transparent");
+        sprite1._transparency = 0.0;
+        sprite2._transparency = 0.0;
+
+        //CurrentLook Tests
+        var sL1, sL2;
+        assert.throws(function () { cm.checkSpriteCollision(sL1, sL2); }, Error,"Sprites undefined");
+        assert.throws(function () { cm.checkSpriteCollision(sL1, sprite2); }, Error,"Sprite1 undefined");
+        assert.throws(function () { cm.checkSpriteCollision(sprite1, sL2); }, Error,"Sprite2 undefined");
+
+        //No Collision Test
+        sprite1._positionX = 20;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 3, "Visible but no Collision");
+
+        //Collision Right
+        sprite1._positionX = 5;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 4, "Collision Right");
+
+        //Collision Left
+        sprite1._positionX = -5;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 4, "Collision Left");
+
+        //Collision Right
+        sprite1._positionY = 5;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 4, "Collision Top");
+
+        //Collision Right
+        sprite1._positionY = -5;
+        test = cm.checkSpriteCollision(sprite1, sprite2);
+        assert.deepEqual(test, 4, "Collision Bottom");
+
             done();
     }
 
