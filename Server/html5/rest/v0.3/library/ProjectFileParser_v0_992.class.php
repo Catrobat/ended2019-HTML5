@@ -683,6 +683,7 @@ class ProjectFileParser_v0_992
     {
         switch($brickType)
         {
+            // Wenn Programm gestartet
             case "StartScript":
                 $brick = new WhenProgramStartBrickDto($this->getNewId());
                 $brickList = $script->brickList;
@@ -694,8 +695,8 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
-            case "WhenClonedScript":
-                $brick = new WhenStartAsCloneBrickDto($this->getNewId());
+            case "WhenScript":
+                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -705,6 +706,24 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
+            // Wenn angetippt
+            // Wenn der Bildschirm berührt wird
+            case "WhenTouchDownScript":
+                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+
+
+
+
+            // Wenn ich empfange
             case "BroadcastScript":
                 $msg = (string)$script->receivedMessage;
                 $res = $this->findItemInArrayByName($msg, $this->broadcasts);
@@ -729,28 +748,44 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
-            case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
-                $brickList = $script->brickList;
-                array_push($this->cpp, $brickList);
 
-                $this->bricksCount += count($brickList->children()) + 1;
-                $brick->bricks = $this->parseInnerBricks($brickList->children());
+            // Verschicke an alle
+            case "BroadcastBrick":
+                $msg = (string)$script->broadcastMessage;
+                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
+                if($res === false)
+                {
+                    $id = $this->getNewId();
+                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                }
+                else
+                {
+                    $id = $res->id;
+                }
 
-                array_pop($this->cpp);
+                $brick = new BroadcastBrickDto($id);
                 break;
 
-            case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
-                $brickList = $script->brickList;
-                array_push($this->cpp, $brickList);
+            // Verschicke und warte
+            case "BroadcastWaitBrick":
+                $msg = (string)$script->broadcastMessage;
+                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
+                if($res === false)
+                {
+                    $id = $this->getNewId();
+                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                }
+                else
+                {
+                    $id = $res->id;
+                }
 
-                $this->bricksCount += count($brickList->children()) + 1;
-                $brick->bricks = $this->parseInnerBricks($brickList->children());
-
-                array_pop($this->cpp);
+                $brick = new BroadcastAndWaitBrickDto($id);
                 break;
 
+
+
+            // When x<y becomes true
             case "WhenConditionScript":
                 $condition = $script->formulaMap;
                 array_push($this->cpp, $condition);
@@ -766,40 +801,9 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
-            case "WhenBackgroundChangesScript":
-                $lookId = null; //if not defined
-
-                if(property_exists($script, "look"))
-                {
-                    $look = $this->getObject($script->look, $this->cpp);
-                    $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/images/" . (string)$look->fileName, $this->images, true);
-
-                    if($res === false)	//will only return false on invalid projects, as resources are registered already
-                    {
-                        throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
-                    }
-                    else {
-                        //find id in sprite->looks[]
-                        $lookObject = $this->findLookByResourceId($res->id);
-                        if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
-                            throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
-                    }
-
-                    //the image has already been included in the resources & look[]
-                    $lookId = $lookObject->id;
-                }
-
-                $brick = new WhenBackgroundChangesToBrickDto($this->getNewId(), $lookId);
-                $brickList = $script->brickList;
-                array_push($this->cpp, $brickList);
-
-                $this->bricksCount += count($brickList->children()) + 1;
-                $brick->bricks = $this->parseInnerBricks($brickList->children());
-
-                array_pop($this->cpp);
-                break;
-
             //physics
+
+            // Wenn physische Kollision mit
             case "CollisionScript":
                 $msg = (string)$script->receivedMessage;
                 $items = explode(">", $msg);  //"<->"
@@ -824,6 +828,40 @@ class ProjectFileParser_v0_992
                     if(!isset($brick))
                         throw new InvalidProjectFileException("physics collision ref $name not found");
                 }
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            // When background changes to
+            case "WhenBackgroundChangesScript":
+                $lookId = null; //if not defined
+
+                if(property_exists($script, "look"))
+                {
+                    $look = $this->getObject($script->look, $this->cpp);
+                    $res = $this->findItemInArrayByUrl($this->getSceneDirName() . "/images/" . (string)$look->fileName, $this->images, true);
+
+                    if($res === false)	//will only return false on invalid projects, as resources are registered already
+                    {
+                        throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+                    }
+                    else {
+                        //find id in sprite->looks[]
+                        $lookObject = $this->findLookByResourceId($res->id);
+                        if($lookObject === false)	//will only return false on invalid projects, as resources are registered already
+                            throw new InvalidProjectFileException("look '" . (string)$look->fileName . "' not defined in this sprite");
+                    }
+
+                    //the image has already been included in the resources & look[]
+                    $lookId = $lookObject->id;
+                }
+
+                $brick = new WhenBackgroundChangesToBrickDto($this->getNewId(), $lookId);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1128,6 +1166,7 @@ class ProjectFileParser_v0_992
     {
         switch($brickType)
         {
+            // Warte x Sekunden - Brick
             case "WaitBrick":
                 $duration = $script->formulaList;
                 array_push($this->cpp, $duration);
@@ -1135,42 +1174,18 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
-            case "BroadcastBrick":
-                $msg = (string)$script->broadcastMessage;
-                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
-                if($res === false)
-                {
-                    $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
-                }
-                else
-                {
-                    $id = $res->id;
-                }
-
-                $brick = new BroadcastBrickDto($id);
-                break;
-
-            case "BroadcastWaitBrick":
-                $msg = (string)$script->broadcastMessage;
-                $res = $this->findItemInArrayByName($msg, $this->broadcasts);
-                if($res === false)
-                {
-                    $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
-                }
-                else
-                {
-                    $id = $res->id;
-                }
-
-                $brick = new BroadcastAndWaitBrickDto($id);
-                break;
-
+            // Notiz - Brick
             case "NoteBrick":
                 $brick = new NoteBrickDto((string)$script->note);
                 break;
 
+            // Wiederhole fortlaufend
+
+            // Wenn x<y whar ist, dann ... sonst ...
+
+            // Wenn x<y wahr ist, dann
+
+            // Warte bis - Brick
             case "WaitUntilBrick":
                 $condition = $script->formulaList;
                 array_push($this->cpp, $condition);
@@ -1178,6 +1193,11 @@ class ProjectFileParser_v0_992
                 array_pop($this->cpp);
                 break;
 
+            // Wiederhole x mal
+
+            // Wiederhole bis x<y wahr ist
+
+            // Continue scene
             case "SceneTransitionBrick":
                 $sceneId = null;
                 $sceneName = (string)$script->sceneForTransition;
@@ -1195,6 +1215,7 @@ class ProjectFileParser_v0_992
                 $brick = new SceneTransitionBrickDto($sceneId);
                 break;
 
+            // Start scene
             case "SceneStartBrick":
                 $sceneId = null;
                 $sceneName = (string)$script->sceneToStart;
@@ -1212,14 +1233,29 @@ class ProjectFileParser_v0_992
                 $brick = new StartSceneBrickDto($sceneId);
                 break;
 
+            // When I start as a clone
+            case "WhenClonedScript":
+                $brick = new WhenStartAsCloneBrickDto($this->getNewId());
+                $brickList = $script->brickList;
+                array_push($this->cpp, $brickList);
+
+                $this->bricksCount += count($brickList->children()) + 1;
+                $brick->bricks = $this->parseInnerBricks($brickList->children());
+
+                array_pop($this->cpp);
+                break;
+
+            // Create clone of
             case "CloneBrick":
                 $brick = new CloneBrickDto();
                 break;
 
+            // Delete this clone
             case "DeleteThisCloneBrick":
                 $brick = new DeleteCloneBrickDto();
                 break;
 
+            // stop script/s
             case "StopScriptBrick":
                 $scriptType = null; //"mouseTouchPointer", "random", "sprite"
 
