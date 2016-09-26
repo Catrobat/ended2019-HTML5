@@ -501,6 +501,7 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ y: Math.round(this._positionY + this._lookOffsetY) });
         },
         /**
+        /**
          * moves the sprite "value" steps in the direction of the current direction
          * @param {number} steps
          * @returns {boolean}
@@ -693,6 +694,7 @@ PocketCode.Model.Sprite = (function () {
             }
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
+
         /**
          * sets the current look of the sprite to the previous one in the list
          * @returns {boolean}
@@ -1230,10 +1232,18 @@ PocketCode.Model.Sprite = (function () {
             this._penColorBlue = blue;
             this._penColorRed = red;
             this._penColorGreen = green;
-            return this._triggerOnChange({blue:this._penColorBlue, red: this._penColorRed, green: this._penColorGreen});
+            return this._triggerOnChange({blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen});
         },
         penStamp: function(){
 
+        },
+
+        showBubble: function(type, text) {
+            //this._bubbleText = text;
+            return this._triggerOnChange({bubble: type, text: text, visible: true});
+        },
+        hideBubble: function(type) {
+            return this._triggerOnChange({bubble: type, visible: false});
         },
 
 

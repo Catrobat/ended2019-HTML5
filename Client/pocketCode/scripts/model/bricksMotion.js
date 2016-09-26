@@ -6,6 +6,12 @@
 /// <reference path="bricksCore.js" />
 'use strict';
 
+var GoToType = {
+    POINTER: 1,
+    RANDOM: 2,
+    SPRITE: 3
+};
+
 PocketCode.Model.merge({
 
     GoToPositionBrick: (function () {
@@ -20,7 +26,7 @@ PocketCode.Model.merge({
 
         GoToPositionBrick.prototype._execute = function () {
             var x = this._x.calculate(),
-				y = this._y.calculate();
+                y = this._y.calculate();
             if (isNaN(x) || isNaN(y))
                 this._return(false);
             else
@@ -287,8 +293,8 @@ PocketCode.Model.merge({
                 var po = this._pendingOps[callId];
                 po.paused = this._paused;
                 var duration = this._duration.calculate(),
-					x = this._x.calculate(),
-					y = this._y.calculate();
+                    x = this._x.calculate(),
+                    y = this._y.calculate();
                 if (isNaN(duration)) {
                     if (!isNaN(x) && !isNaN(y))
                         this._updatePositionHandler({ value: { x: x, y: y } });
@@ -607,5 +613,27 @@ PocketCode.Model.merge({
         return SetFrictionBrick;
     })(),
 
-});
+    /*GoToBrick: (function () {
+        GoToBrick.extends(PocketCode.Model.BaseBrick, false);
 
+        function GoToBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite);
+
+            this._x = new PocketCode.Formula(device, sprite, propObject.x);
+            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+        }
+
+        GoToBrick.prototype._execute = function () {
+            var x = this._x.calculate(),
+                y = this._y.calculate();
+            if (isNaN(x) || isNaN(y))
+                this._return(false);
+            else
+                this._return(this._sprite.setPosition(x, y));
+        };
+
+        return GoToBrick;
+    })(),*/
+
+
+});

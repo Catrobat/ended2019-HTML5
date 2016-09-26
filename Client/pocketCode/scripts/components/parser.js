@@ -100,6 +100,7 @@ PocketCode.merge({
 
                 switch (type) {
                     //in development
+                    case 'SetBackgroundBrick':
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':

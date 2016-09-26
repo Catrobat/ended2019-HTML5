@@ -252,7 +252,10 @@ PocketCode.Model.Scene = (function () {
             this._background = this._spriteFactory.create(background);
             this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this._gameEngine)); //todo
             this._collisionManager.background = this._background;
-        }
+        },
+        setBackground: function (lookId) {
+            return this.background.setLook(lookId);
+        },
     });
 
     return Scene;

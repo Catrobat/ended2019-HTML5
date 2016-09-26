@@ -533,3 +533,57 @@ QUnit.test("FlashBrick", function (assert) {
     done2();
 });
 
+QUnit.test("SayBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
+
+    var b = new PocketCode.Model.SayBrick(device, sprite, { text: text });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SayBrick, "instance check");
+    assert.ok(b.objClassName === "SayBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+
+});
+
+QUnit.test("ThinkBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
+
+    var b = new PocketCode.Model.ThinkBrick(device, sprite, { text: text });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.ThinkBrick, "instance check");
+    assert.ok(b.objClassName === "ThinkBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+
+});
+
