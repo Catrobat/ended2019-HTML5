@@ -79,8 +79,8 @@ PocketCode.GameEngine = (function () {
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
 
         //this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
-        this._onTouchStartAction = new SmartJs.Event.Event(this);
- //       this._currentScene = new PocketCode.Model.Scene();
+        //this._onTouchStartAction = new SmartJs.Event.Event(this);
+        //this._currentScene = new PocketCode.Model.Scene();
         this._scenes = [];
     }
 
@@ -94,15 +94,15 @@ PocketCode.GameEngine = (function () {
                 //var imgs = this._background ? [this._background.renderingImage] : [],
                 //    sprites = this._sprites,
                 //    ri;
-                var imgs = [this._currentScene.background.renderingImage],
-                    sprites = this._currentScene.sprites;
-                for (var i = 0, l = sprites.length; i < l; i++)// {
-                    //ri = sprites[i].renderingImage;
-                    //if (ri.look)    //ignore sprites without looks
-                    //    imgs.push(ri);
-                    imgs.push(sprites[i].renderingImage);
-                //}
-                return imgs;
+                // var imgs = [this._currentScene.background.renderingImage],
+                //     sprites = this._currentScene.sprites;
+                // for (var i = 0, l = sprites.length; i < l; i++)// {
+                //     //ri = sprites[i].renderingImage;
+                //     //if (ri.look)    //ignore sprites without looks
+                //     //    imgs.push(ri);
+                //     imgs.push(sprites[i].renderingImage);
+                // //}
+                // return imgs;
             },
         },
         renderingTexts: {
@@ -170,7 +170,7 @@ PocketCode.GameEngine = (function () {
             },
         },
         collisionManager: {
-            get: function () { //todo make collisionmanager static
+            get: function () {
                 if(!this._currentScene)
                     return undefined;
 
@@ -313,8 +313,6 @@ PocketCode.GameEngine = (function () {
             // this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
             var scenes_ids = [];
-            //todo if no scenes -> error
-            console.log( "scenes: " + jsonProject.scenes.length );
             if(!jsonProject.scenes || jsonProject.scenes.length < 1)
                  throw new Error('No scnene found in project');
 
@@ -561,7 +559,7 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(function () {
                 if (this._disposed || this._currentScene.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
                     return;
-                if (this._currentScene.onSpriteTabbedAction.listenersAttached || this._onTouchStartAction.listenersAttached)
+                if (this._currentScene.onSpriteTabbedAction.listenersAttached || this._currentScene.onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
                 if (this._soundManager.isPlaying)

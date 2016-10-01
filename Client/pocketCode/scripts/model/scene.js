@@ -23,6 +23,7 @@ PocketCode.Model.Scene = (function () {
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
         this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
+        this._onTouchStartAction = new SmartJs.Event.Event(this);
 
         this._sprites = [];
     }
@@ -83,6 +84,9 @@ PocketCode.Model.Scene = (function () {
         onSpriteTabbedAction: {
             get: function () { return this._onSpriteTabbedAction; },
         },
+        onTouchStartAction: {
+            get: function() { return this._}
+        }
     });
 
     //methods
