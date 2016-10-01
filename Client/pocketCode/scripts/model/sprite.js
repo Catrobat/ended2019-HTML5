@@ -1232,18 +1232,18 @@ PocketCode.Model.Sprite = (function () {
             this._penColorBlue = blue;
             this._penColorRed = red;
             this._penColorGreen = green;
-            return this._triggerOnChange({blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen});
+            return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
         },
         penStamp: function(){
 
         },
 
         showBubble: function(type, text) {
-            //this._bubbleText = text;
-            return this._triggerOnChange({bubble: type, text: text, visible: true});
+
+            return this._triggerOnChange({bubble: { type: type, text: text, visible: true}});
         },
         hideBubble: function(type) {
-            return this._triggerOnChange({bubble: type, visible: false});
+            return this._triggerOnChange({bubble: { type: type, visible: false}});
         },
 
 

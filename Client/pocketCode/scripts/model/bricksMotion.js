@@ -6,11 +6,7 @@
 /// <reference path="bricksCore.js" />
 'use strict';
 
-var GoToType = {
-    POINTER: 1,
-    RANDOM: 2,
-    SPRITE: 3
-};
+
 
 PocketCode.Model.merge({
 
@@ -18,7 +14,7 @@ PocketCode.Model.merge({
         GoToPositionBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function GoToPositionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
@@ -41,7 +37,7 @@ PocketCode.Model.merge({
         SetXBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetXBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -62,7 +58,7 @@ PocketCode.Model.merge({
         SetYBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetYBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._y = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -83,7 +79,7 @@ PocketCode.Model.merge({
         ChangeXBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeXBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -104,7 +100,7 @@ PocketCode.Model.merge({
         ChangeYBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeYBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._y = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -125,7 +121,7 @@ PocketCode.Model.merge({
         SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetRotionStyleBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (!propObject)
                 this._style = PocketCode.RotationStyle.ALL_AROUND;
@@ -154,8 +150,8 @@ PocketCode.Model.merge({
     IfOnEdgeBounceBrick: (function () {
         IfOnEdgeBounceBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function IfOnEdgeBounceBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function IfOnEdgeBounceBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         }
 
@@ -171,7 +167,7 @@ PocketCode.Model.merge({
         MoveNStepsBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function MoveNStepsBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._steps = new PocketCode.Formula(device, sprite, propObject.steps);
         }
@@ -192,7 +188,7 @@ PocketCode.Model.merge({
         TurnLeftBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function TurnLeftBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
         }
@@ -213,7 +209,7 @@ PocketCode.Model.merge({
         TurnRightBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function TurnRightBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
         }
@@ -234,7 +230,7 @@ PocketCode.Model.merge({
         PointInDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function PointInDirectionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
         }
@@ -255,7 +251,7 @@ PocketCode.Model.merge({
         PointToBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function PointToBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._spriteId = propObject.spriteId;
         }
@@ -272,7 +268,7 @@ PocketCode.Model.merge({
         GlideToBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function GlideToBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
@@ -358,7 +354,7 @@ PocketCode.Model.merge({
         GoBackBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function GoBackBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._layers = new PocketCode.Formula(device, sprite, propObject.layers);
         }
@@ -378,8 +374,8 @@ PocketCode.Model.merge({
     ComeToFrontBrick: (function () {
         ComeToFrontBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ComeToFrontBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function ComeToFrontBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         }
 
@@ -395,7 +391,7 @@ PocketCode.Model.merge({
         VibrationBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function VibrationBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
             this._device.vibrate();    //call on ctr to notify our device this feature is in use
@@ -418,7 +414,7 @@ PocketCode.Model.merge({
         SetPhysicsObjectTypeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._physicsWorld = physicsWorld;
 
             if (!propObject){
@@ -456,7 +452,7 @@ PocketCode.Model.merge({
         SetVelocityBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVelocityBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
@@ -480,7 +476,7 @@ PocketCode.Model.merge({
         TurnLeftSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function TurnLeftSpeedBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
@@ -503,7 +499,7 @@ PocketCode.Model.merge({
         TurnRightSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function TurnRightSpeedBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
@@ -526,7 +522,7 @@ PocketCode.Model.merge({
         SetGravityBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetGravityBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
@@ -550,7 +546,7 @@ PocketCode.Model.merge({
         SetMassBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetMassBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._mass = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -573,7 +569,7 @@ PocketCode.Model.merge({
         SetBounceFactorBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetBounceFactorBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._bounceFactor = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
@@ -596,7 +592,7 @@ PocketCode.Model.merge({
         SetFrictionBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetFrictionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._friction = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
@@ -613,27 +609,40 @@ PocketCode.Model.merge({
         return SetFrictionBrick;
     })(),
 
-    /*GoToBrick: (function () {
+    GoToType: {
+        POINTER: 1,
+        RANDOM: 2,
+        SPRITE: 3
+    },
+
+    GoToBrick: (function () {
         GoToBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function GoToBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function GoToBrick(device, sprite, gameEngine,  propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+            this._gameEngine = gameEngine;
+            this._destinationSpriteId = propObject.spriteId;
+            switch(propObject.destinationType) {
+                case "pointer":                              // case????
+                    this._type = PocketCode.Model.GoToType.POINTER;
+                    break;
+                case "random":
+                    this._type = PocketCode.Model.GoToType.RANDOM;
+                    break;
+                case "sprite":
+                    this._type = PocketCode.Model.GoToType.SPRITE;
+                    break;
+            }
         }
 
         GoToBrick.prototype._execute = function () {
-            var x = this._x.calculate(),
-                y = this._y.calculate();
-            if (isNaN(x) || isNaN(y))
-                this._return(false);
-            else
-                this._return(this._sprite.setPosition(x, y));
+
+            this._return(this._gameEngine.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
         };
 
         return GoToBrick;
-    })(),*/
+    })(),
 
 
 });

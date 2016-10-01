@@ -705,6 +705,24 @@ PocketCode.GameEngine = (function () {
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
+
+        setSpritePosition: function (spriteId, type, destinationSpriteId) {
+            switch(type) {
+                case PocketCode.Model.GoToType.POINTER:
+                    //TODO
+                    break;
+                case PocketCode.Model.GoToType.RANDOM:
+                    //TODO
+                    break;
+                case PocketCode.Model.GoToType.SPRITE:
+                    //TODO
+                    break;
+            }
+        },
+
+        showAskDialog: function (question, onExecutedListener) {
+            //todo
+        },
     });
 
     return GameEngine;
