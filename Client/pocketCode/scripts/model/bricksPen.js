@@ -10,7 +10,7 @@ PocketCode.Model.merge({
     PenDownBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function PenDownBrick(device, sprite, propObject) {
-      PocketCode.Model.BaseBrick.call(this, device, sprite);
+      PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
     }
 
     PenDownBrick.prototype._execute = function () {
@@ -25,7 +25,7 @@ PocketCode.Model.merge({
     PenUpBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function PenUpBrick(device, sprite, propObject) {
-      PocketCode.Model.BaseBrick.call(this, device, sprite);
+      PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
     }
 
     PenUpBrick.prototype._execute = function () {
@@ -40,7 +40,7 @@ PocketCode.Model.merge({
     SetPenSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function SetPenSizeBrick(device, sprite, propObject) {
-      PocketCode.Model.BaseBrick.call(this, device, sprite);
+      PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
       this._penSize = new PocketCode.Formula(device, sprite, propObject.value);
     }
 
@@ -59,7 +59,7 @@ PocketCode.Model.merge({
     SetPenColorBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function SetPenColorBrick(device, sprite, propObject) {
-      PocketCode.Model.BaseBrick.call(this, device, sprite);
+      PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
       this._penColorBlue = new PocketCode.Formula(device, sprite, propObject.blue);
       this._penColorRed = new PocketCode.Formula(device, sprite, propObject.red);
@@ -82,8 +82,8 @@ PocketCode.Model.merge({
     ClearPenBrick: (function () {
         ClearPenBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ClearPenBrick(device, sprite, scene) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function ClearPenBrick(device, sprite, scene, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
         }
 
         ClearPenBrick.prototype._execute = function () {
@@ -96,8 +96,8 @@ PocketCode.Model.merge({
     StampBrick: (function () {
         StampBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function StampBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function StampBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
         }
 
         StampBrick.prototype._execute = function () {

@@ -13,39 +13,12 @@
 
 PocketCode.Model.merge({
 
-    WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
-
-        function WhenActionBrick(device, sprite, propObject, actionEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
-
-            this._action = propObject.action;
-            //listen to 'when tabbed'
-            this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
-        }
-
-        WhenActionBrick.prototype.merge({
-            _onActionHandler: function (e) {
-                if (e.sprite === this._sprite)
-                    this.execute();
-            },
-            dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
-                this._onAction = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            },
-        });
-
-        return WhenActionBrick;
-    })(),
-
 
     WaitBrick: (function () {
         WaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function WaitBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
             this._paused = false;
@@ -140,7 +113,7 @@ PocketCode.Model.merge({
         NoteBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function NoteBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._text = propObject.text;
         }
@@ -156,8 +129,8 @@ PocketCode.Model.merge({
     ForeverBrick: (function () {
         ForeverBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function ForeverBrick(device, sprite, minLoopCycleTime) {
-            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+        function ForeverBrick(device, sprite,  minLoopCycleTime, propObject) {
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
         }
 
         ForeverBrick.prototype.merge({
@@ -175,7 +148,7 @@ PocketCode.Model.merge({
         IfThenElseBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function IfThenElseBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
             this._ifBricks = new PocketCode.Model.BrickContainer([]);
@@ -240,7 +213,7 @@ PocketCode.Model.merge({
         WaitUntilBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function WaitUntilBrick(device, sprite, propObject, delay) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._delay = delay; //= minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
@@ -282,7 +255,7 @@ PocketCode.Model.merge({
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
         function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
-            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
         }
@@ -318,7 +291,7 @@ PocketCode.Model.merge({
         RepeatUntilBrick.extends(PocketCode.Model.LoopBrick, false);
 
         function RepeatUntilBrick(device, sprite, propObject, minLoopCycleTime) {
-            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime);
+            PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
         }
@@ -334,5 +307,121 @@ PocketCode.Model.merge({
 
         return RepeatUntilBrick;
     })(),
+
+
+    StartScene: (function () {
+        StartScene.extends(PocketCode.Model.BaseBrick, false);
+
+        function StartScene(device, sprite, gameEngine, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._sceneToStart = gameEngine.getSceneById(param.sceneId);
+        }
+
+        StartScene.prototype._execute = function () {
+            this._return(this._sceneToStart.start());
+        };
+
+        return StartScene;
+    })(),
+
+    SceneTransitionBrick: (function () {
+        SceneTransitionBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SceneTransitionBrick(device, sprite, gameEngine, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._transitionScene = gameEngine.getSceneById(param.sceneId);
+        }
+
+        SceneTransitionBrick.prototype._execute = function () {
+            //this._return(this._sceneToStart.start());
+            //scene start/pause
+        };
+
+        return SceneTransitionBrick;
+    })(),
+
+    WhenStartAsCloneBrick: (function () {
+        WhenStartAsCloneBrick.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenStartAsCloneBrick(device, sprite, propObject, startEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+        }
+
+        WhenStartAsCloneBrick.prototype._execute = function () {
+            //
+        };
+
+        return WhenStartAsCloneBrick;
+    })(),
+
+    CloneBrick: (function () {
+        CloneBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function CloneBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._cloneId = propObject.id;
+        }
+
+        CloneBrick.prototype._execute = function () {
+            //
+        };
+
+        return CloneBrick;
+    })(),
+
+    DeleteCloneBrick: (function () {
+        DeleteCloneBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function DeleteCloneBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            //this._cloneId = sprite.id;
+        }
+
+        DeleteCloneBrick.prototype._execute = function () {
+            //
+        };
+
+        return DeleteCloneBrick;
+    })(),
+
+    /*StopScriptType: {
+        THIS: 1,
+        ALL: 2,
+        OTHER: 3
+    },*/
+
+
+    StopScriptBrick: (function () {
+        StopScriptBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function StopScriptBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._stopScriptType = propObject.scriptType;
+            //scriptId??
+            this._scriptId = propObject.scriptId;
+        }
+
+        StopScriptBrick.prototype._execute = function () {
+            switch(this._stopScriptType) {
+                case "this":
+                    this._return(this._sprite.stopScript(this._scriptId));
+                    break;
+                case "all":
+                    this._return(this._sprite.stopAllScripts());
+                    break;
+                case "other":
+                    this._return(this._sprite.stopOtherScripts(this._scriptId));
+                    break;
+            }
+        };
+
+        return StopScriptBrick;
+    })(),
+
+
+
+
+
 
 });

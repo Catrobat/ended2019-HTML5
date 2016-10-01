@@ -11,7 +11,7 @@ PocketCode.Model.merge({
         PlaySoundBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function PlaySoundBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._soundManager = soundManager;
             this._soundId = propObject.resourceId;
@@ -31,7 +31,7 @@ PocketCode.Model.merge({
         PlaySoundAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function PlaySoundAndWaitBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             //this._soundManager = soundManager;
             //this._soundId = propObject.resourceId;
@@ -88,8 +88,8 @@ PocketCode.Model.merge({
     StopAllSoundsBrick: (function () {
         StopAllSoundsBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function StopAllSoundsBrick(device, sprite, soundManager) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function StopAllSoundsBrick(device, sprite, soundManager, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._soundManager = soundManager;
         }
@@ -107,7 +107,7 @@ PocketCode.Model.merge({
         SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVolumeBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._soundManager = soundManager;
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
@@ -131,7 +131,7 @@ PocketCode.Model.merge({
         ChangeVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeVolumeBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._soundManager = soundManager;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -155,7 +155,7 @@ PocketCode.Model.merge({
         SpeakBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SpeakBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._soundManager = soundManager;
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
@@ -196,7 +196,7 @@ PocketCode.Model.merge({
         SpeakAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function SpeakAndWaitBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             //this._soundManager = soundManager;
             //this._soundId = propObject.resourceId;

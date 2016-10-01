@@ -34,6 +34,33 @@ PocketCode.Model.merge({
         return WhenProgramStartBrick;
     })(),
 
+    WhenActionBrick: (function () {
+        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenActionBrick(device, sprite, propObject, actionEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+            this._action = propObject.action;
+            //listen to 'when tabbed'
+            this._onAction = actionEvent;
+            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+        }
+
+        WhenActionBrick.prototype.merge({
+            _onActionHandler: function (e) {
+                if (e.sprite === this._sprite)
+                    this.execute();
+            },
+            dispose: function () {
+                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+                this._onAction = undefined;  //make sure to disconnect from gameEngine
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+            },
+        });
+
+        return WhenActionBrick;
+    })(),
+
     WhenBroadcastReceiveBrick: (function () {
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 
@@ -63,7 +90,7 @@ PocketCode.Model.merge({
         BroadcastBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function BroadcastBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
@@ -131,7 +158,7 @@ PocketCode.Model.merge({
         BroadcastAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function BroadcastAndWaitBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
@@ -167,6 +194,23 @@ PocketCode.Model.merge({
         });
 
         return WhenCollisionBrick;
+    })(),
+
+    WhenBackgroundChangesTo: (function () {
+        WhenBackgroundChangesTo.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenBackgroundChangesTo(device, sprite, scene, propObject) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+            this._scene = scene;
+            this._lookId = param.lookId;
+        }
+
+        WhenBackgroundChangesTo.prototype._execute = function () {
+            ///????
+        };
+
+        return WhenBackgroundChangesTo;
     })(),
 
 });
