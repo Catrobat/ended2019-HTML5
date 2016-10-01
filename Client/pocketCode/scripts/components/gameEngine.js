@@ -596,39 +596,45 @@ PocketCode.GameEngine = (function () {
         //     throw new Error('unknown sprite with id: ' + spriteId);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
-            if (sprite === this._background)
-                return 0;
-            var idx = this._currentScene.sprites.indexOf(sprite);
-            if (idx < 0)
-                throw new Error('sprite not found: getSpriteLayer');
-            return idx + 1;
+            return this._currentScene.getSpriteLayer(sprite);
+            //
+            // if (sprite === this._background)
+            //     return 0;
+            // var idx = this._currentScene.sprites.indexOf(sprite);
+            // if (idx < 0)
+            //     throw new Error('sprite not found: getSpriteLayer');
+            // return idx + 1;
         },
         setSpriteLayerBack: function (sprite, layers) {
-            var sprites = this._currentScene.sprites;
-            var idx = sprites.indexOf(sprite);
-            if (idx == 0)
-                return false;
-            var count = sprites.remove(sprite);
-            if (count == 0)
-                return false;
-
-            idx = Math.max(idx - layers, 0);
-            sprites.insert(idx, sprite);
-
-            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //including background
-            return true;
+            return this._currentScene.getSpriteLayer(sprite, layers);
+            //
+            // var sprites = this._currentScene.sprites;
+            // var idx = sprites.indexOf(sprite);
+            // if (idx == 0)
+            //     return false;
+            // var count = sprites.remove(sprite);
+            // if (count == 0)
+            //     return false;
+            //
+            // idx = Math.max(idx - layers, 0);
+            // sprites.insert(idx, sprite);
+            //
+            // this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //including background
+            // return true;
         },
         setSpriteLayerToFront: function (sprite) {
-            var sprites = this._currentScene.sprites;
-            if (sprites.indexOf(sprite) === sprites.length - 1)
-                return false;
-            var count = sprites.remove(sprite);
-            if (count == 0)
-                return false;
-            sprites.push(sprite);
-
-            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
-            return true;
+            return this._currentScene.setSpriteLayerToFront(sprite);
+            //
+            // var sprites = this._currentScene.sprites;
+            // if (sprites.indexOf(sprite) === sprites.length - 1)
+            //     return false;
+            // var count = sprites.remove(sprite);
+            // if (count == 0)
+            //     return false;
+            // sprites.push(sprite);
+            //
+            // this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
+            // return true;
         },
         handleUserAction: function (e) {
             this._currentScene.handleUserAction(e);

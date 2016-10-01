@@ -263,6 +263,46 @@ PocketCode.Model.Scene = (function () {
         setBackground: function (lookId) {
             return this.background.setLook(lookId);
         },
+        getSpriteLayer: function (sprite) { //including background (used in formulas)
+            if (sprite === this._background)
+                return 0;
+            var idx = this.sprites.indexOf(sprite);
+            if (idx < 0)
+                throw new Error('sprite not found: getSpriteLayer');
+            return idx + 1;
+        },
+        setSpriteLayerBack: function (sprite, layers) {
+            var sprites = this.sprites;
+            var idx = sprites.indexOf(sprite);
+            if (idx == 0)
+                return false;
+            var count = sprites.remove(sprite);
+            if (count == 0)
+                return false;
+
+            idx = Math.max(idx - layers, 0);
+            sprites.insert(idx, sprite);
+
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //including background
+            return true;
+        },
+        setSpriteLayerToFront: function (sprite) {
+            var sprites = this.sprites;
+            if (sprites.indexOf(sprite) === sprites.length - 1)
+                return false;
+            var count = sprites.remove(sprite);
+            if (count == 0)
+                return false;
+            sprites.push(sprite);
+
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
+            return true;
+        },
+        getLookImage: function (id) {
+            //used by the sprite to access an image during look init
+            return this._imageStore.getImage(id);
+        },
+
     });
 
     return Scene;
