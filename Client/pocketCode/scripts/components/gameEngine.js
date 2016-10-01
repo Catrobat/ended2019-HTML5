@@ -320,7 +320,7 @@ PocketCode.GameEngine = (function () {
                 var scene = new PocketCode.Model.Scene();
                 if (i === 0)
                     this._currentScene = scene;
-                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device, this._soundManager);
+                scene.init(this._spriteFactory, this.projectTimer, this._spriteOnExecutedHandler, this, this._device, this._soundManager, this._onSpriteUiChange); //todo move events into scene
                 scene.load(jsonProject.scenes[i]);
                 this._scenes.push(scene)
                 scenes_ids.push( scene.id );

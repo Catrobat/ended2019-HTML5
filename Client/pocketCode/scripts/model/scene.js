@@ -85,19 +85,20 @@ PocketCode.Model.Scene = (function () {
             get: function () { return this._onSpriteTabbedAction; },
         },
         onTouchStartAction: {
-            get: function() { return this._}
-        }
+            get: function() { return this._onTouchStartAction }
+        },
     });
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device, soundManager) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device, soundManager, onSpriteUiChange) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
             this._device = device;
             this._soundManager = soundManager;
+            this._onSpriteUiChange = onSpriteUiChange;
 
             if (this._background)
                 this._background.dispose();// = undefined;
