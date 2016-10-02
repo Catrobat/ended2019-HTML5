@@ -92,8 +92,21 @@ PocketCode.CollisionManager = (function () {
             };
             return collision;
         },
-        checkSpriteCollision: function (sprite1, sprite2) {
+        checkSpriteCollision: function (spriteId1, spriteId2) {
 
+            var sprite1, sprite2;
+            for (var i = 0, l = this._sprites.length; i < l; i++)
+            {
+                var tmp = this._sprites[i];
+                if (tmp._id === spriteId1)
+                    sprite1 = tmp;
+                else if (tmp._id === spriteId2)
+                    sprite2 = tmp;
+
+                if (sprite1 && sprite2)
+                    break;
+            }
+            
             if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 100.0 || sprite2.transparency == 100.0) //!visible, transparent
                 return 1; // return false;
 
