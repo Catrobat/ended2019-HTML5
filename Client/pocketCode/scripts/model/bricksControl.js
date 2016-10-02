@@ -81,7 +81,6 @@ PocketCode.Model.merge({
         return WaitBrick;
     })(),
 
-
     //currently not supported by android
     //ResetTimerBrick: (function () {
     //    ResetTimerBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -107,8 +106,6 @@ PocketCode.Model.merge({
     //    return ResetTimerBrick;
     //})(),
 
-
-
     NoteBrick: (function () {
         NoteBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -125,11 +122,10 @@ PocketCode.Model.merge({
         return NoteBrick;
     })(),
 
-
     ForeverBrick: (function () {
         ForeverBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function ForeverBrick(device, sprite,  minLoopCycleTime, propObject) {
+        function ForeverBrick(device, sprite, minLoopCycleTime, propObject) {
             PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
         }
 
@@ -142,7 +138,6 @@ PocketCode.Model.merge({
 
         return ForeverBrick;
     })(),
-
 
     IfThenElseBrick: (function () {
         IfThenElseBrick.extends(PocketCode.Model.ThreadedBrick, false);
@@ -205,7 +200,6 @@ PocketCode.Model.merge({
         return IfThenElseBrick;
     })(),
 
-
     //please notice: we evaluate the condition using a timeout equal to minLoopDelay
     //the implementation is equal to the Android implementation- anyway, it's not correct
     //we should? extend our formula to support onChange events- this may cause performance issues, e.g. onChangeHandler on each sensor, sprite property, variable, ..
@@ -250,7 +244,6 @@ PocketCode.Model.merge({
         return WaitUntilBrick;
     })(),
 
-
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
@@ -286,7 +279,6 @@ PocketCode.Model.merge({
         return RepeatBrick;
     })(),
 
-
     RepeatUntilBrick: (function () {
         RepeatUntilBrick.extends(PocketCode.Model.LoopBrick, false);
 
@@ -308,22 +300,7 @@ PocketCode.Model.merge({
         return RepeatUntilBrick;
     })(),
 
-
-    StartScene: (function () {
-        StartScene.extends(PocketCode.Model.BaseBrick, false);
-
-        function StartScene(device, sprite, gameEngine, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._sceneToStart = gameEngine.getSceneById(param.sceneId);
-        }
-
-        StartScene.prototype._execute = function () {
-            this._return(this._sceneToStart.start());
-        };
-
-        return StartScene;
-    })(),
-
+    //continue scene
     SceneTransitionBrick: (function () {
         SceneTransitionBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -338,6 +315,21 @@ PocketCode.Model.merge({
         };
 
         return SceneTransitionBrick;
+    })(),
+
+    StartSceneBrick: (function () {
+        StartSceneBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function StartSceneBrick(device, sprite, gameEngine, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._sceneToStart = gameEngine.getSceneById(param.sceneId);
+        }
+
+        StartSceneBrick.prototype._execute = function () {
+            this._return(this._sceneToStart.start());
+        };
+
+        return StartSceneBrick;
     })(),
 
     WhenStartAsCloneBrick: (function () {
@@ -385,43 +377,47 @@ PocketCode.Model.merge({
         return DeleteCloneBrick;
     })(),
 
-    /*StopScriptType: {
+    StopScriptType: {
         THIS: 1,
         ALL: 2,
         OTHER: 3
-    },*/
-
+    },
 
     StopScriptBrick: (function () {
         StopScriptBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function StopScriptBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._stopScriptType = propObject.scriptType;
-            //scriptId??
-            this._scriptId = propObject.scriptId;
+            PocketCode.Model.BaseBrick.call(this, device, sprite, scriptId, propObject);
+
+            switch (propObject.scriptType) {
+                case 'this':
+                    this._type = PocketCode.Model.StopScriptType.THIS;
+                    break;
+                case 'all':
+                    this._type = PocketCode.Model.StopScriptType.ALL;
+                    break;
+                case 'other':
+                    this._type = PocketCode.Model.StopScriptType.OTHER;
+                    break;
+            }
+            this._scriptId = scriptId;
         }
 
         StopScriptBrick.prototype._execute = function () {
-            switch(this._stopScriptType) {
-                case "this":
+            switch(this._type) {
+                case PocketCode.Model.StopScriptType.THIS:
                     this._return(this._sprite.stopScript(this._scriptId));
-                    break;
-                case "all":
-                    this._return(this._sprite.stopAllScripts());
-                    break;
-                case "other":
-                    this._return(this._sprite.stopOtherScripts(this._scriptId));
-                    break;
+                    //break;
+                case PocketCode.Model.StopScriptType.ALL:
+                    this._return(this._sprite.stopAllExceptScripts());
+                    //break;
+                case PocketCode.Model.StopScriptType.OTHER:
+                    this._return(this._sprite.stopAllExceptScripts(this._scriptId));
+                    //break;
             }
         };
 
         return StopScriptBrick;
     })(),
-
-
-
-
-
 
 });

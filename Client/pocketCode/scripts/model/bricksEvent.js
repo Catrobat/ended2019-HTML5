@@ -40,8 +40,8 @@ PocketCode.Model.merge({
         function WhenActionBrick(device, sprite, propObject, actionEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            this._action = propObject.action;
-            //listen to 'when tabbed'
+            //this._action = propObject.action;   //'Tapped', 'TouchStart'
+            //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
             this._onAction = actionEvent;
             actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
         }
@@ -84,7 +84,6 @@ PocketCode.Model.merge({
 
         return WhenBroadcastReceiveBrick;
     })(),
-
 
     BroadcastBrick: (function () {
         BroadcastBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -153,7 +152,6 @@ PocketCode.Model.merge({
         return BroadcastBrick;
     })(),
 
-
     BroadcastAndWaitBrick: (function () {
         BroadcastAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
@@ -176,6 +174,31 @@ PocketCode.Model.merge({
         return BroadcastAndWaitBrick;
     })(),
 
+    WhenConditionMetBrick: (function () {
+        WhenConditionMetBrick.extends(PocketCode.Model.ScriptBlock, false);
+
+        function WhenConditionMetBrick(device, sprite, startEvent, propObject) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+            this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+            this._onStart = startEvent;
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this._onStartHandler, this));
+        }
+
+        WhenConditionMetBrick.prototype.merge({
+            _onStartHandler: function (e) {
+                //if (e.sprite === this._sprite)    //TODO: add logic to periodically evaluate condition and call this.execute() + handle: pause/resume/stop
+                //    this.execute();
+            },
+            dispose: function () {
+                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this._onStartHandler, this));
+                this._onStart = undefined;  //make sure to disconnect from gameEngine
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+            },
+        });
+
+        return WhenConditionMetBrick;
+    })(),
 
     WhenCollisionBrick: (function () {
         WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);

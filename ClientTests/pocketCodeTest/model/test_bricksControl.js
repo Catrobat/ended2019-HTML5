@@ -612,3 +612,37 @@ QUnit.test("RepeatUntilBrick", function (assert) {
 });
 
 
+QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("StartSceneBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("WhenStartAsCloneBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("CloneBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("DeleteCloneBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("StopScriptBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("RepeatUntilBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+

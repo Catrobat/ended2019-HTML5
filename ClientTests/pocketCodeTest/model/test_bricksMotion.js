@@ -35,6 +35,7 @@ QUnit.test("GoToPositionBrick", function (assert) {
 
 });
 
+
 QUnit.test("SetXBrick", function (assert) {
 
     var done1 = assert.async();
@@ -60,6 +61,7 @@ QUnit.test("SetXBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetYBrick", function (assert) {
 
@@ -87,6 +89,7 @@ QUnit.test("SetYBrick", function (assert) {
 
 });
 
+
 QUnit.test("ChangeXBrick", function (assert) {
 
     var done1 = assert.async();
@@ -113,6 +116,7 @@ QUnit.test("ChangeXBrick", function (assert) {
 
 });
 
+
 QUnit.test("ChangeYBrick", function (assert) {
 
     var done1 = assert.async();
@@ -138,6 +142,7 @@ QUnit.test("ChangeYBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetRotionStyleBrick", function (assert) {
 
@@ -172,6 +177,12 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
 
 });
 
+
+QUnit.test("GoToBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("IfOnEdgeBounceBrick", function (assert) {
 
     var done1 = assert.async();
@@ -196,6 +207,7 @@ QUnit.test("IfOnEdgeBounceBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("MoveNStepsBrick", function (assert) {
 
@@ -223,6 +235,7 @@ QUnit.test("MoveNStepsBrick", function (assert) {
 
 });
 
+
 QUnit.test("TurnLeftBrick", function (assert) {
 
     var done1 = assert.async();
@@ -248,6 +261,7 @@ QUnit.test("TurnLeftBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("TurnRightBrick", function (assert) {
 
@@ -275,6 +289,7 @@ QUnit.test("TurnRightBrick", function (assert) {
 
 });
 
+
 QUnit.test("PointInDirectionBrick", function (assert) {
 
     var done1 = assert.async();
@@ -300,6 +315,7 @@ QUnit.test("PointInDirectionBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("PointToBrick", function (assert) {
 
@@ -329,6 +345,7 @@ QUnit.test("PointToBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("GlideToBrick", function (assert) {
 
@@ -467,6 +484,7 @@ QUnit.test("GlideToBrick", function (assert) {
 
 });
 
+
 QUnit.test("GoBackBrick", function (assert) {
 
     var done1 = assert.async();
@@ -494,6 +512,7 @@ QUnit.test("GoBackBrick", function (assert) {
 
 });
 
+
 QUnit.test("ComeToFrontBrick", function (assert) {
 
     var done1 = assert.async();
@@ -520,6 +539,7 @@ QUnit.test("ComeToFrontBrick", function (assert) {
 
 });
 
+
 QUnit.test("VibrationBrick", function (assert) {
 
     var done1 = assert.async();
@@ -545,6 +565,7 @@ QUnit.test("VibrationBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 /* PHYSICS BRICKS */
 QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
@@ -581,6 +602,7 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
 
 });
 
+
 QUnit.test("SetVelocityBrick", function (assert) {
 
     var done1 = assert.async();
@@ -608,6 +630,7 @@ QUnit.test("SetVelocityBrick", function (assert) {
 
 });
 
+
 QUnit.test("TurnLeftSpeedBrick", function (assert) {
 
     var done1 = assert.async();
@@ -634,6 +657,7 @@ QUnit.test("TurnLeftSpeedBrick", function (assert) {
 
 });
 
+
 QUnit.test("TurnRightSpeedBrick", function (assert) {
 
     var done1 = assert.async();
@@ -659,6 +683,7 @@ QUnit.test("TurnRightSpeedBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetGravityBrick", function (assert) {
 
@@ -687,6 +712,7 @@ QUnit.test("SetGravityBrick", function (assert) {
 
 });
 
+
 QUnit.test("SetMassBrick", function (assert) {
 
     var done1 = assert.async();
@@ -713,6 +739,7 @@ QUnit.test("SetMassBrick", function (assert) {
 
 });
 
+
 QUnit.test("SetBounceFactorBrick", function (assert) {
 
     var done1 = assert.async();
@@ -738,6 +765,7 @@ QUnit.test("SetBounceFactorBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetFrictionBrick", function (assert) {
 

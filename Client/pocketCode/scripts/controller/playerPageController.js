@@ -71,15 +71,16 @@ PocketCode.PlayerPageController = (function () {
                 if (this._gameEngine) { //TODO: shouldn't we dispose an existing project before loading another?
                     //unbind existing project
                     this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
-                    this._gameEngine.onScenesInitalized.removeEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
+                    //this._gameEngine.onScenesInitialized.removeEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                     this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
+                    this._gameEngine.dispose();
                 }
                 this._gameEngine = value;
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
-                this._gameEngine.onScenesInitalized.addEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
+                //this._gameEngine.onScenesInitialized.addEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
@@ -117,21 +118,22 @@ PocketCode.PlayerPageController = (function () {
         _projectLoadingProgressHandler: function (e) {
             this._view.setLoadingProgress(e.progress);
         },
-        _scenesInitializedHandler: function(e) {
-            console.log( this._playerViewportController._view );
-            this._playerViewportController._view.initCanvasScenes(e.ids);
-            //this._view.initCanvasScenes(e.ids);
-        },
-        initOnLoad: function () {
+        //_scenesInitializedHandler: function(e) {
+        //    //console.log( this._playerViewportController._view );
+        //    this._playerViewportController.initCanvas(e.ids);
+        //    //this._view.initCanvasScenes(e.ids);
+        //},
+        initOnLoad: function (sceneIds) {
             var screenSize = this._gameEngine.projectScreenSize;
             this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
-            this._playerViewportController.renderingImages = this._gameEngine.renderingImages;
-            this._playerViewportController.renderingTexts = this._gameEngine.renderingTexts;
+            this._playerViewportController.initCanvas(e.ids);
+            this._playerViewportController.renderingImages = this._gameEngine.renderingImages;  //TODO: assign onBeforeStart? -> changing when scenes are changed
+            this._playerViewportController.renderingTexts = this._gameEngine.renderingTexts;    //TODO:
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             if (e.reinit)
-                this.initOnLoad();
+                this.initOnLoad(e.sceneIds);
             this._view.hideStartScreen();
         },
         _projectExecutedHandler: function (e) {

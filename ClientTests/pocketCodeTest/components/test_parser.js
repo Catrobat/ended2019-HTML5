@@ -46,8 +46,9 @@ QUnit.test("FormulaParser: operators", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
-    program._sprites.push(sprite);
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    scene._sprites.push(sprite);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -724,7 +725,8 @@ QUnit.test("BrickFactory", function (assert) {
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
     program._variables = allBricksProject.variables;
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     var minLoopCycleTime = 14;
 
     var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, minLoopCycleTime);

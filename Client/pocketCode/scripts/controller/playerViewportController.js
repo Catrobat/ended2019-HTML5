@@ -117,6 +117,9 @@ PocketCode.PlayerViewportController = (function () {
         hideAxes: function () {
             this._view.hideAxes();
         },
+        initCanvas: function (sceneIds) {
+            this._view.initCanvas(sceneIds);
+        },
         takeScreenshot: function () {
             return this._view.getCanvasDataURL();
         },

@@ -109,6 +109,26 @@ PocketCode.Model.merge({
         return AppendToListBrick;
     })(),
 
+    DeleteAtListBrick: (function () {
+        DeleteAtListBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function DeleteAtListBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            if (propObject.resourceId)    //can be null
+                this._list = sprite.getList(propObject.resourceId);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
+        }
+
+        DeleteAtListBrick.prototype._execute = function () {
+            var idx = this._idx.calculate();
+            if (this._list && !isNaN(idx))
+                this._list.deleteAt(idx);
+            this._return();
+        };
+
+        return DeleteAtListBrick;
+    })(),
 
     InsertAtListBrick: (function () {
         InsertAtListBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -132,7 +152,6 @@ PocketCode.Model.merge({
         return InsertAtListBrick;
     })(),
 
-
     ReplaceAtListBrick: (function () {
         ReplaceAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -153,28 +172,6 @@ PocketCode.Model.merge({
         };
 
         return ReplaceAtListBrick;
-    })(),
-
-
-    DeleteAtListBrick: (function () {
-        DeleteAtListBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function DeleteAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            if (propObject.resourceId)    //can be null
-                this._list = sprite.getList(propObject.resourceId);
-            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
-        }
-
-        DeleteAtListBrick.prototype._execute = function () {
-            var idx = this._idx.calculate();
-            if (this._list && !isNaN(idx))
-                this._list.deleteAt(idx);
-            this._return();
-        };
-
-        return DeleteAtListBrick;
     })(),
 
 });

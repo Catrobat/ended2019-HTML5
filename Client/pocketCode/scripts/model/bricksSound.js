@@ -26,7 +26,6 @@ PocketCode.Model.merge({
         return PlaySoundBrick;
     })(),
 
-
     PlaySoundAndWaitBrick: (function () {
         PlaySoundAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
@@ -84,7 +83,6 @@ PocketCode.Model.merge({
         return PlaySoundAndWaitBrick;
     })(),
 
-
     StopAllSoundsBrick: (function () {
         StopAllSoundsBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -101,7 +99,6 @@ PocketCode.Model.merge({
 
         return StopAllSoundsBrick;
     })(),
-
 
     SetVolumeBrick: (function () {
         SetVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -126,7 +123,6 @@ PocketCode.Model.merge({
         return SetVolumeBrick;
     })(),
 
-
     ChangeVolumeBrick: (function () {
         ChangeVolumeBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -149,7 +145,6 @@ PocketCode.Model.merge({
 
         return ChangeVolumeBrick;
     })(),
-
 
     SpeakBrick: (function () {
         SpeakBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -190,7 +185,6 @@ PocketCode.Model.merge({
 
         return SpeakBrick;
     })(),
-
 
     SpeakAndWaitBrick: (function () {
         SpeakAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);

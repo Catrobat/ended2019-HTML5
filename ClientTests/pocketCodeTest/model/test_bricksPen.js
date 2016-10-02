@@ -7,6 +7,7 @@
 
 QUnit.module("model/bricksPen.js");
 
+
 QUnit.test("PenDownBrick", function (assert) {
 
     var done1 = assert.async();
@@ -31,6 +32,7 @@ QUnit.test("PenDownBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("PenUpBrick", function (assert) {
 
@@ -57,6 +59,7 @@ QUnit.test("PenUpBrick", function (assert) {
 
 });
 
+
 QUnit.test("SetPenSizeBrick", function (assert) {
 
     var done1 = assert.async();
@@ -82,6 +85,7 @@ QUnit.test("SetPenSizeBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetPenColorBrick", function (assert) {
 
@@ -111,3 +115,14 @@ QUnit.test("SetPenColorBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
+
+QUnit.test("StampBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("ClearBackgroundBrick", function (assert) {
+    assert.ok(false, "TODO");
+});
+

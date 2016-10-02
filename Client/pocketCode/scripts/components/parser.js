@@ -15,14 +15,16 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, project, broadcastMgr, soundMgr, totalCount, minLoopCycleTime) {
-            //this._bricksCount = bricksCount || 0;
-            this._program = project;
-            this._brickFactory = new PocketCode.BrickFactory(device, project, broadcastMgr, soundMgr, totalCount, minLoopCycleTime);
+        function SpriteFactory(device, project, soundMgr, bricksTotal, minLoopCycleTime) {
+            this._device = device;
+            this._project = project;
+            this._soundMgr = soundMgr;
+            this._bricksTotal = bricksTotal;
+            this._minLoopCycleTime = minLoopCycleTime;
 
             //we use the brickFactory events here
-            this._onProgressChange = this._brickFactory.onProgressChange;
-            this._onUnsupportedBricksFound = this._brickFactory.onUnsupportedBricksFound;
+            this._onProgressChange = new SmartJs.Event.Event;
+            this._onUnsupportedBricksFound = new SmartJs.Event.Event;
         }
 
         //events
@@ -37,20 +39,31 @@ PocketCode.merge({
 
         //methods
         SpriteFactory.prototype.merge({
-            create: function (jsonSprite) {
+            create: function (currentScene, broadcastMgr, bricksLoaded, jsonSprite) {
+                if (!(currentScene instanceof PocketCode.Model.Scene))
+                    throw new Error('invalid argument: current scene');
+                if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
+                    throw new Error('invalid argument: broadcast manager');
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var sprite = new PocketCode.Model.Sprite(this._program, jsonSprite);
+                bricksLoaded = bricksLoaded || 0;
+                var brickFactory = new PocketCode.BrickFactory(device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
+                brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
+                brickFactory.onProgressChange.onUnsupportedBricksFound(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
+
+                var sprite = new PocketCode.Model.Sprite(this._project, this._scene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
-                    scripts.push(this._brickFactory.create(sprite, jsonSprite.scripts[i]));
+                    scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
                 }
+                brickFactory.dispose();
                 sprite.scripts = scripts;
                 return sprite;
             },
             dispose: function () {
-                this._program = undefined;
+                this._project = undefined;
+                this._scene = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
@@ -62,15 +75,15 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, project, broadcastMgr, soundMgr, totalCount, minLoopCycleTime) {
+        function BrickFactory(device, scene, broadcastMgr, soundMgr, totalCount, loadedCount, minLoopCycleTime) {
             this._device = device;
-            this._project = project;
+            this._scene = scene;
             this._broadcastMgr = broadcastMgr;
             this._soundMgr = soundMgr;
             this._minLoopCycleTime = minLoopCycleTime;
 
             this._total = totalCount;
-            this._parsed = 0;
+            this._parsed = loadedCount;
             this._updatePercentage = 0.0;
             this._unsupportedBricks = [];
 
@@ -125,16 +138,16 @@ PocketCode.merge({
                         //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
                     case 'WhenProgramStartBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onProgramStart);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onStart);
                         break;
 
                     case 'WhenActionBrick':
                         switch (jsonBrick.action) {
                             case 'Tapped':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onSpriteTabbedAction);
+                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
                                 break;
                             case 'TouchStart':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._project.onTouchStartAction);
+                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
                                 break;
                         }
                         break;
@@ -220,7 +233,7 @@ PocketCode.merge({
             },
             dispose: function () {
                 this._device = undefined;
-                this._project = undefined;
+                this._scene = undefined;
                 this._broadcastMgr = undefined;
                 this._soundMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);

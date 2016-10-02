@@ -4,7 +4,7 @@
 /// <reference path="../core.js" />
 /// <reference path="../components/userVariableHost.js" />
 /// <reference path="../components/renderingItem.js" />
-/// <reference path="../components/gameEngine.js" />
+/// <reference path="../model/scene.js" />
 'use strict';
 
 /**
@@ -30,13 +30,15 @@ PocketCode.Model.Sprite = (function () {
     /**
      * initialization of properties
      * @param gameEngine gameEngine instance as a reference
+     * @param scene scene instance as a reference
      * @param propObject object which can contains properties
      */
-    function Sprite(gameEngine, propObject) {
+    function Sprite(gameEngine, scene, propObject) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
         this._gameEngine = gameEngine;
-        this._onChange = gameEngine.onSpriteUiChange;    //mapping event (defined in gameEngine)
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
+        this._scene = scene;
+        this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._scene.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
         this._scripts = [];
@@ -165,7 +167,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             get: function () {
-                return this._gameEngine.getSpriteLayer(this);//.id);
+                return this._scene.getSpriteLayer(this);//.id);
             },
         },
         rotationStyle: {
@@ -357,17 +359,10 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
         },
-        stopOtherScripts: function (scriptId) {
+        stopAllExceptScripts: function (scriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== scriptId)
-                    scripts[i].stop();
-            }
-        },
-        stopAllScripts: function () {
-            var scripts = this._scripts;
-            for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].stop)
                     scripts[i].stop();
             }
         },
@@ -592,7 +587,7 @@ PocketCode.Model.Sprite = (function () {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._gameEngine.getSpriteById(spriteId); //throws error if undefined
+            var pointTo = this._scene.getSpriteById(spriteId); //throws error if undefined
 
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
@@ -609,14 +604,14 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         goBack: function (layers) {
-            return this._gameEngine.setSpriteLayerBack(this, layers);
+            return this._scene.setSpriteLayerBack(this, layers);
         },
         /**
          * sets the layer of the sprite to the foremost one
          * @returns {*}
          */
         comeToFront: function () {
-            return this._gameEngine.setSpriteLayerToFront(this);
+            return this._scene.setSpriteLayerToFront(this);
         },
         /**
          * sets the rotation style of the sprite (enum value)
@@ -660,7 +655,7 @@ PocketCode.Model.Sprite = (function () {
                     }
                     break;
                 default:
-                    throw new Error("invalid argument: unknown rotation style");
+                    throw new Error('invalid argument: unknown rotation style');
             }
 
             if (props.flipX == undefined && props.rotation == undefined)
@@ -972,7 +967,7 @@ PocketCode.Model.Sprite = (function () {
             if (!this._currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
-            var collisionMgr = this._gameEngine.collisionManager;
+            var collisionMgr = this._scene.collisionManager;
 
             var x = this._positionX,
                 y = this._positionY;

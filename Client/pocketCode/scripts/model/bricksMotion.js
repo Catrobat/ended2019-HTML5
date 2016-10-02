@@ -32,7 +32,6 @@ PocketCode.Model.merge({
         return GoToPositionBrick;
     })(),
 
-
     SetXBrick: (function () {
         SetXBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -52,7 +51,6 @@ PocketCode.Model.merge({
 
         return SetXBrick;
     })(),
-
 
     SetYBrick: (function () {
         SetYBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -74,7 +72,6 @@ PocketCode.Model.merge({
         return SetYBrick;
     })(),
 
-
     ChangeXBrick: (function () {
         ChangeXBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -95,7 +92,6 @@ PocketCode.Model.merge({
         return ChangeXBrick;
     })(),
 
-
     ChangeYBrick: (function () {
         ChangeYBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -115,7 +111,6 @@ PocketCode.Model.merge({
 
         return ChangeYBrick;
     })(),
-
 
     SetRotionStyleBrick: (function () {
         SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -146,6 +141,40 @@ PocketCode.Model.merge({
         return SetRotionStyleBrick;
     })(),
 
+    GoToType: {
+        POINTER: 1,
+        RANDOM: 2,
+        SPRITE: 3
+    },
+
+    GoToBrick: (function () {
+        GoToBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function GoToBrick(device, sprite, gameEngine, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._gameEngine = gameEngine;
+            this._destinationSpriteId = propObject.spriteId;
+            switch (propObject.destinationType) {
+                case 'pointer':
+                    this._type = PocketCode.Model.GoToType.POINTER;
+                    break;
+                case 'random':
+                    this._type = PocketCode.Model.GoToType.RANDOM;
+                    break;
+                case 'sprite':
+                    this._type = PocketCode.Model.GoToType.SPRITE;
+                    break;
+            }
+        }
+
+        GoToBrick.prototype._execute = function () {
+
+            this._return(this._gameEngine.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
+        };
+
+        return GoToBrick;
+    })(),
 
     IfOnEdgeBounceBrick: (function () {
         IfOnEdgeBounceBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -161,7 +190,6 @@ PocketCode.Model.merge({
 
         return IfOnEdgeBounceBrick;
     })(),
-
 
     MoveNStepsBrick: (function () {
         MoveNStepsBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -183,7 +211,6 @@ PocketCode.Model.merge({
         return MoveNStepsBrick;
     })(),
 
-
     TurnLeftBrick: (function () {
         TurnLeftBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -203,7 +230,6 @@ PocketCode.Model.merge({
 
         return TurnLeftBrick;
     })(),
-
 
     TurnRightBrick: (function () {
         TurnRightBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -225,7 +251,6 @@ PocketCode.Model.merge({
         return TurnRightBrick;
     })(),
 
-
     PointInDirectionBrick: (function () {
         PointInDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -246,7 +271,6 @@ PocketCode.Model.merge({
         return PointInDirectionBrick;
     })(),
 
-
     PointToBrick: (function () {
         PointToBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -262,7 +286,6 @@ PocketCode.Model.merge({
 
         return PointToBrick;
     })(),
-
 
     GlideToBrick: (function () {
         GlideToBrick.extends(PocketCode.Model.ThreadedBrick, false);
@@ -349,7 +372,6 @@ PocketCode.Model.merge({
         return GlideToBrick;
     })(),
 
-
     GoBackBrick: (function () {
         GoBackBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -370,7 +392,6 @@ PocketCode.Model.merge({
         return GoBackBrick;
     })(),
 
-
     ComeToFrontBrick: (function () {
         ComeToFrontBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -385,7 +406,6 @@ PocketCode.Model.merge({
 
         return ComeToFrontBrick;
     })(),
-
 
     VibrationBrick: (function () {
         VibrationBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -421,10 +441,10 @@ PocketCode.Model.merge({
                 this._physicsType = PocketCode.MovementStyle.NONE;
             } else {
                 switch (propObject.physicsType) {
-                    case "FIXED":
+                    case 'FIXED':
                         this._physicsType = PocketCode.MovementStyle.FIXED;
                         break;
-                    case "DYNAMIC":
+                    case 'DYNAMIC':
                         this._physicsType = PocketCode.MovementStyle.DYNAMIC;
                         break;
                     default:
@@ -446,7 +466,6 @@ PocketCode.Model.merge({
 
         return SetPhysicsObjectTypeBrick;
     })(),
-
 
     SetVelocityBrick: (function () {
         SetVelocityBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -471,7 +490,6 @@ PocketCode.Model.merge({
         return SetVelocityBrick;
     })(),
 
-
     TurnLeftSpeedBrick: (function () {
         TurnLeftSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -494,7 +512,6 @@ PocketCode.Model.merge({
         return TurnLeftSpeedBrick;
     })(),
 
-
     TurnRightSpeedBrick: (function () {
         TurnRightSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -516,7 +533,6 @@ PocketCode.Model.merge({
 
         return TurnRightSpeedBrick;
     })(),
-
 
     SetGravityBrick: (function () {
         SetGravityBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -541,7 +557,6 @@ PocketCode.Model.merge({
         return SetGravityBrick;
     })(),
 
-
     SetMassBrick: (function () {
         SetMassBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -563,7 +578,6 @@ PocketCode.Model.merge({
 
         return SetMassBrick;
     })(),
-
 
     SetBounceFactorBrick: (function () {
         SetBounceFactorBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -587,7 +601,6 @@ PocketCode.Model.merge({
         return SetBounceFactorBrick;
     })(),
 
-
     SetFrictionBrick: (function () {
         SetFrictionBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -608,41 +621,5 @@ PocketCode.Model.merge({
 
         return SetFrictionBrick;
     })(),
-
-    GoToType: {
-        POINTER: 1,
-        RANDOM: 2,
-        SPRITE: 3
-    },
-
-    GoToBrick: (function () {
-        GoToBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function GoToBrick(device, sprite, gameEngine,  propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._gameEngine = gameEngine;
-            this._destinationSpriteId = propObject.spriteId;
-            switch(propObject.destinationType) {
-                case "pointer":                              // case????
-                    this._type = PocketCode.Model.GoToType.POINTER;
-                    break;
-                case "random":
-                    this._type = PocketCode.Model.GoToType.RANDOM;
-                    break;
-                case "sprite":
-                    this._type = PocketCode.Model.GoToType.SPRITE;
-                    break;
-            }
-        }
-
-        GoToBrick.prototype._execute = function () {
-
-            this._return(this._gameEngine.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
-        };
-
-        return GoToBrick;
-    })(),
-
 
 });

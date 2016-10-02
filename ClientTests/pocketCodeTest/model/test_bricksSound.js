@@ -34,6 +34,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
 });
 
+
 QUnit.test("PlaySoundAndWaitBrick", function (assert) {
 
     var done1 = assert.async();
@@ -41,6 +42,7 @@ QUnit.test("PlaySoundAndWaitBrick", function (assert) {
     assert.ok(false, "TODO")
     done1();
 });
+
 
 QUnit.test("StopAllSoundsBrick", function (assert) {
 
@@ -66,6 +68,7 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SetVolumeBrick", function (assert) {
 
@@ -93,6 +96,7 @@ QUnit.test("SetVolumeBrick", function (assert) {
 
 });
 
+
 QUnit.test("ChangeVolumeBrick", function (assert) {
 
     var done1 = assert.async();
@@ -118,6 +122,7 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
+
 
 QUnit.test("SpeakBrick", function (assert) {
 
@@ -163,6 +168,7 @@ QUnit.test("SpeakBrick", function (assert) {
 
 });
 
+
 QUnit.test("SpeakAndWaitBrick", function (assert) {
 
     var done1 = assert.async();
@@ -170,5 +176,4 @@ QUnit.test("SpeakAndWaitBrick", function (assert) {
     assert.ok(false, "TODO")
     done1();
 });
-
 
