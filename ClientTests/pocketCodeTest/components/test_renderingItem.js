@@ -329,6 +329,14 @@ QUnit.test("RenderingImage", function (assert) {
         assert.equal(renderingImage._flipX, false, "flipX: setter");
         renderingImage.shadow = true;
         assert.equal(renderingImage._shadow, true, "shadow: setter");
+        //renderingImage.penDown = false;
+        assert.equal(renderingImage._penDown, false, "penDown: default");
+        //renderingImage.penSize = 4;
+        assert.equal(renderingImage._penSize, 4, "penSize: default");
+        assert.equal(renderingImage._penColorBlue, 255.0, "penColorBlue: default");
+        assert.equal(renderingImage._penColorRed, 0.0, "penColorRed: default");
+        assert.equal(renderingImage._penColorGreen, 0.0, "penColorGreen: default");
+
 
         assert.throws(function () { renderingImage.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
         renderingImage.graphicEffects = [];

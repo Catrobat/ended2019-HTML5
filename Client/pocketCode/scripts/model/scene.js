@@ -18,9 +18,14 @@ PocketCode.Model.Scene = (function () {
     function Scene() {
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
+        this._physicsWorld = new PocketCode.PhysicsWorld(this);
 
         //events
         this._onProgramStart = new SmartJs.Event.Event(this);
+        this._onSpriteTabbedAction = new SmartJs.Event.Event(this);
+        this._onTouchStartAction = new SmartJs.Event.Event(this);
+
+        this._sprites = [];
     }
 
     //properties
@@ -34,6 +39,11 @@ PocketCode.Model.Scene = (function () {
            get: function () {
                return this._id;
            }
+        },
+        name: {
+           get: function () {
+                return this._name;
+            }
         },
         sprites: {
             get: function () {
@@ -50,22 +60,52 @@ PocketCode.Model.Scene = (function () {
                 return this._collisionManager;
             },
         },
+        physicsWorld: {
+            get: function () {
+                return this._physicsWorld;
+            }
+        },
+        renderingImages: {
+            get: function () {
+                var imgs = [this.background.renderingImage],
+                    sprites = this.sprites;
+                for (var i = 0, l = sprites.length; i < l; i++)
+                    imgs.push(sprites[i].renderingImage);
+
+                return imgs;
+            }
+        },
     });
 
     Object.defineProperties(Scene.prototype, {
         onProgramStart: {
             get: function () { return this._onProgramStart; },
         },
+        onSpriteTabbedAction: {
+            get: function () { return this._onSpriteTabbedAction; },
+        },
+        onTouchStartAction: {
+            get: function() { return this._onTouchStartAction }
+        },
     });
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device, soundManager, onSpriteUiChange) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
             this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
-            this._sprites = [];
+            this._device = device;
+            this._soundManager = soundManager;
+            this._onSpriteUiChange = onSpriteUiChange;
+
+            if (this._background)
+                this._background.dispose();// = undefined;
+            this._originalSpriteOrder = [];
+            this._sprites.dispose();
+
+           // this._sprites = [];
             this._projectTimer = projectTimer;
             this._originalSpriteOrder = [];
         },
@@ -78,7 +118,6 @@ PocketCode.Model.Scene = (function () {
             this._projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
             //^^ we create them onProjectLoaded at the first start
-            //todo onSceneStart and onProgramstart back to ge?
             this._onProgramStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
@@ -87,6 +126,8 @@ PocketCode.Model.Scene = (function () {
             if (!jsonScene)
                 throw new Error('invalid argument: jsonScene');
 
+            this._name = jsonScene.name;
+            this._id = jsonScene.id;
             this._originalScreenWidth = jsonScene.screenWidth;
             this._originalScreenHeight = jsonScene.screenHeight;
             this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
@@ -101,9 +142,6 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             this._projectTimer.stop();
-            //todo broadcasts, sounds
-            //this._broadcastMgr.stop();
-            //this._soundManager.stopAllSounds();
             if (this._background) {
                 this._background.stopAllScripts();
             }
@@ -115,13 +153,11 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         pause: function (){
-            //todo
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
             this._projectTimer.pause();
-            //todo sounds
-            //this._soundManager.pauseSounds();
+            this._soundManager.pauseSounds();
             if (this._background)
                 this._background.pauseScripts();
 
@@ -136,9 +172,10 @@ PocketCode.Model.Scene = (function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
                 return;
 
+            //todo resume event?
+
             this._projectTimer.resume();
-            //todo sounds
-            //this._soundManager.resumeSounds();
+            this._soundManager.resumeSounds();
             if (this._background)
                 this._background.resumeScripts();
 
@@ -147,7 +184,20 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].resumeScripts();
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
-            //todo
+        },
+        initializeSprites: function () {
+            var bg = this._background,
+                sprites = this._sprites;
+
+            if (bg) {
+                bg.initLooks();
+                bg.init();
+            }
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                sprites[i].initLooks();
+                sprites[i].init();
+            }
+
         },
         reinitializeSprites: function () {
             var bg = this._background;
@@ -165,7 +215,35 @@ PocketCode.Model.Scene = (function () {
                 sprite.init();
             }
         },
+        handleUserAction: function (e) {
+            switch (e.action) {
+                case PocketCode.UserActionType.SPRITE_CLICKED:
+                    var sprite = this.getSpriteById(e.targetId);
+                    if (sprite)
+                        this._onSpriteTabbedAction.dispatchEvent({ sprite: sprite });
+                    break;
+                default:
+                    this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
+            }
+        },
+        getSpriteById: function (spriteId) {
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].id === spriteId)
+                    return sprites[i];
+            }
 
+            if (this._background && spriteId == this._background.id)
+                return this._background;
+
+            throw new Error('unknown sprite with id: ' + spriteId);
+        },
+        setGravity: function (x, y) {
+            this._physicsWorld.setGravity(x, y);
+        },
+        clearPenStampCanvas: function() {
+            return true;
+        },
         _loadSprites: function (sprites) {
             //todo type check
             var sp = sprites;
@@ -182,7 +260,50 @@ PocketCode.Model.Scene = (function () {
             this._background = this._spriteFactory.create(background);
             this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this._gameEngine)); //todo
             this._collisionManager.background = this._background;
-        }
+        },
+        setBackground: function (lookId) {
+            return this.background.setLook(lookId);
+        },
+        getSpriteLayer: function (sprite) { //including background (used in formulas)
+            if (sprite === this._background)
+                return 0;
+            var idx = this.sprites.indexOf(sprite);
+            if (idx < 0)
+                throw new Error('sprite not found: getSpriteLayer');
+            return idx + 1;
+        },
+        setSpriteLayerBack: function (sprite, layers) {
+            var sprites = this.sprites;
+            var idx = sprites.indexOf(sprite);
+            if (idx == 0)
+                return false;
+            var count = sprites.remove(sprite);
+            if (count == 0)
+                return false;
+
+            idx = Math.max(idx - layers, 0);
+            sprites.insert(idx, sprite);
+
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: idx + 1 } }, sprite);    //including background
+            return true;
+        },
+        setSpriteLayerToFront: function (sprite) {
+            var sprites = this.sprites;
+            if (sprites.indexOf(sprite) === sprites.length - 1)
+                return false;
+            var count = sprites.remove(sprite);
+            if (count == 0)
+                return false;
+            sprites.push(sprite);
+
+            this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
+            return true;
+        },
+        getLookImage: function (id) {
+            //used by the sprite to access an image during look init
+            return this._imageStore.getImage(id);
+        },
+
     });
 
     return Scene;

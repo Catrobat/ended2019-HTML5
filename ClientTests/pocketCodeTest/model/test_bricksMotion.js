@@ -147,7 +147,7 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite);
+    var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, {id: "id"});
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetRotionStyleBrick, "instance check");
@@ -180,7 +180,7 @@ QUnit.test("IfOnEdgeBounceBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.IfOnEdgeBounceBrick(device, sprite);
+    var b = new PocketCode.Model.IfOnEdgeBounceBrick(device, sprite, {id: "id"});
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.IfOnEdgeBounceBrick, "instance check");
@@ -556,7 +556,7 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld);
+    var b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, {id: "id"});
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPhysicsObjectTypeBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");

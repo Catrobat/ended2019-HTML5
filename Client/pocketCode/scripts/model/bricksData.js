@@ -10,7 +10,7 @@ PocketCode.Model.merge({
         SetVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId) //can be null
                 this._var = sprite.getVariable(propObject.resourceId);
@@ -30,7 +30,7 @@ PocketCode.Model.merge({
         ChangeVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId) //can be null
                 this._var = sprite.getVariable(propObject.resourceId);
@@ -55,7 +55,7 @@ PocketCode.Model.merge({
         ShowVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ShowVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
              
             this._varId = propObject.resourceId;
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
@@ -75,7 +75,7 @@ PocketCode.Model.merge({
         HideVariableBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function HideVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._varId = propObject.resourceId;
         }
@@ -93,7 +93,7 @@ PocketCode.Model.merge({
         AppendToListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AppendToListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId)    //can be null
                 this._list = sprite.getList(propObject.resourceId);
@@ -114,7 +114,7 @@ PocketCode.Model.merge({
         InsertAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function InsertAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId)    //can be null
                 this._list = sprite.getList(propObject.resourceId);
@@ -137,7 +137,7 @@ PocketCode.Model.merge({
         ReplaceAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ReplaceAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId)    //can be null
                 this._list = sprite.getList(propObject.resourceId);
@@ -160,7 +160,7 @@ PocketCode.Model.merge({
         DeleteAtListBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function DeleteAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject.resourceId)    //can be null
                 this._list = sprite.getList(propObject.resourceId);

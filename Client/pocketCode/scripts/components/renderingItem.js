@@ -195,6 +195,12 @@ PocketCode.merge({
 
             this.graphicEffects = propObject.graphicEffects || [];
 
+            this._penDown = false;
+            this._penSize = 4;
+            this._penColorBlue = 255.0;
+            this._penColorRed = 0.0;
+            this._penColorGreen = 0.0;
+
             delete propObject.id;   //already set, deleted to avaoid error on merge as id isn't a public property
             this.merge(propObject); //all parameters have the same names as the public interface (setter)- merge will set them all
         }
@@ -259,6 +265,31 @@ PocketCode.merge({
 
                     if (!filters.length)
                         PocketCode.ImageHelper.setFilters(cache, filters);
+                },
+            },
+            penDown: {
+                set: function (value) {
+                    this._penDown = value;
+                },
+            },
+            penSize: {
+                set: function (value) {
+                    this._penSize = value;
+                },
+            },
+            penColorBlue: {
+                set: function (value) {
+                    this._penColorBlue = value;
+                },
+            },
+            penColorRed: {
+                set: function (value) {
+                    this._penColorRed = value;
+                },
+            },
+            penColorGreen: {
+                set: function (value) {
+                    this._penColorGreen = value;
                 },
             },
         });

@@ -59,6 +59,14 @@ PocketCode.Model.Sprite = (function () {
         this._brightness = 100.0;
         this._colorEffect = 0.0;
 
+        //pen
+        this._penDown = false;
+        this._penSize = 4;
+        this._penColorBlue = 255.0;
+        this._penColorRed = 0.0;
+        this._penColorGreen = 0.0;
+
+
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
@@ -125,6 +133,11 @@ PocketCode.Model.Sprite = (function () {
                         { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
                         //TODO: add other filters as soon as available
                     ],
+                    penDown: this._penDown,
+                    penSize: this._penSize,
+                    penColorBlue: this._penColorBlue,
+                    penColorRed: this._penColorRed,
+                    penColorGreen: this._penColorGreen,
                 });
             },
         },
@@ -209,10 +222,8 @@ PocketCode.Model.Sprite = (function () {
                 return this._colorEffect;
             },
         },
-        penDown: {
-            value: false,
-            writeable: true,
-        },
+
+
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -490,6 +501,7 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ y: Math.round(this._positionY + this._lookOffsetY) });
         },
         /**
+        /**
          * moves the sprite "value" steps in the direction of the current direction
          * @param {number} steps
          * @returns {boolean}
@@ -682,6 +694,7 @@ PocketCode.Model.Sprite = (function () {
             }
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
+
         /**
          * sets the current look of the sprite to the previous one in the list
          * @returns {boolean}
@@ -1199,6 +1212,41 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(props);    //returns false for empty objects
         },
+
+        penDown: function(penDown) {
+            if(this._penDown == penDown)
+                return false;
+            this._penDown = penDown;
+            return this._triggerOnChange({penDown:this._penDown});
+
+        },
+        penSize: function(penSize) {
+            if(this._penSize == penSize)
+                return false;
+            this._penSize = penSize;
+            return this._triggerOnChange({penSize:this._penSize});
+        },
+        penColor: function(blue, red, green) {
+            if(this._penColorBlue == blue && this._penColorRed == red && this._penColorGreen == green)
+                return false;
+            this._penColorBlue = blue;
+            this._penColorRed = red;
+            this._penColorGreen = green;
+            return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
+        },
+        penStamp: function(){
+
+        },
+
+        showBubble: function(type, text) {
+
+            return this._triggerOnChange({bubble: { type: type, text: text, visible: true}});
+        },
+        hideBubble: function(type) {
+            return this._triggerOnChange({bubble: { type: type, visible: false}});
+        },
+
+
         /* override */
         dispose: function () {
             this.stopAllScripts();

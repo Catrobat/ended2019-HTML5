@@ -10,7 +10,7 @@ PocketCode.Model.merge({
         SetGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -32,7 +32,7 @@ PocketCode.Model.merge({
         ChangeGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeGraphicEffectBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
@@ -51,13 +51,15 @@ PocketCode.Model.merge({
 
 });
 
+
+
 PocketCode.Model.merge({
 
     SetLookBrick: (function () {
         SetLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetLookBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._lookId = propObject.lookId;
         }
@@ -70,12 +72,47 @@ PocketCode.Model.merge({
         return SetLookBrick;
     })(),
 
+    SetBackgroundBrick: (function () {
+        SetBackgroundBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetBackgroundBrick(device, sprite, scene, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._scene = scene;
+
+            this._lookId = param.lookId;
+        }
+
+        SetBackgroundBrick.prototype._execute = function () {
+            if (this._lookId)  //can be null
+                this._return(this._scene.setBackground(this._lookId));
+        };
+
+        return SetBackgroundBrick;
+    })(),
+
+    SetBackgroundAndWait: (function () {
+        SetBackgroundAndWait.extends(PocketCode.Model.ThreadedBrick, false);
+
+        function SetBackgroundAndWait(device, sprite, scene, propObject) {
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
+            this._scene = scene;
+            this._lookId = param.lookId;
+        }
+
+        SetBackgroundAndWait.prototype._execute = function () {
+            /*if (this._lookId)  //can be null
+                this._return(this._scene.setBackground(this._lookId));*/
+        };
+
+        return SetBackgroundAndWait;
+    })(),
+
 
     PreviousLookBrick: (function () {
         PreviousLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function PreviousLookBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function PreviousLookBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         }
 
@@ -90,8 +127,8 @@ PocketCode.Model.merge({
     NextLookBrick: (function () {
         NextLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function NextLookBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function NextLookBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         }
 
@@ -107,7 +144,7 @@ PocketCode.Model.merge({
         SelectCameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SelectCameraBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (propObject && propObject.selected)    //set and 1
                 this._selected = PocketCode.CameraType.FRONT;
@@ -138,7 +175,7 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._selected = propObject && propObject.selected ? 1 : 0; //{0: off, 1: on}
             this._device.cameraOn = this._device.cameraOn;   //call on ctr to notify our device this feature is in use without changing the setting
@@ -164,7 +201,7 @@ PocketCode.Model.merge({
         SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetCameraTransparencyBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -185,7 +222,7 @@ PocketCode.Model.merge({
         SetSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function SetSizeBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
@@ -206,7 +243,7 @@ PocketCode.Model.merge({
         ChangeSizeBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function ChangeSizeBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
@@ -226,8 +263,8 @@ PocketCode.Model.merge({
     HideBrick: (function () {
         HideBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function HideBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function HideBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
         }
 
         HideBrick.prototype._execute = function () {
@@ -241,8 +278,8 @@ PocketCode.Model.merge({
     ShowBrick: (function () {
         ShowBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ShowBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function ShowBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
         }
 
         ShowBrick.prototype._execute = function () {
@@ -352,8 +389,8 @@ PocketCode.Model.merge({
     ClearGraphicEffectBrick: (function () {
         ClearGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function ClearGraphicEffectBrick(device, sprite) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+        function ClearGraphicEffectBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         }
 
@@ -368,7 +405,7 @@ PocketCode.Model.merge({
         FlashBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function FlashBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._on = Boolean(parseInt(propObject.selected));	//{0: off, 1: on}
             //^^ please notice: Boolean('0') == true (string to bool)
@@ -381,6 +418,140 @@ PocketCode.Model.merge({
         };
 
         return FlashBrick;
+    })(),
+
+    BubbleType: {
+        THINK: 0,
+        SAY: 1
+    },
+
+    SayBrick: (function () {
+        SayBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SayBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._text = new PocketCode.Formula(device, sprite, propObject.text);
+        }
+
+        SayBrick.prototype._execute = function () {
+            var text = this._text.calculate();
+
+            if (text !== '')
+                this._return( this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text) );
+            else
+                this._return(false);
+        };
+
+        return SayBrick;
+    })(),
+
+    ThinkBrick: (function () {
+        ThinkBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function ThinkBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._text = new PocketCode.Formula(device, sprite, propObject.text);
+        }
+
+        ThinkBrick.prototype._execute = function () {
+            var text = this._text.calculate();
+
+            if (text !== '')
+                this._return( this._sprite.showBubble(PocketCode.Model.BubbleType.THINK,text) );
+            else
+                this._return(false);
+        };
+
+        return ThinkBrick;
+    })(),
+
+    SayForBrick: (function () {
+        SayForBrick.extends(PocketCode.Model.WaitBrick, false);
+
+        function SayForBrick(device, sprite, propObject) {
+            PocketCode.Model.WaitBrick.call(this, device, sprite, propObject);
+
+            this._text = new PocketCode.Formula(device, sprite, propObject.text);
+        }
+
+        SayForBrick.prototype.merge({
+            /* override */
+            _timerExpiredHandler: function (e) {
+                var update = this._sprite.hideBubble(PocketCode.Model.BubbleType.SAY);
+                this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
+            },
+            /* override */
+            _execute: function (callId) {
+                var text = this._text.calculate();
+                if (text !== ''&& !isNaN(this._duration))
+                    this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text);
+
+                PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
+            },
+        });
+
+        return SayForBrick;
+    })(),
+
+    ThinkForBrick: (function () {
+        ThinkForBrick.extends(PocketCode.Model.WaitBrick, false);
+
+        function ThinkForBrick(device, sprite, propObject) {
+            PocketCode.Model.WaitBrick.call(this, device, sprite, propObject);
+
+            this._text = new PocketCode.Formula(device, sprite, propObject.text);
+        }
+
+        ThinkForBrick.prototype.merge({
+            /* override */
+            _timerExpiredHandler: function (e) {
+                var update = this._sprite.hideBubble(PocketCode.Model.BubbleType.THINK);
+                this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
+            },
+            /* override */
+            _execute: function (callId) {
+                var text = this._text.calculate();
+
+                if (text !== '' && !isNaN(this._duration))
+                    this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text);
+
+                PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
+            },
+        });
+
+        return ThinkForBrick;
+    })(),
+
+    AskAndWaitBrick: (function () {
+        AskAndWaitBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function AskAndWaitBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, gameEngine, propObject);
+
+            this._gameEngine = gameEngine;
+            this._question = new PocketCode.Formula(device, sprite, propObject.text);
+
+            if (propObject.resourceId) //can be null
+                this._var = sprite.getVariable(propObject.resourceId);
+        }
+
+        AskAndWaitBrick.prototype.merge({
+            _onInputHandler: function (e) {
+                this._var.value = e.input;
+                //this._var.value = this._value.calculate();
+            },
+            _execute: function () {
+                var question = this._question.calculate();
+
+                if (this._var)  //can be undefined
+                    this._gameEngine.showAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
+
+                this._return();
+            },
+        });
+        return AskAndWaitBrick;
     })(),
 
 });

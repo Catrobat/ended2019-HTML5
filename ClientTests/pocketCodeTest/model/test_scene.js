@@ -9,5 +9,29 @@ QUnit.module("model/scene.js");
 
 
 QUnit.test("Scene", function (assert) {
-   assert.ok(false, "TODO");
+    var scene = new PocketCode.Model.Scene();
+    assert.ok(scene instanceof PocketCode.Model.Scene && scene instanceof PocketCode.UserVariableHost, "instance check");
+    assert.ok(scene.objClassName === "Scene", "objClassName check");
+
+    assert.equal(scene._executionState, PocketCode.ExecutionState.INITIALIZED, "Created scene: status initialized");
+
+    //init tests todo
+    var gameEngine = "gameEngine";
+    var projectTimer = {
+        started: 0,
+        start: function () {
+            this.started++;
+        }
+    };
+    scene.init(gameEngine, projectTimer);
+
+
+    var sceneStarted = 0;
+    scene.onProgramStart.addEventListener(new SmartJs.Event.EventListener(function() { sceneStarted++; }, this));
+
+    scene._background = "background";
+    scene.start();
+    assert.equal(sceneStarted, 1, "scene started triggers start event");
+
+    assert.ok(false, "TODO");
 });

@@ -50,7 +50,7 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, program._soundManager);
+    var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, program._soundManager, {id: "id"});
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StopAllSoundsBrick, "instance check");
