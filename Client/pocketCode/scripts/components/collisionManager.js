@@ -228,8 +228,7 @@ PocketCode.CollisionManager = (function () {
             return 5;
             //return false;
 
-
-
+            
         },
         //-------------------------------------------------------------------------------------
         checkSpriteColorCollision: function (sprite, color) {

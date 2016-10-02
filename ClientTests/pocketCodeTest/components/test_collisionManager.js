@@ -246,8 +246,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
         assert.deepEqual(test, 4, "Collision Bottom");
 
-
-
+        
             done();
     }
 
