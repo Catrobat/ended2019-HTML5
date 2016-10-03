@@ -87,7 +87,7 @@ QUnit.test("Sprite", function (assert) {
     //    assert.deepEqual(e.properties, props, "onChange event args properties check");
     //};
     //var prog2 = new PocketCode.GameEngine();
-    //var evSprite = new PocketCode.Model.Sprite(prog2, { id: "newId", name: "myName" })
+    //var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
     //evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //evSprite._triggerOnChange(props);

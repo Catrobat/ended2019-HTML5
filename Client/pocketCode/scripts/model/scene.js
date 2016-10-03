@@ -306,6 +306,9 @@ PocketCode.Model.Scene = (function () {
             //used by the sprite to access an image during look init
             return this._imageStore.getImage(id);
         },
+        setCameraTransparency: function(value) {
+            return this._background.setCameraTransparency(value);
+        },
         setBackground: function (lookId) {
             return this._background.setLook(lookId);
         },

@@ -382,7 +382,8 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
-    program._sprites.push(sprite);
+    scene._sprites.push(sprite);
+
     //init sprite: test data
     sprite._positionX = 3;
     sprite._positionY = 4;
@@ -576,7 +577,7 @@ QUnit.test("FormulaParser: sensors: timer", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -655,7 +656,7 @@ QUnit.test("FormulaParser: sensors: physics", function (assert) {
 
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -929,7 +930,7 @@ QUnit.test("SpriteFactory", function (assert) {
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene();
-    //var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    //var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var sf = new PocketCode.SpriteFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);
 

@@ -223,9 +223,10 @@ PocketCode.Model.merge({
     SetCameraTransparencyBrick: (function () {
         SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetCameraTransparencyBrick(device, sprite, propObject) {
+        function SetCameraTransparencyBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
+            this._scene = scene;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
@@ -234,7 +235,7 @@ PocketCode.Model.merge({
             if (isNaN(val))
                 this._return(false);
             else
-                this._return(false);    //TODO: e.g. this._return(this._device.setCameraTransparenc(val));
+                return this._scene.setCameraTransparency(val);
         };
 
         return SetCameraTransparencyBrick;

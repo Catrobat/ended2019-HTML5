@@ -125,7 +125,7 @@ PocketCode.merge({
 
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
-                    case 'SetCameraTransparencyBrick':
+                    case 'SetCameraTransparencyBrick':  //add scene to cntr - access background
 
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
