@@ -10,6 +10,8 @@ QUnit.test("GameEngine", function (assert) {
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
+    gameEngine.__currentScene = scene;
+
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
     assert.ok(gameEngine.objClassName === "GameEngine", "objClassName check");
 
@@ -28,6 +30,8 @@ QUnit.test("GameEngine", function (assert) {
     };
 
     gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    gameEngine.__currentScene = scene;
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
     //assert.throws(function () { gameEngine._images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images");
@@ -402,6 +406,7 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
+    gameEngine.__currentScene = scene;
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
     var variables = gameEngine.renderingTexts;

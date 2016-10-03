@@ -237,11 +237,11 @@ PocketCode.Model.Sprite = (function () {
                 return this._sounds;
             },
         },
-        projectTimerValue: {    //used in formula (gameEngine not accessible)
-            get: function() {
-                return this._gameEngine.projectTimer.value;
-            },
-        },
+        //projectTimerValue: {    //used in formula (gameEngine not accessible)
+        //    get: function() {
+        //        return this._gameEngine.projectTimer.value;
+        //    },
+        //},
         scripts: {
             set: function (scripts) {
                 if (!(scripts instanceof Array))
@@ -1266,9 +1266,10 @@ PocketCode.Model.Sprite = (function () {
 
 PocketCode.Model.PhysicsSprite = (function () {
     PhysicsSprite.extends(PocketCode.Model.Sprite, false);
-    function PhysicsSprite(gameEngine, propObject) {
 
-        PocketCode.Model.Sprite.call(this, gameEngine, propObject);
+    function PhysicsSprite(gameEngine, scene, propObject) {
+
+        PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
         this._mass = 1.0;
         this._density = 1.0;
@@ -1313,7 +1314,7 @@ PocketCode.Model.PhysicsSprite = (function () {
     //methods
     PhysicsSprite.prototype.merge({
         setGravity: function(x, y) {
-            this._gameEngine.setGravity(x, y);
+            this._scene.setGravity(x, y);
         },
         setVelocity: function (x, y) {
             this._velocityX = x;

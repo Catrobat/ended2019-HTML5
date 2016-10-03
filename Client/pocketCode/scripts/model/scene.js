@@ -21,6 +21,8 @@ PocketCode.Model.Scene = (function () {
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
+        this._onExecuted = new SmartJs.Event.Event(this);
+        this._onSpriteUiChange = new SmartJs.Event.Event(this);
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
 
@@ -91,6 +93,12 @@ PocketCode.Model.Scene = (function () {
         onStart: {
             get: function () { return this._onStart; },
         },
+        onExecuted: {
+            get: function () { return this._onExecuted; },
+        },
+        onSpriteUiChange: {
+            get: function () { return this._onSpriteUiChange; },
+        },
         onSpriteTappedAction: {
             get: function () { return this._onSpriteTappedAction; },
         },
@@ -101,9 +109,9 @@ PocketCode.Model.Scene = (function () {
 
     //methods
     Scene.prototype.merge({
-        init: function (spriteFactory, projectTimer, spriteOnExecutedHandler, gameEngine, device, soundManager, onSpriteUiChange) { //todo move unnecessary parameters to scene directly
+        init: function (spriteFactory, /*projectTimer, spriteOnExecutedHandler, */gameEngine, device, soundManager, onSpriteUiChange) { //todo move unnecessary parameters to scene directly
             this._gameEngine = gameEngine;
-            this._spriteOnExecutedHandler = spriteOnExecutedHandler;
+            //this._spriteOnExecutedHandler = spriteOnExecutedHandler;
             this._spriteFactory = spriteFactory;
             this._collisionManager = undefined;
             this._device = device;
@@ -194,6 +202,27 @@ PocketCode.Model.Scene = (function () {
             }
 
             this._executionState = PocketCode.ExecutionState.STOPPED;
+        },
+        _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
+            window.setTimeout(function () {
+                if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
+                    return;
+                if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
+                    return; //still waiting for user interaction
+
+                //if (this._soundManager.isPlaying)
+                //    return;
+                if (this._background && this._background.scriptsRunning)
+                    return;
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    if (sprites[i].scriptsRunning)
+                        return;
+                }
+
+                this._executionState = PocketCode.ExecutionState.STOPPED;
+                this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
+            }.bind(this), 100);  //delay neede to allow other scripts to start
         },
 
         initializeSprites: function () {

@@ -1848,7 +1848,9 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 QUnit.test("Sprite: physics", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, { id: "id", name: "name" });
+    var scene = new PocketCode.Model.Scene();
+
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "id", name: "name" });
 
     //setter/getter tests
     var value = 234;

@@ -374,7 +374,6 @@ QUnit.test("SayBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
-
 });
 
 
@@ -416,14 +415,14 @@ QUnit.test("SayForBrick", function (assert) {
             lastType = type;
         },
     };
-    b = new PocketCode.Model.SayForBrick(device, spriteMock, { duration: 1, text: text });
+    b = new PocketCode.Model.SayForBrick(device, spriteMock, { text: text, duration: duration });
     var mockHandler = function(e) {
-        assert.equal(lastType, 0, "show bubble ok: type");
+        assert.equal(lastType, PocketCode.Model.BubbleType.SAY, "show bubble ok: type");
         done2();
     }
     b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
-    assert.equal(lastText, "sdf", "show bubble ok: text");
-    assert.equal(lastType, 0, "show bubble ok: type");
+    assert.equal(lastText, "good morning", "show bubble ok: text");
+    assert.equal(lastType, PocketCode.Model.BubbleType.SAY, "show bubble ok: type");
     lastType = undefined;
 });
 
@@ -467,7 +466,7 @@ QUnit.test("ThinkForBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
-    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
+    var text = JSON.parse('{"type":"STRING","value":"sdf","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
 
     var b = new PocketCode.Model.ThinkForBrick(device, sprite, { text: text, duration: duration });
@@ -496,14 +495,14 @@ QUnit.test("ThinkForBrick", function (assert) {
             lastType = type;
         },
     };
-    b = new PocketCode.Model.ThinkForBrick(device, spriteMock, { duration: 1, text: text });
+    b = new PocketCode.Model.ThinkForBrick(device, spriteMock, { text: text, duration: duration });
     var mockHandler = function(e) {
-        assert.equal(lastType, 0, "show bubble ok: type");
+        assert.equal(lastType, PocketCode.Model.BubbleType.THINK, "show bubble ok: type");
         done2();
     }
     b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
     assert.equal(lastText, "sdf", "show bubble ok: text");
-    assert.equal(lastType, 0, "show bubble ok: type");
+    assert.equal(lastType, PocketCode.Model.BubbleType.THINK, "show bubble ok: type");
     lastType = undefined;
 });
 
