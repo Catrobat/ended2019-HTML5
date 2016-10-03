@@ -42,6 +42,7 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;
 
@@ -70,8 +71,8 @@ QUnit.test("Canvas", function (assert) {
     function runTests() {
         var looks1 = [{ resourceId: "s1", id: "s1", name: "look1" }];
         var looks2 = [{ resourceId: "s2", id: "s2", name: "look2" }];
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: looks1 });
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: looks2 });
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: looks1 });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: looks2 });
 
         sprite1.initLooks();
         sprite2.initLooks();

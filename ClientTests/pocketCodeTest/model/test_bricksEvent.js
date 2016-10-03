@@ -15,15 +15,16 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+    var scene = new PocketCode.Model.Scene();
 
-    program._background = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });  //to avoid error on start
+    program._background = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
     program.projectReady = true;
 
-    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
+    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
     b.dispose();
     assert.equal(b._disposed, true, "disposed");
 
-    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, program.onProgramStart);
+    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
@@ -34,12 +35,13 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
         handlerCalled++;
     };
 
-    program.onProgramStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    scene.onStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
     //simulate project loaded for tests
-    program._resourcesLoaded = true;
-    program._spritesLoaded = true;
+    //program._resourcesLoaded = true;
+    //program._spritesLoaded = true;
 
-    program.runProject();
+    //program.runProject();
+    scene.start();
     assert.ok(handlerCalled === 1, "executed handler called (once)");
 
     //add a brick container
@@ -91,7 +93,8 @@ QUnit.test("WhenActionBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, program.onSpriteTappedAction);
 
     b.dispose();

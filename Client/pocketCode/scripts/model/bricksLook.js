@@ -352,7 +352,7 @@ PocketCode.Model.merge({
             /* override */
             _execute: function (callId) {
                 var text = this._text.calculate();
-                if (text !== '' && !isNaN(this._duration))
+                if (text !== '' && !isNaN(this._duration.calculate()))
                     this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text);
 
                 PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
@@ -402,7 +402,7 @@ PocketCode.Model.merge({
             _execute: function (callId) {
                 var text = this._text.calculate();
 
-                if (text !== '' && !isNaN(this._duration))
+                if (text !== '' && !isNaN(this._duration.calculate()))
                     this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text);
 
                 PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super

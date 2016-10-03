@@ -52,7 +52,7 @@ PocketCode.merge({
                 brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
                 brickFactory.onProgressChange.onUnsupportedBricksFound(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
 
-                var sprite = new PocketCode.Model.Sprite(this._project, this._scene, jsonSprite);
+                var sprite = new PocketCode.Model.Sprite(this._project, currentScene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
@@ -63,7 +63,6 @@ PocketCode.merge({
             },
             dispose: function () {
                 this._project = undefined;
-                this._scene = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });

@@ -110,13 +110,15 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
 });
 
+
 QUnit.test("FormulaParser: functions", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -259,13 +261,15 @@ QUnit.test("FormulaParser: functions", function (assert) {
 
 });
 
+
 QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -369,13 +373,15 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
 });
 
+
 QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     program._sprites.push(sprite);
     //init sprite: test data
     sprite._positionX = 3;
@@ -436,13 +442,15 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
 });
 
+
 QUnit.test("FormulaParser: sensors", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -560,12 +568,14 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     //TODO: recheck sensor strings
 });
 
+
 QUnit.test("FormulaParser: sensors: timer", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
@@ -573,13 +583,15 @@ QUnit.test("FormulaParser: sensors: timer", function (assert) {
     assert.ok(false, "TODO: sensors: timer");
 });
 
+
 QUnit.test("FormulaParser: sensors: touch", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -620,18 +632,21 @@ QUnit.test("FormulaParser: sensors: touch", function (assert) {
 
 });
 
+
 QUnit.test("FormulaParser: sensors: geo location", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
     assert.ok(false, "TODO: sensors: geo location");
 });
+
 
 QUnit.test("FormulaParser: sensors: physics", function (assert) {
 
@@ -639,6 +654,7 @@ QUnit.test("FormulaParser: sensors: physics", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
@@ -646,13 +662,15 @@ QUnit.test("FormulaParser: sensors: physics", function (assert) {
     assert.ok(false, "TODO: sensors: physics");
 });
 
+
 QUnit.test("FormulaParser: logic", function (assert) {
 
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -713,6 +731,7 @@ QUnit.test("FormulaParser: logic", function (assert) {
 
 
 });
+
 
 QUnit.test("BrickFactory", function (assert) {
 
@@ -809,7 +828,8 @@ QUnit.test("BrickFactory", function (assert) {
     //adding unsupported brick
     //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
     //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
-    sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
     allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
@@ -820,7 +840,8 @@ QUnit.test("BrickFactory", function (assert) {
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
@@ -896,6 +917,7 @@ QUnit.test("BrickFactory", function (assert) {
 
 });
 
+
 QUnit.test("SpriteFactory", function (assert) {
 
     var allBricksProject = project1;    //using tests_testData.js
@@ -906,6 +928,7 @@ QUnit.test("SpriteFactory", function (assert) {
 
     var device = new PocketCode.Device();
     var program = new PocketCode.GameEngine(allBricksProject.id);
+    var scene = new PocketCode.Model.Scene();
     //var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
 
     var sf = new PocketCode.SpriteFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount);

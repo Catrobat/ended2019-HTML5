@@ -177,7 +177,7 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
         },
-        broadcasts: {
+        broadcasts: { //TODO: public?
             set: function (broadcasts) {
                 if (!(broadcasts instanceof Array))
                     throw new Error('setter expects type Array');
@@ -348,8 +348,6 @@ PocketCode.GameEngine = (function () {
 
             this._onScenesInitialized.dispatchEvent({ ids: scenes_ids });   //update ui progress
 
-
-
             // if (jsonProject.background) {
             //     this._background = this._spriteFactory.create(jsonProject.background);
             //     this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
@@ -438,8 +436,8 @@ PocketCode.GameEngine = (function () {
 
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
-                this._onLoadingProgress.dispatchEvent({ progress: 100 });   //update ui progress
-                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });  //dispatch warnings
+                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else
                 this._onLoad.dispatchEvent();

@@ -12,7 +12,8 @@ QUnit.test("SetVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);//{ id: "var1", name: "var1name", value: 0 };
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -58,7 +59,8 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
     sprite.__variablesSimple._variables.varUnset = new PocketCode.Model.UserVariableSimple("varUnset", "name");
 
@@ -112,7 +114,8 @@ QUnit.test("ShowVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
 
     var x = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}'),
@@ -148,7 +151,8 @@ QUnit.test("HideVariableBrick", function (assert) {
 
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
 
     var b = new PocketCode.Model.HideVariableBrick("device", sprite, { resourceId: "var1" });
@@ -181,8 +185,9 @@ QUnit.test("AppendToListBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene();
 
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -216,8 +221,9 @@ QUnit.test("DeleteAtListBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene();
 
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
@@ -250,8 +256,9 @@ QUnit.test("InsertAtListBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene();
 
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -287,8 +294,9 @@ QUnit.test("ReplaceAtListBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     program._background = "background";  //to avoid error on start
     program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene();
 
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
