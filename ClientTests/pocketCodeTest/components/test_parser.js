@@ -749,7 +749,7 @@ QUnit.test("BrickFactory", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     var minLoopCycleTime = 14;
 
-    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, minLoopCycleTime);
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, 0, minLoopCycleTime);   //TODO: check loadedCount
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
     assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount && bf._minLoopCycleTime === 14, "properties set correctly");
@@ -844,7 +844,7 @@ QUnit.test("BrickFactory", function (assert) {
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
-    var bf = new PocketCode.BrickFactory(device, program, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, 26);
+    var bf = new PocketCode.BrickFactory(device, scene, broadcastMgr, soundMgr, allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
     assert.ok(bf._device === device && bf._project === program && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount && bf._minLoopCycleTime === 26, "properties set correctly");

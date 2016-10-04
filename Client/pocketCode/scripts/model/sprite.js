@@ -119,9 +119,9 @@ PocketCode.Model.Sprite = (function () {
         //        };
         //    },
         //},
-        renderingImage: {   //rendering image is created but not stored!
+        renderingSprite: {   //rendering image is created but not stored!
             get: function () {
-                return new PocketCode.RenderingImage({
+                return new PocketCode.RenderingSprite({
                     id: this._id,
                     x: Math.round(this._positionX + this._lookOffsetX),
                     y: Math.round(this._positionY + this._lookOffsetY),
@@ -360,10 +360,10 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
         },
-        stopAllExceptScripts: function (scriptId) {
+        stopAllScripts: function (exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].id !== scriptId)
+                if (scripts[i].id !== exceptScriptId)
                     scripts[i].stop();
             }
         },

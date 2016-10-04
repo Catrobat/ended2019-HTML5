@@ -10,7 +10,7 @@ gameEngine._imageStore = is;
 var outputContainer;
 //create canvas
 var canvas = new PocketCode.Ui.Canvas();
-canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouched));
+canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(onTouched));
 canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouchStart));
 canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouchMove));
 canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouchEnd));
@@ -51,7 +51,7 @@ function init() {
 
 };
 
-//create renderingImages
+//create renderingSprites
 function imagesLoadHandler() {
     var looks1 = [{ resourceId: "s1", id: "s1", name: "look1" }];
     var looks2 = [{ resourceId: "s2", id: "s2", name: "look2" }];
@@ -68,7 +68,7 @@ function imagesLoadHandler() {
     sprite3.initLooks();
     sprite4.initLooks();
 
-    canvas.renderingImages = [sprite1.renderingImage, sprite2.renderingImage, sprite3.renderingImage, sprite4.renderingImage];
+    canvas.renderingSprites = [sprite1.renderingSprite, sprite2.renderingSprite, sprite3.renderingSprite, sprite4.renderingSprite];
     canvas.render();
     canvas.scale(1.5, 3);
 };

@@ -89,20 +89,20 @@ PocketCode.GameEngine = (function () {
     //properties
     Object.defineProperties(GameEngine.prototype, {
         //rendering
-        //renderingImages: {
+        //renderingSprites: {
         //    get: function () {
-        //        return this._currentScene.renderingImages;
+        //        return this._currentScene.renderingSprites;
         //        //rendering images are created but not stored!
-        //        //var imgs = this._background ? [this._background.renderingImage] : [],
+        //        //var imgs = this._background ? [this._background.renderingSprite] : [],
         //        //    sprites = this._sprites,
         //        //    ri;
-        //        // var imgs = [this._currentScene.background.renderingImage],
+        //        // var imgs = [this._currentScene.background.renderingSprite],
         //        //     sprites = this._currentScene.sprites;
         //        // for (var i = 0, l = sprites.length; i < l; i++)// {
-        //        //     //ri = sprites[i].renderingImage;
+        //        //     //ri = sprites[i].renderingSprite;
         //        //     //if (ri.look)    //ignore sprites without looks
         //        //     //    imgs.push(ri);
-        //        //     imgs.push(sprites[i].renderingImage);
+        //        //     imgs.push(sprites[i].renderingSprite);
         //        // //}
         //        // return imgs;
         //    },
@@ -128,7 +128,7 @@ PocketCode.GameEngine = (function () {
                 this.__currentScene = scene;
                 this._onSceneChanged.dispatchEvent({
                     id: scene.id,
-                    renderingImages: scene.renderingImages,
+                    renderingSprites: scene.renderingSprites,
                     renderingTexts: this.renderingVariables.concat(scene.renderingTexts),
                 });
             },
@@ -179,7 +179,7 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
         },
-        broadcasts: { //TODO: public?
+        broadcasts: { //TODO: public? - move to scene (internal broadcast mgr)
             set: function (broadcasts) {
                 if (!(broadcasts instanceof Array))
                     throw new Error('setter expects type Array');
@@ -366,7 +366,7 @@ PocketCode.GameEngine = (function () {
 
             //add sprites created to collisionManager
             // this._collisionManager.background = this._background;
-            // this._collisionManager.sprites = this._sprites; //TODO: should we try to work with renderingImages inside CM (we currently do not store them)?
+            // this._collisionManager.sprites = this._sprites; //TODO: should we try to work with renderingSprites inside CM (we currently do not store them)?
         },
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {

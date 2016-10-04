@@ -328,7 +328,8 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
 QUnit.test("WhenCollisionBrick", function (assert) {
     var done1 = assert.async();
 
-    var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
+    var scene = PocketCode.Model.Scene();
+    var physicsWorld = new PocketCode.PhysicsWorld(scene);
     var sprite = { id: "id1" };
     var spriteId2 = "id2";
     var b = new PocketCode.Model.WhenCollisionBrick("device", sprite, physicsWorld, {spriteId: spriteId2});

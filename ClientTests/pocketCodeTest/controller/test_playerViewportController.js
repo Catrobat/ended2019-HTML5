@@ -33,9 +33,9 @@ QUnit.test("PlayerViewportController", function (assert) {
     var variables = [];
 
     // check rendering images with wrong type and empty list
-    assert.throws(function () { controller.renderingImages = 0; }, Error, "Set rendering images to non-array type");
-    controller.renderingImages = sprites;
-    assert.ok(controller._renderingImages.length == 0, "Check rendering images init with empty array");
+    assert.throws(function () { controller.renderingSprites = 0; }, Error, "Set rendering images to non-array type");
+    controller.renderingSprites = sprites;
+    assert.ok(controller._renderingSprite.length == 0, "Check rendering images init with empty array");
 
     // taken from test_sprite.js, overwrite game engine look getter
     assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
@@ -44,11 +44,11 @@ QUnit.test("PlayerViewportController", function (assert) {
     };
 
     for (var i = 1; i < 5; i++) {
-        sprites.push(new PocketCode.Model.Sprite(gameEngine, scene, { id: "id" + i, name: "sprite" + i }).renderingImage);
+        sprites.push(new PocketCode.Model.Sprite(gameEngine, scene, { id: "id" + i, name: "sprite" + i }).renderingSprite);
     }
     // init with sprites without looks
-    controller.renderingImages = sprites;
-    //assert.ok(controller._renderingImages.length == 0, "Check rendering images init with no sprite having a look");
+    controller.renderingSprites = sprites;
+    //assert.ok(controller._renderingSprite.length == 0, "Check rendering images init with no sprite having a look");
     //^^ nonsense: even a sprite without a look has a layer
     var testLook = { id: "id_0", resourceId: "resourceId_0", name: "first" };
     var spriteWithLook1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [testLook] });
@@ -57,20 +57,20 @@ QUnit.test("PlayerViewportController", function (assert) {
     canvas.height = 50;
 
     spriteWithLook1._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
-    sprites.splice(0, 0, spriteWithLook1.renderingImage);
+    sprites.splice(0, 0, spriteWithLook1.renderingSprite);
     var spriteWithLook2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [testLook] });
     spriteWithLook2._looks[0].init({canvas: canvas});   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
-    sprites.splice(0, 0, spriteWithLook2.renderingImage);
+    sprites.splice(0, 0, spriteWithLook2.renderingSprite);
     var spriteWithLook3 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [testLook] });
     spriteWithLook3._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
-    sprites.splice(0, 0, spriteWithLook3.renderingImage);
+    sprites.splice(0, 0, spriteWithLook3.renderingSprite);
 
     // init with three sprite having a look
-    controller.renderingImages = sprites;
-    assert.equal(controller._renderingImages.length, 7, "All rendering images set: even those not having a look");
+    controller.renderingSprites = sprites;
+    assert.equal(controller._renderingSprite.length, 7, "All rendering images set: even those not having a look");
 
     var getSpriteWithId = function (id) {
-        var images = controller._renderingImages;
+        var images = controller._renderingSprite;
         var len = images.length;
         for (var i = 0; i < len; i++) {
             if (images[i].id == id)
@@ -97,25 +97,25 @@ QUnit.test("PlayerViewportController", function (assert) {
     assert.equal(updatedSprite.x, updatedX, "Updated Sprite x position");
     assert.equal(updatedSprite.y, updatedY, "Updated Sprite y position");
 
-    //test other sprite changes ? part of renderingImage tests, as other changes are propagated directly
+    //test other sprite changes ? part of renderingSprite tests, as other changes are propagated directly
 
     // layer moving
     var oldLayer = 2;
-    assert.ok(controller._renderingImages.indexOf(updatedSprite) == oldLayer, "Test sprite layer");
+    assert.ok(controller._renderingSprite.indexOf(updatedSprite) == oldLayer, "Test sprite layer");
     var updatedLayer = 0;
     controller.updateSprite("id0", { layer: updatedLayer });
-    assert.ok(controller._renderingImages.indexOf(updatedSprite) == updatedLayer, "Test sprite layer move forward");
+    assert.ok(controller._renderingSprite.indexOf(updatedSprite) == updatedLayer, "Test sprite layer move forward");
     updatedLayer = 2;
     controller.updateSprite("id0", { layer: updatedLayer });
-    assert.ok(controller._renderingImages.indexOf(updatedSprite) == updatedLayer, "Test sprite layer move backwards");
+    assert.ok(controller._renderingSprite.indexOf(updatedSprite) == updatedLayer, "Test sprite layer move backwards");
 
     updatedLayer = 6;
     controller.updateSprite("id0", { layer: 8 });
-    assert.equal(controller._renderingImages.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of rear-bound");
+    assert.equal(controller._renderingSprite.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of rear-bound");
 
     updatedLayer = 1;
     controller.updateSprite("id0", { layer: -2 });
-    assert.equal(controller._renderingImages.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of front-bound");
+    assert.equal(controller._renderingSprite.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of front-bound");
 
     spriteWithLook1.setPosition(100, 200);
     // rendering variables

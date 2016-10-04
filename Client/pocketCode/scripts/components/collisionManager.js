@@ -105,11 +105,11 @@ PocketCode.CollisionManager = (function () {
 
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
-                l1ri = l1.renderingImage,
+                l1ri = l1.renderingSprite,
                 l1b = l1.getBoundary(l1ri.scaling, l1ri.flipX, false),  //we do not calculate exact boundaries- less performant
                 x2 = sprite2.positionX,
                 y2 = sprite2.positionY,
-                l2ri = l2.renderingImage,
+                l2ri = l2.renderingSprite,
                 l2b = l2.getBoundary(l2ri.scaling, l2ri.flipX, false);
 
             //l1 = {

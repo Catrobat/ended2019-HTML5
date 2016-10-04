@@ -171,7 +171,7 @@ QUnit.test("ForeverBrick", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
 
-    var b = new PocketCode.Model.ForeverBrick("device", "sprite", 24, {id: "id"});
+    var b = new PocketCode.Model.ForeverBrick("device", "sprite", 24, { id: "id" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._minLoopCycleTime === 24, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ForeverBrick, "instance check");
@@ -213,7 +213,7 @@ QUnit.test("ForeverBrick", function (assert) {
     //test empty not possible
     //loop delay = false
     var bca = [];
-    var tb = new TestBrick2("device", "sprite", {id: "id"});
+    var tb = new TestBrick2("device", "sprite", { id: "id" });
 
     bca.push(tb);
     var neverCalled = function () {
@@ -250,8 +250,8 @@ QUnit.test("ForeverBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Model.ForeverBrick("device", "sprite", 2, {id: "id"});
-    var tb2 = new TestBrick2("device", "sprite", {id: "id"});
+    var b2 = new PocketCode.Model.ForeverBrick("device", "sprite", 2, { id: "id" });
+    var tb2 = new TestBrick2("device", "sprite", { id: "id" });
     tb2.loopDelay = true;
     bca = [];
     bca.push(tb2);
@@ -402,7 +402,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, { condition: conditionFalse }, 24);
+    var b = new PocketCode.Model.WaitUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._delay === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.WaitUntilBrick && b instanceof PocketCode.Model.ThreadedBrick, "instance check");
@@ -424,7 +424,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
         assert.equal(e.id, "id_2", "thread 2: event argument: id");
         assert.equal(e.loopDelay, false, "thread 2: event argument: loopDelay");
         assert.ok((new Date() - dateTime) > 50, "paused and resumed");
-        
+
         b._condition = conditionFalse;    //make sure both threads get executed even the condition is not met any more
         done2();
     };
@@ -460,7 +460,7 @@ QUnit.test("RepeatBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.RepeatBrick("device", sprite, { x: 1, y: 2, timesToRepeat: nTimes }, 24);
+    var b = new PocketCode.Model.RepeatBrick("device", sprite, 24, { x: 1, y: 2, timesToRepeat: nTimes });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.RepeatBrick, "instance check");
@@ -503,7 +503,7 @@ QUnit.test("RepeatBrick", function (assert) {
     //test empty not possible
     //loop delay = false
     var bca = [];
-    var tb = new TestBrick2("device", sprite, {id: "id"});
+    var tb = new TestBrick2("device", sprite, { id: "id" });
 
     bca.push(tb);
     //without delay
@@ -538,8 +538,8 @@ QUnit.test("RepeatBrick", function (assert) {
         done2();
     };
 
-    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, { timesToRepeat: nTimes }, 25);
-    var tb2 = new TestBrick2("device", "sprite", {id: "id"});
+    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
+    var tb2 = new TestBrick2("device", "sprite", { id: "id" });
     tb2.loopDelay = true;
     bca = [];
     bca.push(tb2);
@@ -561,7 +561,7 @@ QUnit.test("RepeatUntilBrick", function (assert) {
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
-    var b = new PocketCode.Model.RepeatUntilBrick("device", sprite, { condition: conditionFalse }, 24);
+    var b = new PocketCode.Model.RepeatUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.RepeatUntilBrick && b instanceof PocketCode.Model.LoopBrick, "instance check");
@@ -594,10 +594,10 @@ QUnit.test("RepeatUntilBrick", function (assert) {
         return TestBrick;
     })();
 
-    var testBrick1 = new TestBrick("device", sprite, {id: "id"});
-    var innerBricks = [testBrick1, new TestBrick("device", sprite, {id: "id"})];
+    var testBrick1 = new TestBrick("device", sprite, { id: "id" });
+    var innerBricks = [testBrick1, new TestBrick("device", sprite, { id: "id" })];
     b.bricks = new PocketCode.Model.BrickContainer(innerBricks);
-    
+
     var testFinishedHandler1 = function (e) {
         assert.equal(e.id, "n_times", "event argument: id");
         assert.equal(e.loopDelay, false, "event argument: loopDelay");

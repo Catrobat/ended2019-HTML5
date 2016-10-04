@@ -57,7 +57,7 @@ QUnit.test("Canvas", function (assert) {
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(runTests));
     var canvas = new PocketCode.Ui.Canvas();
     assert.ok(canvas instanceof PocketCode.Ui.Canvas && canvas instanceof SmartJs.Ui.Control, "instance check");
-    assert.ok(canvas.onRenderingImageTouched instanceof SmartJs.Event.Event &&
+    assert.ok(canvas.onRenderingSpriteTouched instanceof SmartJs.Event.Event &&
         canvas.onTouchStart instanceof SmartJs.Event.Event &&
         canvas.onTouchMove instanceof SmartJs.Event.Event &&
         canvas.onTouchEnd instanceof SmartJs.Event.Event, "event accessors");
@@ -77,23 +77,23 @@ QUnit.test("Canvas", function (assert) {
         sprite1.initLooks();
         sprite2.initLooks();
 
-        var renderingImageOpaque = sprite1.renderingImage;
-        var renderingImageTransparent = sprite2.renderingImage;
+        var renderingSpriteOpaque = sprite1.renderingSprite;
+        var renderingSpriteTransparent = sprite2.renderingSprite;
 
-        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
-        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
+        var opaqueImageWidth = renderingSpriteOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingSpriteOpaque._cacheCanvas.height;
 
         //for tests only
         //document.body.appendChild(canvas._lowerCanvasEl);
         //canvas._lowerCanvasEl.style.position = 'absolute';
 
         //move to top left
-        renderingImageOpaque.x -= canvas.width * 0.5;
-        renderingImageOpaque.y += canvas.height * 0.5;
+        renderingSpriteOpaque.x -= canvas.width * 0.5;
+        renderingSpriteOpaque.y += canvas.height * 0.5;
 
-        canvas.renderingImages = [renderingImageOpaque];
+        canvas.renderingSprites = [renderingSpriteOpaque];
         canvas.render();
-        assert.notOk(canvas._isTargetTransparent(renderingImageOpaque, renderingImageOpaque), "target not transparent");
+        assert.notOk(canvas._isTargetTransparent(renderingSpriteOpaque, renderingSpriteOpaque), "target not transparent");
 
         assert.equal(countPixels(), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
         //check position
@@ -112,14 +112,14 @@ QUnit.test("Canvas", function (assert) {
         }
         assert.equal(transparent, 11, "transparent boundary check: rendering position");
 
-        assert.throws(function () { canvas.renderingImages = renderingImageTransparent; }, Error, "ERROR: invalid argument: rendering image setter");
-        canvas.renderingImages = [renderingImageTransparent];
+        assert.throws(function () { canvas.renderingSprites = renderingSpriteTransparent; }, Error, "ERROR: invalid argument: rendering image setter");
+        canvas.renderingSprites = [renderingSpriteTransparent];
 
         canvas.render();
 
-        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, { x: 3, y: 3 }), "isTargetTransparent returns true for transparent pixels");
-        assert.ok(!canvas._isTargetTransparent(renderingImageTransparent, { x: 2, y: 2 }), "isTargetTransparent returns false for non transparent pixel");
-        assert.ok(canvas._isTargetTransparent(renderingImageTransparent, { x: 8, y: 3 }), "isTargetTransparent returns true for transparent pixels");
+        assert.ok(canvas._isTargetTransparent(renderingSpriteTransparent, { x: 3, y: 3 }), "isTargetTransparent returns true for transparent pixels");
+        assert.ok(!canvas._isTargetTransparent(renderingSpriteTransparent, { x: 2, y: 2 }), "isTargetTransparent returns false for non transparent pixel");
+        assert.ok(canvas._isTargetTransparent(renderingSpriteTransparent, { x: 8, y: 3 }), "isTargetTransparent returns true for transparent pixels");
         canvas.clear();
 
         //TODO: testing the canvas rendering Text does not only mean to check the setter but to render a text and check the output
@@ -156,7 +156,7 @@ QUnit.test("Canvas", function (assert) {
         canvas._isTargetTransparent = function () { return false; };
 
         var createMockRenderingObject = function (id, isPotentialTarget) {
-            var ro = new PocketCode.RenderingImage({ id: id, visible: true });
+            var ro = new PocketCode.RenderingSprite({ id: id, visible: true });
             //override containsPoint
             ro.containsPoint = function (pointer) {
                 if (pointer.x === mockPointer.x / scaling && pointer.y === mockPointer.y / scaling)
@@ -175,11 +175,11 @@ QUnit.test("Canvas", function (assert) {
             //}
         };
 
-        var previousRenderingObjects = canvas._renderingImages;
-        canvas._renderingImages = [];
-        canvas._renderingImages.push(createMockRenderingObject(1, false));
-        canvas._renderingImages.push(createMockRenderingObject(2, false));
-        canvas._renderingImages.push(createMockRenderingObject(4, true));
+        var previousRenderingObjects = canvas._renderingSprite;
+        canvas._renderingSprite = [];
+        canvas._renderingSprite.push(createMockRenderingObject(1, false));
+        canvas._renderingSprite.push(createMockRenderingObject(2, false));
+        canvas._renderingSprite.push(createMockRenderingObject(4, true));
 
         var target = canvas._getTargetAt(mockPointer);
         assert.strictEqual(target.id, 4, '_getTargetAt returns correct target');
@@ -188,19 +188,19 @@ QUnit.test("Canvas", function (assert) {
         target = canvas._getTargetAt(mockPointer);
         assert.ok(!target, "target not found if invisible");
 
-        canvas._renderingImages.push(createMockRenderingObject(5, false));
-        canvas._renderingImages.push(createMockRenderingObject(6, false));
-        canvas._renderingImages.push(createMockRenderingObject(7, true));
+        canvas._renderingSprite.push(createMockRenderingObject(5, false));
+        canvas._renderingSprite.push(createMockRenderingObject(6, false));
+        canvas._renderingSprite.push(createMockRenderingObject(7, true));
 
         assert.strictEqual(canvas._getTargetAt(mockPointer).id, 7, '_getTargetAt returns last correct target in renderingObjects');
 
-        canvas._renderingImages = [];
+        canvas._renderingSprite = [];
         assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no rendering objects');
 
-        canvas._renderingImages.push(createMockRenderingObject(1, false));
+        canvas._renderingSprite.push(createMockRenderingObject(1, false));
         assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no target rendering objects');
 
-        canvas._renderingImages = previousRenderingObjects;
+        canvas._renderingSprite = previousRenderingObjects;
         canvas.scale(previousScaling.x, previousScaling.y);
 
         //event tests
@@ -209,7 +209,7 @@ QUnit.test("Canvas", function (assert) {
             touchMoveEventArgs,
             touchEndEventArgs;
 
-        canvas.onRenderingImageTouched.dispatchEvent = function (e) {
+        canvas.onRenderingSpriteTouched.dispatchEvent = function (e) {
             imageTouchedEventArgs = e;
         };
         canvas.onTouchStart.dispatchEvent = function (e) {
@@ -264,7 +264,7 @@ QUnit.test("Canvas", function (assert) {
         assert.equal(canvas._scalingY, viewportScaling, 'setDimensions sets scalingY');
 
         var contextScaling = 0;
-        var drawCalledRenderingImage = 0;
+        var drawCalledrenderingSprite = 0;
         var scaleX, scaleY;
 
         var context = canvas._lowerCanvasEl.getContext('2d');
@@ -274,10 +274,10 @@ QUnit.test("Canvas", function (assert) {
             scaleY = y;
         };
 
-        var mockRenderingImage = {
+        var mockrenderingSprite = {
             draw: function () {
                 contextScaling = scaleX;
-                drawCalledRenderingImage++;
+                drawCalledrenderingSprite++;
             }
         };
 
@@ -288,20 +288,20 @@ QUnit.test("Canvas", function (assert) {
             }
         };
 
-        canvas.renderingImages = [mockRenderingImage];
+        canvas.renderingSprites = [mockrenderingSprite];
         canvas.renderingTexts = [mockRenderingText];
 
         canvas.scale(viewportScaling, viewportScaling); //scale triggers a render()
 
         canvas.render();
         assert.equal(contextScaling, viewportScaling, "viewportScaling used to scale context if it exists");
-        assert.equal(drawCalledRenderingImage, 2, "renderingImage draw called on rendering");
+        assert.equal(drawCalledrenderingSprite, 2, "renderingSprite draw called on rendering");
         assert.equal(drawCalledRenderingText, 2, "renderingText draw called on rendering");
 
         canvas.render();
         assert.equal(contextScaling, canvas._scalingX, "canvas scalingX used to scale context if no viewportScaling passed");
 
-        canvas.renderingImages = [renderingImageOpaque];
+        canvas.renderingSprites = [renderingSpriteOpaque];
 
         var scalingY = 50;
         var scalingX = 10;
@@ -322,8 +322,8 @@ QUnit.test("Canvas", function (assert) {
         canvas.render();
 
         // draw the image at pc-canvas coordinates on standard canvas
-        var imageWidth = renderingImageOpaque._width, imageHeight = renderingImageOpaque._height;
-        screenshotCanvasContext.drawImage(renderingImageOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
+        var imageWidth = renderingSpriteOpaque._width, imageHeight = renderingSpriteOpaque._height;
+        screenshotCanvasContext.drawImage(renderingSpriteOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
         assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
 
         canvas.dispose();

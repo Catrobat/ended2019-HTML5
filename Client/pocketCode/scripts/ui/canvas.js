@@ -14,7 +14,7 @@ PocketCode.Ui.Canvas = (function () {
         args = args || { className: 'pc-canvasContainer' };
         SmartJs.Ui.Control.call(this, 'div', args);
 
-        this._renderingImages = [];
+        this._renderingSprite = [];
         this._renderingTexts = [];
         this._scalingX = 1.0;
         this._scalingY = 1.0;
@@ -56,7 +56,7 @@ PocketCode.Ui.Canvas = (function () {
 
 
         //events
-        this._onRenderingImageTouched = new SmartJs.Event.Event(this);
+        this._onRenderingSpriteTouched = new SmartJs.Event.Event(this);
 
         this._onTouchStart = new SmartJs.Event.Event(this);
         this._addDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
@@ -79,11 +79,11 @@ PocketCode.Ui.Canvas = (function () {
                 return this._upperCanvasCtx;
             },
         },
-        renderingImages: {
+        renderingSprites: {
             set: function (list) {
                 if (!(list instanceof Array))
                     throw new Error('invalid argument: expectes type: list');
-                this._renderingImages = list;
+                this._renderingSprite = list;
             },
         },
         renderingTexts: {
@@ -165,9 +165,9 @@ PocketCode.Ui.Canvas = (function () {
 
     //events
     Object.defineProperties(Canvas.prototype, {
-        onRenderingImageTouched: {
+        onRenderingSpriteTouched: {
             get: function () {
-                return this._onRenderingImageTouched;
+                return this._onRenderingSpriteTouched;
             },
         },
         onTouchStart: {
@@ -292,7 +292,7 @@ PocketCode.Ui.Canvas = (function () {
                 for (var i = 0, l = touchData.length; i < l; i++) {
                     var target = this._getTargetAt({ x: touchData[i].x, y: touchData[i].y });
                     if (target) {
-                        this._onRenderingImageTouched.dispatchEvent(touchData[i].merge({ targetId: target.id }));
+                        this._onRenderingSpriteTouched.dispatchEvent(touchData[i].merge({ targetId: target.id }));
                     }
                 }
             return false;
@@ -372,7 +372,7 @@ PocketCode.Ui.Canvas = (function () {
             return pointer;
         },
         _getTargetAt: function (point) {
-            var objects = this._renderingImages;
+            var objects = this._renderingSprite;
             var object, target;
 
             for (var i = objects.length - 1; i >= 0; i--) {
@@ -416,7 +416,7 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(this._scalingX, this._scalingY);
 
 
-            var ro = this._renderingImages;
+            var ro = this._renderingSprite;
             //console.log( ro );
 
             if (ro.length > 0)
@@ -433,16 +433,16 @@ PocketCode.Ui.Canvas = (function () {
             background_ctx.restore();
             ctx.restore();
         },
-        drawStamp: function (renderingImageId) {
+        drawStamp: function (renderingSpriteId) {
 
             this._currentDrawCtx.save();
 
             this._currentDrawCtx.translate(this._translation.x, this._translation.y);
             this._currentDrawCtx.scale(this._scalingX, this._scalingY);
             //console.log(this._currentDrawCtx);
-            var ro = this._renderingImages;
+            var ro = this._renderingSprite;
             for (var i = 0, l = ro.length; i < l; i++) {
-                if (ro[i].id === renderingImageId) {
+                if (ro[i].id === renderingSpriteId) {
                     ro[i].draw(this._currentDrawCtx);
                     break;
                 }
@@ -469,7 +469,7 @@ PocketCode.Ui.Canvas = (function () {
             ctx.translate(width * 0.5, height * 0.5);
             ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
-            var ro = this._renderingImages;
+            var ro = this._renderingSprite;
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
 

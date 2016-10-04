@@ -588,7 +588,8 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var physicsWorld = new PocketCode.PhysicsWorld("gameEngine");
+    var scene = new PocketCode.Model.Scene();
+    var physicsWorld = new PocketCode.PhysicsWorld(scene);
     var device = new PocketCode.Device(new PocketCode.SoundManager());
     var program = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();

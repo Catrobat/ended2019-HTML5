@@ -14,10 +14,14 @@
 PocketCode.Model.Scene = (function () {
     Scene.extends(PocketCode.UserVariableHost, false);
 
-    function Scene() {
+    function Scene(jsonScene) {
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
+        this._collisionManager = new PocketCode.CollisionManager(0, 0);  //TODO: jsonScene.screenWidth, jsonScene.screenHeight);
+
+        this._sprites = [];
+        this._originalSpriteOrder = [];
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
@@ -25,8 +29,6 @@ PocketCode.Model.Scene = (function () {
         this._onSpriteUiChange = new SmartJs.Event.Event(this);
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
-
-        this._sprites = [];
     }
 
     //properties
@@ -46,12 +48,12 @@ PocketCode.Model.Scene = (function () {
                 return this._name;
             }
         },
-        renderingImages: {
+        renderingSprites: {
             get: function () {
-                var imgs = [this._background.renderingImage],
+                var imgs = [this._background.renderingSprite],
                     sprites = this._sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)
-                    imgs.push(sprites[i].renderingImage);
+                    imgs.push(sprites[i].renderingSprite);
 
                 return imgs;
             }

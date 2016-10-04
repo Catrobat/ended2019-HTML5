@@ -127,7 +127,7 @@ PocketCode.PlayerPageController = (function () {
             var screenSize = this._gameEngine.projectScreenSize;
             this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
             this._playerViewportController.initCanvas(e.ids);
-            this._playerViewportController.renderingImages = this._gameEngine.renderingImages;  //TODO: assign onBeforeStart? -> changing when scenes are changed
+            this._playerViewportController.renderingSprites = this._gameEngine.renderingSprites;  //TODO: assign onBeforeStart? -> changing when scenes are changed
             this._playerViewportController.renderingTexts = this._gameEngine.renderingTexts;    //TODO:
             this._view.disabled = false;
         },

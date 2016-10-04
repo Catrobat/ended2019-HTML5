@@ -206,7 +206,7 @@ PocketCode.Model.merge({
     WaitUntilBrick: (function () {
         WaitUntilBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
-        function WaitUntilBrick(device, sprite, propObject, delay) {
+        function WaitUntilBrick(device, sprite, delay, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._delay = delay; //= minLoopCycleTime;
@@ -247,7 +247,7 @@ PocketCode.Model.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function RepeatBrick(device, sprite, propObject, minLoopCycleTime) {
+        function RepeatBrick(device, sprite, minLoopCycleTime, propObject) {
             PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
 
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
@@ -282,7 +282,7 @@ PocketCode.Model.merge({
     RepeatUntilBrick: (function () {
         RepeatUntilBrick.extends(PocketCode.Model.LoopBrick, false);
 
-        function RepeatUntilBrick(device, sprite, propObject, minLoopCycleTime) {
+        function RepeatUntilBrick(device, sprite, minLoopCycleTime, propObject) {
             PocketCode.Model.LoopBrick.call(this, device, sprite, minLoopCycleTime, propObject);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
@@ -409,10 +409,10 @@ PocketCode.Model.merge({
                     this._return(this._sprite.stopScript(this._scriptId));
                     //break;
                 case PocketCode.Model.StopScriptType.ALL:
-                    this._return(this._sprite.stopAllExceptScripts());
+                    this._return(this._sprite.stopAllScripts());
                     //break;
                 case PocketCode.Model.StopScriptType.OTHER:
-                    this._return(this._sprite.stopAllExceptScripts(this._scriptId));
+                    this._return(this._sprite.stopAllScripts(this._scriptId));
                     //break;
             }
         };

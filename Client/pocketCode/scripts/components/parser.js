@@ -23,8 +23,8 @@ PocketCode.merge({
             this._minLoopCycleTime = minLoopCycleTime;
 
             //we use the brickFactory events here
-            this._onProgressChange = new SmartJs.Event.Event;
-            this._onUnsupportedBricksFound = new SmartJs.Event.Event;
+            this._onProgressChange = new SmartJs.Event.Event(this);
+            this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);
         }
 
         //events
@@ -169,14 +169,11 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
-                    case 'ForeverBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime);
-                        break;
-
                     case 'WaitUntilBrick':
+                    case 'ForeverBrick':
                     case 'RepeatBrick':
                     case 'RepeatUntilBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._minLoopCycleTime);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
                         break;
 
                     default:
