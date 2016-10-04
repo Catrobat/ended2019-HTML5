@@ -161,32 +161,32 @@ QUnit.test("checkSpriteCollision", function (assert) {
 
         var test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
 
-        assert.deepEqual(test, 4, "Collision");
+        assert.deepEqual(test, true, "Collision");
 
         //Visibility and Transparency Tests
         sprite1._visible = false;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Sprite1 invisible");
+        assert.deepEqual(test, false, "Sprite1 invisible");
         sprite1._visible = true;
         sprite2._visible = false;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Sprite2 invisible");
+        assert.deepEqual(test, false, "Sprite2 invisible");
         sprite1._visible = false;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Both Sprites invisible");
+        assert.deepEqual(test, false, "Both Sprites invisible");
 
         sprite1._visible = true;
         sprite2._visible = true;
         sprite1._transparency = 100.0;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Sprite1 transparent");
+        assert.deepEqual(test, false, "Sprite1 transparent");
         sprite1._transparency = 0.0;
         sprite2._transparency = 100.0;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Sprite2 transparent");
+        assert.deepEqual(test, false, "Sprite2 transparent");
         sprite1._transparency = 100.0;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 1, "Both Sprites transparent");
+        assert.deepEqual(test, false, "Both Sprites transparent");
         sprite1._transparency = 0.0;
         sprite2._transparency = 0.0;
 
@@ -199,39 +199,39 @@ QUnit.test("checkSpriteCollision", function (assert) {
         //No Collision Test
         sprite1._positionX = 20;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 3, "Visible but no Collision");
+        assert.deepEqual(test, false, "Visible but no Collision");
 
         //Collision Right
         sprite1._positionX = 5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Right");
+        assert.deepEqual(test, true, "Collision Right");
 
         //Collision Right Top
         sprite1._positionY = 5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Right Top");
+        assert.deepEqual(test, true, "Collision Right Top");
 
         //Collision Right Bottom
         sprite1._positionY = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Right Bottom");
+        assert.deepEqual(test, true, "Collision Right Bottom");
 
         sprite1._positionY = 0;
 
         //Collision Left
         sprite1._positionX = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Left");
+        assert.deepEqual(test, true, "Collision Left");
 
         //Collision Left Top
         sprite1._positionY = 5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Left Top");
+        assert.deepEqual(test, true, "Collision Left Top");
 
         //Collision Lef Bottom
         sprite1._positionY = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Left Bottom");
+        assert.deepEqual(test, true, "Collision Left Bottom");
 
         sprite1._positionX = 0;
         sprite1._positionY = 0;
@@ -239,14 +239,65 @@ QUnit.test("checkSpriteCollision", function (assert) {
         //Collision Top
         sprite1._positionY = 5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Top");
+        assert.deepEqual(test, true, "Collision Top");
 
         //Collision Bottom
         sprite1._positionY = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
-        assert.deepEqual(test, 4, "Collision Bottom");
+        assert.deepEqual(test, true, "Collision Bottom");
 
-        
+        //-----------------------------------------------------------
+        //Sprite2 currentLook 2 Tests
+        sprite1._positionX = 0;
+        sprite1._positionY = 0;
+        sprite2._currentLook = l2;
+
+        //Collision Right
+        sprite1._positionX = 5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Right Look2");
+
+        //Collision Right Top
+        sprite1._positionY = 5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Right Top Look2");
+
+        //Collision Right Bottom
+        sprite1._positionY = -5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Right Bottom Look2");
+
+        sprite1._positionY = 0;
+
+        //Collision Left
+        sprite1._positionX = -5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Left Look2");
+
+        //Collision Left Top
+        sprite1._positionY = 5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Left Top Look2");
+
+        //Collision Lef Bottom
+        sprite1._positionY = -5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Left Bottom Look2");
+
+        sprite1._positionX = 0;
+        sprite1._positionY = 0;
+
+        //Collision Top
+        sprite1._positionY = 5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Top Look2");
+
+        //Collision Bottom
+        sprite1._positionY = -5;
+        test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
+        assert.deepEqual(test, true, "Collision Bottom Look2");
+
+
             done();
     }
 

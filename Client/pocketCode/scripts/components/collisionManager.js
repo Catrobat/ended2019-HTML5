@@ -108,13 +108,13 @@ PocketCode.CollisionManager = (function () {
             }
             
             if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 100.0 || sprite2.transparency == 100.0) //!visible, transparent
-                return 1; // return false;
+                return false; // return 1;
 
             var l1 = sprite1.currentLook,
                 l2 = sprite2.currentLook;
 
             if (!l1 || !l2) //one of the sprites does not have a look
-                return 2; //return false;
+                return false; //return 2;
 
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
@@ -155,7 +155,7 @@ PocketCode.CollisionManager = (function () {
             };
 
             if ( area.t - area.b <= 0 || area.r - area.l <= 0 )   //no overlapping
-                return 3; //return false;
+                return false; //return 3;
 
             //check pixels in range
             var precision = 2.0;    //means 2 pixel accuracy used for calculation
@@ -221,12 +221,12 @@ PocketCode.CollisionManager = (function () {
             for (var cnt = 3; cnt < length * 4; cnt += 4){
 
                 if (pixels1[cnt] !== 0 && pixels2[cnt] !== 0) {
-                    return 4; // return true;
+                    return true; // return 4;
                 }
             }
 
-            return 5;
-            //return false;
+            return false;
+            //return 5;
 
             
         },
