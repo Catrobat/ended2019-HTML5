@@ -185,7 +185,27 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
 
 
 QUnit.test("GoToBrick", function (assert) {
-    assert.ok(false, "TODO");
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "sprite", spriteId: "id" });
+
+    assert.ok(b._device === device && b._sprite === sprite , "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.GoToBrick, "instance check");
+    assert.ok(b.objClassName === "GoToBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
 
 

@@ -26,6 +26,7 @@ PocketCode.Model.Scene = (function () {
         //events
         this._onStart = new SmartJs.Event.Event(this);
         this._onExecuted = new SmartJs.Event.Event(this);
+        this._onBackgroundChange = new SmartJs.Event.Event(this);
         this._onSpriteUiChange = new SmartJs.Event.Event(this);
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
@@ -97,6 +98,9 @@ PocketCode.Model.Scene = (function () {
         },
         onExecuted: {
             get: function () { return this._onExecuted; },
+        },
+        onBackgroundChange: {
+            get: function () { return this._onBackgroundChange; },
         },
         onSpriteUiChange: {
             get: function () { return this._onSpriteUiChange; },
@@ -312,7 +316,10 @@ PocketCode.Model.Scene = (function () {
             return this._background.setCameraTransparency(value);
         },
         setBackground: function (lookId) {
-            return this._background.setLook(lookId);
+            var change = this._background.setLook(lookId);
+            if (change)
+                this._onBackgroundChange.dispatchEvent({ lookId: lookId });
+            return change;
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
