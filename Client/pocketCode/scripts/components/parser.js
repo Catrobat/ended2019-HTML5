@@ -48,9 +48,9 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 bricksLoaded = bricksLoaded || 0;
-                var brickFactory = new PocketCode.BrickFactory(device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
                 brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
-                brickFactory.onProgressChange.onUnsupportedBricksFound(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
+                brickFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
 
                 var sprite = new PocketCode.Model.Sprite(this._project, currentScene, jsonSprite);
                 var scripts = [];
@@ -220,11 +220,12 @@ PocketCode.merge({
             _updateProgress: function () {
                 var progress = 100.0 / this._total * this._parsed;
                 //we do not want to trigger several hundred progress updates.. every 5% should be enough
-                if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
+                //todo introduce new condition to update
+                //if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
                     this._updatePercentage = progress;
                     progress = Math.round(progress * 10) / 10;  //show only one decimal place
-                    this._onProgressChange.dispatchEvent({ progress: progress });
-                }
+                    this._onProgressChange.dispatchEvent({ progress: progress, parsed: this._parsed });
+               // }
 
             },
             dispose: function () {

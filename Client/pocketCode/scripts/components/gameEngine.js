@@ -59,10 +59,11 @@ PocketCode.GameEngine = (function () {
 
         this._collisionManager = undefined;//new PocketCode.CollisionManager();
 
-        this._broadcasts = [];
-        this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
+        // this._broadcasts = [];
+        // this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
 
         this._scenes = [];  //TODO: scenens should be an object: this._scenes = { id: [object] };
+        this._sceneIds = [];
         this.__currentScene = undefined;
         //  this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight); //TODO: cntr without sprites?
 
@@ -177,15 +178,6 @@ PocketCode.GameEngine = (function () {
                     this.__sounds[sounds[i].id] = sounds[i];
 
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
-            },
-        },
-        broadcasts: { //TODO: public? - move to scene (internal broadcast mgr)
-            set: function (broadcasts) {
-                if (!(broadcasts instanceof Array))
-                    throw new Error('setter expects type Array');
-
-                this._broadcasts = broadcasts;
-                this._broadcastMgr.init(broadcasts);
             },
         },
         collisionManager: { //TODO: public?
@@ -308,9 +300,6 @@ PocketCode.GameEngine = (function () {
                 //sounds are loaded after images using the image stores onLoad event
             }
 
-            this._broadcasts = jsonProject.broadcasts || [];
-            this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
-
             //make sure vars and lists are defined before creating bricks and sprites
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
@@ -320,14 +309,6 @@ PocketCode.GameEngine = (function () {
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
-            this._spriteFactory = new PocketCode.SpriteFactory(this._device, this, this._broadcastMgr, this._soundManager, bricksCount, this._minLoopCycleTime);
-            this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
-            this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
-
-            if (bricksCount == 0) {
-                this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
-                return;
-            }
 
             // //recreate collision manager
             // if (this._collisionManager)
@@ -338,18 +319,30 @@ PocketCode.GameEngine = (function () {
             if (!jsonProject.scenes || jsonProject.scenes.length < 1)
                 throw new Error('No scnene found in project');
 
-            for (var i = 0, l = jsonProject.scenes.length; i < l; i++) {
-                var scene = new PocketCode.Model.Scene();
+            var broadcasts = jsonProject.broadcasts || [];
+            var scenes = jsonProject.scenes;
+
+            for (var i = 0, l = scenes.length; i < l; i++) {
+                this._sceneIds.push(scenes[i].id);
+                var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount);
+                scene.broadcasts = broadcasts; // todo - use param
+                scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
+                scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
+
                 scene.init(this._spriteFactory, /*this.projectTimer, this._spriteOnExecutedHandler, */this, this._device, this._soundManager, this._onSpriteUiChange); //todo move events into scene
                 scene.load(jsonProject.scenes[i]);
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check 
                 this._scenes.push(scene)
                 scenes_ids.push(scene.id);
                 if (i == 0)
-                    this._currentScene = scene;
+                    this.__currentScene = scene;
+            }
+            if (bricksCount == 0) {
+                this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
+                return;
             }
 
-            this._onScenesInitialized.dispatchEvent({ ids: scenes_ids });   //update ui progress
+            //this._onScenesInitialized.dispatchEvent({ ids: scenes_ids });   //update ui progress
 
             // if (jsonProject.background) {
             //     this._background = this._spriteFactory.create(jsonProject.background);
@@ -372,7 +365,9 @@ PocketCode.GameEngine = (function () {
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
                 this._spritesLoaded = true;
-                this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
+                for (var i = 0, l = this._scenes.length; i < l; i++) {
+                    this._scenes[i].removeSpriteFactoryEventListeners();
+                }
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                     this._initSprites();
@@ -436,14 +431,13 @@ PocketCode.GameEngine = (function () {
             loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
             loadingAlerts.deviceEmulation = device.emulationInUse;
             loadingAlerts.deviceLockRequired = device.mobileLockRequired;
-
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
                 this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
-                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts, sceneIds:  this._sceneIds});   //dispatch warnings
             }
             else
-                this._onLoad.dispatchEvent();
+                this._onLoad.dispatchEvent({sceneIds: this._sceneIds});
         },
         _resourceLoadingErrorHandler: function (e) {
             if (e.target === this._soundManager)
@@ -523,8 +517,9 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
-            return this._currentScene.pause();
-
+            if (this._currentScene)
+                return this._currentScene.pause();
+            return false;
             // if (this._executionState !== PocketCode.ExecutionState.RUNNING)
             //     return false;
             //
