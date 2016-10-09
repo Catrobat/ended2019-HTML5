@@ -230,6 +230,7 @@ PocketCode.Model.Scene = (function () {
         stop: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
+            this._broadcastMgr.stop();
 
             //this._projectTimer.stop();
             if (this._background) {
