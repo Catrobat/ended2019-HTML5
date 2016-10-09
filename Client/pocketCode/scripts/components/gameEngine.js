@@ -54,7 +54,7 @@ PocketCode.GameEngine = (function () {
 
         this._collisionManager = undefined;//new PocketCode.CollisionManager();
 
-        this._scenes = [];  //TODO: scenens should be an object: this._scenes = { id: [object] };
+        this._scenes = {};
         this._sceneIds = [];
         this.__currentScene = undefined;
 
@@ -243,7 +243,6 @@ PocketCode.GameEngine = (function () {
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
 
-            var scenes_ids = [];    //TODO: handle onSceneChange & remove this
             if (!jsonProject.scenes || jsonProject.scenes.length < 1)
                 throw new Error('No scnene found in project');
 
@@ -251,17 +250,17 @@ PocketCode.GameEngine = (function () {
             var scenes = jsonProject.scenes;
 
             for (var i = 0, l = scenes.length; i < l; i++) {
-                this._sceneIds.push(scenes[i].id);
                 var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount);
+                this._sceneIds.push(scenes[i].id);
+                this._scenes[scenes[i].id] = scene;
+
                 scene.broadcasts = broadcasts; // todo - use param
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
                 scene.init(this._spriteFactory, /*this.projectTimer, this._spriteOnExecutedHandler, */this, this._device, this._soundManager, this._onSpriteUiChange); //todo move events into scene
-                scene.load(jsonProject.scenes[i]);
-                //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check 
-                this._scenes.push(scene)
-                scenes_ids.push(scene.id);
+                scene.load(scenes[i]);
+                //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
                 if (i == 0)
                     this.__currentScene = scene;
             }
@@ -274,8 +273,9 @@ PocketCode.GameEngine = (function () {
         _spriteFactoryOnProgressChangeHandler: function (e) {
             if (e.progress === 100) {
                 this._spritesLoaded = true;
-                for (var i = 0, l = this._scenes.length; i < l; i++) {
-                    this._scenes[i].removeSpriteFactoryEventListeners();
+                for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+                    var id = this._sceneIds[i];
+                    this._scenes[id].removeSpriteFactoryEventListeners();
                 }
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
@@ -295,8 +295,9 @@ PocketCode.GameEngine = (function () {
         },
         //todo this initsialises all spritest from all scenes -> might be too much
         _initSprites: function () {
-            for (var i = 0, l = this._scenes.length; i < l; i++) {
-                this._scenes[i].initializeSprites();
+            for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+                var id = this._sceneIds[i];
+                this._scenes[id].initializeSprites();
             }
         },
         _resourceProgressChangeHandler: function (e) {
@@ -363,16 +364,8 @@ PocketCode.GameEngine = (function () {
             reinitSprites = reinitSprites || true;
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites != false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
-                // this._reinitSprites();
-                var scenes = this._scenes,
-                    sceneIds = [];
-                for (var i = 0, l = scenes.length; i < l; i++) {
-                    scenes[i].reinitializeSprites();
-                    sceneIds.push(scenes[i].id);
-                }
-
                 this._resetVariables();  //global
-                this._onBeforeProgramStart.dispatchEvent({ reinit: true, sceneIds: sceneIds });
+                this._onBeforeProgramStart.dispatchEvent({ reinit: true, sceneIds: this._sceneIds });
             }
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
@@ -416,11 +409,9 @@ PocketCode.GameEngine = (function () {
             //todo inform rendering
         },
         getSceneById: function (id) {
-            for (var i = 0, l = this._scenes.length; i < l; i++) {
-                if (id === this._scenes[i].id)
-                    return this._scenes[i];
-            }
-            throw new Error('no Scene with id ' + id + ' found');
+            if(!this._scenes[id])
+                throw new Error('no Scene with id ' + id + ' found');
+            return this._scenes[id];
         },
         /* override */
         dispose: function () {
@@ -445,17 +436,17 @@ PocketCode.GameEngine = (function () {
 
 
             //TODO: remove code below and make sure scenes are disposed
-            if (this._background)
-                this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-
-            delete this._originalSpriteOrder;
-            var scenes = this._scenes;
-            for (var j = 0, lengthScenes = scenes.length; j < lengthScenes; j++) {
-                var sprites = scenes[j].sprites;
-                for (var i = 0, l = sprites.length; i < l; i++) {
-                    sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-                }
-            }
+            // if (this._background)
+            //     this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            //
+            // delete this._originalSpriteOrder;
+            // var scenes = this._scenes;
+            // for (var j = 0, lengthScenes = scenes.length; j < lengthScenes; j++) {
+            //     var sprites = scenes[j].sprites;
+            //     for (var i = 0, l = sprites.length; i < l; i++) {
+            //         sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
+            //     }
+            // }
 
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
