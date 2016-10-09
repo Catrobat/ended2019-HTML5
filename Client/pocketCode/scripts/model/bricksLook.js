@@ -61,6 +61,7 @@ PocketCode.Model.merge({
             this._scene = scene;
 
             this._lookId = param.lookId;
+            //this._lookId = propObject.lookId;
         }
 
         SetBackgroundBrick.prototype._execute = function () {

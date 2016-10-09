@@ -150,10 +150,12 @@ PocketCode.Model.merge({
     GoToBrick: (function () {
         GoToBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function GoToBrick(device, sprite, gameEngine, propObject) {
+        function GoToBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._gameEngine = gameEngine;
+
+           // this._gameEngine = gameEngine;
+            this._scene = scene;
             this._destinationSpriteId = propObject.spriteId;
             switch (propObject.destinationType) {
                 case 'pointer':
@@ -170,7 +172,7 @@ PocketCode.Model.merge({
 
         GoToBrick.prototype._execute = function () {
 
-            this._return(this._gameEngine.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
+            this._return(this._scene.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
         };
 
         return GoToBrick;
