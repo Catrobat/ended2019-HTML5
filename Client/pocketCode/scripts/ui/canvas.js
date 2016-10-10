@@ -144,8 +144,8 @@ PocketCode.Ui.Canvas = (function () {
                 for (var i = 0; i < ids.length; i++) {
                     this._penCanvasEl[ids[i]].height = value;
                 }
-                if (ids.length > 0)
-                    this._currentDrawEl.height = value;
+                //if (ids.length > 0) //todo - i took this out because it was causing problems
+                    //this._currentDrawEl.height = value;
                 this._spritesCanvasEl.height = value;
                 this._bubblesCanvasEl.height = value;
                 this._translation = { x: Math.round(this.width * 0.5), y: Math.round(value * 0.5) };
@@ -434,22 +434,22 @@ PocketCode.Ui.Canvas = (function () {
             ctx.restore();
         },
         drawStamp: function (renderingSpriteId) {
-
-            this._currentDrawCtx.save();
-
-            this._currentDrawCtx.translate(this._translation.x, this._translation.y);
-            this._currentDrawCtx.scale(this._scalingX, this._scalingY);
-            //console.log(this._currentDrawCtx);
-            var ro = this._renderingSprite;
-            for (var i = 0, l = ro.length; i < l; i++) {
-                if (ro[i].id === renderingSpriteId) {
-                    ro[i].draw(this._currentDrawCtx);
-                    break;
-                }
-            }
-            this._currentDrawCtx.restore();
-            //this._currentDrawCtx.translate(this._translation.x * (-1), this._translation.y * (-1));
-            //this._currentDrawCtx.scale(1/this._scalingX, 1/this._scalingY);
+            //todo - took out because it crashed app.
+            // this._currentDrawCtx.save();
+            //
+            // this._currentDrawCtx.translate(this._translation.x, this._translation.y);
+            // this._currentDrawCtx.scale(this._scalingX, this._scalingY);
+            // //console.log(this._currentDrawCtx);
+            // var ro = this._renderingSprite;
+            // for (var i = 0, l = ro.length; i < l; i++) {
+            //     if (ro[i].id === renderingSpriteId) {
+            //         ro[i].draw(this._currentDrawCtx);
+            //         break;
+            //     }
+            // }
+            // this._currentDrawCtx.restore();
+            // //this._currentDrawCtx.translate(this._translation.x * (-1), this._translation.y * (-1));
+            // //this._currentDrawCtx.scale(1/this._scalingX, 1/this._scalingY);
         },
         clearPenCanvas: function () {
             var ctx = this._currentPenCtx;

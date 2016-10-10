@@ -250,7 +250,7 @@ PocketCode.GameEngine = (function () {
             var scenes = jsonProject.scenes;
 
             for (var i = 0, l = scenes.length; i < l; i++) {
-                var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount);
+                var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
                 this._sceneIds.push(scenes[i].id);
                 this._scenes[scenes[i].id] = scene;
 
@@ -258,7 +258,6 @@ PocketCode.GameEngine = (function () {
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
-                scene.init(this._spriteFactory, /*this.projectTimer, this._spriteOnExecutedHandler, */this, this._device, this._soundManager, this._onSpriteUiChange); //todo move events into scene
                 scene.load(scenes[i]);
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
                 if (i == 0)
