@@ -344,6 +344,7 @@ PocketCode.Model.Scene = (function () {
             return this._background.setCameraTransparency(value);
         },
         setBackground: function (lookId) {
+
             var change = this._background.setLook(lookId);
             if (change)
                 this._onBackgroundChange.dispatchEvent({ lookId: lookId });

@@ -619,12 +619,77 @@ QUnit.test("RepeatUntilBrick", function (assert) {
 
 
 QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
-    assert.ok(false, "TODO");
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    //var gameEngine = new PocketCode.GameEngine();
+
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+
+
+    var scene2 = new PocketCode.Model.Scene();
+    scene2._id = "s2"; //scene to start
+    scene._id = "s1"; // curenscene
+    program.__currentScene = scene;
+    program._scenes[scene2._id] = scene2;
+    program._scenes[scene._id] = scene;
+
+
+    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, program, scene, {sceneId: "s2"});
+
+
+    assert.ok(b._device === device && b._sprite === sprite , "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SceneTransitionBrick, "instance check");
+    assert.ok(b.objClassName === "SceneTransitionBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
 
 
 QUnit.test("StartSceneBrick", function (assert) {
-    assert.ok(false, "TODO");
+    var done1 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    //var gameEngine = new PocketCode.GameEngine();
+
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+
+
+    var scene2 = new PocketCode.Model.Scene();
+    console.log(scene2);
+    scene2._id = "s2"; //scene to start
+    scene._id = "s1"; // curenscene
+    program.__currentScene = scene;
+    program._scenes[scene2._id] = scene2;
+    program._scenes[scene._id] = scene;
+
+
+    var b = new PocketCode.Model.StartSceneBrick(device, sprite, program, scene, {sceneId: "s2"});
+
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.StartSceneBrick, "instance check");
+    assert.ok(b.objClassName === "StartSceneBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
 
 
@@ -644,7 +709,69 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
 
 QUnit.test("StopScriptBrick", function (assert) {
-    assert.ok(false, "TODO");
+    //assert.ok(false, "TODO");
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
+
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+
+
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick1._id = "first";
+    var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick2._id = "second";
+    var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
+    brick2._bricks._bricks.push(testBrick);
+
+    var tmpBricks = [];
+    tmpBricks[0] = brick1;
+    tmpBricks[1] = brick2;
+    sprite.scripts = tmpBricks;
+
+    var b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "this"});
+    var c = new PocketCode.Model.StopScriptBrick(device, sprite, "", { scriptType: "all"});
+    var d = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "other"});
+
+    assert.ok(b._device === device && b._sprite === sprite , "THIS brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.StopScriptBrick, "THIS instance check");
+    assert.ok(b.objClassName === "StopScriptBrick", "THIS objClassName check");
+
+    assert.ok(c._device === device && c._sprite === sprite , "ALL brick created and properties set correctly");
+    assert.ok(c instanceof PocketCode.Model.StopScriptBrick, "ALL instance check");
+    assert.ok(c.objClassName === "StopScriptBrick", "ALL objClassName check");
+
+    assert.ok(d._device === device && d._sprite === sprite , "OTHER brick created and properties set correctly");
+    assert.ok(d instanceof PocketCode.Model.StopScriptBrick, "OTHER instance check");
+    assert.ok(d.objClassName === "StopScriptBrick", "OTHER objClassName check");
+
+    //execute
+    var handlerThis = function (e) {
+        assert.ok(true, "THIS executed");
+        assert.equal(typeof e.loopDelay, "boolean", "THIS loopDelay received");
+        assert.equal(e.id, "thread_id", "THIS threadId handled correctly");
+        done1();
+    };
+    var handlerAll = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "ALL loopDelay received");
+        assert.equal(e.id, "thread_id", "ALL threadId handled correctly");
+        done2();
+    };
+    var handlerOther = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "OTHER loopDelay received");
+        assert.equal(e.id, "thread_id", "OTHER threadId handled correctly");
+        done3();
+    };
+    b.execute(new SmartJs.Event.EventListener(handlerThis, this), "thread_id");
+    c.execute(new SmartJs.Event.EventListener(handlerAll, this), "thread_id");
+    d.execute(new SmartJs.Event.EventListener(handlerOther, this), "thread_id");
+
+
 });
 
 

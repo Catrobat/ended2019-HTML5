@@ -60,8 +60,8 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._scene = scene;
 
-            this._lookId = param.lookId;
-            //this._lookId = propObject.lookId;
+            //this._lookId = param.lookId;
+            this._lookId = propObject.lookId;
         }
 
         SetBackgroundBrick.prototype._execute = function () {
@@ -78,7 +78,8 @@ PocketCode.Model.merge({
         function SetBackgroundAndWaitBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
             this._scene = scene;
-            this._lookId = param.lookId;
+            //this._lookId = param.lookId;
+            this._lookId = propObject.lookId;
         }
 
         SetBackgroundAndWaitBrick.prototype._execute = function () {

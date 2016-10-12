@@ -186,6 +186,8 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
 
 QUnit.test("GoToBrick", function (assert) {
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var device = "device";
     var program = new PocketCode.GameEngine();
@@ -193,19 +195,43 @@ QUnit.test("GoToBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "sprite", spriteId: "id" });
+    var c = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "pointer", spriteId: "id" });
+    var d = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "random", spriteId: "id" });
 
-    assert.ok(b._device === device && b._sprite === sprite , "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.GoToBrick, "instance check");
-    assert.ok(b.objClassName === "GoToBrick", "objClassName check");
+    assert.ok(b._device === device && b._sprite === sprite , "SPRITE brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.GoToBrick, " SPRITEinstance check");
+    assert.ok(b.objClassName === "GoToBrick", "SPRITE objClassName check");
+
+    assert.ok(c._device === device && c._sprite === sprite , "POINTER brick created and properties set correctly");
+    assert.ok(c instanceof PocketCode.Model.GoToBrick, "POINTER instance check");
+    assert.ok(c.objClassName === "GoToBrick", "POINTER objClassName check");
+
+    assert.ok(d._device === device && d._sprite === sprite , "RANDOM brick created and properties set correctly");
+    assert.ok(d instanceof PocketCode.Model.GoToBrick, "RANDOM instance check");
+    assert.ok(d.objClassName === "GoToBrick", "RANDOM objClassName check");
 
     //execute
-    var handler = function (e) {
+    var handlerSprite = function (e) {
         assert.ok(true, "executed");
         assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    var handlerPointer = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done2();
+    };
+    var handlerRandom = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done3();
+    };
+    b.execute(new SmartJs.Event.EventListener(handlerSprite, this), "thread_id");
+    c.execute(new SmartJs.Event.EventListener(handlerPointer, this), "thread_id");
+    d.execute(new SmartJs.Event.EventListener(handlerRandom, this), "thread_id");
 });
 
 
