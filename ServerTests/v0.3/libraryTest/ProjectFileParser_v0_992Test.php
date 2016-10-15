@@ -22,13 +22,13 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
     private function prepareCache($cache)
     {
-        if(!is_dir($cache))
+        if (!is_dir($cache))
             mkdir($cache, 0777, true);
 
-        if(!is_dir($cache . "/images"))
+        if (!is_dir($cache . "/images"))
             mkdir($cache . "/images", 0777, true);
 
-        if(!is_dir($cache . "/sounds"))
+        if (!is_dir($cache . "/sounds"))
             mkdir($cache . "/sounds", 0777, true);
     }
 
@@ -40,8 +40,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
         $this->prepareCache($cache);
 
-        $this->copyDir($projectPath ,$cache );
-        print_r('copying fiinshed');
+        $this->copyDir($projectPath, $cache);
         $simpleXML = simplexml_load_file($projectPath . "/code.xml");
 
         $parser = new ProjectFileParser_v0_992($projectId, $resBaseUrl, $cache, $simpleXML);
@@ -53,7 +52,6 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
     private function copyDir($source, $dest, $permissions = 0755)
     {
 
-        print_r('copying '.$source.'to'.$dest);
         // Check for symlinks
         if (is_link($source)) {
             return symlink(readlink($source), $dest);
@@ -61,7 +59,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
         // Simple copy for a file
         if (is_file($source)) {
-            print_r('copying '.$source);
+            print_r('copying ' . $source);
             return copy($source, $dest);
         }
 
@@ -89,7 +87,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
     private function saveJson($project, $cacheDir)
     {
-        if(!is_dir($cacheDir))
+        if (!is_dir($cacheDir))
             mkdir($cacheDir, 0777, true);
 
         $project_json = json_encode($project);
@@ -130,25 +128,42 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
         // check validity
         $expBaseUrl = "/html5/rest/v0.3/projects/" . $json_result->id . "/";
         $this->checkHeader($xml->header, $json_result->header);
-       // $this->checkBackground($xml->objectList[0]->object, $json_result->background);
-        //$this->checkSprites($json_empty, $json_empty);
+        // $this->checkBackground($xml->objectList[0]->object, $json_result->background);
+        // $this->checkSprites($json_empty, $json_empty);
         $this->checkImages($xml->objectList, $json_result->images);
         $this->checkSounds($json_empty, $json_empty);
-        $this->checkGlobalVariables($xml->data[0]->programVariableList[0], $json_result->variables);
-        $this->checkGlobalLists($xml->data[0]->programListOfLists[0], $json_result->lists);
-        $this->checkBroadcasts($json_empty, $json_empty);
+        $this->checkGlobalVariables($xml->programVariableList, $json_result->variables);
+        // $this->checkGlobalLists($xml->data[0]->programListOfLists[0], $json_result->lists);
+        //$this->checkBroadcasts($json_empty, $json_empty);
+        $this->checkScenes($xml->scenes, $json_result->scenes);
     }
 
 
+    private function checkScenes($xml_scenes, $json)
+    {
 
-
-    private function checkScenes($xml_scenes, json){
-
+        for ($i = 0; $i < count($xml_scenes); $i++) {
+            $this->checkScene($xml_scenes[$i]->scene, $json[$i]);
+        }
     }
 
 
-    private function checkScene($xml_scene, json){
+    private function checkScene($xml_scene, $json)
+    {
+        print_r($json->screenHeight);
+        print_r($xml_scene->originalHeight);
+        $this->assertTrue(isset($json->sprites), 'json: scene:  sprites are missing');
+        $this->assertTrue(isset($json->name), 'json: scene: name is missing');
+        $this->assertTrue(isset($json->background), 'json: scene: background is missing');
+        $this->assertTrue(isset($json->id), 'json: scene: id is missing');
+        $this->assertTrue(isset($json->screenWidth), 'json: scene: screneWidth is missing');
+        $this->assertTrue(isset($json->screenHeight), 'json: scene: screenHeight is missing');
+        $this->assertEquals($json->screenHeight, (int)$xml_scene->originalHeight, "json: scene : screenHeight doesn't match");
+        $this->assertEquals($json->screenWidth, (int)$xml_scene->originalWidth, "json: scene: screenWidth doesn't match");
+        $this->assertEquals($json->name, $xml_scene->name, "json: scene: name doesn't match");
 
+        $this->checkSprites($xml_scene->objectList, $json->sprites);
+        // $this->checkBackground($xml_scene->objectList[0], $json->background);
     }
 
     private function checkHeader($xml_header, $json)
@@ -234,16 +249,70 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
     }
 
+
+    private function checkScripts($xml_scripts, $json)
+    {
+        if (isset($xml_scripts->script))
+            $this->checkBricks($xml_scripts->script->brickList, $json[0]->bricks);
+        print_r($json);
+        foreach ($json as $key => $script) {
+            print_r($json);
+            $this->assertTrue(isset($script->id), "json: scripts: id is missing");
+            $this->assertTrue(isset($script->bricks), "json: scripts: bricks are missing");
+            $this->assertTrue(isset($script->type), "json: scripts: type is missing");
+            $this->assertTrue(isset($script->commentedOut), "json: scripts: type is commentedOut");
+
+            if (isset($xml_scripts[$key]))
+                $this->checkBricks($xml_scripts[$key]->brickList, $script->bricks);
+
+        }
+    }
+
+
+    private function checkBricks($xml_bricks, $json)
+    {
+        foreach ($json as $key => $json_brick) {
+            print_r($json_brick);
+            $this->assertTrue(isset($json_brick->type), "json: bricks: type is missing");
+            $this->assertTrue(isset($json_brick->commentedOut), "json: bricks: commentedOut is missing");
+
+            $this->checkBricks($xml_bricks->brick[$key], $json_brick->bricks);
+        }
+    }
+
+
     private function checkSprites($xml_sprites, $json)
     {
+        for ($i = 0; $i < count($json); $i++) {
+            print_r('current i:' . $i);
+            // check existence
+            $this->assertTrue(isset($json[$i]->id), "json: id is missing");
+            $this->assertTrue(isset($json[$i]->name), "json: name is missing");
+            $this->assertTrue(isset($json[$i]->looks), "json: looks is missing");
+            $this->assertTrue(isset($json[$i]->sounds), "json: sounds is missing");
+            $this->assertTrue(isset($json[$i]->variables), "json: variables is missing");
+            $this->assertTrue(isset($json[$i]->lists), "json: lists is missing");
+            $this->assertTrue(isset($json[$i]->scripts), "json: scripts is missing");
+            $this->assertTrue(isset($json[$i]->userScripts), "json: userScripts is missing");
+            $this->assertTrue(isset($json[$i]->nfcTags), "json: nfcTags are missing");
+
+            // check validity
+            $this->assertContains("s", $json[$i]->id);
+
+            // 0 is background
+            if ($i > 0) {
+                $this->checkScripts($xml_sprites->object[$i]->scriptList, $json[$i]->scripts);
+            }
+
+        }
 
     }
+
 
     private function checkImages($objectList, $json)
     {
         $images = [];
-        foreach($json as $image)
-        {
+        foreach ($json as $image) {
             $this->assertTrue(isset($image->id), "json: image id is missing");
             $this->assertTrue(isset($image->url), "json: image url is missing");
             $this->assertTrue(isset($image->size), "json: image size is missing");
@@ -251,11 +320,9 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
             array_push($images, $url);
         }
 
-        foreach($objectList as $object)
-        {
+        foreach ($objectList as $object) {
             $lookList = $object->lookList[0];
-            foreach($lookList as $look)
-            {
+            foreach ($lookList as $look) {
                 $url = $look->fileName;
                 $this->assertTrue(in_array($url, $images), "json: " . $url . " not found");
             }
@@ -265,8 +332,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
     private function checkSounds($xml_sounds, $json)
     {
         $sounds = [];
-        foreach($json as $sound)
-        {
+        foreach ($json as $sound) {
             $this->assertTrue(isset($sound->id), "json: sound id is missing");
             $this->assertTrue(isset($sound->url), "json: sound url is missing");
             $this->assertTrue(isset($sound->size), "json: sound size is missing");
@@ -274,11 +340,9 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
             array_push($sounds, $url);
         }
 
-        foreach($xml_sounds as $object)
-        {
+        foreach ($xml_sounds as $object) {
             $soundList = $object->soundList[0];
-            foreach($soundList as $sound)
-            {
+            foreach ($soundList as $sound) {
                 $url = $sound->fileName;
                 $this->assertTrue(in_array($url, $sounds), "json: " . $url . " not found");
             }
@@ -287,7 +351,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
     private function checkGlobalVariables($xml_vars, $json)
     {
-        $expected = count($xml_vars);
+        $expected = count((array)$xml_vars);
         $actual = count($json);
         $this->assertEquals($expected, $actual, "global vars count : FAILED");
     }
@@ -321,8 +385,30 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
         $this->checkJSON($projectName, $cache);
     }
 
+    public function testMultipleScenes()
+    {
+        $projectName = "multiple-scenes";
+        $cache = $this->cacheDir . __FUNCTION__ . "/";
 
+        $this->processProject($projectName, $cache);
+        $this->checkJSON($projectName, $cache);
+    }
 
+    public function testPen(){
+        $projectName = "pen-test";
+        $cache = $this->cacheDir . __FUNCTION__ . "/";
 
+        $this->processProject($projectName, $cache);
+        $this->checkJSON($projectName, $cache);
+    }
+
+    public  function testVariables ()
+    {
+        $projectName = "Variables";
+        $cache = $this->cacheDir . __FUNCTION__ . "/";
+
+        $this->processProject($projectName, $cache);
+        $this->checkJSON($projectName, $cache);
+    }
 
 }
