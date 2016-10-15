@@ -4,7 +4,7 @@
 /// <reference path="../core.js" />
 /// <reference path="../components/userVariableHost.js" />
 /// <reference path="../components/renderingItem.js" />
-/// <reference path="../components/gameEngine.js" />
+/// <reference path="../model/scene.js" />
 'use strict';
 
 /**
@@ -30,13 +30,16 @@ PocketCode.Model.Sprite = (function () {
     /**
      * initialization of properties
      * @param gameEngine gameEngine instance as a reference
+     * @param scene scene instance as a reference
      * @param propObject object which can contains properties
      */
-    function Sprite(gameEngine, propObject) {
+    function Sprite(gameEngine, scene, propObject) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
+
         this._gameEngine = gameEngine;
-        this._onChange = gameEngine.onSpriteUiChange;    //mapping event (defined in gameEngine)
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
+        this._scene = scene;
+        this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
 
         this._sounds = [];
         this._scripts = [];
@@ -116,9 +119,9 @@ PocketCode.Model.Sprite = (function () {
         //        };
         //    },
         //},
-        renderingImage: {   //rendering image is created but not stored!
+        renderingSprite: {   //rendering image is created but not stored!
             get: function () {
-                return new PocketCode.RenderingImage({
+                return new PocketCode.RenderingSprite({
                     id: this._id,
                     x: Math.round(this._positionX + this._lookOffsetX),
                     y: Math.round(this._positionY + this._lookOffsetY),
@@ -165,7 +168,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             get: function () {
-                return this._gameEngine.getSpriteLayer(this);//.id);
+                return this._scene.getSpriteLayer(this);//.id);
             },
         },
         rotationStyle: {
@@ -235,11 +238,11 @@ PocketCode.Model.Sprite = (function () {
                 return this._sounds;
             },
         },
-        projectTimerValue: {    //used in formula (gameEngine not accessible)
-            get: function() {
-                return this._gameEngine.projectTimer.value;
-            },
-        },
+        //projectTimerValue: {    //used in formula (gameEngine not accessible)
+        //    get: function() {
+        //        return this._gameEngine.projectTimer.value;
+        //    },
+        //},
         scripts: {
             set: function (scripts) {
                 if (!(scripts instanceof Array))
@@ -357,17 +360,10 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
         },
-        stopOtherScripts: function (scriptId) {
+        stopAllScripts: function (exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].id !== scriptId)
-                    scripts[i].stop();
-            }
-        },
-        stopAllScripts: function () {
-            var scripts = this._scripts;
-            for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].stop)
+                if (scripts[i].id !== exceptScriptId)
                     scripts[i].stop();
             }
         },
@@ -592,7 +588,7 @@ PocketCode.Model.Sprite = (function () {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._gameEngine.getSpriteById(spriteId); //throws error if undefined
+            var pointTo = this._scene.getSpriteById(spriteId); //throws error if undefined
 
             var offsetX = pointTo.positionX - this.positionX;
             var offsetY = pointTo.positionY - this.positionY;
@@ -609,14 +605,14 @@ PocketCode.Model.Sprite = (function () {
          * @returns {*}
          */
         goBack: function (layers) {
-            return this._gameEngine.setSpriteLayerBack(this, layers);
+            return this._scene.setSpriteLayerBack(this, layers);
         },
         /**
          * sets the layer of the sprite to the foremost one
          * @returns {*}
          */
         comeToFront: function () {
-            return this._gameEngine.setSpriteLayerToFront(this);
+            return this._scene.setSpriteLayerToFront(this);
         },
         /**
          * sets the rotation style of the sprite (enum value)
@@ -660,7 +656,7 @@ PocketCode.Model.Sprite = (function () {
                     }
                     break;
                 default:
-                    throw new Error("invalid argument: unknown rotation style");
+                    throw new Error('invalid argument: unknown rotation style');
             }
 
             if (props.flipX == undefined && props.rotation == undefined)
@@ -972,7 +968,7 @@ PocketCode.Model.Sprite = (function () {
             if (!this._currentLook)   //no look defined (cannot be changed either): no need to handle this
                 return false;
 
-            var collisionMgr = this._gameEngine.collisionManager;
+            var collisionMgr = this._scene.collisionManager;
 
             var x = this._positionX,
                 y = this._positionY;
@@ -1269,62 +1265,104 @@ PocketCode.Model.Sprite = (function () {
     return Sprite;
 })();
 
-PocketCode.Model.PhysicsSprite = (function () {
-    PhysicsSprite.extends(PocketCode.Model.Sprite, false);
-    function PhysicsSprite(gameEngine, propObject) {
+PocketCode.Model.merge({
+    BackgroundSprite: (function () {
+        BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
-        PocketCode.Model.Sprite.call(this, gameEngine, propObject);
+        function BackgroundSprite(gameEngine, scene, propObject) {
 
-        this._mass = 1.0;
-        this._density = 1.0;
-        this._movementStyle = PocketCode.MovementStyle.NONE;
-        this._velocityX = 0;
-        this._velocityY = 0;
-        this._friction = 0.2;
-        this._bounceFactor = 0.8;
-        this._turnNDegreePerSecond = 0;
-    }
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
-    //properties
-    Object.defineProperties(PhysicsSprite.prototype, {
-        mass: {
-            set: function (value) {
-                this._mass = value
-            }
-        },
-        turnNDegreePerSecond: {
-            set: function (value) {
-                this._turnNDegreePerSecond = value;
-            }
-        },
-        friction: {
-            set: function (value) {
-                this._friction = value
-            }
-        },
-        bounceFactor: {
-            set: function(value) {
-                this._bounceFactor = value;
-            }
-        },
-        movementStyle: {
-            set: function(value) {
-                this._movementStyle = value;
-                //todo
-            }
+            this._cameraTransparency = 0.5; //default
         }
-    });
 
-    //methods
-    PhysicsSprite.prototype.merge({
-        setGravity: function(x, y) {
-            this._gameEngine.setGravity(x, y);
-        },
-        setVelocity: function (x, y) {
-            this._velocityX = x;
-            this._velocityY = y;
+        //properties
+        //Object.defineProperties(BackgroundSprite.prototype, {
+        //    isBackground: {
+        //        value: true,
+        //    },
+        //});
+
+        //methods
+        BackgroundSprite.prototype.merge({
+            //TODO: setTransparency: to include cameraTransparency? Notify Background on device.onCameraUsageChanged to chagne this?
+            setCameraTransparency: function(value) {
+                if (value < 0.0)
+                    value = 0.0;
+                if (value > 100.0)
+                    value = 100.0;
+
+                if (this._cameraTransparency === value)
+                    return false;
+
+                this._cameraTransparency = value;
+                //return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] }); //TODO: combine _transparency & _cameraTransparency
+            }
+        });
+
+        return BackgroundSprite;
+    })(),
+
+    PhysicsSprite: (function () {
+        PhysicsSprite.extends(PocketCode.Model.Sprite, false);
+
+        function PhysicsSprite(gameEngine, scene, propObject) {
+
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
+
+            this._mass = 1.0;
+            this._density = 1.0;
+            this._movementStyle = PocketCode.MovementStyle.NONE;
+            this._velocityX = 0;
+            this._velocityY = 0;
+            this._friction = 0.2;
+            this._bounceFactor = 0.8;
+            this._turnNDegreePerSecond = 0;
         }
-    });
 
-    return PhysicsSprite;
-})();
+        //properties
+        Object.defineProperties(PhysicsSprite.prototype, {  //TODO: validate if (isNaN(value))
+            mass: {
+                set: function (value) {
+                    this._mass = value
+                }
+            },
+            turnNDegreePerSecond: {
+                set: function (value) {
+                    this._turnNDegreePerSecond = value;
+                }
+            },
+            friction: {
+                set: function (value) {
+                    this._friction = value
+                }
+            },
+            bounceFactor: {
+                set: function(value) {
+                    this._bounceFactor = value;
+                }
+            },
+            movementStyle: {
+                set: function(value) {
+                    this._movementStyle = value;
+                    //todo
+                }
+            }
+        });
+
+        //methods
+        PhysicsSprite.prototype.merge({
+            setGravity: function(x, y) {    //TODO: why method and not prop?
+                this._scene.setGravity(x, y);
+            },
+            setVelocity: function (x, y) {    //TODO: why method and not prop?
+                this._velocityX = x;
+                this._velocityY = y;
+            }
+        });
+
+        return PhysicsSprite;
+    })(),
+
+});
+

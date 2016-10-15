@@ -27,7 +27,7 @@ QUnit.test("Scene", function (assert) {
 
 
     var sceneStarted = 0;
-    scene.onProgramStart.addEventListener(new SmartJs.Event.EventListener(function() { sceneStarted++; }, this));
+    scene.onStart.addEventListener(new SmartJs.Event.EventListener(function() { sceneStarted++; }, this));
 
     scene._background = "background";
     scene.start();

@@ -118,7 +118,7 @@ QUnit.test("BrickContainer", function (assert) {
         return TestBrick3;
     })();
 
-    bc = new PocketCode.Model.BrickContainer([new TestBrick("device", "sprite", {id: "id"}), new TestBrick2("device", "sprite", {id: "id"}), new TestBrick3("device", "sprite", {id: "id"})]);
+    bc = new PocketCode.Model.BrickContainer([new TestBrick("device", "sprite", { id: "id" }), new TestBrick2("device", "sprite", { id: "id" }), new TestBrick3("device", "sprite", { id: "id" })]);
 
     assert.ok(bc._bricks.length === 3, "bricks array loaded");
     assert.throws(function () { bc.execute(l1, 23); }, Error, "ERROR: simple argument error check");
@@ -170,11 +170,12 @@ QUnit.test("BrickContainer", function (assert) {
     }
 });
 
+
 QUnit.test("BaseBrick", function (assert) {
 
-    var b = new PocketCode.Model.BaseBrick("device", "sprite", {id: "id"});
+    var b = new PocketCode.Model.BaseBrick("device", "sprite", { id: "id", commentedOut: false });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "BaseBrick", "objClassName check");
 
@@ -194,7 +195,7 @@ QUnit.test("BaseBrick", function (assert) {
         return TestBrick;
     })();
 
-    var testBrick = new TestBrick("device", "sprite", {id: "id"});
+    var testBrick = new TestBrick("device", "sprite", { id: "id" });
     var handler1Called = false;
     var handler1LoopDelay = false;
     var handler1CallId = undefined;
@@ -215,11 +216,12 @@ QUnit.test("BaseBrick", function (assert) {
 
 });
 
+
 QUnit.test("ThreadedBrick", function (assert) {
 
-    var b = new PocketCode.Model.ThreadedBrick("device", "sprite", {id: "id"});
+    var b = new PocketCode.Model.ThreadedBrick("device", "sprite", { id: "id", commentedOut: false });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ThreadedBrick, "instance check");
     assert.ok(b.objClassName === "ThreadedBrick", "objClassName check");
 
@@ -239,7 +241,7 @@ QUnit.test("ThreadedBrick", function (assert) {
         return TestBrick;
     })();
 
-    var testBrick = new TestBrick("device", "sprite", {id: "id"});
+    var testBrick = new TestBrick("device", "sprite", { id: "id" });
     var handler1Called = false;
     var handler1LoopDelay = false;
     var handler1CallId = undefined;
@@ -276,14 +278,15 @@ QUnit.test("ThreadedBrick", function (assert) {
 
 });
 
+
 QUnit.test("SingleContainerBrick", function (assert) {
 
     assert.expect(12);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var b = new PocketCode.Model.SingleContainerBrick("device", "sprite", {id: "id"});
+    var b = new PocketCode.Model.SingleContainerBrick("device", "sprite", { id: "id", commentedOut: false });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SingleContainerBrick, "instance check");
     assert.ok(b.objClassName === "SingleContainerBrick", "objClassName check");
 
@@ -376,13 +379,14 @@ QUnit.test("SingleContainerBrick", function (assert) {
 
 });
 
+
 QUnit.test("ScriptBlock", function (assert) {
 
     var done1 = assert.async();
 
-    var b = new PocketCode.Model.ScriptBlock("device", "sprite", { id: "newId", x: 10, y: 20 });
+    var b = new PocketCode.Model.ScriptBlock("device", "sprite", { id: "newId", commentedOut: false }); //, x: 10, y: 20 });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._x == 10 && b._y == 20, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false, "brick created and properties set correctly"); // && b._x == 10 && b._y == 20
     assert.ok(b instanceof PocketCode.Model.ScriptBlock && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "ScriptBlock", "objClassName check");
 
@@ -454,6 +458,7 @@ QUnit.test("ScriptBlock", function (assert) {
 
 });
 
+
 QUnit.test("LoopBrick", function (assert) {
 
     //assert.expect(4);   //init async asserts (to wait for)
@@ -461,9 +466,9 @@ QUnit.test("LoopBrick", function (assert) {
     var done2 = assert.async();
     var done3 = assert.async();
 
-    var b = new PocketCode.Model.LoopBrick("device", "sprite", 24, {id: "id"});
+    var b = new PocketCode.Model.LoopBrick("device", "sprite", 24, { id: "id", commentedOut: false });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._minLoopCycleTime === 24, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false && b._minLoopCycleTime === 24, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.LoopBrick, "instance check");
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 
@@ -483,11 +488,12 @@ QUnit.test("LoopBrick", function (assert) {
     //loops including brick
     var device = new PocketCode.Device("soundManager");
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     var testBrick2 = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
 
     //pause on inactive loop
-    var b2 = new PocketCode.Model.LoopBrick("device", "sprite", 24, {id: "id"});
+    var b2 = new PocketCode.Model.LoopBrick("device", "sprite", 24, { id: "id" });
     b2.bricks = new PocketCode.Model.BrickContainer([testBrick2]);    //add brick to loop
     b2._loopCount = 3;
     b2._loopConditionMet = function (id) { this._loopCount--; return this._loopCount !== 0; };   //override to simulate running
@@ -505,7 +511,7 @@ QUnit.test("LoopBrick", function (assert) {
 
     //pause on active loop
     var testBrick3 = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.1, right: null, left: null } });
-    var b3 = new PocketCode.Model.LoopBrick("device", "sprite", 24, {id: "id"});
+    var b3 = new PocketCode.Model.LoopBrick("device", "sprite", 24, { id: "id" });
     b3.bricks = new PocketCode.Model.BrickContainer([testBrick3]);    //add brick to loop
 
     var handler3 = function (e) {
@@ -524,11 +530,12 @@ QUnit.test("LoopBrick", function (assert) {
 
 });
 
+
 QUnit.test("UnsupportedBrick", function (assert) {
 
-    var b = new PocketCode.Model.UnsupportedBrick("device", "sprite", { xml: "xml", brickType: "brickType" });
+    var b = new PocketCode.Model.UnsupportedBrick("device", "sprite", { id: "id", commentedOut: false, xml: "xml", brickType: "brickType" });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._xml === "xml" && b._brickType === "brickType", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false && b._xml === "xml" && b._brickType === "brickType", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.UnsupportedBrick, "instance check");
     assert.ok(b.objClassName === "UnsupportedBrick", "objClassName check");
 
@@ -545,5 +552,6 @@ QUnit.test("UnsupportedBrick", function (assert) {
 
     b.execute(l1, "s23");
     assert.ok(handler1Called && !handler1LoopDelay && handler1CallId === "s23", "executed correctly");
+
 });
 

@@ -7,7 +7,8 @@ QUnit.module("components/physicsWorld.js");
 
 QUnit.test("PhysicsWorld", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
-    var physicsWorld = new PocketCode.PhysicsWorld(gameEngine);
+    var scene = new PocketCode.Model.Scene();
+    var physicsWorld = new PocketCode.PhysicsWorld(scene);
 
     var spriteIds = ["s1", "s2", "s3", "s4"];
     var id = spriteIds[0];

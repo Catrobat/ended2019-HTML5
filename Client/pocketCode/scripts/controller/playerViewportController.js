@@ -7,7 +7,7 @@ PocketCode.PlayerViewportController = (function () {
 
     function PlayerViewportController() {
         PocketCode.BaseController.call(this, new PocketCode.Ui.PlayerViewportView());
-        this._renderingImages = [];
+        this._renderingSprite = [];
         this._renderingTexts = [];
         this._redrawRequired = false;
         this._redrawInProgress = false;
@@ -20,13 +20,13 @@ PocketCode.PlayerViewportController = (function () {
 
     //properties
     Object.defineProperties(PlayerViewportController.prototype, {
-        renderingImages: {
+        renderingSprites: {
             set: function (rimgs) {
                 if (!(rimgs instanceof Array))
                     throw new Error('invalid argument: rendering images');
 
-                this._renderingImages = rimgs;
-                this._view.renderingImages = rimgs;
+                this._renderingSprite = rimgs;
+                this._view.renderingSprites = rimgs;
             },
         },
         renderingTexts: {
@@ -66,7 +66,7 @@ PocketCode.PlayerViewportController = (function () {
     PlayerViewportController.prototype.merge({
         updateSprite: function (spriteId, properties) {
             var img,
-                imgs = this._renderingImages,
+                imgs = this._renderingSprite,
                 visible;
 
             for (var i = 0, l = imgs.length; i < l; i++) {
@@ -116,6 +116,9 @@ PocketCode.PlayerViewportController = (function () {
         },
         hideAxes: function () {
             this._view.hideAxes();
+        },
+        initCanvas: function (sceneIds) {
+            this._view.initCanvas(sceneIds);
         },
         takeScreenshot: function () {
             return this._view.getCanvasDataURL();

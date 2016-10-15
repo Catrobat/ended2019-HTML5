@@ -179,10 +179,10 @@ PocketCode.merge({
         return RenderingText;
     })(),
 
-    RenderingImage: (function () {
-        RenderingImage.extends(PocketCode.RenderingItem, false);
+    RenderingSprite: (function () {
+        RenderingSprite.extends(PocketCode.RenderingItem, false);
 
-        function RenderingImage(propObject) {
+        function RenderingSprite(propObject) {
             PocketCode.RenderingItem.call(this, propObject);
 
             this._width = 0;
@@ -206,7 +206,7 @@ PocketCode.merge({
         }
 
         //properties
-        Object.defineProperties(RenderingImage.prototype, {
+        Object.defineProperties(RenderingSprite.prototype, {
             look: {
                 set: function (value) {
                     if (value && !(value instanceof HTMLCanvasElement))
@@ -295,7 +295,7 @@ PocketCode.merge({
         });
 
         //methods
-        RenderingImage.prototype.merge({
+        RenderingSprite.prototype.merge({
             containsPoint: function (point) {
                 if (!this._originalCanvas || !this.visible || (this._width === 0 && this._height === 0))
                     return false;
@@ -346,7 +346,7 @@ PocketCode.merge({
             },
         });
 
-        return RenderingImage;
+        return RenderingSprite;
     })(),
 });
 

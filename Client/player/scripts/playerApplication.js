@@ -205,7 +205,7 @@ PocketCode.merge({
                 },
                 _projectLoadHandler: function (e) {
                     if (!this._loadingError && !e.loadingAlerts) {
-                        this._pages.PlayerPageController.initOnLoad();
+                        this._pages.PlayerPageController.initOnLoad(e.sceneIds);
                         return;
                     }
 
@@ -241,7 +241,7 @@ PocketCode.merge({
                     d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         e.target.dispose();
-                        this._pages.PlayerPageController.initOnLoad();
+                        this._pages.PlayerPageController.initOnLoad(e.sceneIds);
                     }, this));
                     this._showDialog(d, false);
                 },

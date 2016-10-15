@@ -40,7 +40,7 @@ PocketCode.Model.merge({
         CallUserScriptBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function CallUserScriptBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             //this._x = new PocketCode.Formula(device, sprite, propObject.x);
             //this._y = new PocketCode.Formula(device, sprite, propObject.y);

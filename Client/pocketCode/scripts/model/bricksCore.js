@@ -133,8 +133,6 @@ PocketCode.Model.merge({
         function BaseBrick(device, sprite, propObject) {
             this._device = device;
             this._sprite = sprite;
-            if (!propObject)
-                var tmp;
             this._commentedOut = propObject.commentedOut;
         }
 
@@ -154,10 +152,8 @@ PocketCode.Model.merge({
 
                 this._onExecutedListener = onExecutedListener;
                 this._threadId = threadId;
-                if(this._commentedOut){
-                    this._return(false);
-                    return;
-                }
+                if (this._commentedOut === true)
+                    return this._return(false);
                 this._execute();
             },
             /* method to override in derived classes */
@@ -224,10 +220,9 @@ PocketCode.Model.ThreadedBrick = (function () {
 
             var id = SmartJs.getNewId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
-            if(this._commentedOut){
-                this._return(id, false);
-                return;
-            }
+            if (this._commentedOut === true)
+                return this._return(id, false);
+
             this._execute(id);
         },
         /* method to override in derived classes */
@@ -457,6 +452,8 @@ PocketCode.Model.LoopBrick = (function () {
         execute: function (onExecutedListener, threadId) {
             var id = SmartJs.getNewId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener, startTime: new Date(), paused: this._paused };
+            if (this._commentedOut === true)
+                return this._return(id);
 
             if (this._bricks && this._loopConditionMet(id)) {
                 if (!this._paused && !this._disposed)

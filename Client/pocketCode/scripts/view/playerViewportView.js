@@ -30,7 +30,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         //canvas events
         this._onUserAction = new SmartJs.Event.Event(this);
-        this._canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
+        this._canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
             this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_CLICKED }));
         }, this));
         this._canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(function (e) {
@@ -51,9 +51,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 return this._axesVisible;
             },
         },
-        renderingImages: {
+        renderingSprites: {
             set: function (value) {
-                this._canvas.renderingImages = value;
+                this._canvas.renderingSprites = value;
             },
         },
         renderingTexts: {
@@ -121,7 +121,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this.clear();
             this.render();
         },
-        initCanvasScenes: function(ids) {
+        initCanvas: function(ids) {
             this._canvas.init(ids);
         },
         _drawAxes: function () {

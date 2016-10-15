@@ -122,6 +122,7 @@ PocketCode.Device = (function () {
 
         //events
         this._onSpaceKeyDown = new SmartJs.Event.Event(this);
+        this._onCameraUsageChanged = new SmartJs.Event.Event(this);
         //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
     }
 
@@ -130,6 +131,11 @@ PocketCode.Device = (function () {
         onSpaceKeyDown: {
             get: function () {
                 return this._onSpaceKeyDown;
+            },
+        },
+        onCameraUsageChanged: {
+            get: function () {
+                return this._onCameraUsageChanged;  //TODO: define in scene? notify background to support cameraTransparency
             },
         },
     });
@@ -346,7 +352,10 @@ PocketCode.Device = (function () {
                 if (typeof bool !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
                 this._features.CAMERA.inUse = true;
+                if (this._cameraOn == bool)
+                    return;
                 this._cameraOn = bool;
+                this._onCameraUsageChanged.dispatchEvent({ cameraOn: bool });
             },
         },
 

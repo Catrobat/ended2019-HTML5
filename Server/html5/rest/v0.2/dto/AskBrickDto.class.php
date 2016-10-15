@@ -1,11 +1,11 @@
 <?php
 
-class AskAndWaitBrickDto extends BaseBrickDto {
+class AskBrickDto extends BaseBrickDto {
 
   public $question;
   
   public function __construct($question) {
-	parent::__construct("AskAndWait");
+	parent::__construct("Ask");
 	$this->question = $question;
   }
   

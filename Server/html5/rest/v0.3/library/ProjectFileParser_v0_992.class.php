@@ -696,7 +696,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1192,10 +1192,6 @@ class ProjectFileParser_v0_992
                 $brick = new WaitUntilBrickDto($this->parseFormula($condition->formula));
                 array_pop($this->cpp);
                 break;
-
-            // Wiederhole x mal
-
-            // Wiederhole bis x<y wahr ist
 
             // Continue scene
             case "SceneTransitionBrick":
@@ -1734,7 +1730,7 @@ class ProjectFileParser_v0_992
             case "AskBrick":
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
-                $brick = new AskAndWaitBrickDto($this->parseFormula($fl->formula));
+                $brick = new AskBrickDto($this->parseFormula($fl->formula));
                 array_pop($this->cpp);
                 break;
 

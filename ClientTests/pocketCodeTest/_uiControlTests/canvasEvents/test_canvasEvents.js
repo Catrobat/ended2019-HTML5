@@ -3,13 +3,14 @@
 window.onload = init;
 
 var gameEngine = new PocketCode.GameEngine();
+var scene = new PocketCode.Model.Scene();
 var is = new PocketCode.ImageStore();
 gameEngine._imageStore = is;
 
 var outputContainer;
 //create canvas
 var canvas = new PocketCode.Ui.Canvas();
-canvas.onRenderingImageTouched.addEventListener(new SmartJs.Event.EventListener(onTouched));
+canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(onTouched));
 canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(onTouchStart));
 canvas.onTouchMove.addEventListener(new SmartJs.Event.EventListener(onTouchMove));
 canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(onTouchEnd));
@@ -50,16 +51,16 @@ function init() {
 
 };
 
-//create renderingImages
+//create renderingSprites
 function imagesLoadHandler() {
     var looks1 = [{ resourceId: "s1", id: "s1", name: "look1" }];
     var looks2 = [{ resourceId: "s2", id: "s2", name: "look2" }];
-    var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: looks1 });   //(0/0)
-    var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: looks2 });
+    var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: looks1 });   //(0/0)
+    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: looks2 });
     sprite2.setPosition(40, 30);
-    var sprite3 = new PocketCode.Model.Sprite(gameEngine, { id: "id2", name: "sprite2", looks: looks1 });
+    var sprite3 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: looks1 });
     sprite3.setPosition(10, -40);
-    var sprite4 = new PocketCode.Model.Sprite(gameEngine, { id: "id3", name: "sprite3", looks: looks2 });
+    var sprite4 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id3", name: "sprite3", looks: looks2 });
     sprite4.setPosition(-40, 20);
 
     sprite1.initLooks();
@@ -67,7 +68,7 @@ function imagesLoadHandler() {
     sprite3.initLooks();
     sprite4.initLooks();
 
-    canvas.renderingImages = [sprite1.renderingImage, sprite2.renderingImage, sprite3.renderingImage, sprite4.renderingImage];
+    canvas.renderingSprites = [sprite1.renderingSprite, sprite2.renderingSprite, sprite3.renderingSprite, sprite4.renderingSprite];
     canvas.render();
     canvas.scale(1.5, 3);
 };
