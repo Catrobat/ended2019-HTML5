@@ -251,6 +251,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         sprite1._positionX = 0;
         sprite1._positionY = 0;
         sprite2._currentLook = l2;
+        sprite2.setSize(400);
 
         //Collision Right
         sprite1._positionX = 5;
@@ -296,8 +297,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         sprite1._positionY = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
         assert.deepEqual(test, true, "Collision Bottom Look2");
-
-
+        
             done();
     }
 
