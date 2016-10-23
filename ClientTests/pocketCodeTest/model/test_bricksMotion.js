@@ -213,19 +213,19 @@ QUnit.test("GoToBrick", function (assert) {
     //execute
     var handlerSprite = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
     var handlerPointer = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done2();
     };
     var handlerRandom = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done3();
     };

@@ -389,5 +389,20 @@ QUnit.test("WhenCollisionBrick", function (assert) {
 
 
 QUnit.test("WhenBackgroundChangesTo", function (assert) {
-    assert.ok(false, "TODO");
+    var done1 = assert.async();
+    var device = "device";
+    var program = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.WhenBackgroundChangesTo(device, sprite, scene, { id: "id" });
+
+    scene._background = sprite;
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.WhenBackgroundChangesTo, "instance check");
+    assert.ok(b.objClassName === "SayBrick", "objClassName check");
+
+
+
 });

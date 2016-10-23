@@ -175,9 +175,9 @@ PocketCode.Model.Scene = (function () {
         },
         start: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
-                return;
+                return false;
             if (this._executionState === PocketCode.ExecutionState.PAUSED)
-                return this.resume();
+                this.stop();//return this.resume();
 
             //this._projectTimer.start();
             this._executionState = PocketCode.ExecutionState.RUNNING;
@@ -185,6 +185,7 @@ PocketCode.Model.Scene = (function () {
             this._onStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
+            return true;
         },
         pause: function () {
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
@@ -202,14 +203,14 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.PAUSED;
             return true;
         },
-        resume: function () {
+        resumeOrStart: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED)
-                return;
+                return this.start();
 
             //todo resume event?
 
             //this._projectTimer.resume();
-            this._soundManager.resumeSounds();
+            this._soundManager.resumeSounds();  //TODO: pause/resume on scenes???
             if (this._background)
                 this._background.resumeScripts();
 
@@ -218,6 +219,7 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].resumeScripts();
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
+            return true;
         },
         stop: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)

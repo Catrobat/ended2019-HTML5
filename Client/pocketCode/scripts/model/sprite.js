@@ -356,7 +356,7 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id === scriptId) {
                     scripts[i].stop();
-                    return;
+                    return false;
                 }
             }
         },
@@ -366,6 +366,7 @@ PocketCode.Model.Sprite = (function () {
                 if (scripts[i].id !== exceptScriptId)
                     scripts[i].stop();
             }
+            return false;
         },
         /**
          * @event handler
