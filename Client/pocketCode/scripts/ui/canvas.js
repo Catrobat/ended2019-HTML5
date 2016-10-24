@@ -132,7 +132,6 @@ PocketCode.Ui.Canvas = (function () {
                 return this._backgroundCanvasEl.height;
             },
             set: function (value) {
-                console.log("heigjht");
                 if (typeof value !== 'number')
                     throw new Error('invalid argument: expected "value" typeof "number" (px)');
 
