@@ -14,45 +14,81 @@ PocketCode.Ui.Canvas = (function () {
         args = args || { className: 'pc-canvasContainer' };
         SmartJs.Ui.Control.call(this, 'div', args);
 
+        this.init_done = 0;
         this._renderingSprite = [];
         this._renderingTexts = [];
         this._scalingX = 1.0;
         this._scalingY = 1.0;
         this._sceneIds = 0; //TODO: remove
         this._sceneDrawCanvas = {}; //register here with { id: { elem: ?, ctx: ? } } on first use
+        this.currentSceneId = 0;
 
-        this._i = 0;    //TEST ONLY
 
         //handling click/touch/multi-touch
         this._activeTouchEvents = [];
 
-        //this._backgroundCanvasEl = document.createElement('canvas');
-        //this._lowerCanvasCtx = this._backgroundCanvasEl.getContext('2d');
-
-        this._backgroundCanvasEl = document.createElement('canvas');
-        //this._dom.appendChild(this._backgroundCanvasEl);
-        this._backgroundCanvasCtx = this._backgroundCanvasEl.getContext('2d');
-
-
-        this._translation = { x: Math.round(this._backgroundCanvasEl.width * 0.5), y: Math.round(this._backgroundCanvasEl.height * 0.5) };
-
-        this._upperCanvasEl = document.createElement('canvas');
-        this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
         this._helperCanvasEl = document.createElement('canvas');
         this._helperCanvasCtx = this._helperCanvasEl.getContext('2d');
 
-
-
-
         this._cameraCanvasEl = document.createElement('canvas');
         this._cameraCanvasCtx = this._cameraCanvasEl.getContext('2d');
+
+        this._backgroundCanvasEl = document.createElement('canvas');
+        this._backgroundCanvasCtx = this._backgroundCanvasEl.getContext('2d');
+
+        this._translation = { x: Math.round(this._backgroundCanvasEl.width * 0.5), y: Math.round(this._backgroundCanvasEl.height * 0.5) };
+
+        this._penStampCanvasEl = document.createElement('canvas');
+        this._penStampCanvasCtx = this._penStampCanvasEl.getContext('2d');
 
         this._spritesCanvasEl = document.createElement('canvas');
         this._spritesCanvasCtx = this._spritesCanvasEl.getContext('2d');
 
         this._bubblesCanvasEl = document.createElement('canvas');
         this._bubblesCanvasCtx = this._bubblesCanvasEl.getContext('2d');
+
+
+        this._upperCanvasEl = document.createElement('canvas');
+        this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
+
+
+
+        this._dom.appendChild(this._cameraCanvasEl);
+        this._dom.appendChild(this._backgroundCanvasEl);
+        this._dom.appendChild(this._penStampCanvasEl);
+        this._dom.appendChild(this._spritesCanvasEl);
+        this._dom.appendChild(this._bubblesCanvasEl);
+        this._dom.appendChild(this._upperCanvasEl);
+
+
+        //this._sceneIds = sceneIds;
+
+        /*
+        this._penCanvasCtx = {};
+        this._penCanvasEl = {};
+
+
+        for (var i = 0, l = sceneIds.length; i < l; i++) {
+            //console.log("add pen canvas " + i);
+            var id = sceneIds[i],
+              canvas = document.createElement('canvas');
+            this._dom.appendChild(canvas);
+            this._penCanvasEl[id] = canvas;
+            this._penCanvasCtx[id] = canvas.getContext('2d');
+            //this._currentDrawCtx = this._penCanvasCtx[id];
+            //this._currentDrawEl = this._penCanvasEl[id];
+        }
+
+
+        this._currentDrawCtx = this._penCanvasCtx[0];
+        this._currentDrawEl = this._penCanvasEl[0];
+        */
+        console.log("finish init");
+
+        //console.log(this._backgroundCanvasEl);
+        //console.log(this._spritesCanvasEl);
+        //console.log(this._currentDrawEl);
 
 
         //events
@@ -105,14 +141,13 @@ PocketCode.Ui.Canvas = (function () {
                 this._dom.style.width = (value + 'px');
                 this._backgroundCanvasEl.width = value;
                 this._cameraCanvasEl.width = value;
+                this._penStampCanvasEl.width = value;
 
                 var ids = this._sceneIds;
                 for (var i = 0; i < ids.length; i++) {
                     this._penCanvasEl[ids[i]].width = value;
                 }
 
-                if (ids.length > 0)
-                    this._currentDrawEl.width = value;
 
                 this._spritesCanvasEl.width = value;
                 this._bubblesCanvasEl.width = value;
@@ -121,7 +156,7 @@ PocketCode.Ui.Canvas = (function () {
 
                 for (var i = 0; i < this._sceneIds.length; i++) {
                     this._penCanvasEl[this._sceneIds[i]].width = value;
-                    this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
+                //    this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
                 }
                 this._helperCanvasEl.width = value;
             },
@@ -138,13 +173,13 @@ PocketCode.Ui.Canvas = (function () {
                 this._dom.style.height = (value + 'px');
                 this._backgroundCanvasEl.height = value;
                 this._cameraCanvasEl.height = value;
+                this._penStampCanvasEl.height = value;
 
                 var ids = this._sceneIds;
                 for (var i = 0; i < ids.length; i++) {
                     this._penCanvasEl[ids[i]].height = value;
                 }
-                //if (ids.length > 0) //todo - i took this out because it was causing problems
-                    //this._currentDrawEl.height = value;
+
                 this._spritesCanvasEl.height = value;
                 this._bubblesCanvasEl.height = value;
                 this._translation = { x: Math.round(this.width * 0.5), y: Math.round(value * 0.5) };
@@ -154,7 +189,7 @@ PocketCode.Ui.Canvas = (function () {
 
                 for (var i = 0; i < this._sceneIds.length; i++) {
                     this._penCanvasEl[this._sceneIds[i]].height = value;
-                    this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
+                    //this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
                     //console.log("........");
                 }
                 this._helperCanvasEl.height = value;
@@ -203,46 +238,49 @@ PocketCode.Ui.Canvas = (function () {
             this.render();
         },
         init: function (sceneIds) { //TODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
+            console.log("got " );
+            console.log(sceneIds);
 
-            this._sceneIds = sceneIds;
 
-            this._penCanvasCtx = {};
-            this._penCanvasEl = {};
 
-            this._dom.appendChild(this._backgroundCanvasEl);
-            this._dom.appendChild(this._cameraCanvasEl);
+            if( sceneIds == undefined ) {
+                // handle old programs
+                var penStampCanvasEl = document.createElement('canvas');
+                var penStampCanvasCtx = this._penStampCanvasEl.getContext('2d');
+                this._sceneDrawCanvas[0] = {};
+                this._sceneDrawCanvas[0]["element"] = penStampCanvasEl;
+                this._sceneDrawCanvas[0]["ctx"] = penStampCanvasCtx;
+                this.currentSceneId = 0;
 
-            for (var i = 0, l = sceneIds.length; i < l; i++) {
-                //console.log("add pen canvas " + i);
-                var id = sceneIds[i],
-                    canvas = document.createElement('canvas');
-                this._dom.appendChild(canvas);
-                this._penCanvasEl[id] = canvas;
-                this._penCanvasCtx[id] = canvas.getContext('2d');
-                //this._currentDrawCtx = this._penCanvasCtx[id];
-                //this._currentDrawEl = this._penCanvasEl[id];
+            } else {
+
+                var i;
+                var len = sceneIds.length;
+                for (i = 0; i < len; i++) {
+
+                    var penStampCanvasEl = document.createElement('canvas');
+                    var penStampCanvasCtx = this._penStampCanvasEl.getContext('2d');
+                    this._sceneDrawCanvas[sceneIds[i]] = {};
+                    this._sceneDrawCanvas[sceneIds[i]]["element"] = penStampCanvasEl;
+                    this._sceneDrawCanvas[sceneIds[i]]["ctx"] = penStampCanvasCtx;
+                }
+
+                this.currentSceneId = sceneIds[0];
+                this.init_done = 1;
+                console.log(this._sceneDrawCanvas);
             }
 
-            this._dom.appendChild(this._spritesCanvasEl);
-            this._dom.appendChild(this._bubblesCanvasEl);
-            this._dom.appendChild(this._upperCanvasEl);
 
-            this._currentDrawCtx = this._penCanvasCtx[0];
-            this._currentDrawEl = this._penCanvasEl[0];
-            //console.log("finish init");
 
-            //console.log(this._backgroundCanvasEl);
-            //console.log(this._spritesCanvasEl);
-            //console.log(this._currentDrawEl);
 
         },
         clear: function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
-            this._bubblesCanvasEl.clearRect(0, 0, this.width, this.height);
-            this._spritesCanvasEl.clearRect(0, 0, this.width, this.height);
-            this._currentDrawEl.clearRect(0, 0, this.width, this.height);
-            this._cameraCanvasEl.clearRect(0, 0, this.width, this.height);
-            this._backgroundCanvasEl.clearRect(0, 0, this.width, this.height);
+            this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._spritesCanvasCtx.clearRect(0, 0, this.width, this.height);
+            //this._currentDrawCtx.clearRect(0, 0, this.width, this.height);
+            this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
+            this._backgroundCanvasCtx.clearRect(0, 0, this.width, this.height);
             //this._lowerCanvasCtx.clearRect(0, 0, this.width, this.height);
         },
         _getTouchData: function (e) {
@@ -264,6 +302,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         _touchStartHandler: function (e) {
 
+            /*
             this._i++;
             if (this._i === 1)
                 this.drawStamp("s41");
@@ -273,9 +312,17 @@ PocketCode.Ui.Canvas = (function () {
                 this.drawStamp("s37");
             if (this._i === 4)
                 this.drawStamp("s35");
-            var data = this._currentDrawEl.toDataURL('image/png');
-            console.log(data);
-            console.log(this._currentDrawEl);
+            //var data = this._currentDrawEl.toDataURL('image/png');
+            //console.log(data);
+            //console.log(this._currentDrawEl);
+*/
+            this.drawStamp("s40");
+
+            var cur_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
+            console.log(cur_ctx);
+            //var data = cur_ctx.toDataURL('image/png');
+            //console.log(data);
+            //console.log(this._penStampCanvasEl);
 
             if (e.cancelable)
                 e.preventDefault();
@@ -431,24 +478,45 @@ PocketCode.Ui.Canvas = (function () {
 
             background_ctx.restore();
             ctx.restore();
+
+            if( this.init_done == 1 ) {
+                //this._penStampCanvasCtx.clearRect(0, 0, this.width, this.height);
+
+                //console.log(this._sceneDrawCanvas);
+
+                var penStampCanvas_ctx = this._penStampCanvasCtx;
+
+                /*
+                penStampCanvas_ctx.clearRect(0, 0, this.width, this.height);
+
+                penStampCanvas_ctx.save();
+                penStampCanvas_ctx.translate(this._translation.x, this._translation.y);
+                penStampCanvas_ctx.scale(this._scalingX, this._scalingY);
+                penStampCanvas_ctx.restore();
+                */
+                //penStampCanvas_ctx.save();
+                //penStampCanvas_ctx.save();
+                //penStampCanvas_ctx.translate(this._translation.x, this._translation.y);
+                //penStampCanvas_ctx.scale(this._scalingX, this._scalingY);
+                //penStampCanvas_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
+                //penStampCanvas_ctx.restore();
+            }
         },
         drawStamp: function (renderingSpriteId) {
-            //todo - took out because it crashed app.
-            // this._currentDrawCtx.save();
-            //
-            // this._currentDrawCtx.translate(this._translation.x, this._translation.y);
-            // this._currentDrawCtx.scale(this._scalingX, this._scalingY);
-            // //console.log(this._currentDrawCtx);
-            // var ro = this._renderingSprite;
-            // for (var i = 0, l = ro.length; i < l; i++) {
-            //     if (ro[i].id === renderingSpriteId) {
-            //         ro[i].draw(this._currentDrawCtx);
-            //         break;
-            //     }
-            // }
-            // this._currentDrawCtx.restore();
-            // //this._currentDrawCtx.translate(this._translation.x * (-1), this._translation.y * (-1));
-            // //this._currentDrawCtx.scale(1/this._scalingX, 1/this._scalingY);
+
+            //this._currentDrawCtx.save();
+
+            var ro = this._renderingSprite;
+            for (var i = 0, l = ro.length; i < l; i++) {
+                if (ro[i].id === renderingSpriteId) {
+                    this._sceneDrawCanvas[this.currentSceneId]["ctx"].save();
+                    this._sceneDrawCanvas[this.currentSceneId]["ctx"].translate(this._translation.x, this._translation.y);
+                    this._sceneDrawCanvas[this.currentSceneId]["ctx"].scale(this._scalingX, this._scalingY);
+                    ro[i].draw(this._sceneDrawCanvas[this.currentSceneId]["ctx"]);
+                    this._sceneDrawCanvas[this.currentSceneId]["ctx"].restore();
+                    break;
+                }
+            }
         },
         clearPenCanvas: function () {
             var ctx = this._currentPenCtx;
