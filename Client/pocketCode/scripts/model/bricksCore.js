@@ -128,6 +128,7 @@ PocketCode.Model.merge({
          * Initializes device and sprite with the given parameters
          * @param device
          * @param sprite
+         * @param propObject
          * @constructor
          */
         function BaseBrick(device, sprite, propObject) {

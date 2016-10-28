@@ -7,9 +7,17 @@ class ProjectsController extends BaseController
 
     const DEPLOY_API = "https://share.catrob.at/";
     const TEST_API = "https://web-test.catrob.at/";
+    const LOCAL_TEST_API = "http://localhost/";
 
     public $SERVER_ROOT = "/var/www/";
+
+    // change to TEST_API -> web-test
+    // change to LOCAL_TEST_API -> player.localhost (to test own projects and fake request)
+    // change to DEPLOY_API -> share
     public $API = self::TEST_API;
+
+    // set to Test or Deplay
+    public $API_getInfo = self::TEST_API;
     public $BASE_URL = "";
 
     public function __construct($request)
@@ -17,6 +25,7 @@ class ProjectsController extends BaseController
         parent::__construct($request);
         $this->BASE_URL = $this->API;
         $this->API = $this->API . "pocketcode/";
+        $this->API_getInfo = $this->API_getInfo . "pocketcode/";
 
         if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) // is localhost
         {
@@ -59,7 +68,7 @@ class ProjectsController extends BaseController
 
     private function getProjectDetails($projectId)
     {
-        $data = file_get_contents($this->API . "api/projects/getInfoById.json?id=" . $projectId);
+        $data = file_get_contents($this->API_getInfo . "api/projects/getInfoById.json?id=" . $projectId);
         $data = json_decode($data, false);
 
         try

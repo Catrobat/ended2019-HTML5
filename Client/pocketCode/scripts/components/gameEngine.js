@@ -258,10 +258,14 @@ PocketCode.GameEngine = (function () {
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
-                scene.load(scenes[i]);
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
                 if (i == 0)
                     this.__currentScene = scene;
+            }
+
+            // load after initialize all scenes - if reference to scene 2 in scene 1 -> error
+            for (var i = 0, l = scenes.length; i < l; i++) {
+                scene.load(scenes[i]);
             }
             if (bricksCount == 0) {
                 this._spriteFactoryOnProgressChangeHandler({ progress: 100 });

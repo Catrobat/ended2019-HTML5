@@ -12,6 +12,8 @@ PocketCode.merge({
     //_serviceEndpoint: 'http://localhost/html5/rest/v0.2/',  //TODO:
     _serviceEndpoint: function () {
         switch (window.location.hostname) {
+            case "player.localhost":
+                return 'http://localhost/html5/rest/v0.3/';
             case "localhost":
                 // To test with local projects
                 //return 'http://localhost/html5/rest/v0.2/';

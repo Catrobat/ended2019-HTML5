@@ -141,6 +141,7 @@ PocketCode.Model.merge({
         AskBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AskBrick(device, sprite, propObject) {
+            // TODO GameEngine wrong (and missing!) !
             PocketCode.Model.BaseBrick.call(this, device, sprite, gameEngine, propObject);
 
             this._gameEngine = gameEngine;

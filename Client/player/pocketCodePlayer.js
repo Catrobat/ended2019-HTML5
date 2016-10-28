@@ -6,7 +6,14 @@
 if (!PocketCode)
 	var PocketCode = {};
 
-PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
+PocketCode.Local = 0;
+
+
+if( PocketCode.Local === 1 )
+	PocketCode.domain = 'http://player.localhost';//'https://share.catrob.at/';
+else
+	PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
+
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
 PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
@@ -1068,7 +1075,10 @@ PocketCode.Web.resources = {
 		if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
 			return '../';
 
-		return PocketCode.domain + 'html5/';
+    if( hn === 'player.localhost' )
+      return PocketCode.domain + '/html5/client/';
+
+    return PocketCode.domain + '/html5/';
 	}(),
 	files: [
 		{ url: 'smartJs/sj.css', type: 'css' },

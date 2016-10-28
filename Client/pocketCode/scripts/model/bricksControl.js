@@ -304,7 +304,7 @@ PocketCode.Model.merge({
     SceneTransitionBrick: (function () {
         SceneTransitionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SceneTransitionBrick(device, sprite, gameEngine, scene, propObject) {
+        function SceneTransitionBrick(device, sprite, propObject, gameEngine, scene ) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             //this._scene = scene;
             this._transitionScene = gameEngine.getSceneById(propObject.sceneId);

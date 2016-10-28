@@ -175,6 +175,9 @@ PocketCode.merge({
                     case 'RepeatUntilBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
                         break;
+                    case 'SceneTransitionBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, PocketCode.Web.PlayerInterface._player._pages.PlayerPageController._gameEngine, this._scene);
+                        break;
 
                     default:
                         if (PocketCode.Model[type])
