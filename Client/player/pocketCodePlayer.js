@@ -10,7 +10,7 @@ PocketCode.Local = 0;
 
 
 if( PocketCode.Local === 1 )
-	PocketCode.domain = 'http://player.localhost';//'https://share.catrob.at/';
+	PocketCode.domain = 'http://player.localhost/';//'https://share.catrob.at/';
 else
 	PocketCode.domain = 'https://web-test.catrob.at/';//'https://share.catrob.at/';
 
