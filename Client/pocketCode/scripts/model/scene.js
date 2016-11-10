@@ -17,6 +17,8 @@ PocketCode.Model.Scene = (function () {
     function Scene(jsonScene, minLoopCycleTime, totalBrickCount, gameEngine, device, soundManager, onSpriteUiChange) {
         //PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL); //todo need this?
 
+        //this._jsonScene = jsonScene;
+        this._background = undefined;
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
@@ -79,8 +81,11 @@ PocketCode.Model.Scene = (function () {
         },
         renderingSprites: {
             get: function () {
-                var imgs = [this._background.renderingSprite],
-                    sprites = this._sprites;
+                var imgs = [];
+                if (this._background)
+                    imgs.push(this._background.renderingSprite);
+                //var imgs = [this._background.renderingSprite],
+                var sprites = this._sprites;
                 for (var i = 0, l = sprites.length; i < l; i++)
                     imgs.push(sprites[i].renderingSprite);
 
@@ -188,6 +193,7 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         pause: function () {
+            console.log( this._executionState  );
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
@@ -204,8 +210,12 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         resumeOrStart: function () {
-            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
-                return this.start();
+            if (this._executionState !== PocketCode.ExecutionState.PAUSED) {
+                console.log("first start");
+                var res = this.start();
+                console.log( "start res: " + res );
+                return res;
+            }
 
             //todo resume event?
 

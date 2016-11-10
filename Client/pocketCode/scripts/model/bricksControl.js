@@ -314,7 +314,11 @@ PocketCode.Model.merge({
 
         SceneTransitionBrick.prototype._execute = function () {
 
-            this._currentScene.pause();
+            console.log(" execute trasition brick " );
+            var result = this._currentScene.pause();
+            console.log( "res: " + result );
+            console.log( "paused " + this._currentScene._id );
+            console.log( "try to start " + this._transitionScene._id );
             this._return(this._transitionScene.resumeOrStart());
         };
 

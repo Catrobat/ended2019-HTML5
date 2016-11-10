@@ -18,6 +18,9 @@ PocketCode.GameEngine = (function () {
     function GameEngine(minLoopCycleTime) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
+        this._fullProgress = 0;
+        this._scenesProgressList = {};
+
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
@@ -251,6 +254,8 @@ PocketCode.GameEngine = (function () {
 
             for (var i = 0, l = scenes.length; i < l; i++) {
                 var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
+                console.log( scene );
+                console.log("scene after construct");
                 this._sceneIds.push(scenes[i].id);
                 this._scenes[scenes[i].id] = scene;
 
@@ -261,12 +266,18 @@ PocketCode.GameEngine = (function () {
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
                 if (i == 0)
                     this.__currentScene = scene;
+                console.log("added new scene");
             }
 
             // load after initialize all scenes - if reference to scene 2 in scene 1 -> error
             for (var i = 0, l = scenes.length; i < l; i++) {
-                scene.load(scenes[i]);
+                console.log( "try to load scene " + scenes[i].id );
+                this._scenes[scenes[i].id].load(scenes[i]);
+                //scene.load(scenes[i]);
             }
+            console.log("finished loading scene background");
+            console.log( this );
+            console.log( bricksCount );
             if (bricksCount == 0) {
                 this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
                 return;
@@ -274,7 +285,16 @@ PocketCode.GameEngine = (function () {
         },
         //loading handler
         _spriteFactoryOnProgressChangeHandler: function (e) {
-            if (e.progress === 100) {
+
+            this._scenesProgressList[e.target._id] = e.progress;
+            this._fullProgress = 0;
+
+            for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+                var id = this._sceneIds[i];
+                this._fullProgress += this._scenesProgressList[id];
+            }
+
+            if (this._fullProgress === 100) {
                 this._spritesLoaded = true;
                 for (var i = 0, l = this._sceneIds.length; i < l; i++) {
                     var id = this._sceneIds[i];
@@ -287,7 +307,7 @@ PocketCode.GameEngine = (function () {
                 }
             }
             else {
-                this._spritesLoadingProgress = e.progress;
+                this._spritesLoadingProgress = this._fullProgress;
                 var resourceProgress = Math.round(this._resourceLoadedSize / this._resourceTotalSize * 1000) / 10;
                 this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, this._spritesLoadingProgress) });
             }

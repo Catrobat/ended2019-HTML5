@@ -69,6 +69,8 @@ PocketCode.Model.Sprite = (function () {
         this._penColorRed = 0.0;
         this._penColorGreen = 0.0;
 
+        this._stamp = false;
+
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -141,6 +143,7 @@ PocketCode.Model.Sprite = (function () {
                     penColorBlue: this._penColorBlue,
                     penColorRed: this._penColorRed,
                     penColorGreen: this._penColorGreen,
+                    stamp: this._stamp,
                 });
             },
         },
@@ -1232,7 +1235,8 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
         },
         penStamp: function(){
-
+            this._stamp = true;
+            return this._triggerOnChange({stamp:this._stamp});
         },
 
         showBubble: function(type, text) {

@@ -84,7 +84,7 @@ PocketCode.Ui.Canvas = (function () {
         this._currentDrawCtx = this._penCanvasCtx[0];
         this._currentDrawEl = this._penCanvasEl[0];
         */
-        console.log("finish init");
+        //console.log("finish init");
 
         //console.log(this._backgroundCanvasEl);
         //console.log(this._spritesCanvasEl);
@@ -238,8 +238,7 @@ PocketCode.Ui.Canvas = (function () {
             this.render();
         },
         init: function (sceneIds) { //TODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
-            console.log("got " );
-            console.log(sceneIds);
+
 
 
 
@@ -267,7 +266,6 @@ PocketCode.Ui.Canvas = (function () {
 
                 this.currentSceneId = sceneIds[0];
                 this.init_done = 1;
-                console.log(this._sceneDrawCanvas);
             }
 
 
@@ -316,10 +314,9 @@ PocketCode.Ui.Canvas = (function () {
             //console.log(data);
             //console.log(this._currentDrawEl);
 */
-            this.drawStamp("s40");
+            //this.drawStamp("s40");
 
             var cur_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
-            console.log(cur_ctx);
             //var data = cur_ctx.toDataURL('image/png');
             //console.log(data);
             //console.log(this._penStampCanvasEl);
@@ -463,17 +460,26 @@ PocketCode.Ui.Canvas = (function () {
 
 
             var ro = this._renderingSprite;
-            //console.log( ro );
 
             if (ro.length > 0)
                 ro[0].draw(background_ctx);
 
-            for (var i = 1, l = ro.length; i < l; i++)
+            for (var i = 1, l = ro.length; i < l; i++) {
                 ro[i].draw(ctx);
+                if( ro[i].stamp === true ) {
+                    this.drawStamp(ro[i]._id);
+                    ro[i].stamp = false;
+                }
+            }
 
             ro = this._renderingTexts;
-            for (var i = 0, l = ro.length; i < l; i++)
+            for (var i = 0, l = ro.length; i < l; i++) {
                 ro[i].draw(ctx);
+                if( ro[i].stamp === true ) {
+                    this.drawStamp( ro[i]._id );
+                    ro[i].stamp = false;
+                }
+            }
 
 
             background_ctx.restore();
