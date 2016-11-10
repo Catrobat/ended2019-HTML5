@@ -372,6 +372,7 @@ PocketCode.GameEngine = (function () {
         },
         //project interaction
         runProject: function (reinitSprites) {
+          console.log("run project");
             var currentScene = this._currentScene;
             if (!currentScene || currentScene.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
@@ -393,6 +394,7 @@ PocketCode.GameEngine = (function () {
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
+          console.log("scene start: " );
             currentScene.start();
         },
         restartProject: function (reinitSprites) {
@@ -423,13 +425,23 @@ PocketCode.GameEngine = (function () {
             this._currentScene.handleUserAction(e);
         },
         changeScene: function (sceneId) {
+          console.log("try to set current_scene from " + this._currentScene.id + " to " + sceneId );
             if (sceneId === this._currentScene.id)
                 return;
-            var sceneToStart = this.getSceneById();
+            var sceneToStart = this.getSceneById(sceneId);
             this._currentScene.pause();
             this._currentScene = sceneToStart;
-            this._currentScene.start();
             //todo inform rendering
+
+            console.log( sceneToStart );
+          console.log( this._currentScene._background );
+          this._currentScene._background._triggerOnChange();
+          this._currentScene._background._scriptOnExecuted();
+
+            //this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
+            this._currentScene.start();
+          this._currentScene._background._triggerOnChange();
+          console.log( this );
         },
         getSceneById: function (id) {
             if(!this._scenes[id])

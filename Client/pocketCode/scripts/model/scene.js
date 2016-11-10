@@ -19,6 +19,7 @@ PocketCode.Model.Scene = (function () {
 
         //this._jsonScene = jsonScene;
         this._background = undefined;
+        this._gameEngine = gameEngine;
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
@@ -190,6 +191,8 @@ PocketCode.Model.Scene = (function () {
             this._onStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
+          console.log( !this._background);
+          console.log("run through");
             return true;
         },
         pause: function () {
@@ -212,9 +215,12 @@ PocketCode.Model.Scene = (function () {
         resumeOrStart: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED) {
                 console.log("first start");
-                var res = this.start();
-                console.log( "start res: " + res );
-                return res;
+
+                this._gameEngine.changeScene( this._id );
+
+                //var res = this.start();
+                //console.log( "start res: " + res );
+                return true;
             }
 
             //todo resume event?
