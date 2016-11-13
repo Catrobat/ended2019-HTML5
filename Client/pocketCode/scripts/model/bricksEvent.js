@@ -177,22 +177,48 @@ PocketCode.Model.merge({
     WhenConditionMetBrick: (function () {
         WhenConditionMetBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject) {
+        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject, startEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+            this._onStart = startEvent;
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         WhenConditionMetBrick.prototype.merge({
-            //_onStartHandler: function (e) {
-                //if (e.sprite === this._sprite)    //TODO: add logic to periodically evaluate condition and call this.execute() + handle: pause/resume/stop
-                //    this.execute();
-            //},
+            _execute: function () {
+                if (this._timeoutHandler)
+                    window.clearTimeout(this._timeoutHandler);
+
+                var met = false;
+                try {
+                    met = this._condition.calculate();
+                }
+                catch (e) {}
+
+                if (met) {
+                    PocketCode.Model.ScriptBlock.prototype._execute.call(this, SmartJs.getNewId());
+                }
+                else
+                    this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._cycleTime);
+            },
+            pause: function () {
+                if (this._timeoutHandler)
+                    window.clearTimeout(this._timeoutHandler);
+                PocketCode.Model.ScriptBlock.prototype.pause.call(this);
+            },
+            resume: function () {
+                this._execute();
+            },
+            stop: function () {
+                window.clearTimeout(this._timeoutHandler);
+            },
             dispose: function () {
-                //this._onStart.removeEventListener(new SmartJs.Event.EventListener(this._onStartHandler, this));
-                //this._onStart = undefined;  //make sure to disconnect from gameEngine
+                window.clearTimeout(this._timeoutHandler);
+                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+                //this.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
             },
         });
 
@@ -227,7 +253,7 @@ PocketCode.Model.merge({
             this._scene = scene;
             scene.onBackgroundChange.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
 
-            this._lookId = param.lookId;
+            this._lookId = propObject.lookId;
         }
 
         WhenBackgroundChangesTo.prototype.merge({

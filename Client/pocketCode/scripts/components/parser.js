@@ -112,6 +112,7 @@ PocketCode.merge({
 
                 switch (type) {
                     //in development
+                    case 'WhenConditionMetBrick':
                     case 'SetBackgroundBrick':
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':

@@ -399,20 +399,20 @@ PocketCode.Model.ScriptBlock = (function () {
         /**
          * calls "pause()" on bricks
          */
-        pause: function () {
+        /*pause: function () {
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
             //if (this._executionState === PocketCode.ExecutionState.RUNNING)
             //    this._executionState = PocketCode.ExecutionState.PAUSED;
             //^^ while pausing the bricks we do not updae the current exection state
-        },
+        },*/
         /**
          * calls "resume()" on bricks
          */
-        resume: function () {
+       /* resume: function () {
             //if (this._executionState === PocketCode.ExecutionState.PAUSED)
             //    this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
-        },
+        },*/
         /**
          * calls "stop()" on bricks and threadedBrick
          */
