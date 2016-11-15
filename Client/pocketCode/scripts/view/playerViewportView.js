@@ -121,8 +121,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this.clear();
             this.render();
         },
-        initCanvas: function(ids) {
-            this._canvas.init(ids);
+        initScene: function(id, screenSize) {
+            this._canvas.initScene(id, screenSize);
+        },
+        clearPenStampCache: function() {
+            this._canvas.clearPenStampCache();
         },
         _drawAxes: function () {
             if (!this._axesVisible)

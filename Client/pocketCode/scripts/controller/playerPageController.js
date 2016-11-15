@@ -125,37 +125,24 @@ PocketCode.PlayerPageController = (function () {
         //    this._playerViewportController.initCanvas(e.ids);
         //    //this._view.initCanvasScenes(e.ids);
         //},
-        initOnLoad: function (sceneIds) {
-            var screenSize = this._gameEngine.projectScreenSize;
-            this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
-            this._playerViewportController.initCanvas(sceneIds);
-            var firstScene = this._gameEngine.getSceneById(sceneIds[0]);
-            this._playerViewportController.renderingSprites = firstScene.renderingSprites;  //TODO: assign onBeforeStart? -> changing when scenes are changed
-
-            this._playerViewportController.renderingTexts = firstScene.renderingTexts;    //TODO:
-            this._view.disabled = false;
-        },
-        changeScene: function (sceneIds,id) {
-            console.log("change scene reached");
-            var screenSize = this._gameEngine.projectScreenSize;
-            this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
-            this._playerViewportController.initCanvas(sceneIds);
-            var scene = this._gameEngine.getSceneById(id);
-            this._playerViewportController.renderingSprites = scene.renderingSprites;  //TODO: assign onBeforeStart? -> changing when scenes are changed
-
-            this._playerViewportController.renderingTexts = scene.renderingTexts;    //TODO:
+        enableView: function (sceneIds) {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
-            if (e.reinit)
-                this.initOnLoad(e.sceneIds);
+            if (e.reinit) {
+              //this.initOnLoad();
+              this._playerViewportController.clearPenStampCache();
+            }
             this._view.hideStartScreen();
         },
         _changeSceneHandler: function (e) {    //on start event dispatched by gameEngine
-            //if (e.reinit)
-            //    this.initOnLoad(e.sceneIds);
-            //this._view.hideStartScreen();
-            this.changeScene(e.sceneIds,e.id);
+
+            var screenSize = e.screenSize;
+            this._playerViewportController.initScene(e.id, screenSize);
+            this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
+            this._playerViewportController.renderingSprites = e.renderingSprites;
+            this._playerViewportController.renderingTexts = e.renderingTexts;
+
 
         },
         _projectExecutedHandler: function (e) {

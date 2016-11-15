@@ -75,6 +75,11 @@ PocketCode.Model.Scene = (function () {
                 return this._id;
             }
         },
+        screenSize: {
+            get: function () {
+                return { height: this._originalScreenHeight, width: this._originalScreenWidth };
+            }
+        },
         name: {
             get: function () {
                 return this._name;
@@ -213,13 +218,12 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         resumeOrStart: function () {
+            console.log("state: " + this._executionState);
             if (this._executionState !== PocketCode.ExecutionState.PAUSED) {
                 console.log("first start");
 
                 this._gameEngine.changeScene( this._id );
 
-                //var res = this.start();
-                //console.log( "start res: " + res );
                 return true;
             }
 
@@ -333,9 +337,6 @@ PocketCode.Model.Scene = (function () {
         },
         setGravity: function (x, y) {
             this._physicsWorld.setGravity(x, y);
-        },
-        clearPenStampCanvas: function () {
-            return true;
         },
         _loadBackground: function (background) {
             this._background = this._spriteFactory.create(this, this._broadcastMgr, this._bricksLoaded, background);

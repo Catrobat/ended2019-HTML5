@@ -64,6 +64,10 @@ PocketCode.PlayerViewportController = (function () {
 
     //methods
     PlayerViewportController.prototype.merge({
+        clearPenStampCache: function () {
+            this._view.clearPenStampCache();
+
+         },
         updateSprite: function (spriteId, properties) {
             var img,
                 imgs = this._renderingSprite,
@@ -117,8 +121,8 @@ PocketCode.PlayerViewportController = (function () {
         hideAxes: function () {
             this._view.hideAxes();
         },
-        initCanvas: function (sceneIds) {
-            this._view.initCanvas(sceneIds);
+        initScene: function (id, screenSize) {
+            this._view.initScene(id, screenSize);
         },
         takeScreenshot: function () {
             return this._view.getCanvasDataURL();

@@ -205,7 +205,7 @@ PocketCode.merge({
                 },
                 _projectLoadHandler: function (e) {
                     if (!this._loadingError && !e.loadingAlerts) {
-                        this._pages.PlayerPageController.initOnLoad(e.sceneIds);
+                        this._pages.PlayerPageController.enableView();
                         return;
                     }
 

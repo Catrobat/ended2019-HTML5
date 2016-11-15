@@ -91,6 +91,7 @@ PocketCode.GameEngine = (function () {
                     id: scene.id,
                     renderingSprites: scene.renderingSprites,
                     renderingTexts: this.renderingVariables.concat(scene.renderingTexts),
+                    screenSize: scene.screenSize,
                 });
             },
         },
@@ -264,17 +265,20 @@ PocketCode.GameEngine = (function () {
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
-                if (i == 0)
-                    this.__currentScene = scene;
-                console.log("added new scene");
+
+                //if (i == 0)
+                //    this._currentScene = scene;
             }
+
+
 
             // load after initialize all scenes - if reference to scene 2 in scene 1 -> error
             for (var i = 0, l = scenes.length; i < l; i++) {
-                console.log( "try to load scene " + scenes[i].id );
                 this._scenes[scenes[i].id].load(scenes[i]);
                 //scene.load(scenes[i]);
             }
+
+
             console.log("finished loading scene background");
             console.log( this );
             console.log( bricksCount );
@@ -355,10 +359,15 @@ PocketCode.GameEngine = (function () {
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
                 this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
-                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts, sceneIds:  this._sceneIds});   //dispatch warnings
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts});   //dispatch warnings
             }
-            else
-                this._onLoad.dispatchEvent({sceneIds: this._sceneIds});
+            else {
+              this._onLoad.dispatchEvent();
+              for (var c in this._scenes) {
+                this._currentScene = this._scenes[c];
+                break;
+              }
+            }
         },
         _resourceLoadingErrorHandler: function (e) {
             if (e.target === this._soundManager)
@@ -389,7 +398,7 @@ PocketCode.GameEngine = (function () {
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites != false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 this._resetVariables();  //global
-                this._onBeforeProgramStart.dispatchEvent({ reinit: true, sceneIds: this._sceneIds });
+                this._onBeforeProgramStart.dispatchEvent({ reinit: true });
             }
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
@@ -425,7 +434,6 @@ PocketCode.GameEngine = (function () {
             this._currentScene.handleUserAction(e);
         },
         changeScene: function (sceneId) {
-          console.log("try to set current_scene from " + this._currentScene.id + " to " + sceneId );
             if (sceneId === this._currentScene.id)
                 return;
             var sceneToStart = this.getSceneById(sceneId);
@@ -434,8 +442,6 @@ PocketCode.GameEngine = (function () {
             //todo inform rendering
 
           this._currentScene.start();
-          //this._currentScene._background._triggerOnChange();
-          console.log( this );
         },
         getSceneById: function (id) {
             if(!this._scenes[id])
