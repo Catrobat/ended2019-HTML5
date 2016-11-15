@@ -466,10 +466,29 @@ PocketCode.Ui.Canvas = (function () {
 
             for (var i = 1, l = ro.length; i < l; i++) {
                 ro[i].draw(ctx);
+
                 if( ro[i].stamp === true ) {
                     this.drawStamp(ro[i]._id);
                     ro[i].stamp = false;
                 }
+
+
+                if( ro[i]._penDown === true ) {
+                    console.log("pen Draw");
+                    background_ctx.beginPath();
+                    console.log(ro[i].penXPosition + " + " + ro[i].penYPosition);
+                    console.log(ro[i].x + " + " + ro[i].y);
+                    console.log("---");
+                    background_ctx.moveTo(ro[i].penXPosition, ro[i].penYPosition);
+                    background_ctx.lineTo(ro[i].x, ro[i].y);
+                    ro[i].penXPosition = ro[i].x;
+                    ro[i].penYPosition = ro[i].y;
+                    background_ctx.strokeStyle = "black";
+                    background_ctx.lineWidth = ro[i]._penSize;
+                    background_ctx.stroke();
+                    background_ctx.closePath();
+                }
+
             }
 
             ro = this._renderingTexts;
