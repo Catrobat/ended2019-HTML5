@@ -433,14 +433,8 @@ PocketCode.GameEngine = (function () {
             this._currentScene = sceneToStart;
             //todo inform rendering
 
-            console.log( sceneToStart );
-          console.log( this._currentScene._background );
-          this._currentScene._background._triggerOnChange();
-          this._currentScene._background._scriptOnExecuted();
-
-            //this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
-            this._currentScene.start();
-          this._currentScene._background._triggerOnChange();
+          this._currentScene.start();
+          //this._currentScene._background._triggerOnChange();
           console.log( this );
         },
         getSceneById: function (id) {

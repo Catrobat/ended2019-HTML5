@@ -459,6 +459,7 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(this._scalingX, this._scalingY);
 
 
+
             var ro = this._renderingSprite;
 
             if (ro.length > 0)
@@ -474,22 +475,29 @@ PocketCode.Ui.Canvas = (function () {
 
 
                 if( ro[i]._penDown === true ) {
-                    console.log("pen Draw");
-                    background_ctx.beginPath();
-                    console.log(ro[i].penXPosition + " + " + ro[i].penYPosition);
-                    console.log(ro[i].x + " + " + ro[i].y);
-                    console.log("---");
-                    background_ctx.moveTo(ro[i].penXPosition, ro[i].penYPosition);
-                    background_ctx.lineTo(ro[i].x, ro[i].y);
-                    ro[i].penXPosition = ro[i].x;
-                    ro[i].penYPosition = ro[i].y;
-                    background_ctx.strokeStyle = "black";
-                    background_ctx.lineWidth = ro[i]._penSize;
-                    background_ctx.stroke();
-                    background_ctx.closePath();
+                    var x = ro[i].x;
+                    x -= ro[i].offsetX*ro[i]._scaling;
+                    var y = ro[i].y;
+                    y -= ro[i].offsetY*ro[i]._scaling;
+                    y *= -1;
+                    var currentPenStampCtx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
+                    currentPenStampCtx.save();
+                    currentPenStampCtx.translate(this._translation.x, this._translation.y);
+                    currentPenStampCtx.scale(this._scalingX, this._scalingY);
+                    currentPenStampCtx.beginPath();
+                    currentPenStampCtx.moveTo(ro[i].penXPosition, ro[i].penYPosition );
+                    currentPenStampCtx.lineTo(x, y );
+                    ro[i].penXPosition = x;
+                    ro[i].penYPosition = y;
+                    currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColorRed + ", " + ro[i]._penColorGreen + ", " + ro[i]._penColorBlue + " )";
+                    currentPenStampCtx.lineWidth = ro[i]._penSize;
+                    currentPenStampCtx.stroke();
+                    currentPenStampCtx.closePath();
+                    currentPenStampCtx.restore();
                 }
-
             }
+
+            //draw
 
             ro = this._renderingTexts;
             for (var i = 0, l = ro.length; i < l; i++) {

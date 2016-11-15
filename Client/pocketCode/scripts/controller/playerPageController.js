@@ -73,6 +73,7 @@ PocketCode.PlayerPageController = (function () {
                     this._gameEngine.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                     //this._gameEngine.onScenesInitialized.removeEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                     this._gameEngine.onBeforeProgramStart.removeEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
+                    this._gameEngine.onSceneChanged.removeEventListener(new SmartJs.Event.EventListener(this._changeSceneHandler, this));
                     this._gameEngine.onProgramExecuted.removeEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                     this._gameEngine.onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                     this._gameEngine.onVariableUiChange.removeEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
@@ -82,6 +83,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingProgressHandler, this));
                 //this._gameEngine.onScenesInitialized.addEventListener(new SmartJs.Event.EventListener(this._scenesInitializedHandler, this));
                 this._gameEngine.onBeforeProgramStart.addEventListener(new SmartJs.Event.EventListener(this._beforeProjectStartHandler, this));
+                this._gameEngine.onSceneChanged.addEventListener(new SmartJs.Event.EventListener(this._changeSceneHandler, this));
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
@@ -133,10 +135,28 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.renderingTexts = firstScene.renderingTexts;    //TODO:
             this._view.disabled = false;
         },
+        changeScene: function (sceneIds,id) {
+            console.log("change scene reached");
+            var screenSize = this._gameEngine.projectScreenSize;
+            this._playerViewportController.setProjectScreenSize(screenSize.width, screenSize.height);
+            this._playerViewportController.initCanvas(sceneIds);
+            var scene = this._gameEngine.getSceneById(id);
+            this._playerViewportController.renderingSprites = scene.renderingSprites;  //TODO: assign onBeforeStart? -> changing when scenes are changed
+
+            this._playerViewportController.renderingTexts = scene.renderingTexts;    //TODO:
+            this._view.disabled = false;
+        },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             if (e.reinit)
                 this.initOnLoad(e.sceneIds);
             this._view.hideStartScreen();
+        },
+        _changeSceneHandler: function (e) {    //on start event dispatched by gameEngine
+            //if (e.reinit)
+            //    this.initOnLoad(e.sceneIds);
+            //this._view.hideStartScreen();
+            this.changeScene(e.sceneIds,e.id);
+
         },
         _projectExecutedHandler: function (e) {
             if (SmartJs.Device.isMobile)
