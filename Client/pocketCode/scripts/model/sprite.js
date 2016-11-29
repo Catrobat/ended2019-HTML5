@@ -1281,6 +1281,10 @@ PocketCode.Model.Sprite = (function () {
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
+
+        clone: function (sprite) {
+            //var clone =
+        },
     });
 
     return Sprite;

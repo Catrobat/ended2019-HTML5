@@ -421,7 +421,16 @@ PocketCode.Model.Scene = (function () {
         _spriteFactoryOnProgressChangeHandler: function (e) {
                 this._bricksLoaded = e.parsed;
                 this._onProgressChange.dispatchEvent(e);
-            }
+        },
+
+        cloneSprite: function (id) {
+            var sprite = this.getSpriteById(id),
+                clone = sprite.clone();
+
+            //todo: add to spritecollection and rendering sprite
+
+        },
+
         });
 
     return Scene;

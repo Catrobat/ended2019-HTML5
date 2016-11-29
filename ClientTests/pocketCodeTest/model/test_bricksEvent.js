@@ -354,7 +354,7 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
             _execute: function (id) {
                 this.executed++;
                 var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 100);
+                window.setTimeout(function () { _self._return(id, false) }, 80);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
         });
@@ -371,16 +371,17 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
 
 
     window.setTimeout(function () {
-        assert.ok(tb1.executed > 0, "executed");
+        assert.equal(tb1.executed, 1, "executed");
         runPause();
-    }, 70);
+    }, 30);
 
     function runPause() {
         b.pause();
-        tb1.executed = 0;
+        //tb1.executed = 0;
+        b._previousMet = false;
 
         window.setTimeout(function () {
-            assert.equal(tb1.executed, 0, "paused");
+            assert.equal(tb1.executed, 1, "paused");
             runResume();
         }, 40);
     }
@@ -389,7 +390,7 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
         b.resume();
 
         window.setTimeout(function () {
-            assert.ok(tb1.executed > 0, "Resume executed");
+            assert.equal(tb1.executed, 2, "Resume executed");
             runStop();
         }, 50);
 
@@ -400,9 +401,10 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
         tb1.executed = 0;
         window.setTimeout(function () {
             assert.equal(tb1.executed, 0, "Stop executed");
+            done1();
         }, 40);
 
-        done1();
+
     }
 });
 
@@ -534,5 +536,10 @@ QUnit.test("WhenBackgroundChangesTo", function (assert) {
     };
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
     scene.onBackgroundChange.dispatchEvent({ lookId: lookId });
+
+    scene.onBackgroundChange.dispatchEvent({ lookId: "lookId2" });
+
+    assert.ok(true, "not called, if no registred lookId");
+
 
 });

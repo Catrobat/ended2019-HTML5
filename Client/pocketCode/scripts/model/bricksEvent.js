@@ -180,6 +180,7 @@ PocketCode.Model.merge({
         function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject, startEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
+            this._previousMet = false;
             this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
             this._onStart = startEvent;
@@ -197,11 +198,14 @@ PocketCode.Model.merge({
                 }
                 catch (e) {}
 
-                if (met) {
+                if (!this._previousMet && met) {
+                    this._previousMet = met;
                     PocketCode.Model.ScriptBlock.prototype._execute.call(this, SmartJs.getNewId());
                 }
-                else
+                else {
+                    this._previousMet = met;
                     this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._cycleTime);
+                }
             },
             pause: function () {
                 if (this._timeoutHandler)
