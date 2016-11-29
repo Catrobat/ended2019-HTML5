@@ -430,6 +430,11 @@ SmartJs.Ui.merge({
                     return true;
                 },
             },
+            clientRect: {
+                get: function () {
+                    return this._dom.getBoundingClientRect();
+                },
+            },
         });
 
         //events
@@ -692,7 +697,29 @@ SmartJs.Ui.merge({
             SmartJs.Ui.Control.call(this, element, propObject);
         }
 
+        //properties
+        Object.defineProperties(HtmlTag.prototype, {
+            dom: {
+                get: function () {
+                    return this._dom;
+                },
+            },
+        });
+
+        //methods
         HtmlTag.prototype.merge({
+            setDomAttribute: function (key, value) {
+                this._dom.setAttribute(key, value);
+            },
+            getDomAttribute: function (key) {
+                return this._dom.getAttribute(key);
+            },
+            addDomListener: function (eventName, eventHandler, args) {
+                return this._addDomListener(this._dom, eventName, eventHandler, args);
+            },
+            removeDomListener: function (eventName, eventHandler) {
+                return this._removeDomListener(this._dom, eventName, eventHandler);
+            },
             appendChild: function (uiControl) {
                 return this._appendChild(uiControl);
             },

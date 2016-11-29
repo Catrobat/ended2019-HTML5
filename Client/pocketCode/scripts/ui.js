@@ -14,8 +14,8 @@ PocketCode.Ui = {
         circle: '<path d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1zM32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98C56.979,45.796,45.796,56.979,32,56.979z"/>',
     },
     Direction: {
-        LTR: 0,
-        RTL: 1,
+        LTR: 'ltr',
+        RTL: 'rtl',
     },
     PageNavigation: {
         FORWARD: 0,
@@ -63,6 +63,11 @@ PocketCode.Ui.merge({
             var icon = '<polygon points="23.996,46.546 20.307,46.546 40.004,18.416 43.693,18.416"/>';
             return svgs.tagStart + svgs.circle + text1 + text2 + icon + svgs.tagEnd;
         }(),
+        MENU: function () {
+            var svgs = PocketCode.Ui._svgs;
+            var icon = '<path d="M26 13 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/><path d="M26 32 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/><path d="M26 51 l0 -6 6 0 6 0 0 6 0 6 -6 0 -6 0 0 -60z"/>';
+            return svgs.tagStart + icon + svgs.tagEnd;
+        }(),
     },
 
     I18nTextNode: (function () {
@@ -75,7 +80,7 @@ PocketCode.Ui.merge({
             if (i18n && typeof i18n != 'string' && !(i18n instanceof PocketCode.Core.I18nString))
                 throw new Error('invalid argument: i18nKey or i18nString');
 
-            this._i18n = i18n || 'undefined';
+            this._i18n = i18n;// || 'undefined';
             this._insertBefore = insertBefore || '';
             this._insertAfter = insertAfter || '';
 
@@ -153,14 +158,19 @@ PocketCode.Ui.merge({
         //cntr
         function Viewport() {
             SmartJs.Ui.Viewport.call(this, {className: 'pc-playerViewport'});
+            this._dom.dir = 'ltr';
 
             this._disableBrowserGestures();
         }
 
-        ////properties
-        //Object.defineProperties(Viewport.prototype, {
-
-        //});
+        //properties
+        Object.defineProperties(Viewport.prototype, {
+            uiDirection: {
+                set: function (direction) {
+                    this._dom.dir = direction;
+                },
+            },
+        });
 
         ////events
         //Object.defineProperties(Viewport.prototype, {
@@ -170,23 +180,36 @@ PocketCode.Ui.merge({
         //methods
         Viewport.prototype.merge({
             _disableBrowserGestures: function () {
-                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) { e.preventDefault(); });
-                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
-                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
-                    if (!e.systemAllowed)
+                this._clickHandler = this._addDomListener(this._dom, 'click', function (e) {
+                    if (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string') && e.cancelable)
                         e.preventDefault();
                 });
-                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) { e.preventDefault(); });
-                this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) { e.preventDefault(); });
-                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) { e.preventDefault(); });
-                this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) { e.preventDefault(); });
+                this._dblClickHandler = this._addDomListener(this._dom, 'dblclick', function (e) { e.preventDefault(); });
+                this._touchStartHandler = this._addDomListener(this._dom, 'touchstart', function (e) {
+                    if (!e.systemAllowed && (!(e.target instanceof HTMLInputElement) && (!(e.target instanceof HTMLLabelElement) || typeof e.target.htmlFor != 'string')) && e.cancelable)
+                        e.preventDefault();
+                });
+                //this._touchEndHandler = this._addDomListener(this._dom, 'touchend', function (e) {
+                //    e.preventDefault();
+                //});
+                //this._touchCancelHandler = this._addDomListener(this._dom, 'touchcancel', function (e) {
+                //    e.preventDefault();
+                //});
+                this._touchLeaveandler = this._addDomListener(this._dom, 'touchleave', function (e) {
+                    if (e.cancelable)
+                        e.preventDefault();
+                });
+                this._touchMoveHandler = this._addDomListener(this._dom, 'touchmove', function (e) {
+                    if (e.cancelable)
+                        e.preventDefault();
+                });
             },
             _enableBrowserGestures: function () {
                 this._removeDomListener(this._dom, 'click', this._clickHandler);
                 this._removeDomListener(this._dom, 'dblclick', this._dblClickHandler);
                 this._removeDomListener(this._dom, 'touchstart', this._touchStartHandler);
                 //this._removeDomListener(this._dom, 'touchend', this._touchEndHandler);
-                this._removeDomListener(this._dom, 'touchcancel', this._touchCancelHandler);
+                //this._removeDomListener(this._dom, 'touchcancel', this._touchCancelHandler);
                 this._removeDomListener(this._dom, 'touchleave', this._touchLeaveandler);
                 this._removeDomListener(this._dom, 'touchmove', this._touchMoveHandler);
             },

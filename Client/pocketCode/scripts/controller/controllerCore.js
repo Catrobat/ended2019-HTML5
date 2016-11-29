@@ -61,6 +61,11 @@ PocketCode.PageController = (function () {
                 this._currentHistoryIdx = idx;
             },
         },
+        hasOpenDialogs: {
+            get: function () {
+                return this._dialogs.length > 0;
+            },
+        },
     });
     
     //methods

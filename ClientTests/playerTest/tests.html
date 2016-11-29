@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PocketCode Player Unit Tests</title>
+    <link href="../qunit/qunit-1.23.0.css" rel="stylesheet" />
+    <script src="../qunit/qunit-1.23.0.js"></script>
+    <script src="../qunit/blanket-1.2.2.min.js"></script>
+    <!-- libs -->
+    <script src="../../Client/pocketCode/libs/iscroll/iscroll-5.3.1.custom.js"></script>
+    <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
+
+    <!-- core -->
+    <script src="../../Client/player/pocketCodePlayer.js" data-cover></script>
+
+    <!-- smart js -->
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-animation.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+    <!--script src="../../Client/smartJs/sj-error.js"></script-->
+
+    <!-- pocketCode: without code coverage -->
+    <!-- pocketCode: core -->
+    <script src="../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui.js"></script>
+
+    <!-- pocketCode: components -->
+    <script src="../../Client/pocketCode/scripts/components/loggingProvider.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/proxy.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/soundManager.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/broadcastManager.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/collisionManager.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/physicsWorld.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/device.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/formula.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/parser.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/userVariableHost.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/imageHelper.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/gameEngine.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/i18nProvider.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/imageStore.js"></script>
+    <script src="../../Client/pocketCode/scripts/components/renderingItem.js"></script>
+
+    <!-- pocketCode: model -->
+    <script src="../../Client/pocketCode/scripts/model/bricksCore.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksControl.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksMotion.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksSound.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksLook.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksData.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/bricksUserScript.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/look.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/sprite.js"></script>
+    <script src="../../Client/pocketCode/scripts/model/userVariable.js"></script>
+
+    <!-- pocketCode: controller -->
+    <script src="../../Client/pocketCode/scripts/controller/controllerCore.js"></script>
+    <script src="../../Client/pocketCode/scripts/controller/playerViewportController.js"></script>
+    <script src="../../Client/pocketCode/scripts/controller/playerPageController.js"></script>
+
+    <!-- pocketCode: ui -->
+    <script src="../../Client/pocketCode/scripts/ui/accordion.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/button.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/canvas.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/dialog.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/input.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/menu.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerStartScreen.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/playerToolbar.js"></script>
+    <script src="../../Client/pocketCode/scripts/ui/scrollContainer.js"></script>
+
+    <!-- pocketCode: view -->
+    <script src="../../Client/pocketCode/scripts/view/pageView.js"></script>
+    <script src="../../Client/pocketCode/scripts/view/playerViewportView.js"></script>
+    <script src="../../Client/pocketCode/scripts/view/playerPageView.js"></script>
+
+    <!-- scripts -->
+    <script src="../../Client/player/scripts/playerApplication.js" data-cover></script>
+    <script src="../../Client/player/scripts/ui/playerMenu.js" data-cover></script>
+</head>
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <!-- core -->
+    <script src="test_pocketCodePlayer.js"></script>
+
+    <!-- scripts -->
+    <script src="scripts/test_playerApplication.js"></script>
+    <script src="scripts/ui/test_playerMenu.js"></script>
+</body>
+</html>

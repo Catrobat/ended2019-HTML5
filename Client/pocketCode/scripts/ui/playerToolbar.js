@@ -71,6 +71,7 @@ PocketCode.Ui.merge({
             //buttons
             // i18n: btnBack
             this._backButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'btnBack');
+            this._backButton.addClassName('pc-rtl');
             this._backButtonDisabled = false;
             this._backButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.BACK }); }, this));
             this._menuContainerAlign.appendChild(this._backButton);
@@ -80,6 +81,7 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._restartButton);
             // i18n: btnStart
             this._startButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.PLAY, 'btnStart', true);
+            this._startButton.addClassName('pc-rtl');
             this._startButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.START }); }, this));
             this._menuContainerAlign.appendChild(this._startButton);
             // i18n: btnPause
@@ -93,8 +95,29 @@ PocketCode.Ui.merge({
             this._menuContainerAlign.appendChild(this._screenshotButton);
             // i18n: btnAxes
             this._axesButton = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.AXES, 'btnAxes');
+            this._axesButtonDisabled = true;
             this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
             this._menuContainerAlign.appendChild(this._axesButton);
+
+            //// i18n: menuButton
+            //PocketCode.Menu = new PocketCode.Ui.Menu();
+            //var button1 = new PocketCode.Ui.MenuItem("example");
+            //console.log( PocketCode.I18nProvider);
+
+            //PocketCode.Menu.appendChild( button1 );
+            ////this.MenuDisabled = false;
+            ////this._axesButton.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this.onButtonClicked.dispatchEvent({ command: PocketCode.Ui.PlayerBtnCommand.AXES }); }, this));
+            //// this._menuContainerAlign.appendChild(this.Menu);
+            //console.log( this );
+            //var asd = PocketCode.Web.PlayerInterface._webOverlay;
+            ////asd.Menu = this.Menu;
+            //console.log( asd.muteButton.parentNode );
+            //var p = document.createElement("p");
+            //asd.muteButton.parentNode.appendChild( PocketCode.Menu._dom );
+            //console.log( asd );
+
+            //console.log( asd );
+            //console.log( "---" );
 
             this.executionState = PocketCode.ExecutionState.STOPPED;
             this._onResize.addEventListener(new SmartJs.Event.EventListener(this._resizeHandler, this)); //TODO: check if handling is necesary twice
@@ -110,7 +133,7 @@ PocketCode.Ui.merge({
                 set: function (value) {
                     switch (value) {
                         case PocketCode.ExecutionState.ERROR:
-                            //TODO: disable all buttons? only play + pause?
+                            this.disabled = true;
                             break;
                         case PocketCode.ExecutionState.RUNNING:
                             this._startButton.hide();
@@ -158,7 +181,11 @@ PocketCode.Ui.merge({
                         this._screenshotButton.disabled = true;
                     else
                         this._screenshotButton.disabled = value;
-                    this._axesButton.disabled = value;
+
+                    if (this._axesButtonDisabled)
+                        this._axesButton.disabled = true;
+                    else
+                        this._axesButton.disabled = value;
                 },
             },
             axesButtonChecked: {
@@ -166,6 +193,14 @@ PocketCode.Ui.merge({
                     if (typeof value !== 'boolean')
                         throw new Error('invalid argument: expected type: boolean');
                     this._axesButton.checked = value;
+                },
+            },
+            axesButtonDisabled: {
+                set: function (value) {
+                    if (typeof value !== 'boolean')
+                        throw new Error('invalid argument: expected type: boolean');
+                    this._axesButtonDisabled = value;
+                    this._axesButton.disabled = value;
                 },
             },
             backButtonDisabled: {

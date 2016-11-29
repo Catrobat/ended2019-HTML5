@@ -7,7 +7,7 @@
 
 /**
  * @fileOverview bricksCore: This file covers the different types of a brick. BrickContainer, BaseBrick, ThreadedBrick,
- * SingleContainerBrick, RootContainerBrick, LoopBrick, UnsupportedBrick
+ * SingleContainerBrick, ScriptBlock, LoopBrick, UnsupportedBrick
  *
  * @author catrobat HTML5 team
  *
@@ -128,11 +128,13 @@ PocketCode.Model.merge({
          * Initializes device and sprite with the given parameters
          * @param device
          * @param sprite
+         * @param propObject
          * @constructor
          */
-        function BaseBrick(device, sprite) {
+        function BaseBrick(device, sprite, propObject) {
             this._device = device;
             this._sprite = sprite;
+            this._commentedOut = propObject.commentedOut;
         }
 
         BaseBrick.prototype.merge({
@@ -142,14 +144,17 @@ PocketCode.Model.merge({
              * @param {String} threadId
              * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
              * SmartJs.Event.EventListener
-             *
              */
             execute: function (onExecutedListener, threadId) {
+                if (this._disposed)
+                    return;
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                     throw new Error('BaseBrick: missing or invalid arguments on execute()');
 
                 this._onExecutedListener = onExecutedListener;
                 this._threadId = threadId;
+                if (this._commentedOut === true)
+                    return this._return(false);
                 this._execute();
             },
             /* method to override in derived classes */
@@ -194,15 +199,15 @@ PocketCode.Model.ThreadedBrick = (function () {
      * @param sprite
      * @constructor
      */
-    function ThreadedBrick(device, sprite) {
-        PocketCode.Model.BaseBrick.call(this, device, sprite);
+    function ThreadedBrick(device, sprite, propObject) {
+        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
         this._pendingOps = {};
     }
 
     ThreadedBrick.prototype.merge({
         /**
          * Calls "execute(id)" with a uniquely generated thread Id and adds an entry to pendingOps list. Parameters can
-         * be null e.g. ProgramStartBrick, WhenActionBrick, BroadcastReceiveBrick if not triggered by BroadcastWaitBrick
+         * be null e.g. WhenProgramStartBrick, WhenActionBrick, WhenBroadcastReceiveBrick if not triggered by BroadcastWaitBrick
          * @param {SmartJs.Event.EventListener} onExecutedListener: given executedListener
          * @param {String} threadId: given thread ID
          * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
@@ -216,6 +221,9 @@ PocketCode.Model.ThreadedBrick = (function () {
 
             var id = SmartJs.getNewId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
+            if (this._commentedOut === true)
+                return this._return(id, false);
+
             this._execute(id);
         },
         /* method to override in derived classes */
@@ -262,8 +270,8 @@ PocketCode.Model.SingleContainerBrick = (function () {
      * @param sprite
      * @constructor
      */
-    function SingleContainerBrick(device, sprite) {
-        PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+    function SingleContainerBrick(device, sprite, propObject) {
+        PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
         this._bricks = new PocketCode.Model.BrickContainer([]);
     }
@@ -298,8 +306,6 @@ PocketCode.Model.SingleContainerBrick = (function () {
          * @private
          */
         _execute: function (id) {
-            if (this._disposed)
-                return;
             this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id);
         },
         /**
@@ -327,37 +333,45 @@ PocketCode.Model.SingleContainerBrick = (function () {
 })();
 
 /**
- * @class RootContainerBrick
+ * @class ScriptBlock
  * representing a script block
  */
-PocketCode.Model.RootContainerBrick = (function () {
-    RootContainerBrick.extends(PocketCode.Model.SingleContainerBrick, false);
+PocketCode.Model.ScriptBlock = (function () {
+    ScriptBlock.extends(PocketCode.Model.SingleContainerBrick, false);
     /**
      * Initializes onExecuted event
      * @param device
      * @param sprite
      * @constructor
      */
-    function RootContainerBrick(device, sprite) {
-        PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
+    function ScriptBlock(device, sprite, propObject) {
+        PocketCode.Model.SingleContainerBrick.call(this, device, sprite, propObject);
 
+        if (propObject) {   //can be null
+            this._id = propObject.id;
+            //this._x = propObject.x;   //removed because currently not in use (commented out in in project JSON as well)
+            //this._y = propObject.y;
+        }
         this._executionState = PocketCode.ExecutionState.STOPPED;
         this._onExecuted = new SmartJs.Event.Event(this);
     }
 
     //properties
-    Object.defineProperties(RootContainerBrick.prototype, {
+    Object.defineProperties(ScriptBlock.prototype, {
+        id: {
+            get: function () {
+                return this._id;
+            },
+        },
         executionState: {
             get: function () {
                 return this._executionState;
             },
-            //enumerable: false,
-            //configurable: true,
         },
     });
 
     //events
-    Object.defineProperties(RootContainerBrick.prototype, {
+    Object.defineProperties(ScriptBlock.prototype, {
         /**
          * returns onExecuted
          * @event
@@ -371,9 +385,9 @@ PocketCode.Model.RootContainerBrick = (function () {
     });
 
     //methods
-    RootContainerBrick.prototype.merge({
+    ScriptBlock.prototype.merge({
         /**
-         * execute method is overridden, as we need a specific return event handling to determine "program executed" 
+         * execute method is overridden, as we need a specific return event handling to determine "program executed"
          */
         execute: function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
@@ -385,20 +399,20 @@ PocketCode.Model.RootContainerBrick = (function () {
         /**
          * calls "pause()" on bricks
          */
-        pause: function () {
+        /*pause: function () {
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
             //if (this._executionState === PocketCode.ExecutionState.RUNNING)
             //    this._executionState = PocketCode.ExecutionState.PAUSED;
             //^^ while pausing the bricks we do not updae the current exection state
-        },
+        },*/
         /**
          * calls "resume()" on bricks
          */
-        resume: function () {
+       /* resume: function () {
             //if (this._executionState === PocketCode.ExecutionState.PAUSED)
             //    this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
-        },
+        },*/
         /**
          * calls "stop()" on bricks and threadedBrick
          */
@@ -408,7 +422,7 @@ PocketCode.Model.RootContainerBrick = (function () {
         },
     });
 
-    return RootContainerBrick;
+    return ScriptBlock;
 })();
 
 /**
@@ -422,8 +436,8 @@ PocketCode.Model.LoopBrick = (function () {
      * @param sprite
      * @constructor
      */
-    function LoopBrick(device, sprite, minLoopCycleTime) {
-        PocketCode.Model.SingleContainerBrick.call(this, device, sprite);
+    function LoopBrick(device, sprite, minLoopCycleTime, propObject) {
+        PocketCode.Model.SingleContainerBrick.call(this, device, sprite, propObject);
 
         this._minLoopCycleTime = minLoopCycleTime || 20;
         this._paused = false;
@@ -439,9 +453,11 @@ PocketCode.Model.LoopBrick = (function () {
         execute: function (onExecutedListener, threadId) {
             var id = SmartJs.getNewId();
             this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener, startTime: new Date(), paused: this._paused };
+            if (this._commentedOut === true)
+                return this._return(id);
 
             if (this._bricks && this._loopConditionMet(id)) {
-                if (!this._paused)
+                if (!this._paused && !this._disposed)
                     this._execute(id);
             }
             else
@@ -453,8 +469,6 @@ PocketCode.Model.LoopBrick = (function () {
          * @private
          */
         _execute: function (id) {
-            if (this._disposed)
-                return;
             this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id);
         },
         /**
@@ -509,11 +523,11 @@ PocketCode.Model.LoopBrick = (function () {
                 if (!pos.hasOwnProperty(id))
                     continue;
                 po = pos[id];
-                
+
                 if (!po.paused) //long running loops may not have been paused
                     continue;
                 po.paused = false;
-                if (/*this._bricks &&*/ this._loopConditionMet(id))
+                if (/*this._bricks &&*/ this._loopConditionMet(id) && !this._disposed)
                     this._execute(id);
                 else
                     this._return(id);
@@ -535,7 +549,7 @@ PocketCode.Model.UnsupportedBrick = (function () {
     UnsupportedBrick.extends(PocketCode.Model.BaseBrick, false);
 
     function UnsupportedBrick(device, sprite, propObject) {
-        PocketCode.Model.BaseBrick.call(this, device, sprite);
+        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
         this._xml = propObject.xml;
         this._brickType = propObject.brickType;

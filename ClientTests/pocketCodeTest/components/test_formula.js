@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/gameEngine.js" />
-/// <reference path="../../../Client/pocketCode/scripts/component/sprite.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 
 /// <reference path="../_resources/testDataFormula.js" />
@@ -11,13 +11,14 @@ QUnit.module("components/formula.js");
 
 QUnit.test("Formula", function (assert) {
 
+    var scene = new PocketCode.Model.Scene();
     var soundManager = new PocketCode.SoundManager([]);
     var device = new PocketCode.Device(soundManager);
 
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     assert.throws(function () { var f = new PocketCode.Formula(undefined, sprite, json); }, Error, "");
     var f = new PocketCode.Formula(device, sprite, json);
@@ -27,16 +28,16 @@ QUnit.test("Formula", function (assert) {
     assert.equal(f.calculate(), 500, "json parsed to method calculate");
 
     assert.equal(json, f.json, "json getter");
-    var uiString = f.uiString;
+    var uiString = f.toString();
     assert.ok(typeof uiString === "string", "uiString getter");
-    try {
-        f.uiString = "asd";
-    }
-    catch (e) { }
-    assert.equal(f.uiString, uiString, "uiString setter");
+    //try {
+    //    f.uiString = "asd";
+    //}
+    //catch (e) { }
+    //assert.equal(f.toString(), uiString, "uiString setter");
+
 
     f.json = json2;
-    assert.equal(f._uiString, undefined, "uiString cleared when json setter called");
 
     assert.equal(json2, f.json, "json setter");
     assert.equal(f.calculate(), 20, "json setter: calculate update");
@@ -75,7 +76,8 @@ QUnit.test("Formula: string encoding", function (assert) {
     var device = new PocketCode.Device(soundManager);
 
     var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, { id: "spriteId", name: "spriteName" });
+    var scene = new PocketCode.Model.Scene();
+    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite, encoding1);
     assert.equal(f.calculate(), "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");
