@@ -1,3 +1,4 @@
+<<<<<<< .mine
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
@@ -118,7 +119,7 @@ PocketCode.Ui.Canvas = (function () {
 
         var ids = this._sceneIds;
         for (var i = 0; i < ids.length; i++) {
-          this._penCanvasEl[ids[i]].width = value;
+          this._penStampCanvasEl[ids[i]].width = value;
         }
 
 
@@ -128,7 +129,7 @@ PocketCode.Ui.Canvas = (function () {
         this._upperCanvasEl.width = value;
 
         for (var i = 0; i < this._sceneIds.length; i++) {
-          this._penCanvasEl[this._sceneIds[i]].width = value;
+          this._penStampCanvasEl[this._sceneIds[i]].width = value;
           //    this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
         }
         this._helperCanvasEl.width = value;
@@ -150,7 +151,7 @@ PocketCode.Ui.Canvas = (function () {
 
         var ids = this._sceneIds;
         for (var i = 0; i < ids.length; i++) {
-          this._penCanvasEl[ids[i]].height = value;
+          this._penStampCanvasEl[ids[i]].height = value;
         }
 
         this._spritesCanvasEl.height = value;
@@ -161,7 +162,7 @@ PocketCode.Ui.Canvas = (function () {
         this._upperCanvasEl.height = value;
 
         for (var i = 0; i < this._sceneIds.length; i++) {
-          this._penCanvasEl[this._sceneIds[i]].height = value;
+          this._penStampCanvasEl[this._sceneIds[i]].height = value;
           //this._currentDrawEl = this._penCanvasEl[this._sceneIds[i]];
           //console.log("........");
         }
@@ -400,7 +401,6 @@ PocketCode.Ui.Canvas = (function () {
       ctx.translate(this._translation.x, this._translation.y);
       ctx.scale(this._scalingX, this._scalingY);
 
-
       var ro = this._renderingSprite;
 
       if (ro.length > 0) {
@@ -417,30 +417,11 @@ PocketCode.Ui.Canvas = (function () {
 
 
         if (ro[i]._penDown === true) {
-          var x = ro[i].x;
-          x -= ro[i].offsetX * ro[i]._scaling;
-          var y = ro[i].y;
-          y -= ro[i].offsetY * ro[i]._scaling;
-          y *= -1;
-          var currentPenStampCtx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
-          currentPenStampCtx.save();
-          currentPenStampCtx.translate(this._translation.x, this._translation.y);
-          currentPenStampCtx.scale(this._scalingX, this._scalingY);
-          currentPenStampCtx.beginPath();
-          currentPenStampCtx.moveTo(ro[i].penXPosition, ro[i].penYPosition);
-          currentPenStampCtx.lineTo(x, y);
-          ro[i].penXPosition = x;
-          ro[i].penYPosition = y;
-          currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColorRed + ", " + ro[i]._penColorGreen + ", " + ro[i]._penColorBlue + " )";
-          currentPenStampCtx.lineWidth = ro[i]._penSize;
-          currentPenStampCtx.stroke();
-          currentPenStampCtx.closePath();
-          currentPenStampCtx.restore();
+          this.drawPen(ro[i]._id);
         }
       }
 
       //draw
-
       ro = this._renderingTexts;
       for (var i = 0, l = ro.length; i < l; i++) {
         ro[i].draw(ctx);
@@ -494,6 +475,36 @@ PocketCode.Ui.Canvas = (function () {
         }
       }
     },
+
+    drawPen: function (renderingSpriteId) {
+
+      //this._currentDrawCtx.save();
+      var ro = this._renderingSprite;
+      for (var i = 0, l = ro.length; i < l; i++) {
+        if (ro[i].id === renderingSpriteId) {
+          var x = ro[i].x;
+          x -= ro[i].offsetX * ro[i]._scaling;
+          var y = ro[i].y;
+          y -= ro[i].offsetY * ro[i]._scaling;
+          y *= -1;
+          var currentPenStampCtx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
+          currentPenStampCtx.save();
+          currentPenStampCtx.translate(this._translation.x, this._translation.y);
+          currentPenStampCtx.scale(this._scalingX, this._scalingY);
+          currentPenStampCtx.beginPath();
+          currentPenStampCtx.moveTo(ro[i].penXPosition, ro[i].penYPosition);
+          currentPenStampCtx.lineTo(x, y);
+          ro[i].penXPosition = x;
+          ro[i].penYPosition = y;
+          currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColorRed + ", " + ro[i]._penColorGreen + ", " + ro[i]._penColorBlue + " )";
+          currentPenStampCtx.lineWidth = ro[i]._penSize;
+          currentPenStampCtx.stroke();
+          currentPenStampCtx.closePath();
+          currentPenStampCtx.restore();
+        }
+      }
+    },
+
     clearPenCanvas: function () {
       var ctx = this._currentPenCtx;
       ctx.clearRect(0, 0, this.width, this.height);
@@ -542,4 +553,3 @@ PocketCode.Ui.Canvas = (function () {
 
   return Canvas;
 })();
-
