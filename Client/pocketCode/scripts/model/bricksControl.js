@@ -352,6 +352,9 @@ PocketCode.Model.merge({
         function WhenStartAsCloneBrick(device, sprite, propObject, startEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
+            //this._onCloneStart = startEvent;
+            //
+            //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         WhenStartAsCloneBrick.prototype._execute = function () {
@@ -364,13 +367,15 @@ PocketCode.Model.merge({
     CloneBrick: (function () {
         CloneBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function CloneBrick(device, sprite, propObject) {
+        function CloneBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._cloneId = propObject.id;
+
+            this._scene = scene;
+            this._spriteId = propObject.spriteId;
         }
 
         CloneBrick.prototype._execute = function () {
-            //
+            this._return(this._scene.cloneSprite(this._spriteId));
         };
 
         return CloneBrick;
@@ -379,13 +384,17 @@ PocketCode.Model.merge({
     DeleteCloneBrick: (function () {
         DeleteCloneBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function DeleteCloneBrick(device, sprite, propObject) {
+        function DeleteCloneBrick(device, sprite, scene,  propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            //this._cloneId = sprite.id;
+
+            this._scene = scene;
+
         }
 
         DeleteCloneBrick.prototype._execute = function () {
-            //
+            if (!this._sprite.isClone)
+                this._return(false);
+            this._return(this._scene.deleteClone(this._sprite.id));
         };
 
         return DeleteCloneBrick;

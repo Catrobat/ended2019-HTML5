@@ -38,6 +38,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._gameEngine = gameEngine;
         this._scene = scene;
+        this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
 
@@ -94,11 +95,6 @@ PocketCode.Model.Sprite = (function () {
         //variables: a sprite may have no (local) variables
         this._variables = propObject.variables || [];
         this._lists = propObject.lists || [];
-
-        //scripts
-        if (propObject.scripts) {
-            this.scripts = propObject.scripts;
-        }
     }
 
     //properties
@@ -1282,13 +1278,98 @@ PocketCode.Model.Sprite = (function () {
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
 
-        clone: function (sprite) {
-            //var clone =
+        clone: function (device, soundManager, minLoopCycleTime, broadcastMgr) {
+            if (!this._spriteFactory)
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager, undefined, minLoopCycleTime);
+
+            var definition = {
+                _positionX: this._positionX,
+                _positionY: this._positionY,
+                _rotationStyle: this._rotationStyle,
+                _direction: this._direction,
+
+                ////looks
+                _lookOffsetX: this._lookOffsetX,
+                _lookOffsetY: this._lookOffsetY,
+                _currentLook: this._currentLook,
+                _scaling: this._scaling,
+                _visible: this._visible,
+                _transparency: this._transparency,
+                _brightness: this._brightness,
+                _colorEffect: this._colorEffect,
+
+                //pen
+                _penDown: this._penDown,
+                _penSize: this._penSize,
+                _penColor: this._penColor, //todo?
+                _penXPosition: this._penXPosition,
+                _penYPosition: this._penYPosition,
+            };
+            var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
+
         },
     });
 
     return Sprite;
 })();
+
+
+PocketCode.Model.merge({
+    SpriteClone: (function () {
+        SpriteClone.extends(PocketCode.Model.Sprite, false);
+
+        function SpriteClone(gameEngine, scene, jsonSprite, definition) {
+
+            this._id = SmartJs.getNewId();
+            this._json = jsonSprite;
+
+            this._gameEngine = gameEngine;
+            this._scene = scene;
+            this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
+            this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
+
+            this._looks = [];
+            this._sounds = [];
+            this._scripts = [];
+
+            //looks: a sprite doesn't always have a look
+            if (jsonSprite.looks != undefined)
+                this.looks = jsonSprite.looks;
+
+            this.initLooks();
+
+            //sounds
+            if (jsonSprite.sounds) {
+                this.sounds = jsonSprite.sounds;
+            }
+
+            //variables: a sprite may have no (local) variables
+            this._variables = jsonSprite.variables || [];
+            this._lists = jsonSprite.lists || [];
+
+            this.merge(definition);
+
+            this._onCloneStart = new SmartJs.Event.Event(this);
+        }
+
+        Object.defineProperties(SpriteClone.prototype, {
+            isClone: {
+                value: true,
+                //writable: false,
+            },
+        });
+
+        Object.defineProperties(SpriteClone.prototype, {
+            onCloneStart: {
+                get: function () {
+                    return this._onCloneStart;
+                }
+            },
+        });
+
+    })(),
+});
+
 
 PocketCode.Model.merge({
     BackgroundSprite: (function () {

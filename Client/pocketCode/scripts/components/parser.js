@@ -61,6 +61,24 @@ PocketCode.merge({
                 sprite.scripts = scripts;
                 return sprite;
             },
+            createClone: function(currentScene, broadcastMgr, jsonSprite, definition) {
+                if (!(currentScene instanceof PocketCode.Model.Scene))
+                    throw new Error('invalid argument: current scene');
+                if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
+                    throw new Error('invalid argument: broadcast manager');
+                if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
+                    throw new Error('invalid argument: expected type: object');
+
+                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, 0, this._minLoopCycleTime);
+                var clone = new PocketCode.Model.SpriteClone(this._project, currentScene, jsonSprite, definition);
+                var scripts = [];
+                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
+                    scripts.push(brickFactory.create(clone, jsonSprite.scripts[i]));
+                }
+                brickFactory.dispose();
+                clone.scripts = scripts;
+                return clone;
+            },
             dispose: function () {
                 this._project = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);

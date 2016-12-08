@@ -33,6 +33,8 @@ PocketCode.Model.Scene = (function () {
         this._sprites = [];
         this._originalSpriteOrder = [];
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms //todo param?
+        this._device = device;
+        this._soundManager = soundManager;
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
@@ -424,14 +426,27 @@ PocketCode.Model.Scene = (function () {
         },
 
         cloneSprite: function (id) {
+            if (this._background.id == id)
+                return false;
+
             var sprite = this.getSpriteById(id),
-                clone = sprite.clone();
+                layer = this.getSpriteLayer(sprite),
+                clone = sprite.clone(this._device, this._soundManager, this._minLoopCycleTime, this._broadcastMgr);
 
-            //todo: add to spritecollection and rendering sprite
-
+            //add to sprite collection (layer)
+            //this.onCloneCreated.dispatch({id: clone.id, renderingImage: ?clone?, layer: layer}
+            return true;
         },
 
-        });
+        deleteClone: function(cloneId) {
+            var clone = this.getSpriteById(cloneId);
+            //dispose clone
+            //remove from list
+            //notify UI: neues Event onCloneDeleted (siehe unten)
+        }
+
+
+    });
 
     return Scene;
 })();

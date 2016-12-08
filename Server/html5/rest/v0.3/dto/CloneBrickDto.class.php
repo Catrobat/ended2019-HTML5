@@ -1,8 +1,12 @@
 <?php
 
-class CloneBrickDto extends BaseBrickDto {
+class CloneBrickDto extends BaseBrickDto {  //TODO: Dino
 
-    public function __construct($commentedOut = false) {
+    public $spriteId;
+
+    public function __construct($spriteId, $commentedOut = false) {
         parent::__construct("Clone", $commentedOut);
+
+        $this->spriteId = $spriteId;
     }
 }
