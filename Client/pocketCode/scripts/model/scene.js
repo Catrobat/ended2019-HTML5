@@ -198,12 +198,9 @@ PocketCode.Model.Scene = (function () {
             this._onStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
             if (!this._background)
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
-          console.log( !this._background);
-          console.log("run through");
             return true;
         },
         pause: function () {
-            console.log( this._executionState  );
             if (this._executionState !== PocketCode.ExecutionState.RUNNING)
                 return false;
 
@@ -220,14 +217,14 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         resumeOrStart: function () {
-            console.log("state: " + this._executionState);
             if (this._executionState !== PocketCode.ExecutionState.PAUSED) {
-                console.log("first start");
 
                 this._gameEngine.changeScene( this._id );
 
-                return true;
+              return true;
             }
+
+
 
             //todo resume event?
 
@@ -241,6 +238,9 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].resumeScripts();
             }
             this._executionState = PocketCode.ExecutionState.RUNNING;
+
+
+          this._gameEngine.changeScene( this._id );
             return true;
         },
         stop: function () {

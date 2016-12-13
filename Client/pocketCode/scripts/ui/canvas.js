@@ -20,8 +20,8 @@ PocketCode.Ui.Canvas = (function () {
     this._scalingX = 1.0;
     this._scalingY = 1.0;
     this._sceneIds = 0; //TODO: remove
-    this._sceneDrawCanvas = {}; //register here with { id: { elem: ?, ctx: ? } } on first use
-    this.currentSceneId = undefined;
+    this._penStampCache = {}; //register here with { id: { elem: ?, ctx: ? } } on first use
+    this._currentSceneCache = undefined;
 
 
     //handling click/touch/multi-touch
@@ -212,19 +212,25 @@ PocketCode.Ui.Canvas = (function () {
     },
     initScene: function (id, screenSize) { //TODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
 
-      if (this._sceneDrawCanvas[id])
+      if (this._penStampCache[id]) {
+        this._currentSceneCache = this._penStampCache[id];
         return;
+      }
 
-        var penStampCanvasEl = document.createElement('canvas');
-      penStampCanvasEl.height = screenSize.height;
-      penStampCanvasEl.width = screenSize.width;
-      var penStampCanvasCtx = this._penStampCanvasEl.getContext('2d');
+      var penStampCacheCanvasEl = document.createElement('canvas');
+      penStampCacheCanvasEl.height = Math.round( screenSize.height );
+      penStampCacheCanvasEl.width = Math.round( screenSize.width );
 
-      this._sceneDrawCanvas[id] = {
-        element: penStampCanvasEl,
-        ctx: penStampCanvasCtx
+
+      var penStampCacheCanvasCtx = penStampCacheCanvasEl.getContext('2d');
+      penStampCacheCanvasCtx.translate( Math.round( screenSize.width * 0.5 ), Math.round( screenSize.height * 0.5 ) )
+
+
+      this._penStampCache[id] = {
+        element: penStampCacheCanvasEl,
+        ctx: penStampCacheCanvasCtx
       };
-      this.currentSceneId = id;
+      this._currentSceneCache = this._penStampCache[id];
     },
     clear: function () {
       this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
@@ -234,8 +240,8 @@ PocketCode.Ui.Canvas = (function () {
       this._backgroundCanvasCtx.clearRect(0, 0, this.width, this.height);
     },
     clearPenStampCache: function () {
-      for (var c in this._sceneDrawCanvas) {
-        var c = this._sceneDrawCanvas[c];
+      for (var c in this._penStampCache) {
+        var c = this._penStampCache[c];
         c.ctx.clearRect(0, 0, c.element.width, c.element.height);
       }
     },
@@ -258,10 +264,13 @@ PocketCode.Ui.Canvas = (function () {
     },
     _touchStartHandler: function (e) {
 
-      var cur_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
-      //var data = cur_ctx.toDataURL('image/png');
-      //console.log(data);
-      //console.log(this._penStampCanvasEl);
+      /*
+      var asd = this._currentSceneCache.element;
+      console.log(asd);
+      var dataURL = asd.toDataURL();
+      console.log(dataURL);
+      console.log(asd.toDataUrl);
+      */
 
       if (e.cancelable)
         e.preventDefault();
@@ -409,97 +418,79 @@ PocketCode.Ui.Canvas = (function () {
       for (var i = 1, l = ro.length; i < l; i++) {
         ro[i].draw(ctx);
 
-        if (ro[i].stamp === true) {
+        /*if (ro[i].stamp === true) {
           this.drawStamp(ro[i]._id);
           ro[i].stamp = false;
-        }
+        }*/
 
 
-        if (ro[i]._penDown === true) {
-          this.drawPen(ro[i]._id);
-        }
+        //if (ro[i]._penDown === true) {
+        //  this.drawPen(ro[i]._id);
+        //}
       }
 
       //draw
       ro = this._renderingTexts;
       for (var i = 0, l = ro.length; i < l; i++) {
         ro[i].draw(ctx);
-        if (ro[i].stamp === true) {
-          this.drawStamp(ro[i]._id);
-          ro[i].stamp = false;
-        }
       }
 
+
+      if( this._currentSceneCache )
+        this.drawPenStampCacheCanvas();
 
       background_ctx.restore();
       ctx.restore();
 
-      if (this.init_done == 1) {
-        //this._penStampCanvasCtx.clearRect(0, 0, this.width, this.height);
+    },
 
-        //console.log(this._sceneDrawCanvas);
-        console.log(this.currentSceneId);
+    drawPenStampCacheCanvas: function() {
 
-        var penStampCanvas_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
+      var ctx = this._penStampCanvasCtx;
+      var el = this._penStampCanvasEl;
+      var cache_element = this._currentSceneCache.element;
 
-        /*
-         penStampCanvas_ctx.clearRect(0, 0, this.width, this.height);
+      var destWidth = el.width / this._scalingX, destHeight = el.height / this._scalingY;
+      var sourceWidth = cache_element.width, sourceHeight = cache_element.height;
 
-         penStampCanvas_ctx.save();
-         penStampCanvas_ctx.translate(this._translation.x, this._translation.y);
-         penStampCanvas_ctx.scale(this._scalingX, this._scalingY);
-         penStampCanvas_ctx.restore();
-         */
-        //penStampCanvas_ctx.save();
-        //penStampCanvas_ctx.save();
-        //penStampCanvas_ctx.translate(this._translation.x, this._translation.y);
-        //penStampCanvas_ctx.scale(this._scalingX, this._scalingY);
-        //penStampCanvas_ctx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
-        //penStampCanvas_ctx.restore();
-      }
+      ctx.save();
+      ctx.translate( (destWidth-sourceWidth)/2, (destHeight-sourceHeight)/2 );
+      ctx.scale(this._scalingX, this._scalingY);
+
+      ctx.drawImage( cache_element, 0, 0, sourceWidth, sourceHeight );
+      ctx.restore();
     },
     drawStamp: function (renderingSpriteId) {
-
-      //this._currentDrawCtx.save();
-
       var ro = this._renderingSprite;
       for (var i = 0, l = ro.length; i < l; i++) {
         if (ro[i].id === renderingSpriteId) {
-          this._sceneDrawCanvas[this.currentSceneId]["ctx"].save();
-          this._sceneDrawCanvas[this.currentSceneId]["ctx"].translate(this._translation.x, this._translation.y);
-          this._sceneDrawCanvas[this.currentSceneId]["ctx"].scale(this._scalingX, this._scalingY);
-          ro[i].draw(this._sceneDrawCanvas[this.currentSceneId]["ctx"]);
-          this._sceneDrawCanvas[this.currentSceneId]["ctx"].restore();
+          ro[i].draw(this._currentSceneCache.ctx);
           break;
         }
       }
     },
 
-    drawPen: function (renderingSpriteId) {
-      console.log("drawPen");
-      //this._currentDrawCtx.save();
+    drawPen: function (renderingSpriteId, to_x, to_y ) {
       var ro = this._renderingSprite;
+
       for (var i = 0, l = ro.length; i < l; i++) {
         if (ro[i].id === renderingSpriteId) {
+          if( !ro[i].penDown )
+            return;
           var x = ro[i].x;
           x -= ro[i].offsetX * ro[i]._scaling;
+          to_x -= ro[i].offsetX * ro[i]._scaling;
           var y = ro[i].y;
           y -= ro[i].offsetY * ro[i]._scaling;
-          y *= -1;
-          var currentPenStampCtx = this._sceneDrawCanvas[this.currentSceneId]["ctx"];
-          currentPenStampCtx.save();
-          currentPenStampCtx.translate(this._translation.x, this._translation.y);
-          currentPenStampCtx.scale(this._scalingX, this._scalingY);
+          to_y -= ro[i].offsetY * ro[i]._scaling;
+          var currentPenStampCtx = this._currentSceneCache.ctx;
           currentPenStampCtx.beginPath();
-          currentPenStampCtx.moveTo(ro[i].penXPosition, ro[i].penYPosition);
-          currentPenStampCtx.lineTo(x, y);
-          ro[i].penXPosition = x;
-          ro[i].penYPosition = y;
-          currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColor.r + ", " + ro[i]._penColor.g + ", " + ro[i]._penColor.b + " )";
+          currentPenStampCtx.moveTo(x, y  * -1.0 );
+          currentPenStampCtx.lineTo(to_x || x, to_y * -1.0 || y * -1.0);
+          currentPenStampCtx.strokeStyle = "rgb( " + ro[i].penColor.r + ", " + ro[i].penColor.g + ", " + ro[i].penColor.b + " )";
           currentPenStampCtx.lineWidth = ro[i]._penSize;
           currentPenStampCtx.stroke();
           currentPenStampCtx.closePath();
-          currentPenStampCtx.restore();
         }
       }
     },

@@ -67,11 +67,6 @@ PocketCode.Model.Sprite = (function () {
         this._penDown = false;
         this._penSize = 4;
         this._penColor= { r: 0, g: 0, b: 255};
-        //this._penColorBlue = 255.0;
-        //this._penColorRed = 0.0;
-        //this._penColorGreen = 0.0;
-        this._penXPosition = 0;
-        this._penYPosition = 0;
 
         this._stamp = false;
 
@@ -140,9 +135,6 @@ PocketCode.Model.Sprite = (function () {
                     penDown: this._penDown,
                     penSize: this._penSize,
                     prnColor: this._penColor,
-                    //penColorBlue: this._penColorBlue,
-                    //penColorRed: this._penColorRed,
-                    //penColorGreen: this._penColorGreen,
                     penXPosition: this._penXPosition,
                     penYPosition: this._penYPosition,
                     stamp: this._stamp,
@@ -333,16 +325,6 @@ PocketCode.Model.Sprite = (function () {
             this._colorEffect = 0.0;
             this._recalculateLookOffsets();
             this._penDown = false;
-            console.log(this._penXPosition);
-            this._penXPosition = 0.0;
-            console.log(this._penYPosition);
-            this._penYPosition = 0.0;
-            console.log(" ohne _");
-            console.log(this.penXPosition);
-            this.penXPosition = 0.0;
-            console.log(this.penYPosition);
-            this.penYPosition = 0.0;
-            console.log("Reinit Sprites");
 
             //variables
             this._resetVariables();
@@ -1239,7 +1221,6 @@ PocketCode.Model.Sprite = (function () {
         },
         penSize: function(penSize) {
 
-            console.log("pensize");
 
             if(this._penSize == penSize)
                 return false;
@@ -1248,7 +1229,6 @@ PocketCode.Model.Sprite = (function () {
         },
         penColor: function(blue, red, green) {
 
-            console.log("pencolor");
 
             if(this._penColor.b == blue && this._penColor.r == red && this._penColor.g == green)
                 return false;
