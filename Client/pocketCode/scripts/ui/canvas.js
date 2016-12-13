@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
@@ -404,7 +404,7 @@ PocketCode.Ui.Canvas = (function () {
 
       if (ro.length > 0) {
         ro[0].draw(background_ctx);
-        document.body.appendChild(ro[0]._cacheCanvas);
+        //document.body.appendChild(ro[0]._cacheCanvas);
       }
       for (var i = 1, l = ro.length; i < l; i++) {
         ro[i].draw(ctx);
@@ -476,7 +476,7 @@ PocketCode.Ui.Canvas = (function () {
     },
 
     drawPen: function (renderingSpriteId) {
-
+      console.log("drawPen");
       //this._currentDrawCtx.save();
       var ro = this._renderingSprite;
       for (var i = 0, l = ro.length; i < l; i++) {
@@ -495,7 +495,7 @@ PocketCode.Ui.Canvas = (function () {
           currentPenStampCtx.lineTo(x, y);
           ro[i].penXPosition = x;
           ro[i].penYPosition = y;
-          currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColorRed + ", " + ro[i]._penColorGreen + ", " + ro[i]._penColorBlue + " )";
+          currentPenStampCtx.strokeStyle = "rgb( " + ro[i]._penColor.r + ", " + ro[i]._penColor.g + ", " + ro[i]._penColor.b + " )";
           currentPenStampCtx.lineWidth = ro[i]._penSize;
           currentPenStampCtx.stroke();
           currentPenStampCtx.closePath();

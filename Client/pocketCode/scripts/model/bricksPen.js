@@ -61,15 +61,15 @@ PocketCode.Model.merge({
         function SetPenColorBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._penColorBlue = new PocketCode.Formula(device, sprite, propObject.blue);
-            this._penColorRed = new PocketCode.Formula(device, sprite, propObject.red);
-            this._penColorGreen = new PocketCode.Formula(device, sprite, propObject.green);
+            this._penColor.b = new PocketCode.Formula(device, sprite, propObject.blue);
+            this._penColor.r = new PocketCode.Formula(device, sprite, propObject.red);
+            this._penColor.g = new PocketCode.Formula(device, sprite, propObject.green);
         }
 
         SetPenColorBrick.prototype._execute = function () {
-            var blue = this._penColorBlue.calculate(),
-                red = this._penColorRed.calculate(),
-                green = this._penColorGreen.calculate();
+            var blue = this._penColor.b.calculate(),
+                red = this._penColor.r.calculate(),
+                green = this._penColor.g.calculate();
             if (!isNaN(blue) && !isNaN(red) && !isNaN(green))
                 this._return(this._sprite.penColor(blue, red, green));
             else

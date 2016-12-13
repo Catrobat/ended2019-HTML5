@@ -334,9 +334,9 @@ QUnit.test("RenderingSprite", function (assert) {
         assert.equal(renderingSprite._penDown, false, "penDown: default");
         //renderingSprite.penSize = 4;
         assert.equal(renderingSprite._penSize, 4, "penSize: default");
-        assert.equal(renderingSprite._penColorBlue, 255.0, "penColorBlue: default");
-        assert.equal(renderingSprite._penColorRed, 0.0, "penColorRed: default");
-        assert.equal(renderingSprite._penColorGreen, 0.0, "penColorGreen: default");
+        assert.equal(renderingSprite._penColor.b, 255.0, "penColorBlue: default");
+        assert.equal(renderingSprite._penColor.r, 0.0, "penColorRed: default");
+        assert.equal(renderingSprite._penColor.g, 0.0, "penColorGreen: default");
 
         assert.throws(function () { renderingSprite.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
         renderingSprite.graphicEffects = [];

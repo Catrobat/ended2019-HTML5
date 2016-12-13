@@ -66,9 +66,10 @@ PocketCode.Model.Sprite = (function () {
         //pen
         this._penDown = false;
         this._penSize = 4;
-        this._penColorBlue = 255.0;
-        this._penColorRed = 0.0;
-        this._penColorGreen = 0.0;
+        this._penColor= { r: 0, g: 0, b: 255};
+        //this._penColorBlue = 255.0;
+        //this._penColorRed = 0.0;
+        //this._penColorGreen = 0.0;
         this._penXPosition = 0;
         this._penYPosition = 0;
 
@@ -138,9 +139,10 @@ PocketCode.Model.Sprite = (function () {
                     ],
                     penDown: this._penDown,
                     penSize: this._penSize,
-                    penColorBlue: this._penColorBlue,
-                    penColorRed: this._penColorRed,
-                    penColorGreen: this._penColorGreen,
+                    prnColor: this._penColor,
+                    //penColorBlue: this._penColorBlue,
+                    //penColorRed: this._penColorRed,
+                    //penColorGreen: this._penColorGreen,
                     penXPosition: this._penXPosition,
                     penYPosition: this._penYPosition,
                     stamp: this._stamp,
@@ -330,6 +332,17 @@ PocketCode.Model.Sprite = (function () {
             this._brightness = 100.0;
             this._colorEffect = 0.0;
             this._recalculateLookOffsets();
+            this._penDown = false;
+            console.log(this._penXPosition);
+            this._penXPosition = 0.0;
+            console.log(this._penYPosition);
+            this._penYPosition = 0.0;
+            console.log(" ohne _");
+            console.log(this.penXPosition);
+            this.penXPosition = 0.0;
+            console.log(this.penYPosition);
+            this.penYPosition = 0.0;
+            console.log("Reinit Sprites");
 
             //variables
             this._resetVariables();
@@ -1220,8 +1233,6 @@ PocketCode.Model.Sprite = (function () {
             if(this._penDown == penDown)
                 return false;
 
-            console.log("pendown");
-
             this._penDown = penDown;
             return this._triggerOnChange({penDown:this._penDown});
 
@@ -1239,12 +1250,13 @@ PocketCode.Model.Sprite = (function () {
 
             console.log("pencolor");
 
-            if(this._penColorBlue == blue && this._penColorRed == red && this._penColorGreen == green)
+            if(this._penColor.b == blue && this._penColor.r == red && this._penColor.g == green)
                 return false;
-            this._penColorBlue = blue;
-            this._penColorRed = red;
-            this._penColorGreen = green;
-            return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
+            this._penColor = { r: red, g: green, b: blue };
+            //this._penColorBlue = blue;
+            //this._penColorRed = red;
+            //this._penColorGreen = green;
+            return this._triggerOnChange({ color : this._penColor});
         },
         penStamp: function(){
             this._stamp = true;
