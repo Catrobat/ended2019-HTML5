@@ -179,7 +179,7 @@ PocketCode.Model.merge({
             else
                 this._selected = PocketCode.CameraType.BACK;
 
-            this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
+            //this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         SelectCameraBrick.prototype._execute = function () {
@@ -203,15 +203,17 @@ PocketCode.Model.merge({
 
         function CameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._selected = parseInt(propObject.selected) == 1;
 
-            this._selected = propObject && propObject.selected ? 1 : 0; //{0: off, 1: on}
-            this._device.cameraOn = this._device.cameraOn;   //call on ctr to notify our device this feature is in use without changing the setting
+//{0: off, 1: on}
+             //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype._execute = function () {
-            if (this._selected == 1 && !this._device.cameraOn)
+            this._device.cameraOn = true;
+            if (this._selected  && !this._device.cameraOn)
                 this._device.cameraOn = true;
-            else if (this._selected == 0 && this._device.cameraOn)
+           if (this._selected && this._device.cameraOn)
                 this._device.cameraOn = false;
             else {  //set already
                 this._return(false);

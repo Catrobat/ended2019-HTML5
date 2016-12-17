@@ -22,8 +22,8 @@ PocketCode.Ui.Canvas = (function () {
     this._sceneIds = 0; //TODO: remove
     this._sceneDrawCanvas = {}; //register here with { id: { elem: ?, ctx: ? } } on first use
     this.currentSceneId = undefined;
-
-
+    this._cameraStream = null;
+    this._cameraOn = false;
     //handling click/touch/multi-touch
     this._activeTouchEvents = [];
 
@@ -87,6 +87,32 @@ PocketCode.Ui.Canvas = (function () {
       get: function () {
         return this._upperCanvasCtx;
       },
+    },
+    cameraContext: {
+      get: function () {
+        return this._cameraCanvasCtx;
+      }
+    },
+
+    cameraStream : {
+      set: function(cameraStream){
+        this._cameraStream = cameraStream;
+      },
+      get: function(){
+        return this._cameraStream;
+      }
+    },
+
+    cameraOn: {
+      set: function(cameraOn){
+        this._cameraOn = cameraOn;
+            this.renderCamera();
+            },
+
+
+      get: function(){
+        return this._cameraOn;
+      }
     },
     renderingSprites: {
       set: function (list) {
@@ -458,6 +484,8 @@ PocketCode.Ui.Canvas = (function () {
         //penStampCanvas_ctx.restore();
       }
     },
+
+
     drawStamp: function (renderingSpriteId) {
 
       //this._currentDrawCtx.save();
@@ -537,6 +565,18 @@ PocketCode.Ui.Canvas = (function () {
 
       return data;
     },
+
+      renderCamera: function() {
+
+        console.log(" rendering the freaking cameraaaa");
+          if(this._cameraOn && this._cameraStream){
+              this._cameraCanvasCtx.drawImage(this._cameraStream, 0,0, this._cameraCanvasEl.width, this._cameraCanvasEl.height );
+              setTimeout(this.renderCamera.bind(this), 10);
+          }
+          else {
+
+          }
+      },
     dispose: function () {
       this._removeDomListener(this._upperCanvasEl, 'mousedown', this._touchStartHandler);
       this._removeDomListener(this._upperCanvasEl, 'touchstart', this._touchStartHandler);

@@ -5,7 +5,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 {
     public $id = 0;
     public $baseUrl = "http://localhost/html5/rest/v0.3/projects/";
-    public $rootPath = "/libraryTest/";
+    public $rootPath = "/v0.3/libraryTest/";
     public $cacheDir = "cache/";
     public $xmlDir = "xml-codes/";
     public $projectsDir = "projects_v0.992/";
@@ -59,7 +59,6 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
         // Simple copy for a file
         if (is_file($source)) {
-            print_r('copying ' . $source);
             return copy($source, $dest);
         }
 
@@ -150,8 +149,6 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
 
     private function checkScene($xml_scene, $json)
     {
-        print_r($json->screenHeight);
-        print_r($xml_scene->originalHeight);
         $this->assertTrue(isset($json->sprites), 'json: scene:  sprites are missing');
         $this->assertTrue(isset($json->name), 'json: scene: name is missing');
         $this->assertTrue(isset($json->background), 'json: scene: background is missing');
@@ -254,9 +251,7 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
     {
         if (isset($xml_scripts->script))
             $this->checkBricks($xml_scripts->script->brickList, $json[0]->bricks);
-        print_r($json);
         foreach ($json as $key => $script) {
-            print_r($json);
             $this->assertTrue(isset($script->id), "json: scripts: id is missing");
             $this->assertTrue(isset($script->bricks), "json: scripts: bricks are missing");
             $this->assertTrue(isset($script->type), "json: scripts: type is missing");
@@ -272,7 +267,6 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
     private function checkBricks($xml_bricks, $json)
     {
         foreach ($json as $key => $json_brick) {
-            print_r($json_brick);
             $this->assertTrue(isset($json_brick->type), "json: bricks: type is missing");
             $this->assertTrue(isset($json_brick->commentedOut), "json: bricks: commentedOut is missing");
 
@@ -284,7 +278,6 @@ class ProjectFileParser_v0_992Test extends PHPUnit_Framework_TestCase
     private function checkSprites($xml_sprites, $json)
     {
         for ($i = 0; $i < count($json); $i++) {
-            print_r('current i:' . $i);
             // check existence
             $this->assertTrue(isset($json[$i]->id), "json: id is missing");
             $this->assertTrue(isset($json[$i]->name), "json: name is missing");

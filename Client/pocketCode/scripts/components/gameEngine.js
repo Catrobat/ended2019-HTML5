@@ -73,6 +73,7 @@ PocketCode.GameEngine = (function () {
         this._onProgramExecuted = new SmartJs.Event.Event(this);
         this._onSpriteUiChange = new SmartJs.Event.Event(this); //TODO
         this._onVariableUiChange = new SmartJs.Event.Event(this);
+        this._onCameraUsageChanged = new SmartJs.Event.Event(this);
         //map the base class (global variable host) to our public event
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
     }
@@ -131,6 +132,9 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
         },
+
+
+
         collisionManager: { //TODO: public?
             get: function () {
                 if (!this._currentScene)
@@ -179,6 +183,11 @@ PocketCode.GameEngine = (function () {
         onTouchStartAction: {
             get: function () { return this._onTouchStartAction; },
         },
+        onCameraUsageChanged: {
+            get: function(){
+                return this._onCameraUsageChanged;
+            }
+        },
     });
 
     //methods
@@ -190,6 +199,7 @@ PocketCode.GameEngine = (function () {
             this.loadProject(this._jsonProject);
         },
         loadProject: function (jsonProject) {
+            console.log("LOADING PROJECT");
             if (this._disposing || this._disposed)
                 return;
             if (this._executionState == PocketCode.ExecutionState.PAUSED || this._executionState == PocketCode.ExecutionState.RUNNING)
@@ -241,8 +251,12 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
+            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.Device(this._soundManager);
+            console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
+            this._device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+
+            console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
@@ -339,6 +353,10 @@ PocketCode.GameEngine = (function () {
         _imageStoreLoadHandler: function (e) {
             this._sounds = this._jsonProject.sounds || [];
         },
+        _cameraChangedHandler: function(e) {
+            console.log("CAMERA CHANGED HANDLER");
+            this._onCameraUsageChanged.dispatchEvent(e);
+        },
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
@@ -420,7 +438,7 @@ PocketCode.GameEngine = (function () {
             this._currentScene.resume();
         },
         stopProject: function () {
-            this._soundManager.stopAllSounds();
+            //this._soundManager.stopAllSounds();
             this._currentScene.stop();
         },
         _soundManagerFinishedPlayingHandler: function () {
@@ -443,6 +461,7 @@ PocketCode.GameEngine = (function () {
 
           this._currentScene.start();
         },
+
         getSceneById: function (id) {
             if(!this._scenes[id])
                 throw new Error('no Scene with id ' + id + ' found');

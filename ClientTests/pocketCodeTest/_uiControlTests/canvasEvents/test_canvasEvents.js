@@ -6,6 +6,7 @@ var gameEngine = new PocketCode.GameEngine();
 var scene = new PocketCode.Model.Scene();
 var is = new PocketCode.ImageStore();
 gameEngine._imageStore = is;
+console.log("gameEngine:", gameEngine);
 
 var outputContainer;
 //create canvas

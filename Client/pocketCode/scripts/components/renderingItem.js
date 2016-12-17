@@ -184,7 +184,6 @@ PocketCode.merge({
 
         function RenderingSprite(propObject) {
             PocketCode.RenderingItem.call(this, propObject);
-
             this._width = 0;
             this._height = 0;
 

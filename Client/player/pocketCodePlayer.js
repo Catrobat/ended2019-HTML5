@@ -1142,6 +1142,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerViewportView.js', type: 'js' },
+		{url: 'pocketCode/scripts/components/camera.js', type: 'js'},
 
 		{ url: 'pocketCode/scripts/controller/controllerCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/controller/playerPageController.js', type: 'js' },

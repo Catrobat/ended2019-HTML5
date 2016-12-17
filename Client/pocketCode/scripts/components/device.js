@@ -17,7 +17,18 @@ PocketCode.Device = (function () {
         this._flashOn = false;      //TODO: temp solution until flash supported
         this._cameraType = PocketCode.CameraType.BACK;
         this._cameraOn = false;     //TODO: temp solution until camera supported
-
+        this._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+        this._changeSourceSupported = typeof MediaStreamTrack !== 'undefined' ||
+            typeof MediaStreamTrack.getSources == 'undefined';
+        this._cameraSource = null;
+        this._cameraAccessDenied = false;
+        this._cameraSources =  null;
+        this._cameraStream= document.createElement('video');
+        this._cameraStream.width = 500;
+        this._cameraStream.height = 500;
+        this._cameraStream.style = "display: none;";
+        document.getElementsByTagName('body')[0].appendChild(this._cameraStream);
+        this._error = null;
         this._compass = null;
         this._alpha = null;
         this._beta = null;
@@ -49,7 +60,7 @@ PocketCode.Device = (function () {
             CAMERA: {
                 i18nKey: 'lblDeviceCamera',
                 inUse: false,
-                supported: false,
+                supported: true,
             },
             FLASH: {
                 i18nKey: 'lblDeviceFlash',
@@ -101,7 +112,7 @@ PocketCode.Device = (function () {
             LONGITUDE: 0,
             ALTITUDE: 0,
             ACCURACY: 0,
-        };
+        },
 
         this._touchEvents = {
             active: {},
@@ -349,14 +360,38 @@ PocketCode.Device = (function () {
                 return this._cameraOn;
             },
             set: function (bool) {
+                console.log("turning camera on");
                 if (typeof bool !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
                 this._features.CAMERA.inUse = true;
+
                 if (this._cameraOn == bool)
                     return;
+
+                if(bool){
+                        this._startCamera({ video: true, audio: false});
+                    }
+                    else {
+                   if(window.stream){
+                       window.stream.getVideoTracks().forEach(function (track) {
+                           track.stop();
+                       });
+                   }
+                    this._onCameraUsageChanged.dispatchEvent({ cameraOn: false, cameraStream: this._cameraStream });
+                }
                 this._cameraOn = bool;
-                this._onCameraUsageChanged.dispatchEvent({ cameraOn: bool });
+
+            }
+        },
+
+        cameraStream : {
+            get: function (){
+                return this._cameraStream;
             },
+            set: function (stream){
+                this._cameraStream = stream;
+            }
+
         },
 
         faceDetected: {
@@ -680,6 +715,64 @@ PocketCode.Device = (function () {
 
             SmartJs.Core.EventTarget.prototype.dispose.call(this);    //call super()
         },
+        _changeCameraSource : function(sourceId){
+            if (window.stream) {
+                window.stream.stop();
+            }
+            var constraints = {
+                video: {
+                    optional: [{
+                        sourceId: sourceId
+                    }]
+                },
+                audio:false
+            };
+            this._startCamera(constraints);
+        },
+        _handleCameraError : function(error, errorCallback) {
+            console.log("error:", error);
+            if (error.name === 'ConstraintNotSatisfiedError') {
+                console.log("CONSTRAINTS NOT SATISFIED");
+            } else if (error.name === 'PermissionDeniedError') {
+                this._cameraAccessDenied = true;
+                console.log('Permissions have not been granted to use your camera and ' +
+                    'microphone, you need to allow the page access to your devices in ' +
+                    'order for the demo to work.');
+            }
+            console.log('getUserMedia error: ' + error.name, error);
+
+        },
+        _startCamera : function (constraints) {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+
+           navigator.getUserMedia( {video: true, audio:false}, function(stream){
+                console.log("starting camera");
+                window.stream = stream;
+                this._getCameraSources();
+               this._cameraStream.src = window.URL.createObjectURL(stream);
+               this._cameraStream.play();
+               this._onCameraUsageChanged.dispatchEvent({ cameraOn: true, cameraStream: this._cameraStream });
+
+            }.bind(this), function(error){
+
+            });
+        },
+
+        _getCameraSources : function(sourceInfos){
+            navigator.mediaDevices.enumerateDevices().then(function(sources){
+                var  cameraSources = [];
+                for (var i = 0; i !== sources.length; ++i) {
+                    var sourceInfo = sources[i];
+                    if (sourceInfo.kind === 'videoinput') {
+                        cameraSources.push(sourceInfo);
+                    } else {
+                        console.log('Some other kind of source: ', sourceInfo);
+                    }
+                }
+                this._cameraSources = cameraSources;
+
+            }.bind(this)).catch(this._handleCameraError);
+        }
     });
 
     return Device;

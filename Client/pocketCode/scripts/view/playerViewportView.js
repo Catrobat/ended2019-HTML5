@@ -22,7 +22,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._canvas = new PocketCode.Ui.Canvas();
         this._appendChild(this._canvas);
 
-        //TODO: check if handling is necesary twice
+        //TODO: check if handling is necessary twice
         //this.onResize.addEventListener(new SmartJs.Event.EventListener(this._updateCanvasSize, this));
         this._onResize.addEventListener(new SmartJs.Event.EventListener(function () {
             window.setTimeout(this._updateCanvasSize.bind(this), 120);
@@ -127,6 +127,16 @@ PocketCode.Ui.PlayerViewportView = (function () {
         clearPenStampCache: function() {
             this._canvas.clearPenStampCache();
         },
+
+        renderCamera: function(cameraOn, cameraStream){
+            this._canvas.cameraOn = cameraOn;
+            this._canvas.cameraStream = cameraStream;
+            if(cameraOn){
+                this._canvas.renderCamera();
+            }
+
+        },
+
         _drawAxes: function () {
             if (!this._axesVisible)
                 return;
