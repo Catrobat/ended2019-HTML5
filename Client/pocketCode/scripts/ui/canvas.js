@@ -96,7 +96,9 @@ PocketCode.Ui.Canvas = (function () {
 
     cameraStream : {
       set: function(cameraStream){
+
         this._cameraStream = cameraStream;
+          console.log("camera stream in setter:", this._cameraStream);
       },
       get: function(){
         return this._cameraStream;
@@ -105,6 +107,7 @@ PocketCode.Ui.Canvas = (function () {
 
     cameraOn: {
       set: function(cameraOn){
+          console.log("setting camera on in canvas to :", cameraOn);
         this._cameraOn = cameraOn;
             this.renderCamera();
             },
@@ -567,14 +570,12 @@ PocketCode.Ui.Canvas = (function () {
     },
 
       renderCamera: function() {
-
-        console.log(" rendering the freaking cameraaaa");
-          if(this._cameraOn && this._cameraStream){
+          if(this._cameraOn && this._cameraStream != null && this._cameraStream != undefined ){
               this._cameraCanvasCtx.drawImage(this._cameraStream, 0,0, this._cameraCanvasEl.width, this._cameraCanvasEl.height );
               setTimeout(this.renderCamera.bind(this), 10);
           }
           else {
-
+              //this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
           }
       },
     dispose: function () {

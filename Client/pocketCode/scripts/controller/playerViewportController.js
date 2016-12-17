@@ -113,6 +113,7 @@ PocketCode.PlayerViewportController = (function () {
 
         renderCamera: function( cameraOn, cameraStream ){
             console.log("CONTROLLER RENDER CAMERA");
+            console.log("camera stream in viewport controller:", cameraStream);
           this._view.renderCamera(cameraOn, cameraStream);
         },
         setProjectScreenSize: function (width, height) {

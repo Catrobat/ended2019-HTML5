@@ -435,7 +435,11 @@ PocketCode.GameEngine = (function () {
             return false;
         },
         resumeProject: function () {
-            this._currentScene.resume();
+            console.log("current scene :", this._currentScene);
+            if(this._currentScene){
+                this._currentScene.resumeOrStart();
+            }
+
         },
         stopProject: function () {
             //this._soundManager.stopAllSounds();

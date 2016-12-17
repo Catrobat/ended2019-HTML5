@@ -129,11 +129,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
 
         renderCamera: function(cameraOn, cameraStream){
-            this._canvas.cameraOn = cameraOn;
+            console.log("camera stream in view:", cameraStream);
             this._canvas.cameraStream = cameraStream;
-            if(cameraOn){
-                this._canvas.renderCamera();
-            }
+            this._canvas.cameraOn = cameraOn;
+
 
         },
 

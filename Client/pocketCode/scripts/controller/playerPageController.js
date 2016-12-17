@@ -151,6 +151,7 @@ PocketCode.PlayerPageController = (function () {
 
         _cameraChangedHandler: function(e){
             console.log("CAMERA TRIGGERED");
+            console.log("camera stream in page controller:", e.cameraStream);
             this._playerViewportController.renderCamera(e.cameraOn, e.cameraStream);
         },
         _projectExecutedHandler: function (e) {

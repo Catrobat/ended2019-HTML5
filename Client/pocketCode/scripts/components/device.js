@@ -360,26 +360,32 @@ PocketCode.Device = (function () {
                 return this._cameraOn;
             },
             set: function (bool) {
-                console.log("turning camera on");
                 if (typeof bool !== 'boolean')
                     throw new Error('invalid parameter: expected type \'boolean\'');
                 this._features.CAMERA.inUse = true;
-
-                if (this._cameraOn == bool)
+                if( bool == this._cameraOn){
                     return;
+                }
 
                 if(bool){
                         this._startCamera({ video: true, audio: false});
                     }
                     else {
+                    this._cameraOn = false;
+                        if( this._cameraStream){
+                            this._cameraStream.src = null;
+                        }
                    if(window.stream){
+                       if( window.stream.stop){
+                           window.stream.stop();
+                       }
                        window.stream.getVideoTracks().forEach(function (track) {
                            track.stop();
                        });
                    }
                     this._onCameraUsageChanged.dispatchEvent({ cameraOn: false, cameraStream: this._cameraStream });
                 }
-                this._cameraOn = bool;
+
 
             }
         },
@@ -746,9 +752,9 @@ PocketCode.Device = (function () {
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
            navigator.getUserMedia( {video: true, audio:false}, function(stream){
-                console.log("starting camera");
                 window.stream = stream;
                 this._getCameraSources();
+               this._cameraOn = true;
                this._cameraStream.src = window.URL.createObjectURL(stream);
                this._cameraStream.play();
                this._onCameraUsageChanged.dispatchEvent({ cameraOn: true, cameraStream: this._cameraStream });

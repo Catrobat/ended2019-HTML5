@@ -202,6 +202,7 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
+            console.log("CREATING CAMERA BRICK");
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._selected = parseInt(propObject.selected) == 1;
 
@@ -209,18 +210,44 @@ PocketCode.Model.merge({
              //call on ctr to notify our device this feature is in use without changing the setting
         }
 
-        CameraBrick.prototype._execute = function () {
-            this._device.cameraOn = true;
-            if (this._selected  && !this._device.cameraOn)
-                this._device.cameraOn = true;
-           if (this._selected && this._device.cameraOn)
+        CameraBrick.prototype.merge({
+            _execute: function () {
+                console.log("EXECUTION");
+                console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
+                this._device.cameraOn = this._selected;
+                /*if (this._selected == true  && !this._device.cameraOn){
+                    console.log("turning it on");
+                    this._device.cameraOn = true;
+                }
+
+                else if (!this._selected && this._device.cameraOn){
+                    this._device.cameraOn = false;
+                }
+
+                else {  //set already
+                    this._return(false);
+                    return;
+                }*/
+                this._return(true);
+            },
+            pause: function () {
+                console.log(" pausing cameraa");
                 this._device.cameraOn = false;
-            else {  //set already
-                this._return(false);
-                return;
-            }
-            this._return(true);
-        };
+            },
+            resume: function () {
+                console.log("resuming brick");
+                this._execute();
+            },
+            stop: function () {
+                console.log("stopping the brick");
+
+                //this._device.cameraOn = false;
+            },
+            dispose: function () {
+                console.log("disposing the brick");
+                //this._device.cameraOn = false;
+            },
+        });
 
         return CameraBrick;
     })(),
