@@ -66,11 +66,7 @@ PocketCode.Model.Sprite = (function () {
         //pen
         this._penDown = false;
         this._penSize = 4;
-        this._penColorBlue = 255.0;
-        this._penColorRed = 0.0;
-        this._penColorGreen = 0.0;
-        this._penXPosition = 0;
-        this._penYPosition = 0;
+        this._penColor= { r: 0, g: 0, b: 255};
 
         this._stamp = false;
 
@@ -138,9 +134,7 @@ PocketCode.Model.Sprite = (function () {
                     ],
                     penDown: this._penDown,
                     penSize: this._penSize,
-                    penColorBlue: this._penColorBlue,
-                    penColorRed: this._penColorRed,
-                    penColorGreen: this._penColorGreen,
+                    prnColor: this._penColor,
                     penXPosition: this._penXPosition,
                     penYPosition: this._penYPosition,
                     stamp: this._stamp,
@@ -330,6 +324,7 @@ PocketCode.Model.Sprite = (function () {
             this._brightness = 100.0;
             this._colorEffect = 0.0;
             this._recalculateLookOffsets();
+            this._penDown = false;
 
             //variables
             this._resetVariables();
@@ -1220,15 +1215,12 @@ PocketCode.Model.Sprite = (function () {
             if(this._penDown == penDown)
                 return false;
 
-            console.log("pendown");
-
             this._penDown = penDown;
             return this._triggerOnChange({penDown:this._penDown});
 
         },
         penSize: function(penSize) {
 
-            console.log("pensize");
 
             if(this._penSize == penSize)
                 return false;
@@ -1237,14 +1229,14 @@ PocketCode.Model.Sprite = (function () {
         },
         penColor: function(blue, red, green) {
 
-            console.log("pencolor");
 
-            if(this._penColorBlue == blue && this._penColorRed == red && this._penColorGreen == green)
+            if(this._penColor.b == blue && this._penColor.r == red && this._penColor.g == green)
                 return false;
-            this._penColorBlue = blue;
-            this._penColorRed = red;
-            this._penColorGreen = green;
-            return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
+            this._penColor = { r: red, g: green, b: blue };
+            //this._penColorBlue = blue;
+            //this._penColorRed = red;
+            //this._penColorGreen = green;
+            return this._triggerOnChange({ color : this._penColor});
         },
         penStamp: function(){
             this._stamp = true;

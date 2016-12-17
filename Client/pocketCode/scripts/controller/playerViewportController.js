@@ -76,6 +76,12 @@ PocketCode.PlayerViewportController = (function () {
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
                 if (img.id === spriteId) {
+                    if( properties.x || properties.y ) {
+                      this._view.drawPen( spriteId, properties.x, properties.y );
+                    }
+                    if( properties.stamp == true ) {
+                        this._view.drawStamp(spriteId);
+                    }
                     visible = img.visible;
                     img.merge(properties);
 

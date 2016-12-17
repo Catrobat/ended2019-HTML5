@@ -104,8 +104,8 @@ QUnit.test("SetPenColorBrick", function (assert) {
 
     var b = new PocketCode.Model.SetPenColorBrick(device, sprite, { blue: blue, red: red, green: green });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._penColorBlue instanceof PocketCode.Formula && b._penColorRed instanceof PocketCode.Formula
-        && b._penColorGreen instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._penColor.b instanceof PocketCode.Formula && b._penColor.r instanceof PocketCode.Formula
+        && b._penColor.g instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPenColorBrick, "instance check");
     assert.ok(b.objClassName === "SetPenColorBrick", "objClassName check");
 

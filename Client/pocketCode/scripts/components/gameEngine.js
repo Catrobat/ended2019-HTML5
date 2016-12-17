@@ -269,8 +269,7 @@ PocketCode.GameEngine = (function () {
 
             for (var i = 0, l = scenes.length; i < l; i++) {
                 var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
-                console.log( scene );
-                console.log("scene after construct");
+
                 this._sceneIds.push(scenes[i].id);
                 this._scenes[scenes[i].id] = scene;
 
@@ -293,9 +292,6 @@ PocketCode.GameEngine = (function () {
             }
 
 
-            console.log("finished loading scene background");
-            console.log( this );
-            console.log( bricksCount );
             if (bricksCount == 0) {
                 this._spriteFactoryOnProgressChangeHandler({ progress: 100 });
                 return;
@@ -399,7 +395,6 @@ PocketCode.GameEngine = (function () {
         },
         //project interaction
         runProject: function (reinitSprites) {
-          console.log("run project");
             var currentScene = this._currentScene;
             if (!currentScene || currentScene.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
@@ -421,7 +416,7 @@ PocketCode.GameEngine = (function () {
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
-          console.log("scene start: " );
+          //console.log("scene start: " );
             currentScene.start();
         },
         restartProject: function (reinitSprites) {
