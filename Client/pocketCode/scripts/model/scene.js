@@ -40,7 +40,7 @@ PocketCode.Model.Scene = (function () {
         this._onStart = new SmartJs.Event.Event(this);
         this._onExecuted = new SmartJs.Event.Event(this);
         this._onBackgroundChange = new SmartJs.Event.Event(this);
-        this._onSpriteUiChange = new SmartJs.Event.Event(this);
+        //this._onSpriteUiChange = new SmartJs.Event.Event(this);
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
         this._onProgressChange = new SmartJs.Event.Event(this);
@@ -426,20 +426,27 @@ PocketCode.Model.Scene = (function () {
         },
 
         cloneSprite: function (id) {
-            if (this._background.id == id)
+            if (this._background && this._background.id == id )
                 return false;
 
             var sprite = this.getSpriteById(id),
                 layer = this.getSpriteLayer(sprite),
                 clone = sprite.clone(this._device, this._soundManager, this._minLoopCycleTime, this._broadcastMgr);
 
-            //add to sprite collection (layer)
+            this._sprites.insert(layer, clone);
+
+
             //this.onCloneCreated.dispatch({id: clone.id, renderingImage: ?clone?, layer: layer}
+
+            clone.onCloneStart.dispatchEvent();
             return true;
         },
 
         deleteClone: function(cloneId) {
             var clone = this.getSpriteById(cloneId);
+
+            this._sprites.remove(clone);
+            clone.dispose();
             //dispose clone
             //remove from list
             //notify UI: neues Event onCloneDeleted (siehe unten)

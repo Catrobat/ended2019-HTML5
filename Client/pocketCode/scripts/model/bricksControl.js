@@ -304,7 +304,7 @@ PocketCode.Model.merge({
     SceneTransitionBrick: (function () {
         SceneTransitionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SceneTransitionBrick(device, sprite, propObject, gameEngine, scene ) {
+        function SceneTransitionBrick(device, sprite, gameEngine, scene, propObject ) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             //this._scene = scene;
             this._transitionScene = gameEngine.getSceneById(propObject.sceneId);
@@ -347,14 +347,19 @@ PocketCode.Model.merge({
         function WhenStartAsCloneBrick(device, sprite, propObject, startEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            //this._onCloneStart = startEvent;
-            //
-            //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            if (!sprite.isClone)
+                return;
+            this._onCloneStart = sprite.onCloneStart;
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
-        WhenStartAsCloneBrick.prototype._execute = function () {
-            //
-        };
+        WhenStartAsCloneBrick.prototype.merge({
+            dispose: function () {
+                this._onCloneStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                this._onCloneStart = undefined;  //make sure to disconnect from gameEngine
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+            },
+        });
 
         return WhenStartAsCloneBrick;
     })(),
@@ -366,11 +371,11 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
-            this._spriteId = propObject.spriteId;
+            this._cloneId = propObject.spriteId;
         }
 
         CloneBrick.prototype._execute = function () {
-            this._return(this._scene.cloneSprite(this._spriteId));
+            this._return(this._scene.cloneSprite(this._cloneId));
         };
 
         return CloneBrick;

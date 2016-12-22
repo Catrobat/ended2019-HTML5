@@ -12,6 +12,12 @@ QUnit.module("model/sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
+    assert.ok(false, "TODO");
+    return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
+
     var programExecAsync = assert.async();
     var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
@@ -831,6 +837,11 @@ QUnit.test("Sprite", function (assert) {
 
 
 QUnit.test("Sprite offsets", function (assert) {
+    assert.ok(false, "TODO");
+    return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
     var testsDone = assert.async();
 
     var onLoadHandler = function () {
@@ -879,6 +890,11 @@ QUnit.test("Sprite offsets", function (assert) {
 
 
 QUnit.test("Sprite: rotation style", function (assert) {
+    assert.ok(false, "TODO");
+    return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
     //all sprite features are tested where rotation style has an impact: except ifOnEdgeBounce- there is another test routine for this feature
     var done = assert.async();
 
@@ -1007,6 +1023,10 @@ QUnit.test("Sprite: rotation style", function (assert) {
 
 
 QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
+    assert.ok(false, "TODO");
+    return;
+    //TODO:: refactoring, scenes + cntr arguments
+
 
     var done = assert.async();
 
@@ -1855,7 +1875,11 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 });
 
 
-QUnit.test("Sprite: physics", function (assert) {
+QUnit.test("PhysicsSprite", function (assert) {
+    assert.ok(false, "TODO");
+    return;
+    //TODO:: refactoring, scenes + cntr arguments
+
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene();
@@ -1898,5 +1922,26 @@ QUnit.test("Sprite: physics", function (assert) {
     sprite.setVelocity(x, y);
     assert.equal(sprite._velocityX, x, "velocityX set correctly");
     assert.equal(sprite._velocityY, y, "velocityY set correctly");
+});
+
+QUnit.test("SpriteClone", function (assert) {
+
+    var programExecAsync = assert.async();
+    var testsExecAsync = assert.async();
+    var finalAsyncCall = assert.async();
+    var asyncCalls = 0; //check all async calls where executed before running dispose
+
+    var prog = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene();
+
+    var sprite = new PocketCode.Model.SpriteClone(prog, scene, {id: "newId", name: "myName"});
+    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
+
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+});
+
+QUnit.test("Background", function (assert) {
+
+    assert.ok(false, "TODO");
 });
 

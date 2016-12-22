@@ -1312,6 +1312,8 @@ PocketCode.Model.merge({
 
         function SpriteClone(gameEngine, scene, jsonSprite, definition) {
 
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
+
             this._id = SmartJs.getNewId();
             this._json = jsonSprite;
 
@@ -1359,6 +1361,7 @@ PocketCode.Model.merge({
             },
         });
 
+        return SpriteClone;
     })(),
 });
 
