@@ -1,6 +1,6 @@
 <?php
 
-class CloneBrickDto extends BaseBrickDto {  //TODO: Dino
+class CloneBrickDto extends BaseBrickDto {
 
     public $spriteId;
 

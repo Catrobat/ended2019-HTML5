@@ -9,14 +9,18 @@ class ProjectsController extends BaseController
     const TEST_API = "https://web-test.catrob.at/";
     const LOCAL_TEST_API = "http://localhost/";
 
-    public $SERVER_ROOT = "/var/www/";
+    const SERVER_ROOT_DEPLOY = "var/www/share/";
+    const SERVER_ROOT_TEST = "var/www/webtest/";
+    const SERVER_ROOT_LOCAL = "D:\\xampp\\htdocs\\webtest\\";
+
+	private $SERVER_ROOT = self::SERVER_ROOT_LOCAL;
 
     // change to TEST_API -> web-test
     // change to LOCAL_TEST_API -> player.localhost (to test own projects and fake request)
     // change to DEPLOY_API -> share
-    public $API = self::TEST_API;
+    public $API = self::LOCAL_TEST_API;
 
-    // set to Test or Deplay
+    // set to Test or Deploy
     public $API_getInfo = self::TEST_API;
     public $BASE_URL = "";
 
@@ -31,11 +35,6 @@ class ProjectsController extends BaseController
         {
             $this->SERVER_ROOT = str_replace("html5\\rest\\" . $this->request->serviceVersion, "", getcwd());
         }
-    }
-
-    public function SERVER_ROOT()
-    {
-        return $this->SERVER_ROOT;
     }
 
     public function get()
@@ -86,7 +85,7 @@ class ProjectsController extends BaseController
         //include data urls if requested
         if(isset($this->request->imgDataMax))
         {
-            $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/" . $project->ScreenshotBig);
+            $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "shared/web/" . $project->ScreenshotBig);
             $res = $this->loadBase64Image($path, $this->request->imgDataMax);
             if($res !== false)
             {
@@ -141,11 +140,11 @@ class ProjectsController extends BaseController
 
     private function getProject($projectId)
     {
-        $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/resources/programs/");
+        $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT . "webtest/shared/web/resources/programs/");
         $projectFilePath = $projectsRoot . $projectId . ".catrobat";
 
         //load zip
-        $cacheRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "html5/projects/");
+        $cacheRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT . "html5/projects/");
         $cacheDir = $cacheRoot . $this->request->serviceVersion . DIRECTORY_SEPARATOR . $projectId . DIRECTORY_SEPARATOR;
 
         //check if project exists
@@ -271,7 +270,7 @@ class ProjectsController extends BaseController
             //replace invalid 0 chars due to physics bug
             $content = file_get_contents($cacheDir . 'code.xml');
             if ($content === false) {
-                    throw new FileParserException("error loading file: invalid xml");
+                throw new FileParserException("error loading file: invalid xml");
             }
             $content = str_replace('&#x0;', '', $content);
 
@@ -504,7 +503,7 @@ class ProjectsController extends BaseController
         if(isset($this->request->imgDataMax))
         {
             //include data urls
-            $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "webtest/shared/web/");
+            $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT . "webtest/shared/web/");
 
             foreach($projects->featured as $p)
             {
