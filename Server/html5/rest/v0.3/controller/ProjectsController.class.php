@@ -2,38 +2,36 @@
 
 class ProjectsController extends BaseController
 {
-    const CACHING_ENABLED = false;    //true;//
+    const CACHING_ENABLED = true;    //false;
     const INCREMENT_PROJECT_VIEW_COUNTER = false;
+    const CHECK_INAPPROPRIATE = true;  //set this entry to false if testing projects only available on your local machine
 
-    const DEPLOY_API = "https://share.catrob.at/";
-    const TEST_API = "https://web-test.catrob.at/";
-    const LOCAL_TEST_API = "http://localhost/";
+    const WWW_URL_SHARE = "https://share.catrob.at/";
+    const WWW_URL_TEST = "https://web-test.catrob.at/";
 
-    const SERVER_ROOT_DEPLOY = "var/www/share/";
-    const SERVER_ROOT_TEST = "var/www/webtest/";
-    const SERVER_ROOT_LOCAL = "D:\\xampp\\htdocs\\webtest\\";
+    private $WEB_ROOT = self::WWW_URL_TEST;
+    private $WEB_API;
 
-	private $SERVER_ROOT = self::SERVER_ROOT_LOCAL;
+    const RESOURCES_SHARE = "share.catrob.at/shared/web/";
+    const RESOURCES_TEST = "webtest/shared/web/";
 
-    // change to TEST_API -> web-test
-    // change to LOCAL_TEST_API -> player.localhost (to test own projects and fake request)
-    // change to DEPLOY_API -> share
-    public $API = self::LOCAL_TEST_API;
-
-    // set to Test or Deploy
-    public $API_getInfo = self::TEST_API;
-    public $BASE_URL = "";
+	private $SERVER_ROOT;
+    private $RESOURCE_ROOT = self::RESOURCES_TEST;  //directory used for loading projects from file system
 
     public function __construct($request)
     {
         parent::__construct($request);
-        $this->BASE_URL = $this->API;
-        $this->API = $this->API . "pocketcode/";
-        $this->API_getInfo = $this->API_getInfo . "pocketcode/";
+        $this->WEB_API = self::WWW_URL_TEST . "pocketcode/api/";
+        $this->SERVER_ROOT = str_replace("html5" . DIRECTORY_SEPARATOR . "rest" . DIRECTORY_SEPARATOR. $this->request->serviceVersion, "", getcwd());
+        $this->RESOURCE_ROOT = $this->SERVER_ROOT . $this->RESOURCE_ROOT;
 
-        if(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) // is localhost
+        if(in_array($_SERVER["REMOTE_ADDR"], ["127.0.0.1", "::1"])) //localhost
         {
-            $this->SERVER_ROOT = str_replace("html5\\rest\\" . $this->request->serviceVersion, "", getcwd());
+            $protocol = "http://";
+            if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] && $_SERVER["HTTPS"] != "off")
+                $protocol = "https://";
+
+            $this->WEB_ROOT = $protocol . $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . "/";
         }
     }
 
@@ -67,7 +65,7 @@ class ProjectsController extends BaseController
 
     private function getProjectDetails($projectId)
     {
-        $data = file_get_contents($this->API_getInfo . "api/projects/getInfoById.json?id=" . $projectId);
+        $data = file_get_contents($this->WEB_API . "projects/getInfoById.json?id=" . $projectId);
         $data = json_decode($data, false);
 
         try
@@ -85,7 +83,7 @@ class ProjectsController extends BaseController
         //include data urls if requested
         if(isset($this->request->imgDataMax))
         {
-            $path = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT() . "shared/web/" . $project->ScreenshotBig);
+            $path = str_replace("/", DIRECTORY_SEPARATOR, $this->RESOURCE_ROOT . $project->ScreenshotBig);
             $res = $this->loadBase64Image($path, $this->request->imgDataMax);
             if($res !== false)
             {
@@ -116,20 +114,20 @@ class ProjectsController extends BaseController
     {
         $entry = $zipArchive->statIndex($fileIndex);
         // convert Windows directory separator to Unix style
-        $filename = str_replace('\\', '/', $entry['name']);
+        $filename = str_replace("\\", "/", $entry["name"]);
         if($this->isValidPath($filename))
         {
             return $filename;
         }
-        throw new \Exception('Invalid filename path in zip archive');
+        throw new \Exception("Invalid filename path in zip archive");
     }
 
     private function isValidPath($path)
     {
-        $pathParts = explode('/', $path);
-        if(!strncmp($path, '/', 1) ||
-          array_search('..', $pathParts) !== false ||
-          strpos($path, ':') !== false
+        $pathParts = explode("/", $path);
+        if(!strncmp($path, "/", 1) ||
+          array_search("..", $pathParts) !== false ||
+          strpos($path, ":") !== false
         )
         {
             return false;
@@ -140,7 +138,7 @@ class ProjectsController extends BaseController
 
     private function getProject($projectId)
     {
-        $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT . "webtest/shared/web/resources/programs/");
+        $projectsRoot = str_replace("/", DIRECTORY_SEPARATOR, $this->RESOURCE_ROOT . "resources/programs/");
         $projectFilePath = $projectsRoot . $projectId . ".catrobat";
 
         //load zip
@@ -156,18 +154,18 @@ class ProjectsController extends BaseController
         }
 
         //check if project is valid (found in DB and not masked as inappropriate)
-        /*if(!is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
+        if(self::CHECK_INAPPROPRIATE && !is_a($this->getProjectDetails($projectId), "ProjectDetailsDto"))
         {
-        //delete our cache as well
-        FileHelper::deleteDirectory($cacheDir);
-        throw new ProjectNotFoundException($projectId);
-        }*/
+            //delete our cache as well
+            FileHelper::deleteDirectory($cacheDir);
+            throw new ProjectNotFoundException($projectId);
+        }
 
         //increment view counter: simulate page request
         if(self::INCREMENT_PROJECT_VIEW_COUNTER)
         {
             //try to read 1 byte only
-            file_get_contents($this->API . "details/" . $projectId, 0, null, 0, 1);
+            file_get_contents($this->WEB_ROOT . "pocketcode/details/" . $projectId, 0, null, 0, 1);
         }
 
         //create cache directory if not already created
@@ -230,11 +228,11 @@ class ProjectsController extends BaseController
                 //  $filename = str_replace("sounds/", "", $filename);
 
                 //  if($filename != ".nomedia")
-                //    $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
+                //    $filename = preg_replace("/\\.[^.\\s]{3,4}$/", "", $filename);
 
-                //  if( ! mb_detect_encoding( $filename, 'ASCII' ) || preg_match( '/[^A-Za-z0-9 _ .-]/', $filename ))
+                //  if( ! mb_detect_encoding( $filename, "ASCII" ) || preg_match( "/[^A-Za-z0-9 _ .-]/", $filename ))
                 //  {
-                //    throw new Exception("error extracting invalid file name '" . $filename . "' in (zip) file");
+                //    throw new Exception("error extracting invalid file name "" . $filename . "" in (zip) file");
                 //  }
                 //}
                 if($res === true)
@@ -268,11 +266,11 @@ class ProjectsController extends BaseController
 
             //load code.xml of project
             //replace invalid 0 chars due to physics bug
-            $content = file_get_contents($cacheDir . 'code.xml');
+            $content = file_get_contents($cacheDir . "code.xml");
             if ($content === false) {
                 throw new FileParserException("error loading file: invalid xml");
             }
-            $content = str_replace('&#x0;', '', $content);
+            $content = str_replace("&#x0;", "", $content);
 
             $xml = @simplexml_load_string($content);
             //$xml = simplexml_load_file($cacheDir . "code.xml");
@@ -292,17 +290,17 @@ class ProjectsController extends BaseController
             }
 
             //set resource url root path to include it in the response string
-            if(isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0))
-            {
-                $protocol = "https";
-            }
-            else
-            {
-                $protocol = "http";
-            }
+            //if(isset($_SERVER["HTTPS"]) && (strcasecmp("off", $_SERVER["HTTPS"]) !== 0))
+            //{
+            //    $protocol = "https";
+            //}
+            //else
+            //{
+            //    $protocol = "http";
+            //}
 
             //$server_base = $protocol . "://" . $_SERVER["SERVER_NAME"];
-            $resourceRoot = $this->BASE_URL . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/";
+            $resourceRoot = $this->WEB_ROOT . "html5/projects/" . $this->request->serviceVersion . "/" . $projectId . "/";
 
             // load parser using catrobat file version
             $parser = null;
@@ -447,7 +445,7 @@ class ProjectsController extends BaseController
         $featured = [];
         /*if($offset === 0)
         {
-        $data = file_get_contents($this->API . "api/projects/featured.json?limit=3");
+        $data = file_get_contents($this->WEB_API . "projects/featured.json?limit=3");
         $data = json_decode($data, false);
         $baseUrl = $data->CatrobatInformation->BaseUrl;
 
@@ -458,7 +456,7 @@ class ProjectsController extends BaseController
         }
         }*/
 
-        $url = $this->API . "api/projects/";
+        $url = $this->WEB_API . "projects/";
 
         switch($mask)
         {
@@ -503,7 +501,7 @@ class ProjectsController extends BaseController
         if(isset($this->request->imgDataMax))
         {
             //include data urls
-            $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->SERVER_ROOT . "webtest/shared/web/");
+            $localPath = str_replace("/", DIRECTORY_SEPARATOR, $this->RESOURCE_ROOT);
 
             foreach($projects->featured as $p)
             {
@@ -562,7 +560,7 @@ class ProjectsController extends BaseController
         // $img_string = false;
         // if($zip->open($zipPath) === true)
         // {
-        // $img_string = $zip->getFromName('automatic_screenshot.png');
+        // $img_string = $zip->getFromName("automatic_screenshot.png");
         // $zip->close();
         // }
 
