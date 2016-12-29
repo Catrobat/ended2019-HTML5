@@ -9,19 +9,19 @@ class ProjectsController extends BaseController
     const WWW_URL_SHARE = "https://share.catrob.at/";
     const WWW_URL_TEST = "https://web-test.catrob.at/";
 
-    private $WEB_ROOT = self::WWW_URL_TEST;
+    private $WEB_ROOT = self::WWW_URL_SHARE;
     private $WEB_API;
 
     const RESOURCES_SHARE = "share.catrob.at/shared/web/";
     const RESOURCES_TEST = "webtest/shared/web/";
 
 	private $SERVER_ROOT;
-    private $RESOURCE_ROOT = self::RESOURCES_TEST;  //directory used for loading projects from file system
+    private $RESOURCE_ROOT = self::RESOURCES_SHARE;  //directory used for loading projects from file system
 
     public function __construct($request)
     {
         parent::__construct($request);
-        $this->WEB_API = self::WWW_URL_TEST . "pocketcode/api/";
+        $this->WEB_API = self::WWW_URL_SHARE . "pocketcode/api/";
         $this->SERVER_ROOT = str_replace("html5" . DIRECTORY_SEPARATOR . "rest" . DIRECTORY_SEPARATOR. $this->request->serviceVersion, "", getcwd());
         $this->RESOURCE_ROOT = $this->SERVER_ROOT . $this->RESOURCE_ROOT;
 
