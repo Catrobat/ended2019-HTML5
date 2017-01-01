@@ -612,7 +612,7 @@ PocketCode.Device = (function () {
 })();
 
 PocketCode.MediaDevice = (function () {
-    Device.extends(PocketCode.Device, false);
+    MediaDevice.extends(PocketCode.Device, false);
 
     function MediaDevice(soundManager) {
         PocketCode.Device.call(this, soundManager);
@@ -748,7 +748,7 @@ PocketCode.MediaDevice = (function () {
 
     //methods
     MediaDevice.prototype.merge({
-        _getUserMedia: navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia,
+        _getUserMedia: (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia).bind(navigator),
         _changeCameraSource: function (sourceId) {
             if (window.stream) {
                 window.stream.stop();
