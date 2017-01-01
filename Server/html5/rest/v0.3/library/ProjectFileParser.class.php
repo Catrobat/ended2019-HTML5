@@ -863,7 +863,7 @@ class ProjectFileParser
 
             case "PointInDirectionBrick":
                 $degrees = $this->parseFormula($script->degrees->formulaTree);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "PointToBrick":
@@ -889,7 +889,7 @@ class ProjectFileParser
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":

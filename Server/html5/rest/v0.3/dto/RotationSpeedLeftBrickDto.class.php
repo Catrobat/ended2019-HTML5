@@ -1,11 +1,11 @@
 <?php
 
-class TurnLeftSpeedBrickDto extends BaseBrickDto {
+class RotationSpeedLeftBrickDto extends BaseBrickDto {
 
     public $degreesPerSec;	//FormulaDto
 
     public function __construct($degreesPerSec, $commentedOut = false) {
-        parent::__construct("TurnLeftSpeed", $commentedOut);
+        parent::__construct("RotationSpeedLeft", $commentedOut);
 
         $this->degreesPerSec = $degreesPerSec;
     }

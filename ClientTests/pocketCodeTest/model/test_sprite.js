@@ -806,26 +806,26 @@ QUnit.test("Sprite", function (assert) {
     newSprite.setPosition(100, 100);
     sprite.setPosition(50, 50);
 
-    returnVal = sprite.pointTo();
-    assert.ok(!returnVal, "pointTo: missing argument");
-    returnVal = sprite.pointTo("id2");
+    returnVal = sprite.SetDirectionTo();
+    assert.ok(!returnVal, "SetDirectionTo: missing argument");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
     assert.ok(returnVal, "point to: value changed");
-    assert.ok(lastOnChangeArgs.rotation !== undefined, "pointTo event args");
-    returnVal = sprite.pointTo("id2");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "SetDirectionTo event args");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(!returnVal, "point to: value not changed");
-    //returnVal = sprite.pointTo(sprite.id);
+    //returnVal = sprite.SetDirectionTo(sprite.id);
     //assert.ok(!returnVal, "point to: self (no change)");
-    assert.throws(function () { sprite.pointTo(sprite.id); }, "ERROR: point to: self");
+    assert.throws(function () { sprite.SetDirectionTo(sprite.id); }, "ERROR: point to: self");
 
     newSprite.setPosition(0, 0);
     sprite.setPosition(0, 0);
-    returnVal = sprite.pointTo("id2");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(!returnVal, "point to: sprite on same position: ignored");
 
     sprite.setPosition(50, 50);
 
-    sprite.pointTo("id2");
+    sprite.SetDirectionTo("id2");
     assert.ok(sprite.direction == -180 + 45, "point to left down sprite");
     // *************************************************************
 

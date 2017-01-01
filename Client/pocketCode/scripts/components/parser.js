@@ -135,8 +135,8 @@ PocketCode.merge({
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
-                    case 'TurnLeftSpeedBrick':
-                    case 'TurnRightSpeedBrick':
+                    case 'RotationSpeedLeftBrick':
+                    case 'RotationSpeedRightBrick':
                     case 'SetGravityBrick':
                     case 'SetMassBrick':
                     case 'SetBounceFactorBrick':

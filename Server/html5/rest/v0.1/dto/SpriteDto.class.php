@@ -2,7 +2,7 @@
 
 class SpriteDto {
 
-  public $id;		//used for e.g. PointToBrick
+  public $id;		//used for e.g. SetDirectionToBrick
   public $name;
   
   public $looks = array();	//of type ResourceDto

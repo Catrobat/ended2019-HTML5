@@ -207,7 +207,7 @@
         </whenScript>
         <broadcastScript>
           <brickList>
-            <pointInDirectionBrick>
+            <SetDirectionBrick>
               <object reference="../../../../.."/>
               <degrees>
                 <formulaTree>
@@ -215,7 +215,7 @@
                   <value>0</value>
                 </formulaTree>
               </degrees>
-            </pointInDirectionBrick>
+            </SetDirectionBrick>
             <setSizeToBrick>
               <object reference="../../../../.."/>
               <size>
@@ -267,7 +267,7 @@
         </broadcastScript>
         <broadcastScript>
           <brickList>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
               <pointedObject>
                 <lookList/>
@@ -410,7 +410,7 @@
                 </scriptList>
                 <soundList/>
               </pointedObject>
-            </pointToBrick>
+            </SetDirectionToBrick>
             <setVariableBrick>
               <object reference="../../../../.."/>
               <userVariable>
@@ -432,7 +432,7 @@
         <sound reference="../../scriptList/broadcastScript/brickList/playSoundBrick/sound"/>
       </soundList>
     </object>
-    <object reference="../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
+    <object reference="../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
     <object>
       <lookList>
         <look>
@@ -466,7 +466,7 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointInDirectionBrick>
+            <SetDirectionBrick>
               <object reference="../../../../.."/>
               <degrees>
                 <formulaTree>
@@ -474,7 +474,7 @@
                   <value>0.0</value>
                 </formulaTree>
               </degrees>
-            </pointInDirectionBrick>
+            </SetDirectionBrick>
             <setSizeToBrick>
               <object reference="../../../../.."/>
               <size>
@@ -523,7 +523,7 @@
         </broadcastScript>
         <broadcastScript>
           <brickList>
-            <pointInDirectionBrick>
+            <SetDirectionBrick>
               <object reference="../../../../.."/>
               <degrees>
                 <formulaTree>
@@ -531,7 +531,7 @@
                   <value>Airplane's direction</value>
                 </formulaTree>
               </degrees>
-            </pointInDirectionBrick>
+            </SetDirectionBrick>
           </brickList>
           <object reference="../../.."/>
           <receivedMessage>Move!</receivedMessage>
@@ -2770,10 +2770,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -3199,10 +3199,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -3628,10 +3628,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -4057,10 +4057,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -4486,10 +4486,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -4915,10 +4915,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -5344,10 +5344,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -5773,10 +5773,10 @@
                 </formulaTree>
               </yPosition>
             </placeAtBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
-              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
-            </pointToBrick>
+              <pointedObject reference="../../../../../../object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
+            </SetDirectionToBrick>
             <showBrick>
               <object reference="../../../../.."/>
             </showBrick>
@@ -6103,10 +6103,10 @@
               </ifElseBrick>
               <ifEndBrick reference="../ifElseBrick/ifEndBrick"/>
             </ifLogicBeginBrick>
-            <pointToBrick>
+            <SetDirectionToBrick>
               <object reference="../../../../.."/>
               <pointedObject reference="../../../../../../object[2]"/>
-            </pointToBrick>
+            </SetDirectionToBrick>
             <ifLogicBeginBrick>
               <object reference="../../../../.."/>
               <ifCondition>
@@ -6716,7 +6716,7 @@
         </startScript>
         <broadcastScript>
           <brickList>
-            <pointInDirectionBrick>
+            <SetDirectionBrick>
               <object reference="../../../../.."/>
               <degrees>
                 <formulaTree>
@@ -6724,7 +6724,7 @@
                   <value>Opponent's direction</value>
                 </formulaTree>
               </degrees>
-            </pointInDirectionBrick>
+            </SetDirectionBrick>
             <glideToBrick>
               <object reference="../../../../.."/>
               <durationInSeconds>
@@ -6790,7 +6790,7 @@
               <object reference="../../../../.."/>
               <look reference="../../../../../lookList/look[2]"/>
             </setLookBrick>
-            <pointInDirectionBrick>
+            <SetDirectionBrick>
               <object reference="../../../../.."/>
               <degrees>
                 <formulaTree>
@@ -6798,7 +6798,7 @@
                   <value>Opponent's direction</value>
                 </formulaTree>
               </degrees>
-            </pointInDirectionBrick>
+            </SetDirectionBrick>
             <placeAtBrick>
               <object reference="../../../../.."/>
               <xPosition>
@@ -6942,10 +6942,10 @@
         </list>
       </entry>
       <entry>
-        <object reference="../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject"/>
+        <object reference="../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject"/>
         <list>
-          <userVariable reference="../../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject/scriptList/startScript/brickList/setVariableBrick/userVariable"/>
-          <userVariable reference="../../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject/scriptList/startScript/brickList/setVariableBrick[2]/userVariable"/>
+          <userVariable reference="../../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject/scriptList/startScript/brickList/setVariableBrick/userVariable"/>
+          <userVariable reference="../../../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject/scriptList/startScript/brickList/setVariableBrick[2]/userVariable"/>
         </list>
       </entry>
       <entry>
@@ -6995,8 +6995,8 @@
       <userVariable reference="../../../objectList/object/scriptList/startScript/brickList/setVariableBrick/userVariable"/>
       <userVariable reference="../../../objectList/object/scriptList/startScript/brickList/setVariableBrick[2]/userVariable"/>
       <userVariable reference="../../../objectList/object/scriptList/startScript/brickList/setVariableBrick[3]/userVariable"/>
-      <userVariable reference="../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject/scriptList/broadcastScript/brickList/setVariableBrick/userVariable"/>
-      <userVariable reference="../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/pointToBrick/pointedObject/scriptList/broadcastScript/brickList/setVariableBrick[2]/userVariable"/>
+      <userVariable reference="../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject/scriptList/broadcastScript/brickList/setVariableBrick/userVariable"/>
+      <userVariable reference="../../../objectList/object[2]/scriptList/broadcastScript[2]/brickList/SetDirectionToBrick/pointedObject/scriptList/broadcastScript/brickList/setVariableBrick[2]/userVariable"/>
       <userVariable reference="../../../objectList/object/scriptList/startScript/brickList/setVariableBrick[4]/userVariable"/>
       <userVariable reference="../../../objectList/object/scriptList/startScript/brickList/setVariableBrick[5]/userVariable"/>
       <userVariable reference="../../../objectList/object[17]/scriptList/startScript/brickList/setVariableBrick[5]/userVariable"/>

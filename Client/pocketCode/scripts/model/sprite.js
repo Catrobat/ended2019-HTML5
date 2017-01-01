@@ -586,14 +586,14 @@ PocketCode.Model.Sprite = (function () {
          * @param spriteId
          * @returns {boolean}
          */
-        pointTo: function (spriteId) {
+        SetDirectionTo: function (spriteId) {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._scene.getSpriteById(spriteId); //throws error if undefined
+            var SetDirectionTo = this._scene.getSpriteById(spriteId); //throws error if undefined
 
-            var offsetX = pointTo.positionX - this.positionX;
-            var offsetY = pointTo.positionY - this.positionY;
+            var offsetX = SetDirectionTo.positionX - this.positionX;
+            var offsetY = SetDirectionTo.positionY - this.positionY;
 
             if (offsetX === 0 && offsetY === 0)
                 return false;

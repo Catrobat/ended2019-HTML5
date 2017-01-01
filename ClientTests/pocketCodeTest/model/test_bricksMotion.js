@@ -346,7 +346,7 @@ QUnit.test("TurnRightBrick", function (assert) {
 });
 
 
-QUnit.test("PointInDirectionBrick", function (assert) {
+QUnit.test("SetDirectionBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -356,11 +356,11 @@ QUnit.test("PointInDirectionBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
 
-    var b = new PocketCode.Model.PointInDirectionBrick(device, sprite, { degrees: degrees });
+    var b = new PocketCode.Model.SetDirectionBrick(device, sprite, { degrees: degrees });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degrees instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.PointInDirectionBrick, "instance check");
-    assert.ok(b.objClassName === "PointInDirectionBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetDirectionBrick, "instance check");
+    assert.ok(b.objClassName === "SetDirectionBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -374,7 +374,7 @@ QUnit.test("PointInDirectionBrick", function (assert) {
 });
 
 
-QUnit.test("PointToBrick", function (assert) {
+QUnit.test("SetDirectionToBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -387,11 +387,11 @@ QUnit.test("PointToBrick", function (assert) {
     scene._sprites.push(sprite);
 
 
-    var b = new PocketCode.Model.PointToBrick(device, sprite, { spriteId: spriteId });
+    var b = new PocketCode.Model.SetDirectionToBrick(device, sprite, { spriteId: spriteId });
 
     assert.ok(b._device === device && b._sprite === sprite && b._spriteId === spriteId, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.PointToBrick, "instance check");
-    assert.ok(b.objClassName === "PointToBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetDirectionToBrick, "instance check");
+    assert.ok(b.objClassName === "SetDirectionToBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -697,7 +697,7 @@ QUnit.test("SetVelocityBrick", function (assert) {
 });
 
 
-QUnit.test("TurnLeftSpeedBrick", function (assert) {
+QUnit.test("RotationSpeedLeftBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -708,11 +708,11 @@ QUnit.test("TurnLeftSpeedBrick", function (assert) {
     var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
     var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
 
-    var b = new PocketCode.Model.TurnLeftSpeedBrick(device, sprite, { degreesPerSec: deg });
+    var b = new PocketCode.Model.RotationSpeedLeftBrick(device, sprite, { degreesPerSec: deg });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degreesPerSecond instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.TurnLeftSpeedBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    assert.ok(b.objClassName === "TurnLeftSpeedBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.RotationSpeedLeftBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    assert.ok(b.objClassName === "RotationSpeedLeftBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -726,7 +726,7 @@ QUnit.test("TurnLeftSpeedBrick", function (assert) {
 });
 
 
-QUnit.test("TurnRightSpeedBrick", function (assert) {
+QUnit.test("RotationSpeedRightBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -737,11 +737,11 @@ QUnit.test("TurnRightSpeedBrick", function (assert) {
     var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
     var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
 
-    var b = new PocketCode.Model.TurnRightSpeedBrick(device, sprite, { degreesPerSec: deg });
+    var b = new PocketCode.Model.RotationSpeedRightBrick(device, sprite, { degreesPerSec: deg });
 
     assert.ok(b._device === device && b._sprite === sprite && b._degreesPerSecond instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.TurnRightSpeedBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    assert.ok(b.objClassName === "TurnRightSpeedBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.RotationSpeedRightBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    assert.ok(b.objClassName === "RotationSpeedRightBrick", "objClassName check");
 
     //execute
     var handler = function (e) {

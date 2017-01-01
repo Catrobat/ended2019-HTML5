@@ -253,16 +253,16 @@ PocketCode.Model.merge({
         return TurnRightBrick;
     })(),
 
-    PointInDirectionBrick: (function () {
-        PointInDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetDirectionBrick: (function () {
+        SetDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function PointInDirectionBrick(device, sprite, propObject) {
+        function SetDirectionBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
         }
 
-        PointInDirectionBrick.prototype._execute = function () {
+        SetDirectionBrick.prototype._execute = function () {
             var val = this._degrees.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -270,23 +270,23 @@ PocketCode.Model.merge({
                 this._return(this._sprite.setDirection(val));
         };
 
-        return PointInDirectionBrick;
+        return SetDirectionBrick;
     })(),
 
-    PointToBrick: (function () {
-        PointToBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetDirectionToBrick: (function () {
+        SetDirectionToBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function PointToBrick(device, sprite, propObject) {
+        function SetDirectionToBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._spriteId = propObject.spriteId;
         }
 
-        PointToBrick.prototype._execute = function () {
-            this._return(this._sprite.pointTo(this._spriteId));
+        SetDirectionToBrick.prototype._execute = function () {
+            this._return(this._sprite.SetDirectionTo(this._spriteId));
         };
 
-        return PointToBrick;
+        return SetDirectionToBrick;
     })(),
 
     GlideToBrick: (function () {
@@ -492,16 +492,16 @@ PocketCode.Model.merge({
         return SetVelocityBrick;
     })(),
 
-    TurnLeftSpeedBrick: (function () {
-        TurnLeftSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
+    RotationSpeedLeftBrick: (function () {
+        RotationSpeedLeftBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function TurnLeftSpeedBrick(device, sprite, propObject) {
+        function RotationSpeedLeftBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
-        TurnLeftSpeedBrick.prototype._execute = function () {
+        RotationSpeedLeftBrick.prototype._execute = function () {
             var degreesPerSecond = this._degreesPerSecond.calculate();
 
             if(isNaN(degreesPerSecond))
@@ -511,19 +511,19 @@ PocketCode.Model.merge({
             this._return(false);
         };
 
-        return TurnLeftSpeedBrick;
+        return RotationSpeedLeftBrick;
     })(),
 
-    TurnRightSpeedBrick: (function () {
-        TurnRightSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
+    RotationSpeedRightBrick: (function () {
+        RotationSpeedRightBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function TurnRightSpeedBrick(device, sprite, propObject) {
+        function RotationSpeedRightBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
-        TurnRightSpeedBrick.prototype._execute = function () {
+        RotationSpeedRightBrick.prototype._execute = function () {
             var degreesPerSecond = this._degreesPerSecond.calculate();
 
             if(isNaN(degreesPerSecond))
@@ -533,7 +533,7 @@ PocketCode.Model.merge({
             this._return(false);
         };
 
-        return TurnRightSpeedBrick;
+        return RotationSpeedRightBrick;
     })(),
 
     SetGravityBrick: (function () {
