@@ -52,7 +52,7 @@ PocketCode.Device = (function () {
             VIBRATE: {
                 i18nKey: 'lblDeviceVibrate',
                 inUse: false,
-                supported: false,
+                supported: !!(navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate),
             },
             LEGO_NXT: {
                 i18nKey: 'lblDeviceLegoNXT',
@@ -518,11 +518,13 @@ PocketCode.Device = (function () {
         },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
-            if (typeof duration != 'number') //isNaN('') = false
+            if (!this._features.VIBRATE.supported || typeof duration != 'number') //isNaN('') = false
                 return false;
 
             //TODO: as soon as html supports this feature
             //var time = duration * 1000;
+            var vibrate = (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate).bind(navigator);
+            vibrate(duration * 1000);
 
             return true;
         },
@@ -623,7 +625,7 @@ PocketCode.MediaDevice = (function () {
         this._features.CAMERA = {
             i18nKey: 'lblDeviceCamera',
             inUse: false,
-            supported: false,
+            supported: false,   //this._getUserMedia ? true : false,
         };
 
         this._changeSourceSupported = typeof MediaStreamTrack !== 'undefined' ||
@@ -748,7 +750,11 @@ PocketCode.MediaDevice = (function () {
 
     //methods
     MediaDevice.prototype.merge({
-        _getUserMedia: (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia).bind(navigator),
+        _getUserMedia: function() {
+            var userMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+            if (userMedia)
+                return userMedia.bind(navigator);
+        }(),
         _changeCameraSource: function (sourceId) {
             if (window.stream) {
                 window.stream.stop();
