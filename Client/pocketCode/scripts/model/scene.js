@@ -12,12 +12,9 @@
 'use strict';
 
 PocketCode.Model.Scene = (function () {
-    Scene.extends(PocketCode.UserVariableHost, false);
 
     function Scene(jsonScene, minLoopCycleTime, totalBrickCount, device, soundManager, onSpriteUiChange) {
-        //PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL); //todo need this?
 
-        //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
         this._collisionManager = new PocketCode.CollisionManager(0, 0);  //TODO: jsonScene.screenWidth, jsonScene.screenHeight);
@@ -53,14 +50,14 @@ PocketCode.Model.Scene = (function () {
         this._soundManager = soundManager;
         this._onSpriteUiChange = onSpriteUiChange; //todo overwrites what has just been set.
 
-        if (this._background)
-            this._background.dispose();// = undefined;
-        this._originalSpriteOrder = [];
-        this._sprites.dispose();
+        //if (this._background)
+        //    this._background.dispose();// = undefined;
+        //this._originalSpriteOrder = [];
+        //this._sprites.dispose();
 
-        // this._sprites = [];
-        //this._projectTimer = projectTimer;
-        this._originalSpriteOrder = [];
+        //// this._sprites = [];
+        ////this._projectTimer = projectTimer;
+        //this._originalSpriteOrder = [];
     }
 
     //properties

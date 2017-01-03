@@ -182,7 +182,7 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     {
         var receivedAllProjects = e.responseJson;
         assert.ok(receivedAllProjects instanceof Object, 'received object is valid');
-        console.log(receivedAllProjects);
+        //console.log(receivedAllProjects);
 
         var requestType = receivedAllProjects.type;
         var requestMessage = receivedAllProjects.message;

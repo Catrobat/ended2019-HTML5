@@ -449,7 +449,7 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
-            console.log("CREATING CAMERA BRICK");
+            //console.log("CREATING CAMERA BRICK");
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._selected = parseInt(propObject.selected) == 1;
 
@@ -459,8 +459,8 @@ PocketCode.Model.merge({
 
         CameraBrick.prototype.merge({
             _execute: function () {
-                console.log("EXECUTION");
-                console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
+                //console.log("EXECUTION");
+                //console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
                 this._device.cameraOn = this._selected;
                 /*if (this._selected == true  && !this._device.cameraOn){
                     console.log("turning it on");
@@ -478,20 +478,20 @@ PocketCode.Model.merge({
                 this._return(true);
             },
             pause: function () {
-                console.log(" pausing cameraa");
+                //console.log(" pausing cameraa");
                 this._device.cameraOn = false;
             },
             resume: function () {
-                console.log("resuming brick");
+                //console.log("resuming brick");
                 this._execute();
             },
             stop: function () {
-                console.log("stopping the brick");
+                //console.log("stopping the brick");
 
                 //this._device.cameraOn = false;
             },
             dispose: function () {
-                console.log("disposing the brick");
+                //console.log("disposing the brick");
                 //this._device.cameraOn = false;
             },
         });

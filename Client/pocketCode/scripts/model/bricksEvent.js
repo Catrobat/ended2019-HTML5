@@ -247,7 +247,7 @@ PocketCode.Model.merge({
     })(),
 
     WhenBackgroundChangesToBrick: (function () {
-        WhenBackgroundChangesTo.extends(PocketCode.Model.ScriptBlock, false);
+        WhenBackgroundChangesToBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenBackgroundChangesToBrick(device, sprite, propObject, changeEvent) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);

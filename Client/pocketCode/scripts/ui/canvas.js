@@ -96,7 +96,7 @@ PocketCode.Ui.Canvas = (function () {
 
 
               this._cameraStream = cameraStream;
-              console.log("camera stream in setter:", this._cameraStream);
+              //console.log("camera stream in setter:", this._cameraStream);
           },
           get: function(){
               return this._cameraStream;
@@ -106,7 +106,7 @@ PocketCode.Ui.Canvas = (function () {
 
       cameraOn: {
           set: function(cameraOn){
-              console.log("setting camera on in canvas to :", cameraOn);
+              //console.log("setting camera on in canvas to :", cameraOn);
               this._cameraOn = cameraOn;
               this.renderCamera();
           },

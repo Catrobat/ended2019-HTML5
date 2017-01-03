@@ -770,10 +770,10 @@ PocketCode.MediaDevice = (function () {
             this._startCamera(constraints);
         },
         _handleCameraError: function (error, errorCallback) {
-            console.log("error:", error);
+            console.log("error:", error);   //TODO: get rid of console log- handle exceptions or throw them!
             if (error.name === 'ConstraintNotSatisfiedError') {
                 console.log("CONSTRAINTS NOT SATISFIED");
-            } else if (error.name === 'PermissionDeniedError') {
+            } else if (error.name === 'PermissionDeniedError') {    //check for https:// and Blobreader vs Blob when setting onSupported
                 this._cameraAccessDenied = true;
                 console.log('Permissions have not been granted to use your camera and ' +
                     'microphone, you need to allow the page access to your devices in ' +

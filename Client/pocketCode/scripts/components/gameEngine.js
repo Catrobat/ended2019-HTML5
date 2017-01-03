@@ -202,7 +202,7 @@ PocketCode.GameEngine = (function () {
             this.loadProject(this._jsonProject);
         },
         loadProject: function (jsonProject) {
-            console.log("LOADING PROJECT");
+            //console.log("LOADING PROJECT");
             if (this._disposing || this._disposed)
                 return;
             if (this._executionState == PocketCode.ExecutionState.PAUSED || this._executionState == PocketCode.ExecutionState.RUNNING)
@@ -255,23 +255,24 @@ PocketCode.GameEngine = (function () {
             this._lists = jsonProject.lists || [];
 
             this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.Device(this._soundManager);
-            console.log("STARTING GAME ENGINE");
+            //console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
 
-            console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
+            //console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
 
             if (!jsonProject.scenes || jsonProject.scenes.length < 1)
-                throw new Error('No scnene found in project');
+                throw new Error('No scene found in project');
 
             var broadcasts = jsonProject.broadcasts || [];
             var scenes = jsonProject.scenes;
 
+            var scene
             for (var i = 0, l = scenes.length; i < l; i++) {
-                var scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
+                scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
 
                 this._sceneIds.push(scenes[i].id);
                 this._scenes[scenes[i].id] = scene;
@@ -353,7 +354,7 @@ PocketCode.GameEngine = (function () {
             this._sounds = this._jsonProject.sounds || [];
         },
         _cameraChangedHandler: function(e) {
-            console.log("CAMERA CHANGED HANDLER");
+            //console.log("CAMERA CHANGED HANDLER");
             this._onCameraUsageChanged.dispatchEvent(e);
         },
         _soundManagerLoadHandler: function (e) {
@@ -433,7 +434,7 @@ PocketCode.GameEngine = (function () {
             return false;
         },
         resumeProject: function () {
-            console.log("current scene :", this._currentScene);
+            //console.log("current scene :", this._currentScene);
             if(this._currentScene){
                 this._currentScene.resumeOrStart();
             }
