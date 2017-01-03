@@ -87,6 +87,9 @@ PocketCode.GameEngine = (function () {
             set: function (scene) {
                 if (!(scene instanceof PocketCode.Model.Scene))
                     throw new Error('invalid argument: scene');
+                if (this.__currentScene === scene)
+                    return;
+
                 this.__currentScene = scene;
                 this._onSceneChanged.dispatchEvent({
                     id: scene.id,
@@ -185,7 +188,7 @@ PocketCode.GameEngine = (function () {
         },
         onCameraUsageChanged: {
             get: function(){
-                return this._onCameraUsageChanged;
+                return this._onCameraUsageChanged;  //TODO: in use?
             }
         },
     });

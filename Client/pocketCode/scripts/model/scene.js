@@ -14,27 +14,25 @@
 PocketCode.Model.Scene = (function () {
     Scene.extends(PocketCode.UserVariableHost, false);
 
-    function Scene(jsonScene, minLoopCycleTime, totalBrickCount, gameEngine, device, soundManager, onSpriteUiChange) {
+    function Scene(jsonScene, minLoopCycleTime, totalBrickCount, device, soundManager, onSpriteUiChange) {
         //PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL); //todo need this?
 
-        //this._jsonScene = jsonScene;
-        this._background = undefined;
-        this._gameEngine = gameEngine;
         //todo id background sprite
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
         this._collisionManager = new PocketCode.CollisionManager(0, 0);  //TODO: jsonScene.screenWidth, jsonScene.screenHeight);
 
-        this._broadcasts = [];
-        this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
-        this._bricksTotal = totalBrickCount;
-        this._bricksLoaded = 0;
-
+        this._background = undefined;
         this._sprites = [];
         this._originalSpriteOrder = [];
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms //todo param?
         this._device = device;
         this._soundManager = soundManager;
+
+        this._broadcasts = [];
+        this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts);
+        this._bricksTotal = totalBrickCount;
+        this._bricksLoaded = 0;
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
@@ -142,6 +140,7 @@ PocketCode.Model.Scene = (function () {
         },
     });
 
+    //events
     Object.defineProperties(Scene.prototype, {
         onStart: {
             get: function () { return this._onStart; },
@@ -219,9 +218,9 @@ PocketCode.Model.Scene = (function () {
         resumeOrStart: function () {
             if (this._executionState !== PocketCode.ExecutionState.PAUSED) {
 
-                this._gameEngine.changeScene( this._id );
+                this._gameEngine.changeScene(this._id);
 
-              return true;
+                return true;
             }
 
 
@@ -240,7 +239,7 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
 
 
-          this._gameEngine.changeScene( this._id );
+            this._gameEngine.changeScene(this._id);
             return true;
         },
         stop: function () {
@@ -259,7 +258,12 @@ PocketCode.Model.Scene = (function () {
 
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
-        removeSpriteFactoryEventListeners: function () {
+
+        _spriteFactoryOnProgressChangeHandler: function (e) {
+            this._bricksLoaded = e.parsed;
+            this._onProgressChange.dispatchEvent(e);
+        },
+        removeSpriteFactoryEventListeners: function () {    //TODO
             this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
         },
         _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
@@ -361,7 +365,7 @@ PocketCode.Model.Scene = (function () {
             //used by the sprite to access an image during look init
             return this._imageStore.getImage(id);
         },
-        setCameraTransparency: function(value) {
+        setCameraTransparency: function (value) {
             return this._background.setCameraTransparency(value);
         },
         setBackground: function (lookId) {
@@ -406,7 +410,7 @@ PocketCode.Model.Scene = (function () {
             this._onSpriteUiChange.dispatchEvent({ id: sprite.id, properties: { layer: sprites.length } }, sprite);    //including background
             return true;
         },
-        setSpritePosition: function (spriteId, type, destinationSpriteId) {
+        setSpritePosition: function (spriteId, type, destinationSpriteId) { //called by: GoToBrick
             switch (type) {
                 case PocketCode.Model.GoToType.POINTER:
                     //TODO
@@ -415,18 +419,17 @@ PocketCode.Model.Scene = (function () {
                     //TODO
                     break;
                 case PocketCode.Model.GoToType.SPRITE:
-                    //TODO
+                    //TODO: destinationSpriteId is used here to get the coords
                     break;
             }
         },
 
-        _spriteFactoryOnProgressChangeHandler: function (e) {
-                this._bricksLoaded = e.parsed;
-                this._onProgressChange.dispatchEvent(e);
+        clearPenStampBackground: function() {
+            return true;    //TODO
         },
 
         cloneSprite: function (id) {
-            if (this._background && this._background.id == id )
+            if (this._background && this._background.id == id)
                 return false;
 
             var sprite = this.getSpriteById(id),
@@ -442,7 +445,7 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
 
-        deleteClone: function(cloneId) {
+        deleteClone: function (cloneId) {
             var clone = this.getSpriteById(cloneId);
 
             this._sprites.remove(clone);

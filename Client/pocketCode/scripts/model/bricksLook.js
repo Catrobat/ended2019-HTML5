@@ -53,43 +53,6 @@ PocketCode.Model.merge({
 
 PocketCode.Model.merge({
 
-    SetBackgroundBrick: (function () {
-        SetBackgroundBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetBackgroundBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._scene = scene;
-
-            //this._lookId = param.lookId;
-            this._lookId = propObject.lookId;
-        }
-
-        SetBackgroundBrick.prototype._execute = function () {
-            if (this._lookId)  //can be null
-                this._return(this._scene.setBackground(this._lookId));
-        };
-
-        return SetBackgroundBrick;
-    })(),
-
-    SetBackgroundAndWaitBrick: (function () {
-        SetBackgroundAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function SetBackgroundAndWaitBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
-            this._scene = scene;
-            //this._lookId = param.lookId;
-            this._lookId = propObject.lookId;
-        }
-
-        SetBackgroundAndWaitBrick.prototype._execute = function () {
-            /*if (this._lookId)  //can be null
-                this._return(this._scene.setBackground(this._lookId));*/
-        };
-
-        return SetBackgroundAndWaitBrick;
-    })(),
-
     SetLookBrick: (function () {
         SetLookBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -135,142 +98,6 @@ PocketCode.Model.merge({
         };
 
         return PreviousLookBrick;
-    })(),
-
-    AskBrick: (function () {
-        AskBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function AskBrick(device, sprite, propObject) {
-            // TODO GameEngine wrong (and missing!) !
-            PocketCode.Model.BaseBrick.call(this, device, sprite, gameEngine, propObject);
-
-            this._gameEngine = gameEngine;
-            this._question = new PocketCode.Formula(device, sprite, propObject.text);
-
-            if (propObject.resourceId) //can be null
-                this._var = sprite.getVariable(propObject.resourceId);
-        }
-
-        AskBrick.prototype.merge({
-            _onInputHandler: function (e) {
-                this._var.value = e.input;
-                //this._var.value = this._value.calculate();
-            },
-            _execute: function () {
-                var question = this._question.calculate();
-
-                if (this._var)  //can be undefined
-                    this._gameEngine.showAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
-
-                this._return();
-            },
-        });
-        return AskBrick;
-    })(),
-
-    SelectCameraBrick: (function () {
-        SelectCameraBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SelectCameraBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            if (propObject && propObject.selected)    //set and 1
-                this._selected = PocketCode.CameraType.FRONT;
-            else
-                this._selected = PocketCode.CameraType.BACK;
-
-            //this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
-        }
-
-        SelectCameraBrick.prototype._execute = function () {
-            if (this._selected == this._device.selectedCamera) {
-                this._return(false);
-                return;
-            }
-
-            this._device.selectedCamera = this._selected;
-            if (this._device.cameraOn)
-                this._return(true);
-            else
-                this._return(false);
-        };
-
-        return SelectCameraBrick;
-    })(),
-
-    CameraBrick: (function () {
-        CameraBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function CameraBrick(device, sprite, propObject) {
-            console.log("CREATING CAMERA BRICK");
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._selected = parseInt(propObject.selected) == 1;
-
-//{0: off, 1: on}
-             //call on ctr to notify our device this feature is in use without changing the setting
-        }
-
-        CameraBrick.prototype.merge({
-            _execute: function () {
-                console.log("EXECUTION");
-                console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
-                this._device.cameraOn = this._selected;
-                /*if (this._selected == true  && !this._device.cameraOn){
-                    console.log("turning it on");
-                    this._device.cameraOn = true;
-                }
-
-                else if (!this._selected && this._device.cameraOn){
-                    this._device.cameraOn = false;
-                }
-
-                else {  //set already
-                    this._return(false);
-                    return;
-                }*/
-                this._return(true);
-            },
-            pause: function () {
-                console.log(" pausing cameraa");
-                this._device.cameraOn = false;
-            },
-            resume: function () {
-                console.log("resuming brick");
-                this._execute();
-            },
-            stop: function () {
-                console.log("stopping the brick");
-
-                //this._device.cameraOn = false;
-            },
-            dispose: function () {
-                console.log("disposing the brick");
-                //this._device.cameraOn = false;
-            },
-        });
-
-        return CameraBrick;
-    })(),
-
-    SetCameraTransparencyBrick: (function () {
-        SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetCameraTransparencyBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
-        }
-
-        SetCameraTransparencyBrick.prototype._execute = function () {
-            var val = this._value.calculate();
-            if (isNaN(val))
-                this._return(false);
-            else
-                return this._scene.setCameraTransparency(val);
-        };
-
-        return SetCameraTransparencyBrick;
     })(),
 
     SetSizeBrick: (function () {
@@ -339,6 +166,37 @@ PocketCode.Model.merge({
         };
 
         return ShowBrick;
+    })(),
+
+    AskBrick: (function () {
+        AskBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function AskBrick(device, sprite, propObject) {
+            // TODO GameEngine wrong (and missing!) !
+            PocketCode.Model.BaseBrick.call(this, device, sprite, gameEngine, propObject);
+
+            this._gameEngine = gameEngine;
+            this._question = new PocketCode.Formula(device, sprite, propObject.text);
+
+            if (propObject.resourceId) //can be null
+                this._var = sprite.getVariable(propObject.resourceId);
+        }
+
+        AskBrick.prototype.merge({
+            _onInputHandler: function (e) {
+                this._var.value = e.input;
+                //this._var.value = this._value.calculate();
+            },
+            _execute: function () {
+                var question = this._question.calculate();
+
+                if (this._var)  //can be undefined
+                    this._gameEngine.showAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
+
+                this._return();
+            },
+        });
+        return AskBrick;
     })(),
 
     BubbleType: {
@@ -549,6 +407,149 @@ PocketCode.Model.merge({
 
         return ClearGraphicEffectBrick;
     })(),
+
+    SetBackgroundBrick: (function () {
+        SetBackgroundBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetBackgroundBrick(device, sprite, scene, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._scene = scene;
+
+            //this._lookId = param.lookId;
+            this._lookId = propObject.lookId;
+        }
+
+        SetBackgroundBrick.prototype._execute = function () {
+            if (this._lookId)  //can be null
+                this._return(this._scene.setBackground(this._lookId));
+        };
+
+        return SetBackgroundBrick;
+    })(),
+
+    SetBackgroundAndWaitBrick: (function () {
+        SetBackgroundAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
+
+        function SetBackgroundAndWaitBrick(device, sprite, scene, propObject) {
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
+            this._scene = scene;
+            //this._lookId = param.lookId;
+            this._lookId = propObject.lookId;
+        }
+
+        SetBackgroundAndWaitBrick.prototype._execute = function () {
+            /*if (this._lookId)  //can be null
+                this._return(this._scene.setBackground(this._lookId));*/
+        };
+
+        return SetBackgroundAndWaitBrick;
+    })(),
+
+    CameraBrick: (function () {
+        CameraBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function CameraBrick(device, sprite, propObject) {
+            console.log("CREATING CAMERA BRICK");
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            this._selected = parseInt(propObject.selected) == 1;
+
+            //{0: off, 1: on}
+            //call on ctr to notify our device this feature is in use without changing the setting
+        }
+
+        CameraBrick.prototype.merge({
+            _execute: function () {
+                console.log("EXECUTION");
+                console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
+                this._device.cameraOn = this._selected;
+                /*if (this._selected == true  && !this._device.cameraOn){
+                    console.log("turning it on");
+                    this._device.cameraOn = true;
+                }
+
+                else if (!this._selected && this._device.cameraOn){
+                    this._device.cameraOn = false;
+                }
+
+                else {  //set already
+                    this._return(false);
+                    return;
+                }*/
+                this._return(true);
+            },
+            pause: function () {
+                console.log(" pausing cameraa");
+                this._device.cameraOn = false;
+            },
+            resume: function () {
+                console.log("resuming brick");
+                this._execute();
+            },
+            stop: function () {
+                console.log("stopping the brick");
+
+                //this._device.cameraOn = false;
+            },
+            dispose: function () {
+                console.log("disposing the brick");
+                //this._device.cameraOn = false;
+            },
+        });
+
+        return CameraBrick;
+    })(),
+
+    SelectCameraBrick: (function () {
+        SelectCameraBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SelectCameraBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            if (propObject && propObject.selected)    //set and 1
+                this._selected = PocketCode.CameraType.FRONT;
+            else
+                this._selected = PocketCode.CameraType.BACK;
+
+            //this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
+        }
+
+        SelectCameraBrick.prototype._execute = function () {
+            if (this._selected == this._device.selectedCamera) {
+                this._return(false);
+                return;
+            }
+
+            this._device.selectedCamera = this._selected;
+            if (this._device.cameraOn)
+                this._return(true);
+            else
+                this._return(false);
+        };
+
+        return SelectCameraBrick;
+    })(),
+
+    //currently not planned?
+    //SetCameraTransparencyBrick: (function () {
+    //    SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
+
+    //    function SetCameraTransparencyBrick(device, sprite, scene, propObject) {
+    //        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+    //        this._scene = scene;
+    //        this._value = new PocketCode.Formula(device, sprite, propObject.value);
+    //    }
+
+    //    SetCameraTransparencyBrick.prototype._execute = function () {
+    //        var val = this._value.calculate();
+    //        if (isNaN(val))
+    //            this._return(false);
+    //        else
+    //            return this._scene.setCameraTransparency(val);
+    //    };
+
+    //    return SetCameraTransparencyBrick;
+    //})(),
 
     FlashBrick: (function () {
         FlashBrick.extends(PocketCode.Model.BaseBrick, false);

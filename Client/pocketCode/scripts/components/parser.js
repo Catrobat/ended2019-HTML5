@@ -15,9 +15,9 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, project, soundMgr, bricksTotal, minLoopCycleTime) {
+        function SpriteFactory(device, gameEngine, soundMgr, bricksTotal, minLoopCycleTime) {
             this._device = device;
-            this._project = project;
+            this._gameEngine = gameEngine;
             this._soundMgr = soundMgr;
             this._bricksTotal = bricksTotal;
             this._minLoopCycleTime = minLoopCycleTime;
@@ -48,11 +48,11 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 bricksLoaded = bricksLoaded || 0;
-                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
                 brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
                 brickFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
 
-                var sprite = new PocketCode.Model.Sprite(this._project, currentScene, jsonSprite);
+                var sprite = new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
@@ -70,7 +70,7 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, 0, this._minLoopCycleTime);
-                var clone = new PocketCode.Model.SpriteClone(this._project, currentScene, jsonSprite, definition);
+                var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
                     scripts.push(brickFactory.create(clone, jsonSprite.scripts[i]));
@@ -80,7 +80,7 @@ PocketCode.merge({
                 return clone;
             },
             dispose: function () {
-                this._project = undefined;
+                this._gameEngine = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
@@ -92,8 +92,9 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, scene, broadcastMgr, soundMgr, totalCount, loadedCount, minLoopCycleTime) {
+        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, totalCount, loadedCount, minLoopCycleTime) {
             this._device = device;
+            this._gameEngine = gameEngine;
             this._scene = scene;
             this._broadcastMgr = broadcastMgr;
             this._soundMgr = soundMgr;
@@ -129,31 +130,47 @@ PocketCode.merge({
                 var brick = undefined;
 
                 switch (type) {
-                    //in development
-                    case 'WhenConditionMetBrick':
-                    case 'SetBackgroundBrick':
-                    case 'WhenCollisionBrick':
-                    case 'SetPhysicsObjectTypeBrick':
-                    case 'SetVelocityBrick':
-                    case 'RotationSpeedLeftBrick':
-                    case 'RotationSpeedRightBrick':
-                    case 'SetGravityBrick':
-                    case 'SetMassBrick':
-                    case 'SetBounceFactorBrick':
-                    case 'SetFrictionBrick':
+                    //not yet planed?:
+                    //case 'ResetTimerBrick':
+                    //    brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine.projectTimer, jsonBrick);
+                    //    break;
+                    //case 'SetCameraTransparencyBrick':  //add scene to cntr - access background
 
-                    case 'SelectCameraBrick':
-                    //case 'CameraBrick':
-                    case 'SetCameraTransparencyBrick':  //add scene to cntr - access background
-
+                    //not part of current Android release:
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                    case 'PlaySoundAndWaitBrick':
-                    case 'SpeakAndWaitBrick':
+                    //in development:
+                    //case 'WhenConditionMetBrick':
+                    //case 'StopScriptBrick':
+                    //case 'SetBackgroundBrick':
+                    //case 'WhenCollisionBrick':
+                    //case: 'WhenStartAsCloneBrick':
+                    //case 'CloneBrick':
+                    //case 'DeleteCloneBrick':
+                    //case 'SetPhysicsObjectTypeBrick':
+                    //case 'SetVelocityBrick':
+                    //case 'RotationSpeedLeftBrick':
+                    //case 'RotationSpeedRightBrick':
+                    //case 'SetGravityBrick':
+                    //case 'SetMassBrick':
+                    //case 'SetBounceFactorBrick':
+                    //case 'SetFrictionBrick':
+
+                    //case 'SelectCameraBrick':
+                    //case 'CameraBrick':
+
+                    //case 'PlaySoundAndWaitBrick':
+                    //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
-                        //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+                    //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+
+                    //active:
+                    case 'WhenCollisionBrick':
+                    case 'SetPhysicsObjectTypeBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);
+                        break;
 
                     case 'WhenProgramStartBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onStart);
@@ -170,21 +187,28 @@ PocketCode.merge({
                         }
                         break;
 
-                    //case 'ResetTimerBrick':
-                    //    brick = new PocketCode.Model[type](this._device, currentSprite, this._project.projectTimer);
-                    //    break;
+                    case 'CloneBrick':
+                    case 'DeleteCloneBrick':
+                    case 'SetGravityBrick':
+                    case 'SetBackgroundBrick':
+                    case 'SetBackgroundAndWaitBrick':
+                    case 'ClearBackground':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
+                        break;
 
-                    case 'WhenBroadcastReceiveBrick':
                     case 'BroadcastBrick':
                     case 'BroadcastAndWaitBrick':
+                    case 'WhenBroadcastReceiveBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
                     case 'PlaySoundBrick':
+                    case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
                     case 'SetVolumeBrick':
                     case 'ChangeVolumeBrick':
                     case 'SpeakBrick':
+                    case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
@@ -192,12 +216,30 @@ PocketCode.merge({
                     case 'ForeverBrick':
                     case 'RepeatBrick':
                     case 'RepeatUntilBrick':
+                    case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
                         break;
+
+                    case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, PocketCode.Web.PlayerInterface._player._pages.PlayerPageController._gameEngine, this._scene);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
+                    case 'WhenBackgroundChangesToBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onBackgroundChange);
+                        break;
+
+                    case 'StopScriptBrick':
+                        alert("TODO: stopscriptbrick");
+                        break;
+
+                    //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
+                    //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, GoToBrick, IfOnEdgeBounce, MoveNSteps
+                    //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
+                    //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
+                    //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Ask, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
+                    //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
+                    //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
                     default:
                         if (PocketCode.Model[type])
                             brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
@@ -206,12 +248,12 @@ PocketCode.merge({
                         }
                 }
 
-                if (brick instanceof PocketCode.Model.UnsupportedBrick)
+                if (brick instanceof PocketCode.Model.UnsupportedBrick) {
                     this._unsupportedBricks.push(brick);
-
-
+                }
+                else {
                 //load sub bricks
-                if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
+                //if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
                     if (jsonBrick.bricks)   //all loops
                         brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
@@ -789,37 +831,37 @@ PocketCode.merge({
 
                     case 'CURRENT_MONTH':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'month';
 
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'day';
 
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'weekday';
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'hour';
 
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'minute';
 
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':    //TODO
                         if (uiString)
-                            return 'year';
+                            return 'second';
 
                         return '(new Date()).getSeconds()';
 
@@ -881,7 +923,7 @@ PocketCode.merge({
 
                     case 'ACCURACY':
                         if (uiString)
-                            return 'accuracy';  //TODO: check UI string
+                            return 'location_accuracy';  //TODO: check UI string
 
                         return 'this._device.geoAccuracy';
 
