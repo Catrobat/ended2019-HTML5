@@ -250,7 +250,7 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -290,7 +290,7 @@ QUnit.test("JsonpRequest", function (assert) {
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/824/details");//, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
+    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/824/details");//, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
     req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -323,7 +323,7 @@ QUnit.test("JsonpRequest", function (assert) {
         onLoad = 0;
         onProgressChange = 0;
 
-        req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+        req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
 
         req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
         req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
@@ -332,7 +332,7 @@ QUnit.test("JsonpRequest", function (assert) {
         req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
         req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
-        req2.send({ deleteId: 123 }, SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+        req2.send({ deleteId: 123 }, SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
     };
 
     //invalid tag
@@ -397,7 +397,7 @@ QUnit.test("JsonpRequest", function (assert) {
     //    onProgressChange = 0;
     //    onError = 0;
 
-    //    req4 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+    //    req4 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
 
     //    req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler4, this));
     //    req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
@@ -406,7 +406,7 @@ QUnit.test("JsonpRequest", function (assert) {
     //    //req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
     //    //req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
-    //    req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.2/projects/817");
+    //    req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.3/projects/817");
     //};
 
 
@@ -462,7 +462,7 @@ QUnit.test("Proxy", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -537,7 +537,7 @@ QUnit.test("Proxy", function (assert) {
         runTest4();
     };
     var onErrorHandler3 = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
 
         done3();
         runTest4();
