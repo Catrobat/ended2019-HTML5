@@ -230,8 +230,8 @@ PocketCode.merge({
                         break;
 
                     case 'StopScriptBrick':
-                        alert("TODO: stopscriptbrick");
-                        break;
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._currentScriptId, jsonBrick);
+                        //break;
 
                     //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
                     //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, GoToBrick, IfOnEdgeBounce, MoveNSteps
@@ -264,11 +264,6 @@ PocketCode.merge({
 
                 this._parsed++; //this has to be incremented after creating the sub items to avoid the unsupported brick event trigger more than once
                 this._updateProgress();
-
-                //add event listener
-                //if (brick instanceof PocketCode.Model.ScriptBlock) {
-                //	//TODO: this has to be handled by the brick itself: check if there is a testcast for adding an event handler
-                //}
 
                 if (this._total === this._parsed && this._unsupportedBricks.length > 0)
                     this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
