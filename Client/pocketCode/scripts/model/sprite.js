@@ -1393,11 +1393,9 @@ PocketCode.Model.merge({
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
         function BackgroundSprite(gameEngine, scene, propObject) {
-
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
             this._cameraTransparency = 0.5; //default
-
             this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
         }
 

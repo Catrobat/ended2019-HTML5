@@ -25,15 +25,15 @@ PocketCode.GameEngine = (function () {
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourcesLoaded = false;
         this._resourceLoadedSize = 0;
-        this._spritesLoaded = false;
+        this._scenesLoaded = false;
         this._spritesLoadingProgress = 0;
 
         this._id = '';
         this.title = '';
         this.description = '';
         this.author = '';
-        this._originalScreenHeight = 0;
-        this._originalScreenWidth = 0;
+        //this._originalScreenHeight = undefined;//0;
+        //this._originalScreenWidth = undefined;//0;
         this.resourceBaseUrl = '';
 
         this._imageStore = new PocketCode.ImageStore();
@@ -109,7 +109,7 @@ PocketCode.GameEngine = (function () {
         },
         projectLoaded: {
             get: function () {
-                return this._resourcesLoaded && this._spritesLoaded;
+                return this._resourcesLoaded && this._scenesLoaded;
             },
         },
         projectScreenSize: {
@@ -119,8 +119,8 @@ PocketCode.GameEngine = (function () {
         },
         muted: {
             set: function (value) {
-                //if (typeof value !== 'boolean')
-                //    throw new Error('invalid parameter: muted');
+                if (typeof value !== 'boolean')
+                    throw new Error('invalid parameter: muted');
                 this._soundManager.muted = value;
             },
         },
@@ -135,9 +135,6 @@ PocketCode.GameEngine = (function () {
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
             },
         },
-
-
-
         collisionManager: { //TODO: public?
             get: function () {
                 if (!this._currentScene)
@@ -187,7 +184,7 @@ PocketCode.GameEngine = (function () {
             get: function () { return this._onTouchStartAction; },
         },
         onCameraUsageChanged: {
-            get: function(){
+            get: function () {
                 return this._onCameraUsageChanged;  //TODO: in use?
             }
         },
@@ -207,12 +204,13 @@ PocketCode.GameEngine = (function () {
                 return;
             if (this._executionState == PocketCode.ExecutionState.PAUSED || this._executionState == PocketCode.ExecutionState.RUNNING)
                 this.stopProject();
-            if (!jsonProject)
+
+            if (typeof jsonProject != 'object')
                 throw new Error('invalid argument: json project');
             else
                 this._jsonProject = jsonProject;
 
-            this._spritesLoaded = false;
+            this._scenesLoaded = false;
             this._resourcesLoaded = false;
             this._loadingAlerts = {
                 invalidSoundFiles: [],
@@ -254,12 +252,25 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.Device(this._soundManager);
+            if (this._device)
+                this._device.dispose();
+            this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             //console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
 
             //console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
+
+            this.__currentScene = undefined;
+            for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+                var id = this._sceneIds[i];
+                this._scenes[id].dispose();
+                delete this._scenes[id];
+            }
+            //this._scenes = {};
+            this._sceneIds = [];
+            //this.__currentScene = undefined;
+
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
@@ -313,14 +324,14 @@ PocketCode.GameEngine = (function () {
             }
 
             if (this._fullProgress === 100) {
-                this._spritesLoaded = true;
+                this._scenesLoaded = true;
                 for (var i = 0, l = this._sceneIds.length; i < l; i++) {
                     var id = this._sceneIds[i];
                     this._scenes[id].removeSpriteFactoryEventListeners();
                 }
                 if (this._resourcesLoaded) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                    this._initSprites();
+                    this._initSceneSprites();
                     this._handleLoadingComplete();
                 }
             }
@@ -335,11 +346,14 @@ PocketCode.GameEngine = (function () {
             //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
         //todo this initsialises all spritest from all scenes -> might be too much
-        _initSprites: function () {
-            for (var i = 0, l = this._sceneIds.length; i < l; i++) {
-                var id = this._sceneIds[i];
-                this._scenes[id].initializeSprites();
-            }
+        _initSceneSprites: function () {
+            for (var s in this._scenes)
+                this._scenes[s].initializeSprites();
+
+            //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+            //    var id = this._sceneIds[i];
+            //    this._scenes[id].initializeSprites();
+            //}
         },
         _resourceProgressChangeHandler: function (e) {
             if (!e.file || !e.file.size)
@@ -353,7 +367,7 @@ PocketCode.GameEngine = (function () {
         _imageStoreLoadHandler: function (e) {
             this._sounds = this._jsonProject.sounds || [];
         },
-        _cameraChangedHandler: function(e) {
+        _cameraChangedHandler: function (e) {
             //console.log("CAMERA CHANGED HANDLER");
             this._onCameraUsageChanged.dispatchEvent(e);
         },
@@ -361,30 +375,33 @@ PocketCode.GameEngine = (function () {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
             this._resourcesLoaded = true;
-            if (this._spritesLoaded) {
+            if (this._scenesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
-                this._initSprites();
+                this._initSceneSprites();
                 this._handleLoadingComplete();
             }
         },
         _handleLoadingComplete: function () {
+            this._currentScene = this._sceneIds.length > 0 ? this._scenes[this._sceneIds[0]] : undefined;   //first
+
             var loadingAlerts = this._loadingAlerts;
             var device = this._device;
 
             loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
             loadingAlerts.deviceEmulation = device.emulationInUse;
             loadingAlerts.deviceLockRequired = device.mobileLockRequired;
+
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
                 this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
-                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts});   //dispatch warnings
+                this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {
-              this._onLoad.dispatchEvent();
-              for (var c in this._scenes) {
-                this._currentScene = this._scenes[c];
-                break;
-              }
+                this._onLoad.dispatchEvent();
+                //for (var c in this._scenes) {
+                //  this._currentScene = this._scenes[c];
+                //  break;
+                //}
             }
         },
         _resourceLoadingErrorHandler: function (e) {
@@ -394,24 +411,25 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
-            if (this._currentScene._executionState === PocketCode.ExecutionState.RUNNING)
-                this._currentScene.onSpriteTappedAction.dispatchEvent({ sprite: this._currentScene.background });
+            var cs = this._currentScene;
+            if (cs._executionState === PocketCode.ExecutionState.RUNNING)
+                cs.onSpriteTappedAction.dispatchEvent({ sprite: cs.background });
         },
         //project interaction
         runProject: function (reinitSprites) {
             var currentScene = this._currentScene;
             if (!currentScene || currentScene.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
-            if (!this.projectLoaded) {
+            if (!this.projectLoaded)
                 throw new Error('no project loaded');
-            }
 
             if (currentScene.executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
             if (this._device)   //not defined if project lot loaded
                 this._device.clearTouchHistory();
-            reinitSprites = reinitSprites || true;
+            if (reinitSprites !== false)
+                reinitSprites = true;
             //if reinit: all sprites properties have to be set to their default values: default true
             if (reinitSprites != false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 this._resetVariables();  //global
@@ -420,13 +438,13 @@ PocketCode.GameEngine = (function () {
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
-          //console.log("scene start: " );
+            //console.log("scene start: " );
             currentScene.start();
         },
         restartProject: function (reinitSprites) {
             this.stopProject();
             //this.projectTimer.stop();
-            window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
+            window.setTimeout(this.runProject.bind(this, reinitSprites), 200);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._currentScene)
@@ -435,14 +453,15 @@ PocketCode.GameEngine = (function () {
         },
         resumeProject: function () {
             //console.log("current scene :", this._currentScene);
-            if(this._currentScene){
-                this._currentScene.resumeOrStart();
-            }
-
+            if (this._currentScene)
+                return this._currentScene.resume();
+            return false;
         },
         stopProject: function () {
             //this._soundManager.stopAllSounds();
-            this._currentScene.stop();
+            if (this._currentScene)
+                return this._currentScene.stop();
+            return false;
         },
         _soundManagerFinishedPlayingHandler: function () {
             //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
@@ -452,24 +471,42 @@ PocketCode.GameEngine = (function () {
             return this._imageStore.getImage(id);
         },
         handleUserAction: function (e) {
-            this._currentScene.handleUserAction(e);
+            if (this._currentScene)
+                this._currentScene.handleUserAction(e);
         },
-        changeScene: function (sceneId) {
-            if (sceneId === this._currentScene.id)
-                return;
-            var sceneToStart = this.getSceneById(sceneId);
-            this._currentScene.pause();
-            this._currentScene = sceneToStart;
-            //todo inform rendering
-
-          this._currentScene.start();
-        },
-
-        getSceneById: function (id) {
-            if(!this._scenes[id])
+        getSceneById: function (id) {   //TODO public required?
+            if (!this._scenes[id])
                 throw new Error('no Scene with id ' + id + ' found');
             return this._scenes[id];
         },
+        //changeScene: function (sceneId) {
+        //    if (sceneId === this._currentScene.id)
+        //        return;
+        //    var sceneToStart = this.getSceneById(sceneId);
+        //    if (!sceneToStart)
+        //        throw new Error("changeScene: scene could not be found");
+        //    this._currentScene.pause();
+        //    this._currentScene = sceneToStart;
+        //    //todo inform rendering
+
+        //    this._currentScene.start();
+        //},
+        startScene: function (sceneId) {
+            var cs = this._currentScene;
+            if (!cs)
+                return false;
+            if (cs.id == sceneId && cs.executionState == PocketCode.ExecutionState.RUNNING)
+                return false;
+
+            //TODO: set to current scene + start
+        },
+        resumeOrStartScene: function (sceneId) {
+            if (!this._currentScene || this._currentScene.id == sceneId)
+                return false;
+
+            //TODO:  set to current scene + start or resume dending on its execution state
+        },
+
         /* override */
         dispose: function () {
             if (this._disposed)
@@ -507,9 +544,6 @@ PocketCode.GameEngine = (function () {
 
             //call super
             PocketCode.UserVariableHost.prototype.dispose.call(this);
-        },
-        showAskDialog: function (question, onExecutedListener) {
-            //todo
         },
     });
 

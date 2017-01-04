@@ -39,7 +39,7 @@ PocketCode.merge({
 
         //methods
         SpriteFactory.prototype.merge({
-            create: function (currentScene, broadcastMgr, bricksLoaded, jsonSprite) {
+            create: function (currentScene, broadcastMgr, bricksLoaded, jsonSprite, asBackground) {
                 if (!(currentScene instanceof PocketCode.Model.Scene))
                     throw new Error('invalid argument: current scene');
                 if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
@@ -52,7 +52,7 @@ PocketCode.merge({
                 brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
                 brickFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
 
-                var sprite = new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
+                var sprite = asBackground ? new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, jsonSprite) : new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));

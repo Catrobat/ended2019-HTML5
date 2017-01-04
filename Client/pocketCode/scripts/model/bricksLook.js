@@ -171,12 +171,12 @@ PocketCode.Model.merge({
     AskBrick: (function () {
         AskBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function AskBrick(device, sprite, propObject) {
+        function AskBrick(device, sprite, scene, propObject) {
             // TODO GameEngine wrong (and missing!) !
-            PocketCode.Model.BaseBrick.call(this, device, sprite, gameEngine, propObject);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._gameEngine = gameEngine;
-            this._question = new PocketCode.Formula(device, sprite, propObject.text);
+            this._scene = scene;
+            this._question = new PocketCode.Formula(device, sprite, propObject.question);
 
             if (propObject.resourceId) //can be null
                 this._var = sprite.getVariable(propObject.resourceId);
@@ -184,16 +184,16 @@ PocketCode.Model.merge({
 
         AskBrick.prototype.merge({
             _onInputHandler: function (e) {
-                this._var.value = e.input;
+                if (this._var)  //can be undefined
+                    this._var.value = e.input;
                 //this._var.value = this._value.calculate();
+                this._return();
             },
             _execute: function () {
                 var question = this._question.calculate();
+                this._scene.pauseAndShowAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
 
-                if (this._var)  //can be undefined
-                    this._gameEngine.showAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
-
-                this._return();
+                //this._return();   //TODO: threaded brick?
             },
         });
         return AskBrick;
