@@ -126,6 +126,8 @@ PocketCode.merge({
         //methods
         BrickFactory.prototype.merge({
             create: function (currentSprite, jsonBrick) {
+                if (jsonBrick.id && jsonBrick.type !== 'UserScript')
+                    this._currentScriptId = jsonBrick.id;
                 var type = jsonBrick.type + 'Brick';
                 var brick = undefined;
 
