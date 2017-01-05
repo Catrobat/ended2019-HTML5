@@ -708,7 +708,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
 
     b = new PocketCode.Model.WhenStartAsCloneBrick("device", "sprite", { x: 1, y: 2 }, PocketCode.Model.SpriteClone.onCloneStart);
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
 
     //test empty container

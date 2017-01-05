@@ -36,7 +36,7 @@ PocketCode.Model.merge({
     })(),
 
 
-    CallUserScriptBrick: (function () {
+    CallUserScriptBrick: (function () { //TODO make sure a script called can be canceled/stopped if the calling script gets stopped
         CallUserScriptBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function CallUserScriptBrick(device, sprite, propObject) {

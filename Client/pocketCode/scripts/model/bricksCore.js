@@ -5,16 +5,6 @@
 /// <reference path="../components/formula.js" />
 'use strict';
 
-/**
- * @fileOverview bricksCore: This file covers the different types of a brick. BrickContainer, BaseBrick, ThreadedBrick,
- * SingleContainerBrick, ScriptBlock, LoopBrick, UnsupportedBrick
- *
- * @author catrobat HTML5 team
- *
- */
-
-//if (!PocketCode.Model)    //defined in core.js
-//    PocketCode.Model = {};
 
 PocketCode.Model.merge({
 
@@ -427,6 +417,88 @@ PocketCode.Model.ScriptBlock = (function () {
     });
 
     return ScriptBlock;
+})();
+
+PocketCode.Model.SingleInstanceScriptBlock = (function () {
+    SingleInstanceScriptBlock.extends(PocketCode.Model.ScriptBlock, false);
+    /**
+     * Initializes onExecuted event
+     * @param device
+     * @param sprite
+     * @constructor
+     */
+    function SingleInstanceScriptBlock(device, sprite, propObject) {
+        PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+    }
+
+    ////properties
+    //Object.defineProperties(SingleInstanceScriptBlock.prototype, {
+    //    id: {
+    //        get: function () {
+    //            return this._id;
+    //        },
+    //    },
+    //    executionState: {
+    //        get: function () {
+    //            return this._executionState;
+    //        },
+    //    },
+    //});
+
+    ////events
+    //Object.defineProperties(SingleInstanceScriptBlock.prototype, {
+    //    /**
+    //     * returns onExecuted
+    //     * @event
+    //     * @return onExecuted
+    //     */
+    //    onExecuted: {
+    //        get: function () {
+    //            return this._onExecuted;
+    //        },
+    //    },
+    //});
+
+    ////methods
+    //SingleInstanceScriptBlock.prototype.merge({
+    //    /**
+    //     * execute method is overridden, as we need a specific return event handling to determine "program executed"
+    //     */
+    //    execute: function () {
+    //        this._executionState = PocketCode.ExecutionState.RUNNING;
+    //        PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
+    //            this._executionState = PocketCode.ExecutionState.STOPPED;
+    //            this._onExecuted.dispatchEvent();
+    //        }, this), SmartJs.getNewId());
+    //    },
+    //    /**
+    //     * calls "pause()" on bricks
+    //     */
+    //    /*pause: function () {
+    //        PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
+    //        //if (this._executionState === PocketCode.ExecutionState.RUNNING)
+    //        //    this._executionState = PocketCode.ExecutionState.PAUSED;
+    //        //^^ while pausing the bricks we do not updae the current exection state
+    //    },*/
+    //    /**
+    //     * calls "resume()" on bricks
+    //     */
+    //    /* resume: function () {
+    //         //if (this._executionState === PocketCode.ExecutionState.PAUSED)
+    //         //    this._executionState = PocketCode.ExecutionState.RUNNING;
+    //         PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
+    //     },*/
+    //    /**
+    //     * calls "stop()" on bricks and threadedBrick
+    //     */
+    //    stop: function () {
+    //        PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+    //        this._executionState = PocketCode.ExecutionState.STOPPED;
+    //    },
+    //});
+
+    return SingleInstanceScriptBlock;
 })();
 
 /**

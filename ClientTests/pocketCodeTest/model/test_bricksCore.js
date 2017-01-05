@@ -459,6 +459,11 @@ QUnit.test("ScriptBlock", function (assert) {
 });
 
 
+QUnit.test("SingleInstanceScriptBlock", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("LoopBrick", function (assert) {
 
     //assert.expect(4);   //init async asserts (to wait for)
