@@ -284,8 +284,8 @@ PocketCode.Model.Sprite = (function () {
                 var script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
-                    //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
-                    //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
+                    //if (!(script instanceof PocketCode.Model.SingleInstanceScriptBlock))                               //this change breaks our tests: //TODO: 
+                    //    throw new Error('invalid script block: every brick has to be inherited from SingleInstanceScriptBlock');
                     if (script.onExecuted)  //supported by all (root container) scripts
                         script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
                 }
