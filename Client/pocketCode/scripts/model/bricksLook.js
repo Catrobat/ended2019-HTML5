@@ -449,50 +449,18 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
-            //console.log("CREATING CAMERA BRICK");
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._selected = parseInt(propObject.selected) == 1;
+            this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
 
-            //{0: off, 1: on}
-            //call on ctr to notify our device this feature is in use without changing the setting
+            this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype.merge({
             _execute: function () {
-                //console.log("EXECUTION");
-                //console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
-                this._device.cameraOn = this._selected;
-                /*if (this._selected == true  && !this._device.cameraOn){
-                    console.log("turning it on");
-                    this._device.cameraOn = true;
-                }
-
-                else if (!this._selected && this._device.cameraOn){
-                    this._device.cameraOn = false;
-                }
-
-                else {  //set already
-                    this._return(false);
-                    return;
-                }*/
-                this._return(true);
-            },
-            pause: function () {
-                //console.log(" pausing cameraa");
-                this._device.cameraOn = false;
-            },
-            resume: function () {
-                //console.log("resuming brick");
-                this._execute();
-            },
-            stop: function () {
-                //console.log("stopping the brick");
-
-                //this._device.cameraOn = false;
-            },
-            dispose: function () {
-                //console.log("disposing the brick");
-                //this._device.cameraOn = false;
+                if (this._turnOn)
+                    this._return(this._device.startCamera());
+                else
+                    this._return(this._device.stopCamera());
             },
         });
 
@@ -505,25 +473,18 @@ PocketCode.Model.merge({
         function SelectCameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            if (propObject && propObject.selected)    //set and 1
-                this._selected = PocketCode.CameraType.FRONT;
-            else
+            if (propObject && propObject.selected == 0) {   //{0: back, 1: front}
                 this._selected = PocketCode.CameraType.BACK;
-
-            //this._device.selectedCamera = this._device.selectedCamera;   //call on ctr to notify our device this feature is in use without changing the setting
+                this._device.setCameraInUse(this._selected)
+            }
+            else {
+                this._selected = PocketCode.CameraType.FRONT;   //default
+                this._device.setCameraInUse(this._selected)
+            }
         }
 
         SelectCameraBrick.prototype._execute = function () {
-            if (this._selected == this._device.selectedCamera) {
-                this._return(false);
-                return;
-            }
-
-            this._device.selectedCamera = this._selected;
-            if (this._device.cameraOn)
-                this._return(true);
-            else
-                this._return(false);
+            this._return(this._device.setCameraType(this._selected));
         };
 
         return SelectCameraBrick;

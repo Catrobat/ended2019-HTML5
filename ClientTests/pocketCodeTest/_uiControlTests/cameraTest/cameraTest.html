@@ -1,153 +1,84 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Display Webcam Stream</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <title>testpage: camera</title>
+    <script src="../../../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
+    <script src="../../../../Client/player/pocketCodePlayer.js"></script>
+    <script src="../../../../Client/smartJs/sj.js"></script>
+    <script src="../../../../Client/smartJs/sj-core.js"></script>
+    <script src="../../../../Client/smartJs/sj-components.js"></script>
+    <script src="../../../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../../../Client/smartJs/sj-event.js"></script>
+    <script src="../../../../Client/smartJs/sj-ui.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/ui.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/physicsWorld.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/broadcastManager.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/collisionManager.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/soundManager.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/imageHelper.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/imageStore.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/model/userVariable.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/userVariableHost.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/model/look.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/model/sprite.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/model/scene.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/renderingItem.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/gameEngine.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/parser.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/device.js"></script>
 
-    <style>
-        #container {
-            margin: 0px auto;
-            width: 500px;
-            height: 375px;
-            border: 10px #333 solid;
-        }
-        @-webkit-keyframes rotate {
-           100%{
-               -webkit-transform: rotate(30deg);
-           }
-        }
-        #videoElement {
-            width: 0px;
-            height: 0px;
-            background-color: #666;
-            display: none;
-        }
-        #canvas {
-            width: 500px;
-            height: 375px;
-            -webkit-filter: grayscale(100%);
-            -webkit-animation: rotate 5s infinite linear;
+    <script src="../../../../Client/pocketCode/scripts/ui/canvas.js"></script>
 
+    <script src="cameraTest.js"></script>
+    <style type="text/css">
+        /* defining some style for the test page layout onnly */
+        html, body {
+            width: 100%;
+            height: 100%;
             background-color: #CCC;
+            padding: 0;
+            margin: 0;
+            overflow: auto;
+        }
+
+        div {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 5px;
+            border-bottom: solid 1px black;
+        }
+
+        canvas {
+            background-color: #FFF;
         }
     </style>
 
 </head>
-
 <body>
-<!-- On iOS 6 we can use the file select input with the following attributes to capture an image from the camera -->
-Camera:
-<select id="videoSource">
-
-</select>
-<break />
-
-<!-- For devices that support getUserMedia and have a webcam we can display the feed in a video element -->
-    <video autoplay id="videoElement">
-
-    </video>
-
-
-<canvas id="canvas" width="500" height="375"></canvas>
-
-
-<script>
-    var video = document.querySelector("#videoElement");
-    var v,canvas,context,w,h;
-    var videoSelect = document.querySelector('select#videoSource');
-
-    // check for getUserMedia support
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
-
-    if (navigator.getUserMedia) {
-        // get webcam feed if available
-        navigator.mediaDevices.getUserMedia({video: true}, handleVideo, videoError);
-    }
-
-    function handleVideo(stream) {
-        // if found attach feed to video element
-        window.stream = stream;
-        video.src = window.URL.createObjectURL(stream);
-        video.play();
-    }
-
-    function gotSources(sourceInfos) {
-        for (var i = 0; i !== sourceInfos.length; ++i) {
-            var sourceInfo = sourceInfos[i];
-            var option = document.createElement('option');
-            option.value = sourceInfo.devide;
-         if (sourceInfo.kind === 'videoinput') {
-                option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
-                videoSelect.appendChild(option);
-            } else {
-                console.log('Some other kind of source: ', sourceInfo);
-            }
-        }
-    }
-
-
-    function videoError(error) {
-        console.log("error:", error);
-        if (error.name === 'ConstraintNotSatisfiedError') {
-            console.log('The resolution ' + constraints.video.width.exact + 'x' +
-                    constraints.video.width.exact + ' px is not supported by your device.');
-        } else if (error.name === 'PermissionDeniedError') {
-            console.log('Permissions have not been granted to use your camera and ' +
-                    'microphone, you need to allow the page access to your devices in ' +
-                    'order for the demo to work.');
-        }
-        console.log('getUserMedia error: ' + error.name, error);
-    }
-
-    var imgtag = document.getElementById('imgtag'); // get reference to img tag
-    var sel = document.getElementById('fileselect'); // get reference to file select input element
-
-    document.addEventListener('DOMContentLoaded', function(){
-        // when DOM loaded, get canvas 2D context and store width and height of element
-        v = document.getElementById('videoElement');
-        canvas = document.getElementById('canvas');
-        context = canvas.getContext('2d');
-        context.drawImage(video, 0,0);
-
-        w = canvas.width;
-        h = canvas.height;
-
-        navigator.mediaDevices.enumerateDevices().then(gotSources).catch(videoError);
-
-        video.addEventListener('play',function(e){
-
-            draw(v,context,w,h);
-// when save button is clicked, draw video feed to canvas
-
-        });
-
-    },false);
-
-    function draw(v,context,w,h) {
-
-        if(v.paused || v.ended) return false; // if no video, exit here
-
-        context.drawImage(v,0,0,w,h); // draw video feed to canvas
-        setTimeout(draw, 10, v, context, w, h);
-    }
-
-    function changeSource() {
-        if (window.stream) {
-            video.src = null;
-            window.stream.stop();
-        }
-        var videoSource = videoSelect.value;
-        var constraints = {
-            video: {
-                optional: [{
-                    sourceId: videoSource
-                }]
-            }
-        };
-        navigator.getUserMedia(constraints, handleVideo, videoError);
-    }
-    videoSelect.onChange = changeSource;
-
-    </script>
+    <div id="settings">
+        video width: <input type="range" id="videoWidth" min="100" max="1000" value="500">&nbsp;<span id="videoWidthLabel"></span><br />
+        video height: <input type="range" id="videoHeight" min="100" max="800" value="250">&nbsp;<span id="videoHeightLabel"></span><br />
+        background width: <input type="range" id="backgroundWidth" min="100" max="1000" value="500">&nbsp;<span id="backgroundWidthLabel"></span><br />
+        background height: <input type="range" id="backgroundHeight" min="100" max="800" value="250">&nbsp;<span id="backgroundHeightLabel"></span><br />
+        camera: <select id="cameraSelect">
+            <option value="1" selected>front</option>
+            <option value="0">back</option>
+        </select>
+        <button id="on">on</button>
+        <button id="off">off</button><br />
+        device: <button id="devicePause">pause</button>
+        <button id="deviceResume">resume</button>
+        <button id="deviceDispose">dispose</button><br />
+    </div>
+    <div>
+        <canvas id="backgroundCanvas"></canvas>
+    </div>
+    <div id="fdCanvasContainer">
+    </div>
 </body>
 </html>
