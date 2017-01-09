@@ -427,7 +427,7 @@ PocketCode.GameEngine = (function () {
                 return this.resumeProject();
 
             if (this._device)   //not defined if project lot loaded
-                this._device.clearTouchHistory();
+                this._device.reset();
             if (reinitSprites !== false)
                 reinitSprites = true;
             //if reinit: all sprites properties have to be set to their default values: default true

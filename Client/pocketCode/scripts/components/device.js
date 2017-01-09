@@ -414,6 +414,12 @@ PocketCode.Device = (function () {
 
     //methods
     Device.prototype.merge({
+        reset: function () {    //clearTouchHistory
+            this._touchEvents = {
+                active: {},
+                history: [],
+            };
+        },
         _getInclinationX: function (beta, gamma) {
             var x;
             if (this._windowOrientation == 0 || this._windowOrientation == -180) {
@@ -546,12 +552,6 @@ PocketCode.Device = (function () {
                     break;
             }
         },
-        clearTouchHistory: function () {
-            this._touchEvents = {
-                active: {},
-                history: [],
-            };
-        },
         getTouchX: function (idx) {
             idx--;  //mapping ind = 1..n to 0..(n-1)
             if (idx < 0 || idx >= this._touchEvents.history.length)
@@ -670,27 +670,35 @@ PocketCode.MediaDevice = (function () {
             this._getMediaDevices();
         }
 
-        //events
-        this._onInit = new SmartJs.Event.Event(this);
-        this._onCameraUsageChanged = new SmartJs.Event.Event(this);
-
-
         //face detection
         this._features.FACE_DETECTION = {
             i18nKey: 'lblDeviceFaceDetection',
             inUse: false,
             supported: window.Worker && (window.Blob || window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder),
+            maxRendering: 180,
+            defaultOrientation: 0,  //used if inclination noch supported (no gamma)
+            foundDate: new Date(),
+            recognitionDelay: 240,  //ms a value is valid
+            positionX: 0,
+            positionY: 0,
+            size: 0,
+            video: { width: 0, height: 0 },
+            scaling: 1,
+            running: false,
             //parallel: window.Worker && (window.Blob || window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder),
             //canvas: {},
             //initOnCameraUse: false,  //determines if cam is used -> set inUse
         };
+        this._fd = this._features.FACE_DETECTION;   //shortcut
 
-        this._onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._faceDetectionCameraHandler, this));
+        //events
+        this._onInit = new SmartJs.Event.Event(this);
+        this._onCameraUsageChanged = new SmartJs.Event.Event(this);
     }
 
     //events
     Object.defineProperties(MediaDevice.prototype, {
-        onInit: {
+        onInit: {   //used for onLoad event
             get: function () {
                 return this._onInit;
             },
@@ -704,6 +712,11 @@ PocketCode.MediaDevice = (function () {
 
     //properties
     Object.defineProperties(MediaDevice.prototype, {
+        initialized: {
+            get: function () {
+                return this._cam.inUse && !this._cam.supported && !this._cam.initialized ? false : true;
+            },
+        },
         faceDetected: {
             get: function () {
                 this._initFaceDetection();
@@ -711,7 +724,11 @@ PocketCode.MediaDevice = (function () {
                 if (!this._cam.on || !this._features.FACE_DETECTION.supported)
                     return false;
 
-                //TODO
+                var fd = this._fd,
+                    delay = new Date() - fd.foundDate;
+                if (delay < fd.recognitionDelay)
+                    return true;
+                return false;
             },
         },
         faceSize: {
@@ -721,7 +738,11 @@ PocketCode.MediaDevice = (function () {
                 if (!this._cam.on || !this._features.FACE_DETECTION.supported)
                     return 0.0;
 
-                //TODO
+                var fd = this._fd,
+                    delay = new Date() - fd.foundDate;
+                if (delay < fd.recognitionDelay)
+                    return fd.size;
+                return 0.0;
             },
         },
         facePositionX: {
@@ -731,7 +752,11 @@ PocketCode.MediaDevice = (function () {
                 if (!this._cam.on || !this._features.FACE_DETECTION.supported)
                     return 0.0;
 
-                //TODO
+                var fd = this._fd,
+                    delay = new Date() - fd.foundDate;
+                if (delay < fd.recognitionDelay)
+                    return fd.positionX;
+                return 0.0;
             },
         },
         facePositionY: {
@@ -741,7 +766,11 @@ PocketCode.MediaDevice = (function () {
                 if (!this._cam.on || !this._features.FACE_DETECTION.supported)
                     return 0.0;
 
-                //TODO
+                var fd = this._fd,
+                    delay = new Date() - fd.foundDate;
+                if (delay < fd.recognitionDelay)
+                    return fd.positionY;
+                return 0.0;
             },
         },
 
@@ -750,7 +779,8 @@ PocketCode.MediaDevice = (function () {
     //methods
     MediaDevice.prototype.merge({
         //device
-        reInit: function () {   //called at program-restart
+        /* override */
+        reset: function () {   //called at program-restart
             this.stopCamera();
             this._stopStream();
             this._cameraTransparency = 50.0;    //default
@@ -759,6 +789,7 @@ PocketCode.MediaDevice = (function () {
 
             this._initFaceDetection();      //TODO: 
 
+            PocketCode.Device.prototype.reset.call(this);   //call super()
             //TODO: set defaults like selectedCamera (should be called onRestart)
         },
         pause: function () {
@@ -823,13 +854,17 @@ PocketCode.MediaDevice = (function () {
                     this._cam.mediaDevices.devices = devices;
                     if (devices.length == 0) {
                         this._cam.supported = false;  //no camera found
-                        if (!this._cam.initialized)
-                            this._onInit.dispatchEvent();
+                        if (this._cam.initialized)
+                            return;
+                        this._cam.initialized = true;
+                        this._onInit.dispatchEvent();
                     }
                 }.bind(this)).catch(function (error) {
                     this._cam.supported = false;
-                    if (!this._cam.initialized)
-                        this._onInit.dispatchEvent();
+                    if (this._cam.initialized)
+                        return;
+                    this._cam.initialized = true;
+                    this._onInit.dispatchEvent();
                 }.bind(this));
             }
         },
@@ -901,8 +936,10 @@ PocketCode.MediaDevice = (function () {
             }.bind(this),
             onError = function (error) {
                 //supported already set to false if an error occurs
-                if (!this._cam.initialized)
-                    this._onInit.dispatchEvent();
+                if (this._cam.initialized)
+                    return;
+                this._cam.initialized = true;
+                this._onInit.dispatchEvent();
             }.bind(this);
 
             if (cam.mediaDevices.supported)
@@ -928,11 +965,13 @@ PocketCode.MediaDevice = (function () {
                 this._onCameraUsageChanged.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
             }
 
-            if (!this._cam.initialized)
-                this._onInit.dispatchEvent();
+            if (this._cam.initialized)
+                return;
+            this._cam.initialized = true;
+            this._onInit.dispatchEvent();
         },
         _cameraOrientationHandler: function (e) {
-            if (SmartJs.Device.isMobile && this._cam.on) {
+            if (this.isMobile && this._cam.on) {
                 this._onCameraUsageChanged.dispatchEvent({ on: true, src: video, height: this._cameraVideo.videoHeight, width: this._cameraVideo.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
             }
         },
@@ -1004,7 +1043,8 @@ PocketCode.MediaDevice = (function () {
 
         //face detection
         _initFaceDetection: function () {
-            var fd = this._features.FACE_DETECTION;
+            var tmp = this.inclinationX;    //make sure sonsors get initialized
+            var fd = this._fd;
             if (!fd.supported || fd.inUse)
                 return; //not supported or already initialized
 
@@ -1014,12 +1054,13 @@ PocketCode.MediaDevice = (function () {
             }
 
             fd.inUse = true;
-            //init  //TODO
+            fd.canvas = document.createElement('canvas');
+            fd.ctx = fd.canvas.getContext('2d');
 
-
+            this._onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._faceDetectionCameraHandler, this));
         },
         _faceDetectionCameraHandler: function (e) {
-            //var tmp = { on: e.on, height: e.height, width: e.width, orientation: e.orientation };
+            //var tmp = { on: e.on, height: e.height, width: e.width, orientation: e.orientation, transparency: 50? };
             //console.log('TODO: ' + JSON.stringify(tmp));
 
             if (!e.on) {
@@ -1027,16 +1068,77 @@ PocketCode.MediaDevice = (function () {
                 return;
             }
 
+            var fd = this._fd,
+                scaling;
+            if (e.width != fd.video.width || e.height != fd.video.height) {
+                fd.video.width = e.width;
+                fd.video.height = e.height;
+                fd.scaling = e.width > e.height ? fd.maxRendering / e.width : fd.maxRendering / e.height;
+                fd.canvas.width = Math.floor(e.width * fd.scaling);
+                fd.canvas.height = Math.floor(e.height * fd.scaling);
+            }
+            fd.defaultOrientation = e.orientation;
+            if (!fd.running)
+                this.__detectFace();
+        },
+        __detectFace: function () { //should not be called directly (even  internal)
+            var fd = this._fd,
+                ctx = fd.ctx;
 
+            ctx.clearRect(0, 0, fd.canvas.width, fd.canvas.height);
+            ctx.save();
+            var tw = fd.canvas.width * 0.5,
+                th = fd.canvas.height * 0.5;
+            var radRotation = this.isMobile && this._features.INCLINATION.supported ? this._gamma : fd.defaultOrientation;
+            if (radRotation != 0) {
+                ctx.translate(tw, th);
+                ctx.rotate(-radRotation * Math.PI / 180.0);
+                ctx.translate(-tw, -th);
+            }
+            ctx.scale(fd.scaling, fd.scaling);
+            ctx.drawImage(this._cameraVideo, 0, 0);
+            ctx.restore();
+
+            //TODO: inlcude external code
+            var skin = function (src) {//, dst) {
+                var r, g, b, j;
+                var i = src.width * src.height;
+                while (i--) {
+                    j = i * 4;
+                    r = src.data[j];
+                    g = src.data[j + 1];
+                    b = src.data[j + 2];
+                    if (src.data[j + 2] > 0 && (r > 95) && (g > 40) && (b > 20)
+                     && (r > g) && (r > b)
+                     && (r - Math.min(g, b) > 15)
+                     && (Math.abs(r - g) > 15)) {
+                        //dst[i] = 255;
+                        src.data[j] = src.data[j + 1] = src.data[j + 2] = 255;
+                        //src.data[j + 1] = 255;
+                        //src.data[j + 2] = 255;
+                    } else {
+                        //dst[i] = 0;
+                        src.data[j] = src.data[j + 1] = src.data[j + 2] = 0;
+                        //src.data[j + 1] = 0;
+                        //src.data[j + 2] = 0;
+                    }
+                }
+            };
+            var skinData = ctx.getImageData(0, 0, fd.canvas.width, fd.canvas.height);
+            skin(skinData);
+
+            ctx.putImageData(skinData, 0, 0);
         },
         _startFaceDetection: function () {
-
+            if (!this._fd.running)
+                this.__detectFace();
         },
         _pauseFaceDetection: function () {
-
+            this._fd.running = false;
         },
         _resumeFaceDetection: function () {
-
+            if (!this._fd.running)
+                this.__detectFace();
         },
         dispose: function () {
             this.stopCamera();

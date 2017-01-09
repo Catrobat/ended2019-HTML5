@@ -88,7 +88,7 @@ QUnit.test("Device: Touch", function (assert) {
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_END, "m1", 2, 2);
     assert.equal(dev.lastTouchIndex, 1, "no touch added on move/end");
 
-    dev.clearTouchHistory();
+    dev.reset();
     assert.equal(dev.lastTouchIndex, 0, "initial: no touch (after clear/restart)");
 
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 1);
