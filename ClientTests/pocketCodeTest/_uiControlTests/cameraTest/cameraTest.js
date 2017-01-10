@@ -88,6 +88,8 @@ function onLoad() {
         device.resume();
     });
     document.getElementById('deviceDispose').addEventListener('click', function (e) {
+        if (timeout)
+            window.clearTimeout(timeout);
         device.dispose();
     });
 
@@ -137,9 +139,9 @@ function startRendering() {
     backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
     backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
 
-    //for tests onle
+    //nternal method call: for tests only
     device.__detectFace();
 
-    window.setTimeout(startRendering, 200);
+    timeout = window.setTimeout(startRendering, 200);
 }
 

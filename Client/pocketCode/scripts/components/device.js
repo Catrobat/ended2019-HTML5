@@ -640,12 +640,12 @@ PocketCode.MediaDevice = (function () {
             inUse: false,   //startCamera called
             front: {
                 facingMode: 'user',
-                selected: false,   //selected by brick
+                inUse: false,   //selected by brick
                 deviceId: undefined,
             },
             back: {
                 facingMode: 'environment',
-                selected: false,   //selected by brick
+                inUse: false,   //selected by brick
                 deviceId: undefined,
             },
             supported: this._getUserMedia && ('srcObject' in this._cameraVideo || 'mozSrcObject' in this._cameraVideo || window.URL || window.webkitURL),
@@ -721,7 +721,7 @@ PocketCode.MediaDevice = (function () {
             get: function () {
                 this._initFaceDetection();
 
-                if (!this._cam.on || !this._features.FACE_DETECTION.supported)
+                if (!this._cam.on || !this._fd.supported)
                     return false;
 
                 var fd = this._fd,
@@ -735,7 +735,7 @@ PocketCode.MediaDevice = (function () {
             get: function () {
                 this._initFaceDetection();
 
-                if (!this._cam.on || !this._features.FACE_DETECTION.supported)
+                if (!this._cam.on || !this._fd.supported)
                     return 0.0;
 
                 var fd = this._fd,
@@ -749,7 +749,7 @@ PocketCode.MediaDevice = (function () {
             get: function () {
                 this._initFaceDetection();
 
-                if (!this._cam.on || !this._features.FACE_DETECTION.supported)
+                if (!this._cam.on || !this._fd.supported)
                     return 0.0;
 
                 var fd = this._fd,
@@ -763,7 +763,7 @@ PocketCode.MediaDevice = (function () {
             get: function () {
                 this._initFaceDetection();
 
-                if (!this._cam.on || !this._features.FACE_DETECTION.supported)
+                if (!this._cam.on || !this._fd.supported)
                     return 0.0;
 
                 var fd = this._fd,
@@ -781,16 +781,17 @@ PocketCode.MediaDevice = (function () {
         //device
         /* override */
         reset: function () {   //called at program-restart
-            this.stopCamera();
+            //this.stopCamera();
             this._stopStream();
             this._cameraTransparency = 50.0;    //default
             this._cam.selected = PocketCode.CameraType.FRONT;   //default
-            this._initCamera(true);
 
-            this._initFaceDetection();      //TODO: 
-
+            if (cam.inUse) {
+                if (this._fd.inUse)
+                    cam.initFaceDetection = true;
+                this._initCamera(true);
+            }
             PocketCode.Device.prototype.reset.call(this);   //call super()
-            //TODO: set defaults like selectedCamera (should be called onRestart)
         },
         pause: function () {
             if (this._cam.on)
@@ -802,7 +803,7 @@ PocketCode.MediaDevice = (function () {
         resume: function () {
             if (this._cam.on)
                 this._cameraVideo.play();
-            //TODO
+            //TODO: (described above)
 
             this._resumeFaceDetection();
         },
@@ -810,6 +811,7 @@ PocketCode.MediaDevice = (function () {
         //camera
         setSceneSize: function (width, height) { //TODO: set wehen scene gets loaded: try to set the camera contraints and reload the stream (reinit)
             //TODO: needed for position/size calculations for face detection too
+            //needed to calculate camera rotation (portrait or landscape project)
 
             //    var video = this._cameraVideo;
             //    video.width = width;
@@ -834,8 +836,10 @@ PocketCode.MediaDevice = (function () {
             return false;
         },
         disableCamera: function () {    //set by user (dialog) if he/she doesn't want to use the camera
-            this.stopCamera();
+            //this.stopCamera();
+            this._stopStream();
             this._cam.supported = false;    //override
+            this._fd.supported = false;    //override
         },
         _getUserMedia: function () {
             var userMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
@@ -899,6 +903,7 @@ PocketCode.MediaDevice = (function () {
             }
         },
         _stopStream: function () {
+            this.stopCamera();
             var video = this._cameraVideo;
             if (video.srcObject)
                 video.srcObject = null;
@@ -927,6 +932,8 @@ PocketCode.MediaDevice = (function () {
                 return; //already initialized
 
             cam.inUse = true;
+            cam.front.inUse = true; //as soon the camera is used we have to set the default inUse
+
             cam.supported = false;  //make sure firefox makes onSuccess call
             var onSuccess = function (stream) {
                 this._cam.supported = true;
@@ -978,9 +985,9 @@ PocketCode.MediaDevice = (function () {
         setCameraInUse: function (cameraType) {
             //notifies device this cam is used/set during the project
             if (cameraType == PocketCode.CameraType.FRONT)
-                this._cam.front.selected = true;
+                this._cam.front.inUse = true;
             else if (cameraType == PocketCode.CameraType.FRONT)
-                this._cam.back.selected = true;
+                this._cam.back.inUse = true;
         },
         setCameraType: function (cameraType) {
             var found = false;
@@ -1034,7 +1041,7 @@ PocketCode.MediaDevice = (function () {
         stopCamera: function () {
             this._initCamera();
             var cam = this._cam;
-            if (!cam.supported || (!cam.on && !this._cameraStream))  //even if camera not started but stream available
+            if (!cam.on && !this._cameraStream)  //even if camera not started but stream available
                 return;
             cam.on = false;
             this._cameraVideo.pause();
@@ -1087,8 +1094,10 @@ PocketCode.MediaDevice = (function () {
 
             ctx.clearRect(0, 0, fd.canvas.width, fd.canvas.height);
             ctx.save();
-            var tw = fd.canvas.width * 0.5,
-                th = fd.canvas.height * 0.5;
+            var w = fd.canvas.width,
+                h = fd.canvas.height,
+                tw = w * 0.5,
+                th = h * 0.5;
             var radRotation = this.isMobile && this._features.INCLINATION.supported ? this._gamma : fd.defaultOrientation;
             if (radRotation != 0) {
                 ctx.translate(tw, th);
@@ -1099,35 +1108,64 @@ PocketCode.MediaDevice = (function () {
             ctx.drawImage(this._cameraVideo, 0, 0);
             ctx.restore();
 
-            //TODO: inlcude external code
-            var skin = function (src) {//, dst) {
-                var r, g, b, j;
-                var i = src.width * src.height;
-                while (i--) {
-                    j = i * 4;
-                    r = src.data[j];
-                    g = src.data[j + 1];
-                    b = src.data[j + 2];
-                    if (src.data[j + 2] > 0 && (r > 95) && (g > 40) && (b > 20)
-                     && (r > g) && (r > b)
-                     && (r - Math.min(g, b) > 15)
-                     && (Math.abs(r - g) > 15)) {
-                        //dst[i] = 255;
-                        src.data[j] = src.data[j + 1] = src.data[j + 2] = 255;
-                        //src.data[j + 1] = 255;
-                        //src.data[j + 2] = 255;
+            //get data
+            var imgData = ctx.getImageData(0, 0, w, h),
+                data = imgData.data;
+
+            //calc color map
+            var cMap = new Array(w),
+                colSum = new Array(w),
+                row, sum, p;
+
+            var _r, _g, _b;
+            for (var c = 0, cl = w; c < cl; c++) {
+                row = new Array(h);
+                sum = 0;
+                for (var r = 0, rl = h; r < rl; r++) {
+                    p = (r * w + c) * 4;
+                    _r = data[p];
+                    _g = data[p + 1];
+                    _b = data[p + 2];
+                    if (data[p + 3] > 0 && (_r > 95) && (_g > 40) && (_b > 20)
+                     && (_r > _g) && (_r > _b) && (_r - Math.min(_g, _b) > 15)
+                     && (Math.abs(_r - _g) > 15)) {
+                        row[r] = 1;
+                        sum++;
+                        //data[p] = data[p + 1] = data[p + 2] = 255;
                     } else {
-                        //dst[i] = 0;
-                        src.data[j] = src.data[j + 1] = src.data[j + 2] = 0;
-                        //src.data[j + 1] = 0;
-                        //src.data[j + 2] = 0;
+                        row[r] = 0;
+                        //data[p] = data[p + 1] = data[p + 2] = 0;
                     }
                 }
-            };
-            var skinData = ctx.getImageData(0, 0, fd.canvas.width, fd.canvas.height);
-            skin(skinData);
+                cMap[c] = row;
+                colSum[c] = sum;
+            }
 
-            ctx.putImageData(skinData, 0, 0);
+            var rois = [],
+                roi = {},
+                cond = h / 10;
+            for (var i = 0, l = colSum.length; i < l; i++) {
+                if (!roi.x && colSum[i] > cond) {
+                    roi = {};
+                    roi.x = i;
+                }
+                else if (roi.x && colSum[i + 2] < cond) {
+                    roi.w = i - roi.x;
+                    rois.push(roi);
+                }
+            }
+
+            for (var i = 0, l = rois.length; i < l; i++) {
+                sum = 0;
+                //TODO: start with max- set to 'handled', break on found
+                //start haar
+                //start tracking: 
+
+            }
+
+            //no roi: not found
+
+            //ctx.putImageData(imgData, 0, 0);
         },
         _startFaceDetection: function () {
             if (!this._fd.running)
@@ -1141,7 +1179,7 @@ PocketCode.MediaDevice = (function () {
                 this.__detectFace();
         },
         dispose: function () {
-            this.stopCamera();
+            //this.stopCamera();
             this._stopStream();
             this._removeDomListener(this._cameraVideo, 'loadedmetadata', this._cameraInitializedListener);
             this._removeDomListener(window, 'orientationchange', this._cameraOrientationListener);
