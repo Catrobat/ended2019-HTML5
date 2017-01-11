@@ -454,8 +454,7 @@ PocketCode.Model.Scene = (function () {
 
             this._sprites.insert(layer, clone);
 
-
-            //this.onCloneCreated.dispatch({id: clone.id, renderingImage: ?clone?, layer: layer}
+            //todo dispatch event for UI
 
             clone.onCloneStart.dispatchEvent();
             return true;
@@ -466,8 +465,9 @@ PocketCode.Model.Scene = (function () {
 
             this._sprites.remove(clone);
             clone.dispose();
-            //dispose clone
             //remove from list
+
+            //todo dispatch event for UI
             //notify UI: neues Event onCloneDeleted (siehe unten)
         },
         dispose: function() {

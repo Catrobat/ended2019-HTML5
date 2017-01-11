@@ -697,34 +697,30 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
     var done1 = assert.async();
 
     var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, {id: "spriteId", spriteId: "1", name: "spriteName" });
+    var mockScene = {
+        onSpriteUiChange: new SmartJs.Event.Event(this)
+    };
+    var sprite = new PocketCode.Model.SpriteClone(program, mockScene, {id: "spriteId", spriteId: "1", name: "spriteName" }, {});
 
-    var cloneSprite = new PocketCode.Model.CloneBrick("device", sprite, scene, {id: "spriteId", spriteId: "1", name: "spriteName" });
-
-    var b = new PocketCode.Model.WhenStartAsCloneBrick("device", "sprite", { id: "spriteId"}, cloneSprite.SpriteClone.onCloneStart);
+    var b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId"});
     b.dispose();
     assert.equal(b._disposed, true, "disposed");
 
-    b = new PocketCode.Model.WhenStartAsCloneBrick("device", "sprite", { x: 1, y: 2 }, PocketCode.Model.SpriteClone.onCloneStart);
-    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
+    assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
 
     //test empty container
-    var handlerCalled = 0;
-    var handler = function () {
+    var handlerCalled=0;
+    function handler(e){
         handlerCalled++;
-    };
+    }
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    sprite.onCloneStart.dispatchEvent();
+    assert.equal(handlerCalled, 1, "execute empty container");
 
-    cloneSprite.onCloneStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    //simulate project loaded for tests
-    //program._resourcesLoaded = true;
-    //program._spritesLoaded = true;
-
-    //program.runProject();
-    //scene.start();
-    assert.ok(handlerCalled === 1, "executed handler called (once)");
+    b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler, this));
 
     //add a brick container
     var bricks = [];
@@ -753,98 +749,48 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
     bricks.push(new TestBrick2("", ""));
     bricks.push(new TestBrick2("", ""));
 
-    b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
-
-    b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler, this));
+    b._bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
 
     var asyncHandler = function () {
         assert.ok(true, "onExecuted called: including threaded bricks");
         done1();
     };
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
-    //stop so that program can be started again
-    //program.stopProject();
 
-    //program.runProject();
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
+
+    sprite.onCloneStart.dispatchEvent();
 });
 
 
 QUnit.test("CloneBrick", function (assert) {
 
-    //wo zu layer hinzufügen? (cloneSprite in scene)
-    var done1 = assert.async();
-
     var device = "device";
     var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    //override
-    var cloneId = undefined;
-    scene.cloneSprite = function(id) {
-        cloneId = id;
+
+    var latestCloneId;
+    var mockScene = {
+        cloneSprite: function(id) {
+            latestCloneId = id;
+        },
+        onSpriteUiChange: new SmartJs.Event.Event(this)
     };
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, {id: "1", name: "spriteName", scripts: [] });
-    /*sprite._positionX = 200;
-    sprite._positionY = 400;
-    sprite._penDown = true;
-    */scene._sprites.push(sprite);
+    var sprite = new PocketCode.Model.Sprite(program, mockScene, {id: "1", name: "spriteName", scripts: [] });
 
-    var cloneBrick = new PocketCode.Model.CloneBrick(device, sprite, scene, {spriteId: "23"});
+    var cloneBrick = new PocketCode.Model.CloneBrick(device, sprite, mockScene, {spriteId: "23"});
 
     assert.ok(cloneBrick._device === device && cloneBrick._sprite === sprite, "brick created and properties set correctly");
     assert.ok(cloneBrick instanceof PocketCode.Model.CloneBrick, "instance check");
     assert.ok(cloneBrick.objClassName === "CloneBrick", "objClassName check");
 
-    //assert.equal(cloneBrick._cloneId, 1, "_spriteId set correct");
-
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        assert.equal(cloneId, "23");
-        //assert.equal(scene._sprites.length, 2, "sprite added");
+        assert.equal(latestCloneId, "23")
     };
     cloneBrick.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-    //add a brick container
-    var bricks = [];
-    var TestBrick = (function () {
-        TestBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function TestBrick(device, sprite) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, { commentedOut: false });
-            this.executed = 0;
-        }
-
-        TestBrick.prototype.merge({
-            _execute: function (id) {
-                this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 80);
-                //this._return(id, false);    //LOOP DELAY = FALSE
-            },
-        });
-
-        return TestBrick;
-    })();
-
-    var tb1 = new TestBrick("", "");
-    bricks.push(tb1);
-
-    sprite.bricks = new PocketCode.Model.BrickContainer(bricks);
-    cloneBrick = new PocketCode.Model.CloneBrick(device, sprite, scene, {spriteId: "1", id: "spriteId"});
-    cloneBrick.bricks = new PocketCode.Model.BrickContainer(bricks);
-
-    scene.onStart.dispatchEvent();
-
-    //sollte von clone ausgeführte werden
-    //bricks die ein sprite hat zählen??
-    window.setTimeout(function () {
-        assert.equal(tb1.executed, 1, "executed");
-    }, 30);
-
-   done1();
 });
 
 
