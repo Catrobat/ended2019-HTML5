@@ -25,8 +25,10 @@ PocketCode.Model.merge({
 
         WhenProgramStartBrick.prototype.merge({
             dispose: function () {
-                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
-                this._onStart = undefined;  //make sure to disconnect from gameEngine
+                if (this._onStart) {
+                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                    this._onStart = undefined;  //make sure to disconnect from gameEngine
+                }
                 PocketCode.Model.SingleInstanceScriptBlock.prototype.dispose.call(this);
             },
         });
