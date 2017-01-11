@@ -13,6 +13,7 @@ var videoWidth,
     backgroundCanvas,
     backgroundCtx,
     fdCanvasContainer,
+    cycleTime,
     device;
 
 window.addEventListener('load', onLoad);
@@ -80,6 +81,7 @@ function onLoad() {
     backgroundCtx = backgroundCanvas.getContext('2d');
 
     fdCanvasContainer = document.getElementById('fdCanvasContainer');
+    cycleTime = document.getElementById('cycleTime');
 
     document.getElementById('devicePause').addEventListener('click', function (e) {
         device.pause();
@@ -112,8 +114,10 @@ function onCameraSelectChange() {
 
 function cameraInitHandler(e) {
     var fd = device._features.FACE_DETECTION;
-    if (fd.inUse)
+    if (fd.inUse) {
         fdCanvasContainer.appendChild(fd.canvas);
+        fdCanvasContainer.appendChild(fd.haarCanvas);
+    }
 }
 
 var timeout, //to enable debugging I use timouts instead of requestAnimationFrame or interval
@@ -142,6 +146,6 @@ function startRendering() {
     //nternal method call: for tests only
     device.__detectFace();
 
-    timeout = window.setTimeout(startRendering, 200);
+    timeout = window.setTimeout(startRendering, 100);
 }
 
