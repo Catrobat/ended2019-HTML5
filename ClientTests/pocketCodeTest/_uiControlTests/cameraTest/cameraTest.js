@@ -143,9 +143,6 @@ function startRendering() {
     backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
     backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
 
-    //nternal method call: for tests only
-    device.__detectFace();
-
-    timeout = window.setTimeout(startRendering, 100);
+    timeout = window.setTimeout(startRendering, 200);
 }
 
