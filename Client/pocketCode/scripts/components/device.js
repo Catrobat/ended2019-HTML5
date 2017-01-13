@@ -1076,7 +1076,7 @@ PocketCode.MediaDevice = (function () {
             fd.canvas = document.createElement('canvas');
             fd.ctx = fd.canvas.getContext('2d');
             fd.haarCanvas = document.createElement('canvas');
-            fd.haarCtx = fd.canvas.getContext('2d');
+            fd.haarCtx = fd.haarCanvas.getContext('2d');
             //fd.cache = {    //the work canvas resolution is either 180x135 or 135x180: so a matrix may change, the pixel arrays do not
             //    gsImg: Uint8Array ? new Uint8Array(w * h) : new Array(w * h),
             //    iiSum: Int32Array ? new Int32Array((w + 1) * (h + 1)) : new Array((w + 1) * (h + 1)),
@@ -1168,52 +1168,69 @@ PocketCode.MediaDevice = (function () {
 
             var rois = [],
                 roi = {},
-                cond = h / 15;
-            for (var i = 0, l = colSum.length; i < l; i += 2) {
-                if (!roi.x && colSum[i] > cond) {
-                    roi.x = i;
+                cond = 8;
+            for (var c = 0, l = colSum.length; c < l; c += 2) {
+                if (!roi.x && colSum[c] > cond) {
+                    roi.x = c;
                 }
-                else if (roi.x && colSum[i] < cond) {
-                    roi.w = i - roi.x;
-                    if (roi.w > 10)
+                else if (roi.x && colSum[c] < cond) {
+                    roi.w = c - roi.x;
+                    if (roi.w > cond)
                         rois.push(roi);
                     roi = {};
                 }
             }
             if (roi.x) {    //end on image border
-                roi.w = colSum.length - roi.x;
-                if (roi.w > 10)
+                roi.w = w - roi.x;
+                if (roi.w > cond)
                     rois.push(roi);
             }
 
-            cond = 5;
+            //cond = roi.w / 2;
             for (var i = 0, l = rois.length; i < l; i++) {
-                roi = rois[i];
-                roi.y = 0;
+                roi = rois[0];  //always remove first and instert with push
+                rois.remove(roi);
+
+                //roi.y = 0;
                 for (var r = 0; r < h; r++) {
                     sum = 0;
                     for (var c = roi.x, cl = c + roi.w; c < cl; c += 2) {
                         if (cMap[c][r])
                             sum++;
+                        if (sum > cond)
+                            break;
                     }
-                    if (sum < cond)
+                    if (!roi.y && sum > cond) {
                         roi.y = r;
-                    else
-                        break;
+                    }
+                    else if (roi.y && sum < cond) {
+                        roi.h = r - roi.y;
+                        if (roi.h > cond)
+                            rois.push(roi);
+                        roi = {
+                            x: roi.x,
+                            w: roi.w
+                        };
+                    }
+                }
+                if (roi.y) {    //end on image border
+                    roi.h = h - roi.y;
+                    if (roi.h > cond)
+                        rois.push(roi);
                 }
 
-                roi.h = h;
-                for (var r = h; r > roi.y; r -= 2) {
-                    sum = 0;
-                    for (var c = roi.x, cl = c + roi.w; c < cl; c += 2) {
-                        if (cMap[c][r])
-                            sum++;
-                    }
-                    if (sum < cond)
-                        roi.h = r - roi.y;
-                    else
-                        break;
-                }
+                //roi.h = h;
+                //for (var r = h; r > roi.y; r -= 2) {
+                //    sum = 0;
+                //    for (var c = roi.x, cl = c + roi.w; c < cl; c += 2) {
+                //        if (cMap[c][r])
+                //            sum++;
+                //    }
+                //    if (sum < cond)
+                //        roi.h = r - roi.y;
+                //    else
+                //        break;
+                //}
             }
 
             var roiLength = rois.length;
@@ -1244,42 +1261,48 @@ PocketCode.MediaDevice = (function () {
                 if (roi.h / roi.w > faceFactor) {
                     hh = roi.h;
                     hy = roi.y;
-                    hw = hh / faceFactor;
+                    hw = roi.h / faceFactor;
                     hx = roi.x - (hw - roi.w) * 0.5;
                 }
                 else {
                     hw = roi.w;
                     hx = roi.x;
-                    hh = hw * faceFactor;
-                    hy = roi.y - (hh - roi.h) * 0.25;
+                    hh = roi.w * faceFactor;
+                    hy = roi.y - (hh - roi.h) * 0.5;
                 }
-                tmp = Math.max(0, hx - hw * 0.2 >> 0);  //x
+                tmp = Math.max(0, hx - hw * 0.15 >> 0);  //x
                 offset = hx - tmp;
                 hx = tmp;
-                hw = Math.min(w - hx, offset + hw * 1.2 >> 0);
+                hw = Math.min(w - hx, offset + hw * 1.15 >> 0);
 
-                tmp = Math.max(0, hy - hh * 0.2 >> 0); //y
+                tmp = Math.max(0, hy - hh * 0.15 >> 0); //y
                 offset = hy - tmp;
                 hy = tmp;
-                hh = Math.min(h - hy, offset + hh * 1.2 >> 0);
+                hh = Math.min(h - hy, offset + hh * 1.15 >> 0);
 
                 //custom scaling
                 var scaling = fd.scaling;
                 var hData;
-                if (hh < h && hw < w) {   //custom scaling
-                    if (roi.w < 40) {
-                        //TODO
-                    }
-                    if (roi.h > 80) {
-                        //TODO
-                    }
+                //if (hh < h && hw < 50) {   //custom scaling
 
-                    //TODO: use haarCanvas + haarCtx
-                    hData = ctx.getImageData(hx, hy, hw, hh).data;
-                }
-                else {  //use the default scaling
-                    hData = ctx.getImageData(0, 0, hw, hh).data;
-                }
+                //    scaling *= Math.max(h / hh, 50 / hw);
+                //    w = hw / scaling >> 0
+                //    fd.haarCanvas.width = w*5;
+                //    h = hh / scaling >> 0;
+                //    fd.haarCanvas.height = h*5;
+
+                //    var haarCtx = fd.haarCtx;
+                //    haarCtx.save();
+                //    haarCtx.scale(scaling, scaling);
+                //    haarCtx.drawImage(video, hx / fd.scaling >> 0, hy / fd.scaling >> 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0, 0, 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0);
+                //    haarCtx.restore();
+
+                //    hData = haarCtx.getImageData(0, 0, hw, hh).data;
+                //}
+                //else {  //use the default scaling
+                hData = ctx.getImageData(hx, hy, hw, hh).data;
+                //}
+
                 //if (hx + hw > w || hy + hh > h)
                 //    alert("");
                 //if (hw < 20 || hh < 20) //only process if we can get a match (with required confidence)
@@ -1294,8 +1317,8 @@ PocketCode.MediaDevice = (function () {
                 this._grayscale(hData, hw, hh, gsImg);
                 this._getIntegral(gsImg, hw, hh, iiSum, iiSqSum);
 
-                var rects = [];
-                //var rects = this._getHaarRects(iiSum, iiSqSum, hw, hh, fd.classifier, 1.2, 0.7); //TODO: options.scale_factor, options.min_scale); - custom scaling
+                //var rects = [];
+                var rects = this._getHaarRects(iiSum, iiSqSum, hw, hh, fd.classifier, 1.19, Math.max(0.65, hw * 0.019)); //TODO: options.scale_factor, options.min_scale); - custom scaling
                 //TODO: classifier defined in other script file as public - move!
 
                 //evaluate rects
@@ -1331,7 +1354,7 @@ PocketCode.MediaDevice = (function () {
                     var r = rects[i];
                     //ctx.strokeRect((r.x * scaling) | 0, (r.y * scaling) | 0, (r.width * scaling) | 0, (r.height * scaling) | 0);
                     ctx.strokeRect(hx + r.x, hy + r.y, r.w, r.h);
-                    //face = r;  //TODO
+                    face = r;  //TODO
                 }
 
             }   //end: handle rois
@@ -1398,12 +1421,15 @@ PocketCode.MediaDevice = (function () {
             }
         },
         _getHaarRects: function (iiSum, iiSqSum, w, h, classifier, scale_factor, scale_min) {
-            if (typeof scale_factor === "undefined") { scale_factor = 1.2; }
-            if (typeof scale_min === "undefined") { scale_min = 1.0; }
-            var win_w = classifier.size[0];
-            var win_h = classifier.size[1];
+            //if (typeof scale_factor === "undefined") { scale_factor = 1.2; }
+            //if (typeof scale_min === "undefined") { scale_min = 1.0; }
+            var win_w = classifier.size[0],
+                win_h = classifier.size[1],
+                maxW = w > 60 ? w * 0.85 : w,
+                maxH = h > 60 ? h * 0.85 : h;
             var rects = [];
-            while (scale_min * win_w < w && scale_min * win_h < h) {
+
+            while (scale_min * win_w < maxW && scale_min * win_h < maxH) {
                 rects = rects.concat(this.__getSingleScaleRects(iiSum, iiSqSum, w, h, classifier, scale_min));
                 scale_min *= scale_factor;
             }
@@ -1413,8 +1439,8 @@ PocketCode.MediaDevice = (function () {
         __getSingleScaleRects: function (iiSum, iiSqSum, w, h, classifier, scale) {
             var win_w = (classifier.size[0] * scale) | 0,
                 win_h = (classifier.size[1] * scale) | 0,
-                step_x = (0.5 * scale + 1.5) | 0,
-                step_y = step_x;
+                step = (0.5 * scale + 1.5) | 0;//,
+            //step_y = step_x;
             var i, j, k, x, y, ex = (w - win_w) | 0, ey = (h - win_h) | 0;
             var w1 = (w + 1) | 0, edge_dens, mean, variance, std;
             var inv_area = 1.0 / (win_w * win_h);
@@ -1422,14 +1448,14 @@ PocketCode.MediaDevice = (function () {
             var fi_a, fi_b, fi_c, fi_d, fw, fh;
 
             var ii_a = 0, ii_b = win_w, ii_c = win_h * w1, ii_d = ii_c + win_w;
-            var edges_thresh = ((win_w * win_h) * 0xff * this.edges_density) | 0;
+            var edges_thresh = ((win_w * win_h) * 0xff * 0.12) | 0; //edges_density = 0.17
             // if too much gradient we also can skip
             //var edges_thresh_high = ((win_w*win_h) * 0xff * 0.3)|0;
 
             var rects = [];
-            for (y = 0; y < ey; y += step_y) {
+            for (y = 0; y < ey; y += step) {
                 ii_a = y * w1;
-                for (x = 0; x < ex; x += step_x, ii_a += step_x) {
+                for (x = 0; x < ex; x += step, ii_a += step) {
 
                     mean = iiSum[ii_a]
                             - iiSum[ii_a + ii_b]
@@ -1478,7 +1504,7 @@ PocketCode.MediaDevice = (function () {
                         }
                     }
 
-                    if (found && stage_sum > 28.6) {
+                    if (found && stage_sum > 28.45) {
                         rects.push({
                             "x": x,
                             "y": y,
@@ -1486,7 +1512,7 @@ PocketCode.MediaDevice = (function () {
                             "h": win_h,
                             "confidence": stage_sum
                         });
-                        x += step_x, ii_a += step_x;
+                        x += step, ii_a += step;
                     }
                 }
             }
