@@ -1281,49 +1281,108 @@ PocketCode.MediaDevice = (function () {
                 hh = Math.min(h - hy, offset + hh * 1.15 >> 0);
 
                 //custom scaling
-                var scaling = fd.scaling;
+                var rw, rh; //current rendering width/height
+                var hScaling = fd.scaling;
                 var hData;
-                //if (hh < h && hw < 50) {   //custom scaling
+                var c = fd.haarCanvas;
+                if (hh < h && hw < 55) {   //custom scaling
+                    var customScaling = Math.min(h / hh, 55 / hw);
+                    hScaling *= customScaling;
+                    c.width = hw * customScaling >> 0;
+                    c.height = hh * customScaling >> 0;
 
-                //    scaling *= Math.max(h / hh, 50 / hw);
-                //    w = hw / scaling >> 0
-                //    fd.haarCanvas.width = w*5;
-                //    h = hh / scaling >> 0;
-                //    fd.haarCanvas.height = h*5;
+                    var haarCtx = fd.haarCtx;
+                    haarCtx.save();
+                    //TODO rotation
+                    //haarCtx.scale(hScaling, hScaling); - this is done automatically by drawImage
+                    haarCtx.drawImage(video, hx / fd.scaling >> 0, hy / fd.scaling >> 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0, 0, 0, c.width, c.height);
+                    haarCtx.restore();
 
-                //    var haarCtx = fd.haarCtx;
-                //    haarCtx.save();
-                //    haarCtx.scale(scaling, scaling);
-                //    haarCtx.drawImage(video, hx / fd.scaling >> 0, hy / fd.scaling >> 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0, 0, 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0);
-                //    haarCtx.restore();
+                    rw = c.width;
+                    rh = c.height;
+                    hData = haarCtx.getImageData(0, 0, rw, rh).data;
+                }
+                else if (hh > 90) {
+                    var customScaling = Math.min(100 / hh, w / hw);
+                    hScaling *= customScaling;
+                    c.width = hw * customScaling >> 0;
+                    c.height = hh * customScaling >> 0;
 
-                //    hData = haarCtx.getImageData(0, 0, hw, hh).data;
-                //}
-                //else {  //use the default scaling
-                hData = ctx.getImageData(hx, hy, hw, hh).data;
-                //}
+                    var haarCtx = fd.haarCtx;
+                    haarCtx.save();
+                    //TODO rotation
+                    //haarCtx.scale(hScaling, hScaling); - this is done automatically by drawImage
+                    haarCtx.drawImage(video, hx / fd.scaling >> 0, hy / fd.scaling >> 0, hw / fd.scaling >> 0, hh / fd.scaling >> 0, 0, 0, c.width, c.height);
+                    haarCtx.restore();
+
+                    rw = c.width;
+                    rh = c.height;
+                    hData = haarCtx.getImageData(0, 0, rw, rh).data;
+                }
+                else {  //use the default scaling
+                    rw = hw;
+                    rh = hh;
+                    hData = ctx.getImageData(hx, hy, rw, rh).data;
+                }
 
                 //if (hx + hw > w || hy + hh > h)
                 //    alert("");
                 //if (hw < 20 || hh < 20) //only process if we can get a match (with required confidence)
                 //    continue;
 
-                var size = hw * hh;
+                var size = rw * rh;
                 gsImg = ('Uint8Array' in window) ? new Uint8Array(size) : new Array(size);
-                size = (hw + 1) * (hh + 1);
+                size = (rw + 1) * (rh + 1);
                 iiSum = ('Int32Array' in window) ? new Int32Array(size) : new Array(size),
                 iiSqSum = ('Int32Array' in window) ? new Int32Array(size) : new Array(size);
 
-                this._grayscale(hData, hw, hh, gsImg);
-                this._getIntegral(gsImg, hw, hh, iiSum, iiSqSum);
+                this._grayscale(hData, rw, rh, gsImg);
+                this._getIntegral(gsImg, rw, rh, iiSum, iiSqSum);
 
                 //var rects = [];
-                var rects = this._getHaarRects(iiSum, iiSqSum, hw, hh, fd.classifier, 1.19, Math.max(0.65, hw * 0.019)); //TODO: options.scale_factor, options.min_scale); - custom scaling
+                var rects = this._getHaarRects(iiSum, iiSqSum, rw, rh, fd.classifier, 1.19, Math.max(.9/*0.65*/, rw * 0.02)); //TODO: options.scale_factor, options.min_scale); - custom scaling
                 //TODO: classifier defined in other script file as public - move!
 
                 //evaluate rects
+                var foundLength = rects.length;
+                //apply original size and  x/y = center/center
+                for (var i = 0; i < foundLength; i++) {
+                    match = rects[i];
+                    match.w = match.h /= hScaling;
+                    match.x = hx / fd.scaling + match.x / hScaling + match.w * .5;
+                    match.y = hy / fd.scaling + match.y / hScaling + match.h * .5;
+                }
 
+                if (foundLength >= 4) {
+                    var valRadius = 0,
+                        sumConf = 0,
+                        valX = 0,
+                        valY = 0,
+                        match;
 
+                    for (var i = 0; i < foundLength; i++) {
+                        match = rects[i];
+                        valRadius += match.w;
+                        sumConf += match.confidence;
+                        valX += match.x * match.confidence;
+                        valY += match.y * match.confidence;
+                    }
+                    valRadius = valRadius / foundLength * 0.25;
+                    valX /= sumConf;
+                    valY /= sumConf;
+
+                    //evaluate center
+                    var valid = 0;
+                    for (var i = 0; i < foundLength; i++) {
+                        match = rects[i];
+                        if (match.x < valX + valRadius && match.x > valX - valRadius &&
+                            match.y < valY + valRadius && match.y > valY - valRadius)
+                            valid++;
+                    }
+
+                    if (valid / foundLength > 0.74)
+                        face = { x: valX, y: valY, w: valRadius * 4, h: valRadius * 4 };//var tmp = "found";  //test
+                }
                 //no roi: not found
 
                 //Stöcker, Taschenbuch mathematischer Formeln und modernder Verfahren, Harri Deutsch Verlag, 4. Auflage, Seite 331:
@@ -1336,25 +1395,33 @@ PocketCode.MediaDevice = (function () {
                 if (cycleTime)
                     cycleTime.innerText = delay;
 
-                for (c = hx, cl = c + hw; c < cl; c++) {
-                    for (r = hy, rl = r + hh; r < rl; r++) {
-                        p = (c + r * w) * 4;
-                        if (cMap[c][r]) {
-                            data[p] = 255; data[p + 1] = 0; data[p + 2] = 0; data[p + 2] = 128;
-                        }
-                        else
-                            data[p] = data[p + 1] = data[p + 2] = 0; data[p + 2] = 128;
-                    }
-                }
-                ctx.putImageData(imgData, 0, 0);
+                //for (c = hx, cl = c + hw; c < cl; c++) {
+                //    for (r = hy, rl = r + hh; r < rl; r++) {
+                //        p = (c + r * w) * 4;
+                //        if (cMap[c][r]) {
+                //            data[p] = 255; data[p + 1] = 0; data[p + 2] = 0; data[p + 2] = 128;
+                //        }
+                //        else
+                //            data[p] = data[p + 1] = data[p + 2] = 0; data[p + 2] = 128;
+                //    }
+                //}
+                //ctx.putImageData(imgData, 0, 0);
 
                 //draw rects
-                ctx.strokeStyle = "rgb(0,255,0)";
-                for (var i = 0, l = rects.length; i < l; i++) {
-                    var r = rects[i];
-                    //ctx.strokeRect((r.x * scaling) | 0, (r.y * scaling) | 0, (r.width * scaling) | 0, (r.height * scaling) | 0);
-                    ctx.strokeRect(hx + r.x, hy + r.y, r.w, r.h);
-                    face = r;  //TODO
+                //ctx.strokeStyle = "rgb(0,255,0)";
+                //for (var i = 0, l = rects.length; i < l; i++) {
+                //    //if (l > 5) {
+                //    //    var breakpoint = true;
+                //    //}
+                //    var r = rects[i];
+                //    //ctx.strokeRect((r.x * scaling) | 0, (r.y * scaling) | 0, (r.width * scaling) | 0, (r.height * scaling) | 0);
+                //    //var sca = fd.scaling / scaling;
+                //    ctx.strokeRect((r.x - r.w * .5) * fd.scaling, hy + (r.y - r.h * .5) * fd.scaling, r.w * fd.scaling, r.h * fd.scaling);
+                //    //face = r;  //TODO
+                //}
+                if (face) {
+                    ctx.strokeStyle = "rgb(255,0,0)";
+                    ctx.strokeRect((face.x - face.w * .5) * fd.scaling, (face.y - face.h * .5) * fd.scaling, face.w * fd.scaling, face.h * fd.scaling);
                 }
 
             }   //end: handle rois
@@ -1470,13 +1537,13 @@ PocketCode.MediaDevice = (function () {
 
                     std = variance > 0. ? Math.sqrt(variance) : 1;
 
-                    stages = classifier.complex;//Classifiers;
+                    stages = classifier.complex;//classifiers;
                     sn = stages.length;
                     found = true;
                     for (i = 0; i < sn; ++i) {
                         stage = stages[i];
                         stage_thresh = stage.threshold;
-                        trees = stage.simple;//Classifiers;
+                        trees = stage.simple;//classifiers;
                         tn = trees.length;
                         stage_sum = 0;
                         for (j = 0; j < tn; ++j) {
@@ -1504,7 +1571,7 @@ PocketCode.MediaDevice = (function () {
                         }
                     }
 
-                    if (found && stage_sum > 28.45) {
+                    if (found && stage_sum > 28.55) {
                         rects.push({
                             "x": x,
                             "y": y,
@@ -1527,6 +1594,115 @@ PocketCode.MediaDevice = (function () {
         _stopFaceDetection: function () {
             this._fd.started = false;
         },
+        //tracking
+        _initTrackingObject: function (imgData, x, y, w, h) {
+            var fd = this._fd;
+            fd.tracking = {
+                modelHist: new SimpleHistogram(imgData),
+                searchWindow: { x: x, y: y, w: w, h: h },
+                trackObj: { x: 0, y: 0, w: 0, h: 0 },
+            };
+            //TODO
+            //_modelHist = new SimpleHistogram(imgData);
+            //_searchWindow = { x: x, y: y, w: w, h: h };
+            //_trackObj = { x: 0, y: 0, w: 0, h: 0 };
+
+        },
+        _findTrackingObject: function (imgData, w, h) {
+            var fd = this._fd;
+            if (!fd || !fd.tracking)
+                return;
+            var tracking = fd.tracking;
+
+            var curHist = new SimpleHistogram(imgData);
+
+            //var weights = getWeights(_modelHist, curHist);  //=(selectedAreaHist, completeCanvasHist)- Verhältnisse[] von frame zu image Histogram
+            // Return an array of the probabilities of each histogram color bins
+            var weights = [];
+            //var p;
+
+            // iterate over the entire histogram and compare
+            for (var i = 0, p=0; i < 2048; i++) {
+                if (curHist.bin[i] != 0) {
+                    p = Math.min(tracking.modelHist.bin[i] / curHist.bin[i], 1);
+                } else {
+                    p = 0;
+                }
+                weights.push(p);
+            }
+
+            //***
+
+            //color probabilities distributions: get back-projection data
+            var ppd = new Array(w);   //pixel probability data for current searchwindow
+            var r, g, b, pos;
+            var a;// = [];
+
+            // TODO : typed arrays here
+            // but we should then do a compatibilitycheck
+
+            for (var x = 0; x < w; x++) {
+                a = new Array(h);       //per column
+                for (var y = 0; y < h; y++) {   //for each pixel in frame
+                    pos = ((y * w) + x) * 4;
+                    r = imgData[pos] >> 5;
+                    g = imgData[pos + 1] >> 5;
+                    b = imgData[pos + 2] >> 5;
+                    a[y] = weights[r << 6 | g << 3 | b];
+                }
+                ppd[x] = a;  //data[col][row] including propabilities
+            }
+            //_pdf = data;
+
+            //***
+
+            var meanShiftIterations = 10; // maximum number of iterations
+
+            // store initial searchwindow
+            var searchWindow = tracking.searchWindow,
+                prevx = searchWindow.x,
+                prevy = searchWindow.y;
+
+            // Locate by iteration the maximum of density into the probability distributions
+            var m, wadx, wady, wadw, wadh;
+            for (var i = 0; i < meanShiftIterations; i++) {
+                // get searchwindow from ppd:
+                wadx = Math.max(searchWindow.x, 0);
+                wady = Math.max(searchWindow.y, 0);
+                wadw = Math.min(wadx + searchWindow.w, w);
+                wadh = Math.min(wady + searchWindow.h, h);
+
+                m = new Moments(ppd, wadx, wady, wadw, wadh, (i == meanShiftIterations - 1));
+
+                searchWindow.x += ((m.xc - searchWindow.w / 2) >> 0);    //truncat, faster than Math.floor (only 32bit)
+                searchWindow.y += ((m.yc - searchWindow.h / 2) >> 0);
+
+                // if we have reached maximum density, get second moments and stop iterations
+                if (searchWindow.x == prevx && searchWindow.y == prevy) {
+                    m = new Moments(ppd, wadx, wady, wadw, wadh, true);
+                    break;
+                } else {
+                    prevx = searchWindow.x;
+                    prevy = searchWindow.y;
+                }
+            }
+
+            searchWindow.x = Math.max(0, Math.min(searchWindow.x, w));
+            searchWindow.y = Math.max(0, Math.min(searchWindow.y, h));
+
+            var trackObj = tracking.trackObj;
+            trackObj.w = Math.sqrt(m.mu20 * m.invM00) << 2;
+            trackObj.h = Math.sqrt(m.mu02 * m.invM00) << 2;
+
+            //check if tracked object is into the limit
+            trackObj.x = Math.floor(Math.max(0, Math.min(searchWindow.x + searchWindow.w / 2, w)));
+            trackObj.y = Math.floor(Math.max(0, Math.min(searchWindow.y + searchWindow.h / 2, h)));
+
+            //new search window size
+            searchWindow.w = Math.floor(1.1 * trackObj.w);
+            searchWindow.h = Math.floor(1.1 * trackObj.h);
+        },
+
         dispose: function () {
             //this.stopCamera();
             this._stopStream();
@@ -1538,6 +1714,103 @@ PocketCode.MediaDevice = (function () {
             PocketCode.Device.prototype.dispose.call(this);
         },
     });
+
+
+    //internal helper classes
+    var SimpleHistogram = (function () {
+
+        function SimpleHistogram(imgData) {
+            this._size = 2048;
+
+            if ('Uint8Array' in window) {
+                this._bins = new Uint8Array(this._size);
+            }
+            else {
+                this._bins = new Array(this._size);
+                //initialize bins
+                for (var i = 0, l = this._size; i < l; i++) {
+                    this._bins[0] = 0;
+                }
+            }
+
+            //add histogram data
+            if (!(imgData instanceof Array))
+                return;
+            var r, g, b;
+            for (var i = 0, l = imgData.length; i < l; i += 4) {
+                r = imgData[i + 0] >> 5; // round down
+                g = imgData[i + 1] >> 5;
+                b = imgData[i + 2] >> 5;
+                this._bins[r << 6 | g << 3 | b] += 1;
+            }
+        }
+
+        Object.defineProperties(SimpleHistogram.prototype, {
+            bins: {
+                get: function () {
+                    return this._bins;
+                }
+            }
+        });
+        //this.getBin = function (index) {
+        //    return bins[index];
+        //}
+
+        return SimpleHistogram;
+    })();
+
+    var Moments = (function () {
+
+        function Moments(data, x, y, w, h, second) {
+            this._m00 = 0;
+            this._m01 = 0;
+            this._m10 = 0;
+            this._m11 = 0;
+            this.m02 = 0;//
+            this.m20 = 0;//
+
+            var val, vx, vy;
+            var a = [];
+            for (var i = x; i < w; i++) {
+                a = data[i];
+                vx = i - x;
+
+                for (var j = y; j < h; j++) {
+                    val = a[j];
+
+                    vy = j - y;
+                    this._m00 += val;
+                    this._m01 += vy * val;
+                    this._m10 += vx * val;
+                    if (second) {
+                        this._m11 += vx * vy * val;
+                        this.m02 += vy * vy * val;
+                        this.m20 += vx * vx * val;
+                    }
+                }
+            }
+
+            this.invM00 = 1 / this._m00;//
+            this.xc = this._m10 * this.invM00;//
+            this.yc = this._m01 * this.invM00;//
+            //this.mu00 = this._m00;
+            //this.mu01 = 0;
+            //this.mu10 = 0;
+
+            if (second) {
+                this.mu20 = this.m20 - this._m10 * this.xc;//
+                this.mu02 = this.m02 - this._m01 * this.yc;//
+                //this.mu11 = this._m11 - this._m01 * this.xc;
+            }
+        }
+
+        Object.defineProperties(Moments.prototype, {
+
+        });
+
+        return Moments;
+    })();
+    //^^ internal helper classes
 
     return MediaDevice;
 })();

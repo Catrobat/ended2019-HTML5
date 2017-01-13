@@ -116,7 +116,7 @@ function cameraInitHandler(e) {
     var fd = device._features.FACE_DETECTION;
     if (fd.inUse) {
         fdCanvasContainer.appendChild(fd.canvas);
-        fdCanvasContainer.appendChild(fd.haarCanvas);
+        //fdCanvasContainer.appendChild(fd.haarCanvas);
     }
 }
 
