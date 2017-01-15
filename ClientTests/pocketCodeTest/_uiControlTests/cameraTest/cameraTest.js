@@ -100,7 +100,7 @@ function onLoad() {
     var detected = device.faceDetected; //make sure face detection is initialized
     
     //TODO: device.setSceneSize(videoWidth, videoHeight);    //= set at scene change
-    device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(cameraUsageChangeHandler, this));
+    device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(cameraUsageChangeHandler, this));
     device.onInit.addEventListener(new SmartJs.Event.EventListener(cameraInitHandler, this));
 }
 
@@ -115,8 +115,8 @@ function onCameraSelectChange() {
 function cameraInitHandler(e) {
     var fd = device._features.FACE_DETECTION;
     if (fd.inUse) {
-        fdCanvasContainer.appendChild(fd.canvas);
-        //fdCanvasContainer.appendChild(fd.haarCanvas);
+        fdCanvasContainer.appendChild(fd._canvas);  //for tests only
+        //fdCanvasContainer.appendChild(fd._haarCanvas);
     }
 }
 

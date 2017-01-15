@@ -73,7 +73,7 @@ PocketCode.GameEngine = (function () {
         this._onProgramExecuted = new SmartJs.Event.Event(this);
         this._onSpriteUiChange = new SmartJs.Event.Event(this); //TODO
         this._onVariableUiChange = new SmartJs.Event.Event(this);
-        this._onCameraUsageChanged = new SmartJs.Event.Event(this);
+        this._onCameraUsageChange = new SmartJs.Event.Event(this);
         //map the base class (global variable host) to our public event
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
     }
@@ -183,9 +183,9 @@ PocketCode.GameEngine = (function () {
         onTouchStartAction: {
             get: function () { return this._onTouchStartAction; },
         },
-        onCameraUsageChanged: {
+        onCameraUsageChange: {
             get: function () {
-                return this._onCameraUsageChanged;  //TODO: in use?
+                return this._onCameraUsageChange;  //TODO: in use?
             }
         },
     });
@@ -257,9 +257,9 @@ PocketCode.GameEngine = (function () {
             this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             //console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
-            this._device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+            this._device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
 
-            //console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
+            //console.log("_onCameraUsageChange:", this._onCameraUsageChange);
 
             this.__currentScene = undefined;
             for (var i = 0, l = this._sceneIds.length; i < l; i++) {
@@ -367,9 +367,9 @@ PocketCode.GameEngine = (function () {
         _imageStoreLoadHandler: function (e) {
             this._sounds = this._jsonProject.sounds || [];
         },
-        _cameraChangedHandler: function (e) {
+        _cameraChangeHandler: function (e) {
             //console.log("CAMERA CHANGED HANDLER");
-            this._onCameraUsageChanged.dispatchEvent(e);
+            this._onCameraUsageChange.dispatchEvent(e);
         },
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
