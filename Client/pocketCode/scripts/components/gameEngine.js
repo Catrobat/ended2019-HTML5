@@ -279,33 +279,32 @@ PocketCode.GameEngine = (function () {
                 throw new Error('No scene found in project');
 
             var broadcasts = jsonProject.broadcasts || [];
-            var scenes = jsonProject.scenes;
+            var jsonScenes = jsonProject.scenes;
 
-            var scene
-            for (var i = 0, l = scenes.length; i < l; i++) {
-                scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
+            var scene;
+            for (var i = 0, l = jsonScenes.length; i < l; i++) {
+                //scene = new PocketCode.Model.Scene(scenes[i], this._minLoopCycleTime, bricksCount, this, this._device, this._soundManager, this._onSpriteUiChange);
+                scene = new PocketCode.Model.Scene(this, this._device, this._soundManager, broadcasts, this._minLoopCycleTime);//, bricksCount, this._onSpriteUiChange);
+                //gameEngine, device, soundManager, jsonScene, jsonBroadcasts, minLoopCycleTime
+                this._sceneIds.push(jsonScenes[i].id);
+                this._scenes[jsonScenes[i].id] = scene;
 
-                this._sceneIds.push(scenes[i].id);
-                this._scenes[scenes[i].id] = scene;
-
-                scene.broadcasts = broadcasts; // todo - use param
+                //scene.broadcasts = broadcasts; // todo - use param
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryUnsupportedBricksHandler, this));
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
+                scene.load(jsonScenes[i]);
 
-                //if (i == 0)
-                //    this._currentScene = scene;
+                if (i == 0)
+                    this._currentScene = scene;
             }
-
-
 
             // load after initialize all scenes - if reference to scene 2 in scene 1 -> error
-            for (var i = 0, l = scenes.length; i < l; i++) {
-                this._scenes[scenes[i].id].load(scenes[i]);
-                //scene.load(scenes[i]);
-            }
-
+            //for (var i = 0, l = scenes.length; i < l; i++) {
+            //    this._scenes[scenes[i].id].load(scenes[i]);
+            //    //scene.load(scenes[i]);
+            //}
 
             if (bricksCount == 0) {
                 this._spriteFactoryOnProgressChangeHandler({ progress: 100 });

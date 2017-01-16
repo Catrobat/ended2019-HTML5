@@ -291,6 +291,7 @@ PocketCode.merge({
             },
             dispose: function () {
                 this._device = undefined;
+                this._gameEngine = undefined;
                 this._scene = undefined;
                 this._broadcastMgr = undefined;
                 this._soundMgr = undefined;
