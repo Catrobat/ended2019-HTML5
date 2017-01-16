@@ -120,7 +120,6 @@ PocketCode.Web = {
 			_addDomListener: function (target, eventName, eventHandler) {
 				var _self = this;
 				var handler = function (e) {
-					e = e || {};
 					e.stopPropagation();
 					return eventHandler.call(_self, e);
 				};
@@ -221,7 +220,7 @@ PocketCode.Web = {
 					else if (e.type === 'keyup') {
 						var delay = this.lastKeyDown - this.lastExitDate;
 
-						if (delay !== NaN && delay > 700)
+						if (!isNaN(delay) && delay > 700)
 							this.toggleFullscreen(e);
 						this.lastKeyDown = undefined;
 					}
@@ -273,7 +272,7 @@ PocketCode.Web = {
 			this.closeButton = btn;
 
 			//fullscreenButton
-			var btn = document.createElement('button');
+			btn = document.createElement('button');
 			btn.className = 'pc-webButton';
 			btn.innerHTML = '<svg viewBox="0,0,64,64" preserveAspectRatio="xMidYMin meet">' +
 								'<path d="M18.196,56.064L23.122,61H3V40.879l4.936,4.926l8.06-8.061l10.26,10.262L18.196,56.064z M40.879,3 l4.926,4.935l-7.896,7.896L48.17,26.09l7.896-7.895L61,23.122V3H40.879z M7.936,18.196L3,23.122V3h20.122l-4.927,4.935l8.06,8.06 L15.993,26.256L7.936,18.196z M61,40.879l-4.936,4.926l-7.895-7.896L37.909,48.17l7.895,7.896L40.879,61H61V40.879z" />' +
@@ -371,7 +370,6 @@ PocketCode.Web = {
 			_addDomListener: function (target, eventName, eventHandler) {
 				var _self = this;
 				var handler = function (e) {
-					e = e || {};
 					e.stopPropagation();
 					return eventHandler.call(_self, e);
 				};
@@ -798,7 +796,6 @@ PocketCode.Web = {
 				else {
 					this._updateProgress(l, l);
 				}
-
 			},
 			_updateProgress: function (loaded, total) {
 				this.onProgress(loaded, total);
@@ -810,7 +807,6 @@ PocketCode.Web = {
 
 				this.onError(); //call external handler
 			},
-
 		};
 
 		return ResourceLoader;
@@ -827,7 +823,6 @@ PocketCode.Web = {
 		    _addDomListener: function (target, eventName, eventHandler) {
 		        var _self = this;
 		        var handler = function (e) {
-		            e = e || {};
 		            e.stopPropagation();
 		            return eventHandler.call(_self, e);
 		        };

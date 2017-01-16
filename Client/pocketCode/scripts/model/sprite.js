@@ -92,26 +92,6 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
-        //renderingProperties: {   //all rendering propeties as object
-        //    get: function () {
-        //        return {
-        //            id: this._id,
-        //            x: Math.round(this._positionX + this._lookOffsetX),
-        //            y: Math.round(this._positionY + this._lookOffsetY),
-        //            rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
-        //            flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
-        //            look: this._currentLook ? this._currentLook.canvas : undefined,
-        //            scaling: this._scaling,
-        //            visible: this._visible,
-        //            graphicEffects: [
-        //                { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
-        //                { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100.0 },  //send +-100 instead of 0..200
-        //                { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
-        //                //TODO: add other filters as soon as available
-        //            ],
-        //        };
-        //    },
-        //},
         renderingSprite: {   //rendering image is created but not stored!
             get: function () {
                 return new PocketCode.RenderingSprite({
@@ -131,12 +111,13 @@ PocketCode.Model.Sprite = (function () {
                     ],
                     penDown: this._penDown,
                     penSize: this._penSize,
-                    prnColor: this._penColor,
-                    penXPosition: this._penXPosition,
-                    penYPosition: this._penYPosition,
-                    offsetX: this._lookOffsetX,
-                    offsetY: this._lookOffsetY,
-
+                    penColor: this._penColor,
+                    penX: this._positionX,
+                    penY: this._positionY,
+                    //penXPosition: this._penXPosition,
+                    //penYPosition: this._penYPosition,
+                    //offsetX: this._lookOffsetX,
+                    //offsetY: this._lookOffsetY,
                 });
             },
         },
@@ -350,7 +331,10 @@ PocketCode.Model.Sprite = (function () {
             this._brightness = 100.0;
             this._colorEffect = 0.0;
             this._recalculateLookOffsets();
+
             this._penDown = false;
+            this._penSize = 4;
+            this._penColor = { r: 0, g: 0, b: 255 };
 
             //variables
             this._resetVariables();
@@ -412,6 +396,10 @@ PocketCode.Model.Sprite = (function () {
         _triggerOnChange: function (properties) {
             for (var prop in properties) {
                 if (properties[prop] != undefined && properties.hasOwnProperty(prop)) { //at least one item to update
+                    if (properties.x || properties.y) { //include sprite positions for pen
+                        properties.penX = this._positionX;
+                        properties.penY = this._positionY;
+                    }
                     this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
                     return true;
                 }
@@ -1314,8 +1302,6 @@ PocketCode.Model.Sprite = (function () {
                 _penDown: this._penDown,
                 _penSize: this._penSize,
                 _penColor: this._penColor,
-                _penXPosition: this._penXPosition,
-                _penYPosition: this._penYPosition,
             };
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
 

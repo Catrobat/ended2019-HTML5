@@ -54,9 +54,9 @@ PocketCode.merge({
 
                 var sprite = asBackground ? new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, jsonSprite) : new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
                 var scripts = [];
-                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
+                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
-                }
+
                 brickFactory.dispose();
                 sprite.scripts = scripts;
                 return sprite;
@@ -69,12 +69,12 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var brickFactory = new PocketCode.BrickFactory(this._device, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, 0, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, 0, this._minLoopCycleTime);
                 var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
-                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++) {
+                for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(clone, jsonSprite.scripts[i]));
-                }
+
                 brickFactory.dispose();
                 clone.scripts = scripts;
                 return clone;

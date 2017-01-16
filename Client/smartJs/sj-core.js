@@ -98,7 +98,7 @@ SmartJs.Core = {
                     if (typeof object[p] === 'function')
                         throw new Error('_mergeProperties(): setting a method not allowed: property ' + p + ' in ' + object.objClassName);
                     //try {
-                    if (typeof propertyObject[p] === 'object' && typeof propertyObject[p] !== 'array')
+                    if (typeof propertyObject[p] === 'object' && !(propertyObject[p] instanceof 'array'))
                         this._mergeProperties(propertyObject[p], object[p]);
                     else {
                         //var ignore = (/color/i).test(p);  //we need this to make sure the setter has changed ignoring color conversion
