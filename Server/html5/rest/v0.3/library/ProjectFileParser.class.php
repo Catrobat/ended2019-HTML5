@@ -70,7 +70,7 @@ class ProjectFileParser
 
             //header
             $project->header = $this->parseHeader();
-            array_push($project->scenes, new SceneDto($this->getNewId(), "Scene 1", $project->header->device->screenHeight, $project->header->device->screenWidth));
+            array_push($project->scenes, new SceneDto($this->getNewId(), "Scene 1", $project->header->device->screenWidth, $project->header->device->screenHeight));
 
             //global variables
             $this->includeGlobalData();
