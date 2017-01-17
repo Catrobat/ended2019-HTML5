@@ -251,18 +251,16 @@ PocketCode.GameEngine = (function () {
             this._variables = jsonProject.variables || [];
             this._lists = jsonProject.lists || [];
 
-            this._device = SmartJs.Device.isMobile ? new PocketCode.Device(this._soundManager) : new PocketCode.Device(this._soundManager);
+            this._device = SmartJs.Device.isMobile ? new PocketCode.DeviceEmulator(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
             console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
-
-            console.log("_onCameraUsageChanged:", this._onCameraUsageChanged);
 
             this._spritesLoadingProgress = 0;
             var bricksCount = jsonProject.header.bricksCount;
 
             if (!jsonProject.scenes || jsonProject.scenes.length < 1)
-                throw new Error('No scnene found in project');
+                throw new Error('No scene found in project');
 
             var broadcasts = jsonProject.broadcasts || [];
             var scenes = jsonProject.scenes;
@@ -473,8 +471,11 @@ PocketCode.GameEngine = (function () {
 
             this.stopProject();
 
-            if (this._device)
+            if (this._device){
                 this._device.onSpaceKeyDown.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
+                this._device.onCameraUsageChanged.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+            }
+
 
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));

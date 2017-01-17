@@ -45,22 +45,22 @@ PocketCode.Device = (function () {
             ACCELERATION: {
                 i18nKey: 'lblDeviceAcceleration',
                 inUse: false,
-                supported: false,
+                supported: false
             },
             COMPASS: {
                 i18nKey: 'lblDeviceCompass',
                 inUse: false,
-                supported: false,
+                supported: false
             },
             INCLINATION: {
                 i18nKey: 'lblDeviceInclination',
                 inUse: false,
-                supported: false,
+                supported: false
             },
             CAMERA: {
                 i18nKey: 'lblDeviceCamera',
-                inUse: false,
-                supported: true,
+                inUse: true,
+                supported: this._getUserMedia != undefined
             },
             FLASH: {
                 i18nKey: 'lblDeviceFlash',
@@ -342,9 +342,22 @@ PocketCode.Device = (function () {
             },
             set: function (cameraType) {
                 var found = false;
+                var searchWord = cameraType == PocketCode.CameraType.BACK ? 'Back' : 'Front';
                 for (var type in PocketCode.CameraType) {
                     if (PocketCode.CameraType[type] == cameraType) {
-                        found = true;
+
+                           for(var i=0; i< this._cameraSources.length; i++){
+                                var source = this._cameraSources[i];
+                               if(source.label &&
+                                   (source.label.includes(searchWord) ||
+                                   source.label.includes(searchWord.toLowerCase()) ||
+                                   source.label.includes(searchWord.toUpperCase())
+                                   )
+                               ){
+                                   found = true;
+                                   this._changeCameraSource(source.id);
+                               }
+                           }
                         break;
                     }
                 }
@@ -748,7 +761,7 @@ PocketCode.Device = (function () {
             console.log('getUserMedia error: ' + error.name, error);
 
         },
-        _startCamera : function (constraints) {
+        _startCamera : function (constraints, successCallback, errorCallback) {
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
            navigator.getUserMedia( {video: true, audio:false}, function(stream){
@@ -759,9 +772,19 @@ PocketCode.Device = (function () {
                this._cameraStream.play();
                this._onCameraUsageChanged.dispatchEvent({ cameraOn: true, cameraStream: this._cameraStream });
 
-            }.bind(this), function(error){
 
-            });
+            }.bind(this), function(error){
+               if (error.name === 'ConstraintNotSatisfiedError') {
+                   console.log('The resolution ' + constraints.video.width.exact + 'x' +
+                       constraints.video.width.exact + ' px is not supported by your device.');
+               } else if (error.name === 'PermissionDeniedError') {
+
+                   console.log('Permissions have not been granted to use your camera and ' +
+                       'microphone, you need to allow the page access to your devices in ' +
+                       'order for the demo to work.');
+               }
+               this._features.CAMERA.supported = false;
+            }.bind(this));
         },
 
         _getCameraSources : function(sourceInfos){
@@ -771,8 +794,6 @@ PocketCode.Device = (function () {
                     var sourceInfo = sources[i];
                     if (sourceInfo.kind === 'videoinput') {
                         cameraSources.push(sourceInfo);
-                    } else {
-                        console.log('Some other kind of source: ', sourceInfo);
                     }
                 }
                 this._cameraSources = cameraSources;

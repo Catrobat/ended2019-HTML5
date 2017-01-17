@@ -146,7 +146,6 @@ PocketCode.Model.merge({
 
             this._gameEngine = gameEngine;
             this._question = new PocketCode.Formula(device, sprite, propObject.text);
-
             if (propObject.resourceId) //can be null
                 this._var = sprite.getVariable(propObject.resourceId);
         }
@@ -202,9 +201,9 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
-            console.log("CREATING CAMERA BRICK");
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._selected = parseInt(propObject.selected) == 1;
+
 
 //{0: off, 1: on}
              //call on ctr to notify our device this feature is in use without changing the setting
@@ -214,8 +213,8 @@ PocketCode.Model.merge({
             _execute: function () {
                 console.log("EXECUTION");
                 console.log("IS FREAKIN CAMERA SELECTED:", this._selected);
-                this._device.cameraOn = this._selected;
-                /*if (this._selected == true  && !this._device.cameraOn){
+
+               if (this._selected == true  && !this._device.cameraOn){
                     console.log("turning it on");
                     this._device.cameraOn = true;
                 }
@@ -227,7 +226,7 @@ PocketCode.Model.merge({
                 else {  //set already
                     this._return(false);
                     return;
-                }*/
+                }
                 this._return(true);
             },
             pause: function () {

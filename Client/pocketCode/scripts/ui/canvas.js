@@ -480,6 +480,8 @@ PocketCode.Ui.Canvas = (function () {
 
       renderCamera: function() {
           if(this._cameraOn && this._cameraStream != null && this._cameraStream != undefined ){
+            this._cameraStream.width  = this.width;
+            this._cameraStream.height = this.height;
               this._cameraCanvasCtx.drawImage(this._cameraStream, 0,0, this._cameraCanvasEl.width, this._cameraCanvasEl.height );
               setTimeout(this.renderCamera.bind(this), 10);
           }
