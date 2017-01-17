@@ -121,20 +121,20 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this.clear();
             this.render();
         },
-        initScene: function(id, screenSize) {
+        initScene: function (id, screenSize) {
             this._canvas.initScene(id, screenSize);
         },
-        drawStamp: function( spriteId ) {
-            this._canvas.drawStamp( spriteId );
+        drawStamp: function (spriteId) {
+            this._canvas.drawStamp(spriteId);
         },
-        drawPen: function( spriteId, to_x, to_y ) {
-          this._canvas.drawPen( spriteId, to_x, to_y );
+        drawPen: function (spriteId, to_x, to_y) {
+            this._canvas.drawPen(spriteId, to_x, to_y);
         },
-        clearPenStampCache: function() {
+        clearPenStampCache: function () {
             this._canvas.clearPenStampCache();
         },
 
-        renderCamera: function(cameraOn, cameraStream){
+        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params, ...
             //console.log("camera stream in view:", cameraStream);
             this._canvas.cameraStream = cameraStream;
             this._canvas.cameraOn = cameraOn;
@@ -189,8 +189,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             //this works because we have already defined the function in sj-animation.js globally
             this._redrawInProgress = window.requestAnimationFrame(this._redrawCanvas.bind(this));
         },
-        _redrawCanvas: function ()
-        {
+        _redrawCanvas: function () {
             this._redrawRequired = false;
             this._canvas.render();
             this._redrawInProgress = false;

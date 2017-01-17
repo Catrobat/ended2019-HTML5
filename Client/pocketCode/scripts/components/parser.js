@@ -1,10 +1,11 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../core.js" />
 /// <reference path="../model/bricksCore.js" />
+/// <reference path="../model/bricksEvent.js" />
 /// <reference path="../model/bricksControl.js" />
 /// <reference path="../model/bricksSound.js" />
 /// <reference path="../model/bricksMotion.js" />
-/// <reference path="../model/bricksSound.js" />
+/// <reference path="../model/bricksPen.js" />
 /// <reference path="../model/bricksData.js" />
 /// <reference path="../model/userVariable.js" />
 /// <reference path="../component/sprite.js" />
@@ -15,22 +16,25 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, gameEngine, soundMgr, bricksTotal, minLoopCycleTime) {
+        function SpriteFactory(device, gameEngine, soundMgr, /*bricksTotal,*/ minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._soundMgr = soundMgr;
-            this._bricksTotal = bricksTotal;
+            //this._bricksTotal = bricksTotal;
+            //this._bricksLoaded = 0;
             this._minLoopCycleTime = minLoopCycleTime;
 
+            this._unsupportedBricks = [];
+
             //we use the brickFactory events here
-            this._onProgressChange = new SmartJs.Event.Event(this);
+            this._onSpriteLoaded = new SmartJs.Event.Event(this);
             this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);
         }
 
         //events
         Object.defineProperties(SpriteFactory.prototype, {
-            onProgressChange: {
-                get: function () { return this._onProgressChange; },
+            onSpriteLoaded: {
+                get: function () { return this._onSpriteLoaded; },
             },
             onUnsupportedBricksFound: {
                 get: function () { return this._onUnsupportedBricksFound; },
@@ -39,7 +43,7 @@ PocketCode.merge({
 
         //methods
         SpriteFactory.prototype.merge({
-            create: function (currentScene, broadcastMgr, bricksLoaded, jsonSprite, asBackground) {
+            create: function (currentScene, broadcastMgr, /*bricksLoaded,*/ jsonSprite, asBackground) {
                 if (!(currentScene instanceof PocketCode.Model.Scene))
                     throw new Error('invalid argument: current scene');
                 if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
@@ -47,21 +51,28 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                bricksLoaded = bricksLoaded || 0;
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, bricksLoaded, this._minLoopCycleTime);
-                brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
-                brickFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
+                //this._bricksLoaded = 0;
+                this._unsupportedBricks = [];
+                //bricksLoaded = bricksLoaded || 0;
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, bricksLoaded,*/ this._minLoopCycleTime);
+                //brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
+                brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
                 var sprite = asBackground ? new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, jsonSprite) : new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
 
-                brickFactory.dispose();
+                //this._bricksLoaded += brickFactory.bricksParsed;
                 sprite.scripts = scripts;
+
+                this._onSpriteLoaded.dispatchEvent({ bricksLoaded: brickFactory.bricksParsed });
+                brickFactory.dispose();
+                if (this._unsupportedBricks.length > 0)
+                    this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
                 return sprite;
             },
-            createClone: function(currentScene, broadcastMgr, jsonSprite, definition) {
+            createClone: function (currentScene, broadcastMgr, jsonSprite, definition) {
                 if (!(currentScene instanceof PocketCode.Model.Scene))
                     throw new Error('invalid argument: current scene');
                 if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
@@ -69,7 +80,7 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, this._bricksTotal, 0, this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, 0,*/ this._minLoopCycleTime);
                 var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
@@ -92,7 +103,7 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, totalCount, loadedCount, minLoopCycleTime) {
+        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, /*totalCount, loadedCount,*/ minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._scene = scene;
@@ -100,26 +111,33 @@ PocketCode.merge({
             this._soundMgr = soundMgr;
             this._minLoopCycleTime = minLoopCycleTime;
 
-            this._total = totalCount;
-            this._parsed = loadedCount;
-            this._updatePercentage = 0.0;
-            this._unsupportedBricks = [];
+            //this._total = totalCount;
+            this._parsed = 0;//loadedCount;
+            //this._updatePercentage = 0.0;
+            //this._unsupportedBricks = [];
 
-            this._onProgressChange = new SmartJs.Event.Event(this);
-            this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);
+            //this._onProgressChange = new SmartJs.Event.Event(this);
+            this._onUnsupportedBrickFound = new SmartJs.Event.Event(this);
         }
 
         //events
         Object.defineProperties(BrickFactory.prototype, {
-            onProgressChange: {
-                get: function () { return this._onProgressChange; },
+            //onProgressChange: {
+            //    get: function () { return this._onProgressChange; },
+            //    //enumerable: false,
+            //    //configurable: true,
+            //},
+            onUnsupportedBrickFound: {
+                get: function () { return this._onUnsupportedBrickFound; },
                 //enumerable: false,
                 //configurable: true,
             },
-            onUnsupportedBricksFound: {
-                get: function () { return this._onUnsupportedBricksFound; },
-                //enumerable: false,
-                //configurable: true,
+        });
+
+        //properties
+        Object.defineProperties(BrickFactory.prototype, {
+            bricksParsed: {
+                get: function () { return this._parsed; },
             },
         });
 
@@ -142,33 +160,33 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                    //in development:
-                    //case 'WhenConditionMetBrick':
-                    //case 'StopScriptBrick':
-                    //case 'SetBackgroundBrick':
-                    //case 'WhenCollisionBrick':
-                    //case: 'WhenStartAsCloneBrick':
-                    //case 'CloneBrick':
-                    //case 'DeleteCloneBrick':
-                    //case 'SetPhysicsObjectTypeBrick':
-                    //case 'SetVelocityBrick':
-                    //case 'RotationSpeedLeftBrick':
-                    //case 'RotationSpeedRightBrick':
-                    //case 'SetGravityBrick':
-                    //case 'SetMassBrick':
-                    //case 'SetBounceFactorBrick':
-                    //case 'SetFrictionBrick':
+                        //in development:
+                        //case 'WhenConditionMetBrick':
+                        //case 'StopScriptBrick':
+                        //case 'SetBackgroundBrick':
+                        //case 'WhenCollisionBrick':
+                        //case: 'WhenStartAsCloneBrick':
+                        //case 'CloneBrick':
+                        //case 'DeleteCloneBrick':
+                        //case 'SetPhysicsObjectTypeBrick':
+                        //case 'SetVelocityBrick':
+                        //case 'RotationSpeedLeftBrick':
+                        //case 'RotationSpeedRightBrick':
+                        //case 'SetGravityBrick':
+                        //case 'SetMassBrick':
+                        //case 'SetBounceFactorBrick':
+                        //case 'SetFrictionBrick':
 
-                    //case 'SelectCameraBrick':
-                    //case 'CameraBrick':
+                        //case 'SelectCameraBrick':
+                        //case 'CameraBrick':
 
-                    //case 'PlaySoundAndWaitBrick':
-                    //case 'SpeakAndWaitBrick':
+                        //case 'PlaySoundAndWaitBrick':
+                        //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
-                    //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
+                        //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
-                    //active:
+                        //active:
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);
@@ -235,13 +253,13 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._currentScriptId, jsonBrick);
                         //break;
 
-                    //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
-                    //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, GoToBrick, IfOnEdgeBounce, MoveNSteps
-                    //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
-                    //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
-                    //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Ask, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
-                    //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
-                    //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
+                        //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
+                        //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, GoToBrick, IfOnEdgeBounce, MoveNSteps
+                        //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
+                        //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
+                        //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Ask, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
+                        //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
+                        //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
                     default:
                         if (PocketCode.Model[type])
                             brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
@@ -251,11 +269,12 @@ PocketCode.merge({
                 }
 
                 if (brick instanceof PocketCode.Model.UnsupportedBrick) {
-                    this._unsupportedBricks.push(brick);
+                    //this._unsupportedBricks.push(brick);
+                    this._onUnsupportedBrickFound.dispatchEvent({ unsupportedBrick: brick });
                 }
                 else {
-                //load sub bricks
-                //if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
+                    //load sub bricks
+                    //if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
                     if (jsonBrick.bricks)   //all loops
                         brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
@@ -265,10 +284,10 @@ PocketCode.merge({
                 }
 
                 this._parsed++; //this has to be incremented after creating the sub items to avoid the unsupported brick event trigger more than once
-                this._updateProgress();
+                //this._updateProgress();
 
-                if (this._total === this._parsed && this._unsupportedBricks.length > 0)
-                    this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
+                //if (this._total === this._parsed && this._unsupportedBricks.length > 0)
+                //    this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
 
                 return brick;
             },
@@ -278,17 +297,17 @@ PocketCode.merge({
                     bricks.push(this.create(currentSprite, jsonBricks[i]));
                 return new PocketCode.Model.BrickContainer(bricks);
             },
-            _updateProgress: function () {
-                var progress = 100.0 / this._total * this._parsed;
-                //we do not want to trigger several hundred progress updates.. every 5% should be enough
-                //todo introduce new condition to update
-                //if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
-                    this._updatePercentage = progress;
-                    progress = Math.round(progress * 10) / 10;  //show only one decimal place
-                    this._onProgressChange.dispatchEvent({ progress: progress, parsed: this._parsed });
-               // }
+            //_updateProgress: function () {
+            //    var progress = 100.0 / this._total * this._parsed;
+            //    //we do not want to trigger several hundred progress updates.. every 5% should be enough
+            //    //todo introduce new condition to update
+            //    //if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
+            //    this._updatePercentage = progress;
+            //    progress = Math.round(progress * 10) / 10;  //show only one decimal place
+            //    this._onProgressChange.dispatchEvent({ progress: progress, parsed: this._parsed });
+            //    // }
 
-            },
+            //},
             dispose: function () {
                 this._device = undefined;
                 this._gameEngine = undefined;
@@ -611,7 +630,7 @@ PocketCode.merge({
                             return 'FALSE';
                         return 'false';
 
-                    //string
+                        //string
                     case 'LENGTH':
                         if (uiString)
                             return 'length(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -633,7 +652,7 @@ PocketCode.merge({
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                    //list
+                        //list
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
@@ -655,7 +674,7 @@ PocketCode.merge({
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
-                    //touch
+                        //touch
                     case 'MULTI_FINGER_X':
                         if (uiString)
                             return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
@@ -677,7 +696,7 @@ PocketCode.merge({
                         this._isStatic = false;
                         return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
 
-                    //arduino
+                        //arduino
                     case 'ARDUINOANALOG':
                         if (uiString)
                             return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';
@@ -770,7 +789,7 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
-                    //sprite
+                        //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
@@ -821,61 +840,61 @@ PocketCode.merge({
                         return 'this._sprite.positionY';
 
                     //time(r)
-                    case 'CURRENT_YEAR':    //TODO
+                    case 'CURRENT_YEAR':
                         if (uiString)
                             return 'year';
 
                         return '(new Date()).getFullYear()';
 
-                    case 'CURRENT_MONTH':    //TODO
+                    case 'CURRENT_MONTH':
                         if (uiString)
                             return 'month';
 
                         return '(new Date()).getMonth()';
 
-                    case 'CURRENT_DATE':    //TODO
+                    case 'CURRENT_DATE':
                         if (uiString)
                             return 'day';
 
                         return '(new Date()).getDate()';
 
-                    case 'CURRENT_DAY_OF_WEEK':    //TODO
+                    case 'CURRENT_DAY_OF_WEEK':
                         if (uiString)
                             return 'weekday';
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
-                    case 'CURRENT_HOUR':    //TODO
+                    case 'CURRENT_HOUR':
                         if (uiString)
                             return 'hour';
 
                         return '(new Date()).getHours()';
 
-                    case 'CURRENT_MINUTE':    //TODO
+                    case 'CURRENT_MINUTE':
                         if (uiString)
                             return 'minute';
 
                         return '(new Date()).getMinutes()';
 
-                    case 'CURRENT_SECOND':    //TODO
+                    case 'CURRENT_SECOND':
                         if (uiString)
                             return 'second';
 
                         return '(new Date()).getSeconds()';
 
-                    //case 'DAYS_SINCE_2000':
-                    //    if (uiString)
-                    //        return 'days_since_2000';
+                        //case 'DAYS_SINCE_2000':
+                        //    if (uiString)
+                        //        return 'days_since_2000';
 
-                    //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
+                        //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
 
-                    //case 'TIMER':
-                    //    if (uiString)
-                    //        return 'timer';
+                        //case 'TIMER':
+                        //    if (uiString)
+                        //        return 'timer';
 
-                    //    return 'this._sprite.projectTimerValue';
+                        //    return 'this._sprite.projectTimerValue';
 
-                    //touch
+                        //touch
                     case 'FINGER_X':
                         if (uiString)
                             return 'screen_touch_x';
@@ -900,7 +919,7 @@ PocketCode.merge({
 
                         return 'this._device.lastTouchIndex';
 
-                    //geo location
+                        //geo location
                     case 'LATITUDE':
                         if (uiString)
                             return 'latitude';  //TODO: check UI string
@@ -925,7 +944,7 @@ PocketCode.merge({
 
                         return 'this._device.geoAccuracy';
 
-                    //physics
+                        //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -944,7 +963,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
-                    //nxt
+                        //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';
@@ -969,7 +988,7 @@ PocketCode.merge({
 
                         return 'this._device.nxt4';
 
-                    //phiro
+                        //phiro
                     case 'PHIRO_FRONT_LEFT':
                         if (uiString)
                             return 'phiro_front_left_sensor';

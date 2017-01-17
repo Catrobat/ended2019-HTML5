@@ -25,15 +25,15 @@ PocketCode.RenderingItem = (function () {
         },
         x: {
             value: 0.0,
-            //writable: true,
+            writable: true,
         },
         y: {
             value: 0.0,
-            //writable: true,
+            writable: true,
         },
         visible: {
             value: true,
-            //writable: true,
+            writable: true,
         },
     });
 
@@ -264,23 +264,23 @@ PocketCode.merge({
             },
             penDown: {
                 value: false,
-                //writable: true,
+                writable: true,
             },
             penSize: {
                 value: 4.0,
-                //writable: true,
+                writable: true,
             },
             penColor: {
                 value: { r: 0, g: 0, b: 255 },
-                //writable: true,
+                writable: true,
             },
             penX: {
                 value: 0.0,
-                //writable: true,
+                writable: true,
             },
             penY: {
                 value: 0.0,
-                //writable: true,
+                writable: true,
             },
         });
 

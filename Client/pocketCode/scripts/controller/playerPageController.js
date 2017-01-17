@@ -109,7 +109,7 @@ PocketCode.PlayerPageController = (function () {
             this._view.executionState = viewState;
         },
         /* override */
-        actionOnGlobalError: function() {
+        actionOnGlobalError: function () {
             this._view.disabled = true;
         },
 
@@ -132,9 +132,9 @@ PocketCode.PlayerPageController = (function () {
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             if (e.reinit) {
-              //this.initOnLoad();
+                //this.initOnLoad();
                 //console.log("device on before project start:", this._gameEngine._device);
-              this._playerViewportController.clearPenStampCache();
+                this._playerViewportController.clearPenStampCache();
             }
             this._view.hideStartScreen();
         },
@@ -148,12 +148,6 @@ PocketCode.PlayerPageController = (function () {
 
 
         },
-
-        _cameraChangedHandler: function(e){
-            //console.log("CAMERA TRIGGERED");
-            //console.log("camera stream in page controller:", e.cameraStream);
-            this._playerViewportController.renderCamera(e.cameraOn, e.cameraStream);
-        },
         _projectExecutedHandler: function (e) {
             if (SmartJs.Device.isMobile)
                 return history.back();
@@ -163,8 +157,13 @@ PocketCode.PlayerPageController = (function () {
         _uiUpdateHandler: function (e) {
             this._playerViewportController.updateSprite(e.id, e.properties);
         },
-        _varUpdateHandler: function(e) {
+        _varUpdateHandler: function (e) {
             this._playerViewportController.updateVariable(e.id, e.properties);
+        },
+        _cameraChangedHandler: function (e) {
+            //console.log("CAMERA TRIGGERED");
+            //console.log("camera stream in page controller:", e.cameraStream);
+            this._playerViewportController.updateCameraUse(e.on, e.video, e.width, e.height, e.transparency, e.orientation);
         },
         //user
         _buttonClickedHandler: function (e) {
@@ -273,7 +272,7 @@ PocketCode.PlayerPageController = (function () {
             d.imageSrc = imageSrc;
             this._showDialog(d);
         },
-        _downloadScreenshot: function(e) {
+        _downloadScreenshot: function (e) {
             e.target.download();
         },
         dispose: function () {
