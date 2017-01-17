@@ -1377,7 +1377,7 @@ PocketCode.Model.merge({
         function BackgroundSprite(gameEngine, scene, propObject) {
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
-            this._cameraTransparency = 0.5; //default
+            //this._cameraTransparency = 0.5; //default
             this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
         }
 
@@ -1398,21 +1398,21 @@ PocketCode.Model.merge({
         });
 
         //methods
-        BackgroundSprite.prototype.merge({
-            //TODO: setTransparency: to include cameraTransparency? Notify Background on device.onCameraUsageChanged to chagne this?
-            setCameraTransparency: function (value) {
-                if (value < 0.0)
-                    value = 0.0;
-                if (value > 100.0)
-                    value = 100.0;
+        //BackgroundSprite.prototype.merge({
+        //    //TODO: setTransparency: to include cameraTransparency? Notify Background on device.onCameraUsageChanged to chagne this?
+        //    setCameraTransparency: function (value) {
+        //        if (value < 0.0)
+        //            value = 0.0;
+        //        if (value > 100.0)
+        //            value = 100.0;
 
-                if (this._cameraTransparency === value)
-                    return false;
+        //        if (this._cameraTransparency === value)
+        //            return false;
 
-                this._cameraTransparency = value;
-                //return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] }); //TODO: combine _transparency & _cameraTransparency
-            }
-        });
+        //        this._cameraTransparency = value;
+        //        //return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] }); //TODO: combine _transparency & _cameraTransparency
+        //    }
+        //});
 
         return BackgroundSprite;
     })(),

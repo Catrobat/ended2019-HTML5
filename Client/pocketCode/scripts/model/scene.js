@@ -13,7 +13,7 @@
 
 PocketCode.Model.Scene = (function () {
 
-    function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime/*, totalBrickCount, onSpriteUiChange*/) {
+    function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime) {
 
         if (!(jsonBroadcasts instanceof Array))
             throw new Error('setter expects type Array');
@@ -42,7 +42,7 @@ PocketCode.Model.Scene = (function () {
         this._onStart = new SmartJs.Event.Event(this);
         this._onExecuted = new SmartJs.Event.Event(this);
         this._onBackgroundChange = new SmartJs.Event.Event(this);
-        this._onSpriteUiChange = new SmartJs.Event.Event(this);     //TODO: reconnect events on scene change? or share event?
+        this._onSpriteUiChange = gameEngine.onSpriteUiChange;   //mapping event to gameEngin
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
         this._onProgressChange = new SmartJs.Event.Event(this);
