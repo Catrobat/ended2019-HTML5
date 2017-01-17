@@ -67,7 +67,7 @@ PocketCode.PlayerViewportController = (function () {
         clearPenStampCache: function () {
             this._view.clearPenStampCache();
 
-         },
+        },
         updateSprite: function (spriteId, properties) {
             var img,
                 imgs = this._renderingSprite,
@@ -76,10 +76,10 @@ PocketCode.PlayerViewportController = (function () {
             for (var i = 0, l = imgs.length; i < l; i++) {
                 img = imgs[i];
                 if (img.id === spriteId) {
-                    if( properties.x || properties.y ) {
-                      this._view.drawPen( spriteId, properties.x, properties.y );
+                    if (properties.x || properties.y) {
+                        this._view.drawPen(spriteId, properties.x, properties.y);
                     }
-                    if( properties.stamp == true ) {
+                    if (properties.stamp == true) {
                         this._view.drawStamp(spriteId);
                     }
                     visible = img.visible;
@@ -117,10 +117,10 @@ PocketCode.PlayerViewportController = (function () {
             }
         },
 
-        renderCamera: function( cameraOn, cameraStream ){
+        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params
             //console.log("CONTROLLER RENDER CAMERA");
             //console.log("camera stream in viewport controller:", cameraStream);
-          this._view.renderCamera(cameraOn, cameraStream);
+            this._view.updateCameraUse(cameraOn, cameraStream);
         },
         setProjectScreenSize: function (width, height) {
             this._projectScreenWidth = width;

@@ -13,19 +13,13 @@
 
 PocketCode.Model.Scene = (function () {
 
-    function Scene(gameEngine, device, soundManager, jsonScene, jsonBroadcasts, minLoopCycleTime/*, totalBrickCount, onSpriteUiChange*/) {
+    function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime/*, totalBrickCount, onSpriteUiChange*/) {
 
-        if (!jsonScene)
-            throw new Error('invalid argument: jsonScene');
-
-        this._name = jsonScene.name;
-        this._id = jsonScene.id;
-        this._originalScreenWidth = jsonScene.screenWidth;
-        this._originalScreenHeight = jsonScene.screenHeight;
+        if (!(jsonBroadcasts instanceof Array))
+            throw new Error('setter expects type Array');
 
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._physicsWorld = new PocketCode.PhysicsWorld(this);
-        this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
 
         this._background = undefined;
         this._sprites = [];
@@ -36,14 +30,13 @@ PocketCode.Model.Scene = (function () {
 
         //this._broadcasts = jsonBroadcasts || [];
         this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts || []);
-        this._bricksTotal = 0;// TODO calc scene internal bricks? totalBrickCount;
+        //this._bricksTotal = 0;// TODO calc scene internal bricks? totalBrickCount;
         this._bricksLoaded = 0;
+        this._unsupportedBricks = [];
 
-        if (jsonScene.background)
-            this._loadBackground(jsonScene.background);
-        //if (jsonScene.sprites instanceof Array)
-        console.log("jsonScene:", jsonScene);
-            this._loadSprites(jsonScene.sprites);
+        this._spriteFactory = new PocketCode.SpriteFactory(device, gameEngine, soundManager, this._bricksTotal, this._minLoopCycleTime);
+        this._spriteFactory.onSpriteLoaded.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnSpriteLoadedHandler, this));
+        this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnUnsupportedBricksFoundHandler, this));
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
@@ -54,10 +47,6 @@ PocketCode.Model.Scene = (function () {
         this._onTouchStartAction = new SmartJs.Event.Event(this);
         this._onProgressChange = new SmartJs.Event.Event(this);
         this._onUnsupportedBricksFound = new SmartJs.Event.Event(this);
-
-        this._spriteFactory = new PocketCode.SpriteFactory(device, gameEngine, soundManager, this._bricksTotal, this._minLoopCycleTime);
-        this._spriteFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
-        this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onUnsupportedBricksFound.dispatchEvent(e); }, this));
 
         //this._collisionManager = undefined;
         //this._device = device;
@@ -73,6 +62,34 @@ PocketCode.Model.Scene = (function () {
         ////this._projectTimer = projectTimer;
         //this._originalSpriteOrder = [];
     }
+
+    //events
+    Object.defineProperties(Scene.prototype, {
+        onStart: {
+            get: function () { return this._onStart; },
+        },
+        onExecuted: {
+            get: function () { return this._onExecuted; },
+        },
+        onBackgroundChange: {
+            get: function () { return this._onBackgroundChange; },
+        },
+        onSpriteUiChange: {
+            get: function () { return this._onSpriteUiChange; },
+        },
+        onSpriteTappedAction: {
+            get: function () { return this._onSpriteTappedAction; },
+        },
+        onTouchStartAction: {
+            get: function () { return this._onTouchStartAction }
+        },
+        onProgressChange: {
+            get: function () { return this._onProgressChange; },
+        },
+        onUnsupportedBricksFound: {
+            get: function () { return this._onUnsupportedBricksFound; },
+        },
+    });
 
     //properties
     Object.defineProperties(Scene.prototype, {
@@ -109,7 +126,7 @@ PocketCode.Model.Scene = (function () {
                 return imgs;
             }
         },
-        renderingTexts: {  //local vars of bg and sprites
+        renderingVariables: {  //local vars of bg and sprites
             get: function () {
                 var vars = [];
                 if (this._background)
@@ -151,48 +168,34 @@ PocketCode.Model.Scene = (function () {
         },
     });
 
-    //events
-    Object.defineProperties(Scene.prototype, {
-        onStart: {
-            get: function () { return this._onStart; },
-        },
-        onExecuted: {
-            get: function () { return this._onExecuted; },
-        },
-        onBackgroundChange: {
-            get: function () { return this._onBackgroundChange; },
-        },
-        onSpriteUiChange: {
-            get: function () { return this._onSpriteUiChange; },
-        },
-        onSpriteTappedAction: {
-            get: function () { return this._onSpriteTappedAction; },
-        },
-        onTouchStartAction: {
-            get: function () { return this._onTouchStartAction }
-        },
-        onProgressChange: {
-            get: function () { return this._onProgressChange; },
-        },
-        onUnsupportedBricksFound: {
-            get: function () { return this._onUnsupportedBricksFound; },
-        },
-    });
-
     //methods
     Scene.prototype.merge({
-        _calcBricksCount(jsonScene) {
-            return 0;   //TODO
+        load: function (jsonScene) {
+            if (!jsonScene)
+                throw new Error('invalid argument: jsonScene');
+
+            this._name = jsonScene.name;
+            this._id = jsonScene.id;
+            this._originalScreenWidth = jsonScene.screenWidth;
+            this._originalScreenHeight = jsonScene.screenHeight;
+            this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
+
+            if (jsonScene.background)
+                this._loadBackground(jsonScene.background);
+            //if (jsonScene.sprites instanceof Array)
+            this._loadSprites(jsonScene.sprites);
+
+            if(this._unsupportedBricks.length > 0)
+                this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
         },
-        _spriteFactoryOnProgressChangeHandler: function (e) {
-            this._bricksLoaded = e.parsed;
-            this._onProgressChange.dispatchEvent(e);
-        },
-        removeSpriteFactoryEventListeners: function () {    //TODO
-            this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnProgressChangeHandler, this));
-        },
+        //_calcBricksCount(jsonScene) {
+        //    return 0;   //TODO
+        //},
+        //removeSpriteFactoryEventListeners: function () {    //TODO
+        //    this._spriteFactory.onProgressChange.removeEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnSpriteLoadedHandler, this));
+        //},
         _loadBackground: function (background) {
-            this._background = this._spriteFactory.create(this, this._broadcastMgr, this._bricksLoaded, background, true);
+            this._background = this._spriteFactory.create(this, this._broadcastMgr, /*this._bricksLoaded,*/ background, true);
             this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
             //TODO: attach listener onLookChange
             this._collisionManager.background = this._background;
@@ -201,31 +204,21 @@ PocketCode.Model.Scene = (function () {
             //todo type check
             //var sp = sprites;
             var sprite, i, l;
-            if(sprites instanceof  Array) {
-                for (i = 0, l = sprites.length; i < l; i++) {
-                    sprite = this._spriteFactory.create(this, this._broadcastMgr, this._bricksLoaded, sprites[i]);
-                    sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
-                    this._sprites.push(sprite);
-                    this._originalSpriteOrder.push(sprite);
-                }
+            for (i = 0, l = sprites.length; i < l; i++) {
+                sprite = this._spriteFactory.create(this, this._broadcastMgr, /*this._bricksLoaded,*/ sprites[i]);
+                sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
+                this._sprites.push(sprite);
+                this._originalSpriteOrder.push(sprite);
             }
             this._collisionManager.sprites = this._sprites;
         },
-        //load: function (jsonScene) {
-        //    if (!jsonScene)
-        //        throw new Error('invalid argument: jsonScene');
-
-        //    this._name = jsonScene.name;
-        //    this._id = jsonScene.id;
-        //    this._originalScreenWidth = jsonScene.screenWidth;
-        //    this._originalScreenHeight = jsonScene.screenHeight;
-        //    this._collisionManager = new PocketCode.CollisionManager(this._originalScreenWidth, this._originalScreenHeight);
-
-        //    if (jsonScene.background)
-        //        this._loadBackground(jsonScene.background);
-
-        //    this._loadSprites(jsonScene.sprites);
-        //},
+        _spriteFactoryOnSpriteLoadedHandler: function (e) {
+            this._bricksLoaded += e.bricksLoaded;
+            this._onProgressChange.dispatchEvent({ bricksLoaded: this._bricksLoaded });
+        },
+        _spriteFactoryOnUnsupportedBricksFoundHandler: function(e) {
+            this._unsupportedBricks.concat(e.unsupportedBricks);
+        },
         start: function () {
             if (this._executionState === PocketCode.ExecutionState.RUNNING)
                 return false;
@@ -299,7 +292,7 @@ PocketCode.Model.Scene = (function () {
 
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
-        pauseAndShowAskDialog: function(question, callbackListener) {
+        pauseAndShowAskDialog: function (question, callbackListener) {
             //TODO: 
         },
         _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
@@ -443,7 +436,7 @@ PocketCode.Model.Scene = (function () {
             }
         },
 
-        clearPenStampBackground: function() {
+        clearPenStampBackground: function () {
             return true;    //TODO
         },
 
@@ -473,7 +466,7 @@ PocketCode.Model.Scene = (function () {
             //todo dispatch event for UI
             //notify UI: neues Event onCloneDeleted (siehe unten)
         },
-        dispose: function() {
+        dispose: function () {
             if (this._disposed)
                 return; //may occur when dispose on error
 

@@ -13,7 +13,6 @@
 
 PocketCode.Model.merge({
 
-
     WaitBrick: (function () {
         WaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
 

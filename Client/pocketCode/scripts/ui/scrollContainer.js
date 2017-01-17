@@ -1,4 +1,6 @@
-﻿
+﻿'use strict';
+
+
 PocketCode.Ui.ScrollContainer = (function () {
     ScrollContainer.extends(SmartJs.Ui.ContainerControl, false);
 

@@ -101,7 +101,7 @@ PocketCode.merge({
                     //lineWidth = 0,
                     testLine = '',
                     metrics;//,
-                    //maxLineWidth = 0;
+                //maxLineWidth = 0;
 
                 for (var i = 0, l = newLines.length; i < l; i++) {
                     var words = newLines[i].trim().split(' ');
@@ -192,7 +192,7 @@ PocketCode.merge({
             this._rotation = 0.0;
             this._shadow = false;
 
-          this.penDown = false;
+            this.penDown = false;
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -267,12 +267,20 @@ PocketCode.merge({
                 writable: true,
             },
             penSize: {
-              value: 4.0,
-              writable: true,
+                value: 4.0,
+                writable: true,
             },
             penColor: {
-              value: { r: 0, g: 0, b: 255},
-              writable: true,
+                value: { r: 0, g: 0, b: 255 },
+                writable: true,
+            },
+            penX: {
+                value: 0.0,
+                writable: true,
+            },
+            penY: {
+                value: 0.0,
+                writable: true,
             },
         });
 

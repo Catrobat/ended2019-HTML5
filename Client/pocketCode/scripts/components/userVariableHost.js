@@ -20,8 +20,8 @@ PocketCode.UserVariableHost = (function () {
                 throw new Error('invalid argument: global lookup host: expectet type = PocketCode.UserVariableHost');
             if (scope === PocketCode.UserVariableScope.GLOBAL)
                 throw new Error('invalid argument: a global lookup host cannot refer to another global variable definition');
-            if (scope == PocketCode.UserVariableScope.PROCEDURE && globalLookupHost.__variableScope !== PocketCode.UserVariableScope.LOCAL ||
-                scope == PocketCode.UserVariableScope.LOCAL && globalLookupHost.__variableScope !== PocketCode.UserVariableScope.GLOBAL)
+            if (scope == PocketCode.UserVariableScope.PROCEDURE && globalLookupHost.variableScope !== PocketCode.UserVariableScope.LOCAL ||
+                scope == PocketCode.UserVariableScope.LOCAL && globalLookupHost.variableScope !== PocketCode.UserVariableScope.GLOBAL)
                 throw new Error('invalid argument: a lookup host has to have a \'parent\' scope');
         }
         this.__variableLookupHost = globalLookupHost;
@@ -45,6 +45,11 @@ PocketCode.UserVariableHost = (function () {
                         list.push(new PocketCode.RenderingText({ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }));
                 }
                 return list;
+            },
+        },
+        variableScope: {
+            get: function () {
+                return this.__variableScope;
             },
         },
         _variables: {
@@ -95,7 +100,7 @@ PocketCode.UserVariableHost = (function () {
                 tmp.merge(this.__variableLookupHost.getAllVariables());
             return tmp;
         },
-        _valueChangeHandler: function(e) {
+        _valueChangeHandler: function (e) {
             this._onVariableChange.dispatchEvent({ id: e.id, properties: { text: e.target.toString() } });
         },
         showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
