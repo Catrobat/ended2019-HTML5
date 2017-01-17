@@ -284,7 +284,7 @@ PocketCode.merge({
                     this._getUserMedia(this._constraints, onSuccess, onError);
 
                 if (reinit || this._initFaceDetection) {
-                    this._initFaceDetection();
+                    this._initFaceDetection(); // TODO @Wolfgang : not found
                     this._initFaceDetection = false;
                 }
             },
@@ -380,7 +380,7 @@ PocketCode.merge({
                     return;
                 //this.stopCamera();
                 this._stopStream();
-                this._initCamera(true);
+                this._init(true);
 
                 this._selected = PocketCode.CameraType.FRONT;   //default
             },

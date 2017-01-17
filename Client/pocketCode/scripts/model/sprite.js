@@ -114,10 +114,6 @@ PocketCode.Model.Sprite = (function () {
                     penColor: this._penColor,
                     penX: this._positionX,
                     penY: this._positionY,
-                    //penXPosition: this._penXPosition,
-                    //penYPosition: this._penYPosition,
-                    //offsetX: this._lookOffsetX,
-                    //offsetY: this._lookOffsetY,
                 });
             },
         },
