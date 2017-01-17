@@ -524,16 +524,12 @@ PocketCode.Ui.Canvas = (function () {
                 if (ro[i].id === renderingSpriteId) {
                     if (!ro[i].penDown)
                         return;
-                    var x = ro[i].x;
-                    x -= ro[i].offsetX * ro[i]._scaling;
-                    to_x -= ro[i].offsetX * ro[i]._scaling;
-                    var y = ro[i].y;
-                    y -= ro[i].offsetY * ro[i]._scaling;
-                    to_y -= ro[i].offsetY * ro[i]._scaling;
+                    var from_x = ro[i].penX * ro[i]._scaling;
+                    var from_y = ro[i].penY * ro[i]._scaling;
                     var currentPenStampCtx = this._currentSceneCache.ctx;
                     currentPenStampCtx.beginPath();
-                    currentPenStampCtx.moveTo(x, y * -1.0);
-                    currentPenStampCtx.lineTo(to_x || x, to_y * -1.0 || y * -1.0);
+                    currentPenStampCtx.moveTo(from_x, from_y * -1.0);
+                    currentPenStampCtx.lineTo(to_x || from_x, to_y * -1.0 || from_y * -1.0);
                     currentPenStampCtx.strokeStyle = "rgb( " + ro[i].penColor.r + ", " + ro[i].penColor.g + ", " + ro[i].penColor.b + " )";
                     currentPenStampCtx.lineWidth = ro[i]._penSize;
                     currentPenStampCtx.stroke();
