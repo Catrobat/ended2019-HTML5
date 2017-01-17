@@ -27,7 +27,7 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
 
     b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
     //test empty container
@@ -103,7 +103,7 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, scene.onSpriteTappedAction);
     assert.ok(b._device === "device" && b._sprite === sprite && b._onAction instanceof SmartJs.Event.Event, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenActionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenActionBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenActionBrick", "objClassName check");
 
     //test empty container
@@ -166,7 +166,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
     var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenBroadcastReceiveBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenBroadcastReceiveBrick", "objClassName check");
 
     //test empty container
@@ -329,7 +329,7 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, 24, { condition: cond }, scene.onStart);
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._cycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
-    assert.ok(b instanceof PocketCode.Model.WhenConditionMetBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenConditionMetBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenConditionMetBrick", "objClassName check");
 
     assert.equal(b._condition.calculate(), false, "condition checked -> false");
@@ -419,7 +419,7 @@ QUnit.test("WhenCollisionBrick", function (assert) {
     var b = new PocketCode.Model.WhenCollisionBrick("device", sprite, physicsWorld, {spriteId: spriteId2});
 
     assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenCollisionBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenCollisionBrick", "objClassName check");
 
     var handlerCalled = 0;
@@ -486,7 +486,7 @@ QUnit.test("WhenBackgroundChangesTo", function (assert) {
     var b = new PocketCode.Model.WhenBackgroundChangesTo(device, sprite, scene, {lookId: "lookId"});
 
     assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenBackgroundChangesTo && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenBackgroundChangesTo && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenBackgroundChangesTo", "objClassName check");
 
     //test empty container

@@ -7,7 +7,6 @@
 'use strict';
 
 
-
 PocketCode.Model.merge({
 
     GoToPositionBrick: (function () {
@@ -154,7 +153,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
 
-           // this._gameEngine = gameEngine;
+            // this._gameEngine = gameEngine;
             this._scene = scene;
             this._destinationSpriteId = propObject.spriteId;
             switch (propObject.destinationType) {
@@ -253,16 +252,16 @@ PocketCode.Model.merge({
         return TurnRightBrick;
     })(),
 
-    PointInDirectionBrick: (function () {
-        PointInDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetDirectionBrick: (function () {
+        SetDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function PointInDirectionBrick(device, sprite, propObject) {
+        function SetDirectionBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
         }
 
-        PointInDirectionBrick.prototype._execute = function () {
+        SetDirectionBrick.prototype._execute = function () {
             var val = this._degrees.calculate();
             if (isNaN(val))
                 this._return(false);
@@ -270,23 +269,23 @@ PocketCode.Model.merge({
                 this._return(this._sprite.setDirection(val));
         };
 
-        return PointInDirectionBrick;
+        return SetDirectionBrick;
     })(),
 
-    PointToBrick: (function () {
-        PointToBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetDirectionToBrick: (function () {
+        SetDirectionToBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function PointToBrick(device, sprite, propObject) {
+        function SetDirectionToBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._spriteId = propObject.spriteId;
         }
 
-        PointToBrick.prototype._execute = function () {
-            this._return(this._sprite.pointTo(this._spriteId));
+        SetDirectionToBrick.prototype._execute = function () {
+            this._return(this._sprite.SetDirectionTo(this._spriteId));
         };
 
-        return PointToBrick;
+        return SetDirectionToBrick;
     })(),
 
     GlideToBrick: (function () {
@@ -298,20 +297,36 @@ PocketCode.Model.merge({
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
+            this._velocity = 0; //initial
             this._paused = false;
         }
 
         GlideToBrick.prototype.merge({
             _updatePositionHandler: function (e) {
-                this._sprite.setPosition(e.value.x, e.value.y);
+                this._sprite.setPosition(e.value.x, e.value.y, true, this._cancel.bind(this, this._callId), this._velocity);
             },
-            _returnHandler: function (e) {
-                var callId = e.callId;
+            //_returnHandler: function (e) {
+            //    //var callId = e.callId;
+            //    this._return(e.callId, true);
+            //},
+            _cancel: function (callId) {
+                var po = this._pendingOps[callId];
+                if (!po)    //make sure a internaly canceled op does not get cnaceled again from sprite callback
+                    return;
+                po.animation.stop();
                 this._return(callId, true);
             },
             _execute: function (callId) {
+                this._callId = callId;  //in this brick there can only be one active animation
                 var sprite = this._sprite;
-                var po = this._pendingOps[callId];
+
+                var po;
+                //terminate pending ops to avoid conflicts
+                for (var p in this._pendingOps)
+                    if (p != callId)
+                        this._cancel(p);
+
+                po = this._pendingOps[callId];
                 po.paused = this._paused;
                 var duration = this._duration.calculate(),
                     x = this._x.calculate(),
@@ -319,13 +334,17 @@ PocketCode.Model.merge({
                 if (isNaN(duration)) {
                     if (!isNaN(x) && !isNaN(y))
                         this._updatePositionHandler({ value: { x: x, y: y } });
-                    this._returnHandler({ callId: callId });
+                    this._return(callId, false);
                     return;
                 }
 
+                var dx = Math.abs(x - sprite.positionX),
+                    dy = Math.abs(y - sprite.positionY);
+                this._velocity = Math.sqrt(dx * dx + dy * dy) / duration;
+
                 var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, callId)));
                 po.animation = animation;
                 animation.start({ callId: callId });
                 if (this._paused)
@@ -439,9 +458,10 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._physicsWorld = physicsWorld;
 
-            if (!propObject){
+            if (!propObject) {
                 this._physicsType = PocketCode.MovementStyle.NONE;
-            } else {
+            }
+            else {
                 switch (propObject.physicsType) {
                     case 'FIXED':
                         this._physicsType = PocketCode.MovementStyle.FIXED;
@@ -485,63 +505,64 @@ PocketCode.Model.merge({
             if (isNaN(x) || isNaN(y))
                 this._return(false);
 
-            this._sprite.setVelocity(x, y);
+            this._sprite.setVelocity(x, y); //TODO: velocity/sek ->direction?
             this._return(false);
         };
 
         return SetVelocityBrick;
     })(),
 
-    TurnLeftSpeedBrick: (function () {
-        TurnLeftSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
+    RotationSpeedLeftBrick: (function () {
+        RotationSpeedLeftBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function TurnLeftSpeedBrick(device, sprite, propObject) {
+        function RotationSpeedLeftBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
-        TurnLeftSpeedBrick.prototype._execute = function () {
+        RotationSpeedLeftBrick.prototype._execute = function () {
             var degreesPerSecond = this._degreesPerSecond.calculate();
 
-            if(isNaN(degreesPerSecond))
+            if (isNaN(degreesPerSecond))
                 this._return(false);
 
             this._sprite.turnNDegreePerSecond = -degreesPerSecond;
             this._return(false);
         };
 
-        return TurnLeftSpeedBrick;
+        return RotationSpeedLeftBrick;
     })(),
 
-    TurnRightSpeedBrick: (function () {
-        TurnRightSpeedBrick.extends(PocketCode.Model.BaseBrick, false);
+    RotationSpeedRightBrick: (function () {
+        RotationSpeedRightBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function TurnRightSpeedBrick(device, sprite, propObject) {
+        function RotationSpeedRightBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
         }
 
-        TurnRightSpeedBrick.prototype._execute = function () {
+        RotationSpeedRightBrick.prototype._execute = function () {
             var degreesPerSecond = this._degreesPerSecond.calculate();
 
-            if(isNaN(degreesPerSecond))
+            if (isNaN(degreesPerSecond))
                 this._return(false);
 
             this._sprite.turnNDegreePerSecond = degreesPerSecond;
             this._return(false);
         };
 
-        return TurnRightSpeedBrick;
+        return RotationSpeedRightBrick;
     })(),
 
     SetGravityBrick: (function () {
         SetGravityBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetGravityBrick(device, sprite, propObject) {
+        function SetGravityBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
+            this._scene = scene;
             this._x = new PocketCode.Formula(device, sprite, propObject.x);
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
@@ -552,7 +573,7 @@ PocketCode.Model.merge({
             if (isNaN(x) || isNaN(y))
                 this._return(false);
 
-            this._sprite.setGravity(x, y);
+            this._scene.setGravity(x, y);
             this._return(false);
         };
 
@@ -571,7 +592,7 @@ PocketCode.Model.merge({
         SetMassBrick.prototype._execute = function () {
             var mass = this._mass.calculate();
 
-            if(isNaN(mass))
+            if (isNaN(mass))
                 this._return(false);
 
             this._sprite.mass = mass;
@@ -593,7 +614,7 @@ PocketCode.Model.merge({
         SetBounceFactorBrick.prototype._execute = function () {
             var bounceFactor = this._bounceFactor.calculate();
 
-            if(isNaN(bounceFactor))
+            if (isNaN(bounceFactor))
                 this._return(false);
 
             this._sprite.bounceFactor = bounceFactor;
@@ -614,7 +635,7 @@ PocketCode.Model.merge({
 
         SetFrictionBrick.prototype._execute = function () {
             var friction = this._friction.calculate();
-            if(isNaN(friction))
+            if (isNaN(friction))
                 this._return(false);
 
             this._sprite.friction = friction;

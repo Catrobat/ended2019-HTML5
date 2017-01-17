@@ -1103,6 +1103,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/collisionManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/physicsWorld.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/deviceFeature.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/device.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/imageHelper.js', type: 'js' },
@@ -1118,8 +1119,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksEvent.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksPen.js', type: 'js' },
@@ -1142,7 +1143,6 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerViewportView.js', type: 'js' },
-		{url: 'pocketCode/scripts/components/camera.js', type: 'js'},
 
 		{ url: 'pocketCode/scripts/controller/controllerCore.js', type: 'js' },
 		{ url: 'pocketCode/scripts/controller/playerPageController.js', type: 'js' },

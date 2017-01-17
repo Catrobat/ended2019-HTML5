@@ -66,10 +66,7 @@ PocketCode.Model.Sprite = (function () {
         //pen
         this._penDown = false;
         this._penSize = 4;
-        this._penColor= { r: 0, g: 0, b: 255};
-
-        this._stamp = false;
-
+        this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -137,7 +134,6 @@ PocketCode.Model.Sprite = (function () {
                     prnColor: this._penColor,
                     penXPosition: this._penXPosition,
                     penYPosition: this._penYPosition,
-                    stamp: this._stamp,
                     offsetX: this._lookOffsetX,
                     offsetY: this._lookOffsetY,
 
@@ -204,7 +200,11 @@ PocketCode.Model.Sprite = (function () {
                 return this._currentLook;
             },
         },
-
+        visible: {
+            get: function () {
+                return this._visible;
+            },
+        },
         size: {     //percentage
             get: function () {
                 return Math.round(this._scaling * 100.0);
@@ -226,7 +226,7 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
-
+        //sound
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -238,6 +238,39 @@ PocketCode.Model.Sprite = (function () {
                 return this._sounds;
             },
         },
+        //pen & stamp
+        penDown: {
+            set: function (penDown) {
+                if (this._penDown == penDown)
+                    return;
+
+                this._penDown = penDown;
+                this._triggerOnChange({ penDown: this._penDown });
+            },
+        },
+        penSize: {
+            set: function (penSize) {
+                if (this._penSize == penSize)
+                    return;
+
+                this._penSize = penSize;
+                this._triggerOnChange({ penSize: this._penSize });
+            },
+        },
+        penColor: {
+            set: function (rgbObj) {
+                if (typeof rgbObj !== 'object')
+                    throw new Error('invalid setter: rgb object');
+
+                var c = this._penColor;
+                if (c.r == r && c.g == g && c.b == b)
+                    return;
+
+                this._penColor = { r: r, g: g, b: b };
+                this._triggerOnChange({ penColor: this._penColor });
+            },
+        },
+
         //projectTimerValue: {    //used in formula (gameEngine not accessible)
         //    get: function() {
         //        return this._gameEngine.projectTimer.value;
@@ -251,8 +284,8 @@ PocketCode.Model.Sprite = (function () {
                 var script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
-                    //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
-                    //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
+                    //if (!(script instanceof PocketCode.Model.SingleInstanceScriptBlock))                               //this change breaks our tests: //TODO: 
+                    //    throw new Error('invalid script block: every brick has to be inherited from SingleInstanceScriptBlock');
                     if (script.onExecuted)  //supported by all (root container) scripts
                         script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
                 }
@@ -262,13 +295,6 @@ PocketCode.Model.Sprite = (function () {
                 return this._scripts;
             },
         },
-
-        visible: {
-            get: function () {
-                return this._visible;
-            },
-        },
-
         scriptsRunning: {
             get: function () {
                 var scripts = this._scripts;
@@ -419,9 +445,17 @@ PocketCode.Model.Sprite = (function () {
          * @param {boolean} triggerEvent
          * @returns {boolean}
          */
-        setPosition: function (x, y, triggerEvent) {
+        setPosition: function (x, y, triggerEvent, animationCancelCallback, velocity) {
             if (isNaN(x) || isNaN(y))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
+            if (animationCancelCallback) {   //used to cancel animations
+                this._animationCancelCallback = animationCancelCallback;
+                //TODO: velocity
+            }
+
             if (this._positionX === x && this._positionY === y)
                 return false;
 
@@ -448,6 +482,9 @@ PocketCode.Model.Sprite = (function () {
         setPositionX: function (x) {
             if (isNaN(x))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (this._positionX === x)
                 return false;
 
@@ -462,6 +499,9 @@ PocketCode.Model.Sprite = (function () {
         changePositionX: function (value) {
             if (isNaN(value))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (!value)
                 return false;
 
@@ -476,6 +516,9 @@ PocketCode.Model.Sprite = (function () {
         setPositionY: function (y) {
             if (isNaN(y))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (this._positionY === y)
                 return false;
 
@@ -491,6 +534,9 @@ PocketCode.Model.Sprite = (function () {
         changePositionY: function (value) {
             if (isNaN(value))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (!value)
                 return false;
 
@@ -586,14 +632,14 @@ PocketCode.Model.Sprite = (function () {
          * @param spriteId
          * @returns {boolean}
          */
-        pointTo: function (spriteId) {
+        SetDirectionTo: function (spriteId) {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._scene.getSpriteById(spriteId); //throws error if undefined
+            var SetDirectionTo = this._scene.getSpriteById(spriteId); //throws error if undefined
 
-            var offsetX = pointTo.positionX - this.positionX;
-            var offsetY = pointTo.positionY - this.positionY;
+            var offsetX = SetDirectionTo.positionX - this.positionX;
+            var offsetY = SetDirectionTo.positionY - this.positionY;
 
             if (offsetX === 0 && offsetY === 0)
                 return false;
@@ -635,8 +681,8 @@ PocketCode.Model.Sprite = (function () {
                     if (this._direction != 90.0) {  //rotation changed
                         this._recalculateLookOffsets();
                         props.rotation = this._direction - 90.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
@@ -645,21 +691,24 @@ PocketCode.Model.Sprite = (function () {
                     if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 default:
                     throw new Error('invalid argument: unknown rotation style');
             }
+
+            props.x = Math.round(this._positionX + this._lookOffsetX);
+            props.y = Math.round(this._positionY + this._lookOffsetY);
 
             if (props.flipX == undefined && props.rotation == undefined)
                 return false;
@@ -1210,45 +1259,16 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(props);    //returns false for empty objects
         },
-
-        penDown: function(penDown) {
-            if(this._penDown == penDown)
-                return false;
-
-            this._penDown = penDown;
-            return this._triggerOnChange({penDown:this._penDown});
-
-        },
-        penSize: function(penSize) {
-
-
-            if(this._penSize == penSize)
-                return false;
-            this._penSize = penSize;
-            return this._triggerOnChange({penSize:this._penSize});
-        },
-        penColor: function(blue, red, green) {
-
-
-            if(this._penColor.b == blue && this._penColor.r == red && this._penColor.g == green)
-                return false;
-            this._penColor = { r: red, g: green, b: blue };
-            //this._penColorBlue = blue;
-            //this._penColorRed = red;
-            //this._penColorGreen = green;
-            return this._triggerOnChange({ color : this._penColor});
-        },
-        penStamp: function(){
-            this._stamp = true;
-            return this._triggerOnChange({stamp:this._stamp});
+        drawStamp: function () {
+            return this._triggerOnChange({ drawStamp: true });  //TODO: introduce "action" parameter { canvasAction: penDown, penUp, stamp } ???
         },
 
-        showBubble: function(type, text) {
+        showBubble: function (type, text) {
 
-            return this._triggerOnChange({bubble: { type: type, text: text, visible: true}});
+            return this._triggerOnChange({ bubble: { type: type, text: text, visible: true } });
         },
-        hideBubble: function(type) {
-            return this._triggerOnChange({bubble: { type: type, visible: false}});
+        hideBubble: function (type) {
+            return this._triggerOnChange({ bubble: { type: type, visible: false } });
         },
 
 
@@ -1293,7 +1313,7 @@ PocketCode.Model.Sprite = (function () {
                 //pen
                 _penDown: this._penDown,
                 _penSize: this._penSize,
-                _penColor: this._penColor, //todo?
+                _penColor: this._penColor,
                 _penXPosition: this._penXPosition,
                 _penYPosition: this._penYPosition,
             };
@@ -1311,6 +1331,8 @@ PocketCode.Model.merge({
         SpriteClone.extends(PocketCode.Model.Sprite, false);
 
         function SpriteClone(gameEngine, scene, jsonSprite, definition) {
+
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
 
             this._id = SmartJs.getNewId();
             this._json = jsonSprite;
@@ -1344,6 +1366,7 @@ PocketCode.Model.merge({
             this._onCloneStart = new SmartJs.Event.Event(this);
         }
 
+        //properties
         Object.defineProperties(SpriteClone.prototype, {
             isClone: {
                 value: true,
@@ -1351,6 +1374,7 @@ PocketCode.Model.merge({
             },
         });
 
+        //events
         Object.defineProperties(SpriteClone.prototype, {
             onCloneStart: {
                 get: function () {
@@ -1359,6 +1383,7 @@ PocketCode.Model.merge({
             },
         });
 
+        return SpriteClone;
     })(),
 });
 
@@ -1368,10 +1393,10 @@ PocketCode.Model.merge({
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
         function BackgroundSprite(gameEngine, scene, propObject) {
-
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
             this._cameraTransparency = 0.5; //default
+            this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
         }
 
         //properties
@@ -1381,10 +1406,19 @@ PocketCode.Model.merge({
         //    },
         //});
 
+        //events
+        Object.defineProperties(BackgroundSprite.prototype, {
+            onLookChange: {
+                get: function () {
+                    return this._onLookChange;
+                },
+            },
+        });
+
         //methods
         BackgroundSprite.prototype.merge({
             //TODO: setTransparency: to include cameraTransparency? Notify Background on device.onCameraUsageChanged to chagne this?
-            setCameraTransparency: function(value) {
+            setCameraTransparency: function (value) {
                 if (value < 0.0)
                     value = 0.0;
                 if (value > 100.0)
@@ -1436,12 +1470,12 @@ PocketCode.Model.merge({
                 }
             },
             bounceFactor: {
-                set: function(value) {
+                set: function (value) {
                     this._bounceFactor = value;
                 }
             },
             movementStyle: {
-                set: function(value) {
+                set: function (value) {
                     this._movementStyle = value;
                     //todo
                 }
@@ -1450,9 +1484,9 @@ PocketCode.Model.merge({
 
         //methods
         PhysicsSprite.prototype.merge({
-            setGravity: function(x, y) {    //TODO: why method and not prop?
-                this._scene.setGravity(x, y);
-            },
+            //setGravity: function(x, y) {    //TODO: why method and not prop? DEFINED IN SCENE
+            //    this._scene.setGravity(x, y);
+            //},
             setVelocity: function (x, y) {    //TODO: why method and not prop?
                 this._velocityX = x;
                 this._velocityY = y;

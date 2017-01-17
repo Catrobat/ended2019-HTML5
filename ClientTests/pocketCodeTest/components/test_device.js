@@ -31,39 +31,12 @@ QUnit.test("Device", function (assert) {
 
     assert.equal(dev.loudness, sm.volume, "loudness getter");
     
-    dev._features.CAMERA.inUse = false;
-    assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
-    dev._features.CAMERA.inUse = false;
-    assert.throws(function () { dev.selectedCamera = "OTHER"; }, Error, "ERROR: camera setter: invalid value");
-    assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
-    dev._features.CAMERA.inUse = false;
-    dev.selectedCamera = PocketCode.CameraType.FRONT;
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-    assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
-
-    assert.equal(dev.cameraOn, false, "cameraOn: default");
-    dev._features.CAMERA.inUse = false;
-    assert.throws(function () { dev.cameraOn = "OTHER"; }, Error, "ERROR: cameraOn setter: invalid value");
-    assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
-    dev._features.CAMERA.inUse = false;
-    dev.cameraOn = true;
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-    assert.ok(dev.cameraOn, "selected camera: getter/setter");
-
-    dev._features.CAMERA.inUse = false;
-    assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
-    assert.ok(!isNaN(dev.faceSize), "faceSize getter");
-    assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
-    assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
-
     dev._features.FLASH.inUse = false;
     assert.equal(dev.flashOn, false, "flashOn getter");
-    assert.ok(dev._features.FLASH.inUse, "flashOn: camera inUser: after getter");
+    assert.ok(dev._features.FLASH.inUse, "flashOn: flash inUser: after getter");
     dev._features.FLASH.inUse = false;
     dev.flashOn = true;
-    assert.ok(dev._features.FLASH.inUse, "flashOn: camera inUser: after setter");
+    assert.ok(dev._features.FLASH.inUse, "flashOn: flash inUser: after setter");
     assert.equal(dev.flashOn, true, "flashOn getter/setter");
     assert.throws(function () { dev.flashOn = ""; }, Error, "ERROR: invlalid setter: flash on");
 
@@ -115,7 +88,7 @@ QUnit.test("Device: Touch", function (assert) {
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_END, "m1", 2, 2);
     assert.equal(dev.lastTouchIndex, 1, "no touch added on move/end");
 
-    dev.clearTouchHistory();
+    dev.reset();
     assert.equal(dev.lastTouchIndex, 0, "initial: no touch (after clear/restart)");
 
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 1);
@@ -143,6 +116,44 @@ QUnit.test("Device: Touch", function (assert) {
 
 
 QUnit.test("Device: GeoLoacation", function (assert) {
+
+    assert.ok(false, "TODO");
+});
+
+
+QUnit.test("MediaDevice", function (assert) {
+
+    var sm = new PocketCode.SoundManager();
+    var dev = new PocketCode.MediaDevice(sm);
+
+    dev._features.CAMERA.inUse = false;
+    assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
+    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    dev._features.CAMERA.inUse = false;
+    assert.throws(function () { dev.selectedCamera = "OTHER"; }, Error, "ERROR: camera setter: invalid value");
+    assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
+    dev._features.CAMERA.inUse = false;
+    dev.selectedCamera = PocketCode.CameraType.FRONT;
+    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
+
+    assert.equal(dev.cameraOn, false, "cameraOn: default");
+    dev._features.CAMERA.inUse = false;
+    assert.throws(function () { dev.cameraOn = "OTHER"; }, Error, "ERROR: cameraOn setter: invalid value");
+    assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
+    dev._features.CAMERA.inUse = false;
+    dev.cameraOn = true;
+    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    assert.ok(dev.cameraOn, "selected camera: getter/setter");
+
+    dev._features.CAMERA.inUse = false;
+    assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");
+    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    assert.ok(!isNaN(dev.faceSize), "faceSize getter");
+    assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
+    assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
+
+
     assert.ok(false, "TODO");
 });
 

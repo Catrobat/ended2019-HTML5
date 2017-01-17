@@ -1,12 +1,11 @@
 <?php
 
-class PointInDirectionBrickDto extends BaseBrickDto {
+class SetDirectionBrickDto extends BaseBrickDto {
 
   public $degrees;	//FormulaDto
-
   
   public function __construct($degrees) {
-	parent::__construct("PointInDirection");
+	parent::__construct("SetDirection");
 	
 	$this->degrees = $degrees;
   }

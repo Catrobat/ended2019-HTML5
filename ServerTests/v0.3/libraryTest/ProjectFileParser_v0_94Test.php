@@ -4,7 +4,7 @@ require_once ("ID3TagsReader.php");
 class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 {
   public $id = 0;
-  public $baseUrl = "http://localhost/html5/rest/v0.2/projects/";
+  public $baseUrl = "http://localhost/html5/rest/v0.3/projects/";
   public $rootPath = "/v0.3/libraryTest/";
   public $cacheDir = "cache/";
   public $xmlDir = "xml-codes/";
@@ -117,7 +117,7 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->assertNotEquals($json_empty, $json_result->background, "json: background is empty");
 
     // check validity
-    $expBaseUrl = "/html5/rest/v0.2/projects/" . $json_result->id . "/";
+    $expBaseUrl = "/html5/rest/v0.3/projects/" . $json_result->id . "/";
     $this->assertContains($expBaseUrl, $json_result->resourceBaseUrl, "json: wrong resourceBaseUrl");
 
     $this->checkHeader($xml->header, $json_result->header);

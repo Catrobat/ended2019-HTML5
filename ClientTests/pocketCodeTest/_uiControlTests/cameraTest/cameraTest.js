@@ -1,61 +1,148 @@
+/// <reference path="../../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';
 
-window.onload = init;
+var videoWidth,
+    videoWidthLabel,
+    videoHeight,
+    videoHeightLabel,
+    backgroundWidth,
+    backgroundWidthLabel,
+    backgroundHeight,
+    backgroundHeightLabel,
+    camera,
+    backgroundCanvas,
+    backgroundCtx,
+    fdCanvasContainer,
+    cycleTime,
+    device;
 
+window.addEventListener('load', onLoad);
 
-var outputContainer;
-//create canvas
-var canvas = null;
-var device = null;
-var context = null;
+function onLoad() {
+    //init elements
+    videoWidthLabel = document.getElementById('videoWidthLabel');
+    var elem = document.getElementById('videoWidth');
+    videoWidth = parseInt(elem.value);
+    videoWidthLabel.innerText = videoWidth;
+    elem.addEventListener('change', function (e) {
+        videoWidth = parseInt(e.target.value);
+        videoWidthLabel.innerText = videoWidth;
+        onVideoSizeChange();
+    });
 
+    videoHeightLabel = document.getElementById('videoHeightLabel');
+    elem = document.getElementById('videoHeight');
+    videoHeight = parseInt(elem.value);
+    videoHeightLabel.innerText = videoHeight;
+    elem.addEventListener('change', function (e) {
+        videoHeight = parseInt(e.target.value);
+        videoHeightLabel.innerText = videoHeight;
+        onVideoSizeChange();
+    });
 
+    backgroundWidthLabel = document.getElementById('backgroundWidthLabel');
+    elem = document.getElementById('backgroundWidth');
+    backgroundWidth = parseInt(elem.value);
+    backgroundWidthLabel.innerText = backgroundWidth;
+    elem.addEventListener('change', function (e) {
+        backgroundWidth = parseInt(e.target.value);
+        backgroundWidthLabel.innerText = backgroundWidth;
+        backgroundCanvas.width = backgroundWidth;
+        //onBackgroundChange();
+    });
 
-//window onLoad
-function init() {
-    console.log("initializing");
-        canvas = new PocketCode.Ui.Canvas();
-    device = new PocketCode.Device(null);
-    canvas.width = 500;
-    canvas.height = 700;
-        var body = document.getElementsByTagName('body')[0];
-    body.appendChild(canvas._dom);
-    device.cameraOn = true;
-    setTimeout(renderCamera, 1000);
+    backgroundHeightLabel = document.getElementById('backgroundHeightLabel');
+    elem = document.getElementById('backgroundHeight');
+    backgroundHeight = parseInt(elem.value);
+    backgroundHeightLabel.innerText = backgroundHeight;
+    elem.addEventListener('change', function (e) {
+        backgroundHeight = parseInt(e.target.value);
+        backgroundHeightLabel.innerText = backgroundHeight;
+        backgroundCanvas.height = backgroundHeight;
+        //onBackgroundChange();
+    });
 
-    //for the test page we hace to use the private _dom propery
+    elem = document.getElementById('cameraSelect');
+    elem.addEventListener('change', function (e) {
+        camera = parseInt(e.target.value);
+        onCameraSelectChange();
+    });
+    camera = parseInt(elem.value);
+    document.getElementById('on').addEventListener('click', function (e) {
+        device.startCamera();
+    });
+    document.getElementById('off').addEventListener('click', function (e) {
+        device.stopCamera();
+    });
 
-    //create some rendering objects for click tests - onLoad
+    backgroundCanvas = document.getElementById('backgroundCanvas');
+    backgroundCanvas.height = backgroundHeight;
+    backgroundCanvas.width = backgroundWidth;
+    backgroundCtx = backgroundCanvas.getContext('2d');
 
-};
+    fdCanvasContainer = document.getElementById('fdCanvasContainer');
+    cycleTime = document.getElementById('cycleTime');
 
-function renderCamera(){
-    canvas._cameraCanvasCtx.drawImage( device._cameraStream, 0, 0, canvas.width, canvas.height);
-    setTimeout(renderCamera, 10);
+    document.getElementById('devicePause').addEventListener('click', function (e) {
+        device.pause();
+    });
+    document.getElementById('deviceResume').addEventListener('click', function (e) {
+        device.resume();
+    });
+    document.getElementById('deviceDispose').addEventListener('click', function (e) {
+        if (timeout)
+            window.clearTimeout(timeout);
+        device.dispose();
+    });
+
+    //device
+    device = new PocketCode.DeviceEmulator();
+    var detected = device.faceDetected; //make sure face detection is initialized
+    
+    //TODO: device.setSceneSize(videoWidth, videoHeight);    //= set at scene change
+    device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(cameraUsageChangeHandler, this));
+    device.onInit.addEventListener(new SmartJs.Event.EventListener(cameraInitHandler, this));
 }
 
-//create renderingSprites
-function imagesLoadHandler() {
-    var looks1 = [{ resourceId: "s1", id: "s1", name: "look1" }];
-    var looks2 = [{ resourceId: "s2", id: "s2", name: "look2" }];
-    var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: looks1 });   //(0/0)
-    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: looks2 });
-    sprite2.setPosition(40, 30);
-    var sprite3 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: looks1 });
-    sprite3.setPosition(10, -40);
-    var sprite4 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id3", name: "sprite3", looks: looks2 });
-    sprite4.setPosition(-40, 20);
+function onVideoSizeChange() {
+    device.setSceneSize(videoWidth, videoHeight);
+}
 
-    sprite1.initLooks();
-    sprite2.initLooks();
-    sprite3.initLooks();
-    sprite4.initLooks();
+function onCameraSelectChange() {
 
-    canvas.renderingSprites = [sprite1.renderingSprite, sprite2.renderingSprite, sprite3.renderingSprite, sprite4.renderingSprite];
-    canvas.render();
-    canvas.scale(1.5, 3);
-};
+}
 
-function updateScaling() {
-    canvas.scale(document.getElementById('scaleX').value, document.getElementById('scaleY').value);
-};
+function cameraInitHandler(e) {
+    var fd = device._features.FACE_DETECTION;
+    if (fd.inUse) {
+        fdCanvasContainer.appendChild(fd._canvas);  //for tests only
+        //fdCanvasContainer.appendChild(fd._haarCanvas);
+    }
+}
+
+var timeout, //to enable debugging I use timouts instead of requestAnimationFrame or interval
+video,
+streamWidth,
+streamHeight;
+function cameraUsageChangeHandler(e) {
+    if (e.on) {
+        if (timeout)
+            window.clearTimeout(timeout);
+
+        video = e.src;
+        streamWidth = e.width;
+        streamHeight = e.height;
+        startRendering();
+    }
+    else {
+        //stop rendering
+    }
+}
+
+function startRendering() {
+    backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
+    backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
+
+    timeout = window.setTimeout(startRendering, 200);
+}
+

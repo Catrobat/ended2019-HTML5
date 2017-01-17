@@ -558,7 +558,7 @@ PocketCode.Ui.merge({
                 this._downloadForm.style.margin = 0;
                 this._downloadForm.style.padding = 0;
                 this._downloadForm.method = 'POST';
-                this._downloadForm.action = 'https://web-test.catrob.at/html5/rest/v0.2/file/screenshot/';
+                this._downloadForm.action = PocketCode._serviceEndpoint + 'file/screenshot/';
                 this._downloadInput = document.createElement('input');
                 this._downloadInput.type = 'hidden';
                 this._downloadInput.name = 'base64string';

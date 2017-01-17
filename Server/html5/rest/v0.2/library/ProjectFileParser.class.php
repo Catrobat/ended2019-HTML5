@@ -279,22 +279,17 @@ class ProjectFileParser
             return null;
         }
 
-        // global search
-        $res = $this->findItemInArrayByName($name, $this->variables);
+		//local search
+		$res = $this->findItemInArrayByName($name, $this->currentSprite->variables);
+        //global search
+		if($res === false)
+			$res = $this->findItemInArrayByName($name, $this->variables);
         if($res === false)
         {
-            //dto to insert
-            $obj = $this->currentSprite;
-            //local search
-            $res = $this->findItemInArrayByName($name, $obj->variables);
-            if($res === false)
-            {
-                //not defined yet
-                $id = $this->getNewId();
-                array_push($obj->variables, new VariableDto($id, $name));
-
-                return $id;
-            }
+			//not defined yet: add to local scope
+			$id = $this->getNewId();
+			array_push($this->currentSprite->variables, new VariableDto($id, $name));
+			return $id;
         }
 
         return $res->id;
@@ -880,7 +875,7 @@ class ProjectFileParser
 
             case "PointInDirectionBrick":
                 $degrees = $this->parseFormula($script->degrees->formulaTree);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "PointToBrick":
@@ -906,7 +901,7 @@ class ProjectFileParser
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":

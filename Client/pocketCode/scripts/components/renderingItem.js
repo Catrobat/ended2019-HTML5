@@ -310,7 +310,7 @@ PocketCode.merge({
                 ctx.save();
                 ctx.translate(this.x, -this.y);
 
-                ctx.rotate(this._rotation * (Math.PI / 180.0));
+                ctx.rotate(this._rotation * Math.PI / 180.0);
                 ctx.scale(
                     this._scaling * (this._flipX ? -1.0 : 1.0),
                     this._scaling

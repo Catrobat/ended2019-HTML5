@@ -64,7 +64,7 @@ PocketCode.PlayerPageController = (function () {
         },
         project: {
             set: function (value) {
-                console.log("setting project");
+                //console.log("setting project");
                 if (!(value instanceof PocketCode.GameEngine))      //TODO: change this as soon as project is available
                     throw new Error('invalid argumenent: project');
                 if (value === this._gameEngine)
@@ -88,7 +88,7 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(this._projectExecutedHandler, this));
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
-                this._gameEngine.onCameraUsageChanged.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+                this._gameEngine.onCameraUsageChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
             },
         },
     });
@@ -133,7 +133,7 @@ PocketCode.PlayerPageController = (function () {
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             if (e.reinit) {
               //this.initOnLoad();
-                console.log("device on before project start:", this._gameEngine._device);
+                //console.log("device on before project start:", this._gameEngine._device);
               this._playerViewportController.clearPenStampCache();
             }
             this._view.hideStartScreen();
@@ -150,8 +150,8 @@ PocketCode.PlayerPageController = (function () {
         },
 
         _cameraChangedHandler: function(e){
-            console.log("CAMERA TRIGGERED");
-            console.log("camera stream in page controller:", e.cameraStream);
+            //console.log("CAMERA TRIGGERED");
+            //console.log("camera stream in page controller:", e.cameraStream);
             this._playerViewportController.renderCamera(e.cameraOn, e.cameraStream);
         },
         _projectExecutedHandler: function (e) {

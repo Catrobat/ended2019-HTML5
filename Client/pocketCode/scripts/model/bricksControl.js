@@ -85,8 +85,8 @@ PocketCode.Model.merge({
     //ResetTimerBrick: (function () {
     //    ResetTimerBrick.extends(PocketCode.Model.BaseBrick, false);
 
-    //    function ResetTimerBrick(device, sprite, projectTimer) {
-    //        PocketCode.Model.BaseBrick.call(this, device, sprite);
+    //    function ResetTimerBrick(device, sprite, projectTimer, propObject) {
+    //        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
     //        this._projectTimer = projectTimer;
     //    }
 
@@ -146,6 +146,7 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+            this._showElse = propObject.showElse;
             this._ifBricks = new PocketCode.Model.BrickContainer([]);
             this._elseBricks = new PocketCode.Model.BrickContainer([]);
         }
@@ -179,7 +180,7 @@ PocketCode.Model.merge({
             _execute: function (threadId) {
                 if (this._condition.calculate())
                     this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
-                else
+                else //if (this._showElse)
                     this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
             },
             pause: function () {
@@ -300,21 +301,19 @@ PocketCode.Model.merge({
         return RepeatUntilBrick;
     })(),
 
-    //continue scene
+    //continue or start scene
     SceneTransitionBrick: (function () {
         SceneTransitionBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SceneTransitionBrick(device, sprite, propObject, gameEngine, scene ) {
+        function SceneTransitionBrick(device, sprite, gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            //this._scene = scene;
-            this._transitionScene = gameEngine.getSceneById(propObject.sceneId);
-            //this._currentScene = gameEngine.getSceneById(this._scene.id);
-            this._currentScene = scene;
+
+            this._gameEngine = gameEngine;
+            this._sceneId = propObject.sceneId;
         }
 
         SceneTransitionBrick.prototype._execute = function () {
-            var result = this._currentScene.pause();
-            this._return(this._transitionScene.resumeOrStart());
+            this._return(this._gameEngine.resumeOrStartScene(this._sceneId));
         };
 
         return SceneTransitionBrick;
@@ -323,38 +322,29 @@ PocketCode.Model.merge({
     StartSceneBrick: (function () {
         StartSceneBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function StartSceneBrick(device, sprite, gameEngine, scene, propObject) {
+        function StartSceneBrick(device, sprite, gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._scene = scene;
-            this._currentScene = scene;
-            this._sceneToStart = gameEngine.getSceneById(propObject.sceneId);
-            //this._currentScene = gameEngine.getSceneById(this._scene.id);
-
+            
+            this._gameEngine = gameEngine;
+            this._sceneId = propObject.sceneId;
         }
 
         StartSceneBrick.prototype._execute = function () {
-
-            this._currentScene.pause();
-            this._return(this._sceneToStart.start());
+            this._return(this._gameEngine.startScene(this._sceneId));
         };
 
         return StartSceneBrick;
     })(),
 
     WhenStartAsCloneBrick: (function () {
-        WhenStartAsCloneBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenStartAsCloneBrick.extends(PocketCode.Model.WhenProgramStartBrick, false);
 
-        function WhenStartAsCloneBrick(device, sprite, propObject, startEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenStartAsCloneBrick(device, sprite, propObject) {
 
-            //this._onCloneStart = startEvent;
-            //
-            //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            if (!sprite.isClone)
+                return;
+            PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
         }
-
-        WhenStartAsCloneBrick.prototype._execute = function () {
-            //
-        };
 
         return WhenStartAsCloneBrick;
     })(),
@@ -366,11 +356,11 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
-            this._spriteId = propObject.spriteId;
+            this._cloneId = propObject.spriteId;
         }
 
         CloneBrick.prototype._execute = function () {
-            this._return(this._scene.cloneSprite(this._spriteId));
+            this._return(this._scene.cloneSprite(this._cloneId));
         };
 
         return CloneBrick;
@@ -379,7 +369,7 @@ PocketCode.Model.merge({
     DeleteCloneBrick: (function () {
         DeleteCloneBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function DeleteCloneBrick(device, sprite, scene,  propObject) {
+        function DeleteCloneBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
@@ -422,7 +412,7 @@ PocketCode.Model.merge({
         }
 
         StopScriptBrick.prototype._execute = function () {
-            switch(this._type) {
+            switch (this._type) {
                 case PocketCode.Model.StopScriptType.THIS:
                     this._return(this._sprite.stopScript(this._scriptId));
                     break;
