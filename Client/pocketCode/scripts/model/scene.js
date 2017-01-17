@@ -29,7 +29,7 @@ PocketCode.Model.Scene = (function () {
         this._soundManager = soundManager;
 
         //this._broadcasts = jsonBroadcasts || [];
-        this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts || []);
+        this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
         //this._bricksTotal = 0;// TODO calc scene internal bricks? totalBrickCount;
         this._bricksLoaded = 0;
         this._unsupportedBricks = [];

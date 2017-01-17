@@ -256,7 +256,7 @@ PocketCode.Model.merge({
 
             this._lookId = propObject.lookId;
             this._changeEvent = changeEvent;
-            changeEvent.onBackgroundChange.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
+            changeEvent.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
         }
 
         WhenBackgroundChangesToBrick.prototype.merge({

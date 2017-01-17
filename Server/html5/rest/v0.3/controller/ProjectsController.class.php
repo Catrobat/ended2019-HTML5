@@ -2,7 +2,7 @@
 
 class ProjectsController extends BaseController
 {
-    const CACHING_ENABLED = true;    //false;
+    const CACHING_ENABLED = false;  // true;    //
     const INCREMENT_PROJECT_VIEW_COUNTER = false;
     const CHECK_INAPPROPRIATE = true;  //set this entry to false if testing projects only available on your local machine
 
