@@ -18,9 +18,6 @@ PocketCode.GameEngine = (function () {
     function GameEngine(minLoopCycleTime) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
-        //this._fullProgress = 0;
-        //this._scenesProgressList = {};
-
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._resourceTotalSize = 0;
@@ -60,7 +57,6 @@ PocketCode.GameEngine = (function () {
         this._collisionManager = undefined;//new PocketCode.CollisionManager();
 
         this._scenes = {};
-        //this._sceneIds = [];
         this.__currentScene = undefined;
 
         //events
@@ -263,16 +259,10 @@ PocketCode.GameEngine = (function () {
             //console.log("_onCameraUsageChange:", this._onCameraUsageChange);
 
             this.__currentScene = undefined;
-            //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
             for (var id in this._scenes) {
                 this._scenes[id].dispose();
-                //var id = this._sceneIds[i];
-                //this._scenes[id].dispose();
                 delete this._scenes[id];
             }
-            //this._scenes = {};
-            //this._sceneIds = [];
-            //this.__currentScene = undefined;
 
 
             this._spritesLoadingProgress = 0;
@@ -301,16 +291,7 @@ PocketCode.GameEngine = (function () {
 
             this._scenesLoaded = true;
             this._sceneOnProgressChangeHandler({ bricksLoaded: 0 });
-            // load after initialize all scenes - if reference to scene 2 in scene 1 -> error
-            //for (var i = 0, l = scenes.length; i < l; i++) {
-            //    this._scenes[scenes[i].id].load(scenes[i]);
-            //    //scene.load(scenes[i]);
-            //}
 
-            //if (bricksCount == 0) {
-            //    this._sceneOnProgressChangeHandler({ progress: 100 });
-            //    return;
-            //}
         },
         //loading handler
         _sceneOnProgressChangeHandler: function (e) {
