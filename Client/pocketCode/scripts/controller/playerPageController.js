@@ -127,7 +127,7 @@ PocketCode.PlayerPageController = (function () {
         //    this._playerViewportController.initCanvas(e.ids);
         //    //this._view.initCanvasScenes(e.ids);
         //},
-        enableView: function (sceneIds) {
+        enableView: function () {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
