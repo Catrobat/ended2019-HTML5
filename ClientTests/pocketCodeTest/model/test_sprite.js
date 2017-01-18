@@ -23,10 +23,10 @@ QUnit.test("Sprite", function (assert) {
     var finalAsyncCall = assert.async();
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
-    var prog = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
@@ -34,7 +34,7 @@ QUnit.test("Sprite", function (assert) {
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
     //timer (currently not in use)
-    //assert.equal(sprite.projectTimerValue, prog.projectTimer.value, "timer getter");
+    //assert.equal(sprite.projectTimerValue, gameEngine.projectTimer.value, "timer getter");
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
@@ -53,7 +53,7 @@ QUnit.test("Sprite", function (assert) {
     sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //properties
-    assert.throws(function () { var err = new PocketCode.Model.Sprite(prog, scene); }, Error, "missing ctr arguments");
+    assert.throws(function () { var err = new PocketCode.Model.Sprite(gameEngine, scene); }, Error, "missing ctr arguments");
     assert.equal(sprite.id, "newId", "id ctr setter");
     assert.equal(sprite.name, "myName", "name ctr setter");
 
@@ -82,8 +82,8 @@ QUnit.test("Sprite", function (assert) {
 
     //events
     //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
-    //assert.equal(sprite.onChange, prog.onSpriteUiChange, "program - sprite event sharing");
-    //assert.equal(sprite.onChange.target, prog, "onSpriteUiChange target check");
+    //assert.equal(sprite.onChange, gameEngine.onSpriteUiChange, "program - sprite event sharing");
+    //assert.equal(sprite.onChange.target, gameEngine, "onSpriteUiChange target check");
 
     //assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
@@ -100,7 +100,7 @@ QUnit.test("Sprite", function (assert) {
     //evSprite._triggerOnChange(props);
 
 
-    sprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     var returnVal;
 
     // ********************* GraphicEffects *********************
@@ -210,15 +210,15 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* Constructor *********************
 
-    var device = new PocketCode.Device(this._soundManager);
-    prog._brickFactory = new PocketCode.BrickFactory(device, prog, prog._broadcastMgr, prog._soundManager, 20);
+    var device = new PocketCode.MediaDevice(this._soundManager);
+    gameEngine._brickFactory = new PocketCode.BrickFactory(device, gameEngine, gameEngine._broadcastMgr, gameEngine._soundManager, 20);
 
     var jsonProject = JSON.parse(JSON.stringify(projectSounds));
     var jsonSprite = jsonProject.sprites[0];
     jsonSprite.sounds = jsonProject.sounds;
     jsonSprite.variables = strProject11.variables;
 
-    var testSprite = new PocketCode.Model.Sprite(prog, scene, jsonSprite);
+    var testSprite = new PocketCode.Model.Sprite(gameEngine, scene, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
@@ -314,19 +314,19 @@ QUnit.test("Sprite", function (assert) {
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.scripts = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.sounds = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.variables = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for variables.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for variables.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.looks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for looks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for looks.");
 
 
     // *************************************************************
@@ -407,9 +407,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     //if on edge, bounce
-    //assert.ok(typeof prog.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
+    //assert.ok(typeof gameEngine.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
     //var ioeCalled = false;
-    //prog.ifSpriteOnEdgeBounce = function () {    //override to check call
+    //gameEngine.ifSpriteOnEdgeBounce = function () {    //override to check call
     //    ioeCalled = true;
     //};
     //sprite.ifOnEdgeBounce();
@@ -586,8 +586,8 @@ QUnit.test("Sprite", function (assert) {
 
     //we do have to overide the gameEngine look equest to test this, as there are no looks registered
     //game engine: getLookImage
-    assert.ok(typeof prog.getLookImage === "function", "sprite-program interface: get look from store");
-    //prog.getLookImage = function (id) {
+    assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
+    //gameEngine.getLookImage = function (id) {
     //    return { canvas: new Image(), center: { length: 0, angle: 0 }, initialScaling: 0.5 };
     //};
     returnVal = sprite.setLook("second");
@@ -672,9 +672,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* start/pause/resume/stop *********************
-    //var device = new PocketCode.Device();
+    //var device = new PocketCode.MediaDevice();
     var programAsync = new PocketCode.GameEngine();
-    scene = new PocketCode.Model.Scene();
+    scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     programAsync._executionState = PocketCode.ExecutionState.RUNNING;
     programAsync.getLookImage = function (id) { //override to test look center 
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
@@ -759,19 +759,19 @@ QUnit.test("Sprite", function (assert) {
     scene.onStart.dispatchEvent();
 
     // ********************* come to front/go back *********************
-    var program = new PocketCode.GameEngine();
-    program.getLookImage = function (id) { //override to test look center 
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine.getLookImage = function (id) { //override to test look center 
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
     };
 
-    var newSprite = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var newSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(newSprite);
     var firstLayer = newSprite.layer;
 
-    var newSprite2 = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var newSprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(newSprite2);
 
-    var tmpsprite = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var tmpsprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(tmpsprite);
 
     newSprite.comeToFront();
@@ -797,7 +797,7 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* point to *********************
     sprite._id = "id1";
-    newSprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
+    newSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     newSprite._id = "id2";
     scene._sprites.push(newSprite);
     var tmp = scene.getSpriteById("id2");
@@ -881,7 +881,7 @@ QUnit.test("Sprite offsets", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._imageStore = is;
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
     is.loadImages(baseUrl, images, 1);
@@ -1882,7 +1882,7 @@ QUnit.test("PhysicsSprite", function (assert) {
 
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "id", name: "name" });
 
@@ -1931,13 +1931,13 @@ QUnit.test("SpriteClone", function (assert) {
     var finalAsyncCall = assert.async();
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
-    var prog = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.SpriteClone(prog, scene, {id: "newId", name: "myName"});
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" });
     assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
-    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
 });
 
 QUnit.test("Background", function (assert) {

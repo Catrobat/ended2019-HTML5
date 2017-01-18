@@ -18,9 +18,9 @@ QUnit.test("WaitBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
     var b = new PocketCode.Model.WaitBrick(device, sprite, { duration: duration });
 
@@ -270,9 +270,9 @@ QUnit.test("IfThenElseBrick", function (assert) {
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     var b = new PocketCode.Model.IfThenElseBrick("device", sprite, { condition: cond });
@@ -310,9 +310,9 @@ QUnit.test("IfThenElseBrick", function (assert) {
     handler1LoopDelay = false;
     handler1CallId = undefined;
     cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     b._condition = new PocketCode.Formula("device", sprite, cond);
     //check the condition is valid: only for this test case
@@ -399,9 +399,9 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var done2 = assert.async();
 
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WaitUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._delay === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
@@ -457,9 +457,9 @@ QUnit.test("RepeatBrick", function (assert) {
     var done2 = assert.async();
 
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.RepeatBrick("device", sprite, 24, { x: 1, y: 2, timesToRepeat: nTimes });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
@@ -558,9 +558,9 @@ QUnit.test("RepeatUntilBrick", function (assert) {
     var done1 = assert.async();
 
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.RepeatUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
@@ -622,22 +622,22 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     //var gameEngine = new PocketCode.GameEngine();
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
 
-    var scene2 = new PocketCode.Model.Scene();
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     scene2._id = "s2"; //scene to start
     scene._id = "s1"; // curenscene
-    program.__currentScene = scene;
-    program._scenes[scene2._id] = scene2;
-    program._scenes[scene._id] = scene;
+    gameEngine.__currentScene = scene;
+    gameEngine._scenes[scene2._id] = scene2;
+    gameEngine._scenes[scene._id] = scene;
 
 
-    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, program, scene, {sceneId: "s2"});
+    var b = new PocketCode.Model.SceneTransitionBrick(device, sprite, gameEngine, {sceneId: "s2"});
 
 
     assert.ok(b._device === device && b._sprite === sprite , "brick created and properties set correctly");
@@ -659,23 +659,23 @@ QUnit.test("StartSceneBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     //var gameEngine = new PocketCode.GameEngine();
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
 
-    var scene2 = new PocketCode.Model.Scene();
-    console.log(scene2);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    //console.log(scene2);
     scene2._id = "s2"; //scene to start
     scene._id = "s1"; // curenscene
-    program.__currentScene = scene;
-    program._scenes[scene2._id] = scene2;
-    program._scenes[scene._id] = scene;
+    gameEngine.__currentScene = scene;
+    gameEngine._scenes[scene2._id] = scene2;
+    gameEngine._scenes[scene._id] = scene;
 
 
-    var b = new PocketCode.Model.StartSceneBrick(device, sprite, program, scene, {sceneId: "s2"});
+    var b = new PocketCode.Model.StartSceneBrick(device, sprite, gameEngine, {sceneId: "s2"});
 
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
@@ -696,11 +696,11 @@ QUnit.test("StartSceneBrick", function (assert) {
 QUnit.test("WhenStartAsCloneBrick", function (assert) {
     var done1 = assert.async();
 
-    var program = new PocketCode.GameEngine();
+    var gameEngine = new PocketCode.GameEngine();
     var mockScene = {
         onSpriteUiChange: new SmartJs.Event.Event(this)
     };
-    var sprite = new PocketCode.Model.SpriteClone(program, mockScene, {id: "spriteId", spriteId: "1", name: "spriteName" }, {});
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, mockScene, {id: "spriteId", spriteId: "1", name: "spriteName" }, {});
 
     var b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId"});
     b.dispose();
@@ -765,7 +765,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
 QUnit.test("CloneBrick", function (assert) {
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
+    var gameEngine = new PocketCode.GameEngine();
 
     var latestCloneId;
     var mockScene = {
@@ -775,7 +775,7 @@ QUnit.test("CloneBrick", function (assert) {
         onSpriteUiChange: new SmartJs.Event.Event(this)
     };
 
-    var sprite = new PocketCode.Model.Sprite(program, mockScene, {id: "1", name: "spriteName", scripts: [] });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, mockScene, {id: "1", name: "spriteName", scripts: [] });
 
     var cloneBrick = new PocketCode.Model.CloneBrick(device, sprite, mockScene, {spriteId: "23"});
 
@@ -806,9 +806,9 @@ QUnit.test("StopScriptBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);

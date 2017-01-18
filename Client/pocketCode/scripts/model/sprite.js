@@ -240,10 +240,10 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('invalid setter: rgb object');
 
                 var c = this._penColor;
-                if (c.r == r && c.g == g && c.b == b)
+                if (rgbObj.r == c.r && rgbObj.g == c.g && rgbObj.b == c.b)
                     return;
 
-                this._penColor = { r: r, g: g, b: b };
+                this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
                 this._triggerOnChange({ penColor: this._penColor });
             },
         },

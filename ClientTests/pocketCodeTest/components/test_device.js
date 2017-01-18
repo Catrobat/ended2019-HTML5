@@ -9,7 +9,7 @@ QUnit.module("components/device.js");
 QUnit.test("Device", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.Device(sm);
+    var dev = new PocketCode.MediaDevice(sm);
 
     assert.ok(dev instanceof PocketCode.Device, "instance check");
     assert.ok(dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "onSpaceKeyDown event check");
@@ -71,7 +71,7 @@ QUnit.test("Device", function (assert) {
     assert.equal(dev._disposed, true, "dispose");
     assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
-    dev = new PocketCode.Device();  //recreate to check if there are any side effects
+    dev = new PocketCode.MediaDevice();  //recreate to check if there are any side effects
 
 });
 
@@ -79,7 +79,7 @@ QUnit.test("Device", function (assert) {
 QUnit.test("Device: Touch", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.Device(sm);
+    var dev = new PocketCode.MediaDevice(sm);
 
     assert.equal(dev.lastTouchIndex, 0, "initial: no touch");
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 0);

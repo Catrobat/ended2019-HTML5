@@ -12,6 +12,7 @@
 'use strict';
 
 PocketCode.Model.Scene = (function () {
+    Scene.extends(SmartJs.Core.Component);
 
     function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime) {
 
@@ -471,7 +472,7 @@ PocketCode.Model.Scene = (function () {
                 return; //may occur when dispose on error
 
             this.stop();
-            alert('TODO');
+            //alert('TODO');
 
             //TODO: remove code below and make sure scenes are disposed
             // if (this._background)

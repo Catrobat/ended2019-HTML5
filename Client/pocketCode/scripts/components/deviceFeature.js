@@ -332,7 +332,7 @@ PocketCode.merge({
                 if (!this._supported)
                     return false;
 
-                if (this._MediaDevices.supported) {   //new constraints?
+                if (this._mediaDevices.supported) {   //new constraints?
                     //TODO: cam.constraints = {};
                 }
 

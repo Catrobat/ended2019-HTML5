@@ -14,7 +14,7 @@ QUnit.module("controller/playerViewportController.js");
 
 QUnit.test("PlayerViewportController", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var controller = new PocketCode.PlayerViewportController();
 
     // check instance types
