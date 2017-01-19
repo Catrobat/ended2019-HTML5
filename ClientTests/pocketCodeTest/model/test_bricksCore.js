@@ -82,8 +82,7 @@ QUnit.test("BrickContainer", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 300);
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 300);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
             pause: function () {
@@ -322,8 +321,7 @@ QUnit.test("SingleContainerBrick", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 100);
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
             pause: function () {
@@ -406,8 +404,7 @@ QUnit.test("ScriptBlock", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 100);
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
             pause: function () {
@@ -456,11 +453,6 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "super call: stop");
     b.execute();
 
-});
-
-
-QUnit.test("SingleInstanceScriptBlock", function (assert) {
-    assert.ok(false, "TODO");
 });
 
 

@@ -17,9 +17,9 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        SetVariableBrick.prototype._execute = function () {
+        SetVariableBrick.prototype._execute = function (scope) {
             if (this._var)  //can be undefined
-                this._var.value = this._value.calculate();
+                this._var.value = this._value.calculate(scope);
             this._return();
         };
 
@@ -37,8 +37,8 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeVariableBrick.prototype._execute = function () {
-            var value = this._value.calculate();
+        ChangeVariableBrick.prototype._execute = function (scope) {
+            var value = this._value.calculate(scope);
             if (this._var) {   //this._var can be undefined
                 if (!isNaN(this._var.value) && !isNaN(value))
                     this._var.value += value;
@@ -62,9 +62,9 @@ PocketCode.Model.merge({
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
 
-        ShowVariableBrick.prototype._execute = function () {
+        ShowVariableBrick.prototype._execute = function (scope) {
             if (this._varId)    //can be null
-                this._sprite.showVariableAt(this._varId, this._x.calculate(), this._y.calculate());
+                this._sprite.showVariableAt(this._varId, this._x.calculate(scope), this._y.calculate(scope));
             this._return();
         };
 
@@ -100,9 +100,9 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        AppendToListBrick.prototype._execute = function () {
+        AppendToListBrick.prototype._execute = function (scope) {
             if (this._list) //can be null
-                this._list.append(this._value.calculate());
+                this._list.append(this._value.calculate(scope));
             this._return();
         };
 
@@ -120,8 +120,8 @@ PocketCode.Model.merge({
             this._idx = new PocketCode.Formula(device, sprite, propObject.index);
         }
 
-        DeleteAtListBrick.prototype._execute = function () {
-            var idx = this._idx.calculate();
+        DeleteAtListBrick.prototype._execute = function (scope) {
+            var idx = this._idx.calculate(scope);
             if (this._list && !isNaN(idx))
                 this._list.deleteAt(idx);
             this._return();
@@ -142,10 +142,10 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        InsertAtListBrick.prototype._execute = function () {
-            var idx = this._idx.calculate();
+        InsertAtListBrick.prototype._execute = function (scope) {
+            var idx = this._idx.calculate(scope);
             if (this._list && !isNaN(idx))
-                this._list.insertAt(idx, this._value.calculate());
+                this._list.insertAt(idx, this._value.calculate(scope));
             this._return();
         };
 
@@ -164,10 +164,10 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ReplaceAtListBrick.prototype._execute = function () {
-            var idx = this._idx.calculate();
+        ReplaceAtListBrick.prototype._execute = function (scope) {
+            var idx = this._idx.calculate(scope);
             if (this._list && !isNaN(idx))
-                this._list.replaceAt(idx, this._value.calculate());
+                this._list.replaceAt(idx, this._value.calculate(scope));
             this._return();
         };
 

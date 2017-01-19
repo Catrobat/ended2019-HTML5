@@ -381,8 +381,8 @@ PocketCode.merge({
 
                     case 'USER_VARIABLE':
                         if (uiString) {
-                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
-                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
+                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
+                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
                                 this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
@@ -392,7 +392,9 @@ PocketCode.merge({
 
                     case 'USER_LIST':
                         if (uiString) {
-                            var list = this._listNames.local[jsonFormula.value] || this._listNames.global[jsonFormula.value];
+                            var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
+                                this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                                this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '*' + list.name + '*';
                         }
 

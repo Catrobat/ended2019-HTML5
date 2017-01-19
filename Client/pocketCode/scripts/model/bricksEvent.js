@@ -14,10 +14,10 @@
 PocketCode.Model.merge({
 
     WhenProgramStartBrick: (function () {
-        WhenProgramStartBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenProgramStartBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenProgramStartBrick(device, sprite, propObject, startEvent) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
@@ -29,7 +29,7 @@ PocketCode.Model.merge({
                     this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
                     this._onStart = undefined;  //make sure to disconnect from gameEngine
                 }
-                PocketCode.Model.SingleInstanceScriptBlock.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
@@ -37,10 +37,10 @@ PocketCode.Model.merge({
     })(),
 
     WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenActionBrick(device, sprite, propObject, actionEvent) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             //this._action = propObject.action;   //'Tapped', 'TouchStart'
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
@@ -56,7 +56,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.SingleInstanceScriptBlock.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 
@@ -64,10 +64,10 @@ PocketCode.Model.merge({
     })(),
 
     WhenBroadcastReceiveBrick: (function () {
-        WhenBroadcastReceiveBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
@@ -177,10 +177,10 @@ PocketCode.Model.merge({
     })(),
 
     WhenConditionMetBrick: (function () {
-        WhenConditionMetBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenConditionMetBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject) {  //TODO: execute on start?
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);        //handle simultanous execution
 
             this._previousMet = false;
             this._cycleTime = minLoopCycleTime;
@@ -200,7 +200,7 @@ PocketCode.Model.merge({
 
                 if (!this._previousMet && met) {
                     this._previousMet = met;
-                    PocketCode.Model.SingleInstanceScriptBlock.prototype._execute.call(this, SmartJs.getNewId());
+                    PocketCode.Model.ScriptBlock.prototype._execute.call(this, SmartJs.getNewId());
                 }
                 else {
                     this._previousMet = met;
@@ -210,7 +210,7 @@ PocketCode.Model.merge({
             pause: function () {
                 if (this._timeoutHandler)
                     window.clearTimeout(this._timeoutHandler);
-                PocketCode.Model.SingleInstanceScriptBlock.prototype.pause.call(this);
+                PocketCode.Model.ScriptBlock.prototype.pause.call(this);
             },
             resume: function () {
                 this._execute();
@@ -221,7 +221,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
-                PocketCode.Model.SingleInstanceScriptBlock.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
                 //this.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
             },
         });
@@ -230,10 +230,10 @@ PocketCode.Model.merge({
     })(),
 
     WhenCollisionBrick: (function () {
-        WhenCollisionBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             var spriteId2 = propObject.any ? 'any' : propObject.spriteId;   //TODO: change any to undefined?
             physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
@@ -249,10 +249,10 @@ PocketCode.Model.merge({
     })(),
 
     WhenBackgroundChangesToBrick: (function () {
-        WhenBackgroundChangesToBrick.extends(PocketCode.Model.SingleInstanceScriptBlock, false);
+        WhenBackgroundChangesToBrick.extends(PocketCode.Model.ScriptBlock, false);
 
         function WhenBackgroundChangesToBrick(device, sprite, propObject, changeEvent) {
-            PocketCode.Model.SingleInstanceScriptBlock.call(this, device, sprite, propObject);
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._lookId = propObject.lookId;
             this._changeEvent = changeEvent;
@@ -266,7 +266,7 @@ PocketCode.Model.merge({
             },
             dispose: function () {
                 changeEvent.removeEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
-                PocketCode.Model.SingleInstanceScriptBlock.prototype.dispose.call(this);
+                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
 

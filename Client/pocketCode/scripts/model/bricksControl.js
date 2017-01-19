@@ -27,15 +27,15 @@ PocketCode.Model.merge({
             _timerExpiredHandler: function (e) {
                 this._return(e.callId);
             },
-            _execute: function (callId) {
-                var duration = this._duration.calculate();
+            _execute: function (id, scope) {
+                var duration = this._duration.calculate(scope);
                 if (isNaN(duration)) {
-                    this._return(callId);
+                    this._return(id);
                     return;
                 }
-                var po = this._pendingOps[callId];
+                var po = this._pendingOps[id];
                 po.paused = this._paused;
-                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: id });
                 if (this._paused)
                     po.timer.pause();
             },
@@ -114,7 +114,7 @@ PocketCode.Model.merge({
             this._text = propObject.text;
         }
 
-        NoteBrick.prototype._execute = function () {
+        NoteBrick.prototype._execute = function (scope) {
             this._return();
         };
 
@@ -130,7 +130,7 @@ PocketCode.Model.merge({
 
         ForeverBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function () {
+            _loopConditionMet: function (id, scope) {
                 return true;    //always true for endless loop
             },
         });
@@ -176,11 +176,11 @@ PocketCode.Model.merge({
                 //helper method to make event binding easier
                 this._return(e.id, e.loopDelay)
             },
-            _execute: function (threadId) {
-                if (this._condition.calculate())
-                    this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+            _execute: function (id, scope) {
+                if (this._condition.calculate(scope))
+                    this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
                 else //if (this._showElse)
-                    this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+                    this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
             },
             pause: function () {
                 this._ifBricks.pause();
@@ -215,11 +215,11 @@ PocketCode.Model.merge({
         }
 
         WaitUntilBrick.prototype.merge({
-            _execute: function () {
+            _execute: function (id, scope) {
                 if (this._timeoutHandler)
                     window.clearTimeout(this._timeoutHandler);
 
-                if (this._condition.calculate()) {
+                if (this._condition.calculate(scope)) {
                     //call _return for all threads
                     var ids = [];
                     for (var id in this._pendingOps)
@@ -229,15 +229,15 @@ PocketCode.Model.merge({
                         this._return(ids[i], false);
                 }
                 else
-                    this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._delay);
+                    this._timeoutHandler = window.setTimeout(this._execute.bind(this, id, scope), this._delay);
             },
-            pause: function () {
+            pause: function () {    //TODO: keep scope.. make sure pause/resume/stop works.. calll super()
                 if (this._timeoutHandler)
                     window.clearTimeout(this._timeoutHandler);
             },
-            resume: function () {
-                this._execute();
-            },
+            //resume: function () {
+            //    this._execute();
+            //},
             //stop: thread ids (_pendingOps) will be {}.. no override
         });
 
@@ -255,13 +255,13 @@ PocketCode.Model.merge({
 
         RepeatBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function (threadId) {
-                var po = this._pendingOps[threadId];
+            _loopConditionMet: function (id, scope) {
+                var po = this._pendingOps[id];
                 if (!po)
                     return false;
 
                 if (po.loopCounter === undefined) { //init counter
-                    var count = this._timesToRepeat.calculate();
+                    var count = this._timesToRepeat.calculate(scope);
                     if (!isNaN(count))
                         po.loopCounter = Math.round(count);
                     else
@@ -290,8 +290,8 @@ PocketCode.Model.merge({
 
         RepeatUntilBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function () {
-                if (this._condition.calculate())    //break on condition = true
+            _loopConditionMet: function (id, scope) {
+                if (this._condition.calculate(scope))    //break on condition = true
                     return false;
                 return true;
             },

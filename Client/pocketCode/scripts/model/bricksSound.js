@@ -110,8 +110,8 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
-        SetVolumeBrick.prototype._execute = function () {
-            var val = this._percentage.calculate();
+        SetVolumeBrick.prototype._execute = function (scope) {
+            var val = this._percentage.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else {
@@ -133,12 +133,12 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeVolumeBrick.prototype._execute = function () {
-            var val = this._value.calculate();
+        ChangeVolumeBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else {
-                this._soundManager.volume += val;   //changeVolume(this._value.calculate());
+                this._soundManager.volume += val;   //changeVolume(this._value.calculate(scope));
                 this._return();
             }
         };
@@ -168,12 +168,12 @@ PocketCode.Model.merge({
             }
         }
 
-        SpeakBrick.prototype._execute = function () {
+        SpeakBrick.prototype._execute = function (scope) {
             if (this._soundId) {
                 this._soundManager.startSound(this._soundId);
             }
             else {
-                var text = this._text.calculate().replace(/\n,\r/g, '');
+                var text = this._text.calculate(scope).replace(/\n,\r/g, '');
                 if (text !== '') {
                     //we use a request object here to generate an url
                     var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });

@@ -128,7 +128,6 @@ SmartJs.Core.EventTarget = (function () {
 
     EventTarget.prototype.merge({
         _addDomListener: function (target, eventName, eventHandler, args) {
-            var _self = this;
             var handler = function (e) {
                 e = e || {};
                 if (args) {
@@ -136,8 +135,8 @@ SmartJs.Core.EventTarget = (function () {
                         e.stopPropagation();
                     e.merge(args);
                 }
-                return eventHandler.call(_self, e);
-            };
+                return eventHandler.call(this, e);
+            }.bind(this);
             if (target.addEventListener)
                 target.addEventListener(eventName, handler, false);
             else

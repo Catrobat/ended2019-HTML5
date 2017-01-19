@@ -195,7 +195,7 @@ QUnit.test("ForeverBrick", function (assert) {
                 if (this.executed === 5) {  //helper to terminate this loop, inlcuding 5 waits
                     this.onTestFinished.dispatchEvent();
                 }
-                var _self = this;
+                //var _self = this;
                 //window.setTimeout(function () { _self._return(id, this.loopDelay) }, _self._delay);
                 this._return(id, this.loopDelay);    //LOOP DELAY = FALSE
             },
@@ -337,8 +337,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, true) }, 100);
+                window.setTimeout(function () { this._return(id, true) }.bind(this), 100);
                 //this._return(id, true);    //LOOP DELAY = FALSE
             },
             pause: function () {
@@ -485,7 +484,7 @@ QUnit.test("RepeatBrick", function (assert) {
                 //    this.onTestFinished.dispatchEvent();
                 //    return;
                 //}
-                var _self = this;
+                //var _self = this;
                 //window.setTimeout(function () { _self._return(id, true) }, _self._delay);
                 this._return(id, this.loopDelay);
             },
@@ -708,7 +707,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
 
     b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
     assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
+    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
 
     //test empty container
@@ -735,8 +734,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, false) }, 100);
+                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
                 //this._return(id, false);    //LOOP DELAY = FALSE
             },
         });

@@ -187,8 +187,7 @@ QUnit.test("BroadcastManager: broadcast & wait", function (assert) {
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, _self.loopDelay) }, this.delay);
+                window.setTimeout(function () { this._return(id, this.loopDelay) }.bind(this), this.delay);
             },
         });
 
@@ -243,8 +242,7 @@ QUnit.test("BroadcastManager: broadcast & wait: multiple hierachies", function (
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, _self.loopDelay) }, this.delay);
+                window.setTimeout(function () { this._return(id, this.loopDelay) }.bind(this), this.delay);
             },
         });
 
@@ -271,13 +269,10 @@ QUnit.test("BroadcastManager: broadcast & wait: multiple hierachies", function (
 
         TestBrick3.prototype.merge({
             _execHandler: function (e) {
-                var _self = this;
-                window.setTimeout(function () { _self._return(e.id, e.loopDelay) }, this.delay);
+                window.setTimeout(function () { this._return(e.id, e.loopDelay) }.bind(this), this.delay);
             },
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-
                 b2.publish("s13", new SmartJs.Event.EventListener(this._execHandler, this), id);
             },
         });
@@ -326,8 +321,7 @@ QUnit.test("BroadcastManager: broadcast & wait: recursive calls", function (asse
         TestBrick2.prototype.merge({
             _execute: function (id) {
                 this.executed++;
-                var _self = this;
-                window.setTimeout(function () { _self._return(id, _self.loopDelay) }, this.delay);
+                window.setTimeout(function () { this._return(id, this.loopDelay) }.bind(this), this.delay);
             },
         });
 
