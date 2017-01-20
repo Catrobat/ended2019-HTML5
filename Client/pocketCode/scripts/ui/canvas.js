@@ -1,4 +1,4 @@
-/// <reference path="../../../smartJs/sj.js" />
+﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
@@ -417,13 +417,14 @@ PocketCode.Ui.Canvas = (function () {
 
             var ro = this._renderingSprite;
 
-            // draw background - background is always first element in ro-array
-            if (ro.length > 0) {
-                ro[0].draw(background_ctx);
-            }
-            // draw all other sprites
-            for (var i = 1, l = ro.length; i < l; i++) {
-                ro[i].draw(ctx);
+            //console.log(ro);
+
+            // draw all sprites
+            for (var i = 0, l = ro.length; i < l; i++) {
+                if (ro[i].isBackground)
+                    ro[i].draw(background_ctx);
+                else
+                    ro[i].draw(ctx);
             }
 
             //draw rendering texts

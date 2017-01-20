@@ -219,6 +219,7 @@ QUnit.test("Sprite", function (assert) {
     jsonSprite.variables = strProject11.variables;
 
     var testSprite = new PocketCode.Model.Sprite(gameEngine, scene, jsonSprite);
+    var testBackgroundSprite = new PocketCode.Model.backgroundSprite(gameEngine, scene, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
@@ -276,6 +277,9 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters
+    assert.equal(renderingSprite.isBackground, false, "renderingsprite: isBackground set correctly");
+    assert.equal(testBackgroundSprite.isBackground, true, "testBackgroundSprite: is set correctly");
+
 
     var graphicEffectsSet = renderingSprite._graphicEffects && renderingSprite._graphicEffects instanceof Array;
     assert.ok(graphicEffectsSet, "renderingSprite: graphicEffects created as array");
