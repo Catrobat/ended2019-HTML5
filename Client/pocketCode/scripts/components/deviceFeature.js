@@ -282,11 +282,6 @@ PocketCode.merge({
                     navigator.mediaDevices.getUserMedia(this._constraints).then(onSuccess).catch(onError);
                 else
                     this._getUserMedia(this._constraints, onSuccess, onError);
-
-                if (reinit || this._initFaceDetection) {
-                    this._initFaceDetection(); // TODO @Wolfgang : not found
-                    this._initFaceDetection = false;
-                }
             },
             _videoInitializedHandler: function (e) {
                 var video = this._video;

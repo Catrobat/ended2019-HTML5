@@ -108,7 +108,6 @@ PocketCode.Ui.Canvas = (function () {
             set: function (cameraOn) {
                 //console.log("setting camera on in canvas to :", cameraOn);
                 this._cameraOn = cameraOn;
-                this.renderCamera();
             },
             get: function () {
                 return this._cameraOn;
@@ -434,7 +433,7 @@ PocketCode.Ui.Canvas = (function () {
         render: function () {
             var background_ctx = this._backgroundCanvasCtx;
             var ctx = this._spritesCanvasCtx;
-
+            this._renderCamera();
             background_ctx.clearRect(0, 0, this.width, this.height);
             background_ctx.save();
             background_ctx.translate(this._translation.x, this._translation.y);
@@ -480,10 +479,10 @@ PocketCode.Ui.Canvas = (function () {
 
         },
 
-        renderCamera: function () {
+        _renderCamera: function () {
             if (this._cameraOn && this._cameraStream != null && this._cameraStream != undefined) {
                 this._cameraCanvasCtx.drawImage(this._cameraStream, 0, 0, this._cameraCanvasEl.width, this._cameraCanvasEl.height);
-                setTimeout(this.renderCamera.bind(this), 10);
+                setTimeout(this._renderCamera.bind(this), 10);
             }
             else {
                 //this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
