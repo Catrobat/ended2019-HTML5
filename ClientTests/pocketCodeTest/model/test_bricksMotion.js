@@ -13,9 +13,9 @@ QUnit.test("GoToPositionBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
@@ -42,9 +42,9 @@ QUnit.test("SetXBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetXBrick(device, sprite, { value: x });
@@ -70,9 +70,9 @@ QUnit.test("SetYBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetYBrick(device, sprite, { value: y });
@@ -98,9 +98,9 @@ QUnit.test("ChangeXBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
     var b = new PocketCode.Model.ChangeXBrick(device, sprite, { value: x });
@@ -126,9 +126,9 @@ QUnit.test("ChangeYBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.ChangeYBrick(device, sprite, { value: y });
@@ -154,9 +154,9 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
 
@@ -190,9 +190,9 @@ QUnit.test("GoToBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "sprite", spriteId: "id" });
     var c = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "pointer", spriteId: "id" });
@@ -240,9 +240,9 @@ QUnit.test("IfOnEdgeBounceBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.IfOnEdgeBounceBrick(device, sprite, { id: "id" });
 
@@ -267,9 +267,9 @@ QUnit.test("MoveNStepsBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var steps = JSON.parse('{"type":"NUMBER","value":"14","right":null,"left":null}');
 
     var b = new PocketCode.Model.MoveNStepsBrick(device, sprite, { steps: steps });
@@ -295,9 +295,9 @@ QUnit.test("TurnLeftBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"45","right":null,"left":null}');
 
     var b = new PocketCode.Model.TurnLeftBrick(device, sprite, { degrees: degrees });
@@ -323,9 +323,9 @@ QUnit.test("TurnRightBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"30","right":null,"left":null}');
 
     var b = new PocketCode.Model.TurnRightBrick(device, sprite, { degrees: degrees });
@@ -351,9 +351,9 @@ QUnit.test("SetDirectionBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var degrees = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetDirectionBrick(device, sprite, { degrees: degrees });
@@ -379,9 +379,9 @@ QUnit.test("SetDirectionToBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var spriteId = "spriteId";
     sprite._id = spriteId;
     scene._sprites.push(sprite);
@@ -413,9 +413,9 @@ QUnit.test("GlideToBrick", function (assert) {
     var done3 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     //^^ initialized with x/y = 0/0
     sprite._positionX = -10;
     sprite._positionY = -30;
@@ -454,7 +454,7 @@ QUnit.test("GlideToBrick", function (assert) {
     b.execute(l1, "gliding");
 
     //test position updates
-    var spriteMock = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var spriteMock = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     spriteMock._positionX = -10;
     spriteMock._positionY = -30;
 
@@ -495,7 +495,7 @@ QUnit.test("GlideToBrick", function (assert) {
     b2.execute(l2, "gliding2");
 
     //pause, resume, stop
-    var spriteMock2 = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var spriteMock2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     spriteMock2._positionX = -10;
     spriteMock2._positionY = -30;
 
@@ -549,9 +549,9 @@ QUnit.test("GoBackBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);
     var layers = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
 
@@ -578,9 +578,9 @@ QUnit.test("ComeToFrontBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);
 
     var b = new PocketCode.Model.ComeToFrontBrick(device, sprite, { commentedOut: false });
@@ -605,10 +605,10 @@ QUnit.test("VibrationBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var duration = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.VibrationBrick(device, sprite, { duration: duration });
@@ -634,12 +634,13 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var physicsWorld = new PocketCode.PhysicsWorld(scene);
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { id: "id" });
 
@@ -671,11 +672,11 @@ QUnit.test("SetVelocityBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
@@ -701,11 +702,11 @@ QUnit.test("RotationSpeedLeftBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
 
     var b = new PocketCode.Model.RotationSpeedLeftBrick(device, sprite, { degreesPerSec: deg });
@@ -730,11 +731,11 @@ QUnit.test("RotationSpeedRightBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
 
     var b = new PocketCode.Model.RotationSpeedRightBrick(device, sprite, { degreesPerSec: deg });
@@ -759,15 +760,15 @@ QUnit.test("SetGravityBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"23","right":null,"left":null}');
     var y = JSON.parse('{"type":"NUMBER","value":"34","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetGravityBrick(device, sprite, { x: x, y: y });
+    var b = new PocketCode.Model.SetGravityBrick(device, sprite, scene, { x: x, y: y });
 
     assert.ok(b._device === device && b._sprite === sprite && b._x instanceof PocketCode.Formula && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetGravityBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
@@ -789,10 +790,10 @@ QUnit.test("SetMassBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var mass = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetMassBrick(device, sprite, { value: mass });
@@ -817,11 +818,11 @@ QUnit.test("SetBounceFactorBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"71","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetBounceFactorBrick(device, sprite, { percentage: percentage });
@@ -846,11 +847,11 @@ QUnit.test("SetFrictionBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var device = new PocketCode.Device(new PocketCode.SoundManager());
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.PhysicsSprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var friction = JSON.parse('{"type":"NUMBER","value":"53","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetFrictionBrick(device, sprite, { percentage: friction });

@@ -12,8 +12,9 @@
 'use strict';
 
 PocketCode.Model.Scene = (function () {
+    Scene.extends(SmartJs.Core.Component);
 
-    function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime/*, totalBrickCount, onSpriteUiChange*/) {
+    function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime) {
 
         if (!(jsonBroadcasts instanceof Array))
             throw new Error('setter expects type Array');
@@ -29,7 +30,7 @@ PocketCode.Model.Scene = (function () {
         this._soundManager = soundManager;
 
         //this._broadcasts = jsonBroadcasts || [];
-        this._broadcastMgr = new PocketCode.BroadcastManager(this._broadcasts || []);
+        this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
         //this._bricksTotal = 0;// TODO calc scene internal bricks? totalBrickCount;
         this._bricksLoaded = 0;
         this._unsupportedBricks = [];
@@ -42,7 +43,7 @@ PocketCode.Model.Scene = (function () {
         this._onStart = new SmartJs.Event.Event(this);
         this._onExecuted = new SmartJs.Event.Event(this);
         this._onBackgroundChange = new SmartJs.Event.Event(this);
-        this._onSpriteUiChange = new SmartJs.Event.Event(this);     //TODO: reconnect events on scene change? or share event?
+        this._onSpriteUiChange = gameEngine.onSpriteUiChange;   //mapping event to gameEngin
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
         this._onProgressChange = new SmartJs.Event.Event(this);
@@ -471,7 +472,7 @@ PocketCode.Model.Scene = (function () {
                 return; //may occur when dispose on error
 
             this.stop();
-            alert('TODO');
+            //alert('TODO');
 
             //TODO: remove code below and make sure scenes are disposed
             // if (this._background)

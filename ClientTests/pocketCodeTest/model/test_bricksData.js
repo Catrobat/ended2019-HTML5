@@ -10,10 +10,10 @@ QUnit.module("model/bricksData.js");
 
 QUnit.test("SetVariableBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);//{ id: "var1", name: "var1name", value: 0 };
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -39,7 +39,7 @@ QUnit.test("SetVariableBrick", function (assert) {
 
     //global
     sprite._variables = []; //please notice: the ref ist stored in the brick even if the global var is cleared
-    program.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);
+    gameEngine.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "var1name", 0);
     b = new PocketCode.Model.SetVariableBrick("device", sprite, { resourceId: "var1", value: value });
 
     var executedHandler2 = function (e) {
@@ -47,8 +47,8 @@ QUnit.test("SetVariableBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(program.getVariable("var1").value, 1.0, "variable set correctly (global)");
-        assert.equal(sprite.getVariable("var1"), program.getVariable("var1"), "global == local lookup instance");
+        assert.equal(gameEngine.getVariable("var1").value, 1.0, "variable set correctly (global)");
+        assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "setGlobalVar");
 
@@ -57,10 +57,10 @@ QUnit.test("SetVariableBrick", function (assert) {
 
 QUnit.test("ChangeVariableBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
     sprite.__variablesSimple._variables.varUnset = new PocketCode.Model.UserVariableSimple("varUnset", "name");
 
@@ -95,7 +95,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
     //global
     sprite._variables = [];
-    program.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
+    gameEngine.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);
     b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "var1", value: value });
 
     var executedHandler2 = function (e) {
@@ -103,8 +103,8 @@ QUnit.test("ChangeVariableBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        assert.equal(program.getVariable("var1").value, 2.0, "variable set correctly (global)");
-        assert.equal(sprite.getVariable("var1"), program.getVariable("var1"), "global == local lookup instance");
+        assert.equal(gameEngine.getVariable("var1").value, 2.0, "variable set correctly (global)");
+        assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });
@@ -112,10 +112,10 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
 QUnit.test("ShowVariableBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
 
     var x = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}'),
@@ -149,10 +149,10 @@ QUnit.test("ShowVariableBrick", function (assert) {
 
 QUnit.test("HideVariableBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite.__variablesSimple._variables.var1 = new PocketCode.Model.UserVariableSimple("var1", "name", 1);//{ id: "var1", value: 1 };
 
     var b = new PocketCode.Model.HideVariableBrick("device", sprite, { resourceId: "var1" });
@@ -182,12 +182,12 @@ QUnit.test("HideVariableBrick", function (assert) {
 
 QUnit.test("AppendToListBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -218,12 +218,12 @@ QUnit.test("AppendToListBrick", function (assert) {
 
 QUnit.test("DeleteAtListBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
@@ -253,12 +253,12 @@ QUnit.test("DeleteAtListBrick", function (assert) {
 
 QUnit.test("InsertAtListBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
@@ -291,12 +291,12 @@ QUnit.test("InsertAtListBrick", function (assert) {
 
 QUnit.test("ReplaceAtListBrick", function (assert) {
 
-    var program = new PocketCode.GameEngine();
-    program._background = "background";  //to avoid error on start
-    program._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._background = "background";  //to avoid error on start
+    gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');

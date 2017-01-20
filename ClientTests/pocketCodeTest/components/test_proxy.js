@@ -178,8 +178,13 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
 
-    var onLoadAllProjectsHandler = function(e)
+    var onErrorAllProjectsHandler = function(e)
     {
+        if (e.responseJson == undefined) {
+            assert.ok(false, "Did not receive exception an client- CORS problem?");
+            return;
+        }
+
         var receivedAllProjects = e.responseJson;
         assert.ok(receivedAllProjects instanceof Object, 'received object is valid');
         //console.log(receivedAllProjects);
@@ -194,7 +199,7 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     };
 
 
-    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorAllProjectsHandler, this));
     PocketCode.Proxy.send(srAllProjects);
 });
 
@@ -250,7 +255,7 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: cors call to https://share.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();

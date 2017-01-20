@@ -135,9 +135,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
 
         updateCameraUse: function (on, video, width, height, transparency, orientation) {    //TODO: params, ...
-            //console.log("camera stream in view:", cameraStream);
-            this._canvas.cameraStream = video;
-            this._canvas.cameraOn = on;
+            console.log("camera stream in view:", video);
+           this._canvas.updateCameraUse(on, video);
 
 
 

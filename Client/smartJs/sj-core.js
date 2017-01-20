@@ -98,12 +98,7 @@ SmartJs.Core = {
                     if (typeof object[p] === 'function')
                         throw new Error('_mergeProperties(): setting a method not allowed: property ' + p + ' in ' + object.objClassName);
 
-                    var isArray = false;
-                    try {
-                        isArray = typeof propertyObject[p] === 'object' && propertyObject[p] instanceof 'array';
-                    }
-                    catch (e) { }   //may throw an error in chrome
-                    if (typeof propertyObject[p] === 'object' && !isArray) {
+                    if (typeof propertyObject[p] === 'object' && !(propertyObject[p] instanceof Array)) {
                         this._mergeProperties(propertyObject[p], object[p]);
                     }
                     else {

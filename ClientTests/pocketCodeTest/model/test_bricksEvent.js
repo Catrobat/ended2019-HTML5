@@ -13,13 +13,14 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
     //assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
 
-    var program = new PocketCode.GameEngine();
-    program._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-    var scene = new PocketCode.Model.Scene();
-    program.__currentScene = scene; //set internal: tests only
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    gameEngine.__currentScene = scene; //set internal: tests only
+    gameEngine._startScene = scene;
 
-    program._background = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
-    program.projectReady = true;
+    gameEngine._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
+    gameEngine.projectReady = true;
 
     var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
     b.dispose();
@@ -38,12 +39,14 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
 
     scene.onStart.addEventListener(new SmartJs.Event.EventListener(handler, this));
     //simulate project loaded for tests
-    program._resourcesLoaded = true;
-    program._spritesLoaded = true;
+    gameEngine._resourcesLoaded = true;
+    gameEngine._scenesLoaded = true;
 
-    program.runProject();
+    gameEngine.runProject();
     //scene.start();
     assert.ok(handlerCalled === 1, "executed handler called (once)");
+    //TODO: following line should be removed!!!
+    scene._executionState = 0;   //scene does not terminate
 
     //add a brick container
     var bricks = [];
@@ -81,10 +84,10 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
         done1();
     };
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
-    //stop so that program can be started again
-    program.stopProject();
+    //stop so that gameEngine can be started again
+    gameEngine.stopProject();
 
-    program.runProject();
+    gameEngine.runProject();
 
 });
 
@@ -93,9 +96,9 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     var done1 = assert.async();
 
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WhenActionBrick("device", sprite, { x: 1, y: 2, action: "action" }, scene.onSpriteTappedAction);
 
     b.dispose();
@@ -323,9 +326,9 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
 QUnit.test("WhenConditionMetBrick", function (assert) {
     var done1 = assert.async();
 
-    var cond = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var cond = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, 24, { condition: cond }, scene.onStart);
 
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._cycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
@@ -412,7 +415,8 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
 QUnit.test("WhenCollisionBrick", function (assert) {
     var done1 = assert.async();
 
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var physicsWorld = new PocketCode.PhysicsWorld(scene);
     var sprite = { id: "id1" };
     var spriteId2 = "id2";
@@ -472,22 +476,22 @@ QUnit.test("WhenCollisionBrick", function (assert) {
 });
 
 
-QUnit.test("WhenBackgroundChangesTo", function (assert) {
+QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
     //assert.ok(false, "TODO");
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._background = sprite;
     //gleiche lookid wie probOpject??????
     var lookId = "lookId";
-    var b = new PocketCode.Model.WhenBackgroundChangesTo(device, sprite, scene, {lookId: "lookId"});
+    var b = new PocketCode.Model.WhenBackgroundChangesToBrick(device, sprite, { lookId: "lookId" }, scene.onBackgroundChange);
 
     assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenBackgroundChangesTo && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
-    assert.ok(b.objClassName === "WhenBackgroundChangesTo", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.WhenBackgroundChangesToBrick && b instanceof PocketCode.Model.SingleInstanceScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenBackgroundChangesToBrick", "objClassName check");
 
     //test empty container
     var handlerCalled = 0;

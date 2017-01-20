@@ -127,7 +127,7 @@ PocketCode.PlayerPageController = (function () {
         //    this._playerViewportController.initCanvas(e.ids);
         //    //this._view.initCanvasScenes(e.ids);
         //},
-        enableView: function (sceneIds) {
+        enableView: function () {
             this._view.disabled = false;
         },
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
@@ -161,9 +161,10 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateVariable(e.id, e.properties);
         },
         _cameraChangedHandler: function (e) {
-            //console.log("CAMERA TRIGGERED");
+            console.log("CAMERA TRIGGERED");
             //console.log("camera stream in page controller:", e.cameraStream);
-            this._playerViewportController.updateCameraUse(e.on, e.video, e.width, e.height, e.transparency, e.orientation);
+            console.log("e:", e);
+            this._playerViewportController.updateCameraUse(e.on, e.src, e.width, e.height, e.transparency, e.orientation);
         },
         //user
         _buttonClickedHandler: function (e) {

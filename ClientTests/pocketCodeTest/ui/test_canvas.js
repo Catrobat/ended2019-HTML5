@@ -17,23 +17,20 @@ QUnit.test("Canvas", function (assert) {
     var done = assert.async();
     var ALPHA_CHANNEL_IDX = 3;
 
-    var alphaAtPoint = function (x, y) {
-        var ctx = canvas._lowerCanvasCtx;   // access to check internal settings
+    var alphaAtPoint = function (ctx, x, y) {
         return ctx.getImageData(x, y, 1, 1).data[ALPHA_CHANNEL_IDX];
     };
 
-    var pixelHasAlpha = function (x, y) {
-        return alphaAtPoint(x, y) > 0.;
+    var pixelHasAlpha = function (ctx, x, y) {
+        return alphaAtPoint(ctx, x, y) > 0.;
     };
 
-    var countPixels = function () {
-        var canvasHeight = canvas._lowerCanvasEl.height;
-        var canvasWidth = canvas._lowerCanvasEl.width;
+    var countPixels = function (ctx, canvasWidth, canvasHeight) {
         var pixels = 0;
 
         for (var i = 0; i < canvasHeight; i++) {
             for (var j = 0; j < canvasWidth; j++) {
-                if (pixelHasAlpha(j, i)) {
+                if (pixelHasAlpha(ctx, j, i)) {
                     pixels++;
                 }
             }
@@ -42,7 +39,7 @@ QUnit.test("Canvas", function (assert) {
     };
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;
 
@@ -95,19 +92,21 @@ QUnit.test("Canvas", function (assert) {
         canvas.render();
         assert.notOk(canvas._isTargetTransparent(renderingSpriteOpaque, renderingSpriteOpaque), "target not transparent");
 
-        assert.equal(countPixels(), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
+        var canvasELement = canvas._spritesCanvasEl,
+            ctx = canvasELement.getContext('2d');
+        assert.equal(countPixels(ctx, canvasELement.width, canvasELement.height), opaqueImageWidth * opaqueImageHeight / 4.0, "correct nr of pixels rendered on canvas");
         //check position
         var visible = 0, transparent = 0;
         var list = [{ x: 4, y: 0 }, { x: 4, y: 1 }, { x: 4, y: 2 }, { x: 4, y: 3 }, { x: 4, y: 4 }, { x: 3, y: 4 }, { x: 2, y: 4 }, { x: 1, y: 4 }, { x: 0, y: 4 }];
         for (var i = 0, l = list.length; i < l; i++) {
-            if (pixelHasAlpha(list[i].x, list[i].y))
+            if (pixelHasAlpha(ctx, list[i].x, list[i].y))
                 visible++;
         }
         assert.equal(visible, 9, "visible boundary check: rendering position");
 
         list = [{ x: 5, y: 0 }, { x: 5, y: 1 }, { x: 5, y: 2 }, { x: 5, y: 3 }, { x: 5, y: 4 }, { x: 5, y: 5 }, { x: 4, y: 5 }, { x: 3, y: 5 }, { x: 2, y: 5 }, { x: 1, y: 5 }, { x: 0, y: 5 }];
         for (var i = 0, l = list.length; i < l; i++) {
-            if (!pixelHasAlpha(list[i].x, list[i].y))
+            if (!pixelHasAlpha(ctx, list[i].x, list[i].y))
                 transparent++;
         }
         assert.equal(transparent, 11, "transparent boundary check: rendering position");

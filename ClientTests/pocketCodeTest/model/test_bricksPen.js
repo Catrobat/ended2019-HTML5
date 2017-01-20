@@ -13,9 +13,9 @@ QUnit.test("PenDownBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.PenDownBrick(device, sprite, {});
 
@@ -40,9 +40,9 @@ QUnit.test("PenUpBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.PenUpBrick(device, sprite, {});
 
@@ -67,12 +67,12 @@ QUnit.test("SetPenSizeBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetPenSizeBrick(device, sprite, { value: x });
+    var b = new PocketCode.Model.SetPenSizeBrick(device, sprite, { size: x });
 
     assert.ok(b._device === device && b._sprite === sprite && b._penSize instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPenSizeBrick, "instance check");
@@ -95,17 +95,17 @@ QUnit.test("SetPenColorBrick", function (assert) {
     var done1 = assert.async();
 
     var device = "device";
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var blue = JSON.parse('{"type":"NUMBER","value":"200.0","right":null,"left":null}');
     var red = JSON.parse('{"type":"NUMBER","value":"145.0","right":null,"left":null}');
     var green = JSON.parse('{"type":"NUMBER","value":"33.0","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetPenColorBrick(device, sprite, { blue: blue, red: red, green: green });
+    var b = new PocketCode.Model.SetPenColorBrick(device, sprite, { b: blue, r: red, g: green });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._penColor.b instanceof PocketCode.Formula && b._penColor.r instanceof PocketCode.Formula
-        && b._penColor.g instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._b instanceof PocketCode.Formula && b._r instanceof PocketCode.Formula
+        && b._g instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetPenColorBrick, "instance check");
     assert.ok(b.objClassName === "SetPenColorBrick", "objClassName check");
 

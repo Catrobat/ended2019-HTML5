@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
+﻿﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
 /// <reference path="device.js" />
@@ -12,6 +12,7 @@ PocketCode.DeviceFeature = (function () {
     function DeviceFeature(i18nKey, supported) {
         this._i18nKey = i18nKey;
         this._supported = supported || true;
+        console.log("supported at start:", this._supported);
         this._inUse = false;
         this._initialized = false;
 
@@ -186,6 +187,7 @@ PocketCode.merge({
                         }
                         this._mediaDevices.devices = devices;
                         if (devices.length == 0) {
+                            console.log("no camera found");
                             this._supported = false;  //no camera found
                             if (this._initialized)
                                 return;
@@ -222,13 +224,13 @@ PocketCode.merge({
                 //this._videoInitializedHandler(); //try to start
             },
             _streamInactiveHandler: function (e) {
+                console.log("STREAM INACTIVE");
                 if (this._disposed)
                     return;
                 //var cam = this._cam;
                 if (this._on) {   //stream broken by e.g. camera plugged out
-                    this._on = false;
-                    this._onChange.dispatchEvent({ on: false });
-                    this._supported = false;  //make sure no error occurs on further usage
+                  this._onChange.dispatchEvent({ on: false });
+                   // this._supported = false;  //make sure no error occurs on further usage
                 }
             },
             _stopStream: function () {
@@ -251,21 +253,26 @@ PocketCode.merge({
                     }
                     this._cameraStream = undefined;
                 }
+                this._on = false;
+                this._onChange.dispatchEvent({ on:false, src: this._video});
             },
             //_streamEndedHandler: function (e) {
             //    //TODO
             //},
             _init: function (reinit) {
                 //var cam = this._cam;
+                console.log("supported at init:", this._supported);
                 if (!this._supported || (this._inUse && !reinit))
                     return; //already initialized
 
                 this._inUse = true;
                 this._front.inUse = true; //as soon the camera is used we have to set the default inUse
 
-                this._supported = false;  //make sure firefox makes onSuccess call
+                this._supported = true;  //make sure firefox makes onSuccess call
                 var onSuccess = function (stream) {
+                    console.log("ON_SUCCESS");
                     this._supported = true;
+                    console.log("supported after success:", this._supported);
                     this._getMediaDevices();    //getting names as well (permissions granted)
 
                     this._initStream(stream);
@@ -327,7 +334,7 @@ PocketCode.merge({
                 if (!this._supported)
                     return false;
 
-                if (this._MediaDevices.supported) {   //new constraints?
+                if (this._mediaDevices.supported) {   //new constraints?
                     //TODO: cam.constraints = {};
                 }
 
@@ -338,13 +345,19 @@ PocketCode.merge({
                 return true;
             },
             start: function () {   //or resume
+
+                console.log("STARTING CAMERA");
                 //var cam = this._cam;//,
                 //supported = cam.supported;
+                console.log("supported:", this._supported);
+                console.log("on:", this._on);
                 if (!this._supported || this._on)
                     return false;
 
                 var video = this._video;
-                if (this._cameraStream && video.paused) {
+                console.log("camera STREAM:", this._cameraStream);
+                if (this._cameraStream) {
+                    console.log("video paused actually starting");
                     video.play();
                     this._on = true;
                     this._onChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth });
@@ -367,8 +380,12 @@ PocketCode.merge({
                 this._onChange.dispatchEvent({ on: false });
             },
             pause: function () {
+                this._on = false;
+                this._onChange.dispatchEvent({ on:false, src: this._video});
             },
             resume: function () {
+                this._on =true;
+                this._onChange.dispatchEvent({ on: true, src: this._video})
             },
             reset: function () {   //called at program-restart
                 if (!this._inUse)
@@ -897,8 +914,10 @@ PocketCode.merge({
 
                     //test
                     var delay = new Date() - testStart;
-                    if (cycleTime)
-                        cycleTime.innerText = delay;
+                   // if (cycleTime != undefined ){
+                     //   cycleTime.innerText = delay;
+                    //}
+
 
                     //for (c = hx, cl = c + hw; c < cl; c++) {
                     //    for (r = hy, rl = r + hh; r < rl; r++) {

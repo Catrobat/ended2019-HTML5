@@ -212,7 +212,9 @@ PocketCode.merge({
                     case 'SetGravityBrick':
                     case 'SetBackgroundBrick':
                     case 'SetBackgroundAndWaitBrick':
-                    case 'ClearBackground':
+                    case 'ClearBackgroundBrick':
+                    case 'GoToBrick':
+                    case 'AskBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
@@ -251,13 +253,13 @@ PocketCode.merge({
 
                     case 'StopScriptBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._currentScriptId, jsonBrick);
-                        //break;
+                        break;
 
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
-                        //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, GoToBrick, IfOnEdgeBounce, MoveNSteps
+                        //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce, MoveNSteps
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
-                        //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Ask, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
+                        //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
                         //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
                         //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
                     default:
