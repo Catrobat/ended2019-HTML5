@@ -287,7 +287,7 @@ PocketCode.GameEngine = (function () {
                 scene.load(jsonScenes[i]);
 
                 if (i == 0)
-                    this._currentScene = this._startScene = scene;
+                    this._startScene = scene;
             }
 
             this._scenesLoaded = true;
@@ -393,6 +393,7 @@ PocketCode.GameEngine = (function () {
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {
+                this._currentScene = this._startScene;
                 this._onLoad.dispatchEvent();
                 //for (var c in this._scenes) {
                 //  this._currentScene = this._scenes[c];
