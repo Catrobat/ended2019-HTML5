@@ -462,6 +462,12 @@ PocketCode.Model.merge({
                 else
                     this._return(this._device.stopCamera());
             },
+            pause: function() {
+                this._return(this._device.stopCamera());
+            },
+            resume: function() {
+                this._return( this._device.startCamera());
+            }
         });
 
         return CameraBrick;
