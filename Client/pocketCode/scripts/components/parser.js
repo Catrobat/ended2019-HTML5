@@ -22,7 +22,7 @@ PocketCode.merge({
             this._soundMgr = soundMgr;
             //this._bricksTotal = bricksTotal;
             //this._bricksLoaded = 0;
-            this._minLoopCycleTime = minLoopCycleTime;
+            this._minLoopCycleTime = minLoopCycleTime || 20;
 
             this._unsupportedBricks = [];
 
@@ -58,7 +58,9 @@ PocketCode.merge({
                 //brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
                 brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
-                var sprite = asBackground ? new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, jsonSprite) : new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
+                var sprite = asBackground ?
+                    new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite) :
+                    new PocketCode.Model.Sprite(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
@@ -81,7 +83,7 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, 0,*/ this._minLoopCycleTime);
-                var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
+                var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(clone, jsonSprite.scripts[i]));
@@ -238,10 +240,13 @@ PocketCode.merge({
                     case 'ForeverBrick':
                     case 'RepeatBrick':
                     case 'RepeatUntilBrick':
-                    case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick);
                         break;
 
+                    case 'WhenConditionMetBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick, this._scene.onStart);
+                        break;
+                        
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);

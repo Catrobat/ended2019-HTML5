@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <!-- smart js -->
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-animation.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+
+    <script src="../../Client/pocketCode/scripts/core.js"></script>
+
+    <script src="../../Client/pocketCode/scripts/physics/math.js"></script>
+    <script src="../../Client/pocketCode/scripts/physics/collision.js"></script>
+    <script src="../../Client/pocketCode/scripts/physics/shape.js"></script>
+    <script src="../../Client/pocketCode/scripts/physics/world.js"></script>
+
+    <script type="text/javascript">
+        //math.js
+        var vec2 = new PocketCode.Physics.Vec2();
+
+        var mat2 = new PocketCode.Physics.Mat2();
+
+        //collistion.js
+        var mf = new PocketCode.Physics.ContactManifold();
+
+        //static now: var cpp = new PocketCode.Physics.CollisionSolver();
+
+        //shape.js
+        var p = new PocketCode.Physics.Polygon();
+
+        //world.js
+        //var b = new PocketCode.Physics.Body();    //exception handled
+        var b2 = new PocketCode.Physics.Body(p, 0, 0);
+
+        var is = new PocketCode.Physics.ImpulseScene();
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

@@ -170,7 +170,6 @@ PocketCode.Model.merge({
         }
 
         GoToBrick.prototype._execute = function () {
-
             this._return(this._scene.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
         };
 
@@ -309,32 +308,32 @@ PocketCode.Model.merge({
             //    //var callId = e.callId;
             //    this._return(e.callId, true);
             //},
-            _cancel: function (callId) {
-                var po = this._pendingOps[callId];
-                if (!po)    //make sure a internaly canceled op does not get cnaceled again from sprite callback
+            _cancel: function (id) {
+                var po = this._pendingOps[id];
+                if (!po)    //make sure a internaly canceled op does not get canceled again from sprite callback
                     return;
                 po.animation.stop();
-                this._return(callId, true);
+                this._return(id, false);
             },
-            _execute: function (scope, callId) {
-                this._callId = callId;  //in this brick there can only be one active animation
+            _execute: function (id, scope) {
+                this._callId = id;  //in this brick there can only be one active animation
                 var sprite = this._sprite;
 
                 var po;
                 //terminate pending ops to avoid conflicts
                 for (var p in this._pendingOps)
-                    if (p != callId)
+                    if (p != id)
                         this._cancel(p);
 
-                po = this._pendingOps[callId];
-                po.paused = this._paused;
+                po = this._pendingOps[id];
+                //po.paused = this._paused;
                 var duration = this._duration.calculate(scope),
                     x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
                 if (isNaN(duration)) {
                     if (!isNaN(x) && !isNaN(y))
                         this._updatePositionHandler({ value: { x: x, y: y } });
-                    this._return(callId, false);
+                    this._return(id, false);
                     return;
                 }
 
@@ -344,49 +343,49 @@ PocketCode.Model.merge({
 
                 var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, callId)));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id)));
                 po.animation = animation;
-                animation.start({ callId: callId });
+                animation.start({ callId: id });
                 if (this._paused)
                     animation.pause();
             },
             pause: function () {
                 this._paused = true;
                 var po, pos = this._pendingOps;
-                for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
-                    po = pos[p];
+                for (var id in pos) {
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
+                    po = pos[id];
                     if (po.animation)
                         po.animation.pause();
-                    po.paused = true;
+                    //po.paused = true;
                 }
             },
             resume: function () {
                 this._paused = false;
                 var po, pos = this._pendingOps;
-                for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
-                    po = pos[p];
-                    if (po.paused) {
-                        po.paused = false;
+                for (var id in pos) {
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
+                    po = pos[id];
+                    //if (po.paused) {
+                    //    po.paused = false;
                         if (po.animation)
                             po.animation.resume();
-                    }
+                    //}
                 }
             },
             stop: function () {
                 this._paused = false;
                 var po, pos = this._pendingOps;
-                for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
-                    po = pos[p];
+                for (var id in pos) {
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
+                    po = pos[id];
                     if (po.animation)
                         po.animation.stop();
                 }
-                this._pendingOps = {};
+                PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
             },
         });
 
@@ -459,18 +458,18 @@ PocketCode.Model.merge({
             this._physicsWorld = physicsWorld;
 
             if (!propObject) {
-                this._physicsType = PocketCode.MovementStyle.NONE;
+                this._physicsType = PocketCode.PhysicsType.NONE;
             }
             else {
                 switch (propObject.physicsType) {
                     case 'FIXED':
-                        this._physicsType = PocketCode.MovementStyle.FIXED;
+                        this._physicsType = PocketCode.PhysicsType.FIXED;
                         break;
                     case 'DYNAMIC':
-                        this._physicsType = PocketCode.MovementStyle.DYNAMIC;
+                        this._physicsType = PocketCode.PhysicsType.DYNAMIC;
                         break;
                     default:
-                        this._physicsType = PocketCode.MovementStyle.NONE;
+                        this._physicsType = PocketCode.PhysicsType.NONE;
                         break;
                 }
             }
@@ -478,10 +477,10 @@ PocketCode.Model.merge({
 
         SetPhysicsObjectTypeBrick.prototype._execute = function () {
             //TODO:
-            var physicsEnabled = this._physicsType !== PocketCode.MovementStyle.NONE;
+            var physicsEnabled = this._physicsType !== PocketCode.PhysicsType.NONE;
 
             this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
-            this._sprite.movementStyle = this._physicsType;
+            this._sprite.physicsType = this._physicsType;
 
             this._return(false);
         };

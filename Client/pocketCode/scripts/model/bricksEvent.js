@@ -179,15 +179,19 @@ PocketCode.Model.merge({
     WhenConditionMetBrick: (function () {
         WhenConditionMetBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject) {  //TODO: execute on start?
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);        //handle simultanous execution
+        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject, startEvent) {
+            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._previousMet = false;
             this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
+
+            this._onStart = startEvent;
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         WhenConditionMetBrick.prototype.merge({
+            //a When.. brick cannot be part of a user script, so we do not have to take care of the execution scope (always sprite)
             _execute: function () {
                 if (this._timeoutHandler)
                     window.clearTimeout(this._timeoutHandler);

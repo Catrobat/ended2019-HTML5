@@ -17,7 +17,7 @@ PocketCode.RotationStyle = {
     ALL_AROUND: 'all around',
 };
 
-PocketCode.MovementStyle = {
+PocketCode.PhysicsType = {
     NONE: 'no bouncing',
     FIXED: 'others bounce off it',
     DYNAMIC: 'bouncing with gravity'
@@ -33,11 +33,12 @@ PocketCode.Model.Sprite = (function () {
      * @param scene scene instance as a reference
      * @param propObject object which can contains properties
      */
-    function Sprite(gameEngine, scene, propObject) {
+    function Sprite(gameEngine, scene, minLoopCycleTime, propObject) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
         this._scene = scene;
+        this._minLoopCycleTime = minLoopCycleTime || 20;
         this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
@@ -542,7 +543,7 @@ PocketCode.Model.Sprite = (function () {
             var offsetX = Math.round(Math.cos(rad) * steps),    //make sure the value is an int
                 offsetY = Math.round(Math.sin(rad) * steps);
 
-            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, steps / this._minLoopCycleTime);
         },
         //motion:direction
         /**
@@ -1248,10 +1249,11 @@ PocketCode.Model.Sprite = (function () {
         },
 
         showBubble: function (type, text) {
-
+            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
             return this._triggerOnChange({ bubble: { type: type, text: text, visible: true } });
         },
         hideBubble: function (type) {
+            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
             return this._triggerOnChange({ bubble: { type: type, visible: false } });
         },
 
@@ -1312,9 +1314,9 @@ PocketCode.Model.merge({
     SpriteClone: (function () {
         SpriteClone.extends(PocketCode.Model.Sprite, false);
 
-        function SpriteClone(gameEngine, scene, jsonSprite, definition) {
+        function SpriteClone(gameEngine, scene, minLoopCycleTime, jsonSprite, definition) {
 
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, jsonSprite);
 
             this._id = SmartJs.getNewId();
             this._json = jsonSprite;
@@ -1374,8 +1376,8 @@ PocketCode.Model.merge({
     BackgroundSprite: (function () {
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
-        function BackgroundSprite(gameEngine, scene, propObject) {
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
+        function BackgroundSprite(gameEngine, scene, minLoopCycleTime, propObject) {
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, propObject);
 
             //this._cameraTransparency = 0.5; //default
             this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
@@ -1420,13 +1422,13 @@ PocketCode.Model.merge({
     PhysicsSprite: (function () {
         PhysicsSprite.extends(PocketCode.Model.Sprite, false);
 
-        function PhysicsSprite(gameEngine, scene, propObject) {
+        function PhysicsSprite(gameEngine, scene, minLoopCycleTime, propObject) {
 
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, propObject);
 
             this._mass = 1.0;
             this._density = 1.0;
-            this._movementStyle = PocketCode.MovementStyle.NONE;
+            this._physicsType = PocketCode.PhysicsType.NONE;
             this._velocityX = 0;
             this._velocityY = 0;
             this._friction = 0.2;
@@ -1456,9 +1458,9 @@ PocketCode.Model.merge({
                     this._bounceFactor = value;
                 }
             },
-            movementStyle: {
+            physicsType: {
                 set: function (value) {
-                    this._movementStyle = value;
+                    this._physicsType = value;
                     //todo
                 }
             }

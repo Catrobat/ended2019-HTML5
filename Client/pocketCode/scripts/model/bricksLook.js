@@ -172,7 +172,6 @@ PocketCode.Model.merge({
         AskBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AskBrick(device, sprite, scene, propObject) {
-            // TODO GameEngine wrong (and missing!) !
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
@@ -290,13 +289,13 @@ PocketCode.Model.merge({
                 this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
             },
             /* override */
-            _execute: function (scope, callId) {
+            _execute: function (id, scope) {
                 var text = this._text.calculate(scope);
 
                 if (text !== '' && !isNaN(this._duration.calculate(scope)))
                     this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text);
 
-                PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
+                PocketCode.Model.WaitBrick.prototype._execute.call(this, id); //call super
             },
         });
 

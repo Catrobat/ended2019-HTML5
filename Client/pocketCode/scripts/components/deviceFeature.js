@@ -366,10 +366,11 @@ PocketCode.merge({
                 this._init();
                 //var cam = this._cam;
                 if (!this._on && !this._cameraStream)  //even if camera not started but stream available
-                    return;
+                    return false;
                 this._on = false;
                 this._video.pause();
                 this._onChange.dispatchEvent({ on: false });
+                return true;
             },
             pause: function () {
             },

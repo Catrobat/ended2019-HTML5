@@ -37,9 +37,9 @@ PocketCode.Model.merge({
 
                 var id = SmartJs.getNewId();
                 this._pendingOps[id] = {
+                    listener: onExecutedListener,
                     threadId: threadId,
                     scope: scope,
-                    listener: onExecutedListener,
                     loopDelay: false,
                     childIdx: 0,
                 };
@@ -63,6 +63,8 @@ PocketCode.Model.merge({
                     bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
                 }
                 else {
+                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                        po.scope = undefined;   //make sure to not dispose objects currently in use
                     var listener = po.listener,
                         threadId = po.threadId,
                         loopDelay = po.loopDelay;
@@ -97,7 +99,19 @@ PocketCode.Model.merge({
              * Goes through the list of bricks and calls "stop()" on each of them
              */
             stop: function () {
+                var po;
+                for (var id in this._pendingOps) {
+                    po = this._pendingOps[id];
+                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                        po.scope = undefined;   //make sure to not dispose objects currently in use
+
+                    for (var prop in po) //may include objects like animation, ...
+                        if (po[prop] && po[prop].dispose)
+                            po[prop].dispose();
+                    delete this._pendingOps[id];
+                }
                 this._pendingOps = {};
+
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].stop)
@@ -220,8 +234,9 @@ PocketCode.Model.ThreadedBrick = (function () {
 
             var id = SmartJs.getNewId();
             this._pendingOps[id] = {
-                threadId: threadId,
                 listener: onExecutedListener,
+                threadId: threadId,
+                scope: scope,
             };
             if (this._commentedOut === true)
                 return this._return(id, false);
@@ -248,16 +263,30 @@ PocketCode.Model.ThreadedBrick = (function () {
             var threadId = po.threadId;
 
             for (var prop in po) //may include objects like animation, ...
-                if (po[prop].dispose)
+                if (po[prop] && po[prop].dispose)
                     po.dispose();
             delete this._pendingOps[id];
             if (listener)
                 listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
         },
-        /**
-         * clears pendingOps list
-         */
+        //pause: function() {
+
+        //},
+        //resume: function() {
+
+        //},
         stop: function () {
+            var po;
+            for (var id in this._pendingOps) {
+                var po = this._pendingOps[id];
+                if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                    po.scope = undefined;   //make sure to not dispose objects currently in use
+
+                for (var prop in po) //may include objects like animation, ...
+                    if (po[prop] && po[prop].dispose)
+                        po[prop].dispose();
+                delete this._pendingOps[id];
+            }
             this._pendingOps = {};
         },
     });
@@ -397,7 +426,7 @@ PocketCode.Model.ScriptBlock = (function () {
          */
         execute: function () {
             if (this._executionState == PocketCode.ExecutionState.RUNNING)
-                this.stop();
+                this.stop();    //called twice before finish = stopp current thread and start from beginning (PocketCode specification)
             this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function () {
                 this._executionState = PocketCode.ExecutionState.STOPPED;
@@ -407,20 +436,24 @@ PocketCode.Model.ScriptBlock = (function () {
         /**
          * calls "pause()" on bricks
          */
-        /*pause: function () {
+        pause: function () {
+            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+                return;
+
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
-            //if (this._executionState === PocketCode.ExecutionState.RUNNING)
-            //    this._executionState = PocketCode.ExecutionState.PAUSED;
-            //^^ while pausing the bricks we do not updae the current exection state
-        },*/
+            this._executionState = PocketCode.ExecutionState.PAUSED;
+            //^^ while pausing the bricks we do not updae the current execution state
+        },
         /**
          * calls "resume()" on bricks
          */
-       /* resume: function () {
-            //if (this._executionState === PocketCode.ExecutionState.PAUSED)
-            //    this._executionState = PocketCode.ExecutionState.RUNNING;
+        resume: function () {
+            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
+                return;
+
+            this._executionState = PocketCode.ExecutionState.RUNNING;
             PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
-        },*/
+        },
         /**
          * calls "stop()" on bricks and threadedBrick
          */
@@ -449,7 +482,7 @@ PocketCode.Model.LoopBrick = (function () {
         PocketCode.Model.SingleContainerBrick.call(this, device, sprite, propObject);
 
         this._minLoopCycleTime = minLoopCycleTime || 20;
-        this._paused = false;
+        this._pauseLoop = false;
         //this._bricks typeof PocketCode.Model.BrickContainer
     }
 
@@ -461,16 +494,22 @@ PocketCode.Model.LoopBrick = (function () {
          */
         execute: function (onExecutedListener, threadId, scope) {
             var id = SmartJs.getNewId();
-            this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener, startTime: new Date(), paused: this._paused };
+            this._pendingOps[id] = {
+                listener: onExecutedListener,
+                threadId: threadId,
+                scope: scope,
+                startTime: new Date(),
+                paused: this._pauseLoop,
+            };
             if (this._commentedOut === true)
-                return this._return(id);
+                return this._return(id, false);
 
-            if (this._bricks && this._loopConditionMet(id, scope)) {
-                if (!this._paused && !this._disposed)
+            if (this._bricks && this._loopConditionMet(this._pendingOps[id])) {
+                if (!this._pauseLoop && !this._disposed)
                     this._execute(id, scope);
             }
             else
-                this._return(id);
+                this._return(id, false);
         },
         /**
          * override to enable loop condition check
@@ -485,7 +524,7 @@ PocketCode.Model.LoopBrick = (function () {
          * @returns {boolean}
          * @private
          */
-        _loopConditionMet: function (id, scope) {
+        _loopConditionMet: function (po) {
             return false;
         },
         /**
@@ -497,12 +536,12 @@ PocketCode.Model.LoopBrick = (function () {
             var po = this._pendingOps[id];
             if (!po)// || po.paused)  //stopped
                 return;
-            if (this._paused) { //set them paused when end of loop is reached
+            if (this._pauseLoop) { //set them paused when end of loop is reached
                 po.paused = true;
                 return;
             }
 
-            if (/*this._bricks &&*/ this._loopConditionMet(id, po.scope)) {   //bricks checked already in execute()
+            if (/*this._bricks &&*/ this._loopConditionMet(po)) {   //bricks checked already in execute()
                 var executionDelay = 0;
                 if (e.loopDelay) {
                     executionDelay = this._minLoopCycleTime - (new Date() - po.startTime);  //20ms min loop cycle time
@@ -519,30 +558,31 @@ PocketCode.Model.LoopBrick = (function () {
                 this._return(id);
         },
         pause: function () {
-            this._paused = true;
+            this._pauseLoop = true;
             PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
             //we cannot iterate through all properties and set them paused here as this will cause an error on long (still) running loops
         },
         resume: function () {
-            this._paused = false;
+            this._pauseLoop = false;
             PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
-            var po, pos = this._pendingOps;
+            var po,
+                pos = this._pendingOps;
             for (var id in pos) {
-                if (!pos.hasOwnProperty(id))
-                    continue;
+                //if (!pos.hasOwnProperty(id))
+                //    continue;
                 po = pos[id];
 
-                if (!po.paused) //long running loops may not have been paused
+                if (!po.paused) //only loops without threaded bricks (paused in brick) may have been paused
                     continue;
                 po.paused = false;
-                if (/*this._bricks &&*/ this._loopConditionMet(id, po.scope) && !this._disposed)
+                if (/*this._bricks &&*/ this._loopConditionMet(po) && !this._disposed)
                     this._execute(id, po.scope);
                 else
                     this._return(id);
             }
         },
         stop: function () {
-            this._paused = false;
+            this._pauseLoop = false;
             PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
         },
     });

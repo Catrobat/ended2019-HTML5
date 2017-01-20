@@ -443,7 +443,7 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
     var execState = b.executionState;
     b.pause();
-    assert.equal(b.executionState, execState, "exec state: not updated on pause()");
+    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state: updated on pause()");
     assert.ok(b._bricks._bricks[0].paused && b._bricks._bricks[1].paused && b._bricks._bricks[2].paused && b._bricks._bricks[3].paused, "super call: pause");
     b.resume();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: resume");
@@ -486,7 +486,7 @@ QUnit.test("LoopBrick", function (assert) {
     var device = new PocketCode.MediaDevice("soundManager");
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
     var testBrick2 = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
 
     //pause on inactive loop
@@ -501,7 +501,7 @@ QUnit.test("LoopBrick", function (assert) {
     };
     var l2 = new SmartJs.Event.EventListener(handler2, this);
     b2.pause();
-    assert.ok(b2._paused, "loop set paused");
+    assert.ok(b2._pauseLoop, "loop set paused");
     b2.execute(l2, "pausedId");
     //window.setTimeout(function () { b.resume(); }, 50);
     b2.resume();

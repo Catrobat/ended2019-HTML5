@@ -92,7 +92,7 @@ QUnit.test("GameEngine", function (assert) {
     gameEngine._spritesLoaded = true;
 
     //Mock: first we test if our Mocked interface still exist- change to sprite otherwise will not affect our tests
-    var spriteInterface = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id", name: "name" });
+    var spriteInterface = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id", name: "name" });
     assert.ok(typeof spriteInterface.pauseScripts == "function" && typeof spriteInterface.resumeScripts == "function" && typeof spriteInterface.stopAllScripts == "function", "mock: valid sprite interface");
 
     //Mock GameEngine and SoundManagers start, pause, stop methods
@@ -261,7 +261,7 @@ QUnit.test("GameEngine", function (assert) {
     //assert.ok(gameEngine._sprites[0].timesStarted === spritesStarted + 1 && gameEngine._background.timesStarted === bgStarted + 1, "Started all sprites when restarting");
     assert.ok(gameEngine._soundManager.status === PocketCode.ExecutionState.STOPPED, "Called SoundManagers stopAllSounds when restarting gameEngine");
 
-    var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
+    var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "newId", name: "myName" });
     sprite1._id = "spriteId1";
     //sprite1.name = "spriteName1";
     gameEngine._sprites.push(sprite1);
@@ -419,16 +419,16 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     gameEngine._variables = [{ id: "g1", name: "var1", }, { id: "g2", name: "var2", }, ];   //gloable
 
-    var bg = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "bg" });
+    var bg = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "newId", name: "bg" });
     bg._variables = [{ id: "id1", name: "var1", }, { id: "id2", name: "var2", }, ]; //background
 
     return;
     //TODO: most of the tests below should be moved and rewritten for scenes
 
     gameEngine._background = bg;
-    var sp1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId2", name: "sp1" });
+    var sp1 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "newId2", name: "sp1" });
     sp1._variables = [{ id: "id3", name: "var1", }, { id: "id4", name: "var2", }, ];    //sprite 1
-    var sp2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId3", name: "sp2" });
+    var sp2 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "newId3", name: "sp2" });
     sp2._variables = [{ id: "id5", name: "var1", }, { id: "id6", name: "var2", }, ];    //sprite 2
 
     gameEngine._sprites.push(sp1);
