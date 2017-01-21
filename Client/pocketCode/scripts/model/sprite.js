@@ -33,12 +33,11 @@ PocketCode.Model.Sprite = (function () {
      * @param scene scene instance as a reference
      * @param propObject object which can contains properties
      */
-    function Sprite(gameEngine, scene, minLoopCycleTime, propObject) {
+    function Sprite(gameEngine, scene, propObject) {
         PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
         this._scene = scene;
-        this._minLoopCycleTime = minLoopCycleTime || 20;
         this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
@@ -248,8 +247,8 @@ PocketCode.Model.Sprite = (function () {
                 if (rgbObj.r == c.r && rgbObj.g == c.g && rgbObj.b == c.b)
                     return;
 
-                this._penColor = {r: rgbObj.r, g: rgbObj.g, b: rgbObj.b};
-                this._triggerOnChange({penColor: this._penColor});
+                this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
+                this._triggerOnChange({ penColor: this._penColor });
             },
         },
         isBackground: {
@@ -443,7 +442,7 @@ PocketCode.Model.Sprite = (function () {
             if (isNaN(x) || isNaN(y))
                 throw new Error('invalid argument: position');
 
-            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+            if (this._animationCancelCallback && this._animationCancelCallback != animationCancelCallback)  //cancel pending updates caused by animations
                 this._animationCancelCallback();
             if (animationCancelCallback) {   //used to cancel animations
                 this._animationCancelCallback = animationCancelCallback;
@@ -544,7 +543,7 @@ PocketCode.Model.Sprite = (function () {
          * @param {number} steps
          * @returns {boolean}
          */
-        move: function (steps) {
+        move: function (steps, velocity) {
             if (!steps || isNaN(steps))
                 return false;
 
@@ -552,7 +551,7 @@ PocketCode.Model.Sprite = (function () {
             var offsetX = Math.round(Math.cos(rad) * steps),    //make sure the value is an int
                 offsetY = Math.round(Math.sin(rad) * steps);
 
-            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, steps / this._minLoopCycleTime);
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, velocity);
         },
         //motion:direction
         /**
@@ -1285,9 +1284,9 @@ PocketCode.Model.Sprite = (function () {
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
 
-        clone: function (device, soundManager, minLoopCycleTime, broadcastMgr) {
+        clone: function (device, soundManager, broadcastMgr) {
             if (!this._spriteFactory)
-                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager, undefined, minLoopCycleTime);
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
 
             var definition = {
                 _positionX: this._positionX,
@@ -1323,9 +1322,9 @@ PocketCode.Model.merge({
     SpriteClone: (function () {
         SpriteClone.extends(PocketCode.Model.Sprite, false);
 
-        function SpriteClone(gameEngine, scene, minLoopCycleTime, jsonSprite, definition) {
+        function SpriteClone(gameEngine, scene, jsonSprite, definition) {
 
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, jsonSprite);
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
 
             this._id = SmartJs.getNewId();
             this._json = jsonSprite;
@@ -1385,8 +1384,8 @@ PocketCode.Model.merge({
     BackgroundSprite: (function () {
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
-        function BackgroundSprite(gameEngine, scene, minLoopCycleTime, propObject) {
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, propObject);
+        function BackgroundSprite(gameEngine, scene, propObject) {
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
             //set background flag
             this._isBackground = true;
@@ -1434,9 +1433,9 @@ PocketCode.Model.merge({
     PhysicsSprite: (function () {
         PhysicsSprite.extends(PocketCode.Model.Sprite, false);
 
-        function PhysicsSprite(gameEngine, scene, minLoopCycleTime, propObject) {
+        function PhysicsSprite(gameEngine, scene, propObject) {
 
-            PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, propObject);
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
             this._mass = 1.0;
             this._density = 1.0;

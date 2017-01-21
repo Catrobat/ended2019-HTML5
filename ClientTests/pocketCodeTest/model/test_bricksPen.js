@@ -15,7 +15,7 @@ QUnit.test("PenDownBrick", function (assert) {
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.PenDownBrick(device, sprite, {});
 
@@ -42,7 +42,7 @@ QUnit.test("PenUpBrick", function (assert) {
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.PenUpBrick(device, sprite, {});
 
@@ -69,7 +69,7 @@ QUnit.test("SetPenSizeBrick", function (assert) {
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetPenSizeBrick(device, sprite, { size: x });
@@ -97,7 +97,7 @@ QUnit.test("SetPenColorBrick", function (assert) {
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var blue = JSON.parse('{"type":"NUMBER","value":"200.0","right":null,"left":null}');
     var red = JSON.parse('{"type":"NUMBER","value":"145.0","right":null,"left":null}');
     var green = JSON.parse('{"type":"NUMBER","value":"33.0","right":null,"left":null}');

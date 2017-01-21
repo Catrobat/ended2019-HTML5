@@ -194,9 +194,10 @@ PocketCode.Model.merge({
     MoveNStepsBrick: (function () {
         MoveNStepsBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function MoveNStepsBrick(device, sprite, propObject) {
+        function MoveNStepsBrick(device, sprite, minLoopCycleTime, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
+            this._minLoopCycleTime = minLoopCycleTime || 20;
             this._steps = new PocketCode.Formula(device, sprite, propObject.steps);
         }
 
@@ -205,7 +206,7 @@ PocketCode.Model.merge({
             if (isNaN(val))
                 this._return(false);
             else
-                this._return(this._sprite.move(val));
+                this._return(this._sprite.move(val), val / this._minLoopCycleTime);
         };
 
         return MoveNStepsBrick;
@@ -302,7 +303,7 @@ PocketCode.Model.merge({
 
         GlideToBrick.prototype.merge({
             _updatePositionHandler: function (e) {
-                this._sprite.setPosition(e.value.x, e.value.y, true, this._cancel.bind(this, this._callId), this._velocity);
+                this._sprite.setPosition(e.value.x, e.value.y, true, this._pendingOps[this._callId].cancelCallback, this._velocity);
             },
             //_returnHandler: function (e) {
             //    //var callId = e.callId;
@@ -326,14 +327,18 @@ PocketCode.Model.merge({
                         this._cancel(p);
 
                 po = this._pendingOps[id];
+                po.cancelCallback = this._cancel.bind(this, id);    //make sure callback is only created once per animation
                 //po.paused = this._paused;
                 var duration = this._duration.calculate(scope),
                     x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
                 if (isNaN(duration)) {
-                    if (!isNaN(x) && !isNaN(y))
+                    if (!isNaN(x) && !isNaN(y)) {
                         this._updatePositionHandler({ value: { x: x, y: y } });
-                    this._return(id, false);
+                        this._return(id, true);
+                    }
+                    else
+                        this._return(id, false);
                     return;
                 }
 
@@ -343,9 +348,9 @@ PocketCode.Model.merge({
 
                 var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id)));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true)));
                 po.animation = animation;
-                animation.start({ callId: id });
+                animation.start();//{ callId: id });
                 if (this._paused)
                     animation.pause();
             },

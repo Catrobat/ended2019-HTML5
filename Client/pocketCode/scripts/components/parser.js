@@ -59,8 +59,8 @@ PocketCode.merge({
                 brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
                 var sprite = asBackground ?
-                    new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite) :
-                    new PocketCode.Model.Sprite(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite);
+                    new PocketCode.Model.BackgroundSprite(this._gameEngine, currentScene, jsonSprite) :
+                    new PocketCode.Model.Sprite(this._gameEngine, currentScene, jsonSprite);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
@@ -83,7 +83,7 @@ PocketCode.merge({
                     throw new Error('invalid argument: expected type: object');
 
                 var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, 0,*/ this._minLoopCycleTime);
-                var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, this._minLoopCycleTime, jsonSprite, definition);
+                var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(clone, jsonSprite.scripts[i]));
@@ -236,6 +236,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
+                    case 'MoveNStepsBrick':
                     case 'WaitUntilBrick':
                     case 'ForeverBrick':
                     case 'RepeatBrick':
@@ -261,7 +262,7 @@ PocketCode.merge({
                         break;
 
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
-                        //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce, MoveNSteps
+                        //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
                         //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect

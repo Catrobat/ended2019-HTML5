@@ -44,24 +44,24 @@ QUnit.test("PlayerViewportController", function (assert) {
     };
 
     for (var i = 1; i < 5; i++) {
-        sprites.push(new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id" + i, name: "sprite" + i }).renderingSprite);
+        sprites.push(new PocketCode.Model.Sprite(gameEngine, scene, { id: "id" + i, name: "sprite" + i }).renderingSprite);
     }
     // init with sprites without looks
     controller.renderingSprites = sprites;
     //assert.ok(controller._renderingSprite.length == 0, "Check rendering images init with no sprite having a look");
     //^^ nonsense: even a sprite without a look has a layer
     var testLook = { id: "id_0", resourceId: "resourceId_0", name: "first" };
-    var spriteWithLook1 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id0", name: "sprite0", looks: [testLook] });
+    var spriteWithLook1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [testLook] });
     var canvas = document.createElement('canvas');
     canvas.width = 100;
     canvas.height = 50;
 
     spriteWithLook1._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
     sprites.splice(0, 0, spriteWithLook1.renderingSprite);
-    var spriteWithLook2 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id1", name: "sprite1", looks: [testLook] });
+    var spriteWithLook2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [testLook] });
     spriteWithLook2._looks[0].init({canvas: canvas});   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
     sprites.splice(0, 0, spriteWithLook2.renderingSprite);
-    var spriteWithLook3 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id2", name: "sprite2", looks: [testLook] });
+    var spriteWithLook3 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [testLook] });
     spriteWithLook3._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
     sprites.splice(0, 0, spriteWithLook3.renderingSprite);
 

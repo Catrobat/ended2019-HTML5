@@ -18,7 +18,7 @@ QUnit.test("Formula", function (assert) {
 
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     assert.throws(function () { var f = new PocketCode.Formula(undefined, sprite, json); }, Error, "");
     var f = new PocketCode.Formula(device, sprite, json);
@@ -77,7 +77,7 @@ QUnit.test("Formula: string encoding", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite, encoding1);
     assert.equal(f.calculate(), "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");

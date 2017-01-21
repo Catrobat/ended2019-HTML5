@@ -47,7 +47,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
@@ -118,7 +118,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -269,7 +269,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -381,7 +381,7 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);
 
     //init sprite: test data
@@ -451,7 +451,7 @@ QUnit.test("FormulaParser: sensors", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -577,7 +577,7 @@ QUnit.test("FormulaParser: sensors: timer", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -592,7 +592,7 @@ QUnit.test("FormulaParser: sensors: touch", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -641,7 +641,7 @@ QUnit.test("FormulaParser: sensors: geo location", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -656,7 +656,7 @@ QUnit.test("FormulaParser: sensors: physics", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -671,7 +671,7 @@ QUnit.test("FormulaParser: logic", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
 
@@ -746,7 +746,7 @@ QUnit.test("BrickFactory", function (assert) {
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     gameEngine._variables = allBricksProject.variables;
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var minLoopCycleTime = 14;
 
     var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, minLoopCycleTime);//, allBricksProject.header.bricksCount, 0, minLoopCycleTime);   //TODO: check loadedCount
@@ -830,7 +830,7 @@ QUnit.test("BrickFactory", function (assert) {
     //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
     //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
     allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
@@ -842,7 +842,7 @@ QUnit.test("BrickFactory", function (assert) {
     var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, 26);//allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
@@ -930,7 +930,7 @@ QUnit.test("SpriteFactory", function (assert) {
     var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene,  20,{ id: "spriteId", name: "spriteName" });
+    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var sf = new PocketCode.SpriteFactory(device, gameEngine, soundMgr, 25);//allBricksProject.header.bricksCount);
 

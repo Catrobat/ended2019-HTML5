@@ -394,10 +394,10 @@ QUnit.test("RenderingSprite", function (assert) {
         //draw tests
         //var look1 = new PocketCode.Model.Look({ name: "look1", id: "sid1", resourceId: "s1" });
         //var look2 = new PocketCode.Model.Look({ name: "look2", id: "sid2", resourceId: "s2" });
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id0", name: "sprite0", looks: [{ name: "look1", id: "sid1", resourceId: "s1" }] });   //look1] });
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [{ name: "look1", id: "sid1", resourceId: "s1" }] });   //look1] });
         sprite1.initLooks();
         sprite1.init();
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id1", name: "sprite1", looks: [{ name: "look2", id: "sid2", resourceId: "s2" }] });   //look2] });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [{ name: "look2", id: "sid2", resourceId: "s2" }] });   //look2] });
         sprite2.initLooks();
         sprite2.init();
 
@@ -622,10 +622,10 @@ QUnit.test("RenderingSprite", function (assert) {
         //var lookOpaque = new PocketCode.Model.Look({ name: "look3", id: "sid3", resourceId: "s3" });
         //var lookTransparent = new PocketCode.Model.Look({ name: "look4", id: "sid4", resourceId: "s4" });
 
-        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id2", name: "sprite2", looks: [{ name: "look3", id: "sid3", resourceId: "s3" }] });  //lookOpaque] });
+        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [{ name: "look3", id: "sid3", resourceId: "s3" }] });  //lookOpaque] });
         spriteOpaque.initLooks();
         spriteOpaque.init();
-        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, scene, 20, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
+        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
         spriteTransparent.initLooks();
         spriteTransparent.init();
         var renderingSpriteOpaque = spriteOpaque.renderingSprite; //new PocketCode.RenderingSprite(spriteOpaque.renderingProperties);
