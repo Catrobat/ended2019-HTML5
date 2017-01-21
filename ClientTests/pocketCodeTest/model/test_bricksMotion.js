@@ -435,7 +435,6 @@ QUnit.test("GlideToBrick", function (assert) {
     assert.equal(b._y.calculate(), 50, "formula y created correctly");
     assert.equal(b._duration.calculate(), 1, "formula duration created correctly");
 
-
     var asyncHandler1 = function (e) {
         var end = new Date();
         assert.equal(e.loopDelay, true, "loop delay event arg");
@@ -508,9 +507,7 @@ QUnit.test("GlideToBrick", function (assert) {
     };
     var l3 = new SmartJs.Event.EventListener(asyncHandler3, this);
 
-
     var x, y;
-
     var test_pause = function () {
         b3.pause();
         assert.ok(spriteMock2._positionX > -10, "pause: x position test");

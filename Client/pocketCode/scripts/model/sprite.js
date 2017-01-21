@@ -69,6 +69,9 @@ PocketCode.Model.Sprite = (function () {
         this._penSize = 4;
         this._penColor = { r: 0, g: 0, b: 255 };
 
+        //background boolean
+        this._isBackground = undefined;
+
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
@@ -115,6 +118,7 @@ PocketCode.Model.Sprite = (function () {
                     penColor: this._penColor,
                     penX: this._positionX,
                     penY: this._positionY,
+                    isBackground: this._isBackground,
                 });
             },
         },
@@ -244,8 +248,13 @@ PocketCode.Model.Sprite = (function () {
                 if (rgbObj.r == c.r && rgbObj.g == c.g && rgbObj.b == c.b)
                     return;
 
-                this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
-                this._triggerOnChange({ penColor: this._penColor });
+                this._penColor = {r: rgbObj.r, g: rgbObj.g, b: rgbObj.b};
+                this._triggerOnChange({penColor: this._penColor});
+            },
+        },
+        isBackground: {
+            get: function () {
+                return this._isBackground;
             },
         },
 
@@ -1378,6 +1387,9 @@ PocketCode.Model.merge({
 
         function BackgroundSprite(gameEngine, scene, minLoopCycleTime, propObject) {
             PocketCode.Model.Sprite.call(this, gameEngine, scene, minLoopCycleTime, propObject);
+
+            //set background flag
+            this._isBackground = true;
 
             //this._cameraTransparency = 0.5; //default
             this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
