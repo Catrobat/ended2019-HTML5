@@ -452,17 +452,18 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
 
-            this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
+            //this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype.merge({
             _execute: function () {
                 if (this._turnOn) {
                     this._device._cam.setType(PocketCode.CameraType.BACK);
-                    this._return(this._device.startCamera());
+                    //this._return(this._device.startCamera());
                 }
                 else
-                    this._return(this._device.stopCamera());
+                   // this._return(this._device.stopCamera());
+                    this._return(true);
             }
         });
 

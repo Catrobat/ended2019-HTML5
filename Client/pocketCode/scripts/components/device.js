@@ -725,14 +725,12 @@ PocketCode.MediaDevice = (function () {
         },
         /* override */
         pause: function () {
-            console.log("DEVICE PAUSE");
             this._fd.stop();
             this._cam.pause();
 
             PocketCode.Device.prototype.pause.call(this);   //call super()
         },
         resume: function () {
-            console.log("DEVICE RESUME");
             this._cam.resume();
             var e = this._camStatus;
             this._fd.start(e.src, e.width, e.height, e.orientation);
