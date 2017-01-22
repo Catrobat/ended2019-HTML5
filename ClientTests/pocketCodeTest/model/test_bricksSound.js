@@ -10,8 +10,6 @@ QUnit.module("model/bricksSound.js");
 
 QUnit.test("PlaySoundBrick", function (assert) {
 
-    var done1 = assert.async();
-
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
@@ -27,9 +25,8 @@ QUnit.test("PlaySoundBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(e.loopDelay, undefined, "loopDelay received");
+        assert.ok(e.loopDelay === undefined || e.loopDelay === false, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
@@ -40,8 +37,35 @@ QUnit.test("PlaySoundAndWaitBrick", function (assert) {
 
     var done1 = assert.async();
 
-    assert.ok(false, "TODO")
-    done1();
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var soundId = "soundId";
+
+    var b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, gameEngine._soundManager, { resourceId: soundId });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === gameEngine._soundManager && b._soundId === soundId, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.PlaySoundAndWaitBrick, "instance check");
+    assert.ok(b.objClassName === "PlaySoundAndWaitBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.ok(e.loopDelay === undefined || e.loopDelay === false, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        
+        runTest2();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+    //pause, resume, stop
+    function runTest2() {
+
+        assert.ok(false, "TODO");
+        done1();
+    }
+
 });
 
 
@@ -131,13 +155,12 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
 QUnit.test("SpeakBrick", function (assert) {
 
     var done1 = assert.async();
-    var done2 = assert.async();
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
+    var text = JSON.parse('{"type":"STRING","value":"hello world","right":null,"left":null}');
 
     var b = new PocketCode.Model.SpeakBrick(device, sprite, gameEngine._soundManager, { text: text });
 
@@ -149,36 +172,94 @@ QUnit.test("SpeakBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(e.loopDelay, undefined, "loopDelay received");
+        assert.notOk(e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
+        
+        runTest2();
     };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    window.setTimeout(function () { b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id"); }, 1000); //wait until sound was loaded (cntr)
 
+    function runTest2() {
+        //test: using text generated at runtime (not static)
+        //sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+        sprite.__variablesSimple._variables.s15 = new PocketCode.Model.UserVariableSimple("s15", "var_name", 94);
+        //^^ pretty difficult to set a variable for a test case.. maybe we should rewrite this
 
-    //test: using text generated at runtime (not static)
-    //sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
-    sprite.__variablesSimple._variables.s15 = new PocketCode.Model.UserVariableSimple("s15", "var_name", 94);
-    //^^ pretty difficult to set a variable for a test case.. maybe we should rewrite this
+        text = join;    //using testDataFormula.js
+        var b2 = new PocketCode.Model.SpeakBrick(device, sprite, gameEngine._soundManager, { text: text });
 
-    text = join;    //using testDataFormula.js
-    var b2 = new PocketCode.Model.SpeakBrick(device, sprite, gameEngine._soundManager, { text: text });
+        var handler2 = function (e) {
+            assert.ok(true, "dynamic text: executed");
+            assert.equal(e.id, "thread_id2", "dynamic text: threadId handled correctly");
 
-    var handler2 = function (e) {
-        assert.ok(true, "dynamic text: executed");
-        assert.equal(e.id, "thread_id2", "dynamic text: threadId handled correctly");
-        done2();
-    };
-    b2.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
-
+            done1();
+        };
+        b2.execute(new SmartJs.Event.EventListener(handler2, this), "thread_id2");
+    }
 });
 
 
 QUnit.test("SpeakAndWaitBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
-    assert.ok(false, "TODO")
-    done1();
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
+
+    var b = new PocketCode.Model.SpeakAndWaitBrick(device, sprite, gameEngine._soundManager, { text: text });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === gameEngine._soundManager, "brick created and properties set correctly");
+    assert.ok(b._text instanceof PocketCode.Formula, "sound file: formula parameter set");
+    assert.ok(b instanceof PocketCode.Model.SpeakAndWaitBrick, "instance check");
+    assert.ok(b.objClassName === "SpeakAndWaitBrick", "objClassName check");
+
+    //execute a preloaded sound (static formula)
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.notOk(e.loopDelay, "loopDelay received");
+        assert.equal(e.id, "t_id", "threadId handled correctly");
+        done1();
+
+        runTest2();
+        runTest3();
+    };
+    window.setTimeout(function () { b.execute(new SmartJs.Event.EventListener(handler, this), "t_id"); }, 1000);
+
+    //execute a sound loaded on the fly
+    function runTest2() {
+        //test: using text generated at runtime (not static)
+        //sprite.__variablesSimple._variables.s15 = { id: "s15", name: "var_name", value: "dynamic points" };
+        sprite.__variablesSimple._variables.s15 = new PocketCode.Model.UserVariableSimple("s15", "var_name", 94);
+        //^^ pretty difficult to set a variable for a test case.. maybe we should rewrite this
+
+        text = join;    //using testDataFormula.js
+        var b2 = new PocketCode.Model.SpeakAndWaitBrick(device, sprite, gameEngine._soundManager, { text: text });
+
+        var handler2 = function (e) {
+            assert.ok(true, "dynamic text: executed");
+            assert.equal(e.id, "t_id2", "dynamic text: threadId handled correctly");
+            done2();
+
+        };
+        b2.execute(new SmartJs.Event.EventListener(handler2, this), "t_id2");
+    }
+
+    //including pause/resume/stop
+    function runTest3() {
+        var handler3 = function (e) {
+            assert.ok(false, "handler3 not called- brick stopped");
+        };
+        b.execute(new SmartJs.Event.EventListener(handler3, this), "t_id");
+
+        window.setTimeout(function () { b.pause(); }, 300);
+        window.setTimeout(function () { b.resume(); }, 800);
+        window.setTimeout(function () { b.stop(); }, 1200);
+        window.setTimeout(function () { done3(); }, 1500);
+    }
 });
 
