@@ -1,5 +1,4 @@
 <?php
-require_once ("ID3TagsReader.php");
 
 class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
 {
@@ -612,16 +611,6 @@ class ProjectFileParser_v0_94Test extends PHPUnit_Framework_TestCase
     $this->checkJSON($projectName, $cache);
   }
 
-  public function testAirplane(){
-        $filePath = "/home/dinokeskic/HTML5/ServerTests/v0.3/libraryTest/projects/airplane/sounds/5952a60f91ed000cf2c46f645698c018_record.mp3";
-      $filePath2 = "/home/dinokeskic/Desktop/sound.mp3";
-          $oReader = new ID3TagsReader();
-          $tags =$oReader->getTagsInfo($filePath2);
-          print_r($tags);
-
-          $this->assertTrue(true, "success reading mp3 tags");
-
-  }
 
 
 }

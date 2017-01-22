@@ -717,20 +717,22 @@ PocketCode.MediaDevice = (function () {
             e = e || this._camStatus;
             e.merge({ orientation: window.orientation || 0, transparency: this._cameraTransparency });
             this._camStatus = e;
-            if (e.on)
+          /**  if (e.on && e.width && e.height && e.src)
                 this._fd.start(e.src, e.width, e.height, e.orientation);
             else
-                this._fd.stop();
+                this._fd.stop(); **/
             this._onCameraChange.dispatchEvent(e);
         },
         /* override */
         pause: function () {
+            console.log("DEVICE PAUSE");
             this._fd.stop();
             this._cam.pause();
 
             PocketCode.Device.prototype.pause.call(this);   //call super()
         },
         resume: function () {
+            console.log("DEVICE RESUME");
             this._cam.resume();
             var e = this._camStatus;
             this._fd.start(e.src, e.width, e.height, e.orientation);
