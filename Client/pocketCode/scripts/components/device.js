@@ -582,6 +582,20 @@ PocketCode.Device = (function () {
                 return 0.0;
             return this._touchEvents.history[idx].y;
         },
+        getLatestActiveTouchPosition: function() {
+            var e,
+                history = this._touchEvents.history,
+                pos = {};
+            if (Object.keys(obj).length == 0)   //quick check
+                return pos;
+
+            for (var i = history.length - 1; i >= 0; i--) {
+                if (history[i].active)
+                    return history[i];
+            }
+
+            return pos;
+        },
         isTouched: function (idx) {
             idx--;
             if (idx < 0 || idx >= this._touchEvents.history.length)
