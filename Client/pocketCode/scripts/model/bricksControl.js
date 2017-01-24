@@ -7,9 +7,6 @@
 /// <reference path="bricksCore.js" />
 'use strict';
 
-/**
- * @fileOverview bricksControl
- */
 
 PocketCode.Model.merge({
 
@@ -27,15 +24,15 @@ PocketCode.Model.merge({
             _timerExpiredHandler: function (e) {
                 this._return(e.callId);
             },
-            _execute: function (callId) {
-                var duration = this._duration.calculate();
+            _execute: function (id, scope) {
+                var duration = this._duration.calculate(scope);
                 if (isNaN(duration)) {
-                    this._return(callId);
+                    this._return(id);
                     return;
                 }
-                var po = this._pendingOps[callId];
-                po.paused = this._paused;
-                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: callId });
+                var po = this._pendingOps[id];
+                //po.paused = this._paused;
+                po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: id });
                 if (this._paused)
                     po.timer.pause();
             },
@@ -43,22 +40,22 @@ PocketCode.Model.merge({
                 this._paused = true;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
                     po = pos[p];
                     if (po.timer)
                         po.timer.pause();
-                    po.paused = true;
+                    //po.paused = true;
                 }
             },
             resume: function () {
                 this._paused = false;
-                var po, pos = this._pendingOps;
-                for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
-                    po = pos[p];
-                    po.paused = false;
+                var po;//, pos = this._pendingOps;
+                for (var id in this._pendingOps) {
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
+                    po = this._pendingOps[id];
+                    //po.paused = false;
                     if (po.timer)
                         po.timer.resume();
                 }
@@ -67,8 +64,8 @@ PocketCode.Model.merge({
                 this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
-                    if (!pos.hasOwnProperty(p))
-                        continue;
+                    //if (!pos.hasOwnProperty(p))
+                    //    continue;
                     po = pos[p];
                     if (po.timer)
                         po.timer.stop();
@@ -114,7 +111,7 @@ PocketCode.Model.merge({
             this._text = propObject.text;
         }
 
-        NoteBrick.prototype._execute = function () {
+        NoteBrick.prototype._execute = function (scope) {
             this._return();
         };
 
@@ -130,7 +127,7 @@ PocketCode.Model.merge({
 
         ForeverBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function () {
+            _loopConditionMet: function (po) {
                 return true;    //always true for endless loop
             },
         });
@@ -176,11 +173,11 @@ PocketCode.Model.merge({
                 //helper method to make event binding easier
                 this._return(e.id, e.loopDelay)
             },
-            _execute: function (threadId) {
-                if (this._condition.calculate())
-                    this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+            _execute: function (id, scope) {
+                if (this._condition.calculate(scope))
+                    this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
                 else //if (this._showElse)
-                    this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), threadId);
+                    this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
             },
             pause: function () {
                 this._ifBricks.pause();
@@ -219,16 +216,18 @@ PocketCode.Model.merge({
                 if (this._timeoutHandler)
                     window.clearTimeout(this._timeoutHandler);
 
-                if (this._condition.calculate()) {
-                    //call _return for all threads
-                    var ids = [];
-                    for (var id in this._pendingOps)
-                        ids.push(id);   //store ids: preventing object modification (delete prop) during iteration
+                var po,
+                    pending = false;    //indicating if there are unhadled threads waiting
+                for (var id in this._pendingOps) {
+                    po = this._pendingOps[id];
 
-                    for (var i = 0, l = ids.length; i < l; i++)
-                        this._return(ids[i], false);
+                    if (this._condition.calculate(po.scope))
+                        this._return(id, false);
+                    else
+                        pending = true;
                 }
-                else
+
+                if (pending) //polling will only be restarted if there are unhaldled ops waiting
                     this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._delay);
             },
             pause: function () {
@@ -238,7 +237,6 @@ PocketCode.Model.merge({
             resume: function () {
                 this._execute();
             },
-            //stop: thread ids (_pendingOps) will be {}.. no override
         });
 
         return WaitUntilBrick;
@@ -255,13 +253,12 @@ PocketCode.Model.merge({
 
         RepeatBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function (threadId) {
-                var po = this._pendingOps[threadId];
+            _loopConditionMet: function (po) {
                 if (!po)
                     return false;
 
                 if (po.loopCounter === undefined) { //init counter
-                    var count = this._timesToRepeat.calculate();
+                    var count = this._timesToRepeat.calculate(po.scope);
                     if (!isNaN(count))
                         po.loopCounter = Math.round(count);
                     else
@@ -290,8 +287,8 @@ PocketCode.Model.merge({
 
         RepeatUntilBrick.prototype.merge({
             /* override */
-            _loopConditionMet: function () {
-                if (this._condition.calculate())    //break on condition = true
+            _loopConditionMet: function (po) {
+                if (this._condition.calculate(po.scope))    //break on condition = true
                     return false;
                 return true;
             },

@@ -287,7 +287,7 @@ PocketCode.GameEngine = (function () {
                 scene.load(jsonScenes[i]);
 
                 if (i == 0)
-                    this._currentScene = this._startScene = scene;
+                    this._startScene = scene;
             }
 
             this._scenesLoaded = true;
@@ -303,15 +303,15 @@ PocketCode.GameEngine = (function () {
 
             if (/*progress == 100 &&*/ this._scenesLoaded) {
 
-            //this._scenesProgressList[e.target._id] = e.progress;
-            //this._fullProgress = 0;
+                //this._scenesProgressList[e.target._id] = e.progress;
+                //this._fullProgress = 0;
 
-            //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
-            //    var id = this._sceneIds[i];
-            //    this._fullProgress += this._scenesProgressList[id];
-            //}
+                //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
+                //    var id = this._sceneIds[i];
+                //    this._fullProgress += this._scenesProgressList[id];
+                //}
 
-            //if (this._fullProgress === 100) {
+                //if (this._fullProgress === 100) {
                 //this._scenesLoaded = true;
                 //for (var i = 0, l = this._sceneIds.length; i < l; i++) {
                 //    var id = this._sceneIds[i];
@@ -393,6 +393,7 @@ PocketCode.GameEngine = (function () {
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {
+                this._currentScene = this._startScene;
                 this._onLoad.dispatchEvent();
                 //for (var c in this._scenes) {
                 //  this._currentScene = this._scenes[c];
@@ -501,12 +502,15 @@ PocketCode.GameEngine = (function () {
         //},
         startScene: function (sceneId) {
             var scene = this.getSceneById(sceneId);
+            if (!scene)
+                return false;
             var cs = this._currentScene;
             if (cs && cs !== scene)
                 cs.pause();
 
-            this._currentScene=scene;
+            this._currentScene = scene;
             scene.start();
+            return true;
             //else
             //if (!scene || !cs)
             //    return false;

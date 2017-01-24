@@ -213,19 +213,19 @@ QUnit.test("GoToBrick", function (assert) {
     //execute
     var handlerSprite = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received"); //-> missing implementation scene.setSpritePosition
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
     var handlerPointer = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received"); //-> missing implementation scene.setSpritePosition
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done2();
     };
     var handlerRandom = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received");
+        assert.equal(typeof e.loopDelay, "boolean", "TODO loopDelay received"); //-> missing implementation scene.setSpritePosition
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done3();
     };
@@ -272,10 +272,11 @@ QUnit.test("MoveNStepsBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var steps = JSON.parse('{"type":"NUMBER","value":"14","right":null,"left":null}');
 
-    var b = new PocketCode.Model.MoveNStepsBrick(device, sprite, { steps: steps });
+    var b = new PocketCode.Model.MoveNStepsBrick(device, sprite, 24, { steps: steps });
 
     assert.ok(b._device === device && b._sprite === sprite && b._steps instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.MoveNStepsBrick, "instance check");
+    assert.equal(b._minLoopCycleTime, 24, "property set");
     assert.ok(b.objClassName === "MoveNStepsBrick", "objClassName check");
 
     //execute
@@ -435,7 +436,6 @@ QUnit.test("GlideToBrick", function (assert) {
     assert.equal(b._y.calculate(), 50, "formula y created correctly");
     assert.equal(b._duration.calculate(), 1, "formula duration created correctly");
 
-
     var asyncHandler1 = function (e) {
         var end = new Date();
         assert.equal(e.loopDelay, true, "loop delay event arg");
@@ -447,99 +447,103 @@ QUnit.test("GlideToBrick", function (assert) {
         assert.equal(sprite.positionY, 50, "y end position check");
 
         done1();
+
+        startTest2();
     };
-    var l1 = new SmartJs.Event.EventListener(asyncHandler1, this);
 
     var start = new Date();
-    b.execute(l1, "gliding");
+    b.execute(new SmartJs.Event.EventListener(asyncHandler1, this), "gliding");
 
-    //test position updates
-    var spriteMock = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    spriteMock._positionX = -10;
-    spriteMock._positionY = -30;
+    function startTest2() {
+        //test position updates
+        var spriteMock = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+        spriteMock._positionX = -10;
+        spriteMock._positionY = -30;
 
-    var positions = [];
-    //override function
-    spriteMock.setPosition = function (x, y) {
-        //store positions
-        positions.push({ x: x, y: y });
-        this._positionX = x;
-        this._positionY = y;
-    };
+        var positions = [];
+        //override function
+        spriteMock.setPosition = function (x, y) {
+            //store positions
+            positions.push({ x: x, y: y });
+            this._positionX = x;
+            this._positionY = y;
+        };
 
-    var b2 = new PocketCode.Model.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
+        var b2 = new PocketCode.Model.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
 
-    var asyncHandler2 = function (e) {
-        var end = new Date();
-        assert.equal(e.loopDelay, true, "check positions: loop delay event arg");
-        assert.equal(e.id, "gliding2", "check positions: loop delay id");
+        var asyncHandler2 = function (e) {
+            var end = new Date();
+            assert.equal(e.loopDelay, true, "check positions: loop delay event arg");
+            assert.equal(e.id, "gliding2", "check positions: loop delay id");
 
-        var delay = end - start;
-        assert.ok(delay > 990 && delay < 1200, "check positions: execution time check: 1s = 1000ms, real: " + delay);
-        assert.equal(sprite.positionX, 20, "check positions: x end position check");
-        assert.equal(sprite.positionY, 50, "check positions: y end position check");
+            var delay = end - start;
+            assert.ok(delay > 990 && delay < 1200, "check positions: execution time check: 1s = 1000ms, real: " + delay);
+            assert.equal(sprite.positionX, 20, "check positions: x end position check");
+            assert.equal(sprite.positionY, 50, "check positions: y end position check");
 
-        var passed = true;
-        for (var i = 1, l = positions.length; i < l; i++) {
-            if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not check for array length < 1 because this should never happen
-                passed = false;
-        }
-        //console.log(positions);
-        assert.ok(passed, "check positions: continuous coordinates: " + JSON.stringify(positions));
-        assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
-        done2();
-    };
-    var l2 = new SmartJs.Event.EventListener(asyncHandler2, this);
+            var passed = true;
+            for (var i = 1, l = positions.length; i < l; i++) {
+                if (positions[i].x < positions[i - 1].x || positions[i].y < positions[i - 1].y) //I do not check for array length < 1 because this should never happen
+                    passed = false;
+            }
+            //console.log(positions);
+            assert.ok(passed, "check positions: continuous coordinates: " + JSON.stringify(positions));
+            assert.ok(positions.length > 40, "amount of updates > 40: " + positions.length + " (this might not be an error on slow devices)");
+            
+            done2();
 
-    var start = new Date();
-    b2.execute(l2, "gliding2");
+            startTest3();
+        };
 
-    //pause, resume, stop
-    var spriteMock2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    spriteMock2._positionX = -10;
-    spriteMock2._positionY = -30;
+        var start = new Date();
+        b2.execute(new SmartJs.Event.EventListener(asyncHandler2, this), "gliding2");
+    }
 
-    var b3 = new PocketCode.Model.GlideToBrick(device, spriteMock2, { x: x, y: y, duration: duration });
+    function startTest3() {
+        //pause, resume, stop
+        var spriteMock2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+        spriteMock2._positionX = -10;
+        spriteMock2._positionY = -30;
 
-    var asyncHandler3 = function (e) {
-        //handler not called because the animation is stopped
-        assert.ok(false, "stop was not called correctly");
-        done3();
-    };
-    var l3 = new SmartJs.Event.EventListener(asyncHandler3, this);
+        var b3 = new PocketCode.Model.GlideToBrick(device, spriteMock2, { x: x, y: y, duration: duration });
 
+        var asyncHandler3 = function (e) {
+            //handler not called because the animation is stopped
+            assert.ok(false, "stop was not called correctly");
+            done3();
+        };
 
-    var x, y;
+        var sx, sy;
+        var test_pause = function () {
+            b3.pause();
+            assert.ok(spriteMock2._positionX > -10, "pause: x position test");
+            assert.ok(spriteMock2._positionY > -30, "pause: y position test");
 
-    var test_pause = function () {
-        b3.pause();
-        assert.ok(spriteMock2._positionX > -10, "pause: x position test");
-        assert.ok(spriteMock2._positionY > -30, "pause: y position test");
+            sx = spriteMock2._positionX;
+            sy = spriteMock2._positionY;
+            window.setTimeout(function () { test_resume(); }, 200);
+        };
 
-        x = spriteMock2._positionX;
-        y = spriteMock2._positionY;
-        window.setTimeout(function () { test_resume(); }, 200);
-    };
+        var test_resume = function () {
+            assert.equal(sx, spriteMock2._positionX, "resume: x not changed during paused state");
+            assert.equal(sy, spriteMock2._positionY, "resume: y not changed during paused state");
+            b3.resume();
 
-    var test_resume = function () {
-        assert.equal(x, spriteMock2._positionX, "resume: x not changed during paused state");
-        assert.equal(y, spriteMock2._positionY, "resume: y not changed during paused state");
-        b3.resume();
+            window.setTimeout(function () { test_stop(); }, 200);
+        };
 
-        window.setTimeout(function () { test_stop(); }, 200);
-    };
+        var test_stop = function () {
+            b3.stop();
+            assert.ok(spriteMock2._positionX > sx, "stop: x position test");
+            assert.ok(spriteMock2._positionY > sy, "stop: y position test");
 
-    var test_stop = function () {
-        b3.stop();
-        assert.ok(spriteMock2._positionX > x, "stop: x position test");
-        assert.ok(spriteMock2._positionY > y, "stop: y position test");
+            done3();
+            b3.resume();  //should not work on stoped brick
+        };
 
-        done3();
-        b3.resume();  //should not work on stoped brick
-    };
-
-    b3.execute(l3, "gliding3");
-    window.setTimeout(function () { test_pause(); }, 200);
+        b3.execute(new SmartJs.Event.EventListener(asyncHandler3, this), "gliding3");
+        window.setTimeout(function () { test_pause(); }, 200);
+    }
 
 });
 
@@ -648,13 +652,13 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Model.SetPhysicsObjectTypeBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "SetPhysicsObjectTypeBrick", "objClassName check");
 
-    assert.equal(b._physicsType, PocketCode.MovementStyle.NONE, "default style: no bouncing: not defined");
+    assert.equal(b._physicsType, PocketCode.PhysicsType.NONE, "default style: no bouncing: not defined");
     b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "FIXED" });
-    assert.equal(b._physicsType, PocketCode.MovementStyle.FIXED, "style: fixed");
+    assert.equal(b._physicsType, PocketCode.PhysicsType.FIXED, "style: fixed");
     b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "DYNAMIC" });
-    assert.equal(b._physicsType, PocketCode.MovementStyle.DYNAMIC, "style: dynamic");
+    assert.equal(b._physicsType, PocketCode.PhysicsType.DYNAMIC, "style: dynamic");
     b = new PocketCode.Model.SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, { physicsType: "non-existent type" });
-    assert.equal(b._physicsType, PocketCode.MovementStyle.NONE, "default style: no bouncing: non-existent type");
+    assert.equal(b._physicsType, PocketCode.PhysicsType.NONE, "default style: no bouncing: non-existent type");
 
     //execute
     var handler = function (e) {
@@ -793,7 +797,7 @@ QUnit.test("SetMassBrick", function (assert) {
     var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });    //PhysicsSprite
     var mass = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetMassBrick(device, sprite, { value: mass });

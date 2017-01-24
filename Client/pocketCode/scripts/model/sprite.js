@@ -17,7 +17,7 @@ PocketCode.RotationStyle = {
     ALL_AROUND: 'all around',
 };
 
-PocketCode.MovementStyle = {
+PocketCode.PhysicsType = {
     NONE: 'no bouncing',
     FIXED: 'others bounce off it',
     DYNAMIC: 'bouncing with gravity'
@@ -68,6 +68,9 @@ PocketCode.Model.Sprite = (function () {
         this._penSize = 4;
         this._penColor = { r: 0, g: 0, b: 255 };
 
+        //background boolean
+        this._isBackground = undefined;
+
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
 
@@ -114,6 +117,7 @@ PocketCode.Model.Sprite = (function () {
                     penColor: this._penColor,
                     penX: this._positionX,
                     penY: this._positionY,
+                    isBackground: this._isBackground,
                 });
             },
         },
@@ -247,6 +251,11 @@ PocketCode.Model.Sprite = (function () {
                 this._triggerOnChange({ penColor: this._penColor });
             },
         },
+        isBackground: {
+            get: function () {
+                return this._isBackground;
+            },
+        },
 
         //projectTimerValue: {    //used in formula (gameEngine not accessible)
         //    get: function() {
@@ -261,8 +270,8 @@ PocketCode.Model.Sprite = (function () {
                 var script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
-                    //if (!(script instanceof PocketCode.Model.SingleInstanceScriptBlock))                               //this change breaks our tests: //TODO: 
-                    //    throw new Error('invalid script block: every brick has to be inherited from SingleInstanceScriptBlock');
+                    //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
+                    //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
                     if (script.onExecuted)  //supported by all (root container) scripts
                         script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
                 }
@@ -433,7 +442,7 @@ PocketCode.Model.Sprite = (function () {
             if (isNaN(x) || isNaN(y))
                 throw new Error('invalid argument: position');
 
-            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+            if (this._animationCancelCallback && this._animationCancelCallback != animationCancelCallback)  //cancel pending updates caused by animations
                 this._animationCancelCallback();
             if (animationCancelCallback) {   //used to cancel animations
                 this._animationCancelCallback = animationCancelCallback;
@@ -534,7 +543,7 @@ PocketCode.Model.Sprite = (function () {
          * @param {number} steps
          * @returns {boolean}
          */
-        move: function (steps) {
+        move: function (steps, velocity) {
             if (!steps || isNaN(steps))
                 return false;
 
@@ -542,7 +551,7 @@ PocketCode.Model.Sprite = (function () {
             var offsetX = Math.round(Math.cos(rad) * steps),    //make sure the value is an int
                 offsetY = Math.round(Math.sin(rad) * steps);
 
-            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, velocity);
         },
         //motion:direction
         /**
@@ -1248,10 +1257,11 @@ PocketCode.Model.Sprite = (function () {
         },
 
         showBubble: function (type, text) {
-
+            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
             return this._triggerOnChange({ bubble: { type: type, text: text, visible: true } });
         },
         hideBubble: function (type) {
+            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
             return this._triggerOnChange({ bubble: { type: type, visible: false } });
         },
 
@@ -1274,9 +1284,9 @@ PocketCode.Model.Sprite = (function () {
             PocketCode.UserVariableHost.prototype.dispose.call(this);
         },
 
-        clone: function (device, soundManager, minLoopCycleTime, broadcastMgr) {
+        clone: function (device, soundManager, broadcastMgr) {
             if (!this._spriteFactory)
-                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager, undefined, minLoopCycleTime);
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
 
             var definition = {
                 _positionX: this._positionX,
@@ -1377,6 +1387,9 @@ PocketCode.Model.merge({
         function BackgroundSprite(gameEngine, scene, propObject) {
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
+            //set background flag
+            this._isBackground = true;
+
             //this._cameraTransparency = 0.5; //default
             this._onLookChange = new SmartJs.Event.Event(this); //TODO: implementation
         }
@@ -1426,7 +1439,7 @@ PocketCode.Model.merge({
 
             this._mass = 1.0;
             this._density = 1.0;
-            this._movementStyle = PocketCode.MovementStyle.NONE;
+            this._physicsType = PocketCode.PhysicsType.NONE;
             this._velocityX = 0;
             this._velocityY = 0;
             this._friction = 0.2;
@@ -1456,9 +1469,9 @@ PocketCode.Model.merge({
                     this._bounceFactor = value;
                 }
             },
-            movementStyle: {
+            physicsType: {
                 set: function (value) {
-                    this._movementStyle = value;
+                    this._physicsType = value;
                     //todo
                 }
             }

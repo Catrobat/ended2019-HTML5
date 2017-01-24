@@ -118,11 +118,10 @@ PocketCode.Web = {
                 };
             },
             _addDomListener: function (target, eventName, eventHandler) {
-                var _self = this;
                 var handler = function (e) {
                     e.stopPropagation();
-                    return eventHandler.call(_self, e);
-                };
+                    return eventHandler.call(this, e);
+                }.bind(this);
                 if (target.addEventListener)
                     target.addEventListener(eventName, handler, false);
                 //else
@@ -197,14 +196,13 @@ PocketCode.Web = {
                 }
             },
             _fullscreenchangeHandler: function (e) {
-                var _self = this;
                 window.setTimeout(function () {  //needed to detect fullscreen correctly in IE
-                    var fs = _self.isJsFullscreen.bind(_self);
+                    var fs = this.isJsFullscreen;
                     if (!fs())
-                        _self.lastExitDate = new Date();
+                        this.lastExitDate = new Date();
 
-                    _self.onFullscreenChange.call(_self, fs());
-                }, 10);
+                    this.onFullscreenChange(fs());
+                }.bind(this), 10);
             },
             _keyHandler: function (e) {
                 e = e || window.event;
@@ -368,11 +366,10 @@ PocketCode.Web = {
 
         WebOverlay.prototype = {
             _addDomListener: function (target, eventName, eventHandler) {
-                var _self = this;
                 var handler = function (e) {
                     e.stopPropagation();
-                    return eventHandler.call(_self, e);
-                };
+                    return eventHandler.call(this, e);
+                }.bind(this);
                 if (target.addEventListener)
                     target.addEventListener(eventName, handler, false);
                 //else
@@ -734,9 +731,8 @@ PocketCode.Web = {
             _requestFile: function (root, file, successHandler, errorHandler) {
                 //check for exising tag: prevent duplicated files due to simultanous loaders
                 var href = root + file.url;
-                var _self = this;
                 if (document.getElementById(href)) {
-                    setTimeout(successHandler.bind(this), 20);
+                    setTimeout(successHandler.bind(this), 10);
                     return;
                 }
 
@@ -752,9 +748,9 @@ PocketCode.Web = {
                             if (!loaded && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
                                 loaded = true;
                                 oScript.onload = oScript.onreadystatechange = null;
-                                setTimeout(successHandler.bind(_self), 20);//();
+                                setTimeout(successHandler.bind(this), 10);//();
                             }
-                        };
+                        }.bind(this);
                         oHead.appendChild(oScript);
                         //oHead.insertBefore(oScript, oHead.firstChild);    //alternative
                         oScript.id = oScript.src = href;
@@ -769,8 +765,8 @@ PocketCode.Web = {
                         var oCssSim = new Image();
                         oCssSim.onerror = function () {
                             oCss.href = href;
-                            setTimeout(successHandler.bind(_self), 20);
-                        };
+                            setTimeout(successHandler.bind(this), 10);
+                        }.bind(this);
                         oCssSim.src = href;
                         break;
                         //case 'img':
@@ -821,11 +817,10 @@ PocketCode.Web = {
 
         PlayerInterface.prototype = {
             _addDomListener: function (target, eventName, eventHandler) {
-                var _self = this;
                 var handler = function (e) {
                     e.stopPropagation();
-                    return eventHandler.call(_self, e);
-                };
+                    return eventHandler.call(this, e);
+                }.bind(this);
                 if (target.addEventListener)
                     target.addEventListener(eventName, handler, false);
                 //else
@@ -917,7 +912,7 @@ PocketCode.Web = {
                 document.body.appendChild(this._splashScreen._dom);
                 this._splashScreen.show();  //init size
                 this._exitButton = new PocketCode.Web.ExitButton();
-                var _self = this;
+
                 this._exitButton.dom.addEventListener('click', this._closeHandler.bind(this), false);
                 this._exitButton.dom.addEventListener('touchend', this._closeHandler.bind(this), false);
 

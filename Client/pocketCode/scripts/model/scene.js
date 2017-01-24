@@ -424,16 +424,36 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         setSpritePosition: function (spriteId, type, destinationSpriteId) { //called by: GoToBrick
+            if (!spriteId)
+                return false;
+            var sprite = this.getSpriteById(spriteId);
+            if (!sprite)
+                return false;
+
             switch (type) {
                 case PocketCode.Model.GoToType.POINTER:
-                    //TODO
+                    var pos = this._device.getLatestActiveTouchPosition();
+                    if (!pos.x || !pos.y)
+                        return false;
+
+                    return sprite.setPosition(pos.x, pos.y);
                     break;
                 case PocketCode.Model.GoToType.RANDOM:
-                    //TODO
+                    var x = Math.floor((Math.random() * this._originalScreenWidth * 2) + 1 - this._originalScreenWidth),
+                        y = Math.floor((Math.random() * this._originalScreenHeight * 2) + 1 - this._originalScreenHeight);
+                    return sprite.setPosition(x, y);
                     break;
                 case PocketCode.Model.GoToType.SPRITE:
-                    //TODO: destinationSpriteId is used here to get the coords
+                    if (!destinationSpriteId || spriteId == destinationSpriteId)
+                        return false;
+                    var destSprite = this.getSpriteById(destinationSpriteId);
+                    if (!destSprite)
+                        return false;
+
+                    return sprite.setPosition(destSprite.positionX, destSprite.positionY);
                     break;
+                default:
+                    return false;
             }
         },
 
@@ -442,7 +462,7 @@ PocketCode.Model.Scene = (function () {
         },
 
         cloneSprite: function (id) {
-            if (this._background && this._background.id == id)
+            if (this._background && this._background.id == id)  //cloning background not allowed
                 return false;
 
             var sprite = this.getSpriteById(id),

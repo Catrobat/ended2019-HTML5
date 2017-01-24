@@ -32,51 +32,55 @@ PocketCode.Model.merge({
         function PlaySoundAndWaitBrick(device, sprite, soundManager, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
-            //this._soundManager = soundManager;
-            //this._soundId = propObject.resourceId;
+            this._soundManager = soundManager;
+            this._soundId = propObject.resourceId;
         }
 
         PlaySoundAndWaitBrick.prototype.merge({
-            _execute: function (callId) {
-                //if (this._soundId)  //can be null
-                //    this._soundManager.startSound(this._soundId);
-                this._return(callId);
+            _execute: function (id, scope) {
+                if (!this._soundId) {  //can be null
+                    this._return(id);
+                    return;
+                }
+                var po = this._pendingOps[id];
+                if (!po)  //stopped
+                    return;
+
+                var instanceId = this._soundManager.startSound(this._soundId, this._return.bind(this, id, false));
+                if (instanceId === false)
+                    this._return(id);
+                else
+                    po.instanceId = instanceId;
             },
             pause: function () {
-                //this._paused = true;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.timer)
-                //        po.timer.pause();
-                //    po.paused = true;
-                //}
+                this._paused = true;
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    po = pos[p];
+                    if (po.instanceId)
+                        this._soundManager.pauseSound(po.instanceId);
+                    //po.paused = true;
+                }
             },
             resume: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    po.paused = false;
-                //    if (po.timer)
-                //        po.timer.resume();
-                //}
+                this._paused = false;
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    po = pos[p];
+                    //po.paused = false;
+                    if (po.instanceId)
+                        this._soundManager.resumeSound(po.instanceId);
+                }
             },
             stop: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.timer)
-                //        po.timer.stop();
-                //}
-                //this._pendingOps = {};
+                this._paused = false;
+                var po, pos = this._pendingOps;
+                for (var p in pos) {
+                    po = pos[p];
+                    if (po.instanceId)
+                        this._soundManager.stopSound(po.instanceId);
+                }
+                PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
             },
         });
 
@@ -110,10 +114,10 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
-        SetVolumeBrick.prototype._execute = function () {
-            var val = this._percentage.calculate();
+        SetVolumeBrick.prototype._execute = function (scope) {
+            var val = this._percentage.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else {
                 this._soundManager.volume = val;
                 this._return();
@@ -133,12 +137,12 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeVolumeBrick.prototype._execute = function () {
-            var val = this._value.calculate();
+        ChangeVolumeBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else {
-                this._soundManager.volume += val;   //changeVolume(this._value.calculate());
+                this._soundManager.volume += val;   //changeVolume(this._value.calculate(scope));
                 this._return();
             }
         };
@@ -168,12 +172,12 @@ PocketCode.Model.merge({
             }
         }
 
-        SpeakBrick.prototype._execute = function () {
+        SpeakBrick.prototype._execute = function (scope) {
             if (this._soundId) {
                 this._soundManager.startSound(this._soundId);
             }
             else {
-                var text = this._text.calculate().replace(/\n,\r/g, '');
+                var text = this._text.calculate(scope).replace(/\n,\r/g, '');
                 if (text !== '') {
                     //we use a request object here to generate an url
                     var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
@@ -185,62 +189,91 @@ PocketCode.Model.merge({
 
         return SpeakBrick;
     })(),
-
-    SpeakAndWaitBrick: (function () {
-        SpeakAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function SpeakAndWaitBrick(device, sprite, soundManager, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
-
-            //this._soundManager = soundManager;
-            //this._soundId = propObject.resourceId;
-        }
-
-        SpeakAndWaitBrick.prototype.merge({
-            _execute: function (callId) {
-                //if (this._soundId)  //can be null
-                //    this._soundManager.startSound(this._soundId);
-                this._return(callId);
-            },
-            pause: function () {
-                //this._paused = true;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.timer)
-                //        po.timer.pause();
-                //    po.paused = true;
-                //}
-            },
-            resume: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    po.paused = false;
-                //    if (po.timer)
-                //        po.timer.resume();
-                //}
-            },
-            stop: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.timer)
-                //        po.timer.stop();
-                //}
-                //this._pendingOps = {};
-            },
-        });
-
-        return SpeakAndWaitBrick;
-    })(),
-
 });
+
+PocketCode.Model.SpeakAndWaitBrick = (function () {
+    SpeakAndWaitBrick.extends(PocketCode.Model.PlaySoundAndWaitBrick, false);
+
+    function SpeakAndWaitBrick(device, sprite, soundManager, propObject) {
+        PocketCode.Model.PlaySoundAndWaitBrick.call(this, device, sprite, soundManager, propObject);
+
+        //this._soundManager = soundManager;
+        this._text = new PocketCode.Formula(device, sprite, propObject.text);
+
+        if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
+            this._soundId = SmartJs.getNewId();
+            var text = this._text.calculate().replace(/\n,\r/g, '');
+            if (text == '') {
+                this._soundId = undefined;
+                return;
+            }
+            //caching
+            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+            this._soundManager.loadSound(request.url, this._soundId, 'mp3');
+        }
+    }
+
+    SpeakAndWaitBrick.prototype.merge({
+        _onLoadHandler: function (id, instanceId) {
+            var po = this._pendingOps[id];
+            if (!po)  //stopped
+                return;
+            po.instanceId = instanceId;
+        },
+        _execute: function (id, scope) {
+            var po = this._pendingOps[id];
+            if (!po)  //stopped
+                return;
+
+            var instanceId = false;
+            if (this._soundId) {
+                instanceId = this._soundManager.startSound(this._soundId, this._return.bind(this, id, false));
+                if (instanceId === false)
+                    this._return(id);
+                else
+                    po.instanceId = instanceId;
+            }
+            else {
+                var text = this._text.calculate(scope).replace(/\n,\r/g, '');
+                if (text !== '') {
+                    //we use a request object here to generate an url
+                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+                    this._soundManager.startSoundFromUrl(request.url, this._onLoadHandler.bind(this, id), this._return.bind(this, id, false));
+                }
+            }
+        },
+        //pause: function () {
+        //    this._paused = true;
+        //    var po, pos = this._pendingOps;
+        //    for (var p in pos) {
+        //        po = pos[p];
+        //        if (po.instanceId)
+        //            this._soundManager.pauseSound(po.instanceId);
+        //        //po.paused = true;
+        //    }
+        //},
+        //resume: function () {
+        //    this._paused = false;
+        //    var po, pos = this._pendingOps;
+        //    for (var p in pos) {
+        //        po = pos[p];
+        //        //po.paused = false;
+        //        if (po.instanceId)
+        //            this._soundManager.resumeSound(po.instanceId);
+        //    }
+        //},
+        //stop: function () {
+        //    this._paused = false;
+        //    var po, pos = this._pendingOps;
+        //    for (var p in pos) {
+        //        po = pos[p];
+        //        if (po.instanceId)
+        //            this._soundManager.stopSound(po.instanceId);
+        //    }
+        //    PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
+        //},
+    });
+
+    return SpeakAndWaitBrick;
+})();
+

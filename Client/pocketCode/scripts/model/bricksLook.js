@@ -16,8 +16,8 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        SetGraphicEffectBrick.prototype._execute = function () {
-            var val = this._value.calculate();
+        SetGraphicEffectBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else
@@ -37,8 +37,8 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeGraphicEffectBrick.prototype._execute = function () {
-            var val = this._value.calculate();
+        ChangeGraphicEffectBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else
@@ -109,8 +109,8 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
-        SetSizeBrick.prototype._execute = function () {
-            var val = this._percentage.calculate();
+        SetSizeBrick.prototype._execute = function (scope) {
+            var val = this._percentage.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else
@@ -129,8 +129,8 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeSizeBrick.prototype._execute = function () {
-            var val = this._value.calculate();
+        ChangeSizeBrick.prototype._execute = function (scope) {
+            var val = this._value.calculate(scope);
             if (isNaN(val))
                 this._return(false);
             else
@@ -172,7 +172,6 @@ PocketCode.Model.merge({
         AskBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AskBrick(device, sprite, scene, propObject) {
-            // TODO GameEngine wrong (and missing!) !
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
@@ -189,8 +188,8 @@ PocketCode.Model.merge({
                 //this._var.value = this._value.calculate();
                 this._return();
             },
-            _execute: function () {
-                var question = this._question.calculate();
+            _execute: function (scope) {
+                var question = this._question.calculate(scope);
                 this._scene.pauseAndShowAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
 
                 //this._return();   //TODO: threaded brick?
@@ -213,8 +212,8 @@ PocketCode.Model.merge({
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
 
-        SayBrick.prototype._execute = function () {
-            var text = this._text.calculate();
+        SayBrick.prototype._execute = function (scope) {
+            var text = this._text.calculate(scope);
 
             if (text !== '')
                 this._return(this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text));
@@ -241,12 +240,12 @@ PocketCode.Model.merge({
                 this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
             },
             /* override */
-            _execute: function (callId) {
-                var text = this._text.calculate();
-                if (text !== '' && !isNaN(this._duration.calculate()))
+            _execute: function (id, scope) {
+                var text = this._text.calculate(scope);
+                if (text !== '' && !isNaN(this._duration.calculate(scope)))
                     this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text);
 
-                PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
+                PocketCode.Model.WaitBrick.prototype._execute.call(this, id, scope); //call super
             },
         });
 
@@ -262,8 +261,8 @@ PocketCode.Model.merge({
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
 
-        ThinkBrick.prototype._execute = function () {
-            var text = this._text.calculate();
+        ThinkBrick.prototype._execute = function (scope) {
+            var text = this._text.calculate(scope);
 
             if (text !== '')
                 this._return(this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text));
@@ -290,13 +289,13 @@ PocketCode.Model.merge({
                 this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
             },
             /* override */
-            _execute: function (callId) {
-                var text = this._text.calculate();
+            _execute: function (id, scope) {
+                var text = this._text.calculate(scope);
 
-                if (text !== '' && !isNaN(this._duration.calculate()))
+                if (text !== '' && !isNaN(this._duration.calculate(scope)))
                     this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text);
 
-                PocketCode.Model.WaitBrick.prototype._execute.call(this, callId); //call super
+                PocketCode.Model.WaitBrick.prototype._execute.call(this, id); //call super
             },
         });
 
@@ -506,8 +505,8 @@ PocketCode.Model.merge({
     //        this._value = new PocketCode.Formula(device, sprite, propObject.value);
     //    }
 
-    //    SetCameraTransparencyBrick.prototype._execute = function () {
-    //        var val = this._value.calculate();
+    //    SetCameraTransparencyBrick.prototype._execute = function (scope) {
+    //        var val = this._value.calculate(scope);
     //        if (isNaN(val))
     //            this._return(false);
     //        else
