@@ -55,8 +55,9 @@ PocketCode.Ui.Canvas = (function () {
         this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
         // TODO think about order of elements!
-        this._dom.appendChild(this._cameraCanvasEl);
         this._dom.appendChild(this._backgroundCanvasEl);
+        this._dom.appendChild(this._cameraCanvasEl);
+
         this._dom.appendChild(this._penStampCanvasEl);
         this._dom.appendChild(this._spritesCanvasEl);
         this._dom.appendChild(this._bubblesCanvasEl);
@@ -219,7 +220,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         initScene: function (id, screenSize) {
             // DONETODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
-
+            console.log(" meraba iz initScene");
             if (this._penStampCache[id]) {
                 this._currentSceneCache = this._penStampCache[id];
                 return;
@@ -401,9 +402,9 @@ PocketCode.Ui.Canvas = (function () {
             return hasTransparentAlpha;
         },
         render: function () {
+            console.log("meraba iz kanvasa");
             var background_ctx = this._backgroundCanvasCtx;
             var ctx = this._spritesCanvasCtx;
-            this._renderCamera();
             background_ctx.clearRect(0, 0, this.width, this.height);
             background_ctx.save();
             background_ctx.translate(this._translation.x, this._translation.y);
@@ -415,6 +416,7 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(this._scalingX, this._scalingY);
 
             var ro = this._renderingSprite;
+            console.log("ro:", ro);
 
             // draw background - background is always first element in ro-array
             if (ro.length > 0) {
