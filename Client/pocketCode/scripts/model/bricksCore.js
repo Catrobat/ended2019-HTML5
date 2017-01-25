@@ -485,21 +485,21 @@ PocketCode.Model.merge({
                 //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
                 //}, this), SmartJs.getNewId());
             },
-            pause: function () {
-                if (this._executionState == PocketCode.ExecutionState.PAUSED)
-                    return;
+            //pause: function () {
+            //    //if (this._executionState == PocketCode.ExecutionState.PAUSED)
+            //    //    return;
 
-                PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
-                this._executionState = PocketCode.ExecutionState.PAUSED;
-                //^^ while pausing the bricks we do not updae the current execution state
-            },
-            resume: function () {
-                if (this._executionState !== PocketCode.ExecutionState.PAUSED)
-                    return;
+            //    PocketCode.Model.SingleContainerBrick.prototype.pause.call(this);
+            //    //this._executionState = PocketCode.ExecutionState.PAUSED;
+            //    //^^ while pausing the bricks we do not updae the current execution state
+            //},
+            //resume: function () {
+            //    //if (this._executionState !== PocketCode.ExecutionState.PAUSED)
+            //    //    return;
 
-                this._executionState = PocketCode.ExecutionState.RUNNING;
-                PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
-            },
+            //    //this._executionState = PocketCode.ExecutionState.RUNNING;
+            //    PocketCode.Model.SingleContainerBrick.prototype.resume.call(this);
+            //},
             stop: function () {
                 PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
                 this._executionState = PocketCode.ExecutionState.STOPPED;

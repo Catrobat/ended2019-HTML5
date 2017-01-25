@@ -237,10 +237,6 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
-                        //test only:
-                    //case 'ForeverBrick':
-                    //    brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                    //    break;
                     case 'MoveNStepsBrick':
                     case 'WaitUntilBrick':
                     case 'ForeverBrick':
