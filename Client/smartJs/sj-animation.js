@@ -199,8 +199,8 @@ SmartJs.Animation.Animation2D = (function () {
         /* override */
         _updateValue: function (factor) {
             var value = {
-                x: Math.round(this._start.x + factor.x * this._diff.x),  //makes sure we only trigger updates if pixels change
-                y: Math.round(this._start.y + factor.y * this._diff.y),
+                x: this._start.x + factor.x * this._diff.x,  //makes sure we only trigger updates if pixels change
+                y: this._start.y + factor.y * this._diff.y,
             };
 
             if (this._current.x === value.x && this._current.y === value.y)

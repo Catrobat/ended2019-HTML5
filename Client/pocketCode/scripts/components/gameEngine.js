@@ -6,7 +6,7 @@
 /// <reference path="imageStore.js" />
 /// <reference path="../model/userVariable.js" />
 /// <reference path="../model/scene.js" />
-/// <reference path="broadcastManager.js" />
+/// <reference path="publishSubscribe.js" />
 /// <reference path="collisionManager.js" />
 /// <reference path="soundManager.js" />
 /// <reference path="stopwatch.js" />
@@ -63,7 +63,7 @@ PocketCode.GameEngine = (function () {
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
         //this._onScenesInitialized = new SmartJs.Event.Event(this);
-        this._onSceneChanged = new SmartJs.Event.Event(this);
+        this._onSceneChange = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
 
@@ -85,8 +85,8 @@ PocketCode.GameEngine = (function () {
         //onScenesInitialized: {
         //    get: function () { return this._onScenesInitialized; },
         //},
-        onSceneChanged: {
-            get: function () { return this._onSceneChanged; },
+        onSceneChange: {
+            get: function () { return this._onSceneChange; },
         },
         onLoad: {
             get: function () { return this._onLoad; },
@@ -135,12 +135,6 @@ PocketCode.GameEngine = (function () {
                     return;
 
                 this.__currentScene = scene;
-                this._onSceneChanged.dispatchEvent({
-                    id: scene.id,
-                    renderingSprites: scene.renderingSprites,
-                    renderingTexts: this.renderingVariables.concat(scene.renderingVariables),
-                    screenSize: scene.screenSize,
-                });
             },
         },
         //project execution
@@ -281,7 +275,7 @@ PocketCode.GameEngine = (function () {
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
-                this._scenes[scene.id] = scene;
+                this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
                 scene.load(jsonScenes[i]);
@@ -407,6 +401,18 @@ PocketCode.GameEngine = (function () {
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
+        //scene
+        _dispatchSceneChange: function(reinit){
+            var scene = this.__currentScene;
+            this._onSceneChange.dispatchEvent({
+                id: scene.id,
+                renderingSprites: scene.renderingSprites,
+                renderingTexts: this.renderingVariables.concat(scene.renderingVariables),
+                screenSize: scene.screenSize,
+                reinit: reinit,
+            });
+        },
+        //device
         _deviceOnCameraChangeHandler: function (e) {
             //console.log("CAMERA CHANGED HANDLER");
             this._onCameraUsageChange.dispatchEvent(e);
@@ -418,6 +424,7 @@ PocketCode.GameEngine = (function () {
         },
         //project interaction
         runProject: function (reinitSprites) {
+            reinitSprites = reinitSprites || true;  //default = true
             var currentScene = this._currentScene;
             if (!currentScene || currentScene.executionState === PocketCode.ExecutionState.RUNNING)
                 return;
@@ -433,20 +440,23 @@ PocketCode.GameEngine = (function () {
             //    reinitSprites = true;
             //if reinit: all sprites properties have to be set to their default values: default true
             currentScene = this._currentScene = this._startScene;
-            if (reinitSprites != false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
+            if (reinitSprites !== false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 this._resetVariables();  //global
+                for (var id in this._scenes)
+                    this._scenes[id].reinitializeSprites();
                 this._onBeforeProgramStart.dispatchEvent({ reinit: true });
             }
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
-            //console.log("scene start: " );
+            this._dispatchSceneChange();
             currentScene.start();
         },
         restartProject: function (reinitSprites) {
+            reinitSprites = reinitSprites || true;  //default = true
             this.stopProject();
             //this.projectTimer.stop();
-            window.setTimeout(this.runProject.bind(this, reinitSprites), 200);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
+            window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
             if (this._currentScene)
@@ -505,15 +515,14 @@ PocketCode.GameEngine = (function () {
                 cs.pause();
 
             this._currentScene = scene;
+            if (scene.executionState == PocketCode.ExecutionState.RUNNING) {
+                scene.stop();
+                for (var id in this._scenes)
+                    this._scenes[id].reinitializeSprites();
+            }
+            this._dispatchSceneChange(true);
             scene.start();
             return true;
-            //else
-            //if (!scene || !cs)
-            //    return false;
-            //if (cs.id == sceneId && cs.executionState == PocketCode.ExecutionState.RUNNING)
-            //    return false;
-
-            //TODO: set to current scene + start
         },
         resumeOrStartScene: function (sceneId) {
             var scene = this.getSceneById(sceneId);
@@ -522,23 +531,18 @@ PocketCode.GameEngine = (function () {
                 cs.pause();
 
             this._currentScene = scene;
-            if (scene.executionState == PocketCode.ExecutionState.PAUSED)
+            if (scene.executionState == PocketCode.ExecutionState.PAUSED) {
+                this._dispatchSceneChange(false);
                 scene.resume();
-            else if (scene.executionState !== PocketCode.ExecutionState.RUNNING)
+            }
+            else if (scene.executionState !== PocketCode.ExecutionState.RUNNING) {
+                this._dispatchSceneChange(false);
                 scene.start();
+            }
             else
                 return false;
 
             return true;
-
-            //if (scene.executionState == PocketCode.ExecutionState.PAUSED)
-            //    scene.resume;
-
-
-            //    if (!this._currentScene || this._currentScene.id == sceneId)
-            //    return false;
-
-            //TODO:  set to current scene + start or resume depending on its execution state
         },
 
         /* override */
@@ -550,7 +554,7 @@ PocketCode.GameEngine = (function () {
 
             if (this._device) {
                 this._device.onSpaceKeyDown.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
-                this._device.OnCameraChange.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));
+                this._device.onCameraChange.removeEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));
             }
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));

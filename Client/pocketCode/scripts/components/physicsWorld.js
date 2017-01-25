@@ -27,17 +27,17 @@ PocketCode.PhysicsWorld = (function () {
 
     //methods
     PhysicsWorld.prototype.merge({
-        subscribe: function (spriteId, physicsEnabled){
+        subscribe: function (spriteId, physicsEnabled) {
             this._physicsSprites[spriteId] = physicsEnabled;
         },
         subscribeCollision: function (sprite1, sprite2, listener) {
-            if(!sprite1 || !sprite2 || !listener)
+            if (!sprite1 /*|| !sprite2 */ || !listener)   //TODO: if (!sprite2)   => 'any', does this mean any physics or any (all)
                 return;
 
-            if(this._registeredCollisions[sprite2] && this._registeredCollisions[sprite2][sprite1]){
+            if (this._registeredCollisions[sprite2] && this._registeredCollisions[sprite2][sprite1]) {
                 this._registeredCollisions[sprite2][sprite1].push(listener);
                 return;
-            } else if (this._registeredCollisions[sprite1] && this._registeredCollisions[sprite1][sprite2]){
+            } else if (this._registeredCollisions[sprite1] && this._registeredCollisions[sprite1][sprite2]) {
                 this._registeredCollisions[sprite1][sprite2].push(listener);
                 return;
             }
@@ -55,16 +55,16 @@ PocketCode.PhysicsWorld = (function () {
             }
         },
         _testCollisionWithAnyPhysicsSprite: function (spriteId) {
-            for (var physicsSprite in this._physicsSprites){
-                if (!this._physicsSprites.hasOwnProperty(physicsSprite))
+            for (var physicsSprite in this._physicsSprites) {
+                if (!this._physicsSprites.hasOwnProperty(physicsSprite))    //wrong??? TODO: string?
                     continue;
-                if (this._collisionManager.checkSpriteCollision(spriteId, physicsSprite)){
+                if (this._collisionManager.checkSpriteCollision(spriteId, physicsSprite)) {
                     this._handleDetectedCollision(this._registeredCollisions[spriteId]['any']);
                 }
             }
         },
         _checkPotentialCollisions: function () {
-            for (var spriteId1 in this._registeredCollisions){
+            for (var spriteId1 in this._registeredCollisions) {
                 if (!this._registeredCollisions.hasOwnProperty(spriteId1))
                     continue;
 
@@ -72,7 +72,7 @@ PocketCode.PhysicsWorld = (function () {
                     if (!this._registeredCollisions[spriteId1].hasOwnProperty(spriteId2))
                         continue;
 
-                    if (spriteId2 === 'any'){
+                    if (spriteId2 === 'any') {   //TODO
                         this._testCollisionWithAnyPhysicsSprite(spriteId1);
                     } else if (this._collisionManager.checkSpriteCollision(spriteId1, spriteId2)) {
                         this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);

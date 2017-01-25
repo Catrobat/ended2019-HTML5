@@ -2,7 +2,7 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../core.js" />
-/// <reference path="../components/broadcastManager.js" />
+/// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/gameEngine.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
@@ -17,7 +17,6 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-            this._paused = false;
         }
 
         WaitBrick.prototype.merge({
@@ -31,46 +30,36 @@ PocketCode.Model.merge({
                     return;
                 }
                 var po = this._pendingOps[id];
-                //po.paused = this._paused;
                 po.timer = new SmartJs.Components.Timer(Math.round(duration * 1000.0), new SmartJs.Event.EventListener(this._timerExpiredHandler, this), true, { callId: id });
                 if (this._paused)
                     po.timer.pause();
             },
             pause: function () {
-                this._paused = true;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
                     po = pos[p];
                     if (po.timer)
                         po.timer.pause();
-                    //po.paused = true;
                 }
+                PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
             },
             resume: function () {
-                this._paused = false;
-                var po;//, pos = this._pendingOps;
-                for (var id in this._pendingOps) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
-                    po = this._pendingOps[id];
-                    //po.paused = false;
+                var po, pos = this._pendingOps;
+                for (var id in pos) {
+                    po = pos[id];
                     if (po.timer)
                         po.timer.resume();
                 }
+                PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
             },
             stop: function () {
-                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
                     po = pos[p];
                     if (po.timer)
                         po.timer.stop();
                 }
-                this._pendingOps = {};
+                PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
             },
         });
 
@@ -410,10 +399,12 @@ PocketCode.Model.merge({
         StopScriptBrick.prototype._execute = function () {
             switch (this._type) {
                 case PocketCode.Model.StopScriptType.THIS:
-                    this._return(this._sprite.stopScript(this._scriptId));
+                    this._sprite.stopScript(this._scriptId);
+                    return; //no handler called
                     break;
                 case PocketCode.Model.StopScriptType.ALL:
-                    this._return(this._sprite.stopAllScripts());
+                    this._sprite.stopAllScripts();
+                    return; //no handler called
                     break;
                 case PocketCode.Model.StopScriptType.OTHER:
                     this._return(this._sprite.stopAllScripts(this._scriptId));

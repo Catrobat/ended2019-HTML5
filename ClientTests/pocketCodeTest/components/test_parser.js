@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/publishSubscribe.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/parser.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />

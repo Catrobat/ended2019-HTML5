@@ -4,7 +4,7 @@
 /// <reference path="../core.js" />
 /// <reference path="../components/userVariableHost.js" />
 /// <reference path="../components/imageStore.js" />
-/// <reference path="../components/broadcastManager.js" />
+/// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/collisionManager.js" />
 /// <reference path="../components/soundManager.js" />
 /// <reference path="sprite.js" />
@@ -41,8 +41,8 @@ PocketCode.Model.Scene = (function () {
 
         //events
         this._onStart = new SmartJs.Event.Event(this);
-        this._onExecuted = new SmartJs.Event.Event(this);
-        this._onBackgroundChange = new SmartJs.Event.Event(this);
+        //this._onExecuted = new SmartJs.Event.Event(this);
+        //this._onBackgroundChange = new SmartJs.Event.Event(this);
         this._onSpriteUiChange = gameEngine.onSpriteUiChange;   //mapping event to gameEngin
         this._onSpriteTappedAction = new SmartJs.Event.Event(this);
         this._onTouchStartAction = new SmartJs.Event.Event(this);
@@ -69,12 +69,12 @@ PocketCode.Model.Scene = (function () {
         onStart: {
             get: function () { return this._onStart; },
         },
-        onExecuted: {
-            get: function () { return this._onExecuted; },
-        },
-        onBackgroundChange: {
-            get: function () { return this._onBackgroundChange; },
-        },
+        //onExecuted: {
+        //    get: function () { return this._onExecuted; },
+        //},
+        //onBackgroundChange: {
+        //    get: function () { return this._onBackgroundChange; },
+        //},
         onSpriteUiChange: {
             get: function () { return this._onSpriteUiChange; },
         },
@@ -197,7 +197,7 @@ PocketCode.Model.Scene = (function () {
         //},
         _loadBackground: function (background) {
             this._background = this._spriteFactory.create(this, this._broadcastMgr, /*this._bricksLoaded,*/ background, true);
-            this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
+            //this._background.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
             //TODO: attach listener onLookChange
             this._collisionManager.background = this._background;
         },
@@ -207,7 +207,7 @@ PocketCode.Model.Scene = (function () {
             var sprite, i, l;
             for (i = 0, l = sprites.length; i < l; i++) {
                 sprite = this._spriteFactory.create(this, this._broadcastMgr, /*this._bricksLoaded,*/ sprites[i]);
-                sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
+                //sprite.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this)); //todo
                 this._sprites.push(sprite);
                 this._originalSpriteOrder.push(sprite);
             }
@@ -230,8 +230,8 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.RUNNING;
             //^^ we create them onProjectLoaded at the first start
             this._onStart.dispatchEvent();    //notifies the listerners (script bricks) to start executing
-            if (!this._background)
-                this._spriteOnExecutedHandler();    //make sure an empty program terminates
+            //if (!this._background)
+            //    this._spriteOnExecutedHandler();    //make sure an empty program terminates
             return true;
         },
         pause: function () {
@@ -280,7 +280,7 @@ PocketCode.Model.Scene = (function () {
         stop: function () {
             if (this._executionState === PocketCode.ExecutionState.STOPPED)
                 return;
-            this._broadcastMgr.stop();
+            //this._broadcastMgr.stop();
 
             //this._projectTimer.stop();
             if (this._background) {
@@ -296,27 +296,27 @@ PocketCode.Model.Scene = (function () {
         pauseAndShowAskDialog: function (question, callbackListener) {
             //TODO: 
         },
-        _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
-            window.setTimeout(function () {
-                if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
-                    return;
-                if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
-                    return; //still waiting for user interaction
+        //_spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
+        //    window.setTimeout(function () {
+        //        if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
+        //            return;
+        //        if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
+        //            return; //still waiting for user interaction
 
-                //if (this._soundManager.isPlaying)
-                //    return;
-                if (this._background && this._background.scriptsRunning)
-                    return;
-                var sprites = this._sprites;
-                for (var i = 0, l = sprites.length; i < l; i++) {
-                    if (sprites[i].scriptsRunning)
-                        return;
-                }
+        //        //if (this._soundManager.isPlaying)
+        //        //    return;
+        //        if (this._background && this._background.scriptsRunning)
+        //            return;
+        //        var sprites = this._sprites;
+        //        for (var i = 0, l = sprites.length; i < l; i++) {
+        //            if (sprites[i].scriptsRunning)
+        //                return;
+        //        }
 
-                this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
-            }.bind(this), 100);  //delay neede to allow other scripts to start
-        },
+        //        this._executionState = PocketCode.ExecutionState.STOPPED;
+        //        this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
+        //    }.call(this), 100);  //delay neede to allow other scripts to start
+        //},
         initializeSprites: function () {
             var bg = this._background,
                 sprites = this._sprites;
@@ -336,17 +336,10 @@ PocketCode.Model.Scene = (function () {
                 bg.init();
             }
 
-            this._sprites = this._originalSpriteOrder;  //reset sprite order
-            //this._collisionManager.sprites = this._originalSpriteOrder;
-
-            var sprites = this._sprites;//,
-            //sprite;
+            this._sprites = this._originalSpriteOrder;
+            var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].init();
-            //{
-            //    sprite = sprites[i];
-            //    sprite.init();
-            //}
         },
         handleUserAction: function (e) {
             switch (e.action) {
@@ -360,14 +353,14 @@ PocketCode.Model.Scene = (function () {
             }
         },
         getSpriteById: function (spriteId) {
+            if (this._background && this._background.id == spriteId)
+                return this._background;
+
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
                     return sprites[i];
             }
-
-            if (this._background && spriteId == this._background.id)
-                return this._background;
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
@@ -381,12 +374,17 @@ PocketCode.Model.Scene = (function () {
         setCameraTransparency: function (value) {
             return this._background.setCameraTransparency(value);
         },
-        setBackground: function (lookId) {
+        setBackground: function (lookId, waitCallback) {
+            if (!this._background)
+                return false;
 
-            var change = this._background.setLook(lookId);
-            if (change)
-                this._onBackgroundChange.dispatchEvent({ lookId: lookId });
-            return change;
+            return this._background.setLook(lookId, waitCallback);
+        },
+        subscribeToBackgroundChange: function (lookId, changeHandler) {
+            if (!this._background)
+                return;
+
+            this._background.subscribeOnLookChange(lookId, changeHandler);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
@@ -456,11 +454,12 @@ PocketCode.Model.Scene = (function () {
                     return false;
             }
         },
-
+        //pen
         clearPenStampBackground: function () {
-            return true;    //TODO
+            this._onSpriteUiChange.dispatchEvent({ properties: { clearBackground: true } });
+            return true;
         },
-
+        //clone
         cloneSprite: function (id) {
             if (this._background && this._background.id == id)  //cloning background not allowed
                 return false;

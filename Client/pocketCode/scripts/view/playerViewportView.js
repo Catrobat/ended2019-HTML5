@@ -108,6 +108,32 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._originalHeight = height;
             this._updateCanvasSize();
         },
+        //pen, stamp
+        initScene: function (id, screenSize, reinit) {
+            if (reinit)
+                this._canvas.clearCurrentPenStampCache();
+            this._canvas.initScene(id, screenSize);
+            this.render();
+        },
+        drawStamp: function (spriteId) {
+            this._canvas.drawStamp(spriteId);
+        },
+        movePen: function (spriteId, toX, toY) {
+            this._canvas.movePen(spriteId, toX, toY);
+        },
+        clearCurrentPenStampCache: function () {
+            this._canvas.clearCurrentPenStampCache();
+        },
+        clearPenStampCache: function() {
+            this._canvas.clearPenStampCache();
+        },
+        //camera
+        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params, ...
+            //console.log("camera stream in view:", cameraStream);
+            this._canvas.cameraStream = cameraStream;
+            this._canvas.cameraOn = cameraOn;
+        },
+        //axes
         showAxes: function () {
             if (this._axesVisible)
                 return;
@@ -118,30 +144,8 @@ PocketCode.Ui.PlayerViewportView = (function () {
             if (!this._axesVisible)
                 return;
             this._axesVisible = false;
-            this.clear();
-            this.render();
+            this._clearAxes();
         },
-        initScene: function (id, screenSize) {
-            this._canvas.initScene(id, screenSize);
-        },
-        drawStamp: function (spriteId) {
-            this._canvas.drawStamp(spriteId);
-        },
-        drawPen: function (spriteId, to_x, to_y) {
-            this._canvas.drawPen(spriteId, to_x, to_y);
-        },
-        clearPenStampCache: function () {
-            this._canvas.clearPenStampCache();
-        },
-
-        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params, ...
-            //console.log("camera stream in view:", cameraStream);
-            this._canvas.cameraStream = cameraStream;
-            this._canvas.cameraOn = cameraOn;
-
-
-        },
-
         _drawAxes: function () {
             if (!this._axesVisible)
                 return;
@@ -177,6 +181,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
             ctx.stroke();
             ctx.restore();
         },
+        _clearAxes: function () {
+            var ctx = this._canvas.contextTop;
+            ctx.clearRect(0, 0, this._canvas.width, this._canvas.heigt);
+        },
         getCanvasDataURL: function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
             return url;
@@ -196,9 +204,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             if (this._redrawRequired)
                 this.render();
         },
-        clear: function () {
-            this._canvas.clear();
-        },
+        //clear: function () {
+        //    this._canvas.clear();
+        //},
         dispose: function () {
             this.onResize.dispose();
             //override: to make sure a view is disposed by it's controller

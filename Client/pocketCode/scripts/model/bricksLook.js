@@ -412,9 +412,8 @@ PocketCode.Model.merge({
 
         function SetBackgroundBrick(device, sprite, scene, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._scene = scene;
 
-            //this._lookId = param.lookId;
+            this._scene = scene;
             this._lookId = propObject.lookId;
         }
 
@@ -431,14 +430,14 @@ PocketCode.Model.merge({
 
         function SetBackgroundAndWaitBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
+
             this._scene = scene;
-            //this._lookId = param.lookId;
             this._lookId = propObject.lookId;
         }
 
-        SetBackgroundAndWaitBrick.prototype._execute = function () {
-            /*if (this._lookId)  //can be null
-                this._return(this._scene.setBackground(this._lookId));*/
+        SetBackgroundAndWaitBrick.prototype._execute = function (id) {
+            if (this._lookId)  //can be null
+                this._return(this._scene.setBackground(this._lookId), this._return.bind(this, id));
         };
 
         return SetBackgroundAndWaitBrick;

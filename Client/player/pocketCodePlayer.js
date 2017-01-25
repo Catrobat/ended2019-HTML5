@@ -1087,7 +1087,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 
-		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
+		{ url: 'pocketCode/scripts/components/publishSubscribe.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/collisionManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/physicsWorld.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/deviceFeature.js', type: 'js' },

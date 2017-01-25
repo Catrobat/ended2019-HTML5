@@ -217,6 +217,7 @@ PocketCode.merge({
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
                     case 'AskBrick':
+                    case 'WhenBackgroundChangesToBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
@@ -236,6 +237,10 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
+                        //test only:
+                    //case 'ForeverBrick':
+                    //    brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                    //    break;
                     case 'MoveNStepsBrick':
                     case 'WaitUntilBrick':
                     case 'ForeverBrick':
@@ -251,10 +256,6 @@ PocketCode.merge({
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
-                        break;
-
-                    case 'WhenBackgroundChangesToBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onBackgroundChange);
                         break;
 
                     case 'StopScriptBrick':

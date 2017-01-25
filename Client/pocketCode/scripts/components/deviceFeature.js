@@ -410,7 +410,7 @@ PocketCode.merge({
         FaceDetection.extends(PocketCode.DeviceFeature, false);
 
         function FaceDetection(device) {
-            var supported = !!(window.Worker && (window.Blob || window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder));
+            var supported = false;  //currently disabled// !!(window.Worker && (window.Blob || window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder));
             PocketCode.DeviceFeature.call(this, 'lblDeviceFaceDetection', supported);
 
             if (!(device instanceof PocketCode.Device))

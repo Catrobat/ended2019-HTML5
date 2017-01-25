@@ -298,7 +298,6 @@ PocketCode.Model.merge({
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
             this._velocity = 0; //initial
-            this._paused = false;
         }
 
         GlideToBrick.prototype.merge({
@@ -355,7 +354,6 @@ PocketCode.Model.merge({
                     animation.pause();
             },
             pause: function () {
-                this._paused = true;
                 var po, pos = this._pendingOps;
                 for (var id in pos) {
                     //if (!pos.hasOwnProperty(p))
@@ -365,9 +363,9 @@ PocketCode.Model.merge({
                         po.animation.pause();
                     //po.paused = true;
                 }
+                PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
             },
             resume: function () {
-                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var id in pos) {
                     //if (!pos.hasOwnProperty(p))
@@ -379,9 +377,9 @@ PocketCode.Model.merge({
                             po.animation.resume();
                     //}
                 }
+                PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
             },
             stop: function () {
-                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var id in pos) {
                     //if (!pos.hasOwnProperty(p))

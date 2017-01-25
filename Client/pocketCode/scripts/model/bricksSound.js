@@ -53,7 +53,6 @@ PocketCode.Model.merge({
                     po.instanceId = instanceId;
             },
             pause: function () {
-                this._paused = true;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
                     po = pos[p];
@@ -61,9 +60,9 @@ PocketCode.Model.merge({
                         this._soundManager.pauseSound(po.instanceId);
                     //po.paused = true;
                 }
+                PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
             },
             resume: function () {
-                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
                     po = pos[p];
@@ -71,9 +70,9 @@ PocketCode.Model.merge({
                     if (po.instanceId)
                         this._soundManager.resumeSound(po.instanceId);
                 }
+                PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
             },
             stop: function () {
-                this._paused = false;
                 var po, pos = this._pendingOps;
                 for (var p in pos) {
                     po = pos[p];

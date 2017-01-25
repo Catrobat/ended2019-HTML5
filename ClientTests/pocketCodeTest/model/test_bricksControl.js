@@ -1,5 +1,5 @@
 /// <reference path="../../qunit/qunit-1.23.0.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/publishSubscribe.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />

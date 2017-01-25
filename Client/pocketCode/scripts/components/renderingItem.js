@@ -202,6 +202,10 @@ PocketCode.merge({
 
         //properties
         Object.defineProperties(RenderingSprite.prototype, {
+            isBackground: {
+                value: false,
+                writable: true,
+            },
             look: {
                 set: function (value) {
                     if (value && !(value instanceof HTMLCanvasElement))
