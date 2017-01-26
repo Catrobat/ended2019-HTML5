@@ -59,6 +59,11 @@ abstract class BaseView
     else  //default request: write to header
     {
       http_response_code($responseStatusCode);
+      if ($responseStatusCode != 200) {
+          header("Access-Control-Allow-Headers: origin, x-requested-with, content-type");
+          header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
+          header("Access-Control-Allow-Origin: *");
+      }
     }
 
     //write nested buffer to calculate length + set headers
