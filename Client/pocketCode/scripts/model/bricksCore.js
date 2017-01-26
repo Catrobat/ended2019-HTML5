@@ -446,7 +446,7 @@ PocketCode.Model.merge({
                 if (onExecutedListener && threadId) {
                     if (dispatchedAt && dispatchedAt <= this._stoppedAt)
                         return;
-                    this.execute(dispatchedAt, onExecutedListener, threadId);
+                    this.execute(onExecutedListener, threadId);
                 }
                 else {
                     this.executeEvent({ dispatchedAt: dispatchedAt });

@@ -70,10 +70,10 @@ PocketCode.BroadcastManager = (function () {
             }
 
             var po; //stop running tasks with same broadcast id
-            for (var id in this._pendingBW) {
-                po = this._pendingBW[id];
+            for (var id in this._pendingOps) {
+                po = this._pendingOps[id];
                 if (po.broadcastId == bcId) {
-                    delete this._pendingBW[id];
+                    delete this._pendingOps[id];
                     break;
                 }
             }
@@ -101,7 +101,7 @@ PocketCode.BroadcastManager = (function () {
                 //var subsCount = subs.length;
                 //if (subsCount > 0) {
                     var id = SmartJs.getNewId(),
-                        po = this._pendingBW[id] = { /*callId: callId,*/ broadcastId: bcId, count: 0, waitCallback: waitCallback, loopDelay: false };
+                        po = this._pendingOps[id] = { /*callId: callId,*/ broadcastId: bcId, count: 0, waitCallback: waitCallback, loopDelay: false };
                     for (var i = 0, l = subs.length; i < l; i++) {
                         po.count++;
                         handler = subs[i];
@@ -139,7 +139,7 @@ PocketCode.BroadcastManager = (function () {
             }
         },
         _scriptExecutedCallback: function (e) { //{ id: threadId, loopDelay: loopD }
-            var po = this._pendingBW[e.id];
+            var po = this._pendingOps[e.id];
             if (!po) //stopped
                 return;
 
@@ -150,7 +150,7 @@ PocketCode.BroadcastManager = (function () {
                 //var callId = po.callId;
                 //var waitCallback = po.waitCallback;
                 //var loopDelay = po.loopDelay || e.loopDelay;
-                delete this._pendingBW[threadId];
+                delete this._pendingOps[threadId];
                 //this._notifyPublisher(waitCallback, /*callId,*/ loopDelay);
                 po.waitCallback(po.loopDelay);
             }
@@ -164,7 +164,7 @@ PocketCode.BroadcastManager = (function () {
         //},
         //stop: function () {
         //    this._stopped = true;
-        //    this._pendingBW = {};
+        //    this._pendingOps = {};
         //},
     });
 
