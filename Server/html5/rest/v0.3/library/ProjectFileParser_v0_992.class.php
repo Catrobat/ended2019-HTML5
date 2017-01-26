@@ -397,11 +397,17 @@ class ProjectFileParser_v0_992
             }
             else
             {
+                if((string)$sprite["type"] == "GroupSprite") {
+                    continue;
+                }
                 array_push($this->currentScene->sprites, new SpriteDto($this->getNewId(), $this->getName($sprite)));
             }
         }
 
         //parse sprites
+        $spriteGroups = [];
+        $currentSpriteGroup = null;
+
         //1st entry = background
         $bg = true;
         $cppSaved = array_merge([], $this->cpp); //store path to reset after parsing
@@ -417,6 +423,10 @@ class ProjectFileParser_v0_992
             {
                 $this->currentScene->background = $this->parseSprite($sprite, $this->currentScene->background->id);
                 $bg = false;
+            }
+            else if ((string)$sprite["type"] == "GroupSprite") {
+                $currentSpriteGroup = new IdNameDto($this->getNewId(), $this->getName($sprite));
+                array_push($spriteGroups, $currentSpriteGroup);
             }
             else
             {
@@ -437,8 +447,11 @@ class ProjectFileParser_v0_992
 
                 //override existing object with completely parsed sprite
                 $this->currentScene->sprites[$idx] = $this->parseSprite($sprite, $id);
+                if (isset($currentSpriteGroup))
+                    $this->currentScene->sprites[$idx]->groupId = $currentSpriteGroup->id;
             }
         }
+        $this->currentScene->spriteGroups = $spriteGroups;
         $this->cpp = $cppSaved; //restore path
 
         array_pop($this->cpp);
