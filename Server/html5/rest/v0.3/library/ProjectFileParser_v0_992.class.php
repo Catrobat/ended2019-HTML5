@@ -144,7 +144,7 @@ class ProjectFileParser_v0_992
         {
 			//not defined yet: add to local scope
 			$id = $this->getNewId();
-			array_push($this->currentSprite->variables, new VariableDto($id, $name));
+			array_push($this->currentSprite->variables, new IdNameDto($id, $name));
 			return $id;
         }
 
@@ -188,7 +188,7 @@ class ProjectFileParser_v0_992
             {
                 //not defined yet
                 $id = $this->getNewId();
-                array_push($obj->lists, new ListDto($id, $name));
+                array_push($obj->lists, new IdNameDto($id, $name));
 
                 return $id;
             }
@@ -359,7 +359,7 @@ class ProjectFileParser_v0_992
         foreach($this->simpleXml->programVariableList->children() as $userVar)
         {
             $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
+            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
         }
         array_pop($this->cpp);
 
@@ -368,7 +368,7 @@ class ProjectFileParser_v0_992
         foreach($this->simpleXml->programListOfLists->children() as $userList)
         {
             $userList = $this->getList($userList);
-            array_push($this->lists, new ListDto($this->getNewId(), (string)$userList));
+            array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
         }
         array_pop($this->cpp);
     }
@@ -767,7 +767,7 @@ class ProjectFileParser_v0_992
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -791,7 +791,7 @@ class ProjectFileParser_v0_992
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -808,7 +808,7 @@ class ProjectFileParser_v0_992
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
