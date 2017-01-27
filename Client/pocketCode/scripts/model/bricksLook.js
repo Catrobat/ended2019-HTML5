@@ -367,7 +367,7 @@ PocketCode.Model.merge({
 
         function SetColorEffectBrick(device, sprite, propObject) {
             PocketCode.Model.SetGraphicEffectBrick.call(this, device, sprite, propObject);
-            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
+            //this._effect = PocketCode.GraphicEffect.COLOR;
         }
 
         //SetBrightnessBrick.prototype._execute = function () {
@@ -382,7 +382,7 @@ PocketCode.Model.merge({
 
         function ChangeColorEffectBrick(device, sprite, propObject) {
             PocketCode.Model.ChangeGraphicEffectBrick.call(this, device, sprite, propObject);
-            //this._effect = PocketCode.GraphicEffect.BRIGHTNESS;
+            //this._effect = PocketCode.GraphicEffect.COLOR;
         }
 
         //ChangeBrightnessBrick.prototype._execute = function () {

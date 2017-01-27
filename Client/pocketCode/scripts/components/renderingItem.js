@@ -262,7 +262,7 @@ PocketCode.merge({
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    if (!filters.length)
+                    if (filters.length > 0)
                         PocketCode.ImageHelper.setFilters(cache, filters);
                 },
             },
