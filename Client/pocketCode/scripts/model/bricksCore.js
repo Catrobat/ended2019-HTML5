@@ -473,7 +473,7 @@ PocketCode.Model.merge({
             execute: function (onExecutedListener, threadId) {
                 if (this._disposed)
                     return;
-                if (this._executionState == PocketCode.ExecutionState.RUNNING) {
+                if (this._executionState == PocketCode.ExecutionState.RUNNING)// {
                     PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //stop pending operations without triggering stop at script
                     //this._cancalPendingOperations();
                     //this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
@@ -481,9 +481,9 @@ PocketCode.Model.merge({
                     //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
                     //onExecutedListener = onExecutedListener || new SmartJs.Event.EventListener(function () { }, this);
                     //threadId = threadId || SmartJs.getNewId();
-
+                else
                     this._executionState = PocketCode.ExecutionState.RUNNING;
-                }
+                //}
                 PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
                 //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
                 //}, this), SmartJs.getNewId());
