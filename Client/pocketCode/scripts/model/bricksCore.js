@@ -116,7 +116,7 @@ PocketCode.Model.merge({
             /**
              * Goes through the list of bricks and calls "stop()" on each of them
              */
-            stop: function () {
+            stopPendingOperations: function () {
                 var po;
                 for (var id in this._pendingOps) {
                     po = this._pendingOps[id];
@@ -135,6 +135,9 @@ PocketCode.Model.merge({
                     if (bricks[i].stop)
                         bricks[i].stop();
                 }
+            },
+            stop: function () {
+                this.stopPendingOperations();
                 this._paused = false;
             },
             dispose: function () {
@@ -297,8 +300,7 @@ PocketCode.Model.ThreadedBrick = (function () {
         resume: function () {
             this._paused = false;
         },
-        stop: function () {
-            this._paused = false;
+        _stopPendingOperations: function () {
             var po;
             for (var id in this._pendingOps) {
                 var po = this._pendingOps[id];
@@ -311,6 +313,10 @@ PocketCode.Model.ThreadedBrick = (function () {
                 delete this._pendingOps[id];
             }
             this._pendingOps = {};
+        },
+        stop: function () {
+            this._stopPendingOperations();
+            this._paused = false;
         },
     });
 
@@ -383,6 +389,9 @@ PocketCode.Model.SingleContainerBrick = (function () {
         /**
          * calls "stop()" on bricks and threadedBrick
          */
+        _stopPendingOperations: function() {
+            this._bricks.stopPendingOperations();
+        },
         stop: function () {
             this._bricks.stop();
             PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
@@ -474,7 +483,8 @@ PocketCode.Model.merge({
                 if (this._disposed)
                     return;
                 if (this._executionState == PocketCode.ExecutionState.RUNNING)// {
-                    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //stop pending operations without triggering stop at script
+                    this._stopPendingOperations();
+                    //PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //stop pending operations without triggering stop at script
                     //this._cancalPendingOperations();
                     //this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
 
