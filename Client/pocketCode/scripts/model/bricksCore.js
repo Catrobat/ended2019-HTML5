@@ -297,8 +297,7 @@ PocketCode.Model.ThreadedBrick = (function () {
         resume: function () {
             this._paused = false;
         },
-        stop: function () {
-            this._paused = false;
+        _cancalPendingOperations: function () {
             var po;
             for (var id in this._pendingOps) {
                 var po = this._pendingOps[id];
@@ -311,6 +310,10 @@ PocketCode.Model.ThreadedBrick = (function () {
                 delete this._pendingOps[id];
             }
             this._pendingOps = {};
+        },
+        stop: function () {
+            this._paused = false;
+            this._cancalPendingOperations();
         },
     });
 
@@ -473,14 +476,16 @@ PocketCode.Model.merge({
             execute: function (onExecutedListener, threadId) {
                 if (this._disposed)
                     return;
-                if (this._executionState == PocketCode.ExecutionState.RUNNING)
-                    this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
+                if (this._executionState == PocketCode.ExecutionState.RUNNING) {
+                    this._cancalPendingOperations();
+                    //this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
 
-                //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
-                //onExecutedListener = onExecutedListener || new SmartJs.Event.EventListener(function () { }, this);
-                //threadId = threadId || SmartJs.getNewId();
+                    //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
+                    //onExecutedListener = onExecutedListener || new SmartJs.Event.EventListener(function () { }, this);
+                    //threadId = threadId || SmartJs.getNewId();
 
-                this._executionState = PocketCode.ExecutionState.RUNNING;
+                    this._executionState = PocketCode.ExecutionState.RUNNING;
+                }
                 PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
                 //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
                 //}, this), SmartJs.getNewId());
