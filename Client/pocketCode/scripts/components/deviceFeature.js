@@ -201,7 +201,7 @@ PocketCode.merge({
                     }.bind(this));
                 }
             },
-            _initStream(stream) {
+            _initStream: function (stream) {
                 //stream.oninactive = this._streamInactiveHandler.bind(this);
                 this._addDomListener(stream, 'inactive', this._streamInactiveHandler);    //TODO:
                 //this._addDomListener(stream, 'ended', this._streamInactiveHandler);    //TODO:
@@ -1101,16 +1101,16 @@ PocketCode.merge({
                     throw new Error('invalid arguments: start()');
 
                 //if (src != this._src) {
-                    if (this._on)
-                        this.stop();
-                    
-                    this._src = src;
-                    var c = this._canvas;
-                    //if (c.width != width || c.height != height) {
-                        this._scaling = width > height ? this._maxRendering / width : this._maxRendering / height;   //TODO
-                        c.width = Math.floor(width * this._scaling);
-                        c.height = Math.floor(height * this._scaling);
-                    //}
+                if (this._on)
+                    this.stop();
+
+                this._src = src;
+                var c = this._canvas;
+                //if (c.width != width || c.height != height) {
+                this._scaling = width > height ? this._maxRendering / width : this._maxRendering / height;   //TODO
+                c.width = Math.floor(width * this._scaling);
+                c.height = Math.floor(height * this._scaling);
+                //}
                 //}
                 /*else*/ if (this._on)
                     return;

@@ -379,7 +379,7 @@ PocketCode.SoundManager = (function () {
                 }
             }
         },
-        resumeSound(id) {
+        resumeSound: function (id) {
             var sounds = this._activeSounds;
             for (var i = 0, l = sounds.length; i < l; i++) {
                 if (sounds[i].uniqueId === id) {
