@@ -297,7 +297,8 @@ PocketCode.Model.ThreadedBrick = (function () {
         resume: function () {
             this._paused = false;
         },
-        _cancalPendingOperations: function () {
+        stop: function () {
+            this._paused = false;
             var po;
             for (var id in this._pendingOps) {
                 var po = this._pendingOps[id];
@@ -310,10 +311,6 @@ PocketCode.Model.ThreadedBrick = (function () {
                 delete this._pendingOps[id];
             }
             this._pendingOps = {};
-        },
-        stop: function () {
-            this._paused = false;
-            this._cancalPendingOperations();
         },
     });
 
@@ -477,7 +474,8 @@ PocketCode.Model.merge({
                 if (this._disposed)
                     return;
                 if (this._executionState == PocketCode.ExecutionState.RUNNING) {
-                    this._cancalPendingOperations();
+                    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //stop pending operations without triggering stop at script
+                    //this._cancalPendingOperations();
                     //this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
 
                     //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
