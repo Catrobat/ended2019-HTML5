@@ -162,28 +162,28 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                        //in development:
-                        //case 'WhenConditionMetBrick':
-                        //case 'StopScriptBrick':
-                        //case 'SetBackgroundBrick':
-                        //case 'WhenCollisionBrick':
-                        //case: 'WhenStartAsCloneBrick':
-                        //case 'CloneBrick':
-                        //case 'DeleteCloneBrick':
-                        //case 'SetPhysicsObjectTypeBrick':
-                        //case 'SetVelocityBrick':
-                        //case 'RotationSpeedLeftBrick':
-                        //case 'RotationSpeedRightBrick':
-                        //case 'SetGravityBrick':
-                        //case 'SetMassBrick':
-                        //case 'SetBounceFactorBrick':
-                        //case 'SetFrictionBrick':
+                    //in development:
+                    //case 'WhenConditionMetBrick':
+                    //case 'StopScriptBrick':
+                    //case 'SetBackgroundBrick':
+                    //case 'WhenCollisionBrick':
+                    //case: 'WhenStartAsCloneBrick':
+                    //case 'CloneBrick':
+                    //case 'DeleteCloneBrick':
+                    case 'SetPhysicsObjectTypeBrick':
+                    case 'SetVelocityBrick':
+                    case 'RotationSpeedLeftBrick':
+                    case 'RotationSpeedRightBrick':
+                    case 'SetGravityBrick':
+                    case 'SetMassBrick':
+                    case 'SetBounceFactorBrick':
+                    case 'SetFrictionBrick':
 
-                        //case 'SelectCameraBrick':
-                        //case 'CameraBrick':
+                    //case 'SelectCameraBrick':
+                    //case 'CameraBrick':
 
-                        //case 'PlaySoundAndWaitBrick':
-                        //case 'SpeakAndWaitBrick':
+                    //case 'PlaySoundAndWaitBrick':
+                    //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
