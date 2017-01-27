@@ -15,7 +15,7 @@ PocketCode.PublishSubscribeBroker = (function () {
     PublishSubscribeBroker.prototype.merge({
         subscribe: function (id, handler) {
             if (typeof id !== 'string')
-                throw new Error('invalid argument: broadcast id, expected type: string');
+                throw new Error('invalid argument: message id, expected type: string');
             if (typeof handler !== 'function')
                 throw new Error('invalid argument: subscription handler, expected type: function');
 
@@ -23,8 +23,8 @@ PocketCode.PublishSubscribeBroker = (function () {
             this._subscriptions[id].push(handler);
         },
         publish: function (id, waitCallback) {//, threadId) {
-            if (typeof id !== 'string' || !this._subscriptions[id])
-                throw new Error('invalid argument: broadcast id not found');
+            if (typeof id !== 'string')
+                throw new Error('invalid argument: message id not found');
             if (waitCallback && typeof waitCallback !== 'function')
                 throw new Error('invalid argument: publish callback');
 
@@ -36,7 +36,7 @@ PocketCode.PublishSubscribeBroker = (function () {
                 return;
             }
 
-            var po, //stop running tasks with same broadcast id
+            var po, //stop running tasks with same message id
                 pid;
             for (pid in this._pendingOps) {
                 po = this._pendingOps[pid];
@@ -110,6 +110,12 @@ PocketCode.BroadcastManager = (function () {
                 throw new Error('invalid argument: invalid (unknown) broadcast id');
 
             PocketCode.PublishSubscribeBroker.prototype.subscribe.call(this, bcId, handler);
+        },
+        publish: function (bcId, waitCallback) {
+            if (!this._subscriptions[bcId])
+                throw new Error('invalid argument: invalid (unknown) broadcast id');
+
+            PocketCode.PublishSubscribeBroker.prototype.publish.call(this, bcId, waitCallback);
         },
     });
 

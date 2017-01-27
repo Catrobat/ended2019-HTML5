@@ -178,7 +178,7 @@ PocketCode.Model.merge({
                 try {
                     met = this._condition.calculate();
                 }
-                catch (e) {}
+                catch (e) { }
 
                 if (!this._previousMet && met) {
                     this._previousMet = met;
@@ -236,27 +236,28 @@ PocketCode.Model.merge({
         function WhenBackgroundChangesToBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            //this._lookId = propObject.lookId;
-            //this._changeEvent = changeEvent;    //TODO: 
-            scene.subscribeToBackgroundChange(propObject.lookId, this._subscribeCallback.bind(this));
+            if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
+                sprite.subscribeOnLookChange(propObject.lookId, this._subscribeCallback.bind(this));
+            else
+                scene.subscribeToBackgroundChange(propObject.lookId, this._subscribeCallback.bind(this));
             //changeEvent.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
         }
 
         //WhenBackgroundChangesToBrick.prototype.merge({
-            //_lookChangeHandler: function (e) {
-            //    if (e && e.listener && e.id) {    //for changeAndWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-            //        //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
-            //        this._bricks.execute(e.listener, e.id);
-            //    }
-            //    else {
-            //        //the onExecuted event is only dispatched for simple changes - changeAndWait will always terminate befor the calling routine
-            //        this.executeEvent();
-            //    }
-            //},
-            //dispose: function () {
-            //    changeEvent.removeEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
-            //    PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            //},
+        //_lookChangeHandler: function (e) {
+        //    if (e && e.listener && e.id) {    //for changeAndWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
+        //        //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
+        //        this._bricks.execute(e.listener, e.id);
+        //    }
+        //    else {
+        //        //the onExecuted event is only dispatched for simple changes - changeAndWait will always terminate befor the calling routine
+        //        this.executeEvent();
+        //    }
+        //},
+        //dispose: function () {
+        //    changeEvent.removeEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
+        //    PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+        //},
         //});
 
         return WhenBackgroundChangesToBrick;
