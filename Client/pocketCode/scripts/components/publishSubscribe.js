@@ -53,7 +53,7 @@ PocketCode.PublishSubscribeBroker = (function () {
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
                     handler = subs[i];
-                    window.setTimeout(handler.bind(this, new Date(), new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
+                    window.setTimeout(handler.bind(this, new Date(), new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid), 0);
                 }
             }
             else {
@@ -72,7 +72,7 @@ PocketCode.PublishSubscribeBroker = (function () {
             po.loopDelay = po.loopDelay || e.loopDelay;
 
             if (po.count == 0) {
-                delete this._pendingOps[threadId];
+                delete this._pendingOps[e.id];
                 po.waitCallback(po.loopDelay);
             }
         },
