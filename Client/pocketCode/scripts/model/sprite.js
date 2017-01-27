@@ -1384,8 +1384,9 @@ PocketCode.Model.merge({
         function BackgroundSprite(gameEngine, scene, propObject) {
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
-            this._lookChangeSubscriptions = {};
-            this._pendingLookOps = {};
+            this._lookChangeBroker = new PocketCode.PublishSubscribeBroker();
+            //this._lookChangeSubscriptions = {};
+            //this._pendingLookOps = {};
         }
 
         //properties
@@ -1399,72 +1400,73 @@ PocketCode.Model.merge({
         //methods
         BackgroundSprite.prototype.merge({
             subscribeOnLookChange: function (lookId, handler) {
-                if (typeof lookId !== 'string')
-                    throw new Error('invalid argument: look id, expected type: string');
-                if (typeof handler !== 'function')
-                    throw new Error('invalid argument: subscriber handler, expected type: function');
+                this._lookChangeBroker.subscribe(lookId, handler);
+                //if (typeof lookId !== 'string')
+                //    throw new Error('invalid argument: look id, expected type: string');
+                //if (typeof handler !== 'function')
+                //    throw new Error('invalid argument: subscriber handler, expected type: function');
 
-                this._lookChangeSubscriptions[lookId] || (this._lookChangeSubscriptions[lookId] = []);
-                this._lookChangeSubscriptions[lookId].push(handler);
+                //this._lookChangeSubscriptions[lookId] || (this._lookChangeSubscriptions[lookId] = []);
+                //this._lookChangeSubscriptions[lookId].push(handler);
             },
-            _publish: function (lookId, waitCallback) {
-                //this._stopped = false;
+            //_publish: function (lookId, waitCallback) {
+            //    //this._stopped = false;
 
-                var subs = this._lookChangeSubscriptions[lookId];
-                if (!subs || subs.length == 0) {
-                    if (waitCallback)
-                        waitCallback(false);
-                    return;
-                }
+            //    var subs = this._lookChangeSubscriptions[lookId];
+            //    if (!subs || subs.length == 0) {
+            //        if (waitCallback)
+            //            waitCallback(false);
+            //        return;
+            //    }
 
-                var po; //stop running tasks with same broadcast id
-                for (id in this._pendingLookOps) {
-                    po = this._pendingLookOps[id];
-                    if (po.lookId == lookId) {
-                        delete this._pendingLookOps[id];
-                        beak;
-                    }
-                }
+            //    var po; //stop running tasks with same broadcast id
+            //    for (id in this._pendingLookOps) {
+            //        po = this._pendingLookOps[id];
+            //        if (po.lookId == lookId) {
+            //            delete this._pendingLookOps[id];
+            //            beak;
+            //        }
+            //    }
 
-                var handler;
-                if (waitCallback) {
-                    var id = SmartJs.getNewId(),
-                        po = this._pendingLookOps[id] = { lookId: lookId, count: 0, waitCallback: waitCallback, loopDelay: false };
-                    //this._pendingLookOps[id] = { count: 0 };
+            //    var handler;
+            //    if (waitCallback) {
+            //        var id = SmartJs.getNewId(),
+            //            po = this._pendingLookOps[id] = { lookId: lookId, count: 0, waitCallback: waitCallback, loopDelay: false };
+            //        //this._pendingLookOps[id] = { count: 0 };
 
-                    for (var i = 0, l = subs.length; i < l; i++) {
-                        //if (this._stopped)
-                        //    break;
-                        po.count++;
-                        handler = subs[i];
-                        window.setTimeout(handler.bind(this, new Date(), new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 1);
-                        //handler(new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id);
-                    }
-                }
-                else {
-                    for (var i = 0, l = subs.length; i < l; i++) {
-                        //if (this._stopped)
-                        //    break;
-                        handler = subs[i];
-                        window.setTimeout(handler.bind(this, new Date()), 1);   //handler();  //window.setTimeout(handler, 0);
-                    }
-                }
-                //this._pendingLookOps
-            },
-            _scriptExecutedCallback: function (e) { //{ id: threadId, loopDelay: loopD }
-                var po = this._pendingLookOps[e.id]
-                if (!po)    //stopped
-                    return;
-                //if (po.id == id) {  //make sure an old callback isn't handled
-                    po.count--;
-                    po.loopDelay = po.loopDelay || e.loopDelay;
-                //}
+            //        for (var i = 0, l = subs.length; i < l; i++) {
+            //            //if (this._stopped)
+            //            //    break;
+            //            po.count++;
+            //            handler = subs[i];
+            //            window.setTimeout(handler.bind(this, new Date(), new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 1);
+            //            //handler(new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id);
+            //        }
+            //    }
+            //    else {
+            //        for (var i = 0, l = subs.length; i < l; i++) {
+            //            //if (this._stopped)
+            //            //    break;
+            //            handler = subs[i];
+            //            window.setTimeout(handler.bind(this, new Date()), 1);   //handler();  //window.setTimeout(handler, 0);
+            //        }
+            //    }
+            //    //this._pendingLookOps
+            //},
+            //_scriptExecutedCallback: function (e) { //{ id: threadId, loopDelay: loopD }
+            //    var po = this._pendingLookOps[e.id]
+            //    if (!po)    //stopped
+            //        return;
+            //    //if (po.id == id) {  //make sure an old callback isn't handled
+            //        po.count--;
+            //        po.loopDelay = po.loopDelay || e.loopDelay;
+            //    //}
 
-                if (po.count == 0) {  //all scripts executed
-                    delete this._pendingLookOps[e.id];
-                    po.waitCallback(po.loopDelay);
-                }
-            },
+            //    if (po.count == 0) {  //all scripts executed
+            //        delete this._pendingLookOps[e.id];
+            //        po.waitCallback(po.loopDelay);
+            //    }
+            //},
 
             /* override */
             setLook: function (lookId, waitCallback) {
@@ -1475,7 +1477,7 @@ PocketCode.Model.merge({
                     return false;
                 }
 
-                this._publish(lookId, waitCallback);
+                this._lookChangeBroker.publish(lookId, waitCallback);
                 return true;
             },
             stopAllScripts: function (exceptScriptId) {
@@ -1484,8 +1486,9 @@ PocketCode.Model.merge({
                 PocketCode.Model.Sprite.prototype.stopAllScripts.call(this, exceptScriptId);
             },
             dispose: function () {
-                this._pendingLookOps = {};
-                this._lookChangeSubscriptions = {};
+                //this._pendingLookOps = {};
+                //this._lookChangeSubscriptions = {};
+                this._lookChangeBroker.dispose();
                 PocketCode.Model.Sprite.prototype.dispose.call(this);
             },
         });
