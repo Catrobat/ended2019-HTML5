@@ -205,8 +205,9 @@ PocketCode.Model.merge({
             var val = this._steps.calculate(scope);
             if (isNaN(val))
                 this._return(false);
-            else
-                this._return(this._sprite.move(val), val / this._minLoopCycleTime);
+            else {
+                this._return(this._sprite.move(val, val / this._minLoopCycleTime));
+            }
         };
 
         return MoveNStepsBrick;
