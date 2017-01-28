@@ -5,6 +5,12 @@
 
 'use strict';
 
+/* CREDITS
+ * face detection makses use of algorithms and code by
+ * popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html
+ * Eugene Zatepyakin: inspirit.ru/ (based on github.com/mtschirs/js-objectdetect)
+ * Benjamin Jung: github.com/auduno (based on libspark.org/browser/as3/FaceIt)
+ */
 
 PocketCode.DeviceFeature = (function () {
     DeviceFeature.extends(SmartJs.Core.EventTarget);
