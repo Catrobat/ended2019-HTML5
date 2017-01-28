@@ -183,7 +183,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         _clearAxes: function () {
             var ctx = this._canvas.contextTop;
-            ctx.clearRect(0, 0, this._canvas.width, this._canvas.heigt);
+            ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         },
         getCanvasDataURL: function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
