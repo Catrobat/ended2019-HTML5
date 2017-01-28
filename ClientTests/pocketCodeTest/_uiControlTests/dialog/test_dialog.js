@@ -11,7 +11,7 @@ window.onload = function () {
     //var tbButton3 = new PocketCode.Ui.Button('not supported');
 
     var control = new PocketCode.Ui.AskDialog('شروع مجدد');
-    control.onSubmit.addEventListener(new SmartJs.Event.EventListener(function () { alert(control.answer); }, this));
+    control.onSubmit.addEventListener(new SmartJs.Event.EventListener(function (e) { alert(e.answer + ', ' + e.target.answer); }, this));
     window.onresize = function (e) {
         control._onResize.dispatchEvent();
     };

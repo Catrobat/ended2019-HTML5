@@ -197,21 +197,27 @@ PocketCode.Ui.merge({
             this._addDomListener(this._answerInput.dom, 'keypress', function (e) {
                 if (e.keyCode == 13) {
                     e.preventDefault();
-                    this._btnSubmit.onClick.dispatchEvent();
+                    this._onSubmit.dispatchEvent({ answer: this.answer });
                 }
             });
             this._container.appendChild(this._answerInput);
             this._dialog.insertAt(1, this._container);
 
             this._btnSubmit = new PocketCode.Ui.Button('lblSubmitAnswer');
+            this._btnSubmit.onClick.addEventListener(new SmartJs.Event.EventListener(function () {
+                this._onSubmit.dispatchEvent({ answer: this.answer });
+            }, this));
             this.addButton(this._btnSubmit);
+
+            //event
+            this._onSubmit = new SmartJs.Event.Event(this);
         }
         
         //events
         Object.defineProperties(AskDialog.prototype, {
             onSubmit: {
                 get: function () {
-                    return this._btnSubmit.onClick;
+                    return this._onSubmit;
                 },
             },
         });
