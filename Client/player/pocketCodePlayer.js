@@ -1106,8 +1106,8 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksEvent.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksEvent.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
 		{ url: 'pocketCode/scripts/model/bricksPen.js', type: 'js' },

@@ -321,19 +321,6 @@ PocketCode.Model.merge({
         return StartSceneBrick;
     })(),
 
-    WhenStartAsCloneBrick: (function () {
-        WhenStartAsCloneBrick.extends(PocketCode.Model.WhenProgramStartBrick, false);
-
-        function WhenStartAsCloneBrick(device, sprite, propObject) {
-
-            if (!sprite.isClone)
-                return;
-            PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
-        }
-
-        return WhenStartAsCloneBrick;
-    })(),
-
     CloneBrick: (function () {
         CloneBrick.extends(PocketCode.Model.BaseBrick, false);
 
