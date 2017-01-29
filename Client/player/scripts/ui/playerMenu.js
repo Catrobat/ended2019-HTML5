@@ -28,13 +28,14 @@ PocketCode.Player.merge({
                 var item;
                 if (SmartJs.Device.isMobile) {
                     this.hide();
-                    item = new PocketCode.Ui.I18nCheckbox("menuFullscreen");
-                    this.appendChild(item);
-                    item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                        this.close();
-                        this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: e.checked });
-                    }, this));
-                    this.appendChild(new PocketCode.Ui.MenuSeparator());
+                    //temporarely disabled
+                    //item = new PocketCode.Ui.I18nCheckbox("menuFullscreen");
+                    //this.appendChild(item);
+                    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                    //    this.close();
+                    //    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: e.checked });
+                    //}, this));
+                    //this.appendChild(new PocketCode.Ui.MenuSeparator());
                 }
 
                 this._languageRadioGroup = new PocketCode.Ui.RadioGroup();
