@@ -167,7 +167,7 @@ PocketCode.merge({
                     //case 'StopScriptBrick':
                     //case 'SetBackgroundBrick':
                     //case 'WhenCollisionBrick':
-                    //case: 'WhenStartAsCloneBrick':
+                    //case 'WhenStartAsCloneBrick':
                     //case 'CloneBrick':
                     //case 'DeleteCloneBrick':
                     case 'SetPhysicsObjectTypeBrick':
@@ -230,10 +230,13 @@ PocketCode.merge({
                     case 'PlaySoundBrick':
                     case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
-                    case 'SetVolumeBrick':
-                    case 'ChangeVolumeBrick':
                     case 'SpeakBrick':
                     case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
+                        break;
+
+                    case 'SetVolumeBrick':
+                    case 'ChangeVolumeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
@@ -420,10 +423,10 @@ PocketCode.merge({
             },
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
-                //if (uiString || !numeric)
-                return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+                //if (uiString) //|| !numeric)
+                    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
-                //return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                //return '(' + this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
@@ -582,10 +585,10 @@ PocketCode.merge({
                             return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
-                    case 'MOD':
+                    case 'MOD': //http://stackoverflow.com/questions/4467539/javascript-modulo-not-behaving
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return '(' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')';
+                        return '(((' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')) + (' + this._parseJsonType(jsonFormula.right) + ')) % (' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'ARCSIN':
                         if (uiString)
