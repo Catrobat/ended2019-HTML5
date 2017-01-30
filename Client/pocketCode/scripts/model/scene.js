@@ -267,7 +267,7 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             //this._projectTimer.stop();
-            this._soundManager.stopSounds(this._id);
+            this._soundManager.stopAllSounds(this._id);
 
             if (this._background) {
                 this._background.stopAllScripts();

@@ -342,7 +342,7 @@ PocketCode.SoundManager = (function () {
                 loadedCallback(soundInstance.uniqueId);
             return soundInstance.uniqueId;
         },
-        startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {  //TODO
+        startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {
             if (!this.supported)
                 return false;
             var soundId = SmartJs.getNewId();
@@ -362,7 +362,7 @@ PocketCode.SoundManager = (function () {
                 return true;
             return false;
         },
-        pauseSound: function (sceneId, id) {    //TODO: take care about several simultanously running sounds (instances)
+        pauseSound: function (sceneId, id) {
             var active = this._activeSounds[sceneId];
             if (!sounds)
                 return;
@@ -447,12 +447,15 @@ PocketCode.SoundManager = (function () {
             var active = [];
             if (sceneId) {
                 active = this._activeSounds[sceneId];
+                if (!active) //e.g. gameEngine stopped all sounds before scenes try to stop them
+                    return false;
             }
             else {
                 for (var id in this._activeSounds) {
                     active = active.concat(this._activeSounds[id]);
                 }
             }
+
 
             for (var i = 0, l = active.length; i < l; i++)
                 active[i].stop();
