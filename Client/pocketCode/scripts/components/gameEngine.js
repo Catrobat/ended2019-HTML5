@@ -259,7 +259,6 @@ PocketCode.GameEngine = (function () {
                 delete this._scenes[id];
             }
 
-
             this._spritesLoadingProgress = 0;
             this._bricksCount = jsonProject.header.bricksCount;
 
@@ -275,6 +274,7 @@ PocketCode.GameEngine = (function () {
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
+                scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._dispatchSceneChange(); }, this));
                 this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying(this._currentScene) to check
