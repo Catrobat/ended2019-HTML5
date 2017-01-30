@@ -443,6 +443,10 @@ PocketCode.Model.Scene = (function () {
                 return; //may occur when dispose on error
 
             this.stop();
+            //do not dispose device & sound-manager: handled by game engine
+            this._device = undefined;
+            this._soundManager = undefined;
+
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
 

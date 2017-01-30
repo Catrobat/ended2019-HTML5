@@ -6,7 +6,6 @@
 
 
 PocketCode.SoundManager = (function () {
-    //SoundManager.extends(SmartJs.Core.Component);
 
     function SoundManager() {
 
@@ -383,6 +382,8 @@ PocketCode.SoundManager = (function () {
             var active = [];
             if (sceneId) {
                 active = this._activeSounds[sceneId];
+                if (!active)
+                    return false;
             }
             else {
                 for (var id in this._activeSounds) {
@@ -417,6 +418,8 @@ PocketCode.SoundManager = (function () {
             var active = [];
             if (sceneId) {
                 active = this._activeSounds[sceneId];
+                if (!active)
+                    return false;
             }
             else {
                 for (var id in this._activeSounds) {
@@ -468,7 +471,6 @@ PocketCode.SoundManager = (function () {
             createjs.Sound.removeEventListener('fileerror', this._fileErrorProxy);
             this.stopAllSounds();
             this._removeAllSounds();
-            //SmartJs.Core.Component.prototype.dispose.call(this);
         },
     });
 
