@@ -489,25 +489,13 @@ PocketCode.GameEngine = (function () {
             if (this._currentScene)
                 this._currentScene.handleUserAction(e);
         },
-        getSceneById: function (id) {   //TODO public required?
+        _getSceneById: function (id) {
             if (!this._scenes[id])
                 throw new Error('no Scene with id ' + id + ' found');
             return this._scenes[id];
         },
-        //changeScene: function (sceneId) {
-        //    if (sceneId === this._currentScene.id)
-        //        return;
-        //    var sceneToStart = this.getSceneById(sceneId);
-        //    if (!sceneToStart)
-        //        throw new Error("changeScene: scene could not be found");
-        //    this._currentScene.pause();
-        //    this._currentScene = sceneToStart;
-        //    //todo inform rendering
-
-        //    this._currentScene.start();
-        //},
         startScene: function (sceneId) {
-            var scene = this.getSceneById(sceneId);
+            var scene = this._getSceneById(sceneId);
             if (!scene)
                 return false;
             var cs = this._currentScene;
@@ -524,8 +512,8 @@ PocketCode.GameEngine = (function () {
             scene.start();
             return true;
         },
-        resumeOrStartScene: function (sceneId) {
-            var scene = this.getSceneById(sceneId);
+        resumeOrStartScene: function (sceneId) {    //change scene brick
+            var scene = this._getSceneById(sceneId);
             var cs = this._currentScene;
             if (cs && cs !== scene)
                 cs.pause();
