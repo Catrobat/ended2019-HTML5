@@ -84,17 +84,7 @@ SmartJs.Event = {
                 if (typeof bubbles !== 'undefined' && typeof bubbles !== 'boolean')
                     throw new Error('invalid argument: expected optional bubbles type: boolean');
 
-                var a = args || {};
-                //try {    //notice: params change if an event is passed as the properties are read only
-                a.target = target || this.target;
-                a.bubbles = bubbles || false;
-                //}
-                //catch (e) {
-                //    a.sjTarget = target || this.target;
-                //    a.sjBubbles = bubbles || false;
-                //}
-
-                var li = this._listeners || []; //necessary due to the fact that binded events may call a disposed event
+                var li = this._listeners || []; //necessary due to the fact that bound events may call a disposed event
                 var item;
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
@@ -105,7 +95,18 @@ SmartJs.Event = {
                         continue;
                     }
 
+                    var a = args || {};
+                    //try {    //notice: params change if an event is passed as the properties are read only
+                    a.target = target || this.target;
+                    a.bubbles = bubbles || false;
+                    //}
+                    //catch (e) {
+                    //    a.sjTarget = target || this.target;
+                    //    a.sjBubbles = bubbles || false;
+                    //}
+
                     if (item instanceof SmartJs.Event.AsyncEventListener) {
+                        a.dispatchedAt = new Date();
                         if (item.scope)
                             setTimeout(item.handler.bind(item.scope, a), 0);
                         else

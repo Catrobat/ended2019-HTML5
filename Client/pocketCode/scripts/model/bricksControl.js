@@ -387,11 +387,11 @@ PocketCode.Model.merge({
             switch (this._type) {
                 case PocketCode.Model.StopScriptType.THIS:
                     this._sprite.stopScript(this._scriptId);
-                    return; //no handler called
+                    return; //no handler called: script was stopped
                     break;
                 case PocketCode.Model.StopScriptType.ALL:
                     this._sprite.stopAllScripts();
-                    return; //no handler called
+                    return; //no handler called: script was stopped
                     break;
                 case PocketCode.Model.StopScriptType.OTHER:
                     this._return(this._sprite.stopAllScripts(this._scriptId));
