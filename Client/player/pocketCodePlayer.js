@@ -20,6 +20,24 @@ PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
 PocketCode.mobileUrlRfc3066 = PocketCode.domain + 'html5/player/{projectId}/{rfc3066}';
 PocketCode.logoUrl = PocketCode.domain + 'html5/pocketCode/img/logo.png';
 
+//add css file
+document.addEventListener('DOMContentLoaded', function () {
+    var hn = window.location.hostname;
+    var href;
+    if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
+        href = 'pocketCodePlayer.css';
+    else
+        href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
+
+    var link = document.createElement('link');
+    link.href = href;
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+
+    document.getElementsByTagName('head')[0].appendChild(link);
+});
+
+
 PocketCode.crossOrigin = new ((function () {
 
     function CrossOrigin() {
