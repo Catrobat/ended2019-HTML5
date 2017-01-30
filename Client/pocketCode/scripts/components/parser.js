@@ -222,6 +222,7 @@ PocketCode.merge({
                         break;
 
                     case 'BroadcastBrick':
+                        //type = 'BroadcastAndWaitBrick'; //fix to make sure we are catroid compatible?
                     case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);

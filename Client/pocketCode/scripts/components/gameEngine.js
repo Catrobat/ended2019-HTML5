@@ -277,7 +277,7 @@ PocketCode.GameEngine = (function () {
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
                 this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
-                //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying to check
+                //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying(this._currentScene) to check
                 scene.load(jsonScenes[i]);
 
                 if (i == 0)
@@ -373,6 +373,7 @@ PocketCode.GameEngine = (function () {
             //init scene sprites
             for (var id in this._scenes)
                 this._scenes[id].initializeSprites();
+            this._currentScene = this._startScene;
 
             var loadingAlerts = this._loadingAlerts;
             var device = this._device;
@@ -387,7 +388,6 @@ PocketCode.GameEngine = (function () {
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {
-                this._currentScene = this._startScene;
                 this._onLoad.dispatchEvent();
                 //for (var c in this._scenes) {
                 //  this._currentScene = this._scenes[c];
