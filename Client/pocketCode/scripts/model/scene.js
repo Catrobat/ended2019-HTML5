@@ -70,10 +70,10 @@ PocketCode.Model.Scene = (function () {
         onSpriteUiChange: {
             get: function () { return this._onSpriteUiChange; },
         },
-        onSpriteTappedAction: {
+        onSpriteTappedAction: { //WhenActionBrick: Tapped
             get: function () { return this._onSpriteTappedAction; },
         },
-        onTouchStartAction: {
+        onTouchStartAction: {   //WhenActionBrick: TouchStart
             get: function () { return this._onTouchStartAction }
         },
     });
@@ -307,8 +307,10 @@ PocketCode.Model.Scene = (function () {
                     if (sprite)
                         this._onSpriteTappedAction.dispatchEvent({ sprite: sprite });
                     break;
-                default:
+                default:    //TOUCH_START, TOUCH_MOVE, TOUCH_END
                     this._device.updateTouchEvent(e.action, e.id, e.x, e.y);
+                    if (e.action == PocketCode.UserActionType.TOUCH_START)
+                        this._onTouchStartAction.dispatchEvent();
             }
         },
         getSpriteById: function (spriteId) {
