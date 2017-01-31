@@ -289,7 +289,7 @@ PocketCode.Model.ThreadedBrick = (function () {
 
             for (var prop in po) //may include objects like animation, ...
                 if (po[prop] && po[prop].dispose)
-                    po.dispose();
+                    po[prop].dispose();
             delete this._pendingOps[id];
             if (listener)
                 listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
