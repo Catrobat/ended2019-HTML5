@@ -62,6 +62,7 @@ SmartJs.Components = {
     })(),
 
     Timer: (function () {
+        Timer.extends(SmartJs.Core.Component);
 
         function Timer(delay, listener, startOnInit, callbackArgs) {
             if (isNaN(delay) || parseInt(delay) !== delay)
@@ -152,6 +153,10 @@ SmartJs.Components = {
                     this._timeoutId = undefined;
                 }
             },
+            dispose: function () {
+                this.stop();
+                SmartJs.Core.Component.prototype.dispose.call(this);
+            },
         });
 
         return Timer;
@@ -204,6 +209,10 @@ SmartJs.Components = {
             stop: function () {
                 this._init();
             },
+            dispose: function () {
+                this.stop();
+                SmartJs.Core.Component.prototype.dispose.call(this);
+            }
         });
 
         return Stopwatch;

@@ -215,12 +215,13 @@ QUnit.test("SmartJs.Event.EventListener", function (assert) {
 
 QUnit.test("SmartJs.Event.AsyncEventListener", function (assert) {
 
-	assert.expect(5);   //init async asserts (to wait for)
+	assert.expect(6);   //init async asserts (to wait for)
 	var done1 = assert.async();
 	var done2 = assert.async();
 
 	var hdl = function (e) {
-		assert.ok(true, "async handler 1 called");
+	    assert.ok(true, "async handler 1 called");
+	    assert.ok(e.dispatchedAt < new Date(), "event including dispatchedAt property");
 		done1();
 	};
 	var hdl2 = function (e) {

@@ -59,8 +59,12 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	//var done11 = assert.async();
 
 	
-	var testHandler1 = function () {
+	var testHandler1 = function (e) {
 		assert.ok(true, "constructor + event dispatched");
+
+		var timer = e.target;
+		timer.dispose();
+		assert.ok(timer._disposed, "disposing and recreate");
 		done1();
 	};
 	var testHandler2 = function () {
@@ -73,7 +77,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	};
 
 	var t = new SmartJs.Components.Timer(800, new SmartJs.Event.EventListener(testHandler1, this), true);
-	assert.ok(t instanceof SmartJs.Components.Timer, "instance check");
+	assert.ok(t instanceof SmartJs.Components.Timer && t instanceof SmartJs.Core.Component, "instance check");
 	assert.throws(function () { t = new SmartJs.Components.Timer(800.1, new SmartJs.Event.EventListener(testHandler1, this), true); }, Error, "ERROR: invalid argument: ctr");
 
 	t = new SmartJs.Components.Timer(500, new SmartJs.Event.EventListener(testHandler2, this), true);
@@ -181,7 +185,6 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	window.setTimeout(function () { remainingRunning = p10.remainingTime; p10.pause(); restart(); }, 15);
 
 	//done11();
-
 
 });
 

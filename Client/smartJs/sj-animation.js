@@ -37,7 +37,7 @@ SmartJs.Animation = {
     },
 
     Animation: (function () {
-
+        Animation.extends(SmartJs.Core.Component);
         //ctr
         function Animation(start, end, time, /* function */ render/*, updateListener, startOnInit, callbackArgs*/) {
             if (isNaN(start) || isNaN(end))
@@ -165,6 +165,10 @@ SmartJs.Animation = {
                 //this._cancelAnimationFrame.call(window, this._frameId);
                 window.cancelAnimationFrame(this._frameId);
                 this._paused = false;
+            },
+            dispose: function () {
+                this.stop();
+                SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
 

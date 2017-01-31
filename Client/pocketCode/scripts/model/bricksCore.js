@@ -123,7 +123,7 @@ PocketCode.Model.merge({
                     if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
                         po.scope = undefined;   //make sure to not dispose objects currently in use
 
-                    for (var prop in po) //may include objects like animation, ...
+                    for (var prop in po) //may include objects like timer, animation, ...
                         if (po[prop] && po[prop].dispose)
                             po[prop].dispose();
                     delete this._pendingOps[id];
