@@ -1266,8 +1266,6 @@ PocketCode.Model.Sprite = (function () {
                 _direction: this._direction,
 
                 ////looks
-                _lookOffsetX: this._lookOffsetX,
-                _lookOffsetY: this._lookOffsetY,
                 _currentLook: this._currentLook,
                 _scaling: this._scaling,
                 _visible: this._visible,
@@ -1364,6 +1362,7 @@ PocketCode.Model.merge({
             delete definition.lists;
 
             this.merge(definition);
+            this._recalculateLookOffsets();
 
             this._onCloneStart = new SmartJs.Event.Event(this);
         }
