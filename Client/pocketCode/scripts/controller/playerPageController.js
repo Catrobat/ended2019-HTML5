@@ -188,7 +188,10 @@ PocketCode.PlayerPageController = (function () {
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
                         history.pushState(new PocketCode.HistoryEntry(state.historyIdx + 1, state.dialogsLength, this, PocketCode.ExecutionState.RUNNING, this._dialogs.length), document.title, '');
                     }
-                    this._gameEngine.runProject();
+                    if (this._view.executionState == PocketCode.ExecutionState.PAUSED)
+                        this._gameEngine.resumeProject();
+                    else
+                        this._gameEngine.runProject();
                     this._view.executionState = PocketCode.ExecutionState.RUNNING;
                     this._view.screenshotButtonDisabled = false;
                     this._view.axesButtonDisabled = false;

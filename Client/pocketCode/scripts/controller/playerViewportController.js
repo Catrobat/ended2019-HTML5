@@ -69,16 +69,24 @@ PocketCode.PlayerViewportController = (function () {
                 imgs = this._renderingSprite,
                 visible;
 
-            if (properties.penX || properties.penY) {
+            if (properties.showAskDialog) {
+                this._view.showAskDialog(properties.question, properties.callback);
+                delete properties.showAskDialog;
+                delete properties.question;
+                delete properties.callback;
+                if (Object.keys(properties).length == 0)
+                    return;
+            }
+            else if (properties.penX || properties.penY) {
                 this._view.movePen(spriteId, properties.penX, properties.penY);
             }
-            if (properties.drawStamp == true) {
+            else if (properties.drawStamp == true) {
                 this._view.drawStamp(spriteId);
                 delete properties.drawStamp;
                 if (Object.keys(properties).length == 0)
                     return;
             }
-            if (properties.clearBackground == true) {
+            else if (properties.clearBackground == true) {
                 this._view.clearCurrentPenStampCache();
                 delete properties.clearBackground;
                 if (Object.keys(properties).length == 0)

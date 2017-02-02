@@ -17,6 +17,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
         this._originalWidth = 200;  //default: until set
         this._originalHeight = 380;
+        this.__resizeLocked = false;
         this._axesVisible = false;
 
         this._canvas = new PocketCode.Ui.Canvas();
@@ -44,8 +45,36 @@ PocketCode.Ui.PlayerViewportView = (function () {
         }, this));
     }
 
+    // events
+    Object.defineProperties(PlayerViewportView.prototype, {
+        onUserAction: {
+            get: function () {
+                return this._onUserAction;
+            }
+        },
+    });
+
     //properties
     Object.defineProperties(PlayerViewportView.prototype, {
+        _resizeLocked: {
+            set: function (bool) {
+                if (typeof bool != 'boolean')
+                    throw new Error('invalid parameter: setter: resizeLocked');
+                if (this.__resizeLocked == bool)
+                    return;
+
+                this.__resizeLocked = bool;
+                if (bool) {
+                    this.style.width = this.width + 'px';
+                    this.style.height = this.height + 'px';
+                }
+                else {
+                    this.style.width = '100%';
+                    this.style.height = '100%';
+                    //this._updateCanvasSize();
+                }
+            },
+        },
         axisVisible: {
             get: function () {
                 return this._axesVisible;
@@ -63,18 +92,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
     });
 
-    // events
-    Object.defineProperties(PlayerViewportView.prototype, {
-        onUserAction: {
-            get: function () {
-                return this._onUserAction;
-            }
-        },
-    });
-
     //methods
     PlayerViewportView.prototype.merge({
         _updateCanvasSize: function (e) {
+            if (this.__resizeLocked)
+                return;
             var w = this.width,
                 h = this.height,
                 ow = this._originalWidth,
@@ -108,6 +130,20 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._originalHeight = height;
             this._updateCanvasSize();
         },
+        //ask
+        showAskDialog: function (question, callback) {
+            var dialog = new PocketCode.Ui.AskDialog(question);
+            dialog.onSubmit.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                e.target.dispose();
+                if (SmartJs.Device.isMobile)
+                    this._resizeLocked = false;
+                callback(e.answer);
+            }, this));
+            if (SmartJs.Device.isMobile)
+                this._resizeLocked = true;
+            this._appendChild(dialog);
+            dialog.focusInputField();
+        },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
             if (reinit)
@@ -124,7 +160,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         clearCurrentPenStampCache: function () {
             this._canvas.clearCurrentPenStampCache();
         },
-        clearPenStampCache: function() {
+        clearPenStampCache: function () {
             this._canvas.clearPenStampCache();
         },
         //camera
@@ -189,7 +225,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var url = this._canvas.toDataURL(this._originalWidth, this._originalHeight);
             return url;
         },
-
         render: function () {
             this._redrawRequired = true;
             if (this._redrawInProgress)

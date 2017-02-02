@@ -153,7 +153,7 @@ PocketCode.Ui.Dialog = (function () {
 
             this._footer.appendChild(button);
         },
-        execDefaultBtnAction: function() {
+        execDefaultBtnAction: function () {
             if (this.onCancel)
                 this.onCancel.dispatchEvent();
             else if (this.onOK)
@@ -172,6 +172,8 @@ PocketCode.Ui.merge({
         function AskDialog(question) {
             PocketCode.Ui.Dialog.call(this);
 
+            if (SmartJs.Device.isMobile)
+                this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
             this._minHeight = 250;
 
             this._captionTextNode.dispose();
@@ -212,7 +214,7 @@ PocketCode.Ui.merge({
             //event
             this._onSubmit = new SmartJs.Event.Event(this);
         }
-        
+
         //events
         Object.defineProperties(AskDialog.prototype, {
             onSubmit: {
@@ -232,25 +234,30 @@ PocketCode.Ui.merge({
         });
 
         //methods           
-        /* override */
-        AskDialog.prototype._resizeHandler = function (e) {
-            var availableHeight = this.height - (this._container.height + this._footer.height + 2 * this._marginTopBottom + 34);    //including header padding
-            var minHeight = this._minHeight - (this._container.height + this._footer.height);
-            if (availableHeight > minHeight)
-                this._scrollContainer.style.maxHeight = availableHeight + 'px';
-            else
-                this._scrollContainer.style.maxHeight = minHeight + 'px';
-            this._dialog.style.width = (this.width - 30) + 'px';
-
-            var buttons = this._footer._dom.children;
-            for (var i = 0, l = buttons.length; i < l; i++) {
-                if (l == 1)
-                    buttons[i].style.width = '100%';
+        AskDialog.prototype.merge({
+            focusInputField: function () {
+                this._answerInput.dom.focus();
+            },
+            /* override */
+            _resizeHandler: function (e) {
+                var availableHeight = this.height - (this._container.height + this._footer.height + 2 * this._marginTopBottom + 34);    //including header padding
+                var minHeight = this._minHeight - (this._container.height + this._footer.height);
+                if (availableHeight > minHeight)
+                    this._scrollContainer.style.maxHeight = availableHeight + 'px';
                 else
-                    buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
-            }
-            this._scrollContainer.onResize.dispatchEvent();
-        };
+                    this._scrollContainer.style.maxHeight = minHeight + 'px';
+                this._dialog.style.width = (this.width - 30) + 'px';
+
+                var buttons = this._footer._dom.children;
+                for (var i = 0, l = buttons.length; i < l; i++) {
+                    if (l == 1)
+                        buttons[i].style.width = '100%';
+                    else
+                        buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
+                }
+                this._scrollContainer.onResize.dispatchEvent();
+            },
+        });
 
         return AskDialog;
     })(),
@@ -629,7 +636,7 @@ PocketCode.Ui.merge({
             this._btnCancel = new PocketCode.Ui.Button('lblClose');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
-            
+
             this._screenshotImage = new SmartJs.Ui.Image({ style: { width: '100%' } });
             this._screenshotImage.onLoad.addEventListener(new SmartJs.Event.EventListener(this._imageOnLoadHandler, this));
 
@@ -637,7 +644,7 @@ PocketCode.Ui.merge({
                 this._addDomListener(this._screenshotImage._dom, 'touchstart', function (e) {
                     //make sure event is bubbled to enable image download
                 }, { stopPropagation: false, systemAllowed: true });
-                
+
                 this._screenshotImage.style.paddingTop = '10px';
                 this._messageTextNode.i18n = 'msgScreenshotMobile';
                 //this._container.appendChild(new PocketCode.Ui.I18nTextNode('msgScreenshotMobile'));
@@ -695,11 +702,11 @@ PocketCode.Ui.merge({
                 },
             },
         });
-                
+
         //methods
         ScreenshotDialog.prototype.merge({
             _imageOnLoadHandler: function () {
-                if(this._btnDownload)
+                if (this._btnDownload)
                     this._btnDownload.disabled = false;
                 window.setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 10);
             },

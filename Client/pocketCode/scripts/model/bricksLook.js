@@ -182,15 +182,17 @@ PocketCode.Model.merge({
         }
 
         AskBrick.prototype.merge({
-            _onInputHandler: function (e) {
+            _onAnswerHandler: function (answer) {
                 if (this._var)  //can be undefined
-                    this._var.value = e.input;
-                //this._var.value = this._value.calculate();
+                    this._var.value = answer;
+
+                this._scene.resume(true);
                 this._return();
             },
             _execute: function (scope) {
                 var question = this._question.calculate(scope);
-                this._scene.pauseAndShowAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
+                this._scene.pause(true);
+                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this));  //new SmartJs.Event.EventListener(this._onInputHandler, this));
 
                 //this._return();   //TODO: threaded brick?
             },
