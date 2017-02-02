@@ -332,6 +332,7 @@ PocketCode.Model.merge({
         }
 
         CloneBrick.prototype._execute = function () {
+            //todo: bubbles
             this._return(this._scene.cloneSprite(this._cloneId));
         };
 

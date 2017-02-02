@@ -689,75 +689,6 @@ QUnit.test("StartSceneBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
 
-
-QUnit.test("WhenStartAsCloneBrick", function (assert) {
-    var done1 = assert.async();
-
-    var gameEngine = new PocketCode.GameEngine();
-    var mockScene = {
-        onSpriteUiChange: new SmartJs.Event.Event(this)
-    };
-    var sprite = new PocketCode.Model.SpriteClone(gameEngine, mockScene, { id: "spriteId", spriteId: "1", name: "spriteName" }, {});
-
-    var b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
-    b.dispose();
-    assert.equal(b._disposed, true, "disposed");
-
-    b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
-    assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
-    assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
-
-    //test empty container
-    var handlerCalled = 0;
-    function handler(e) {
-        handlerCalled++;
-    }
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler, this));
-    sprite.onCloneStart.dispatchEvent();
-    assert.equal(handlerCalled, 1, "execute empty container");
-
-    b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler, this));
-
-    //add a brick container
-    var bricks = [];
-    var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function TestBrick2(device, sprite) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, { commentedOut: false });
-            this.executed = 0;
-        }
-
-        TestBrick2.prototype.merge({
-            _execute: function (id) {
-                this.executed++;
-                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
-                //this._return(id, false);    //LOOP DELAY = FALSE
-            },
-        });
-
-        return TestBrick2;
-    })();
-
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
-
-    b._bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
-
-    var asyncHandler = function () {
-        assert.ok(true, "onExecuted called: including threaded bricks");
-        done1();
-    };
-
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
-
-    sprite.onCloneStart.dispatchEvent();
-});
-
-
 QUnit.test("CloneBrick", function (assert) {
 
     var device = "device";
@@ -791,7 +722,109 @@ QUnit.test("CloneBrick", function (assert) {
 
 
 QUnit.test("DeleteCloneBrick", function (assert) {
-    assert.ok(false, "TODO");
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+
+    var cloneBrick = new PocketCode.Model.DeleteCloneBrick(device, "sprite", scene, { id: "2" });
+
+    assert.ok(cloneBrick._device === device && cloneBrick._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(cloneBrick instanceof PocketCode.Model.DeleteCloneBrick, "instance check");
+    assert.ok(cloneBrick.objClassName === "DeleteCloneBrick", "objClassName check");
+
+    var is = new PocketCode.ImageStore();   //recreate
+    gameEngine._imageStore = is;
+
+    //init tests
+    var baseUrl = "_resources/images/",
+    images = [
+        { id: "s4", url: "imgHelper1.png", size: 2 },
+    ];
+
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
+    is.loadImages(baseUrl, images);
+
+    var clone, sprite;
+    function startTest() {
+        scene.load(CloneScene);
+        sprite = scene._sprites[0];
+
+        sprite.penDown = true;
+        sprite.penSize = 6;
+        sprite.penColor = { r: 255, g: 20, b: 20 };
+        sprite.setPositionX(300);
+        sprite.setPositionY(100);
+        sprite.turnLeft(-10);
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        //this._currentLook
+        sprite.setSize(50);
+        sprite.hide();
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 20);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 30);
+        // show/hide bubble
+
+        var variable1 = sprite.getVariable("s20");
+        variable1.value = 5;
+        var variable2 = sprite.getVariable("s21");
+        variable2.value = 10;
+        var list1 = sprite.getList("s22");
+        list1.append("test");
+        list1.append(34);
+        var list2 = sprite.getList("s23");
+        list2.append("test2");
+        list2.append(1);
+
+        scene.start();
+        setTimeout(validateClone, 10);
+    }
+
+    function validateClone() {
+        clone = scene._sprites[0];
+
+        //check looks
+        assert.ok(clone._penDown == sprite._penDown &&
+            clone._penSize == sprite._penSize &&
+            clone._penColor.b == sprite._penColor.b &&
+            clone._penColor.r == sprite._penColor.r &&
+            clone._penColor.g == sprite._penColor.g &&
+            clone._penColor != sprite._penColor &&
+            clone.positionX == sprite.positionX &&
+            clone.positionY == sprite.positionY &&
+            clone.direction == sprite.direction &&
+            clone.rotationStyle == sprite.rotationStyle &&
+            clone.size == sprite.size &&
+            clone.visible == sprite.visible &&
+            clone.transparency == sprite.transparency &&
+            clone.brightness == sprite.brightness &&
+            clone.colorEffect == sprite.colorEffect , "set properties correct");
+
+        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Lookobject");
+        assert.ok(clone._scripts.length > 0, "brick created");
+        assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
+            clone.getVariable("s21") !== sprite.getVariable("s21") &&
+            clone.getList("s22")._value !== sprite.getList("s22")._value &&
+            clone.getList("s23")._value !== sprite.getList("s23")._value , "Variables and Lists created");
+
+        assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
+            clone.getVariable("s21").value == sprite.getVariable("s21").value &&
+            clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
+            clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
+            clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
+            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1] , "Variables and List values set");
+
+        var list1 = sprite.getList("s22");
+        list1.replaceAt(2, 40);
+
+        assert.notEqual(clone.getList("s22")._value[1] , sprite.getList("s22")._value[1] , "Independent list items");
+
+        assert.ok(clone instanceof PocketCode.Model.SpriteClone , "clone create successful");
+        done1();
+    }
+
 });
 
 

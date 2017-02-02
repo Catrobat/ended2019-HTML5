@@ -544,3 +544,76 @@ QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
 
 
 });
+
+
+QUnit.test("WhenStartAsCloneBrick", function (assert) {
+    var done1 = assert.async();
+
+    var gameEngine = new PocketCode.GameEngine();
+    var mockScene = {
+        onSpriteUiChange: new SmartJs.Event.Event(this)
+    };
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, mockScene, { id: "spriteId", spriteId: "1", name: "spriteName" }, {});
+
+    var b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
+    b.dispose();
+    assert.equal(b._disposed, true, "disposed");
+
+    b = new PocketCode.Model.WhenStartAsCloneBrick("device", sprite, { id: "spriteId" });
+    assert.ok(b._device === "device" && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.WhenStartAsCloneBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
+
+    //test empty container
+    var handlerCalled = 0;
+    function handler(e) {
+        handlerCalled++;
+        assert.equal(handlerCalled, 1, "execute empty container");
+        runTest2();
+    }
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler));
+    sprite.onCloneStart.dispatchEvent();
+
+    function runTest2() {
+        b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler));
+
+        //add a brick container
+        var bricks = [];
+        var TestBrick2 = (function () {
+            TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
+
+            function TestBrick2(device, sprite) {
+                PocketCode.Model.ThreadedBrick.call(this, device, sprite, {commentedOut: false});
+                this.executed = 0;
+            }
+
+            TestBrick2.prototype.merge({
+                _execute: function (id) {
+                    this.executed++;
+                    window.setTimeout(function () {
+                        this._return(id, false)
+                    }.bind(this), 100);
+                    //this._return(id, false);    //LOOP DELAY = FALSE
+                },
+            });
+
+            return TestBrick2;
+        })();
+
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+
+        b._bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
+
+        var asyncHandler = function () {
+            assert.ok(true, "onExecuted called: including threaded bricks");
+            done1();
+        };
+
+        b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler));
+
+        sprite.onCloneStart.dispatchEvent();
+    }
+});
