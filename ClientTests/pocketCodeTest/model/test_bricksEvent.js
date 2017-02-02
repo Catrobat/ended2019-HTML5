@@ -583,7 +583,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
             TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
             function TestBrick2(device, sprite) {
-                PocketCode.Model.ThreadedBrick.call(this, device, sprite, {commentedOut: false});
+                PocketCode.Model.ThreadedBrick.call(this, device, sprite, { commentedOut: false });
                 this.executed = 0;
             }
 

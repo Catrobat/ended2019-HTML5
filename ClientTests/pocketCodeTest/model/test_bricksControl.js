@@ -741,7 +741,8 @@ QUnit.test("DeleteCloneBrick", function (assert) {
     //init tests
     var baseUrl = "_resources/images/",
     images = [
-        { id: "s4", url: "imgHelper1.png", size: 2 },
+        { id: "s4", url: "imgHelper15.png", size: 2 },
+        { id: "s5", url: "imgHelper16.png", size: 2 },
     ];
 
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
@@ -749,7 +750,8 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
     var clone, sprite;
     function startTest() {
-        scene.load(CloneScene);
+        scene.load(cloneScene); //global ressource defined in _resources/testDataProject
+        scene.initializeSprites();  //images already loaded- initilaze look objects
         sprite = scene._sprites[0];
 
         sprite.penDown = true;
@@ -759,7 +761,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
         sprite.setPositionY(100);
         sprite.turnLeft(-10);
         sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
-        //this._currentLook
+        sprite.nextLook();  //set this._currentLook
         sprite.setSize(50);
         sprite.hide();
         sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
@@ -794,34 +796,38 @@ QUnit.test("DeleteCloneBrick", function (assert) {
             clone._penColor != sprite._penColor &&
             clone.positionX == sprite.positionX &&
             clone.positionY == sprite.positionY &&
+            clone._lookOffsetX == sprite._lookOffsetX &&
+            clone._lookOffsetY == sprite._lookOffsetY &&
             clone.direction == sprite.direction &&
             clone.rotationStyle == sprite.rotationStyle &&
             clone.size == sprite.size &&
             clone.visible == sprite.visible &&
             clone.transparency == sprite.transparency &&
             clone.brightness == sprite.brightness &&
-            clone.colorEffect == sprite.colorEffect , "set properties correct");
+            clone.colorEffect == sprite.colorEffect, "set properties correct");
 
-        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Lookobject");
+        assert.equal(clone._currentLook.id, sprite._currentLook.id, "current look id set");
+        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Look objects");
+
         assert.ok(clone._scripts.length > 0, "brick created");
         assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
             clone.getVariable("s21") !== sprite.getVariable("s21") &&
             clone.getList("s22")._value !== sprite.getList("s22")._value &&
-            clone.getList("s23")._value !== sprite.getList("s23")._value , "Variables and Lists created");
+            clone.getList("s23")._value !== sprite.getList("s23")._value, "Variables and Lists created");
 
         assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
             clone.getVariable("s21").value == sprite.getVariable("s21").value &&
             clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
             clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
             clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
-            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1] , "Variables and List values set");
+            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1], "Variables and List values set");
 
         var list1 = sprite.getList("s22");
         list1.replaceAt(2, 40);
 
-        assert.notEqual(clone.getList("s22")._value[1] , sprite.getList("s22")._value[1] , "Independent list items");
+        assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
 
-        assert.ok(clone instanceof PocketCode.Model.SpriteClone , "clone create successful");
+        assert.ok(clone instanceof PocketCode.Model.SpriteClone, "clone create successful");
         done1();
     }
 

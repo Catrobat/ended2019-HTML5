@@ -1280,6 +1280,7 @@ PocketCode.Model.Sprite = (function () {
                 _penSize: this._penSize,
                 _penColor: this._penColor,
 
+                currentLookId: this._currentLook.id, 
                 variables: this.getAllVariables().local,
                 lists: this.getAllLists().local,
             };
@@ -1345,6 +1346,9 @@ PocketCode.Model.merge({
             //variables: a sprite may have no (local) variables
             this._variables = jsonSprite.variables || [];
             this._lists = jsonSprite.lists || [];
+
+            this.setLook(definition.currentLookId);
+            delete definition.currentLookId;
 
             for (var id in definition.variables) {
                 this.getVariable(id).value = definition.variables[id].value;
