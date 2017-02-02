@@ -225,7 +225,7 @@ PocketCode.SoundManager = (function () {
                 }, size: size
             };
         },
-        _loadSound: function (url, id, type, playOnLoad, finishedCallback, loadedCallback) {
+        loadSound: function (url, id, type, playOnLoad, finishedCallback, loadedCallback) {
             //added to cache static tts sound files- detected by parser
             if (!id || !url) {
                 throw new Error('load sound: missing id or url');
@@ -345,7 +345,7 @@ PocketCode.SoundManager = (function () {
             if (!this.supported)
                 return false;
             var soundId = SmartJs.getNewId();
-            var success = this._loadSound(url, soundId, 'mp3', true, finishedCallback, loadedCallback);
+            var success = this.loadSound(url, soundId, 'mp3', true, finishedCallback, loadedCallback);
             if (success)
                 return true;
             //else
