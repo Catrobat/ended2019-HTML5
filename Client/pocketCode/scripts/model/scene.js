@@ -271,6 +271,7 @@ PocketCode.Model.Scene = (function () {
                     return false;
             }
 
+            this._executionState = PocketCode.ExecutionState.RUNNING;   //important: because pause can be set again during resume
             //this._projectTimer.resume();
             this._soundManager.resumeSounds(this._id);
 
@@ -281,7 +282,6 @@ PocketCode.Model.Scene = (function () {
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].resumeScripts();
             }
-            this._executionState = PocketCode.ExecutionState.RUNNING;
             return true;
         },
         stop: function () {

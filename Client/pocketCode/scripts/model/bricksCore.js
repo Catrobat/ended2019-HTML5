@@ -8,16 +8,7 @@
 
 PocketCode.Model.merge({
 
-    /**
-     * @class BrickContainer: BrickContainer is a Brick object that can contain other Brick(Container)s
-     */
     BrickContainer: (function () {
-        //BrickContainer.extends(SmartJs.Core.Component);
-        /**
-         * Initializes list of bricks and list of pending Ops
-         * @param bricks
-         * @constructor
-         */
         function BrickContainer(bricks) {
             this._bricks = bricks || [];
             this._pendingOps = {};
@@ -25,14 +16,6 @@ PocketCode.Model.merge({
         }
 
         BrickContainer.prototype.merge({
-            /**
-             * This method creates a new entry indicated with a unique id for pendingOps with the given threadId, onExecutedListener, loopDelay(false)
-             * and a child Index (0). Afterwards executeContainerItem is called.
-             * @param {SmartJs.Event.EventListener} onExecutedListener: given executedListener
-             * @param {String} threadId: given thread ID
-             * @throws {Error} missing or invalid arguments: when threadId isn't of type String or listener isn't of type
-             * SmartJs.Event.EventListener
-             */
             execute: function (onExecutedListener, threadId, scope) {
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                     throw new Error('BrickContainer: missing or invalid arguments on execute()');
@@ -47,11 +30,6 @@ PocketCode.Model.merge({
                 };
                 this._executeContainerItem({ id: id, loopDelay: false });
             },
-            /**
-             * Goes through pendingOps and calls "execute()" on each bricks[id] entry
-             * @param args: consists of id and loopDelay
-             * @private
-             */
             _executeContainerItem: function (args) {
                 var po = this._pendingOps[args.id];
                 if (!po)  //stopped
@@ -82,9 +60,6 @@ PocketCode.Model.merge({
                     listener.handler.call(listener.scope, { id: threadId, loopDelay: loopDelay });
                 }
             },
-            /**
-             * Goes through the list of bricks and calls "pause()" on each of them
-             */
             pause: function () {
                 this._paused = true;
                 var bricks = this._bricks;
@@ -93,19 +68,20 @@ PocketCode.Model.merge({
                         bricks[i].pause();
                 }
             },
-            /**
-             * Goes through the list of bricks and calls "resume()" on each of them
-             */
             resume: function () {
                 this._paused = false;
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].resume)
                         bricks[i].resume();
+                    if (this._paused)   //e.g. AskBrick: after resuming the next brick will pause the routine again
+                        return;
                 }
 
                 var op;
                 for (var id in this._pendingOps) {
+                    if (this._paused)   //e.g. AskBrick: after resuming the next brick will pause the routine again
+                        return;
                     op = this._pendingOps[id];
                     if (op.paused) {    //paused in container
                         op.paused = undefined;
@@ -113,9 +89,6 @@ PocketCode.Model.merge({
                     }
                 }
             },
-            /**
-             * Goes through the list of bricks and calls "stop()" on each of them
-             */
             stopPendingOperations: function () {
                 var po;
                 for (var id in this._pendingOps) {
@@ -389,7 +362,7 @@ PocketCode.Model.SingleContainerBrick = (function () {
         /**
          * calls "stop()" on bricks and threadedBrick
          */
-        _stopPendingOperations: function() {
+        _stopPendingOperations: function () {
             this._bricks.stopPendingOperations();
         },
         stop: function () {

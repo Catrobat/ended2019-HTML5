@@ -186,7 +186,7 @@ PocketCode.Model.merge({
                     variable.value = answer;
 
                 this._scene.resume(true);
-                this._return(id);
+                this._return(id, true);
             },
             _execute: function (id, scope) {
                 var question = this._question.calculate(scope);
