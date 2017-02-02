@@ -169,32 +169,31 @@ PocketCode.Model.merge({
     })(),
 
     AskBrick: (function () {
-        AskBrick.extends(PocketCode.Model.BaseBrick, false);
+        AskBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function AskBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
             this._question = new PocketCode.Formula(device, sprite, propObject.question);
-
-            if (propObject.resourceId) //can be null
-                this._var = sprite.getVariable(propObject.resourceId);
+            this._varId = propObject.resourceId;
         }
 
         AskBrick.prototype.merge({
-            _onAnswerHandler: function (answer) {
-                if (this._var)  //can be undefined
-                    this._var.value = answer;
+            _onAnswerHandler: function (id, scope, answer) {
+                var variable = scope.getVariable(this._varId);
+                if (variable)  //can be undefined
+                    variable.value = answer;
 
                 this._scene.resume(true);
-                this._return();
+                this._return(id);
             },
-            _execute: function (scope) {
+            _execute: function (id, scope) {
                 var question = this._question.calculate(scope);
-                this._scene.pause(true);
-                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this));  //new SmartJs.Event.EventListener(this._onInputHandler, this));
+                scope = scope || this._sprite;
 
-                //this._return();   //TODO: threaded brick?
+                this._scene.pause(true);
+                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, id, scope));
             },
         });
         return AskBrick;
