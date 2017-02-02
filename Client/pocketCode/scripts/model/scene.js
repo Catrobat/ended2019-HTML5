@@ -421,10 +421,11 @@ PocketCode.Model.Scene = (function () {
 
             var sprite = this.getSpriteById(id),
                 layer = this.getSpriteLayer(sprite),
-                clone = sprite.clone(this._device, this._soundManager, this._minLoopCycleTime, this._broadcastMgr);
+                clone = sprite.clone(this._device, this._soundManager, this._broadcastMgr);
 
-            this._sprites.insert(layer, clone); //adding behind original sprite
+            this._sprites.insert(layer-1, clone); //adding at position from original sprite
 
+            //todo: test: count dispatch
             this._onUiChange.dispatchEvent();   //to include clone in rendering sprites
             clone.onCloneStart.dispatchEvent();
             return true;

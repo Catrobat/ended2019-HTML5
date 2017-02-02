@@ -1279,8 +1279,12 @@ PocketCode.Model.Sprite = (function () {
                 _penDown: this._penDown,
                 _penSize: this._penSize,
                 _penColor: this._penColor,
+
+                variables: this.getAllVariables().local,
+                lists: this.getAllLists().local,
             };
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
+            return clone;
 
         },
         /* override */
@@ -1341,6 +1345,19 @@ PocketCode.Model.merge({
             //variables: a sprite may have no (local) variables
             this._variables = jsonSprite.variables || [];
             this._lists = jsonSprite.lists || [];
+
+            for (var id in definition.variables) {
+                this.getVariable(id).value = definition.variables[id].value;
+            }
+            delete definition.variables;
+
+            var list;
+            for (var id in definition.lists) {
+                list = this.getList(id);
+                for (var i=0, l=definition.lists[id].length;i<l;i++)
+                    list.append(definition.lists[id].valueAt(i+1));
+            }
+            delete definition.lists;
 
             this.merge(definition);
 
