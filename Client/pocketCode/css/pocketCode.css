@@ -847,6 +847,7 @@
     position: relative;
     white-space: nowrap;
     padding: 10px 16px 10px 11px;
+    margin: 0px;
     width: 100%;
     background: none;
     border: 0;
