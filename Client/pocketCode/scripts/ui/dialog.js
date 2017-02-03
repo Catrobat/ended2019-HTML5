@@ -172,9 +172,11 @@ PocketCode.Ui.merge({
         function AskDialog(question) {
             PocketCode.Ui.Dialog.call(this);
 
-            if (SmartJs.Device.isMobile)
-                this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
             this._minHeight = 250;
+            if (SmartJs.Device.isMobile) {
+                this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
+                this.style.minHeight = (this._minHeight + 2 * this._marginTopBottom) + 'px';
+            }
 
             this._captionTextNode.dispose();
             this._captionTextNode = new SmartJs.Ui.TextNode(question);

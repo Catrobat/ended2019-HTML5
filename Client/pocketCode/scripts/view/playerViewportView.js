@@ -56,8 +56,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //properties
     Object.defineProperties(PlayerViewportView.prototype, {
-        _resizeLocked: {
+        _mobileResizeLocked: {  //to keep the original viewport size when the mobile keyboard shows up
             set: function (bool) {
+                if (!SmartJs.Device.isMobile)
+                    return; //mobile only
                 if (typeof bool != 'boolean')
                     throw new Error('invalid parameter: setter: resizeLocked');
                 if (this.__resizeLocked == bool)
@@ -65,13 +67,17 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
                 this.__resizeLocked = bool;
                 if (bool) {
-                    this.style.width = this.width + 'px';
-                    this.style.height = this.height + 'px';
+                    var canvas = this._canvas;
+                    canvas.style.width = canvas.width + 'px';
+                    canvas.style.height = canvas.height + 'px';
+
+                    SmartJs.Ui.Window.onResize.addEventListener(new SmartJs.Event.EventListener(this._windowOrientationChangeHandler, this));
                 }
                 else {
                     this.style.width = '100%';
                     this.style.height = '100%';
-                    //this._updateCanvasSize();
+
+                    SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowOrientationChangeHandler, this));
                 }
             },
         },
@@ -94,7 +100,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     //methods
     PlayerViewportView.prototype.merge({
-        _updateCanvasSize: function (e) {
+        _windowOrientationChangeHandler: function (e) {
+            var canvas = this._canvas;
+            canvas.style.left = Math.floor((e.width - canvas.width) * 0.5) + 'px';
+        },
+        _updateCanvasSize: function () {
             if (this.__resizeLocked)
                 return;
             var w = this.width,
@@ -135,14 +145,25 @@ PocketCode.Ui.PlayerViewportView = (function () {
             var dialog = new PocketCode.Ui.AskDialog(question);
             dialog.onSubmit.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 e.target.dispose();
-                if (SmartJs.Device.isMobile)
-                    this._resizeLocked = false;
+                if (SmartJs.Device.isMobile) {
+                    this._mobileResizeLocked = false;
+                    this._updateCanvasSize();
+                }
                 callback(e.answer);
             }, this));
-            if (SmartJs.Device.isMobile)
-                this._resizeLocked = true;
-            this._appendChild(dialog);
-            dialog.focusInputField();
+
+            if (SmartJs.Device.isMobile) {
+                window.setTimeout(function () {
+                    this._appendChild(dialog);
+                    this._updateCanvasSize();
+                    this._mobileResizeLocked = true;
+                    dialog.focusInputField();
+                }.bind(this), 500); //wait before show to make sure the UI gets time to update during two calls (hide/show online keyboard)
+            }
+            else {
+                this._appendChild(dialog);
+                dialog.focusInputField();
+            }
         },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
