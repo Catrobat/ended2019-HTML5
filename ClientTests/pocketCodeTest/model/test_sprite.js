@@ -219,7 +219,6 @@ QUnit.test("Sprite", function (assert) {
     jsonSprite.variables = strProject11.variables;
 
     var testSprite = new PocketCode.Model.Sprite(gameEngine, scene, jsonSprite);
-    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
@@ -239,6 +238,43 @@ QUnit.test("Sprite", function (assert) {
     //}
     //assert.ok(soundsMatch, "Sounds set correctly");
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
+
+    // ********************* isBackground/pen *********************
+    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
+
+    //isBackground Tests
+    testBackgroundSprite.isBackground = false;
+    assert.equal(testBackgroundSprite.isBackground, false, "renderingSprite: isBackground set correctly");
+    testBackgroundSprite.isBackground = true;
+    assert.equal(testBackgroundSprite.isBackground, true, "renderingSprite: isBackground set correctly");
+
+    //penDown Test
+    assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false");
+    testSprite._penDown = true;
+    assert.equal(testSprite._penDown, true, "renderingSprite: penDown is true");
+
+    //penSize Test
+    assert.equal(testSprite._penSize, 4, "renderingSprite: penSize is 4");
+    testSprite._penSize = 8;
+    assert.equal(testSprite._penSize, 8, "renderingSprite: penSize is 8");
+
+    //penColor Test
+    var actualPenColor = testSprite._penColor;
+    var expectedPenColor = testSprite._penColor;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is blue");
+    actualPenColor.b = 0;
+    actualPenColor.r = 255;
+    expectedPenColor.b = 0;
+    expectedPenColor.r = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is red");
+    actualPenColor.r = 0;
+    actualPenColor.g = 255;
+    expectedPenColor.r = 0;
+    expectedPenColor.g = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is green");
+
+
+    // *************************************************************
 
 
     programExecAsync();
@@ -283,8 +319,7 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters
-    assert.equal(renderingSprite.isBackground, false, "renderingsprite: isBackground set correctly");
-    //assert.equal(testBackgroundSprite.isBackground, true, "testBackgroundSprite: is set correctly");
+
 
 
     var graphicEffectsSet = renderingSprite._graphicEffects && renderingSprite._graphicEffects instanceof Array;
