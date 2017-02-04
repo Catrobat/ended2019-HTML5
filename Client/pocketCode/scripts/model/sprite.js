@@ -1291,6 +1291,7 @@ PocketCode.Model.Sprite = (function () {
             this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
+            this._scene = undefined;   //make sure the game engine is not disposed
             this._onChange = undefined;     //make sure the game engines event is not disposed (shared event)
             var script,
                 scripts = this._scripts;
@@ -1315,8 +1316,9 @@ PocketCode.Model.merge({
         SpriteClone.extends(PocketCode.Model.Sprite, false);
 
         function SpriteClone(gameEngine, scene, jsonSprite, definition) {
-
             PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
+            if (!definition || typeof definition != 'object')
+                throw new Error('clone needs a defnition object to merge paroperties from original sprite');
 
             this._id = SmartJs.getNewId();
             this._json = jsonSprite;
@@ -1345,23 +1347,22 @@ PocketCode.Model.merge({
             this._variables = jsonSprite.variables || [];
             this._lists = jsonSprite.lists || [];
 
-            if(definition) {
-                this.setLook(definition.currentLookId);
-                delete definition.currentLookId;
+            this.setLook(definition.currentLookId);
+            delete definition.currentLookId;
 
-                for (var id in definition.variables) {
-                    this.getVariable(id).value = definition.variables[id].value;
-                }
-                delete definition.variables;
-
-                var list;
-                for (var id in definition.lists) {
-                    list = this.getList(id);
-                    for (var i = 0, l = definition.lists[id].length; i < l; i++)
-                        list.append(definition.lists[id].valueAt(i + 1));
-                }
-                delete definition.lists;
+            for (var id in definition.variables) {
+                this.getVariable(id).value = definition.variables[id].value;
             }
+            delete definition.variables;
+
+            var list;
+            for (var id in definition.lists) {
+                list = this.getList(id);
+                for (var i = 0, l = definition.lists[id].length; i < l; i++)
+                    list.append(definition.lists[id].valueAt(i + 1));
+            }
+            delete definition.lists;
+
             this.merge(definition);
             this._recalculateLookOffsets();
 
@@ -1374,14 +1375,6 @@ PocketCode.Model.merge({
                 get: function () {
                     return this._onCloneStart;
                 }
-            },
-        });
-
-        //properties
-        Object.defineProperties(SpriteClone.prototype, {
-            isClone: {
-                value: true,
-                //writable: false,
             },
         });
 
