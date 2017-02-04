@@ -147,7 +147,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 e.target.dispose();
                 if (SmartJs.Device.isMobile) {
                     this._mobileResizeLocked = false;
-                    this._updateCanvasSize();
                 }
                 callback(e.answer);
             }, this));
