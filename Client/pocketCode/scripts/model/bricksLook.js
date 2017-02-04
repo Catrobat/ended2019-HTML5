@@ -169,10 +169,10 @@ PocketCode.Model.merge({
     })(),
 
     AskBrick: (function () {
-        AskBrick.extends(PocketCode.Model.ThreadedBrick, false);
+        AskBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function AskBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
             this._question = new PocketCode.Formula(device, sprite, propObject.question);
@@ -180,26 +180,27 @@ PocketCode.Model.merge({
         }
 
         AskBrick.prototype.merge({
-            _onAnswerHandler: function (id, scope, answer) {
+            _onAnswerHandler: function (scope, answer) {
                 var variable = scope.getVariable(this._varId);
                 if (variable)  //can be undefined
                     variable.value = answer;
 
                 this._scene.resume(true);
-                this._return(id, true);
+                this._return(true);
             },
-            _execute: function (id, scope) {
-                var question = this._question.calculate(scope);
+            _execute: function (scope) {
                 scope = scope || this._sprite;
+                var question = this._question.calculate(scope);
 
                 this._scene.pause(true);
-                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, id, scope));
+                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, scope));
             },
             dispose: function () {
                 this._scene = undefined;
-                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
             },
         });
+
         return AskBrick;
     })(),
 
