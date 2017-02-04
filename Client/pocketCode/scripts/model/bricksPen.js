@@ -101,9 +101,15 @@ PocketCode.Model.merge({
             this._scene = scene;
         }
 
-        ClearBackgroundBrick.prototype._execute = function () {
-            this._return(this._scene.clearPenStampBackground());
-        };
+        ClearBackgroundBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._scene.clearPenStampBackground());
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return ClearBackgroundBrick;
     })(),

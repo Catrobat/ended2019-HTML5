@@ -331,10 +331,16 @@ PocketCode.Model.merge({
             this._cloneId = propObject.spriteId;
         }
 
-        CloneBrick.prototype._execute = function () {
-            //todo: bubbles
-            this._return(this._scene.cloneSprite(this._cloneId));
-        };
+        CloneBrick.prototype.merge({
+            _execute: function () {
+                //todo: bubbles
+                this._return(this._scene.cloneSprite(this._cloneId));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return CloneBrick;
     })(),
@@ -346,14 +352,19 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
-
         }
 
-        DeleteCloneBrick.prototype._execute = function () {
-            if (!this._sprite.isClone)
-                this._return(false);
-            this._return(this._scene.deleteClone(this._sprite.id));
-        };
+        DeleteCloneBrick.prototype.merge({
+            _execute: function () {
+                if (!this._sprite.isClone)
+                    this._return(false);
+                this._return(this._scene.deleteClone(this._sprite.id));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return DeleteCloneBrick;
     })(),
