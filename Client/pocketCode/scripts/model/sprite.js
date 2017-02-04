@@ -1254,7 +1254,6 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ bubble: { type: type, visible: false } });
         },
 
-
         clone: function (device, soundManager, broadcastMgr) {
             if (!this._spriteFactory)
                 this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
