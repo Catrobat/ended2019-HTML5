@@ -21,6 +21,7 @@ PocketCode.Model.merge({
             var variable = scope.getVariable(this._varId);
             if (variable)  //can be undefined
                 variable.value = this._value.calculate(scope);
+            this._return();
         };
 
         return SetVariableBrick;
