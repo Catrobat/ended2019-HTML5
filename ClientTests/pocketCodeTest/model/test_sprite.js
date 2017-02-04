@@ -1935,6 +1935,7 @@ QUnit.test("PhysicsSprite", function (assert) {
 });
 
 
+
 QUnit.test("SpriteClone", function (assert) {
 
     //var programExecAsync = assert.async();
@@ -1946,9 +1947,106 @@ QUnit.test("SpriteClone", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" });
+
     assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
+
+    //test clone
+    var is = new PocketCode.ImageStore();   //recreate
+    gameEngine._imageStore = is;
+
+    //init tests
+    var baseUrl = "_resources/images/",
+        images = [
+            { id: "s4", url: "imgHelper15.png", size: 2 },
+            { id: "s5", url: "imgHelper16.png", size: 2 },
+        ];
+
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
+    is.loadImages(baseUrl, images);
+
+    var clone;
+    function startTest() {
+        scene.load(cloneScene); //global ressource defined in _resources/testDataProject
+        scene.initializeSprites();  //images already loaded- initilaze look objects
+        sprite = scene._sprites[0];
+
+
+        sprite.penDown = true;
+        sprite.penSize = 6;
+        sprite.penColor = { r: 255, g: 20, b: 20 };
+        sprite.setPositionX(300);
+        sprite.setPositionY(100);
+        sprite.turnLeft(-10);
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        sprite.nextLook();  //set this._currentLook
+        sprite.setSize(50);
+        sprite.hide();
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 20);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 30);
+        // show/hide bubble
+
+        var variable1 = sprite.getVariable("s20");
+        variable1.value = 5;
+        var variable2 = sprite.getVariable("s21");
+        variable2.value = 10;
+        var list1 = sprite.getList("s22");
+        list1.append("test");
+        list1.append(34);
+        var list2 = sprite.getList("s23");
+        list2.append("test2");
+        list2.append(1);
+
+        scene.start();
+        setTimeout(validateClone, 10);
+    }
+
+    function validateClone() {
+        clone = scene._sprites[0];
+
+        //check looks
+        assert.ok(clone._penDown == sprite._penDown &&
+            clone._penSize == sprite._penSize &&
+            clone._penColor.b == sprite._penColor.b &&
+            clone._penColor.r == sprite._penColor.r &&
+            clone._penColor.g == sprite._penColor.g &&
+            clone._penColor != sprite._penColor &&
+            clone.positionX == sprite.positionX &&
+            clone.positionY == sprite.positionY &&
+            clone._lookOffsetX == sprite._lookOffsetX &&
+            clone._lookOffsetY == sprite._lookOffsetY &&
+            clone.direction == sprite.direction &&
+            clone.rotationStyle == sprite.rotationStyle &&
+            clone.size == sprite.size &&
+            clone.visible == sprite.visible &&
+            clone.transparency == sprite.transparency &&
+            clone.brightness == sprite.brightness &&
+            clone.colorEffect == sprite.colorEffect, "set properties correct");
+
+        assert.equal(clone._currentLook.id, sprite._currentLook.id, "current look id set");
+        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Look objects");
+
+        assert.ok(clone._scripts.length > 0, "brick created");
+        assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
+            clone.getVariable("s21") !== sprite.getVariable("s21") &&
+            clone.getList("s22")._value !== sprite.getList("s22")._value &&
+            clone.getList("s23")._value !== sprite.getList("s23")._value, "Variables and Lists created");
+
+        assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
+            clone.getVariable("s21").value == sprite.getVariable("s21").value &&
+            clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
+            clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
+            clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
+            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1], "Variables and List values set");
+
+        var list1 = sprite.getList("s22");
+        list1.replaceAt(2, 40);
+
+        assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
+    }
+
 
     assert.ok(false, "TODO");
 });

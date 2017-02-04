@@ -1345,22 +1345,23 @@ PocketCode.Model.merge({
             this._variables = jsonSprite.variables || [];
             this._lists = jsonSprite.lists || [];
 
-            this.setLook(definition.currentLookId);
-            delete definition.currentLookId;
+            if(definition) {
+                this.setLook(definition.currentLookId);
+                delete definition.currentLookId;
 
-            for (var id in definition.variables) {
-                this.getVariable(id).value = definition.variables[id].value;
+                for (var id in definition.variables) {
+                    this.getVariable(id).value = definition.variables[id].value;
+                }
+                delete definition.variables;
+
+                var list;
+                for (var id in definition.lists) {
+                    list = this.getList(id);
+                    for (var i = 0, l = definition.lists[id].length; i < l; i++)
+                        list.append(definition.lists[id].valueAt(i + 1));
+                }
+                delete definition.lists;
             }
-            delete definition.variables;
-
-            var list;
-            for (var id in definition.lists) {
-                list = this.getList(id);
-                for (var i=0, l=definition.lists[id].length;i<l;i++)
-                    list.append(definition.lists[id].valueAt(i+1));
-            }
-            delete definition.lists;
-
             this.merge(definition);
             this._recalculateLookOffsets();
 
