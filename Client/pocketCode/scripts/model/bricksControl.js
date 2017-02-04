@@ -356,7 +356,7 @@ PocketCode.Model.merge({
 
         DeleteCloneBrick.prototype.merge({
             _execute: function () {
-                if (!this._sprite.isClone)
+                if (!(this._sprite instanceof PocketCode.Model.SpriteClone))
                     this._return(false);
                 this._return(this._scene.deleteClone(this._sprite.id));
             },

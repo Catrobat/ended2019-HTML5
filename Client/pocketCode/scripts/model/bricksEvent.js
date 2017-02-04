@@ -268,7 +268,7 @@ PocketCode.Model.merge({
 
         function WhenStartAsCloneBrick(device, sprite, propObject) {
 
-            if (!sprite.isClone)
+            if (!(this._sprite instanceof PocketCode.Model.SpriteClone))
                 return;
             PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
         }

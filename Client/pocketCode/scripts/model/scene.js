@@ -16,6 +16,7 @@ PocketCode.Model.Scene = (function () {
 
     function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime) {
 
+        //TODO: argument validation
         if (!(jsonBroadcasts instanceof Array))
             throw new Error('setter expects type Array');
 
@@ -25,7 +26,7 @@ PocketCode.Model.Scene = (function () {
         this._background = undefined;
         this._sprites = [];
         this._originalSpriteOrder = [];
-        this._minLoopCycleTime = minLoopCycleTime || 20; //ms //todo param?
+        this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._device = device;
 
         this._soundManager = soundManager;
