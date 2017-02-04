@@ -115,10 +115,10 @@ QUnit.test("UserVariableSimple", function (assert) {
     uv = new PocketCode.Model.UserVariableSimple(1, "2", "3.4");
     assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 3.4 && uv.value === 3.4, "properties set correctly: including value");
     assert.equal(uv.toString(), "3.4", "toString(): value");
-    uv.value = 4; //int
-    assert.equal(uv.toString(), "4.0", "toString(): int");
+    uv.value = 4.0; //int
+    assert.equal(uv.toString(), "4", "toString(): int (now without decimal)");
     uv.value = 4.01234567890;    //long float
-    assert.equal(uv.toString(), "4.01234568", "toString(): float: round to 8 decimals");
+    assert.equal(uv.toString(), "4.0123456789", "toString(): float: (now without rounding)");
 
     uv.value = "2,3";   //not detected as number
     assert.equal(uv.valueAsNumber, 0, "number string (not detected) as number = 0");
