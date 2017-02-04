@@ -134,7 +134,7 @@ PocketCode.PlayerPageController = (function () {
             if (e.reinit) {
             //    //this.initOnLoad();
             //    //console.log("device on before project start:", this._gameEngine._device);
-                this._playerViewportController.clearPenStampCache();
+                this._playerViewportController.clearViewport();
             }
             this._view.hideStartScreen();
         },

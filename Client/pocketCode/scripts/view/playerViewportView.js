@@ -19,6 +19,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._originalHeight = 380;
         this.__resizeLocked = false;
         this._axesVisible = false;
+        this._activeAskDialog = undefined;
 
         this._canvas = new PocketCode.Ui.Canvas();
         this._appendChild(this._canvas);
@@ -143,6 +144,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //ask
         showAskDialog: function (question, callback) {
             var dialog = new PocketCode.Ui.AskDialog(question);
+            this._activeAskDialog = dialog;
             dialog.onSubmit.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 e.target.dispose();
                 if (SmartJs.Device.isMobile) {
@@ -180,7 +182,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
         clearCurrentPenStampCache: function () {
             this._canvas.clearCurrentPenStampCache();
         },
-        clearPenStampCache: function () {
+        clear: function () {
+            if (this._activeAskDialog)
+                this._activeAskDialog.dispose();
             this._canvas.clearPenStampCache();
         },
         //camera
@@ -263,8 +267,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //    this._canvas.clear();
         //},
         dispose: function () {
+            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowOrientationChangeHandler, this));
             this.onResize.dispose();
-            //override: to make sure a view is disposed by it's controller
+            SmartJs.Ui.Control.prototype.dispose.call(this);
         },
 
     });

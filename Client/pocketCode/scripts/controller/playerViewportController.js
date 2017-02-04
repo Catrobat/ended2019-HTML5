@@ -151,8 +151,8 @@ PocketCode.PlayerViewportController = (function () {
         initScene: function (id, screenSize, reinit) {
             this._view.initScene(id, screenSize, reinit);
         },
-        clearPenStampCache: function () {
-            this._view.clearPenStampCache();
+        clearViewport: function () {
+            this._view.clear();
         },
         takeScreenshot: function () {
             return this._view.getCanvasDataURL();
