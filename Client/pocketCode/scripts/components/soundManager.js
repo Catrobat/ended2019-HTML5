@@ -363,7 +363,7 @@ PocketCode.SoundManager = (function () {
         },
         pauseSound: function (sceneId, id) {
             var active = this._activeSounds[sceneId];
-            if (!sounds)
+            if (!active)
                 return;
 
             for (var i = 0, l = active.length; i < l; i++) {

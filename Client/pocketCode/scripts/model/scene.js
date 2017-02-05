@@ -2,7 +2,7 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="../components/userVariableHost.js" />
+/// <reference path="userVariableHost.js" />
 /// <reference path="../components/imageStore.js" />
 /// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/collisionManager.js" />
@@ -290,7 +290,8 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             //this._projectTimer.stop();
-            this._soundManager.stopAllSounds(this._id);
+            if (this._soundManager) //stop() may be called during dispose before loading the scene
+                this._soundManager.stopAllSounds(this._id);
 
             if (this._background) {
                 this._background.stopAllScripts();

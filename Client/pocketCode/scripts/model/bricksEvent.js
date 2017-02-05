@@ -69,19 +69,6 @@ PocketCode.Model.merge({
             broadcastMgr.subscribe(propObject.receiveMsgId, this._subscribeCallback.bind(this));//new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
 
-        //WhenBroadcastReceiveBrick.prototype.merge({
-        //    _onBroadcastHandler: function (e) {
-        //        if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-        //            //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
-        //            this._bricks.execute(e.listener, e.id);
-        //        }
-        //        else {
-        //            //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
-        //            this.executeEvent();
-        //        }
-        //    },
-        //});
-
         return WhenBroadcastReceiveBrick;
     })(),
 
@@ -93,40 +80,13 @@ PocketCode.Model.merge({
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
-
-            //this._paused = false;
-            //this._pendingOp = false;
-            //this._stopped = false;
         }
 
         BroadcastBrick.prototype.merge({
             _execute: function () {
-                //if (this._paused) {
-                //    this._pendingOp = true;
-                //    return;
-                //}
-                //if (this._stopped) {
-                //    this._stopped = false;
-                //    return;
-                //}
                 this._broadcastMgr.publish(this._broadcastMsgId);
                 this._return();
             },
-            //pause: function () {
-            //    this._paused = true;
-            //},
-            //resume: function () {
-            //    this._paused = false;
-            //    if (this._pendingOp) {
-            //        this._pendingOp = false;
-            //        this._execute();
-            //    }
-            //},
-            //stop: function () {
-            //    this._stopped = true;
-            //    this._paused = false;
-            //    this._pendingOp = false;
-            //},
         });
 
         return BroadcastBrick;
@@ -201,7 +161,6 @@ PocketCode.Model.merge({
                 window.clearTimeout(this._timeoutHandler);
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-                //this.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
             },
         });
 
@@ -218,12 +177,6 @@ PocketCode.Model.merge({
             physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
 
-        //WhenCollisionBrick.prototype.merge({
-        //    _onCollisionHandler: function (e) {
-        //        this.executeEvent();
-        //    }
-        //});
-
         return WhenCollisionBrick;
     })(),
 
@@ -237,25 +190,7 @@ PocketCode.Model.merge({
                 sprite.subscribeOnLookChange(propObject.lookId, this._subscribeCallback.bind(this));
             else
                 scene.subscribeToBackgroundChange(propObject.lookId, this._subscribeCallback.bind(this));
-            //changeEvent.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
         }
-
-        //WhenBackgroundChangesToBrick.prototype.merge({
-        //_lookChangeHandler: function (e) {
-        //    if (e && e.listener && e.id) {    //for changeAndWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-        //        //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
-        //        this._bricks.execute(e.listener, e.id);
-        //    }
-        //    else {
-        //        //the onExecuted event is only dispatched for simple changes - changeAndWait will always terminate befor the calling routine
-        //        this.executeEvent();
-        //    }
-        //},
-        //dispose: function () {
-        //    changeEvent.removeEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
-        //    PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-        //},
-        //});
 
         return WhenBackgroundChangesToBrick;
     })(),
@@ -268,7 +203,7 @@ PocketCode.Model.merge({
 
         function WhenStartAsCloneBrick(device, sprite, propObject) {
 
-            if (!(this._sprite instanceof PocketCode.Model.SpriteClone))
+            if (!(sprite instanceof PocketCode.Model.SpriteClone))
                 return;
             PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
         }

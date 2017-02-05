@@ -956,7 +956,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
         sprite._direction = -1.0;
         result = sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
-        assert.deepEqual(props, { flipX: false }, "turn back to flipX = false when switch to DO_NOT_ROTATE")
+        assert.notOk(props.flipX, "turn back to flipX = false when switch to DO_NOT_ROTATE");
         props = undefined;
 
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
@@ -1059,12 +1059,12 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         ];
 
     //simulate loading a json Project: setting required properties (internal)
-    gameEngine._originalScreenWidth = 50;
-    gameEngine._originalScreenHeight = 100;
-    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    scene._originalScreenWidth = 50;
+    scene._originalScreenHeight = 100;
+    scene._collisionManager = new PocketCode.CollisionManager(scene._originalScreenWidth, scene._originalScreenHeight);
 
-    var sh2 = gameEngine._originalScreenHeight * 0.5,
-        sw2 = gameEngine._originalScreenWidth * 0.5;
+    var sh2 = scene._originalScreenHeight * 0.5,
+        sw2 = scene._originalScreenWidth * 0.5;
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;    //inject image store
 
@@ -1916,18 +1916,18 @@ QUnit.test("PhysicsSprite", function (assert) {
     sprite.physicsType = value;
     assert.equal(sprite._physicsType, value, "movementStyle set correctly");
 
-    var x = 23;
-    var y = 234;
-    var setGravityCalled = false;
-    sprite._gameEngine.setGravity = function (gravityX, gravityY) {
-        setGravityCalled = gravityX === x && gravityY === y;
-    };
+    //var x = 23;
+    //var y = 234;
+    //var setGravityCalled = false;
+    //scene.setGravity = function (gravityX, gravityY) {
+    //    setGravityCalled = gravityX === x && gravityY === y;
+    //};
 
-    sprite.setGravity(x, y);
-    assert.ok(setGravityCalled, "set gravity sets gravity in GE");
+    //sprite.setGravity(x, y);
+    //assert.ok(setGravityCalled, "set gravity sets gravity in GE");
 
-    x = 84;
-    y = 2;
+    var x = 84;
+    var y = 2;
 
     sprite.setVelocity(x, y);
     assert.equal(sprite._velocityX, x, "velocityX set correctly");
@@ -1946,7 +1946,7 @@ QUnit.test("SpriteClone", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" });
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
 
     assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost, "instance check");
 
