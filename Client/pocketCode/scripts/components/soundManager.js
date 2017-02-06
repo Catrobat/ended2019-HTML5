@@ -16,6 +16,7 @@ PocketCode.SoundManager = (function () {
 
         this._id = SmartJs.getNewId() + '_';
         this._maxInstancesOfSameSound = 20;
+        this._supported = createjs.Sound.initializeDefaultPlugins();
 
         this._volume = 0.7;
         this._muted = false;
@@ -43,7 +44,9 @@ PocketCode.SoundManager = (function () {
     //properties
     Object.defineProperties(SoundManager.prototype, {
         supported: {
-            value: createjs.Sound.initializeDefaultPlugins(),
+            get: function () {
+                return this._supported;
+            },
         },
         volume: {
             get: function () {
@@ -292,14 +295,19 @@ PocketCode.SoundManager = (function () {
         abortLoading: function () {
             this._loading = false;
         },
-        startSound: function (sceneId, id, finishedCallback, loadedCallback) {
-            if (!this.supported)
+        startSound: function (sceneId, id, loadedCallback, finishedCallback) {
+            if (!this.supported) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
+            }
 
             try {
                 var soundInstance = createjs.Sound.createInstance(this._id + id);
             }
             catch (e) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
             }
             soundInstance.addEventListener('succeeded', createjs.proxy(function (e, sceneId, soundInstance) {
@@ -342,8 +350,12 @@ PocketCode.SoundManager = (function () {
             return soundInstance.uniqueId;
         },
         startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {
-            if (!this.supported)
+            if (!this.supported) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
+            }
+
             var soundId = SmartJs.getNewId();
             var success = this.loadSound(url, soundId, 'mp3', true, finishedCallback, loadedCallback);
             if (success)
