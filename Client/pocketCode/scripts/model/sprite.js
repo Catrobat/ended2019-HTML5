@@ -30,7 +30,7 @@ PocketCode.Model.Sprite = (function () {
         this._scene = scene;
         this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
         this._scripts = [];
@@ -1150,9 +1150,6 @@ PocketCode.Model.merge({
                 throw new Error('clone needs a defnition object to merge paroperties from original sprite');
 
             this._id = SmartJs.getNewId();
-
-            this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
-            this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
 
             //looks: a sprite doesn't always have a look
             if (jsonSprite.looks != undefined)

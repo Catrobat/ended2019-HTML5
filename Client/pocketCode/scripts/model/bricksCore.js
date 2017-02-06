@@ -434,6 +434,8 @@ PocketCode.Model.merge({
                     this._return(id, false);
             },
             _execute: function (id, scope) {
+                if (this._disposed)
+                    return;
                 this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id, scope);
             },
             _loopConditionMet: function (po) {

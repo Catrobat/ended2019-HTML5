@@ -16,12 +16,10 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, gameEngine, soundMgr, /*bricksTotal,*/ minLoopCycleTime) {
+        function SpriteFactory(device, gameEngine, soundMgr, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._soundMgr = soundMgr;
-            //this._bricksTotal = bricksTotal;
-            //this._bricksLoaded = 0;
             this._minLoopCycleTime = minLoopCycleTime || 20;
 
             this._unsupportedBricks = [];
@@ -93,7 +91,9 @@ PocketCode.merge({
                 return clone;
             },
             dispose: function () {
+                this._device = undefined;
                 this._gameEngine = undefined;
+                this._soundMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
@@ -105,7 +105,7 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, /*totalCount, loadedCount,*/ minLoopCycleTime) {
+        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._scene = scene;

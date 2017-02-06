@@ -47,7 +47,7 @@ PocketCode.Model.merge({
 
         WhenActionBrick.prototype.merge({
             _onActionHandler: function (e) {
-                if (e.sprite === this._sprite)
+                if (!e.sprite || e.sprite === this._sprite)
                     this.executeEvent(e);
             },
             dispose: function () {
@@ -87,6 +87,10 @@ PocketCode.Model.merge({
                 this._broadcastMgr.publish(this._broadcastMsgId);
                 this._return();
             },
+            dispose: function () {
+                this._broadcastMgr = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
         });
 
         return BroadcastBrick;
@@ -105,6 +109,10 @@ PocketCode.Model.merge({
         BroadcastAndWaitBrick.prototype.merge({
             _execute: function (id) {
                 this._broadcastMgr.publish(this._broadcastMsgId, this._return.bind(this, id));
+            },
+            dispose: function () {
+                this._broadcastMgr = undefined;
+                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
             },
         });
 
@@ -160,6 +168,7 @@ PocketCode.Model.merge({
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
                 this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+                this._onStart = undefined;
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
