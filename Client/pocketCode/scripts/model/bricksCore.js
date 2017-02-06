@@ -151,6 +151,8 @@ PocketCode.Model.merge({
                 this._return(false);
             },
             _return: function (loopDelay) {
+                if (this._disposed)
+                    return;
                 this._onExecutedListener.handler.call(this._onExecutedListener.scope, {
                     id: this._threadId,
                     loopDelay: loopDelay
