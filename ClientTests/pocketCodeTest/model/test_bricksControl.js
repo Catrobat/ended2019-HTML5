@@ -145,6 +145,8 @@ QUnit.test("WaitBrick", function (assert) {
 
 QUnit.test("NoteBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var b = new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._text === "s12", "brick created and properties set correctly");
@@ -156,6 +158,7 @@ QUnit.test("NoteBrick", function (assert) {
     var h = function (e) {
         id = e.id;
         loopDelay = e.loopDelay;
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(h, this), "sdf");
@@ -271,6 +274,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
@@ -297,7 +301,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = handler1LoopDelay || e.loopDelay;
         handler1CallId = e.id;
-
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(handler1, this), "if");
@@ -364,7 +368,6 @@ QUnit.test("IfThenElseBrick", function (assert) {
         assert.equal(e.id, "ifthenelse", "if-then-else: executed");
         assert.equal(e.loopDelay, true, "if-then-else: loop delay check");
         assert.deepEqual(b._pendingOps, {}, "pending ops cleared after onExecute");
-        done1();
 
         //this isn't a very nice way to test it but will generate an err if stop() does not work
         b.execute(new SmartJs.Event.EventListener(asyncHandler, this), "ifthenelse");
@@ -396,6 +399,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
 QUnit.test("WaitUntilBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var conditionTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
@@ -414,6 +418,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var testFinishedHandler1 = function (e) {   //simulating 1st thread
         assert.equal(e.id, "id_1", "thread 1: event argument: id");
         assert.equal(e.loopDelay, false, "thread 1: event argument: loopDelay");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "id_1");
 
@@ -425,7 +430,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
         assert.ok((new Date() - dateTime) > 50, "paused and resumed");
 
         b._condition = new PocketCode.Formula("device", sprite, conditionFalse);    //make sure both threads get executed even the condition is not met any more
-        done1();
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "id_1");
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "id_2");
@@ -626,6 +631,7 @@ QUnit.test("RepeatUntilBrick", function (assert) {
 
 
 QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
+
     var done1 = assert.async();
 
     var device = "device";
@@ -663,6 +669,7 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
 
 
 QUnit.test("StartSceneBrick", function (assert) {
+
     var done1 = assert.async();
 
     var device = "device";
@@ -697,6 +704,8 @@ QUnit.test("StartSceneBrick", function (assert) {
 
 QUnit.test("CloneBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
 
@@ -721,7 +730,8 @@ QUnit.test("CloneBrick", function (assert) {
         assert.ok(true, "executed");
         //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        assert.equal(latestCloneId, "23")
+        assert.equal(latestCloneId, "23");
+        done1();
     };
     cloneBrick.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
@@ -784,6 +794,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
 
 QUnit.test("StopScriptBrick", function (assert) {
+
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();

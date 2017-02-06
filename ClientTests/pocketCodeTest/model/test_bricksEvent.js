@@ -330,6 +330,7 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
 
 
 QUnit.test("WhenConditionMetBrick", function (assert) {
+
     var done1 = assert.async();
 
     var cond = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
@@ -349,7 +350,6 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     b._condition = new PocketCode.Formula("device", sprite, cond);
 
     //assert.ok(b._condition.calculate(), "2nd condition checked -> true");
-
 
     //add a brick container
     var bricks = [];
@@ -378,7 +378,6 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
 
     scene.onStart.dispatchEvent();  //make sure brick is active
-
 
     window.setTimeout(function () {
         assert.equal(tb1.executed, 1, "executed");
@@ -420,6 +419,7 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
 
 
 QUnit.test("WhenCollisionBrick", function (assert) {
+
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
@@ -558,11 +558,11 @@ QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
 
     assert.ok(true, "not called, if no registred lookId");
 
-
 });
 
 
 QUnit.test("WhenStartAsCloneBrick", function (assert) {
+
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
@@ -583,16 +583,16 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
 
     //test empty container
     var handlerCalled = 0;
-    function handler(e) {
+    var handler = function(e) {
         handlerCalled++;
         assert.equal(handlerCalled, 1, "execute empty container");
+        b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler));
         runTest2();
     }
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler));
     sprite.onCloneStart.dispatchEvent();
 
     function runTest2() {
-        b.onExecuted.removeEventListener(new SmartJs.Event.EventListener(handler));
 
         //add a brick container
         var bricks = [];
@@ -632,5 +632,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
         b.onExecuted.addEventListener(new SmartJs.Event.EventListener(asyncHandler));
 
         sprite.onCloneStart.dispatchEvent();
+
     }
+
 });

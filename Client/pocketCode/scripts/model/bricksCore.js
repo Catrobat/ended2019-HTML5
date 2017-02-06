@@ -175,6 +175,7 @@ PocketCode.Model.merge({
 
 PocketCode.Model.ThreadedBrick = (function () {
     ThreadedBrick.extends(PocketCode.Model.BaseBrick, false);
+
     function ThreadedBrick(device, sprite, propObject) {
         PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
@@ -251,6 +252,7 @@ PocketCode.Model.ThreadedBrick = (function () {
 
 PocketCode.Model.SingleContainerBrick = (function () {
     SingleContainerBrick.extends(PocketCode.Model.ThreadedBrick, false);
+
     function SingleContainerBrick(device, sprite, propObject) {
         PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
@@ -399,7 +401,6 @@ PocketCode.Model.merge({
 
         return ScriptBlock;
     })(),
-
 
     LoopBrick: (function () {
         LoopBrick.extends(PocketCode.Model.SingleContainerBrick, false);

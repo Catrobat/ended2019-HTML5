@@ -9,8 +9,7 @@ QUnit.test("BrickContainer", function (assert) {
 
     assert.expect(17);
     var done1 = assert.async();
-    //var done2 = assert.async();
-    //var done3 = assert.async();
+    var done2 = assert.async();
     var doneFinal = assert.async();
 
     var bc = new PocketCode.Model.BrickContainer();
@@ -24,11 +23,8 @@ QUnit.test("BrickContainer", function (assert) {
         handler1CallId = e.id;
 
         assert.ok(handler1Called, "handler called");
-        //done1();
         assert.ok(handler1LoopDelay, "loopDelay handled corrrectly");
-        //done2();
         assert.ok(handler1CallId === "newId", "call id handled corrrectly");
-        //done3();
         done1();
         proceedTests();
     };
@@ -41,6 +37,7 @@ QUnit.test("BrickContainer", function (assert) {
         handler1Called = true;
         handler1LoopDelay = e.loopDelay;
         handler1CallId = e.id;
+        done2();
     };
     bc.execute(new SmartJs.Event.EventListener(handler2, this), "pc234");    //call on empty container
     assert.ok(handler1Called, "empty container: handler called");
@@ -51,7 +48,6 @@ QUnit.test("BrickContainer", function (assert) {
     handler1Called = false;
     handler1LoopDelay = false;
     handler1CallId = undefined;
-
 
     var TestBrick = (function () {
         TestBrick.extends(PocketCode.Model.ThreadedBrick, false);
@@ -124,7 +120,6 @@ QUnit.test("BrickContainer", function (assert) {
 
     bc.execute(l1, "newId");
 
-
     function proceedTests() {
         var count = 0;
         for (p in bc._pendingOps)
@@ -162,8 +157,6 @@ QUnit.test("BrickContainer", function (assert) {
                 break;
         }
         assert.ok(disposed, "all bricks (including sub bricks) disposed");
-
-        //TODO: bc.execute(l1, "newId");
 
         doneFinal();
     }
@@ -439,7 +432,9 @@ QUnit.test("ScriptBlock", function (assert) {
     };
 
     b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
-    done1(); return; //TODO
+    done1();
+    return; //TODO
+
     b.execute();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
     var execState = b.executionState;

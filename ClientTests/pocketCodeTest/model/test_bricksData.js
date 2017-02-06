@@ -10,6 +10,9 @@ QUnit.module("model/bricksData.js");
 
 QUnit.test("SetVariableBrick", function (assert) {
 
+    var done1 = assert.async();
+    var done2 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
@@ -33,6 +36,7 @@ QUnit.test("SetVariableBrick", function (assert) {
         assert.equal(loopDelay, false, "loop delay check");
 
         assert.equal(sprite.getVariable("var1").value, 1.0, "variable set correctly (local)");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "setVar");
@@ -49,6 +53,7 @@ QUnit.test("SetVariableBrick", function (assert) {
 
         assert.equal(gameEngine.getVariable("var1").value, 1.0, "variable set correctly (global)");
         assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "setGlobalVar");
 
@@ -56,6 +61,10 @@ QUnit.test("SetVariableBrick", function (assert) {
 
 
 QUnit.test("ChangeVariableBrick", function (assert) {
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -81,6 +90,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
         assert.equal(loopDelay, false, "loop delay check");
 
         assert.equal(sprite.getVariable("var1").value, 2.0, "variable set correctly (local)");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "changeVar");
@@ -90,6 +100,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "varUnset", value: value });
     var executedHandlerBool = function (e) {
         assert.equal(sprite.getVariable("varUnset").value, true, "variable set correctly: change with not numeric");
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandlerBool, this), "id");
 
@@ -105,12 +116,15 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
         assert.equal(gameEngine.getVariable("var1").value, 2.0, "variable set correctly (global)");
         assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
+        done3();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });
 
 
 QUnit.test("ShowVariableBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -138,16 +152,20 @@ QUnit.test("ShowVariableBrick", function (assert) {
         assert.equal(e.id, "showText", "event args id correct");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "showText");
 
     assert.equal(methodCalled.id, "var1", "sprite interface called: id checked");
     assert.equal(methodCalled.x, 1, "sprite interface called: positionX checked");
     assert.equal(methodCalled.y, 2, "sprite interface called: positionY checked");
+
 });
 
 
 QUnit.test("HideVariableBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -172,6 +190,7 @@ QUnit.test("HideVariableBrick", function (assert) {
         assert.equal(e.id, "hideText", "event args id correct");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "hideText");
 
@@ -181,6 +200,8 @@ QUnit.test("HideVariableBrick", function (assert) {
 
 
 QUnit.test("AppendToListBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -209,6 +230,7 @@ QUnit.test("AppendToListBrick", function (assert) {
 
         var list = sprite.getList("list1");
         assert.equal(list.valueAt(4), 1.0, "list append");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "AppendToList");
@@ -217,6 +239,8 @@ QUnit.test("AppendToListBrick", function (assert) {
 
 
 QUnit.test("DeleteAtListBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -244,6 +268,7 @@ QUnit.test("DeleteAtListBrick", function (assert) {
         assert.equal(list.valueAt(1), 0, "list delete: 1st item");
         assert.equal(list.valueAt(2), 2, "list delete: 2nd item: moved 3rd to 2nd (+ cast to number)");
         assert.equal(list.length, 2, "list length after delete");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "DeleteAt");
@@ -252,6 +277,8 @@ QUnit.test("DeleteAtListBrick", function (assert) {
 
 
 QUnit.test("InsertAtListBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -282,6 +309,7 @@ QUnit.test("InsertAtListBrick", function (assert) {
         var list = sprite.getList("list1");
         assert.equal(list.valueAt(2), 1.0, "list insert");
         assert.equal(list.length, 4, "list length after insert");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "InsertAt");
@@ -290,6 +318,8 @@ QUnit.test("InsertAtListBrick", function (assert) {
 
 
 QUnit.test("ReplaceAtListBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -320,10 +350,10 @@ QUnit.test("ReplaceAtListBrick", function (assert) {
         var list = sprite.getList("list1");
         assert.equal(list.valueAt(3), 1.0, "list replace");
         assert.equal(list.length, 3, "list length after replace");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "ReplaceAt");
 
 });
-
 

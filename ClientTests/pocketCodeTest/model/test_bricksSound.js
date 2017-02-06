@@ -10,6 +10,8 @@ QUnit.module("model/bricksSound.js");
 
 QUnit.test("PlaySoundBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
@@ -28,6 +30,7 @@ QUnit.test("PlaySoundBrick", function (assert) {
         assert.ok(true, "executed");
         assert.ok(e.loopDelay === undefined || e.loopDelay === false, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
