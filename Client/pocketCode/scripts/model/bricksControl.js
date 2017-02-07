@@ -328,13 +328,15 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
+            this._ofMyself = propObject.ofMyself;
             this._cloneId = propObject.spriteId;
         }
 
         CloneBrick.prototype.merge({
             _execute: function () {
                 //todo: bubbles
-                this._return(this._scene.cloneSprite(this._cloneId));
+                var id = this._ofMyself ? this._sprite.id : this._cloneId;
+                this._return(this._scene.cloneSprite(id));
             },
             dispose: function () {
                 this._scene = undefined;

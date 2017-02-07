@@ -2,11 +2,11 @@
 
 class CloneBrickDto extends BaseBrickDto {
 
+    public $ofMyself = false;
     public $spriteId;
 
-    public function __construct($spriteId, $commentedOut = false) {
+    public function __construct($commentedOut = false) {
         parent::__construct("Clone", $commentedOut);
 
-        $this->spriteId = $spriteId;
     }
 }
