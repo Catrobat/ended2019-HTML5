@@ -510,8 +510,12 @@ PocketCode.merge({
                     if (this._project && this._project.onLoadingError)
                         this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
                     //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
-                    for (var page in this._pages)   //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
+
+                    this._currentPage = undefined;
+                    for (var page in this._pages) {  //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
                         this._pages[page].dispose();
+                        delete this._pages[page];
+                    }
 
                     SmartJs.Components.Application.prototype.dispose.call(this);    //call super()
                 },
