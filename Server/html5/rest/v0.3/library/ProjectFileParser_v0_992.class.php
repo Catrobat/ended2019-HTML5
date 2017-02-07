@@ -1291,20 +1291,20 @@ class ProjectFileParser_v0_992
 
             // Create clone of
             case "CloneBrick":
-                $brick;// = new CloneBrickDto();
+                $brick = new CloneBrickDto();
                 if(property_exists($script, "objectToClone")) {
                     $spriteXml = $this->getObject($script->objectToClone, $this->cpp);
 					$name = $this->getName($spriteXml);
 					foreach($this->currentScene->sprites as $s) {
 						if($s->name === $name)
 						{
-							$brick = new CloneBrickDto($s->id);
+							$brick->spriteId = $s->id;
 							break;
 						}
 					}
                 }
                 else {
-                    $brick = new CloneBrickDto((string)$this->currentSprite->id);
+                    $brick->ofMyself = true;
                 }
                 break;
 
