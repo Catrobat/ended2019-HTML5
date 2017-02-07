@@ -187,7 +187,7 @@ PocketCode.Model.Scene = (function () {
             this._onProgressChange.dispatchEvent({ bricksLoaded: this._bricksLoaded });
         },
         _spriteFactoryOnUnsupportedBricksFoundHandler: function (e) {
-            this._unsupportedBricks.concat(e.unsupportedBricks);
+            this._unsupportedBricks = this._unsupportedBricks.concat(e.unsupportedBricks);
         },
         initializeSprites: function () {
             var bg = this._background,

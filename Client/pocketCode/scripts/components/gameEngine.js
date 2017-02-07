@@ -325,7 +325,7 @@ PocketCode.GameEngine = (function () {
             }
         },
         _sceneUnsupportedBricksHandler: function (e) {
-            this._loadingAlerts.unsupportedBricks.concat(e.unsupportedBricks);
+            this._loadingAlerts.unsupportedBricks = this._loadingAlerts.unsupportedBricks.concat(e.unsupportedBricks);
             //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
         },
         //todo this initsialises all spritest from all scenes -> might be too much
