@@ -586,8 +586,6 @@ PocketCode.Device = (function () {
             var e,
                 history = this._touchEvents.history,
                 pos = {};
-            if (Object.keys(obj).length == 0)   //quick check
-                return pos;
 
             for (var i = history.length - 1; i >= 0; i--) {
                 if (history[i].active)

@@ -459,7 +459,7 @@ PocketCode.Model.merge({
             _execute: function () {
                 if (this._turnOn) {
                     this._device._cam.setType(PocketCode.CameraType.BACK);
-                    //this._return(this._device.startCamera());
+                    this._return(this._device.startCamera());
                 }
                 else
                    // this._return(this._device.stopCamera());
