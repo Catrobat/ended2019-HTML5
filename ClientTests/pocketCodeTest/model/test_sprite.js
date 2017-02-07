@@ -240,6 +240,7 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
 
     // ********************* isBackground/pen *********************
+
     var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
 
     //isBackground Tests

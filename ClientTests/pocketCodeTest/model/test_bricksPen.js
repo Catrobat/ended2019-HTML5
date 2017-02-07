@@ -123,6 +123,7 @@ QUnit.test("SetPenColorBrick", function (assert) {
 
 QUnit.test("StampBrick", function (assert) {
 
+
     var done1 = assert.async();
 
     var device = "device";
