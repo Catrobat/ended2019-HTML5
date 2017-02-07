@@ -189,10 +189,16 @@ QUnit.test("GoToBrick", function (assert) {
     var done2 = assert.async();
     var done3 = assert.async();
 
-    var device = "device";
+    var soundMgr = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundMgr);
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, device, soundMgr, []);
+    scene._originalScreenWidth = 300; //set internal: used for random position calculation 
+    scene._originalScreenHeight = 800;
+
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id", name: "spriteName2" });
+    scene._sprites = [sprite, sprite2];  //add to scene to set position
 
     var b = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "sprite", spriteId: "id" });
     var c = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "pointer", spriteId: "id" });

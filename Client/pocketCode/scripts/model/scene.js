@@ -2,7 +2,7 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="../components/userVariableHost.js" />
+/// <reference path="userVariableHost.js" />
 /// <reference path="../components/imageStore.js" />
 /// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/collisionManager.js" />
@@ -16,6 +16,7 @@ PocketCode.Model.Scene = (function () {
 
     function Scene(gameEngine, device, soundManager, jsonBroadcasts, minLoopCycleTime) {
 
+        //TODO: argument validation
         if (!(jsonBroadcasts instanceof Array))
             throw new Error('setter expects type Array');
 
@@ -25,7 +26,7 @@ PocketCode.Model.Scene = (function () {
         this._background = undefined;
         this._sprites = [];
         this._originalSpriteOrder = [];
-        this._minLoopCycleTime = minLoopCycleTime || 20; //ms //todo param?
+        this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._device = device;
 
         this._soundManager = soundManager;
@@ -225,9 +226,23 @@ PocketCode.Model.Scene = (function () {
                 this._spriteOnExecutedHandler();    //make sure an empty program terminates
             return true;
         },
-        pause: function () {
-            if (this._executionState !== PocketCode.ExecutionState.RUNNING)
-                return false;
+        pause: function (forUserInteraction) {
+            if (forUserInteraction) {
+                if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                    return false;
+                else if (this._executionState == PocketCode.ExecutionState.PAUSED) {
+                    this._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;
+                    return true;
+                }
+                else if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+                    return false;
+            }
+            else {
+                if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                    return true;
+                else if (this._executionState !== PocketCode.ExecutionState.RUNNING)
+                    return false;
+            }
 
             //this._projectTimer.pause();
             this._soundManager.pauseSounds(this._id);
@@ -239,16 +254,25 @@ PocketCode.Model.Scene = (function () {
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].pauseScripts();
             }
-            this._executionState = PocketCode.ExecutionState.PAUSED;
+            if (forUserInteraction)
+                this._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;
+            else
+                this._executionState = PocketCode.ExecutionState.PAUSED;
             return true;
         },
-        pauseAndShowAskDialog: function (question, callbackListener) {
-            //TODO: 
-        },
-        resume: function () {
-            if (this._executionState !== PocketCode.ExecutionState.PAUSED)
-                return false;
+        resume: function (forUserInteraction) {
+            if (forUserInteraction) {
+                if (this._executionState !== PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                    return false;
+            }
+            else {
+                if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
+                    return true;
+                else if (this._executionState !== PocketCode.ExecutionState.PAUSED)
+                    return false;
+            }
 
+            this._executionState = PocketCode.ExecutionState.RUNNING;   //important: because pause can be set again during resume
             //this._projectTimer.resume();
             this._soundManager.resumeSounds(this._id);
 
@@ -259,7 +283,6 @@ PocketCode.Model.Scene = (function () {
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].resumeScripts();
             }
-            this._executionState = PocketCode.ExecutionState.RUNNING;
             return true;
         },
         stop: function () {
@@ -267,7 +290,8 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             //this._projectTimer.stop();
-            this._soundManager.stopAllSounds(this._id);
+            if (this._soundManager) //stop() may be called during dispose before loading the scene
+                this._soundManager.stopAllSounds(this._id);
 
             if (this._background) {
                 this._background.stopAllScripts();
@@ -280,25 +304,25 @@ PocketCode.Model.Scene = (function () {
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
-        //    window.setTimeout(function () {
-        //        if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
-        //            return;
-        //        if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
-        //            return; //still waiting for user interaction
+            //    window.setTimeout(function () {
+            //        if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
+            //            return;
+            //        if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
+            //            return; //still waiting for user interaction
 
-        //        //if (this._soundManager.isPlaying)
-        //        //    return;
-        //        if (this._background && this._background.scriptsRunning)
-        //            return;
-        //        var sprites = this._sprites;
-        //        for (var i = 0, l = sprites.length; i < l; i++) {
-        //            if (sprites[i].scriptsRunning)
-        //                return;
-        //        }
+            //        //if (this._soundManager.isPlaying)
+            //        //    return;
+            //        if (this._background && this._background.scriptsRunning)
+            //            return;
+            //        var sprites = this._sprites;
+            //        for (var i = 0, l = sprites.length; i < l; i++) {
+            //            if (sprites[i].scriptsRunning)
+            //                return;
+            //        }
 
-        //        this._executionState = PocketCode.ExecutionState.STOPPED;
-        //        this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
-        //    }.call(this), 100);  //delay neede to allow other scripts to start
+            //        this._executionState = PocketCode.ExecutionState.STOPPED;
+            //        this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
+            //    }.call(this), 100);  //delay neede to allow other scripts to start
         },
         handleUserAction: function (e) {
             switch (e.action) {
@@ -409,6 +433,10 @@ PocketCode.Model.Scene = (function () {
                     return false;
             }
         },
+        //ask
+        showAskDialog: function (question, callback) {
+            this._onSpriteUiChange.dispatchEvent({ properties: { showAskDialog: true, question: question, callback: callback } });
+        },
         //pen
         clearPenStampBackground: function () {
             this._onSpriteUiChange.dispatchEvent({ properties: { clearBackground: true } });
@@ -423,9 +451,8 @@ PocketCode.Model.Scene = (function () {
                 layer = this.getSpriteLayer(sprite),
                 clone = sprite.clone(this._device, this._soundManager, this._broadcastMgr);
 
-            this._sprites.insert(layer-1, clone); //adding at position from original sprite
+            this._sprites.insert(layer - 1, clone); //adding at position from original sprite
 
-            //todo: test: count dispatch
             this._onUiChange.dispatchEvent();   //to include clone in rendering sprites
             clone.onCloneStart.dispatchEvent();
             return true;

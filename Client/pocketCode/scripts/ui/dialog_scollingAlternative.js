@@ -91,33 +91,42 @@ PocketCode.Ui.Dialog = (function () {
             setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 0);
             //make sure the scroll position is updated after strings were replaced
         },
-        _createLayout: function () {
+        _createLayout: function (usingScrollContainer) {
             var background = document.createElement('div');
             background.className = 'pc-dialogOverlay';
             this._dom.appendChild(background);
 
-            var layout = document.createElement('div');
-            layout.className = 'pc-webLayout';
-            this._dom.appendChild(layout);
-
-            var layoutRow = document.createElement('div');
-            layoutRow.className = 'pc-webLayoutRow';
+            if (true) {//usingScrollContainer) {
+                var scrollContainer = new PocketCode.Ui.ScrollContainer();
+                var layout = new SmartJs.Ui.ContainerControl({ className: 'pc-webLayout' });
+                scrollContainer.appendChild(layout);
+                this._appendChild(scrollContainer);
+            }
+            else {
+                var layout = new SmartJs.Ui.ContainerControl({ className: 'pc-webLayout' });
+                //var layout = document.createElement('div');
+                //layout.className = 'pc-webLayout';
+                //this._dom.appendChild(layout);
+                this._appendChild(layout);
+            }
+            var layoutRow = new SmartJs.Ui.ContainerControl({ className: 'pc-webLayoutRow' }); //document.createElement('div');
+            //layoutRow.className = 'pc-webLayoutRow';
             layout.appendChild(layoutRow);
 
-            var col = document.createElement('div');
-            col.className = 'pc-dialogCol';
+            var col = new SmartJs.Ui.Control('div', { className: 'pc-dialogCol' }); //document.createElement('div');
+            //col.className = 'pc-dialogCol';
             layoutRow.appendChild(col);
 
-            var center = document.createElement('div');
-            center.className = 'pc-centerCol';
+            var center = new SmartJs.Ui.ContainerControl({ className: 'pc-centerCol' }); //document.createElement('div');
+            //center.className = 'pc-centerCol';
             layoutRow.appendChild(center);
 
-            col = document.createElement('div');
-            col.className = 'pc-dialogCol';
+            col = new SmartJs.Ui.Control('div', { className: 'pc-dialogCol' }); //document.createElement('div');
+            //col.className = 'pc-dialogCol';
             layoutRow.appendChild(col);
 
             var dialog = this._dialog;
-            center.appendChild(dialog._dom);
+            center.appendChild(dialog);
 
             this.appendChild(this._messageTextNode);
             dialog.appendChild(this._header);
@@ -172,19 +181,23 @@ PocketCode.Ui.merge({
         function AskDialog(question) {
             PocketCode.Ui.Dialog.call(this);
 
-            this._minHeight = 250;
-            if (SmartJs.Device.isMobile) {
-                this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
-                this.style.minHeight = (this._minHeight + 2 * this._marginTopBottom) + 'px';
-            }
-
+            //if (SmartJs.Device.isMobile) {
+            //    this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
+            //    this.style.minHeight = (this._minHeight + 2 * this._marginTopBottom) + 'px';
+            //}
+            //else {
             this._captionTextNode.dispose();
             this._captionTextNode = new SmartJs.Ui.TextNode(question);
 
             this._scrollContainer = new PocketCode.Ui.ScrollContainer();
             this._header.className = 'pc-askDialogHeader';
-            this._header.appendChild(this._scrollContainer);  //scrollcontainer in header
-            this._scrollContainer.appendChild(this._captionTextNode);
+            if (SmartJs.Device.isMobile) {
+                this._header.appendChild(this._captionTextNode);
+            }
+            else {
+                this._header.appendChild(this._scrollContainer);  //scrollcontainer in header
+                this._scrollContainer.appendChild(this._captionTextNode);
+            }
             var dir = PocketCode.I18nProvider.getTextDirection(question);
             this._header._dom.dir = dir;    //no public accessor available
 
@@ -194,6 +207,7 @@ PocketCode.Ui.merge({
             var layout = new SmartJs.Ui.ContainerControl();
             layout.appendChild(this._messageTextNode);
             this._container.appendChild(layout);
+            //}
 
             this._answerInput = new SmartJs.Ui.HtmlTag('input');
             this._answerInput.setDomAttribute('dir', 'auto');
@@ -212,6 +226,13 @@ PocketCode.Ui.merge({
                 this._onSubmit.dispatchEvent({ answer: this.answer });
             }, this));
             this.addButton(this._btnSubmit);
+
+            if (SmartJs.Device.isMobile) {
+                //this._minHeight = 250;
+            }
+            else {
+                this._minHeight = 250;
+            }
 
             //event
             this._onSubmit = new SmartJs.Event.Event(this);

@@ -80,8 +80,8 @@ PocketCode.merge({
                 set: function (value) {
                     if (!value)
                         this._text = this._UNDEFINED_TEXT.toString();
-                    else if (typeof value == 'number' && Math.round(value) == value)
-                        this._text = value.toString() + '.0';   //include 1 decimal for integers
+                    //else if (typeof value == 'number' && Math.round(value) == value)
+                    //    this._text = value.toString() + '.0';   //include 1 decimal for integers
                     else
                         this._text = value.toString();
                 },
@@ -95,7 +95,7 @@ PocketCode.merge({
             },
             _drawTextBlock: function (ctx, maxWidth, x, y) {
                 x = x || this.x;
-                y = y || this.y;
+                y = -y || -this.y;
                 var newLines = this._text.split(/\r?\n/),
                     line = '',
                     //lineWidth = 0,
@@ -123,7 +123,7 @@ PocketCode.merge({
                                 ctx.fillText(line.trim(), x, y);
                                 //maxLineWidth = Math.max(maxLineWidth, lineWidth);
                                 //lineWidth = metrics.width - lineWidth;
-                                y += this._lineHeight;
+                                y -= this._lineHeight;
                                 line = testLine = words[n] + ' ';
                                 //testLine = '';
                                 //lineWidth = metrics.width;
@@ -135,7 +135,7 @@ PocketCode.merge({
                         //lineWidth = 0;
                         testLine = '';
                     }
-                    y += this._lineHeight;
+                    y -= this._lineHeight;
                 }
                 //return { width: Math.ceil(maxLineWidth), height: y - lineHeight };
             },
@@ -160,7 +160,7 @@ PocketCode.merge({
                     this._drawTextBlock(ctx, maxWidth);
                 }
                 else //draw in one line
-                    ctx.fillText(text, this.x, this.y);
+                    ctx.fillText(text, this.x, -this.y);
 
                 //if maxWidth: check for breaks
                 //if rtl: and breaks

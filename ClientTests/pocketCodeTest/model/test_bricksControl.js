@@ -145,6 +145,8 @@ QUnit.test("WaitBrick", function (assert) {
 
 QUnit.test("NoteBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var b = new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" });
 
     assert.ok(b._device === "device" && b._sprite === "sprite" && b._text === "s12", "brick created and properties set correctly");
@@ -156,6 +158,7 @@ QUnit.test("NoteBrick", function (assert) {
     var h = function (e) {
         id = e.id;
         loopDelay = e.loopDelay;
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(h, this), "sdf");
@@ -271,6 +274,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     //assert.expect(10);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
@@ -297,7 +301,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
         handler1Called = true;
         handler1LoopDelay = handler1LoopDelay || e.loopDelay;
         handler1CallId = e.id;
-
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(handler1, this), "if");
@@ -364,7 +368,6 @@ QUnit.test("IfThenElseBrick", function (assert) {
         assert.equal(e.id, "ifthenelse", "if-then-else: executed");
         assert.equal(e.loopDelay, true, "if-then-else: loop delay check");
         assert.deepEqual(b._pendingOps, {}, "pending ops cleared after onExecute");
-        done1();
 
         //this isn't a very nice way to test it but will generate an err if stop() does not work
         b.execute(new SmartJs.Event.EventListener(asyncHandler, this), "ifthenelse");
@@ -396,6 +399,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
 QUnit.test("WaitUntilBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var conditionTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
@@ -414,6 +418,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var testFinishedHandler1 = function (e) {   //simulating 1st thread
         assert.equal(e.id, "id_1", "thread 1: event argument: id");
         assert.equal(e.loopDelay, false, "thread 1: event argument: loopDelay");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "id_1");
 
@@ -425,7 +430,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
         assert.ok((new Date() - dateTime) > 50, "paused and resumed");
 
         b._condition = new PocketCode.Formula("device", sprite, conditionFalse);    //make sure both threads get executed even the condition is not met any more
-        done1();
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "id_1");
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "id_2");
@@ -567,6 +572,12 @@ QUnit.test("RepeatUntilBrick", function (assert) {
     assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._minLoopCycleTime === 24, "brick created and properties set correctly");   //timesToRepeat is parsed to get a formula object
     assert.ok(b instanceof PocketCode.Model.RepeatUntilBrick && b instanceof PocketCode.Model.LoopBrick, "instance check");
     assert.ok(b.objClassName === "RepeatUntilBrick", "objClassName check");
+    assert.ok(b._condition instanceof PocketCode.Formula, "formula created");
+
+    b.dispose();
+    assert.ok(b._disposed, "disposed");
+    //recreate
+    b = new PocketCode.Model.RepeatUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
     //validation = false
     var TestBrick = (function () {
@@ -620,6 +631,7 @@ QUnit.test("RepeatUntilBrick", function (assert) {
 
 
 QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
+
     var done1 = assert.async();
 
     var device = "device";
@@ -657,6 +669,7 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
 
 
 QUnit.test("StartSceneBrick", function (assert) {
+
     var done1 = assert.async();
 
     var device = "device";
@@ -691,6 +704,8 @@ QUnit.test("StartSceneBrick", function (assert) {
 
 QUnit.test("CloneBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
 
@@ -715,7 +730,8 @@ QUnit.test("CloneBrick", function (assert) {
         assert.ok(true, "executed");
         //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        assert.equal(latestCloneId, "23")
+        assert.equal(latestCloneId, "23");
+        done1();
     };
     cloneBrick.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 });
@@ -727,7 +743,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
 
     var cloneBrick = new PocketCode.Model.DeleteCloneBrick(device, "sprite", scene, { id: "2" });
 
@@ -754,32 +770,6 @@ QUnit.test("DeleteCloneBrick", function (assert) {
         scene.initializeSprites();  //images already loaded- initilaze look objects
         sprite = scene._sprites[0];
 
-        sprite.penDown = true;
-        sprite.penSize = 6;
-        sprite.penColor = { r: 255, g: 20, b: 20 };
-        sprite.setPositionX(300);
-        sprite.setPositionY(100);
-        sprite.turnLeft(-10);
-        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
-        sprite.nextLook();  //set this._currentLook
-        sprite.setSize(50);
-        sprite.hide();
-        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
-        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 20);
-        sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 30);
-        // show/hide bubble
-
-        var variable1 = sprite.getVariable("s20");
-        variable1.value = 5;
-        var variable2 = sprite.getVariable("s21");
-        variable2.value = 10;
-        var list1 = sprite.getList("s22");
-        list1.append("test");
-        list1.append(34);
-        var list2 = sprite.getList("s23");
-        list2.append("test2");
-        list2.append(1);
-
         scene.start();
         setTimeout(validateClone, 10);
     }
@@ -787,94 +777,79 @@ QUnit.test("DeleteCloneBrick", function (assert) {
     function validateClone() {
         clone = scene._sprites[0];
 
-        //check looks
-        assert.ok(clone._penDown == sprite._penDown &&
-            clone._penSize == sprite._penSize &&
-            clone._penColor.b == sprite._penColor.b &&
-            clone._penColor.r == sprite._penColor.r &&
-            clone._penColor.g == sprite._penColor.g &&
-            clone._penColor != sprite._penColor &&
-            clone.positionX == sprite.positionX &&
-            clone.positionY == sprite.positionY &&
-            clone._lookOffsetX == sprite._lookOffsetX &&
-            clone._lookOffsetY == sprite._lookOffsetY &&
-            clone.direction == sprite.direction &&
-            clone.rotationStyle == sprite.rotationStyle &&
-            clone.size == sprite.size &&
-            clone.visible == sprite.visible &&
-            clone.transparency == sprite.transparency &&
-            clone.brightness == sprite.brightness &&
-            clone.colorEffect == sprite.colorEffect, "set properties correct");
+        assert.equal(scene._sprites.length, 2, "clone added to list");
+        var deleteCloneBrick = new PocketCode.Model.DeleteCloneBrick(device, clone, scene, { id: "2" });
 
-        assert.equal(clone._currentLook.id, sprite._currentLook.id, "current look id set");
-        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Look objects");
-
-        assert.ok(clone._scripts.length > 0, "brick created");
-        assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
-            clone.getVariable("s21") !== sprite.getVariable("s21") &&
-            clone.getList("s22")._value !== sprite.getList("s22")._value &&
-            clone.getList("s23")._value !== sprite.getList("s23")._value, "Variables and Lists created");
-
-        assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
-            clone.getVariable("s21").value == sprite.getVariable("s21").value &&
-            clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
-            clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
-            clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
-            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1], "Variables and List values set");
-
-        var list1 = sprite.getList("s22");
-        list1.replaceAt(2, 40);
-
-        assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
-
-        assert.ok(clone instanceof PocketCode.Model.SpriteClone, "clone create successful");
-        done1();
+        //execute
+        var handler = function (e) {
+            assert.ok(clone._disposed, "disposed on delete");
+            //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+            assert.equal(scene._sprites.length, 1, "clone deleted from list");
+            done1();
+        };
+        deleteCloneBrick.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
     }
 
 });
 
 
 QUnit.test("StopScriptBrick", function (assert) {
-    //assert.ok(false, "TODO");
+
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
+    var b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "this" });
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.StopScriptBrick, "instance check");
+    assert.ok(b.objClassName === "StopScriptBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.Model.StopScriptType.THIS, "type set: THIS");
+
+    b.dispose();
+    assert.ok(b._disposed, "disposed");
+    //recreate
+    b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "this" });
+    assert.ok(typeof sprite.stopScript == "function", "stopScript: sprite interface check");
+    var stoppedScriptId;
+    sprite.stopScript = function (id) { //override
+        stoppedScriptId = id;
+    }
+
+    assert.ok(typeof sprite.stopAllScripts == "function", "stopScripts: sprite interface check");
+    var stopScriptsCalled = 0,
+        stoppedScriptsExceptId;
+    sprite.stopAllScripts = function (id) { //override
+        stopScriptsCalled++;
+        stoppedScriptsExceptId = id;
+    }
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick1._id = "first";
     var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick2._id = "second";
     var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
-    brick2._bricks._bricks.push(testBrick);
+    brick2._bricks._bricks.push(testBrick); //add to brick container
 
     var tmpBricks = [];
     tmpBricks[0] = brick1;
     tmpBricks[1] = brick2;
     sprite.scripts = tmpBricks;
 
-    var b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "this" });
     var c = new PocketCode.Model.StopScriptBrick(device, sprite, "", { scriptType: "all" });
+    assert.equal(c._type, PocketCode.Model.StopScriptType.ALL, "type set: ALL");
+
     var d = new PocketCode.Model.StopScriptBrick(device, sprite, "first", { scriptType: "other" });
+    assert.equal(d._type, PocketCode.Model.StopScriptType.OTHER, "type set: OTHER");
 
-    assert.ok(b._device === device && b._sprite === sprite, "THIS brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.StopScriptBrick, "THIS instance check");
-    assert.ok(b.objClassName === "StopScriptBrick", "THIS objClassName check");
-
-    assert.ok(c._device === device && c._sprite === sprite, "ALL brick created and properties set correctly");
-    assert.ok(c instanceof PocketCode.Model.StopScriptBrick, "ALL instance check");
-    assert.ok(c.objClassName === "StopScriptBrick", "ALL objClassName check");
-
-    assert.ok(d._device === device && d._sprite === sprite, "OTHER brick created and properties set correctly");
-    assert.ok(d instanceof PocketCode.Model.StopScriptBrick, "OTHER instance check");
-    assert.ok(d.objClassName === "StopScriptBrick", "OTHER objClassName check");
 
     //execute
+    assert.ok(false, "TODO");
+
     var handlerThis = function (e) {
         assert.ok(true, "THIS executed");
         assert.equal(typeof e.loopDelay, "boolean", "THIS loopDelay received");
@@ -893,15 +868,13 @@ QUnit.test("StopScriptBrick", function (assert) {
         assert.equal(e.id, "thread_id", "OTHER threadId handled correctly");
         done3();
     };
-    b.execute(new SmartJs.Event.EventListener(handlerThis, this), "thread_id");
-    c.execute(new SmartJs.Event.EventListener(handlerAll, this), "thread_id");
-    d.execute(new SmartJs.Event.EventListener(handlerOther, this), "thread_id");
+    //b.execute(new SmartJs.Event.EventListener(handlerThis, this), "thread_id");
+    //c.execute(new SmartJs.Event.EventListener(handlerAll, this), "thread_id");
+    //d.execute(new SmartJs.Event.EventListener(handlerOther, this), "thread_id");
 
+    done1();
+    done2();
+    done3();
 
-});
-
-
-QUnit.test("RepeatUntilBrick", function (assert) {
-    assert.ok(false, "TODO");
 });
 

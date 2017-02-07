@@ -15,15 +15,15 @@ PocketCode.PhysicsWorld = (function () {
         this._collisionManager = scene.collisionManager;
     }
 
-    //properties
-    Object.defineProperties(PhysicsWorld.prototype, {
+    ////properties
+    //Object.defineProperties(PhysicsWorld.prototype, {
 
-    });
+    //});
 
-    //events
-    Object.defineProperties(PhysicsWorld.prototype, {
+    ////events
+    //Object.defineProperties(PhysicsWorld.prototype, {
 
-    });
+    //});
 
     //methods
     PhysicsWorld.prototype.merge({
@@ -31,8 +31,8 @@ PocketCode.PhysicsWorld = (function () {
             this._physicsSprites[spriteId] = physicsEnabled;
         },
         subscribeCollision: function (sprite1, sprite2, listener) {
-            if (!sprite1 /*|| !sprite2 */ || !listener)   //TODO: if (!sprite2)   => 'any', does this mean any physics or any (all)
-                return;
+            if (!sprite1 || !sprite2  || !(listener instanceof SmartJs.Event.EventListener))   //TODO: if (!sprite2)   => 'any', does this mean any physics or any (all)
+                throw new Error('invalid argument(s): subscribe collision');
 
             if (this._registeredCollisions[sprite2] && this._registeredCollisions[sprite2][sprite1]) {
                 this._registeredCollisions[sprite2][sprite1].push(listener);
@@ -50,8 +50,13 @@ PocketCode.PhysicsWorld = (function () {
             if (!(listeners instanceof Array))
                 throw new Error('invalid argument: expected listeners type of array');
 
+            var listener;
             for (var i = 0, l = listeners.length; i < l; i++) {
-                listeners[i].handler.call(listeners[i].scope, {});
+                listener = listeners[i];
+                if (listener instanceof SmartJs.Event.AsyncEventListener)
+                    window.setTimeout(listener.handler.bind(listener.scope, { dispatchedAt: new Date() }), 0);
+                else
+                    listener.handler.call(listener.scope, {});
             }
         },
         _testCollisionWithAnyPhysicsSprite: function (spriteId) {
@@ -63,23 +68,23 @@ PocketCode.PhysicsWorld = (function () {
                 }
             }
         },
-        _checkPotentialCollisions: function () {
-            for (var spriteId1 in this._registeredCollisions) {
-                if (!this._registeredCollisions.hasOwnProperty(spriteId1))
-                    continue;
+        //_checkPotentialCollisions: function () {
+        //    for (var spriteId1 in this._registeredCollisions) {
+        //        if (!this._registeredCollisions.hasOwnProperty(spriteId1))
+        //            continue;
 
-                for (var spriteId2 in this._registeredCollisions[spriteId1]) {
-                    if (!this._registeredCollisions[spriteId1].hasOwnProperty(spriteId2))
-                        continue;
+        //        for (var spriteId2 in this._registeredCollisions[spriteId1]) {
+        //            if (!this._registeredCollisions[spriteId1].hasOwnProperty(spriteId2))
+        //                continue;
 
-                    if (spriteId2 === 'any') {   //TODO
-                        this._testCollisionWithAnyPhysicsSprite(spriteId1);
-                    } else if (this._collisionManager.checkSpriteCollision(spriteId1, spriteId2)) {
-                        this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
-                    }
-                }
-            }
-        },
+        //            if (spriteId2 === 'any') {
+        //                this._testCollisionWithAnyPhysicsSprite(spriteId1);
+        //            } else if (this._collisionManager.checkSpriteCollision(spriteId1, spriteId2)) {
+        //                this._handleDetectedCollision(this._registeredCollisions[spriteId1][spriteId2]);
+        //            }
+        //        }
+        //    }
+        //},
         setGravity: function (x, y) {
             this._gravityX = x;
             this._gravityY = y;

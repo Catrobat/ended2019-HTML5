@@ -3,10 +3,10 @@
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/userVariable.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/userVariableHost.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/userVariableHost.js" />
 'use strict';
 
-QUnit.module("components/userVariableHost.js");
+QUnit.module("model/userVariableHost.js");
 
 
 QUnit.test("UserVariableHost", function (assert) {

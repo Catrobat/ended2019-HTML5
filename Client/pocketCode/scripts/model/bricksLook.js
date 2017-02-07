@@ -176,25 +176,31 @@ PocketCode.Model.merge({
 
             this._scene = scene;
             this._question = new PocketCode.Formula(device, sprite, propObject.question);
-
-            if (propObject.resourceId) //can be null
-                this._var = sprite.getVariable(propObject.resourceId);
+            this._varId = propObject.resourceId;
         }
 
         AskBrick.prototype.merge({
-            _onInputHandler: function (e) {
-                if (this._var)  //can be undefined
-                    this._var.value = e.input;
-                //this._var.value = this._value.calculate();
-                this._return();
+            _onAnswerHandler: function (scope, answer) {
+                var variable = scope.getVariable(this._varId);
+                if (variable)  //can be undefined
+                    variable.value = answer;
+
+                this._scene.resume(true);
+                this._return(true);
             },
             _execute: function (scope) {
+                scope = scope || this._sprite;
                 var question = this._question.calculate(scope);
-                this._scene.pauseAndShowAskDialog(question, new SmartJs.Event.EventListener(this._onInputHandler, this));
 
-                //this._return();   //TODO: threaded brick?
+                this._scene.pause(true);
+                this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, scope));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
             },
         });
+
         return AskBrick;
     })(),
 
@@ -417,10 +423,16 @@ PocketCode.Model.merge({
             this._lookId = propObject.lookId;
         }
 
-        SetBackgroundBrick.prototype._execute = function () {
-            if (this._lookId)  //can be null
-                this._return(this._scene.setBackground(this._lookId));
-        };
+        SetBackgroundBrick.prototype.merge({
+            _execute: function () {
+                if (this._lookId)  //can be null
+                    this._return(this._scene.setBackground(this._lookId));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SetBackgroundBrick;
     })(),
@@ -435,10 +447,16 @@ PocketCode.Model.merge({
             this._lookId = propObject.lookId;
         }
 
-        SetBackgroundAndWaitBrick.prototype._execute = function (id) {
-            if (this._lookId)  //can be null
-                this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
-        };
+        SetBackgroundAndWaitBrick.prototype.merge({
+            _execute: function (id) {
+                if (this._lookId)  //can be null
+                    this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SetBackgroundAndWaitBrick;
     })(),

@@ -10,12 +10,12 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksMotion.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksSound.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksData.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/userVariableHost.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/userVariableHost.js" />
 
 /// <reference path="../_resources/testDataProjects.js" />
 'use strict';

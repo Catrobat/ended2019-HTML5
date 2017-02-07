@@ -991,7 +991,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
         sprite._direction = -1.0;
         result = sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
-        assert.deepEqual(props, { flipX: false }, "turn back to flipX = false when switch to DO_NOT_ROTATE")
+        assert.notOk(props.flipX, "turn back to flipX = false when switch to DO_NOT_ROTATE");
         props = undefined;
 
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
@@ -1094,12 +1094,12 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         ];
 
     //simulate loading a json Project: setting required properties (internal)
-    gameEngine._originalScreenWidth = 50;
-    gameEngine._originalScreenHeight = 100;
-    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    scene._originalScreenWidth = 50;
+    scene._originalScreenHeight = 100;
+    scene._collisionManager = new PocketCode.CollisionManager(scene._originalScreenWidth, scene._originalScreenHeight);
 
-    var sh2 = gameEngine._originalScreenHeight * 0.5,
-        sw2 = gameEngine._originalScreenWidth * 0.5;
+    var sh2 = scene._originalScreenHeight * 0.5,
+        sw2 = scene._originalScreenWidth * 0.5;
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;    //inject image store
 
@@ -1951,23 +1951,24 @@ QUnit.test("PhysicsSprite", function (assert) {
     sprite.physicsType = value;
     assert.equal(sprite._physicsType, value, "movementStyle set correctly");
 
-    var x = 23;
-    var y = 234;
-    var setGravityCalled = false;
-    sprite._gameEngine.setGravity = function (gravityX, gravityY) {
-        setGravityCalled = gravityX === x && gravityY === y;
-    };
+    //var x = 23;
+    //var y = 234;
+    //var setGravityCalled = false;
+    //scene.setGravity = function (gravityX, gravityY) {
+    //    setGravityCalled = gravityX === x && gravityY === y;
+    //};
 
-    sprite.setGravity(x, y);
-    assert.ok(setGravityCalled, "set gravity sets gravity in GE");
+    //sprite.setGravity(x, y);
+    //assert.ok(setGravityCalled, "set gravity sets gravity in GE");
 
-    x = 84;
-    y = 2;
+    var x = 84;
+    var y = 2;
 
     sprite.setVelocity(x, y);
     assert.equal(sprite._velocityX, x, "velocityX set correctly");
     assert.equal(sprite._velocityY, y, "velocityY set correctly");
 });
+
 
 
 QUnit.test("SpriteClone", function (assert) {
@@ -1980,10 +1981,107 @@ QUnit.test("SpriteClone", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" });
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
+
     assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
+
+    //test clone
+    var is = new PocketCode.ImageStore();   //recreate
+    gameEngine._imageStore = is;
+
+    //init tests
+    var baseUrl = "_resources/images/",
+        images = [
+            { id: "s4", url: "imgHelper15.png", size: 2 },
+            { id: "s5", url: "imgHelper16.png", size: 2 },
+        ];
+
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
+    is.loadImages(baseUrl, images);
+
+    var clone;
+    function startTest() {
+        scene.load(cloneScene); //global ressource defined in _resources/testDataProject
+        scene.initializeSprites();  //images already loaded- initilaze look objects
+        sprite = scene._sprites[0];
+
+
+        sprite.penDown = true;
+        sprite.penSize = 6;
+        sprite.penColor = { r: 255, g: 20, b: 20 };
+        sprite.setPositionX(300);
+        sprite.setPositionY(100);
+        sprite.turnLeft(-10);
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        sprite.nextLook();  //set this._currentLook
+        sprite.setSize(50);
+        sprite.hide();
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 20);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 30);
+        // show/hide bubble
+
+        var variable1 = sprite.getVariable("s20");
+        variable1.value = 5;
+        var variable2 = sprite.getVariable("s21");
+        variable2.value = 10;
+        var list1 = sprite.getList("s22");
+        list1.append("test");
+        list1.append(34);
+        var list2 = sprite.getList("s23");
+        list2.append("test2");
+        list2.append(1);
+
+        scene.start();
+        setTimeout(validateClone, 10);
+    }
+
+    function validateClone() {
+        clone = scene._sprites[0];
+
+        //check looks
+        assert.ok(clone._penDown == sprite._penDown &&
+            clone._penSize == sprite._penSize &&
+            clone._penColor.b == sprite._penColor.b &&
+            clone._penColor.r == sprite._penColor.r &&
+            clone._penColor.g == sprite._penColor.g &&
+            clone._penColor != sprite._penColor &&
+            clone.positionX == sprite.positionX &&
+            clone.positionY == sprite.positionY &&
+            clone._lookOffsetX == sprite._lookOffsetX &&
+            clone._lookOffsetY == sprite._lookOffsetY &&
+            clone.direction == sprite.direction &&
+            clone.rotationStyle == sprite.rotationStyle &&
+            clone.size == sprite.size &&
+            clone.visible == sprite.visible &&
+            clone.transparency == sprite.transparency &&
+            clone.brightness == sprite.brightness &&
+            clone.colorEffect == sprite.colorEffect, "set properties correct");
+
+        assert.equal(clone._currentLook.id, sprite._currentLook.id, "current look id set");
+        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Look objects");
+
+        assert.ok(clone._scripts.length > 0, "brick created");
+        assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
+            clone.getVariable("s21") !== sprite.getVariable("s21") &&
+            clone.getList("s22")._value !== sprite.getList("s22")._value &&
+            clone.getList("s23")._value !== sprite.getList("s23")._value, "Variables and Lists created");
+
+        assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
+            clone.getVariable("s21").value == sprite.getVariable("s21").value &&
+            clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
+            clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
+            clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
+            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1], "Variables and List values set");
+
+        var list1 = sprite.getList("s22");
+        list1.replaceAt(2, 40);
+
+        assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
+    }
+
 
     assert.ok(false, "TODO");
 });

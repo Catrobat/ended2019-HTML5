@@ -2,7 +2,7 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="userVariableHost.js" />
+/// <reference path="../model/userVariableHost.js" />
 /// <reference path="imageStore.js" />
 /// <reference path="../model/userVariable.js" />
 /// <reference path="../model/scene.js" />
@@ -274,7 +274,7 @@ PocketCode.GameEngine = (function () {
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
-                scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._dispatchSceneChange(); }, this));
+                scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(this._dispatchSceneChange, this));
                 this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying(this._currentScene) to check
@@ -548,6 +548,11 @@ PocketCode.GameEngine = (function () {
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
             this._imageStore.abortLoading();
             //this._imageStore.dispose();
+
+            for (var id in this._scenes) {
+                this._scenes[id].dispose();
+                delete this._scenes[id];
+            }
 
             this._soundManager.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._soundManager.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));

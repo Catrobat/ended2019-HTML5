@@ -169,9 +169,15 @@ PocketCode.Model.merge({
             }
         }
 
-        GoToBrick.prototype._execute = function () {
-            this._return(this._scene.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
-        };
+        GoToBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._scene.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return GoToBrick;
     })(),
@@ -479,15 +485,21 @@ PocketCode.Model.merge({
             }
         }
 
-        SetPhysicsObjectTypeBrick.prototype._execute = function () {
-            //TODO:
-            var physicsEnabled = this._physicsType !== PocketCode.PhysicsType.NONE;
+        SetPhysicsObjectTypeBrick.prototype.merge({
+            _execute: function () {
+                //TODO:
+                var physicsEnabled = this._physicsType !== PocketCode.PhysicsType.NONE;
 
-            this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
-            this._sprite.physicsType = this._physicsType;
+                this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
+                this._sprite.physicsType = this._physicsType;
 
-            this._return(false);
-        };
+                this._return(false);
+            },
+            dispose: function () {
+                this._physicsWorld = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SetPhysicsObjectTypeBrick;
     })(),
@@ -570,15 +582,21 @@ PocketCode.Model.merge({
             this._y = new PocketCode.Formula(device, sprite, propObject.y);
         }
 
-        SetGravityBrick.prototype._execute = function (scope) {
-            var x = this._x.calculate(scope),
-                y = this._y.calculate(scope);
-            if (isNaN(x) || isNaN(y))
-                this._return(false);
+        SetGravityBrick.prototype.merge({
+            _execute: function (scope) {
+                var x = this._x.calculate(scope),
+                    y = this._y.calculate(scope);
+                if (isNaN(x) || isNaN(y))
+                    this._return(false);
 
-            this._scene.setGravity(x, y);
-            this._return(false);
-        };
+                this._scene.setGravity(x, y);
+                this._return(false);
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SetGravityBrick;
     })(),

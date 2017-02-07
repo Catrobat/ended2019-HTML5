@@ -151,11 +151,12 @@ PocketCode.Model.merge({
                 var val = this._value;
                 if (val == undefined)
                     return '';
-                if (typeof val != 'number')
-                    return val.toString();
-                if (parseInt(val) === val)
-                    return val.toFixed(1);
-                return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
+                return val.toString();  //we do not format variable values in any way
+                //if (typeof val != 'number')
+                //    return val.toString();
+                //if (parseInt(val) === val)
+                //    return val.toFixed(1);
+                //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
                 if (this.value === undefined)

@@ -18,11 +18,17 @@ PocketCode.Model.merge({
             this._soundId = propObject.resourceId;
         }
 
-        PlaySoundBrick.prototype._execute = function () {
-            if (this._soundId)  //can be null
-                this._soundManager.startSound(this._sceneId, this._soundId);
-            this._return();
-        };
+        PlaySoundBrick.prototype.merge({
+            _execute: function () {
+                if (this._soundId)  //can be null
+                    this._soundManager.startSound(this._sceneId, this._soundId);
+                this._return();
+            },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return PlaySoundBrick;
     })(),
@@ -81,6 +87,10 @@ PocketCode.Model.merge({
                 }
                 PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
             },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
+            },
         });
 
         return PlaySoundAndWaitBrick;
@@ -96,10 +106,16 @@ PocketCode.Model.merge({
             this._soundManager = soundManager;
         }
 
-        StopAllSoundsBrick.prototype._execute = function () {
-            this._soundManager.stopAllSounds(this._sceneId);
-            this._return();
-        };
+        StopAllSoundsBrick.prototype.merge({
+            _execute: function () {
+                this._soundManager.stopAllSounds(this._sceneId);
+                this._return();
+            },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return StopAllSoundsBrick;
     })(),
@@ -114,15 +130,21 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
-        SetVolumeBrick.prototype._execute = function (scope) {
-            var val = this._percentage.calculate(scope);
-            if (isNaN(val))
-                this._return();
-            else {
-                this._soundManager.volume = val;
-                this._return();
-            }
-        };
+        SetVolumeBrick.prototype.merge({
+            _execute: function (scope) {
+                var val = this._percentage.calculate(scope);
+                if (isNaN(val))
+                    this._return();
+                else {
+                    this._soundManager.volume = val;
+                    this._return();
+                }
+            },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SetVolumeBrick;
     })(),
@@ -137,15 +159,21 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
-        ChangeVolumeBrick.prototype._execute = function (scope) {
-            var val = this._value.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else {
-                this._soundManager.volume += val;   //changeVolume(this._value.calculate(scope));
-                this._return();
-            }
-        };
+        ChangeVolumeBrick.prototype.merge({
+            _execute: function (scope) {
+                var val = this._value.calculate(scope);
+                if (isNaN(val))
+                    this._return(false);
+                else {
+                    this._soundManager.volume += val;   //changeVolume(this._value.calculate(scope));
+                    this._return();
+                }
+            },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return ChangeVolumeBrick;
     })(),
@@ -173,20 +201,26 @@ PocketCode.Model.merge({
             }
         }
 
-        SpeakBrick.prototype._execute = function (scope) {
-            if (this._soundId) {
-                this._soundManager.startSound(this._sceneId, this._soundId);
-            }
-            else {
-                var text = this._text.calculate(scope).replace(/\n,\r/g, '');
-                if (text !== '') {
-                    //we use a request object here to generate an url
-                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-                    this._soundManager.startSoundFromUrl(this._sceneId, request.url);
+        SpeakBrick.prototype.merge({
+            _execute: function (scope) {
+                if (this._soundId) {
+                    this._soundManager.startSound(this._sceneId, this._soundId);
                 }
-            }
-            this._return();
-        };
+                else {
+                    var text = this._text.calculate(scope).replace(/\n,\r/g, '');
+                    if (text !== '') {
+                        //we use a request object here to generate an url
+                        var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+                        this._soundManager.startSoundFromUrl(this._sceneId, request.url);
+                    }
+                }
+                this._return();
+            },
+            dispose: function () {
+                this._soundManager = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SpeakBrick;
     })(),
