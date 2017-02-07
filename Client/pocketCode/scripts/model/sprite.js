@@ -21,10 +21,10 @@ PocketCode.PhysicsType = {
 
 
 PocketCode.Model.Sprite = (function () {
-    Sprite.extends(PocketCode.UserVariableHost, false);
+    Sprite.extends(PocketCode.Model.UserVariableHost, false);
 
     function Sprite(gameEngine, scene, propObject) {
-        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
+        PocketCode.Model.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
         this._scene = scene;
@@ -1131,7 +1131,7 @@ PocketCode.Model.Sprite = (function () {
             }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
 
     });

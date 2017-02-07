@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -11,21 +11,21 @@ QUnit.module("model/userVariableHost.js");
 
 QUnit.test("UserVariableHost", function (assert) {
 
-    var uvhg = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.GLOBAL)
-    var uvhl = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
-    var uvhp = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
+    var uvhg = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.GLOBAL)
+    var uvhl = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
+    var uvhp = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
 
-    assert.ok(uvhl instanceof PocketCode.UserVariableHost && uvhl instanceof SmartJs.Core.Component, "created: instance and inheritance check");
+    assert.ok(uvhl instanceof PocketCode.Model.UserVariableHost && uvhl instanceof SmartJs.Core.Component, "created: instance and inheritance check");
 
     //check cntr parameters
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(); }, Error, "ERROR: missing scope");
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, "string"); }, Error, "ERROR: invalid lookup");
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.GLOBAL, uvhg); }, Error, "ERROR: lookup for global");
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhl); }, Error, "ERROR: lookup host without global scope");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(); }, Error, "ERROR: missing scope");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, "string"); }, Error, "ERROR: invalid lookup");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.GLOBAL, uvhg); }, Error, "ERROR: lookup for global");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhl); }, Error, "ERROR: lookup host without global scope");
 
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhp); }, Error, "ERROR: lookup to proocedure: lookup host without global scope");
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhp); }, Error, "ERROR: lookup host without local scope");
-    assert.throws(function () { var test = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhg); }, Error, "ERROR: procedure: lookup host not local scope");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhp); }, Error, "ERROR: lookup to proocedure: lookup host without global scope");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhp); }, Error, "ERROR: lookup host without local scope");
+    assert.throws(function () { var test = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhg); }, Error, "ERROR: procedure: lookup host not local scope");
 
     //setter: we have to test the private (in this case protected) methods as these are used by gameEngine and sprite internally
     var vars = [];
@@ -106,16 +106,16 @@ QUnit.test("UserVariableHost", function (assert) {
     uvhg._variables = vars;
     uvhg._lists = lists;
 
-    uvhl = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
-    uvhp = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
+    uvhl = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
+    uvhp = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
     var v = uvhl.getAllVariables();
     compareAndAssert(v, "var: no local: ", {}, vars);
     var l = uvhp.getAllLists();
     compareAndAssert(l, "list: no local: ", {}, lists);
 
     //recreate: no global settings 
-    uvhl = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL);
-    uvhp = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
+    uvhl = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL);
+    uvhp = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
     uvhl._variables = vars;
     uvhl._lists = lists;
     v = uvhl.getAllVariables();
@@ -124,8 +124,8 @@ QUnit.test("UserVariableHost", function (assert) {
     compareAndAssert(l, "list: no global: ", lists, {});
 
     //recreate: local and global 
-    uvhl = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
-    uvhp = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
+    uvhl = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.LOCAL, uvhg);
+    uvhp = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, uvhl);
 
     //vars = [{ id: "id1", name: "var1", }, ];
     //lists = [{ id: "id1", name: "list1", }, ];
@@ -188,7 +188,7 @@ QUnit.test("UserVariableHost", function (assert) {
     assert.equal(varChangeCalled, 1, "var change: event handler called (hideVariable)");
 
     //procedure scope without lookup
-    uvhp = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE);
+    uvhp = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE);
     var varsl = [{ id: "id1", name: "var1local", }, { id: "id2", name: "var2local", }, ];
     var listsl = [{ id: "id1", name: "list1local", }, { id: "id2", name: "list2local", }, ];
     uvhp._variables = varsl;

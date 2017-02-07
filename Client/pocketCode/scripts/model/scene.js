@@ -487,7 +487,7 @@ PocketCode.Model.Scene = (function () {
             }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
 
     });

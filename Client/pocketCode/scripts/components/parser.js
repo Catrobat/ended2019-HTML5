@@ -353,7 +353,7 @@ PocketCode.merge({
                 return {
                     calculate: new Function(
                         'uvh',
-                        'this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;' +
+                        'this._userVariableHost = (uvh instanceof PocketCode.Model.UserVariableHost) ? uvh : this._sprite;' +
                         'return ' + formulaString + ';'),
                     isStatic: this._isStatic
                 };

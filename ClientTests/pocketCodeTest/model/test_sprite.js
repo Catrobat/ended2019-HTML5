@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
@@ -27,7 +27,7 @@ QUnit.test("Sprite", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
-    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
+    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
     //triggerOnChange
@@ -1983,7 +1983,7 @@ QUnit.test("SpriteClone", function (assert) {
 
     var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
 
-    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost, "instance check");
+    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
 

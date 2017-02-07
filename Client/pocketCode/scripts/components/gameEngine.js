@@ -13,10 +13,10 @@
 'use strict';
 
 PocketCode.GameEngine = (function () {
-    GameEngine.extends(PocketCode.UserVariableHost, false);
+    GameEngine.extends(PocketCode.Model.UserVariableHost, false);
 
     function GameEngine(minLoopCycleTime) {
-        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
+        PocketCode.Model.UserVariableHost.call(this, PocketCode.UserVariableScope.GLOBAL);
 
         this._executionState = PocketCode.ExecutionState.INITIALIZED;
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
@@ -582,7 +582,7 @@ PocketCode.GameEngine = (function () {
             // }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
     });
 

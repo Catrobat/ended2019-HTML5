@@ -4,7 +4,7 @@
 /*
  * this is a base class for sprite and gameEngine introduced to avoid duplicated code for handling variables and lists
  */
-PocketCode.UserVariableHost = (function () {
+PocketCode.Model.UserVariableHost = (function () {
     UserVariableHost.extends(SmartJs.Core.Component);
 
     //ctr
@@ -16,8 +16,8 @@ PocketCode.UserVariableHost = (function () {
         this.__variableScope = scope;
 
         if (globalLookupHost) {
-            if (!(globalLookupHost instanceof PocketCode.UserVariableHost))
-                throw new Error('invalid argument: global lookup host: expectet type = PocketCode.UserVariableHost');
+            if (!(globalLookupHost instanceof PocketCode.Model.UserVariableHost))
+                throw new Error('invalid argument: global lookup host: expectet type = PocketCode.Model.UserVariableHost');
             if (scope === PocketCode.UserVariableScope.GLOBAL)
                 throw new Error('invalid argument: a global lookup host cannot refer to another global variable definition');
             if (scope == PocketCode.UserVariableScope.PROCEDURE && globalLookupHost.variableScope !== PocketCode.UserVariableScope.LOCAL ||
