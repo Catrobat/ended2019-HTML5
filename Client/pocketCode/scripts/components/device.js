@@ -1029,11 +1029,11 @@ PocketCode.DeviceEmulator = (function () {
                             ALTITUDE: coords.altitude,  //already in meters
                             ACCURACY: coords.accuracy,  //already in meters
                         };
-                    },
+                    }.bind(this),
                     function () {   //error handler
                         if (/*window.location.host != 'localhost' && */window.location.protocol != "https:")
                             this._features.GEO_LOCATION.supported = false;  //chrome only allows access over http
-                    }
+                    }.bind(this)
                 );
         },
         /* override */
