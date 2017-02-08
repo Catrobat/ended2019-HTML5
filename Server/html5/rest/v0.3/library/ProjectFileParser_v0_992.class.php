@@ -1789,6 +1789,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "AskBrick":
+            case "AskSpeechBrick":
 				$var = null;
 				if(property_exists($script, "userVariable")) {
 					$varXml = $this->getObject($script->userVariable, $this->cpp);
@@ -1796,7 +1797,10 @@ class ProjectFileParser_v0_992
 				}
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
-                $brick = new AskBrickDto($this->parseFormula($fl->formula), $var);
+                if ($brickType == "AskBrick")
+                    $brick = new AskBrickDto($this->parseFormula($fl->formula), $var);
+                else
+                    $brick = new AskSpeechBrickDto($this->parseFormula($fl->formula), $var);
                 array_pop($this->cpp);
                 break;
 
