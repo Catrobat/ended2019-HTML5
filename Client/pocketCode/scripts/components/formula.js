@@ -81,16 +81,21 @@ PocketCode.Formula = (function () {
                     brightness: 100,
                     transparency: 0,
                     colorEffect: 0,
+                    currentLookNumber: 1,
+                    currentLookName: 2,
                     layer: 1,
                     direction: 90,
                     size: 100,
                     positionX: 0,
                     positionY: 0,
+                    collidesWithEdge: false,
+                    collidesWithPointer: true,
                     velocityX: 0,
                     velocityY: 0,
                     velocityAngular: 0,
                     getVariable: function (id) { return { id: id, value: 0 }; },
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
+                    collidesWithSprite: function (name) { return true; },
                 };
                 var test = this.calculate.call(formula);    //execute generated calculate method in testFormula
             }

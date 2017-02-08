@@ -364,7 +364,7 @@ PocketCode.merge({
                     return '';
 
                 /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
-                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING
+                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
                 */
                 switch (jsonFormula.type) {
                     case 'OPERATOR':
@@ -409,14 +409,31 @@ PocketCode.merge({
                         return 'this._userVariableHost.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
-                        //if (!jsonFormula.right)
-                        //    return '()';
-
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        //if (uiString)
                         return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+
+                    case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
+                        this._isStatic = false;
+                        var params = jsonFormula.value.split(' ');  //e.g. 'sp1 touches sp2'
+                        if (params.length == 1) { //v0.993
+                            if (uiString)
+                                return 'touches_object(' + jsonFormula.value + ')';
+
+                            return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
+                        }
+                        else if (params.length == 3) { //v0.992
+                            if (uiString)
+                                return '\'' + jsonFormula.value + '\'';
+
+                            return 'this._sprite.collidesWithSprite(\'' + params[2] + '\')';
+                        }
+                        else { //not supported
+                            if (uiString)
+                                return '\'' + jsonFormula.value + '\'';
+                            return 'false';
+                        }
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
@@ -800,7 +817,7 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
-                        //sprite
+                    //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
@@ -819,6 +836,22 @@ PocketCode.merge({
                             return 'color';
 
                         return 'this._sprite.colorEffect';
+
+                    case 'OBJECT_BACKGROUND_NUMBER':
+                        if (uiString)
+                            return 'background_number';
+                    case 'OBJECT_LOOK_NUMBER':
+                        if (uiString)
+                            return 'look_number';
+                        return 'this._sprite.currentLookNumber';
+
+                    case 'OBJECT_BACKGROUND_NAME':
+                        if (uiString)
+                            return 'background_name';
+                    case 'OBJECT_LOOK_NAME':
+                        if (uiString)
+                            return 'look_name';
+                        return 'this._sprite.currentLookName';
 
                     case 'OBJECT_LAYER':
                         if (uiString)
@@ -930,32 +963,46 @@ PocketCode.merge({
 
                         return 'this._device.lastTouchIndex';
 
-                        //geo location
+                    //collision
+                    case 'COLLIDES_WITH_EDGE':
+                        if (uiString)
+                            return 'touches_edge';
+
+                        return 'this._sprite.collidesWithEdge';
+
+                    case 'COLLIDES_WITH_FINGER':
+                        if (uiString)
+                            return 'touches_finger';
+
+                        return 'this._sprite.collidesWithPointer';
+
+                    //geo location
                     case 'LATITUDE':
                         if (uiString)
-                            return 'latitude';  //TODO: check UI string
+                            return 'latitude';
 
                         return 'this._device.geoLatitude';
 
                     case 'LONGITUDE':
                         if (uiString)
-                            return 'longitude';  //TODO: check UI string
+                            return 'longitude';
 
                         return 'this._device.geoLongitude';
 
                     case 'ALTITUDE':
                         if (uiString)
-                            return 'altitude';  //TODO: check UI string
+                            return 'altitude';
 
                         return 'this._device.geoAltitude';
 
                     case 'ACCURACY':
+                    case 'LOCATION_ACCURACY':
                         if (uiString)
-                            return 'location_accuracy';  //TODO: check UI string
+                            return 'location_accuracy';
 
                         return 'this._device.geoAccuracy';
 
-                        //physics
+                    //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -974,7 +1021,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
-                        //nxt
+                    //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';
