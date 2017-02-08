@@ -139,7 +139,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             get: function () {
-                return this._scene.getSpriteLayer(this);//.id);
+                return this._scene.getSpriteLayer(this);
             },
         },
         rotationStyle: {
@@ -173,6 +173,18 @@ PocketCode.Model.Sprite = (function () {
         currentLook: {
             get: function () {
                 return this._currentLook;
+            },
+        },
+        currentLookNumber: {
+            get: function () {
+                return this._looks.indexOf(this._currentLook) + 1;  //returns 0 for not found   //TODO?
+            },
+        },
+        currentLookName: {
+            get: function () {
+                if (!this._currentLook)
+                    return '';
+                return this._currentLook.name;
             },
         },
         visible: {
@@ -243,6 +255,44 @@ PocketCode.Model.Sprite = (function () {
 
                 this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
                 this._triggerOnChange({ penColor: this._penColor });
+            },
+        },
+
+        //collision: in formula
+        collidesWithEdge: {
+            get: function() {
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                collision = collisionMgr.checkSpriteEdgeCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
+            },
+        },
+        collidesWithPointer: {
+            get: function() {
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                collision = collisionMgr.checkSpritePointerCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
             },
         },
 
@@ -1094,7 +1144,7 @@ PocketCode.Model.Sprite = (function () {
                 _rotationStyle: this._rotationStyle,
                 _direction: this._direction,
 
-                ////looks
+                //looks
                 _currentLook: this._currentLook,
                 _scaling: this._scaling,
                 _visible: this._visible,
@@ -1114,6 +1164,15 @@ PocketCode.Model.Sprite = (function () {
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
             return clone;
 
+        },
+        //collision: in formula
+        collidesWithSprite: function (spriteName) {
+            var sprite = this._scene.getSpriteByName(spriteName);
+            if (!sprite)
+                return false;
+
+            var collisionMgr = this._scene.collisionManager;
+            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
         },
         /* override */
         dispose: function () {

@@ -349,6 +349,18 @@ PocketCode.Model.Scene = (function () {
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
+        getSpriteByName: function (spriteName) {
+            if (this._background && this._background.name == spriteName)
+                return this._background;
+
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].name === spriteName)
+                    return sprites[i];
+            }
+
+            throw new Error('unknown sprite with name: ' + spriteName);
+        },
         getLookImage: function (id) {
             //used by the sprite to access an image during look init
             return this._imageStore.getImage(id);

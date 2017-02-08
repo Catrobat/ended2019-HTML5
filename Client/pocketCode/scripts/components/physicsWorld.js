@@ -6,13 +6,13 @@
 PocketCode.PhysicsWorld = (function () {
     PhysicsWorld.extends(SmartJs.Core.Component);
 
-    function PhysicsWorld(scene) {
+    function PhysicsWorld(collisionManager) {
         this._physicsSprites = {};
         this._registeredCollisions = {};
 
         this._gravityX = 0.0;
         this._gravityY = -10.0;
-        this._collisionManager = scene.collisionManager;
+        this._collisionManager = collisionManager;
     }
 
     ////properties

@@ -7,7 +7,6 @@
 /// <reference path="../model/userVariable.js" />
 /// <reference path="../model/scene.js" />
 /// <reference path="publishSubscribe.js" />
-/// <reference path="collisionManager.js" />
 /// <reference path="soundManager.js" />
 /// <reference path="stopwatch.js" />
 'use strict';
@@ -53,8 +52,6 @@ PocketCode.GameEngine = (function () {
             deviceEmulation: false,
             deviceLockRequired: false,
         };
-
-        this._collisionManager = undefined;//new PocketCode.CollisionManager();
 
         this._scenes = {};
         this.__currentScene = undefined;
@@ -171,14 +168,6 @@ PocketCode.GameEngine = (function () {
                     this.__sounds[sounds[i].id] = sounds[i];
 
                 this._soundManager.loadSounds(this._resourceBaseUrl, sounds);
-            },
-        },
-        collisionManager: { //TODO: public?
-            get: function () {
-                if (!this._currentScene)
-                    return undefined;
-
-                return this._currentScene.collisionManager;
             },
         },
     });
