@@ -102,7 +102,7 @@ PocketCode.CollisionManager = (function () {
             return collision;
         },
         checkSpriteCollision: function (spriteId1, spriteId2) {
-
+            return false;   //temporarely disabled to avoid errors
             var sprite1, sprite2;
             if (this._background.id == spriteId1)
                 sprite1 = this._background;

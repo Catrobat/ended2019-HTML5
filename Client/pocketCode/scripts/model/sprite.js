@@ -260,7 +260,9 @@ PocketCode.Model.Sprite = (function () {
 
         //collision: in formula
         collidesWithEdge: {
-            get: function() {
+            get: function () {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
                 var collisionMgr = this._scene.collisionManager,
                     dir = this.direction,
                     rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
@@ -279,6 +281,8 @@ PocketCode.Model.Sprite = (function () {
         },
         collidesWithPointer: {
             get: function() {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
                 var collisionMgr = this._scene.collisionManager,
                     dir = this.direction,
                     rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
