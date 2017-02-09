@@ -217,9 +217,10 @@ PocketCode.merge({
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
-                        type = 'AskBrick';  //providing a ask dialog instead the typical askSpeech brick
                     case 'AskBrick':
                     case 'WhenBackgroundChangesToBrick':
+                        if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
+                            type = 'AskBrick';
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
