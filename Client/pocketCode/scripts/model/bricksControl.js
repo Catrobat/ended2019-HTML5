@@ -297,9 +297,15 @@ PocketCode.Model.merge({
             this._sceneId = propObject.sceneId;
         }
 
-        SceneTransitionBrick.prototype._execute = function () {
-            this._return(this._gameEngine.resumeOrStartScene(this._sceneId));
-        };
+        SceneTransitionBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._gameEngine.resumeOrStartScene(this._sceneId));
+            },
+            dispose: function () {
+                this._gameEngine = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SceneTransitionBrick;
     })(),
@@ -309,14 +315,20 @@ PocketCode.Model.merge({
 
         function StartSceneBrick(device, sprite, gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            
+
             this._gameEngine = gameEngine;
             this._sceneId = propObject.sceneId;
         }
 
-        StartSceneBrick.prototype._execute = function () {
-            this._return(this._gameEngine.startScene(this._sceneId));
-        };
+        StartSceneBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._gameEngine.startScene(this._sceneId));
+            },
+            dispose: function () {
+                this._gameEngine = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return StartSceneBrick;
     })(),
