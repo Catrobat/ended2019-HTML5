@@ -168,11 +168,10 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
-            if (reinit) {
-                this._canvas.initScene(id, screenSize);
-                this._canvas.clearCurrentPenStampCache();
-            }
             this._canvas.initScene(id, screenSize);
+            if (reinit)
+                this._canvas.clearCurrentPenStampCache();
+
             this.render();
         },
         drawStamp: function (spriteId) {

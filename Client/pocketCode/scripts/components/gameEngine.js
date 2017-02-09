@@ -492,16 +492,6 @@ PocketCode.GameEngine = (function () {
                 cs.pause();
 
             this._currentScene = scene;
-            /*if (scene.executionState == PocketCode.ExecutionState.RUNNING) {
-
-
-
-                for (var id in this._scenes) {
-                    console.log("restart " + id );
-                    this._scenes[id].stop();
-                    this._scenes[id].reinitializeSprites();
-                }
-            }*/
             scene.stop();
             scene.reinitializeSprites();
             this._dispatchSceneChange(true);
