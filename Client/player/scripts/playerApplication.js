@@ -198,6 +198,7 @@ PocketCode.merge({
 
                     //stop gameEngine + loading
                     this._project.dispose();
+                    this._project = undefined;
                 },
                 _i18nControllerErrorHandler: function (e) {
                     PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
