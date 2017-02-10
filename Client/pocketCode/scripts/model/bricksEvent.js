@@ -129,7 +129,10 @@ PocketCode.Model.merge({
             this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
 
-            this._onStart = startEvent;
+            if (this._sprite instanceof PocketCode.Model.SpriteClone)
+                this._onStart = this._sprite.onCloneStart;
+            else
+                this._onStart = startEvent;
             startEvent.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
         }
 
@@ -141,6 +144,8 @@ PocketCode.Model.merge({
 
                 var met = false;
                 try {
+                    if (this._sprite instanceof PocketCode.Model.SpriteClone)
+                        var bp = true;
                     met = this._condition.calculate();
                 }
                 catch (e) { }

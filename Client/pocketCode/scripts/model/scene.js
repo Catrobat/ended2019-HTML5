@@ -208,8 +208,12 @@ PocketCode.Model.Scene = (function () {
                 bg.init();
             }
 
-            this._sprites = this._originalSpriteOrder;
             var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++)
+                if (sprites[i] instanceof PocketCode.Model.SpriteClone)
+                    this.deleteClone(sprites[i].id);
+
+            this._sprites = this._originalSpriteOrder;
             for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].init();
         },
@@ -471,6 +475,8 @@ PocketCode.Model.Scene = (function () {
         },
         deleteClone: function (cloneId) {
             var clone = this.getSpriteById(cloneId);
+            if (!(clone instanceof PocketCode.Model.SpriteClone))
+                return;
 
             this._sprites.remove(clone);
             clone.dispose();

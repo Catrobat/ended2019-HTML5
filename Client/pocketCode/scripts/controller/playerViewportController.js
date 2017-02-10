@@ -114,7 +114,7 @@ PocketCode.PlayerViewportController = (function () {
                 }
             }
         },
-        updateVariable: function (varId, properties) {  //properties: {text: , x: , y: , visible: }
+        updateVariable: function (objectId, varId, properties) {  //properties: {text: , x: , y: , visible: }
             var _text,
                 _texts = this._renderingTexts,
                 _visible;
@@ -122,7 +122,7 @@ PocketCode.PlayerViewportController = (function () {
             for (var i = 0, l = _texts.length; i < l; i++) {
                 _text = _texts[i];
                 _visible = _text.visible;
-                if (_text.id === varId) {
+                if (_text.objectId == objectId && _text.id === varId) {
                     _text.merge(properties);
                     if (_text.visible != false || _visible != _text.visible)   //visible or visibility changed
                         this._view.render();

@@ -67,11 +67,11 @@ PocketCode.GameEngine = (function () {
         this._onBeforeProgramStart = new SmartJs.Event.Event(this);
         //this._onProgramStart = new SmartJs.Event.Event(this);
         this._onProgramExecuted = new SmartJs.Event.Event(this);
-        this._onSpriteUiChange = new SmartJs.Event.Event(this); //TODO
+        this._onSpriteUiChange = new SmartJs.Event.Event(this); //defined here: dispatched in bricks and sprites
         this._onVariableUiChange = new SmartJs.Event.Event(this);
         this._onCameraUsageChange = new SmartJs.Event.Event(this);
         //map the base class (global variable host) to our public event
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ id: e.id, properties: e.properties }, e.target); }, this));
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ objectId: e.objectId, id: e.id, properties: e.properties }, e.target); }, this));
     }
 
     //events
@@ -101,7 +101,7 @@ PocketCode.GameEngine = (function () {
             get: function () { return this._onProgramExecuted; },
         },
         onSpriteUiChange: {
-            get: function () { return this._onSpriteUiChange; },    //TODO
+            get: function () { return this._onSpriteUiChange; },
         },
         onVariableUiChange: {
             get: function () { return this._onVariableUiChange; },
@@ -396,7 +396,7 @@ PocketCode.GameEngine = (function () {
             this._onSceneChange.dispatchEvent({
                 id: scene.id,
                 renderingSprites: scene.renderingSprites,
-                renderingTexts: this.renderingVariables.concat(scene.renderingVariables),
+                renderingTexts: this._getRenderingVariables(this._id).concat(scene.renderingVariables),
                 screenSize: scene.screenSize,
                 reinit: reinit,
             });

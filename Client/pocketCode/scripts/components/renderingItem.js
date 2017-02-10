@@ -62,6 +62,7 @@ PocketCode.merge({
 
             this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitilaized
             //^^ this may be a PocketCode.Core.I18nString Object to support i18n
+            this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             this.text = propObject.text;
 
             this._fontFamily = 'Arial';
@@ -73,6 +74,11 @@ PocketCode.merge({
 
         //properties
         Object.defineProperties(RenderingText.prototype, {
+            objectId: {
+                get: function () {
+                    return this._objectId;
+                },
+            },
             text: {
                 //get: function (value) {
                 //    return this._text;
@@ -80,8 +86,8 @@ PocketCode.merge({
                 set: function (value) {
                     if (!value)
                         this._text = this._UNDEFINED_TEXT.toString();
-                    //else if (typeof value == 'number' && Math.round(value) == value)
-                    //    this._text = value.toString() + '.0';   //include 1 decimal for integers
+                        //else if (typeof value == 'number' && Math.round(value) == value)
+                        //    this._text = value.toString() + '.0';   //include 1 decimal for integers
                     else
                         this._text = value.toString();
                 },

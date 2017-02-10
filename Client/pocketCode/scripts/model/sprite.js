@@ -89,6 +89,11 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
+        renderingVariables: {
+            get: function() {
+                return this._getRenderingVariables(this._id);
+            },
+        },
         renderingSprite: {   //rendering image is created but not stored!
             get: function () {
                 return new PocketCode.RenderingSprite({
@@ -280,7 +285,7 @@ PocketCode.Model.Sprite = (function () {
             },
         },
         collidesWithPointer: {
-            get: function() {
+            get: function () {
                 if (!this._currentLook) //sprite/background without look
                     return false;
                 var collisionMgr = this._scene.collisionManager,
@@ -1149,7 +1154,6 @@ PocketCode.Model.Sprite = (function () {
                 _direction: this._direction,
 
                 //looks
-                _currentLook: this._currentLook,
                 _scaling: this._scaling,
                 _visible: this._visible,
                 _transparency: this._transparency,
@@ -1161,13 +1165,13 @@ PocketCode.Model.Sprite = (function () {
                 _penSize: this._penSize,
                 _penColor: this._penColor,
 
-                currentLookId: this._currentLook.id, 
+                currentLookId: this._currentLook.id,
                 variables: this.getAllVariables().local,
                 lists: this.getAllLists().local,
             };
+
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
             return clone;
-
         },
         //collision: in formula
         collidesWithSprite: function (spriteName) {
@@ -1259,6 +1263,11 @@ PocketCode.Model.merge({
                 }
             },
         });
+
+        //test only
+        SpriteClone.prototype.dispose = function () {
+            PocketCode.Model.Sprite.prototype.dispose.call(this);
+        };
 
         return SpriteClone;
     })(),

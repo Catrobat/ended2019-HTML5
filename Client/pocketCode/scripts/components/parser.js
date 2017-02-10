@@ -356,8 +356,8 @@ PocketCode.merge({
                 return {
                     calculate: new Function(
                         'uvh',
-                        'this._userVariableHost = (uvh instanceof PocketCode.Model.UserVariableHost) ? uvh : this._sprite;' +
-                        'return ' + formulaString + ';'),
+                        'uvh || (uvh = this._sprite); ' +
+                        'return (' + formulaString + ');'),
                     isStatic: this._isStatic
                 };
             },
@@ -398,7 +398,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._userVariableHost.getVariable("' + jsonFormula.value + '").value';
+                        return 'uvh.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
                         if (uiString) {
@@ -409,7 +409,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._userVariableHost.getList("' + jsonFormula.value + '")';
+                        return 'uvh.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';

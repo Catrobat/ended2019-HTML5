@@ -157,7 +157,7 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateSprite(e.id, e.properties);
         },
         _varUpdateHandler: function (e) {
-            this._playerViewportController.updateVariable(e.id, e.properties);
+            this._playerViewportController.updateVariable(e.objectId, e.id, e.properties);
         },
         _cameraChangedHandler: function (e) {
             //console.log("CAMERA TRIGGERED");
