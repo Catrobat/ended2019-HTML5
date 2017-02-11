@@ -280,9 +280,13 @@ PocketCode.merge({
                 value: 4.0,
                 writable: true,
             },
-            penColor: {
-                value: { r: 0, g: 0, b: 255 },
-                writable: true,
+            penColor: { //providing a setter/getter is important to make sure the object is merged correctly
+                get: function () {
+                    return this._penColor;
+                },
+                set: function (rgb) {
+                    this._penColor = rgb;
+                },
             },
             penX: {
                 value: 0.0,
