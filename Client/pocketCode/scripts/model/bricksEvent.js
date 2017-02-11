@@ -150,8 +150,6 @@ PocketCode.Model.merge({
 
                 var met = false;
                 try {
-                    if (this._sprite instanceof PocketCode.Model.SpriteClone)
-                        var bp = true;
                     met = this._condition.calculate();
                 }
                 catch (e) { }
