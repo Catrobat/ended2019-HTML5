@@ -133,7 +133,7 @@ PocketCode.Model.merge({
                 this._onStart = this._sprite.onCloneStart;
             else
                 this._onStart = startEvent;
-            startEvent.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+            this._onStart.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
         }
 
         WhenConditionMetBrick.prototype.merge({
