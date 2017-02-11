@@ -262,7 +262,7 @@ PocketCode.merge({
                         break;
 
                     case 'StopScriptBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._currentScriptId, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse

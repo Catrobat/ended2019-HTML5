@@ -392,8 +392,11 @@ PocketCode.Model.merge({
     StopScriptBrick: (function () {
         StopScriptBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function StopScriptBrick(device, sprite, scriptId, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, scriptId, propObject);
+        function StopScriptBrick(device, sprite, scene, scriptId, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._scene = scene;
+            this._scriptId = scriptId;
 
             switch (propObject.scriptType) {
                 case 'this':
@@ -406,24 +409,29 @@ PocketCode.Model.merge({
                     this._type = PocketCode.Model.StopScriptType.OTHER;
                     break;
             }
-            this._scriptId = scriptId;
         }
 
-        StopScriptBrick.prototype._execute = function () {
-            switch (this._type) {
-                case PocketCode.Model.StopScriptType.THIS:
-                    this._sprite.stopScript(this._scriptId);
-                    return; //no handler called: script was stopped
-                    break;
-                case PocketCode.Model.StopScriptType.ALL:
-                    this._sprite.stopAllScripts();
-                    return; //no handler called: script was stopped
-                    break;
-                case PocketCode.Model.StopScriptType.OTHER:
-                    this._return(this._sprite.stopAllScripts(this._scriptId));
-                    break;
-            }
-        };
+        StopScriptBrick.prototype.merge({
+            _execute: function () {
+                switch (this._type) {
+                    case PocketCode.Model.StopScriptType.THIS:
+                        this._sprite.stopScript(true, this._scriptId);
+                        return; //no handler called: script was stopped
+                        break;
+                    case PocketCode.Model.StopScriptType.ALL:
+                        this._scene.stopAllScripts(true);
+                        return; //no handler called: script was stopped
+                        break;
+                    case PocketCode.Model.StopScriptType.OTHER:
+                        this._return(this._sprite.stopAllScripts(true, this._scriptId));
+                        break;
+                }
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return StopScriptBrick;
     })(),

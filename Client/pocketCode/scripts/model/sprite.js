@@ -391,20 +391,20 @@ PocketCode.Model.Sprite = (function () {
                     scripts[i].resume();
             }
         },
-        stopScript: function (scriptId) {
+        stopScript: function (calledFromStopBrick, scriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id === scriptId) {
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
                     return false;
                 }
             }
         },
-        stopAllScripts: function (/*optional*/ exceptScriptId) {
+        stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== exceptScriptId)
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
             }
             return false;
         },

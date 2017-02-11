@@ -208,10 +208,14 @@ PocketCode.Model.Scene = (function () {
                 bg.init();
             }
 
-            var sprites = this._sprites;
+            var sprites = this._sprites,
+                clones = [];
             for (var i = 0, l = sprites.length; i < l; i++)
                 if (sprites[i] instanceof PocketCode.Model.SpriteClone)
-                    this.deleteClone(sprites[i].id);
+                    clones.push(sprites[i]);    //do not edit indixes during iterating
+
+            for (var i = 0, l = clones.length; i < l; i++)
+                this.deleteClone(clones[i].id);
 
             this._sprites = this._originalSpriteOrder;
             for (var i = 0, l = sprites.length; i < l; i++)
@@ -297,15 +301,17 @@ PocketCode.Model.Scene = (function () {
             if (this._soundManager) //stop() may be called during dispose before loading the scene
                 this._soundManager.stopAllSounds(this._id);
 
+            this.stopAllScripts();
+            this._executionState = PocketCode.ExecutionState.STOPPED;
+        },
+        stopAllScripts: function (calledFromStopBrick) {
             if (this._background) {
-                this._background.stopAllScripts();
+                this._background.stopAllScripts(calledFromStopBrick);
             }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].stopAllScripts();
+                sprites[i].stopAllScripts(calledFromStopBrick);
             }
-
-            this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
             //    window.setTimeout(function () {

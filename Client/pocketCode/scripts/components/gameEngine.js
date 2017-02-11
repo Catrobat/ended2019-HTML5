@@ -263,7 +263,7 @@ PocketCode.GameEngine = (function () {
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
-                scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(this._dispatchSceneChange, this));
+                scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(this._dispatchOnSceneChange, this));
                 this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
                 //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying(this._currentScene) to check
@@ -391,7 +391,7 @@ PocketCode.GameEngine = (function () {
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
         //scene
-        _dispatchSceneChange: function(reinit){
+        _dispatchOnSceneChange: function(reinit){
             var scene = this.__currentScene;
             this._onSceneChange.dispatchEvent({
                 id: scene.id,
@@ -438,7 +438,7 @@ PocketCode.GameEngine = (function () {
             else
                 this._onBeforeProgramStart.dispatchEvent();  //indicates the project was loaded and rendering objects can be generated
 
-            this._dispatchSceneChange();
+            this._dispatchOnSceneChange();
             currentScene.start();
         },
         restartProject: function (reinitSprites) {
@@ -494,7 +494,7 @@ PocketCode.GameEngine = (function () {
             this._currentScene = scene;
             scene.stop();
             scene.reinitializeSprites();
-            this._dispatchSceneChange(true);
+            this._dispatchOnSceneChange(true);
             scene.start();
             return true;
         },
@@ -506,11 +506,11 @@ PocketCode.GameEngine = (function () {
 
             this._currentScene = scene;
             if (scene.executionState == PocketCode.ExecutionState.PAUSED) {
-                this._dispatchSceneChange(false);
+                this._dispatchOnSceneChange(false);
                 scene.resume();
             }
             else if (scene.executionState !== PocketCode.ExecutionState.RUNNING) {
-                this._dispatchSceneChange(false);
+                this._dispatchOnSceneChange(false);
                 scene.start();
             }
             else

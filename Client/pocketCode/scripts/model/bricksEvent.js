@@ -171,8 +171,9 @@ PocketCode.Model.merge({
             resume: function () {
                 this._execute();
             },
-            stop: function () {
-                window.clearTimeout(this._timeoutHandler);
+            stop: function (calledFromStopBrick) {
+                if (!calledFromStopBrick)
+                    window.clearTimeout(this._timeoutHandler);
             },
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
