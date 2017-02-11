@@ -165,8 +165,14 @@ PocketCode.Model.merge({
                 //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
+                this._uiCache = {
+                    visible: false,
+                    x: 0,
+                    y: 0,
+                };
+
                 if (this.value === undefined)
-                    return;
+                    return; //no event is triggered
                 this.value = undefined;
             },
             showAt: function(x, y) {

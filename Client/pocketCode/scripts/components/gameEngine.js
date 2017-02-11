@@ -54,8 +54,11 @@ PocketCode.GameEngine = (function () {
         };
 
         this._scenes = {};
-        this.__currentScene = undefined;
+        this._currentScene = undefined;
         this._startScene = undefined;
+
+        //rendring cache
+        this._globalRenderingTexts = {};    //stored by scene to enable different settings (positions, visible) for one variable per scene
 
         //events
         this._onLoadingProgress = new SmartJs.Event.Event(this);
@@ -121,19 +124,6 @@ PocketCode.GameEngine = (function () {
 
     //properties
     Object.defineProperties(GameEngine.prototype, {
-        _currentScene: {
-            get: function () {
-                return this.__currentScene;
-            },
-            set: function (scene) {
-                if (!(scene instanceof PocketCode.Model.Scene))
-                    throw new Error('invalid argument: scene');
-                if (this.__currentScene === scene)
-                    return;
-
-                this.__currentScene = scene;
-            },
-        },
         //project execution
         executionState: {
             get: function () {
@@ -242,7 +232,7 @@ PocketCode.GameEngine = (function () {
 
             //console.log("_onCameraUsageChange:", this._onCameraUsageChange);
 
-            this.__currentScene = undefined;
+            this._currentScene = undefined;
             for (var id in this._scenes) {
                 this._scenes[id].dispose();
                 delete this._scenes[id];
@@ -392,11 +382,27 @@ PocketCode.GameEngine = (function () {
         },
         //scene
         _dispatchOnSceneChange: function(reinit){
-            var scene = this.__currentScene;
+            var scene = this._currentScene,
+                rtCache = this._globalRenderingTexts,
+                globalTexts = rtCache[scene.id];
+
+            if (globalTexts) {
+                //variable values may have changed- update
+                var tmp;
+                for (var i = 0, l = globalTexts.length; i < l; i++) {
+                    tmp = globalTexts[i];
+                    tmp.text = this.getVariable(tmp.id).toString();
+                }
+            }
+            else {
+                globalTexts = this._getRenderingVariables(this._id);
+                rtCache[scene.id] = globalTexts;
+            }
+
             this._onSceneChange.dispatchEvent({
                 id: scene.id,
                 renderingSprites: scene.renderingSprites,
-                renderingTexts: this._getRenderingVariables(this._id).concat(scene.renderingVariables),
+                renderingTexts: globalTexts.concat(scene.renderingVariables), //global + local
                 screenSize: scene.screenSize,
                 reinit: reinit,
             });
@@ -423,14 +429,16 @@ PocketCode.GameEngine = (function () {
             if (currentScene.executionState === PocketCode.ExecutionState.PAUSED)
                 return this.resumeProject();
 
-            if (this._device)   //not defined if project lot loaded
+            if (this._device)   //not defined if project not loaded
                 this._device.reset();
             //if (reinitSprites !== false)
             //    reinitSprites = true;
             //if reinit: all sprites properties have to be set to their default values: default true
             currentScene = this._currentScene = this._startScene;
-            if (reinitSprites !== false && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
+            if (reinitSprites && currentScene.executionState !== PocketCode.ExecutionState.INITIALIZED) {
                 this._resetVariables();  //global
+                this._globalRenderingTexts = {};
+
                 for (var id in this._scenes)
                     this._scenes[id].reinitializeSprites();
                 this._onBeforeProgramStart.dispatchEvent({ reinit: true });
