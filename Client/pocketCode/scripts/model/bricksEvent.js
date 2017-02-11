@@ -129,14 +129,20 @@ PocketCode.Model.merge({
             this._cycleTime = minLoopCycleTime;
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
 
-            if (this._sprite instanceof PocketCode.Model.SpriteClone)
+            if (this._sprite instanceof PocketCode.Model.SpriteClone) {
                 this._onStart = this._sprite.onCloneStart;
-            else
+                this._onStart.addEventListener(new SmartJs.Event.EventListener(this._onCloneStartHandler, this));
+            }
+            else {
                 this._onStart = startEvent;
-            this._onStart.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+                this._onStart.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+            }
         }
 
         WhenConditionMetBrick.prototype.merge({
+            _onCloneStartHandler: function () {  //to make sure all whenStartAsClone scripts where executed before evaluating the condition
+                window.setTimeout(this.executeEvent.bind(this), this._cycleTime);
+            },
             //a When.. brick cannot be part of a user script, so we do not have to take care of the execution scope (always sprite)
             _execute: function () {
                 if (this._timeoutHandler)
@@ -172,7 +178,10 @@ PocketCode.Model.merge({
             },
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
-                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+                if (this._sprite instanceof PocketCode.Model.SpriteClone)
+                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this._onCloneStartHandler, this));
+                else
+                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
                 this._onStart = undefined;
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
