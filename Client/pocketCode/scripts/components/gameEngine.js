@@ -380,33 +380,6 @@ PocketCode.GameEngine = (function () {
             else
                 this._onLoadingError.dispatchEvent({ files: [e.file] });
         },
-        //scene
-        _dispatchOnSceneChange: function(reinit){
-            var scene = this._currentScene,
-                rtCache = this._globalRenderingTexts,
-                globalTexts = rtCache[scene.id];
-
-            if (globalTexts) {
-                //variable values may have changed- update
-                var tmp;
-                for (var i = 0, l = globalTexts.length; i < l; i++) {
-                    tmp = globalTexts[i];
-                    tmp.text = this.getVariable(tmp.id).toString();
-                }
-            }
-            else {
-                globalTexts = this._getRenderingVariables(this._id);
-                rtCache[scene.id] = globalTexts;
-            }
-
-            this._onSceneChange.dispatchEvent({
-                id: scene.id,
-                renderingSprites: scene.renderingSprites,
-                renderingTexts: globalTexts.concat(scene.renderingVariables), //global + local
-                screenSize: scene.screenSize,
-                reinit: reinit,
-            });
-        },
         //device
         _deviceOnCameraChangeHandler: function (e) {
             //console.log("CAMERA CHANGED HANDLER");
@@ -486,6 +459,40 @@ PocketCode.GameEngine = (function () {
             if (this._currentScene)
                 this._currentScene.handleUserAction(e);
         },
+        //scene
+        _dispatchOnSceneChange: function (reinit) {
+            var scene = this._currentScene,
+                rtCache = this._globalRenderingTexts,
+                globalTexts = rtCache[scene.id];
+
+            if (globalTexts) {
+                //variable values may have changed- update
+                var tmp;
+                for (var i = 0, l = globalTexts.length; i < l; i++) {
+                    tmp = globalTexts[i];
+                    tmp.text = this.getVariable(tmp.id).toString();
+                }
+            }
+            else {
+                globalTexts = this._getRenderingVariables(this._id);
+                rtCache[scene.id] = globalTexts;
+
+                var tmp;
+                for (var i = 0, l = globalTexts.length; i < l; i++) {
+                    tmp = globalTexts[i];
+                    //override internal visibility cache
+                    tmp.visible = false;
+                }
+            }
+
+            this._onSceneChange.dispatchEvent({
+                id: scene.id,
+                renderingSprites: scene.renderingSprites,
+                renderingTexts: globalTexts.concat(scene.renderingVariables), //global + local
+                screenSize: scene.screenSize,
+                reinit: reinit,
+            });
+        },
         _getSceneById: function (id) {
             if (!this._scenes[id])
                 throw new Error('no Scene with id ' + id + ' found');
@@ -502,6 +509,8 @@ PocketCode.GameEngine = (function () {
             this._currentScene = scene;
             scene.stop();
             scene.reinitializeSprites();
+            if (this._globalRenderingTexts[scene.id])
+                delete this._globalRenderingTexts[scene.id];
             this._dispatchOnSceneChange(true);
             scene.start();
             return true;
