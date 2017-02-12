@@ -1289,6 +1289,9 @@ PocketCode.Model.merge({
             subscribeOnLookChange: function (lookId, handler) {
                 this._lookChangeBroker.subscribe(lookId, handler);
             },
+            unsubscribeFromLookChange: function (lookId, handler) {
+                this._lookChangeBroker.unsubscribe(lookId, handler);
+            },
             /* override */
             setLook: function (lookId, waitCallback) {
                 var success = PocketCode.Model.Sprite.prototype.setLook.call(this, lookId);

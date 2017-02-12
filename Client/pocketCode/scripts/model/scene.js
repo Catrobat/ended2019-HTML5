@@ -387,6 +387,12 @@ PocketCode.Model.Scene = (function () {
 
             this._background.subscribeOnLookChange(lookId, changeHandler);
         },
+        unsubscribeFromBackgroundChange: function(lookId, changeHandler) {
+            if (!this._background)
+                return;
+
+            this._background.unsubscribeFromLookChange(lookId, changeHandler);
+        },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
                 return 0;

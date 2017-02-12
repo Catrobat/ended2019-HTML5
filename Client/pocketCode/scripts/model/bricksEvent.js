@@ -66,8 +66,15 @@ PocketCode.Model.merge({
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            broadcastMgr.subscribe(propObject.receiveMsgId, this._subscribeCallback.bind(this));//new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
+            this._msgId = propObject.receiveMsgId;
+            this._callback = this._subscribeCallback.bind(this);
+            broadcastMgr.subscribe(this._msgId, this._callback);
         }
+
+        WhenBroadcastReceiveBrick.prototype.dispose = function () {
+            broadcastMgr.unsubscribe(this._msgId, this._callback);
+            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+        };
 
         return WhenBroadcastReceiveBrick;
     })(),
@@ -195,9 +202,14 @@ PocketCode.Model.merge({
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            var spriteId2 = propObject.any ? 'any' : propObject.spriteId;
-            physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            this._spriteId2 = propObject.any ? 'any' : propObject.spriteId;
+            physicsWorld.subscribeCollision(sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
+
+        WhenCollisionBrick.prototype.dispose = function () {
+            physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+        };
 
         return WhenCollisionBrick;
     })(),
@@ -208,11 +220,19 @@ PocketCode.Model.merge({
         function WhenBackgroundChangesToBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
+            this._lookId = propObject.lookId
+            this._callback = this._subscribeCallback.bind(this);
             if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
-                sprite.subscribeOnLookChange(propObject.lookId, this._subscribeCallback.bind(this));
+                sprite.subscribeOnLookChange(this._lookId, this._callback);
             else
-                scene.subscribeToBackgroundChange(propObject.lookId, this._subscribeCallback.bind(this));
+                scene.subscribeToBackgroundChange(this._lookId, this._callback);
         }
+
+        //methods
+        WhenBackgroundChangesToBrick.prototype.dispose = function () {
+            scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
+            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+        };
 
         return WhenBackgroundChangesToBrick;
     })(),
