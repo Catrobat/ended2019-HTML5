@@ -190,7 +190,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
             {
                 $nestedCounter++;
             }
-            else if($name === "IfThenLogicEndBrick")
+            
+            if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
                 {

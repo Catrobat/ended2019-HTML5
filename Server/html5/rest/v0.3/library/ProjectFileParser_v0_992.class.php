@@ -1104,7 +1104,8 @@ class ProjectFileParser_v0_992
             {
                 $nestedCounter++;
             }
-            else if($name === "IfThenLogicEndBrick")
+            
+            if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
                 {
