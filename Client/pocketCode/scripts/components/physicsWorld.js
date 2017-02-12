@@ -46,6 +46,9 @@ PocketCode.PhysicsWorld = (function () {
             this._registeredCollisions[sprite1][sprite2] || (this._registeredCollisions[sprite1][sprite2] = []);
             this._registeredCollisions[sprite1][sprite2].push(listener);
         },
+        unsubscribeCollision: function (sprite1, sprite2, listener) {
+            //alert('TODO: unsubscribe collision');   //TODO
+        },
         _handleDetectedCollision: function (listeners) {
             if (!(listeners instanceof Array))
                 throw new Error('invalid argument: expected listeners type of array');
