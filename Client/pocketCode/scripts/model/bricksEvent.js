@@ -176,11 +176,15 @@ PocketCode.Model.merge({
                 PocketCode.Model.ScriptBlock.prototype.pause.call(this);
             },
             resume: function () {
+                PocketCode.Model.ScriptBlock.prototype.resume.call(this);
                 this._execute();
             },
             stop: function (calledFromStopBrick) {
-                if (!calledFromStopBrick)
+                if (!calledFromStopBrick) {
                     window.clearTimeout(this._timeoutHandler);
+                    this._previousMet = false;  //reinit
+                }
+                PocketCode.Model.ScriptBlock.prototype.stop.call(this);
             },
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
