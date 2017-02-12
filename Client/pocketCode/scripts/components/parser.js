@@ -628,8 +628,13 @@ PocketCode.merge({
 
                     case 'EXP':
                         if (uiString)
-                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'POWER':
+                        if (uiString)
+                            return 'power(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.pow(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'FLOOR':
                         if (uiString)
@@ -753,7 +758,13 @@ PocketCode.merge({
                 *  X_ACCELERATION, Y_ACCELERATION, Z_ACCELERATION, COMPASS_DIRECTION, X_INCLINATION, Y_INCLINATION, LOUDNESS, FACE_DETECTED, FACE_SIZE, FACE_X_POSITION, FACE_Y_POSITION, OBJECT_X(true), OBJECT_Y(true), OBJECT_GHOSTEFFECT(true), OBJECT_BRIGHTNESS(true), OBJECT_SIZE(true), OBJECT_ROTATION(true), OBJECT_LAYER(true)
                 */
                 switch (jsonFormula.value) {
-                    //sensors
+                    //device
+                    case 'LOUDNESS':
+                        if (uiString)
+                            return 'loudness';
+
+                        return 'this._device.loudness';
+
                     case 'X_ACCELERATION':
                         if (uiString)
                             return 'acceleration_x';
@@ -772,12 +783,6 @@ PocketCode.merge({
 
                         return 'this._device.accelerationZ';
 
-                    case 'COMPASS_DIRECTION':
-                        if (uiString)
-                            return 'compass_direction';
-
-                        return 'this._device.compassDirection';
-
                     case 'X_INCLINATION':
                         if (uiString)
                             return 'inclination_x';
@@ -790,12 +795,64 @@ PocketCode.merge({
 
                         return 'this._device.inclinationY';
 
-                    case 'LOUDNESS':
+                    case 'COMPASS_DIRECTION':
                         if (uiString)
-                            return 'loudness';
+                            return 'compass_direction';
 
-                        return 'this._device.loudness';
+                        return 'this._device.compassDirection';
 
+                        //geo location
+                    case 'LATITUDE':
+                        if (uiString)
+                            return 'latitude';
+
+                        return 'this._device.geoLatitude';
+
+                    case 'LONGITUDE':
+                        if (uiString)
+                            return 'longitude';
+
+                        return 'this._device.geoLongitude';
+
+                    case 'ALTITUDE':
+                        if (uiString)
+                            return 'altitude';
+
+                        return 'this._device.geoAltitude';
+
+                    case 'ACCURACY':
+                    case 'LOCATION_ACCURACY':
+                        if (uiString)
+                            return 'location_accuracy';
+
+                        return 'this._device.geoAccuracy';
+
+                        //touch
+                    case 'FINGER_X':
+                        if (uiString)
+                            return 'screen_touch_x';
+
+                        return 'this._device.getTouchX(this._device.lastTouchIndex)';
+
+                    case 'FINGER_Y':
+                        if (uiString)
+                            return 'screen_touch_y';
+
+                        return 'this._device.getTouchY(this._device.lastTouchIndex)';
+
+                    case 'FINGER_TOUCHED':
+                        if (uiString)
+                            return 'screen_is_touched';
+
+                        return 'this._device.isTouched(this._device.lastTouchIndex)';
+
+                    case 'LAST_FINGER_INDEX':
+                        if (uiString)
+                            return 'last_screen_touch_index';
+
+                        return 'this._device.lastTouchIndex';
+
+                    //face detection
                     case 'FACE_DETECTED':
                         if (uiString)
                             return 'is_face_detected';
@@ -820,6 +877,61 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
+                        //date and time
+                    case 'CURRENT_YEAR':
+                        if (uiString)
+                            return 'year';
+
+                        return '(new Date()).getFullYear()';
+
+                    case 'CURRENT_MONTH':
+                        if (uiString)
+                            return 'month';
+
+                        return '(new Date()).getMonth()';
+
+                    case 'CURRENT_DATE':
+                        if (uiString)
+                            return 'day';
+
+                        return '(new Date()).getDate()';
+
+                    case 'CURRENT_DAY_OF_WEEK':
+                        if (uiString)
+                            return 'weekday';
+
+                        return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
+
+                    case 'CURRENT_HOUR':
+                        if (uiString)
+                            return 'hour';
+
+                        return '(new Date()).getHours()';
+
+                    case 'CURRENT_MINUTE':
+                        if (uiString)
+                            return 'minute';
+
+                        return '(new Date()).getMinutes()';
+
+                    case 'CURRENT_SECOND':
+                        if (uiString)
+                            return 'second';
+
+                        return '(new Date()).getSeconds()';
+
+                        //case 'DAYS_SINCE_2000':
+                        //    if (uiString)
+                        //        return 'days_since_2000';
+
+                        //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
+
+                        //case 'TIMER':
+                        //    if (uiString)
+                        //        return 'timer';
+
+                        //    return 'this._sprite.projectTimerValue';
+                        
                     //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
@@ -886,85 +998,6 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
-                    //time(r)
-                    case 'CURRENT_YEAR':
-                        if (uiString)
-                            return 'year';
-
-                        return '(new Date()).getFullYear()';
-
-                    case 'CURRENT_MONTH':
-                        if (uiString)
-                            return 'month';
-
-                        return '(new Date()).getMonth()';
-
-                    case 'CURRENT_DATE':
-                        if (uiString)
-                            return 'day';
-
-                        return '(new Date()).getDate()';
-
-                    case 'CURRENT_DAY_OF_WEEK':
-                        if (uiString)
-                            return 'weekday';
-
-                        return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
-
-                    case 'CURRENT_HOUR':
-                        if (uiString)
-                            return 'hour';
-
-                        return '(new Date()).getHours()';
-
-                    case 'CURRENT_MINUTE':
-                        if (uiString)
-                            return 'minute';
-
-                        return '(new Date()).getMinutes()';
-
-                    case 'CURRENT_SECOND':
-                        if (uiString)
-                            return 'second';
-
-                        return '(new Date()).getSeconds()';
-
-                        //case 'DAYS_SINCE_2000':
-                        //    if (uiString)
-                        //        return 'days_since_2000';
-
-                        //    return '(new Date() - new Date(2000, 0, 1, 0, 0, 0, 0)) / 86400000';
-
-                        //case 'TIMER':
-                        //    if (uiString)
-                        //        return 'timer';
-
-                        //    return 'this._sprite.projectTimerValue';
-
-                        //touch
-                    case 'FINGER_X':
-                        if (uiString)
-                            return 'screen_touch_x';
-
-                        return 'this._device.getTouchX(this._device.lastTouchIndex)';
-
-                    case 'FINGER_Y':
-                        if (uiString)
-                            return 'screen_touch_y';
-
-                        return 'this._device.getTouchY(this._device.lastTouchIndex)';
-
-                    case 'FINGER_TOUCHED':
-                        if (uiString)
-                            return 'screen_is_touched';
-
-                        return 'this._device.isTouched(this._device.lastTouchIndex)';
-
-                    case 'LAST_FINGER_INDEX':
-                        if (uiString)
-                            return 'last_screen_touch_index';
-
-                        return 'this._device.lastTouchIndex';
 
                     //collision
                     case 'COLLIDES_WITH_EDGE':
@@ -978,32 +1011,6 @@ PocketCode.merge({
                             return 'touches_finger';
 
                         return 'this._sprite.collidesWithPointer';
-
-                    //geo location
-                    case 'LATITUDE':
-                        if (uiString)
-                            return 'latitude';
-
-                        return 'this._device.geoLatitude';
-
-                    case 'LONGITUDE':
-                        if (uiString)
-                            return 'longitude';
-
-                        return 'this._device.geoLongitude';
-
-                    case 'ALTITUDE':
-                        if (uiString)
-                            return 'altitude';
-
-                        return 'this._device.geoAltitude';
-
-                    case 'ACCURACY':
-                    case 'LOCATION_ACCURACY':
-                        if (uiString)
-                            return 'location_accuracy';
-
-                        return 'this._device.geoAccuracy';
 
                     //physics
                     case 'OBJECT_X_VELOCITY':
