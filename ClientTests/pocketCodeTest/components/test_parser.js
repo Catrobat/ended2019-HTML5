@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/broadcastManager.js" />
+/// <reference path="../../../Client/pocketCode/scripts/components/publishSubscribe.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/parser.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
@@ -10,12 +10,12 @@
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksMotion.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksSound.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksData.js" />
+/// <reference path="../../../Client/pocketCode/scripts/model/userVariableHost.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
-/// <reference path="../../../Client/pocketCode/scripts/components/userVariableHost.js" />
 
 /// <reference path="../_resources/testDataProjects.js" />
 'use strict';

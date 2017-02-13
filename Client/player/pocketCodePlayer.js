@@ -20,6 +20,24 @@ PocketCode.mobileUrl = PocketCode.domain + 'html5/player/{projectId}';
 PocketCode.mobileUrlRfc3066 = PocketCode.domain + 'html5/player/{projectId}/{rfc3066}';
 PocketCode.logoUrl = PocketCode.domain + 'html5/pocketCode/img/logo.png';
 
+//add css file
+document.addEventListener('DOMContentLoaded', function () {
+    var hn = window.location.hostname;
+    var href;
+    if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
+        href = 'pocketCodePlayer.css';
+    else
+        href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
+
+    var link = document.createElement('link');
+    link.href = href;
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+
+    document.getElementsByTagName('head')[0].appendChild(link);
+});
+
+
 PocketCode.crossOrigin = new ((function () {
 
     function CrossOrigin() {
@@ -1082,12 +1100,26 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
-		{ url: 'pocketCode/css/menuAndControls.css', type: 'css' },
 
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
 
-		{ url: 'pocketCode/scripts/components/broadcastManager.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksEvent.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksPen.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksData.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/bricksUserScript.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/userVariableHost.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/look.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/sprite.js', type: 'js' },
+		{ url: 'pocketCode/scripts/model/scene.js', type: 'js' },
+
+		{ url: 'pocketCode/scripts/components/publishSubscribe.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/collisionManager.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/physicsWorld.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/deviceFeature.js', type: 'js' },
@@ -1095,8 +1127,6 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/formula.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/imageHelper.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/imageStore.js', type: 'js' },
-		{ url: 'pocketCode/scripts/components/userVariableHost.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/scene.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/gameEngine.js', type: 'js' },    //make sure includes are in the right order (inheritance)
 		{ url: 'pocketCode/scripts/components/i18nProvider.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/loggingProvider.js', type: 'js' },
@@ -1104,19 +1134,6 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/components/proxy.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/renderingItem.js', type: 'js' },
 		{ url: 'pocketCode/scripts/components/soundManager.js', type: 'js' },
-
-		{ url: 'pocketCode/scripts/model/bricksCore.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksEvent.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksControl.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksLook.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksMotion.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksPen.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksSound.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksData.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/bricksUserScript.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/look.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/sprite.js', type: 'js' },
-		{ url: 'pocketCode/scripts/model/userVariable.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/ui/button.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },

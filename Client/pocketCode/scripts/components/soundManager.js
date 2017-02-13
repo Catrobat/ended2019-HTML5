@@ -6,7 +6,6 @@
 
 
 PocketCode.SoundManager = (function () {
-    //SoundManager.extends(SmartJs.Core.Component);
 
     function SoundManager() {
 
@@ -17,20 +16,21 @@ PocketCode.SoundManager = (function () {
 
         this._id = SmartJs.getNewId() + '_';
         this._maxInstancesOfSameSound = 20;
+        this._supported = createjs.Sound.initializeDefaultPlugins();
 
         this._volume = 0.7;
         this._muted = false;
         createjs.Sound.volume = this._volume;   //initial
         this._muted = createjs.Sound.muted;
 
-        this._activeSounds = [];
+        this._activeSounds = {};    //an array of sound instances per scene id
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
-        this._onStartPlayingInstance = new SmartJs.Event.Event(this);       //currently private only
-        this._onFinishedPlayingInstance = new SmartJs.Event.Event(this);    //currently private only
-        this._onFailedPlayingInstance = new SmartJs.Event.Event(this);      //currently private only
+        //this._onStartPlayingInstance = new SmartJs.Event.Event(this);       //currently private only
+        //this._onFinishedPlayingInstance = new SmartJs.Event.Event(this);    //currently private only
+        //this._onFailedPlayingInstance = new SmartJs.Event.Event(this);      //currently private only
         this._onFinishedPlaying = new SmartJs.Event.Event(this);
 
         //bind on soundJs
@@ -44,7 +44,9 @@ PocketCode.SoundManager = (function () {
     //properties
     Object.defineProperties(SoundManager.prototype, {
         supported: {
-            value: createjs.Sound.initializeDefaultPlugins(),
+            get: function () {
+                return this._supported;
+            },
         },
         volume: {
             get: function () {
@@ -64,9 +66,12 @@ PocketCode.SoundManager = (function () {
                     return;
 
                 this._volume = value;
-                var sounds = this._activeSounds;
-                for (var i = 0, l = sounds.length; i < l; i++)
-                    sounds[i].volume = value;
+                var sounds;
+                for (var id in this._activeSounds) {
+                    sounds = this._activeSounds[id];
+                    for (var i = 0, l = sounds.length; i < l; i++)
+                        sounds[i].volume = value;
+                }
             }
         },
         muted: {
@@ -80,16 +85,12 @@ PocketCode.SoundManager = (function () {
                     return;
 
                 this._muted = value;
-                var sounds = this._activeSounds;
-                for (var i = 0, l = sounds.length; i < l; i++)
-                    sounds[i].muted = value;
-            },
-        },
-        isPlaying: {
-            get: function () {
-                if (this._activeSounds.length > 0)
-                    return true;
-                return false;
+                var sounds;
+                for (var id in this._activeSounds) {
+                    sounds = this._activeSounds[id];
+                    for (var i = 0, l = sounds.length; i < l; i++)
+                        sounds[i].muted = value;
+                }
             },
         },
     });
@@ -294,42 +295,50 @@ PocketCode.SoundManager = (function () {
         abortLoading: function () {
             this._loading = false;
         },
-        startSound: function (id, finishedCallback, loadedCallback) {
-            if (!this.supported)
+        startSound: function (sceneId, id, loadedCallback, finishedCallback) {
+            if (!this.supported) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
+            }
 
             try {
                 var soundInstance = createjs.Sound.createInstance(this._id + id);
             }
             catch (e) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
             }
-            soundInstance.addEventListener('succeeded', createjs.proxy(function (e, soundInstance) {
-                this._activeSounds.push(soundInstance);
-                this._onStartPlayingInstance.dispatchEvent({ instance: soundInstance });
-            }, this, soundInstance));
+            soundInstance.addEventListener('succeeded', createjs.proxy(function (e, sceneId, soundInstance) {
+                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
+                this._activeSounds[sceneId].push(soundInstance);
+                //this._onStartPlayingInstance.dispatchEvent({ instance: soundInstance });
+            }, this, sceneId, soundInstance));
 
-            soundInstance.addEventListener('complete', createjs.proxy(function (e, soundInstance) {
-                var active = this._activeSounds;
+            soundInstance.addEventListener('complete', createjs.proxy(function (e, sceneId, soundInstance) {
+                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
+                var active = this._activeSounds[sceneId];
                 active.remove(soundInstance);
-                this._onFinishedPlayingInstance.dispatchEvent({ instance: soundInstance });
+                //this._onFinishedPlayingInstance.dispatchEvent({ instance: soundInstance });
                 if (active.length == 0)
                     this._onFinishedPlaying.dispatchEvent({ instance: soundInstance });
 
                 if (finishedCallback)
                     finishedCallback(true);
-            }, this, soundInstance));
+            }, this, sceneId, soundInstance));
 
-            soundInstance.addEventListener('failed', createjs.proxy(function (e, soundInstance) {
-                var active = this._activeSounds;
+            soundInstance.addEventListener('failed', createjs.proxy(function (e, sceneId, soundInstance) {
+                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
+                var active = this._activeSounds[sceneId];
                 active.remove(soundInstance);
-                this._onFailedPlayingInstance.dispatchEvent({ instance: soundInstance });
+                //this._onFailedPlayingInstance.dispatchEvent({ instance: soundInstance });
                 if (active.length == 0)
                     this._onFinishedPlaying.dispatchEvent({ instance: soundInstance });
 
                 if (finishedCallback)
                     finishedCallback(false);
-            }, this, soundInstance));
+            }, this, sceneId, soundInstance));
 
             soundInstance.volume = this._volume;
             soundInstance.muted = this._muted;
@@ -340,9 +349,13 @@ PocketCode.SoundManager = (function () {
                 loadedCallback(soundInstance.uniqueId);
             return soundInstance.uniqueId;
         },
-        startSoundFromUrl: function (url, loadedCallback, finishedCallback) {
-            if (!this.supported)
+        startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {
+            if (!this.supported) {
+                if (finishedCallback)
+                    finishedCallback(false);
                 return false;
+            }
+
             var soundId = SmartJs.getNewId();
             var success = this.loadSound(url, soundId, 'mp3', true, finishedCallback, loadedCallback);
             if (success)
@@ -352,73 +365,124 @@ PocketCode.SoundManager = (function () {
                 finishedCallback(false);
             return false;
         },
-        pauseSound: function (id) {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++) {
-                if (sounds[i].uniqueId === id) {
-                    sounds[i].paused = true;
+        isPlaying: function (sceneId) {
+            if (!sceneId)
+                throw new Error('missing argument: scene id');
+            var active = this._activeSounds[sceneId];
+            if (active && active.length > 0)
+                return true;
+            return false;
+        },
+        pauseSound: function (sceneId, id) {
+            var active = this._activeSounds[sceneId];
+            if (!active)
+                return;
+
+            for (var i = 0, l = active.length; i < l; i++) {
+                if (active[i].uniqueId === id) {
+                    active[i].paused = true;
 
                     //fixes rounding errors in the framework that occurs when sounds are paused before 1ms
-                    if (sounds[i].position < 1) {
-                        sounds[i].position = 0;
+                    if (active[i].position < 1) {
+                        active[i].position = 0;
                     }
                     return;
                 }
             }
         },
-        pauseSounds: function () {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++) {
-                if (sounds[i].paused === false) {
-                    sounds[i].paused = true;
+        pauseSounds: function (/*optional*/ sceneId) {
+            var active = [];
+            if (sceneId) {
+                active = this._activeSounds[sceneId];
+                if (!active)
+                    return false;
+            }
+            else {
+                for (var id in this._activeSounds) {
+                    active = active.concat(this._activeSounds[id]);
+                }
+            }
+
+            for (var i = 0, l = active.length; i < l; i++) {
+                if (active[i].paused === false) {
+                    active[i].paused = true;
 
                     //fixes rounding errors in the framework that occurs when sounds are paused before 1ms
-                    if (sounds[i].position < 1) {
-                        sounds[i].position = 0;
+                    if (active[i].position < 1) {
+                        active[i].position = 0;
                     }
                 }
             }
         },
-        resumeSound(id) {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++) {
-                if (sounds[i].uniqueId === id) {
-                    sounds[i].paused = false;
+        resumeSound: function (sceneId, id) {
+            var active = this._activeSounds[sceneId];
+            if (!active)
+                return;
+
+            for (var i = 0, l = active.length; i < l; i++) {
+                if (active[i].uniqueId === id) {
+                    active[i].paused = false;
                     return;
                 }
             }
         },
-        resumeSounds: function () {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++) {
-                if (sounds[i].paused === true) {
-                    sounds[i].paused = false;
+        resumeSounds: function (/*optional*/ sceneId) {
+            var active = [];
+            if (sceneId) {
+                active = this._activeSounds[sceneId];
+                if (!active)
+                    return false;
+            }
+            else {
+                for (var id in this._activeSounds) {
+                    active = active.concat(this._activeSounds[id]);
+                }
+            }
+
+            for (var i = 0, l = active.length; i < l; i++) {
+                if (active[i].paused === true) {
+                    active[i].paused = false;
                 }
             }
         },
-        stopSound: function (id) {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++) {
-                if (sounds[i].uniqueId === id) {
-                    sounds[i].stop();
-                    this._activeSounds.remove(sounds[i]);
+        stopSound: function (sceneId, id) {
+            var active = this._activeSounds[sceneId];
+            if (!active)
+                return;
+
+            for (var i = 0, l = active.length; i < l; i++) {
+                if (active[i].uniqueId === id) {
+                    active[i].stop();
+                    active.remove(active[i]);
                     return;
                 }
             }
         },
-        stopAllSounds: function () {
-            var sounds = this._activeSounds;
-            for (var i = 0, l = sounds.length; i < l; i++)
-                sounds[i].stop();
-            this._activeSounds = [];
+        stopAllSounds: function (/*optional*/ sceneId) {
+            var active = [];
+            if (sceneId) {
+                active = this._activeSounds[sceneId];
+                if (!active) //e.g. gameEngine stopped all sounds before scenes try to stop them
+                    return false;
+            }
+            else {
+                for (var id in this._activeSounds) {
+                    active = active.concat(this._activeSounds[id]);
+                }
+            }
+
+
+            for (var i = 0, l = active.length; i < l; i++)
+                active[i].stop();
+            this._activeSounds = {};
             return true;
         },
         dispose: function () {
             this.abortLoading();
             createjs.Sound.removeEventListener('fileload', this._fileLoadProxy);
             createjs.Sound.removeEventListener('fileerror', this._fileErrorProxy);
+            this.stopAllSounds();
             this._removeAllSounds();
-            //SmartJs.Core.Component.prototype.dispose.call(this);
         },
     });
 

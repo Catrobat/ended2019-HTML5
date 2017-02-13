@@ -16,12 +16,10 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, gameEngine, soundMgr, /*bricksTotal,*/ minLoopCycleTime) {
+        function SpriteFactory(device, gameEngine, soundMgr, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._soundMgr = soundMgr;
-            //this._bricksTotal = bricksTotal;
-            //this._bricksLoaded = 0;
             this._minLoopCycleTime = minLoopCycleTime || 20;
 
             this._unsupportedBricks = [];
@@ -93,7 +91,9 @@ PocketCode.merge({
                 return clone;
             },
             dispose: function () {
+                this._device = undefined;
                 this._gameEngine = undefined;
+                this._soundMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
@@ -105,7 +105,7 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, /*totalCount, loadedCount,*/ minLoopCycleTime) {
+        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._scene = scene;
@@ -162,28 +162,28 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                        //in development:
-                        //case 'WhenConditionMetBrick':
-                        //case 'StopScriptBrick':
-                        //case 'SetBackgroundBrick':
-                        //case 'WhenCollisionBrick':
-                        //case: 'WhenStartAsCloneBrick':
-                        //case 'CloneBrick':
-                        //case 'DeleteCloneBrick':
-                        //case 'SetPhysicsObjectTypeBrick':
-                        //case 'SetVelocityBrick':
-                        //case 'RotationSpeedLeftBrick':
-                        //case 'RotationSpeedRightBrick':
-                        //case 'SetGravityBrick':
-                        //case 'SetMassBrick':
-                        //case 'SetBounceFactorBrick':
-                        //case 'SetFrictionBrick':
+                    //in development:
+                    //case 'WhenConditionMetBrick':
+                    //case 'StopScriptBrick':
+                    //case 'SetBackgroundBrick':
+                    //case 'WhenCollisionBrick':
+                    //case 'WhenStartAsCloneBrick':
+                    //case 'CloneBrick':
+                    //case 'DeleteCloneBrick':
+                    case 'SetPhysicsObjectTypeBrick':
+                    case 'SetVelocityBrick':
+                    case 'RotationSpeedLeftBrick':
+                    case 'RotationSpeedRightBrick':
+                    case 'SetGravityBrick':
+                    case 'SetMassBrick':
+                    case 'SetBounceFactorBrick':
+                    case 'SetFrictionBrick':
 
-                        //case 'SelectCameraBrick':
-                        //case 'CameraBrick':
+                    //case 'SelectCameraBrick':
+                    //case 'CameraBrick':
 
-                        //case 'PlaySoundAndWaitBrick':
-                        //case 'SpeakAndWaitBrick':
+                    //case 'PlaySoundAndWaitBrick':
+                    //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
@@ -217,10 +217,12 @@ PocketCode.merge({
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
                     case 'AskBrick':
+                    case 'WhenBackgroundChangesToBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
                     case 'BroadcastBrick':
+                        //type = 'BroadcastAndWaitBrick'; //fix to make sure we are catroid compatible?
                     case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
@@ -229,10 +231,13 @@ PocketCode.merge({
                     case 'PlaySoundBrick':
                     case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
-                    case 'SetVolumeBrick':
-                    case 'ChangeVolumeBrick':
                     case 'SpeakBrick':
                     case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
+                        break;
+
+                    case 'SetVolumeBrick':
+                    case 'ChangeVolumeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
                         break;
 
@@ -251,10 +256,6 @@ PocketCode.merge({
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
-                        break;
-
-                    case 'WhenBackgroundChangesToBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onBackgroundChange);
                         break;
 
                     case 'StopScriptBrick':
@@ -423,10 +424,10 @@ PocketCode.merge({
             },
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
-                //if (uiString || !numeric)
-                return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
+                //if (uiString) //|| !numeric)
+                    return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
-                //return 'this._validateNumeric(' + this._parseJsonType(jsonFormula.left, uiString) + ', \'' + operator + '\', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                //return '(' + this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
@@ -585,10 +586,10 @@ PocketCode.merge({
                             return 'round(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
-                    case 'MOD':
+                    case 'MOD': //http://stackoverflow.com/questions/4467539/javascript-modulo-not-behaving
                         if (uiString)
                             return 'mod(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return '(' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')';
+                        return '(((' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')) + (' + this._parseJsonType(jsonFormula.right) + ')) % (' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'ARCSIN':
                         if (uiString)

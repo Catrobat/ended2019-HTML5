@@ -2,14 +2,11 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-components.js" />
 /// <reference path="../core.js" />
-/// <reference path="../components/broadcastManager.js" />
+/// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/gameEngine.js" />
 /// <reference path="bricksCore.js" />
 'use strict';
 
-/**
- * @fileOverview bricksEvent
- */
 
 PocketCode.Model.merge({
 
@@ -20,13 +17,13 @@ PocketCode.Model.merge({
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._onStart = startEvent;
-            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            startEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
 
         WhenProgramStartBrick.prototype.merge({
             dispose: function () {
                 if (this._onStart) {
-                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                    this._onStart.removeEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
                     this._onStart = undefined;  //make sure to disconnect from gameEngine
                 }
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
@@ -45,16 +42,16 @@ PocketCode.Model.merge({
             //this._action = propObject.action;   //'Tapped', 'TouchStart'
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
             this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+            actionEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this._onActionHandler, this));
         }
 
         WhenActionBrick.prototype.merge({
             _onActionHandler: function (e) {
-                if (e.sprite === this._sprite)
-                    this.execute();
+                if (!e.sprite || e.sprite === this._sprite)
+                    this.executeEvent(e);
             },
             dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+                this._onAction.removeEventListener(new SmartJs.Event.AsyncEventListener(this._onActionHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
@@ -69,20 +66,8 @@ PocketCode.Model.merge({
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            broadcastMgr.subscribe(propObject.receiveMsgId, new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
+            broadcastMgr.subscribe(propObject.receiveMsgId, this._subscribeCallback.bind(this));//new SmartJs.Event.EventListener(this._onBroadcastHandler, this));
         }
-
-        WhenBroadcastReceiveBrick.prototype.merge({
-            _onBroadcastHandler: function (e) {
-                if (e && e.id) {    //for broadcastWait: e.g. { id: threadId, listener: new SmartJs.Event.EventListener(_brickExecutedHandler, this) }
-                    PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, e.listener, e.id);
-                }
-                else {
-                    //the onExecuted event is only dispatched for broadcasts- broadcastWait will always terminate befor the calling routine
-                    this.execute();
-                }
-            },
-        });
 
         return WhenBroadcastReceiveBrick;
     })(),
@@ -95,59 +80,16 @@ PocketCode.Model.merge({
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastMsgId = propObject.broadcastMsgId;
-
-            this._paused = false;
-            this._pendingOp = false;
-            //this._stopped = false;
-
-            this._recursiveBroadcasts = false;
-            this._timeout = undefined;
         }
 
         BroadcastBrick.prototype.merge({
-            _execute: function (usingTimeout) {
-                if (usingTimeout && this._stopped)
-                    return;
-                this._stopped = false;
-                if (this._paused) {
-                    this._pendingOp = true;
-                    return;
-                }
-                //if (this._stopped) {
-                //    this._stopped = false;
-                //    return;
-                //}
-                var brId = this._broadcastMsgId;
-                //var broadcasts = this._broadcasts;
-
-                if (this._recursiveBroadcasts) {
-                    this._timeout = setTimeout(this._execute.bind(this, true), 1);
-                }
-                else {
-                    this._recursiveBroadcasts = true;
-                    //this._broadcastMgr.publish(brId);
-                    this._timeout = setTimeout(this._broadcastMgr.publish.bind(this._broadcastMgr, brId), 0);
-                    this._recursiveBroadcasts = false;
-                }
-                //setTimeout(this._return.bind(this), 1);
+            _execute: function () {
+                this._broadcastMgr.publish(this._broadcastMsgId);
                 this._return();
             },
-            pause: function () {
-                this._paused = true;
-            },
-            resume: function () {
-                this._paused = false;
-                if (this._pendingOp) {
-                    this._pendingOp = false;
-                    this._execute();
-                }
-            },
-            stop: function () {
-                clearTimeout(this._timeout);
-                this._paused = false;
-                this._stopped = true;
-                //this._pendingOp = false;    //TODO: TEST
-                //this._stopped = true;
+            dispose: function () {
+                this._broadcastMgr = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
             },
         });
 
@@ -165,11 +107,12 @@ PocketCode.Model.merge({
         }
 
         BroadcastAndWaitBrick.prototype.merge({
-            _returnHandler: function (e) {
-                this._return(e.id, e.loopDelay)
-            },
             _execute: function (id) {
-                this._broadcastMgr.publish(this._broadcastMsgId, new SmartJs.Event.EventListener(this._returnHandler, this), id);
+                this._broadcastMgr.publish(this._broadcastMsgId, this._return.bind(this, id));
+            },
+            dispose: function () {
+                this._broadcastMgr = undefined;
+                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
             },
         });
 
@@ -187,7 +130,7 @@ PocketCode.Model.merge({
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
 
             this._onStart = startEvent;
-            startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            startEvent.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
         }
 
         WhenConditionMetBrick.prototype.merge({
@@ -200,7 +143,7 @@ PocketCode.Model.merge({
                 try {
                     met = this._condition.calculate();
                 }
-                catch (e) {}
+                catch (e) { }
 
                 if (!this._previousMet && met) {
                     this._previousMet = met;
@@ -224,9 +167,9 @@ PocketCode.Model.merge({
             },
             dispose: function () {
                 window.clearTimeout(this._timeoutHandler);
-                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+                this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+                this._onStart = undefined;
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-                //this.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
             },
         });
 
@@ -239,15 +182,9 @@ PocketCode.Model.merge({
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            var spriteId2 = propObject.any ? 'any' : propObject.spriteId;   //TODO: change any to undefined?
-            physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.EventListener(this._onCollisionHandler, this));
+            var spriteId2 = propObject.any ? 'any' : propObject.spriteId;
+            physicsWorld.subscribeCollision(sprite.id, spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
-
-        WhenCollisionBrick.prototype.merge({
-            _onCollisionHandler: function (e) {
-                this.execute();
-            }
-        });
 
         return WhenCollisionBrick;
     })(),
@@ -255,26 +192,32 @@ PocketCode.Model.merge({
     WhenBackgroundChangesToBrick: (function () {
         WhenBackgroundChangesToBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenBackgroundChangesToBrick(device, sprite, propObject, changeEvent) {
+        function WhenBackgroundChangesToBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            this._lookId = propObject.lookId;
-            this._changeEvent = changeEvent;
-            changeEvent.addEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
+            if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
+                sprite.subscribeOnLookChange(propObject.lookId, this._subscribeCallback.bind(this));
+            else
+                scene.subscribeToBackgroundChange(propObject.lookId, this._subscribeCallback.bind(this));
         }
 
-        WhenBackgroundChangesToBrick.prototype.merge({
-            _onBackgroundChangeHandler: function (e) {
-                if(e.lookId == this._lookId)
-                    this.execute();
-            },
-            dispose: function () {
-                changeEvent.removeEventListener(new SmartJs.Event.EventListener(this._onBackgroundChangeHandler, this));
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            },
-        });
-
         return WhenBackgroundChangesToBrick;
+    })(),
+});
+
+PocketCode.Model.merge({
+
+    WhenStartAsCloneBrick: (function () {
+        WhenStartAsCloneBrick.extends(PocketCode.Model.WhenProgramStartBrick, false);
+
+        function WhenStartAsCloneBrick(device, sprite, propObject) {
+
+            if (!(sprite instanceof PocketCode.Model.SpriteClone))
+                return;
+            PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
+        }
+
+        return WhenStartAsCloneBrick;
     })(),
 
 });

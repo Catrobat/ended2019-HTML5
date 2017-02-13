@@ -77,9 +77,6 @@ QUnit.test("RenderingText", function (assert) {
     assert.equal(renderingText._text, text.toString(), "Text set correctly");
     assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
 
-    renderingText.text = 4;
-    assert.equal(renderingText._text, "4.0", "include 1 decimal as default for integers");
-
     //rendering
     var canvas = document.createElement("canvas");
     canvas.width = 200;
@@ -141,7 +138,7 @@ QUnit.test("RenderingText", function (assert) {
 
     ctx.clearRect(0, 0, 200, 100);
     renderingText.x = 10;
-    renderingText.y = 10;
+    renderingText.y = -10;  //+=up on out coord system
     renderingText.draw(ctx);
 
     img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
@@ -163,7 +160,7 @@ QUnit.test("RenderingText", function (assert) {
     img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
     var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
         bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
-    assert.ok(Math.abs(top + bottom -220) < 2, "rendering Text line height: based on screenshot (2016-07-11)");
+    assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
 
 });
 
@@ -331,9 +328,9 @@ QUnit.test("RenderingSprite", function (assert) {
         renderingSprite.shadow = true;
         assert.equal(renderingSprite._shadow, true, "shadow: setter");
         //renderingSprite.penDown = false;
-        assert.equal(renderingSprite._penDown, false, "penDown: default");
+        assert.equal(renderingSprite.penDown, false, "penDown: default");
         //renderingSprite.penSize = 4;
-        assert.equal(renderingSprite._penSize, 4, "penSize: default");
+        assert.equal(renderingSprite.penSize, 4, "penSize: default");
         assert.equal(renderingSprite.penColor.b, 255.0, "penColorBlue: default");
         assert.equal(renderingSprite.penColor.r, 0.0, "penColorRed: default");
         assert.equal(renderingSprite.penColor.g, 0.0, "penColorGreen: default");

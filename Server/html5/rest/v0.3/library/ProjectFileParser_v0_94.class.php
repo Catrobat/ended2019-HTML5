@@ -18,7 +18,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     foreach($data->programListOfLists->children() as $userList)
     {
       $userList = $this->getList($userList);
-      array_push($this->lists, new ListDto($this->getNewId(), (string)$userList));
+      array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
     }
     array_pop($this->cpp);
 
@@ -27,7 +27,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
     foreach($data->programVariableList->children() as $userVar)
     {
       $userVar = $this->getObject($userVar, $this->cpp);
-      array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
+      array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
     }
     array_pop($this->cpp);
 
@@ -71,7 +71,7 @@ class ProjectFileParser_v0_94 extends ProjectFileParser_v0_93
       {
         //not defined yet
         $id = $this->getNewId();
-        array_push($obj->lists, new ListDto($id, $name));
+        array_push($obj->lists, new IdNameDto($id, $name));
 
         return $id;
       }

@@ -55,9 +55,8 @@ PocketCode.Ui.Canvas = (function () {
         this._upperCanvasCtx = this._upperCanvasEl.getContext('2d');
 
         // TODO think about order of elements!
-        this._dom.appendChild(this._backgroundCanvasEl);
         this._dom.appendChild(this._cameraCanvasEl);
-
+        this._dom.appendChild(this._backgroundCanvasEl);
         this._dom.appendChild(this._penStampCanvasEl);
         this._dom.appendChild(this._spritesCanvasEl);
         this._dom.appendChild(this._bubblesCanvasEl);
@@ -92,26 +91,23 @@ PocketCode.Ui.Canvas = (function () {
 
 
                 this._cameraStream = cameraStream;
+
                 //console.log("camera stream in setter:", this._cameraStream);
             },
             get: function () {
                 return this._cameraStream;
             }
         },
-
-
         cameraOn: {
             set: function (cameraOn) {
                 //console.log("setting camera on in canvas to :", cameraOn);
                 this._cameraOn = cameraOn;
+                this.renderCamera();
             },
             get: function () {
                 return this._cameraOn;
             }
         },
-
-
-
         cameraContext: {
             get: function () {
                 return this._cameraCanvasCtx;
@@ -218,40 +214,13 @@ PocketCode.Ui.Canvas = (function () {
             this._scalingY = y;
             this.render();
         },
-        initScene: function (id, screenSize) {
-            // DONETODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
-            console.log(" meraba iz initScene");
-            if (this._penStampCache[id]) {
-                this._currentSceneCache = this._penStampCache[id];
-                return;
-            }
 
-            var penStampCacheCanvasEl = document.createElement('canvas');
-            penStampCacheCanvasEl.height = Math.round(screenSize.height);
-            penStampCacheCanvasEl.width = Math.round(screenSize.width);
-
-
-            var penStampCacheCanvasCtx = penStampCacheCanvasEl.getContext('2d');
-            penStampCacheCanvasCtx.translate(Math.round(screenSize.width * 0.5), Math.round(screenSize.height * 0.5))
-
-            this._penStampCache[id] = {
-                element: penStampCacheCanvasEl,
-                ctx: penStampCacheCanvasCtx
-            };
-            this._currentSceneCache = this._penStampCache[id];
-        },
         clear: function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._spritesCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._backgroundCanvasCtx.clearRect(0, 0, this.width, this.height);
-        },
-        clearPenStampCache: function () {
-            for (var c in this._penStampCache) {
-                var d = this._penStampCache[c];
-                d.ctx.clearRect(0, 0, d.element.width, d.element.height);
-            }
         },
         clearPenStampCanvas: function () {
             if (!this._currentSceneCache)
@@ -402,9 +371,9 @@ PocketCode.Ui.Canvas = (function () {
             return hasTransparentAlpha;
         },
         render: function () {
-            console.log("meraba iz kanvasa");
             var background_ctx = this._backgroundCanvasCtx;
             var ctx = this._spritesCanvasCtx;
+
             background_ctx.clearRect(0, 0, this.width, this.height);
             background_ctx.save();
             background_ctx.translate(this._translation.x, this._translation.y);
@@ -416,7 +385,6 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(this._scalingX, this._scalingY);
 
             var ro = this._renderingSprite;
-            console.log("ro:", ro);
 
             //console.log(ro);
 
@@ -435,24 +403,19 @@ PocketCode.Ui.Canvas = (function () {
             }
 
             // draw current PenStampCanvas
-            if (this._currentSceneCache)
-                this.drawPenStampCacheCanvas();
+            this._drawPenStampCacheCanvas();
 
             background_ctx.restore();
             ctx.restore();
 
         },
 
-        updateCameraUse: function(cameraOn, cameraStream){
-          this._cameraOn = cameraOn;
-            this._cameraStream = cameraStream;
-            this._renderCamera();
-        },
-
-        _renderCamera: function () {
+        renderCamera: function () {
             if (this._cameraOn && this._cameraStream != null && this._cameraStream != undefined) {
+                this._cameraStream.width = this.width;
+                this._cameraStream.height = this.height;
                 this._cameraCanvasCtx.drawImage(this._cameraStream, 0, 0, this._cameraCanvasEl.width, this._cameraCanvasEl.height);
-                setTimeout(this._renderCamera.bind(this), 10);
+                setTimeout(this.renderCamera.bind(this), 10);
             }
             else {
                 //this._cameraCanvasCtx.clearRect(0, 0, this.width, this.height);
@@ -460,51 +423,107 @@ PocketCode.Ui.Canvas = (function () {
         },
 
 
-        drawPenStampCacheCanvas: function () {
-            var ctx = this._penStampCanvasCtx;
-            var el = this._penStampCanvasEl;
-            var cache_element = this._currentSceneCache.element;
+        initScene: function (id, screenSize) {
+            // DONETODO: make sure to remove + recreate canvas elements - draw canvas keeps the same, sceneDrawCache as { sceneId: { elem: ?, ctx: ? } }
 
-            var destWidth = el.width / this._scalingX, destHeight = el.height / this._scalingY;
-            var sourceWidth = cache_element.width, sourceHeight = cache_element.height;
+            if (this._penStampCache[id]) {
+                this._currentSceneCache = this._penStampCache[id];
+                return;
+            }
 
-            ctx.save();
-            ctx.translate((destWidth - sourceWidth) / 2, (destHeight - sourceHeight) / 2);
-            ctx.scale(this._scalingX, this._scalingY);
+            var penStampCacheCanvasEl = document.createElement('canvas');
+            penStampCacheCanvasEl.height = screenSize.height;
+            penStampCacheCanvasEl.width = screenSize.width;
 
-            ctx.drawImage(cache_element, 0, 0, sourceWidth, sourceHeight);
-            ctx.restore();
+            var ctx = penStampCacheCanvasEl.getContext('2d');
+            ctx.translate(screenSize.width * 0.5, screenSize.height * 0.5)
+            //ctx.scale(1.0, -1.0);
+
+            this._penStampCache[id] = {
+                element: penStampCacheCanvasEl,
+                ctx: ctx
+            };
+            this._currentSceneCache = this._penStampCache[id];
+        },
+        clearCurrentPenStampCache: function () {
+            //clear background
+            var ctx = this._penStampCanvasCtx,
+                el = this._penStampCanvasEl;
+            ctx.clearRect(0, 0, el.width, el.height);
+
+            //clear cache ctx
+            var c = this._currentSceneCache,
+                e = c.element;
+            if (!c)
+                return;
+            var ctx = c.ctx;
+            ctx.clearRect(-e.width * 0.5, -e.height * 0.5, e.width, e.height);
+        },
+        clearPenStampCache: function () {
+            //clear background
+            var ctx = this._penStampCanvasCtx,
+                el = this._penStampCanvasEl;
+            ctx.clearRect(0, 0, el.width, el.height);
+
+            //remove cache items
+            this._currentSceneCache = undefined;
+
+            for (var id in this._penStampCache) {
+                delete this._penStampCache[id];
+            }
+        },
+        movePen: function (renderingSpriteId, toX, toY) {
+            var ro = this._renderingSprite,
+                ri;
+            for (var i = 0, l = ro.length; i < l; i++) {
+                ri = ro[i];
+                if (ri.id === renderingSpriteId) {
+                    if (!ri.penDown)
+                        return;
+
+                    var ctx = this._currentSceneCache.ctx;
+                    ctx.beginPath();
+                    ctx.moveTo(ri.penX, -ri.penY);
+                    ctx.lineTo(toX, -toY);
+                    ctx.strokeStyle = "rgb( " + ri.penColor.r + ", " + ri.penColor.g + ", " + ri.penColor.b + " )";
+                    ctx.lineWidth = ri._penSize;
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    this._drawPenStampCacheCanvas();
+                    break;
+                }
+            }
         },
         drawStamp: function (renderingSpriteId) {
             var ro = this._renderingSprite;
             for (var i = 0, l = ro.length; i < l; i++) {
                 if (ro[i].id === renderingSpriteId) {
                     ro[i].draw(this._currentSceneCache.ctx);
+                    this._drawPenStampCacheCanvas();
                     break;
                 }
             }
         },
+        _drawPenStampCacheCanvas: function () {
+            if (!this._currentSceneCache)
+                return;
+            var ctx = this._penStampCanvasCtx,
+                el = this._penStampCanvasEl,
+                cache_element = this._currentSceneCache.element,
 
-        drawPen: function (renderingSpriteId, to_x, to_y) {
-            var ro = this._renderingSprite;
-            for (var i = 0, l = ro.length; i < l; i++) {
-                if (ro[i].id === renderingSpriteId) {
-                    if (!ro[i].penDown)
-                        return;
-                    var from_x = ro[i].penX * ro[i]._scaling;
-                    var from_y = ro[i].penY * ro[i]._scaling;
-                    var currentPenStampCtx = this._currentSceneCache.ctx;
-                    currentPenStampCtx.beginPath();
-                    currentPenStampCtx.moveTo(from_x, from_y * -1.0);
-                    currentPenStampCtx.lineTo(to_x || from_x, to_y * -1.0 || from_y * -1.0);
-                    currentPenStampCtx.strokeStyle = "rgb( " + ro[i].penColor.r + ", " + ro[i].penColor.g + ", " + ro[i].penColor.b + " )";
-                    currentPenStampCtx.lineWidth = ro[i]._penSize;
-                    currentPenStampCtx.stroke();
-                    currentPenStampCtx.closePath();
-                }
-            }
+                destWidth = el.width / this._scalingX, destHeight = el.height / this._scalingY,
+                sourceWidth = cache_element.width, sourceHeight = cache_element.height;
+
+            ctx.clearRect(0, 0, el.width, el.height);
+            ctx.save();
+            ctx.translate((destWidth - sourceWidth) * 0.5, (destHeight - sourceHeight) * 0.5);
+            ctx.scale(this._scalingX, this._scalingY);
+
+            ctx.drawImage(cache_element, 0, 0, sourceWidth, sourceHeight);
+            ctx.restore();
         },
-
+        //screenshot
         toDataURL: function (width, height) {
             var currentWidth = this.width,
               currentHeight = this.height;

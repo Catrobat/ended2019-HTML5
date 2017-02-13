@@ -1,6 +1,6 @@
 <?php
 
-class VariableDto {
+class IdNameDto {
 
     public $id;
     public $name;

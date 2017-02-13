@@ -9,6 +9,7 @@ QUnit.module("model/bricksLook.js");
 
 
 QUnit.test("SetBackgroundBrick", function (assert) {
+
     var done1 = assert.async();
 
     var device = "device";
@@ -475,7 +476,6 @@ QUnit.test("ThinkBrick", function (assert) {
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
-
 });
 
 
@@ -502,7 +502,6 @@ QUnit.test("ThinkForBrick", function (assert) {
         assert.ok(true, "executed");
         assert.equal(e.loopDelay, true, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-
         done1();
     };
 

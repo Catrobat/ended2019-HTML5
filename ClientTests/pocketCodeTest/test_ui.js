@@ -145,6 +145,8 @@ QUnit.test("Viewport", function (assert) {
     var pv = new PocketCode.Ui.PlayerPageView();
     vp.loadPageView(pv);
 
+    vp.uiDirection = "rtl";
+    assert.equal(vp._dom.dir, "rtl", "viewport direction setter");
     vp.dispose();
     assert.ok(vp._disposed, true, "disposed");
 

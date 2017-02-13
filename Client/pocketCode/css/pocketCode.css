@@ -17,6 +17,8 @@
     /*background-color: #003041;
 	background-color: #002D3E;*/
     background-color: #04222C;
+    user-select: none;
+    cursor: default;
 }
 
     .pc-playerViewport button {
@@ -112,6 +114,7 @@
     .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
         top: 0;
     }
+
     [dir='rtl'] .pc-playerStartScreen .pc-liBar, .pc-playerStartScreen .pc-li {
         right: 0;
     }
@@ -364,18 +367,20 @@
 .pc-playerMenuV .pc-iOsClosed {
     left: 0;
 }
+
 [dir='rtl'] .pc-playerMenuV .pc-iOsClosed {
     left: auto;
     right: 0;
 }
 
-    .pc-playerMenuV .pc-iOsClosed div {
-        right: 0;
-    }
-    [dir='rtl'] .pc-playerMenuV .pc-iOsClosed div {
-        right: auto;
-        left: 0;
-    }
+.pc-playerMenuV .pc-iOsClosed div {
+    right: 0;
+}
+
+[dir='rtl'] .pc-playerMenuV .pc-iOsClosed div {
+    right: auto;
+    left: 0;
+}
 
 /* menu toolbar & buttons */
 .pc-playerMenuContainer {
@@ -396,6 +401,7 @@
     width: 9.3em;
     height: 100%;
 }
+
 [dir='rtl'] .pc-playerMenuV .pc-playerMenuContainer {
     left: auto;
     right: 1.15em;
@@ -458,6 +464,7 @@
     margin-left: -1.1em;
     margin-top: 0.7em;
 }
+
 [dir='rtl'] .pc-playerMenuV .pc-menuBigButton {
     margin-right: -1.1em;
 }
@@ -472,10 +479,11 @@
     margin-left: 0em;
     height: 10.8em;
 }
-[dir='rtl'] .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
-    margin-left: auto;
-    margin-right: 0em;
-}
+
+    [dir='rtl'] .pc-playerMenuOutside .pc-menuBigButton, .pc-playerMenuOutside .pc-menuBigButton:active {
+        margin-left: auto;
+        margin-right: 0em;
+    }
 
 .pc-playerButton svg {
     position: absolute;
@@ -587,9 +595,9 @@
     overflow: hidden;
     font-size: 15px;
     color: #D3D3D3;
-    -webkit-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
-    -moz-box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
-    box-shadow: 0px 0px 8px -2px rgba(0,0,0,0.6);
+    -webkit-box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
+    -moz-box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
+    box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.6);
 }
 
 .pc-dialogCol {
@@ -601,16 +609,22 @@
 .pc-dialog > div {
     position: relative;
     width: 100%;
-    float: left;
-    box-sizing: border-box;
+    /*float: left;
+    box-sizing: border-box;*/
 }
 
-.pc-dialogHeader {
+.pc-dialogHeader, .pc-askDialogHeader {
+    overflow: hidden;
     border-bottom: solid 2px #33B5E5;
     color: #33B5E5;
     font-size: 21px;
     font-weight: 500;
     padding: 19px 15px;
+}
+
+.pc-askDialogHeader {
+    font-size: 18px;
+    padding: 15px;
 }
 
 .pc-dialogWarning {
@@ -623,39 +637,72 @@
     color: #A31515;
 }
 
-.pc-dialogBody {
+.pc-dialogBody, .pc-askDialogBody {
     text-align: center;
     font-weight: 500;
     overflow: hidden;
     /*overflow-x: hidden;
 	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;*/
-    padding: 0px 17px;
+	-webkit-overflow-scrolling: touch;
+    padding: 0px;*/
+    padding: 0px 15px;
     border: solid 1px #282828;
 }
 
-    .pc-dialogBody .pc-dialogContent {
-        padding-top: 14px;
-        padding-bottom: 14px;
-        cursor: default;
-        overflow: hidden;
+.pc-askDialogBody {
+    text-align: left;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 17px 4px;
+}
+[dir='rtl'] .pc-askDialogBody {
+    text-align: right;
+}
+
+    .pc-askDialogBody div {
+        padding: 0px 11px;
     }
 
-        .pc-dialogBody .pc-dialogContent ul {
-            list-style-type: square;
-            padding-left: 18px;
-            padding-right: 0px;
-            margin-top: 4px;
-            margin-bottom: 8px;
-        }
-        [dir='rtl'] .pc-dialogBody .pc-dialogContent ul {
-            padding-left: 0px;
-            padding-right: 18px;
+    .pc-askDialogBody input {
+        outline-width: 0px;
+        width: 100%;
+        border: solid 2px #282828;
+        background-color: white;
+        height: 35px;
+        margin-top: 20px;
+        padding-left: 5px;
+        padding-right: 5px;
+        font-size: 16px;
+    }
+
+        .pc-askDialogBody input:focus {
+            border: solid 2px #FB9B27;
+            border-radius: 2px;
         }
 
-            .pc-dialogBody .pc-dialogContent ul li {
-                list-style-position: outside;
-            }
+.pc-dialogBody .pc-dialogContent {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    cursor: default;
+    overflow: hidden;
+}
+
+    .pc-dialogBody .pc-dialogContent ul {
+        list-style-type: square;
+        padding-left: 18px;
+        padding-right: 0px;
+        margin-top: 4px;
+        margin-bottom: 8px;
+    }
+
+[dir='rtl'] .pc-dialogBody .pc-dialogContent ul {
+    padding-left: 0px;
+    padding-right: 18px;
+}
+
+.pc-dialogBody .pc-dialogContent ul li {
+    list-style-position: outside;
+}
 
 .pc-dialogFooter {
     border: solid 1px #282828;
@@ -717,4 +764,247 @@
     -moz-opacity: 0.8;
     opacity: 0.8;
     filter: alpha(opacity = 80);
+}
+
+
+/* menu */
+.pc-menu {
+    font-size: 15px;
+    color: #D3D3D3;
+    position: relative;
+    z-index: 10000;
+}
+
+.pc-menuButton {
+    border-style: solid;
+    border-width: 1px 1px 0;
+    border-color: transparent;
+    border-radius: 2px 2px 0 0;
+    background-color: transparent;
+    margin: 3px;
+    margin-bottom: 0;
+    position: absolute;
+    z-index: 2;
+}
+
+.pc-menu .pc-menuButton span {
+    visibility: hidden;
+}
+
+.pc-menuButtonOpened {
+    border-color: #484848;
+    background-color: #282828;
+}
+
+/* mobile menu */
+.pc-menuMobile {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+    .pc-menuMobile .pc-menuButton {
+        background-color: #00475E;
+        background-color: rgba(0,71,94,0.8);
+        border-radius: 2px;
+    }
+
+    .pc-menuMobile .pc-menuButtonOpened {
+        border-color: #484848;
+        background-color: #282828;
+        border-width: 1px 1px 0;
+        border-radius: 2px 2px 0 0;
+    }
+
+[dir='rtl'] .pc-menuMobile {
+    margin-right: 4px;
+    right: auto;
+    left: 15px;
+}
+
+
+.pc-subMenu {
+    position: absolute;
+    min-width: 150px;
+    overflow: hidden;
+    z-index: 1;
+    top: 45px;
+    right: 3px;
+    padding: 1px 0px;
+    float: right;
+    background-color: #282828;
+    border: 1px solid #484848;
+    border-radius: 2px 0px 2px 2px;
+}
+
+[dir='rtl'] .pc-subMenu {
+    margin-right: 4px;
+    right: auto;
+    left: 3px;
+}
+
+/* menu item, separator*/
+.pc-menuItem, .pc-checkbox, .pc-radio {
+    position: relative;
+    white-space: nowrap;
+    padding: 10px 16px 10px 11px;
+    margin: 0px;
+    width: 100%;
+    background: none;
+    border: 0;
+    text-align: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: normal;
+    display: block;
+    text-shadow: none;
+    text-transform: none;
+}
+
+.pc-menuSymbol {
+    margin-right: 0 !important;
+}
+
+    .pc-menuSymbol span {
+        display: none;
+    }
+
+.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
+    color: #33B5E5;
+    cursor: pointer;
+}
+
+.pc-menuItem:active {
+    position: relative;
+    white-space: nowrap;
+    padding: 10px 14px 10px 11px;
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+}
+
+.pc-menuSeparator hr {
+    border: 0;
+    margin: 1px 12px 1px 2px;
+    color: #484848;
+    background-color: #484848;
+    height: 1px;
+}
+
+/* checkbox, radio button */
+.pc-checkbox input, .pc-radio input, .pc-accordion input {
+    display: none;
+}
+
+.pc-checkbox label, .pc-radio label, .pc-accordion label {
+    line-height: 15px;
+    display: block;
+    position: relative;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.pc-checkbox label, .pc-radio label {
+    padding-left: 25px;
+    padding-right: 28px;
+}
+
+[dir='rtl'] .pc-checkbox label, [dir='rtl'] .pc-radio label {
+    padding-left: 25px;
+    padding-right: 28px;
+}
+
+.pc-menuMobile .pc-checkbox label, .pc-menuMobile .pc-radio label {
+    padding-left: 25px;
+    padding-right: 5px;
+}
+
+[dir='rtl'] .pc-menuMobile .pc-checkbox label, [dir='rtl'] .pc-menuMobile .pc-radio label {
+    padding-left: 5px;
+    padding-right: 28px;
+}
+
+.pc-checkbox label:before, .pc-radio label:before {
+    content: '';
+    position: absolute;
+    left: 0px;
+    width: 19px;
+    height: 19px;
+    border: 2px solid #4C6168;
+    top: -2px;
+}
+
+[dir='rtl'] .pc-checkbox label:before, [dir='rtl'] .pc-radio label:before {
+    left: auto;
+    right: 0px;
+}
+
+.pc-radio label:before {
+    border-radius: 50%;
+    width: 19px;
+    height: 19px;
+}
+
+/* checked mark aspect */
+.pc-checkbox label:after {
+    position: absolute;
+    content: '✔';
+    top: -2px;
+    left: 3px;
+    font-size: 22px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #33B5E5;
+    -webkit-transition: all .1s;
+    -moz-transition: all .1s;
+    -ms-transition: all .1s;
+    transition: all .1s;
+}
+
+[dir='rtl'] .pc-checkbox label:after {
+    left: auto;
+    right: -3px;
+}
+
+.pc-radio label:after {
+    position: absolute;
+    content: '';
+    border: 0px;
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    background-color: #33B5E5;
+    left: 5px;
+    top: 3px;
+    -webkit-transition: all .1s;
+    -moz-transition: all .1s;
+    -ms-transition: all .1s;
+    transition: all .1s;
+}
+
+[dir='rtl'] .pc-radio label:after {
+    left: auto;
+    right: 5px;
+}
+
+
+/* checked mark aspect changes */
+.pc-checkbox [type="checkbox"]:not(:checked) + label:after,
+.pc-radio [type="radio"]:not(:checked) + label:after {
+    opacity: 0;
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    transform: scale(0);
+}
+
+.pc-checkbox [type="checkbox"]:checked + label:after,
+.pc-radio [type="radio"]:checked + label:after {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
 }

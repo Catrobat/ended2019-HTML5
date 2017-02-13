@@ -71,39 +71,39 @@ QUnit.test("TestRequestLimitedNrOfProjects", function(assert) {
     assert.notOk(ids.indexOf(receivedProject.id) == -1, 'received project (' + receivedProject.id + ') handeled... finish!')
   };
 
-  var onLoadAllProjectsHandler = function(e)
-  {
-    var receivedAllProjects = e.responseJson;
-    assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
-    //console.log(receivedAllProjects);
+  //var onLoadAllProjectsHandler = function(e)
+  //{
+  //  var receivedAllProjects = e.responseJson;
+  //  assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
+  //  //console.log(receivedAllProjects);
 
-    var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
-    //console.log(projectCount);
-    assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
+  //  var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
+  //  //console.log(projectCount);
+  //  assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
 
-    var mask = receivedAllProjects.mask;
-    //console.log(mask);
-    assert.equal(mask, 'recent', 'correct mask: recent');
+  //  var mask = receivedAllProjects.mask;
+  //  //console.log(mask);
+  //  assert.equal(mask, 'recent', 'correct mask: recent');
 
-    var projects = receivedAllProjects.items;
-    //console.log(projects);
-    assert.ok(projects instanceof Array, 'array of projects');
+  //  var projects = receivedAllProjects.items;
+  //  //console.log(projects);
+  //  assert.ok(projects instanceof Array, 'array of projects');
 
-    for(var i = 0; i < projectCount; i++)
-    {
-      var project = projects[i];
-      var urlSingleProject = PocketCode.Services.PROJECT;
-      var params = { id : project['id'] };
-      ids.push(parseInt(project['id']));
-      var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
-      srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
-      //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
-      PocketCode.Proxy.send(srSingleProject);
-    }
-  };
+  //  for(var i = 0; i < projectCount; i++)
+  //  {
+  //    var project = projects[i];
+  //    var urlSingleProject = PocketCode.Services.PROJECT;
+  //    var params = { id : project['id'] };
+  //    ids.push(parseInt(project['id']));
+  //    var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
+  //    srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
+  //    //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
+  //    PocketCode.Proxy.send(srSingleProject);
+  //  }
+  //};
 
-  srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
-  PocketCode.Proxy.send(srAllProjects);
+  //srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+  //PocketCode.Proxy.send(srAllProjects);
 });
 
 

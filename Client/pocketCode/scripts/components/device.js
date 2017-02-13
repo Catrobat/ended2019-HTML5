@@ -2,13 +2,6 @@
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
 /// <reference path="soundManager.js" />
-
-/* CREDITS
- * face detection makses use of algorithms and code by
- * popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html
- * Eugene Zatepyakin: inspirit.ru/ (based on github.com/mtschirs/js-objectdetect)
- * Benjamin Jung: github.com/auduno (based on libspark.org/browser/as3/FaceIt)
- */
 'use strict';
 
 PocketCode.Device = (function () {
@@ -586,6 +579,8 @@ PocketCode.Device = (function () {
             var e,
                 history = this._touchEvents.history,
                 pos = {};
+            if (Object.keys(this._touchEvents.active).length == 0)   //quick check
+                return pos;
 
             for (var i = history.length - 1; i >= 0; i--) {
                 if (history[i].active)

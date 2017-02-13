@@ -13,8 +13,6 @@ QUnit.module("ui/button.js");
 
 QUnit.test("Button", function (assert) {
 
-    var done = assert.async;
-
     var dom = document.getElementById("qunit-fixture");
     var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
     dom.appendChild(container._dom);
@@ -33,16 +31,21 @@ QUnit.test("Button", function (assert) {
     ctrl.i18nKey = "newI18n";
     assert.equal(ctrl.text, "[newI18n]", "i18n setter");
 
+    var clicked = 0;
     var clickHandler = function (e) {
-        assert.ok(true, "button clcked");
+        clicked++;
+        assert.ok(true, "button clicked");
 
         ctrl.dispose();    //removed on dispose
         assert.equal(ctrl._disposed, true, "disposed");
         assert.equal(container._childs.length, 0, "removed from parent during dispose");
-
-        done();
     }
+
     ctrl.onClick.addEventListener(new SmartJs.Event.EventListener(clickHandler));
+    ctrl._dom.click();  //simulate click
+    assert.equal(clicked, 0, "no event dispatched on disabled control");
+
+    ctrl.disabled = false;
     ctrl._dom.click();  //simulate click
 
 });
@@ -57,10 +60,13 @@ QUnit.test("PlayerSvgButton", function (assert) {
     assert.throws(function () { new PocketCode.Ui.PlayerSvgButton('', 'i18nKey'); }, Error, "ERROR: invalid icon");
 
     var ctrl = new PocketCode.Ui.PlayerSvgButton('iconTest', 'i18nKey', true);
-    container.appendChild(ctrl);
-
     assert.ok(ctrl instanceof PocketCode.Ui.PlayerSvgButton && ctrl instanceof PocketCode.Ui.Button, "instance check + inheritance");
     assert.ok(ctrl.objClassName === "PlayerSvgButton", "objClassName check");
+    ctrl.dispose();
+
+    ctrl = new PocketCode.Ui.PlayerSvgButton('iconTest', 'i18nKey', true, true);
+    assert.equal(ctrl.className, "pc-menuBigButton pc-webButton", "css on menuButton");
+    container.appendChild(ctrl);
 
     assert.equal(ctrl.checked, false, "checked getter");
     ctrl.checked = true;

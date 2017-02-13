@@ -1,54 +1,517 @@
 ﻿<!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns#">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="robots" content="noindex,nofollow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex,nofollow">
     <meta name="viewport" content="width=device-width">
     <title>Pocket Code Website </title>
-    <link rel="shortcut icon" href="https://web-test.catrob.at/images/logo/favicon.png" />
+    <link rel="shortcut icon" href="https://share.catrob.at/images/logo/favicon.png">
 
-    <link rel="stylesheet" href="https://web-test.catrob.at/css/pocketcode/base.css" media="screen" />
+    <link rel="stylesheet" href="https://share.catrob.at/css/pocketcode/base.css" media="screen">
 
-    <script type="text/javascript" src="https://web-test.catrob.at/compiled/script.js"></script>
+    <link rel="stylesheet" href="https://share.catrob.at/css/pocketcode/program.css" media="screen">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="pocketCodePlayer.js"></script>
 
-    <link rel="stylesheet" href="https://web-test.catrob.at/css/pocketcode/program.css" media="screen" />
-    <meta property="og:image" content="https://web-test.catrob.at/resources/screenshots/screen_817.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image:secure_url" content="https://web-test.catrob.at/resources/screenshots/screen_817.png" />
-    <meta property="og:title" content="Tic-Tac-Toe&#x20;Master" />
-    <meta property="og:description" content="Three&#x20;in&#x20;one&#x20;win.&#x20;However,&#x20;the&#x20;computer&#x20;is&#x20;a&#x20;master&#x20;strategist&#x21;&#x20;&#x0A;&#x0A;The&#x20;text&#x20;was&#x20;composed&#x20;using&#x20;PicSay&#x20;-&#x20;http&#x3A;&#x2F;&#x2F;catrob.at&#x2F;PicSay&#x20;as&#x20;explained&#x20;on&#x20;http&#x3A;&#x2F;&#x2F;catrob.at&#x2F;WordBalloonExplanation" />
-    <meta property="og:url" content="https://web-test.catrob.at/pocketcode/program/817" />
+    <meta property="og:image" content="https://share.catrob.at/resources/screenshots/screen_817.png">
+    <meta property="og:type" content="website">
+    <meta property="og:image:secure_url" content="https://share.catrob.at/resources/screenshots/screen_817.png">
+    <meta property="og:title" content="Tic-Tac-Toe Master">
+    <meta property="og:description" content="Three in one win. However, the computer is a master strategist!
 
-    <!-- CHANGED SNIPPET -->
+The text was composed using PicSay - http://catrob.at/PicSay as explained on http://catrob.at/WordBalloonExplanation
+
+#GalaxyGameJam">
+    <meta property="og:url" content="https://share.catrob.at/pocketcode/program/817">
     <style type="text/css">
-        /* this are changes made to your original styles - if you keep the layout it is you should integrate them into your existing styles
-                   and delete them here */
-        #program-middle #image {
+        .fb_hidden {
+            position: absolute;
+            top: -10000px;
+            z-index: 10001;
+        }
+
+        .fb_reposition {
+            overflow: hidden;
             position: relative;
         }
+
+        .fb_invisible {
+            display: none;
+        }
+
+        .fb_reset {
+            background: none;
+            border: 0;
+            border-spacing: 0;
+            color: #000;
+            cursor: auto;
+            direction: ltr;
+            font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+            font-size: 11px;
+            font-style: normal;
+            font-variant: normal;
+            font-weight: normal;
+            letter-spacing: normal;
+            line-height: 1;
+            margin: 0;
+            overflow: visible;
+            padding: 0;
+            text-align: left;
+            text-decoration: none;
+            text-indent: 0;
+            text-shadow: none;
+            text-transform: none;
+            visibility: visible;
+            white-space: normal;
+            word-spacing: normal;
+        }
+
+            .fb_reset > div {
+                overflow: hidden;
+            }
+
+        .fb_link img {
+            border: none;
+        }
+
+        @keyframes fb_transform {
+            from {
+                opacity: 0;
+                transform: scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .fb_animate {
+            animation: fb_transform .3s forwards;
+        }
+
+        .fb_dialog {
+            background: rgba(82, 82, 82, .7);
+            position: absolute;
+            top: -10000px;
+            z-index: 10001;
+        }
+
+        .fb_reset .fb_dialog_legacy {
+            overflow: visible;
+        }
+
+        .fb_dialog_advanced {
+            padding: 10px;
+            -moz-border-radius: 8px;
+            -webkit-border-radius: 8px;
+            border-radius: 8px;
+        }
+
+        .fb_dialog_content {
+            background: #fff;
+            color: #333;
+        }
+
+        .fb_dialog_close_icon {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;
+            _background-image: url(https://static.xx.fbcdn.net/rsrc.php/v3/yL/r/s816eWC-2sl.gif);
+            cursor: pointer;
+            display: block;
+            height: 15px;
+            position: absolute;
+            right: 18px;
+            top: 17px;
+            width: 15px;
+        }
+
+        .fb_dialog_mobile .fb_dialog_close_icon {
+            top: 5px;
+            left: 5px;
+            right: auto;
+        }
+
+        .fb_dialog_padding {
+            background-color: transparent;
+            position: absolute;
+            width: 1px;
+            z-index: -1;
+        }
+
+        .fb_dialog_close_icon:hover {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent;
+            _background-image: url(https://static.xx.fbcdn.net/rsrc.php/v3/yL/r/s816eWC-2sl.gif);
+        }
+
+        .fb_dialog_close_icon:active {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent;
+            _background-image: url(https://static.xx.fbcdn.net/rsrc.php/v3/yL/r/s816eWC-2sl.gif);
+        }
+
+        .fb_dialog_loader {
+            background-color: #f6f7f9;
+            border: 1px solid #606060;
+            font-size: 24px;
+            padding: 20px;
+        }
+
+        .fb_dialog_top_left, .fb_dialog_top_right, .fb_dialog_bottom_left, .fb_dialog_bottom_right {
+            height: 10px;
+            width: 10px;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        .fb_dialog_top_left {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;
+            left: -10px;
+            top: -10px;
+        }
+
+        .fb_dialog_top_right {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;
+            right: -10px;
+            top: -10px;
+        }
+
+        .fb_dialog_bottom_left {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;
+            bottom: -10px;
+            left: -10px;
+        }
+
+        .fb_dialog_bottom_right {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;
+            right: -10px;
+            bottom: -10px;
+        }
+
+        .fb_dialog_vert_left, .fb_dialog_vert_right, .fb_dialog_horiz_top, .fb_dialog_horiz_bottom {
+            position: absolute;
+            background: #525252;
+            filter: alpha(opacity=70);
+            opacity: .7;
+        }
+
+        .fb_dialog_vert_left, .fb_dialog_vert_right {
+            width: 10px;
+            height: 100%;
+        }
+
+        .fb_dialog_vert_left {
+            margin-left: -10px;
+        }
+
+        .fb_dialog_vert_right {
+            right: 0;
+            margin-right: -10px;
+        }
+
+        .fb_dialog_horiz_top, .fb_dialog_horiz_bottom {
+            width: 100%;
+            height: 10px;
+        }
+
+        .fb_dialog_horiz_top {
+            margin-top: -10px;
+        }
+
+        .fb_dialog_horiz_bottom {
+            bottom: 0;
+            margin-bottom: -10px;
+        }
+
+        .fb_dialog_iframe {
+            line-height: 0;
+        }
+
+        .fb_dialog_content .dialog_title {
+            background: #6d84b4;
+            border: 1px solid #365899;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+            .fb_dialog_content .dialog_title > span {
+                background: url(https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;
+                float: left;
+                padding: 5px 0 7px 26px;
+            }
+
+        body.fb_hidden {
+            -webkit-transform: none;
+            height: 100%;
+            margin: 0;
+            overflow: visible;
+            position: absolute;
+            top: -10000px;
+            left: 0;
+            width: 100%;
+        }
+
+        .fb_dialog.fb_dialog_mobile.loading {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;
+            min-height: 100%;
+            min-width: 100%;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 10001;
+        }
+
+            .fb_dialog.fb_dialog_mobile.loading.centered {
+                width: auto;
+                height: auto;
+                min-height: initial;
+                min-width: initial;
+                background: none;
+            }
+
+                .fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner {
+                    width: 100%;
+                }
+
+                .fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content {
+                    background: none;
+                }
+
+        .loading.centered #fb_dialog_loader_close {
+            color: #fff;
+            display: block;
+            padding-top: 20px;
+            clear: both;
+            font-size: 18px;
+        }
+
+        #fb-root #fb_dialog_ipad_overlay {
+            background: rgba(0, 0, 0, .45);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 100%;
+            min-height: 100%;
+            z-index: 10000;
+        }
+
+            #fb-root #fb_dialog_ipad_overlay.hidden {
+                display: none;
+            }
+
+        .fb_dialog.fb_dialog_mobile.loading iframe {
+            visibility: hidden;
+        }
+
+        .fb_dialog_content .dialog_header {
+            -webkit-box-shadow: white 0 1px 1px -1px inset;
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#738ABA), to(#2C4987));
+            border-bottom: 1px solid;
+            border-color: #1d4088;
+            color: #fff;
+            font: 14px Helvetica, sans-serif;
+            font-weight: bold;
+            text-overflow: ellipsis;
+            text-shadow: rgba(0, 30, 84, .296875) 0 -1px 0;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+            .fb_dialog_content .dialog_header table {
+                -webkit-font-smoothing: subpixel-antialiased;
+                height: 43px;
+                width: 100%;
+            }
+
+            .fb_dialog_content .dialog_header td.header_left {
+                font-size: 12px;
+                padding-left: 5px;
+                vertical-align: middle;
+                width: 60px;
+            }
+
+            .fb_dialog_content .dialog_header td.header_right {
+                font-size: 12px;
+                padding-right: 5px;
+                vertical-align: middle;
+                width: 60px;
+            }
+
+        .fb_dialog_content .touchable_button {
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4966A6), color-stop(.5, #355492), to(#2A4887));
+            border: 1px solid #29487d;
+            -webkit-background-clip: padding-box;
+            -webkit-border-radius: 3px;
+            -webkit-box-shadow: rgba(0, 0, 0, .117188) 0 1px 1px inset, rgba(255, 255, 255, .167969) 0 1px 0;
+            display: inline-block;
+            margin-top: 3px;
+            max-width: 85px;
+            line-height: 18px;
+            padding: 4px 12px;
+            position: relative;
+        }
+
+        .fb_dialog_content .dialog_header .touchable_button input {
+            border: none;
+            background: none;
+            color: #fff;
+            font: 12px Helvetica, sans-serif;
+            font-weight: bold;
+            margin: 2px -12px;
+            padding: 2px 6px 3px 6px;
+            text-shadow: rgba(0, 30, 84, .296875) 0 -1px 0;
+        }
+
+        .fb_dialog_content .dialog_header .header_center {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 18px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .fb_dialog_content .dialog_content {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;
+            border: 1px solid #555;
+            border-bottom: 0;
+            border-top: 0;
+            height: 150px;
+        }
+
+        .fb_dialog_content .dialog_footer {
+            background: #f6f7f9;
+            border: 1px solid #555;
+            border-top-color: #ccc;
+            height: 40px;
+        }
+
+        #fb_dialog_loader_close {
+            float: left;
+        }
+
+        .fb_dialog.fb_dialog_mobile .fb_dialog_close_button {
+            text-shadow: rgba(0, 30, 84, .296875) 0 -1px 0;
+        }
+
+        .fb_dialog.fb_dialog_mobile .fb_dialog_close_icon {
+            visibility: hidden;
+        }
+
+        #fb_dialog_loader_spinner {
+            animation: rotateSpinner 1.2s linear infinite;
+            background-color: transparent;
+            background-image: url(https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/t-wz8gw1xG1.png);
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            height: 24px;
+            width: 24px;
+        }
+
+        @keyframes rotateSpinner {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fb_iframe_widget {
+            display: inline-block;
+            position: relative;
+        }
+
+            .fb_iframe_widget span {
+                display: inline-block;
+                position: relative;
+                text-align: justify;
+            }
+
+            .fb_iframe_widget iframe {
+                position: absolute;
+            }
+
+        .fb_iframe_widget_fluid_desktop, .fb_iframe_widget_fluid_desktop span, .fb_iframe_widget_fluid_desktop iframe {
+            max-width: 100%;
+        }
+
+            .fb_iframe_widget_fluid_desktop iframe {
+                min-width: 220px;
+                position: relative;
+            }
+
+        .fb_iframe_widget_lift {
+            z-index: 1;
+        }
+
+        .fb_hide_iframes iframe {
+            position: relative;
+            left: -10000px;
+        }
+
+        .fb_iframe_widget_loader {
+            position: relative;
+            display: inline-block;
+        }
+
+        .fb_iframe_widget_fluid {
+            display: inline;
+        }
+
+            .fb_iframe_widget_fluid span {
+                width: 100%;
+            }
+
+        .fb_iframe_widget_loader iframe {
+            min-height: 32px;
+            z-index: 2;
+            zoom: 1;
+        }
+
+        .fb_iframe_widget_loader .FB_Loader {
+            background: url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat;
+            height: 32px;
+            width: 32px;
+            margin-left: -16px;
+            position: absolute;
+            left: 50%;
+            z-index: 4;
+        }
     </style>
-    <!-- CHANGED SNIPPET -->
-    <!-- ADDED SNIPPET: when adding please make sure to use relative links to make it work on the productive website without changes -->
-    <link href="playerInterface.css" rel="stylesheet" />
-    <link href="pocketCodePlayer.css" rel="stylesheet" />
-    <script src="pocketCodePlayer.js"></script>
-    <!-- ADDED SNIPPET -->
 </head>
 <body>
 
     <div id="wrapper">
         <header>
+            <script src="https://share.catrob.at/bundles/fosjsrouting/js/router.js"></script>
+            <script src="https://share.catrob.at/js/routing?callback=fos.Router.setData"></script>
+
             <nav>
+                <div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" src="https://staticxx.facebook.com/connect/xd_arbiter/r/Sh-3BhStODe.js?version=42#channel=f33c2d3e7d057e8&amp;origin=https%3A%2F%2Fshare.catrob.at" style="border: none;"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div></div>
                 <div id="header-top">
+
+                    <div id="social-like">
+                        <div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; background: transparent; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 32px; height: 20px;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 32px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1485647883599" name="I0_1485647883599" src="https://apis.google.com/se/0/_/+1/fastbutton?usegapi=1&amp;size=medium&amp;annotation=none&amp;origin=https%3A%2F%2Fshare.catrob.at&amp;url=https%3A%2F%2Fshare.catrob.at%2Fpocketcode%2F&amp;gsrc=3p&amp;ic=1&amp;jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.de.WSh5CgfkMBI.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCNhT-Zxr8QQSVE-pVuGQ1sKO59xfw#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh%2Conload&amp;id=I0_1485647883599&amp;parent=https%3A%2F%2Fshare.catrob.at&amp;pfname=&amp;rpctoken=35295156" data-gapiattached="true" title="+1"></iframe></div>
+                    </div>
+
+                    <div id="social-like">
+                        <div class="fb-like fb_iframe_widget" data-href="https://share.catrob.at/pocketcode/" data-layout="button" data-action="like" data-show-faces="false" data-share="false" fb-xfbml-state="rendered" fb-iframe-plugin-query="action=like&amp;app_id=1602051133371458&amp;container_width=0&amp;href=https%3A%2F%2Fshare.catrob.at%2Fpocketcode%2F&amp;layout=button&amp;locale=en_US&amp;sdk=joey&amp;share=false&amp;show_faces=false"><span style="vertical-align: bottom; width: 49px; height: 20px;"><iframe name="f5639252bb7cb8" width="1000px" height="1000px" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" title="fb:like Facebook Social Plugin" src="https://www.facebook.com/v2.1/plugins/like.php?action=like&amp;app_id=1602051133371458&amp;channel=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FSh-3BhStODe.js%3Fversion%3D42%23cb%3Df347aede40549%26domain%3Dshare.catrob.at%26origin%3Dhttps%253A%252F%252Fshare.catrob.at%252Ff33c2d3e7d057e8%26relation%3Dparent.parent&amp;container_width=0&amp;href=https%3A%2F%2Fshare.catrob.at%2Fpocketcode%2F&amp;layout=button&amp;locale=en_US&amp;sdk=joey&amp;share=false&amp;show_faces=false" style="border: none; visibility: visible; width: 49px; height: 20px;" class=""></iframe></span></div>
+                    </div>
+
                     <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div>
-                    <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div>
+                    <div><a href="https://share.catrob.at/pocketcode/help">Tutorials</a></div>
                     <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div>
                 </div>
 
+
                 <div id="header-left">
                     <div id="logo">
-                        <a href="https://web-test.catrob.at/pocketcode/">
-                            <img src="https://web-test.catrob.at/images/logo/logo_text.png" alt="Pocket Code Logo" />
+                        <a href="https://share.catrob.at/pocketcode/">
+                            <img src="https://share.catrob.at/images/logo/logo_text.png" alt="Pocket Code Logo">
                         </a>
                     </div>
                     <input id="searchbar" class="input-search" placeholder="Suche...">
@@ -63,7 +526,7 @@
                             <input id="search-input-header" placeholder="Suche..." class="size-large input-search">
                         </div>
 
-                        <a href="https://web-test.catrob.at/pocketcode/login" id="btn-login">
+                        <a href="https://share.catrob.at/pocketcode/login" id="btn-login">
                             <div class="btn btn-menu">
                                 <div class="img-avatar"></div>
                             </div>
@@ -77,7 +540,7 @@
                             <div class="img-undo-search"></div>
                         </div>
                         <div class="margin-spacer"></div>
-                        <a href="https://web-test.catrob.at/pocketcode/login" id="btn-login">
+                        <a href="https://share.catrob.at/pocketcode/login" id="btn-login">
                             <div class="btn btn-menu">
                                 <div class="img-avatar"></div>
                             </div>
@@ -95,107 +558,142 @@
                 <div id="program-name">Tic-Tac-Toe Master</div>
                 <div id="program-user">
                     <span class="img-author"></span>
-                    <a href="https://web-test.catrob.at/pocketcode/profile/70">hej-wickie-hej</a>
+                    <a href="https://share.catrob.at/pocketcode/profile/70">hej-wickie-hej</a>
                 </div>
                 <div class="clear"></div>
             </div>
 
             <div id="program-middle">
                 <div id="image" class="image-container">
-                    <!-- CHANGED SNIPPET -->
-                    <!-- a href="https://web-test.catrob.at/pocketcode/download/817.catrobat?fname=Tic-Tac-Toe+Master" -->
-                    <img id="screenshot" src="https://web-test.catrob.at/resources/screenshots/screen_817.png" height="300" width="300">
-                    <!-- /a--> <button class="pc-startButton" onclick="javascript: launchProject(817);"> <svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64"> <path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" /> <polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" /> </svg> </button>
-                    <!-- CHANGED SNIPPET -->
+                    <img id="img-screenshot" width="300" height="300" src="https://share.catrob.at/resources/screenshots/screen_817.png">
+                    <button class="pc-startButton" onclick="javascript: launchProject(968);">
+                        <svg preserveAspectRatio="xMidYMin meet" viewBox="0,0,64,64">
+                            <path class="pc-svgPlayerIconBorder" d="M32,1C14.88,1,1,14.88,1,31.999C1,49.12,14.88,63,32,63s31-13.88,31-31.001C63,14.88,49.12,1,32,1z M32,56.979c-13.796,0-24.98-11.184-24.98-24.98c0-13.795,11.185-24.98,24.98-24.98s24.979,11.186,24.979,24.98 C56.979,45.796,45.796,56.979,32,56.979z" />
+                            <polygon class="pc-svgPlayerIconSymbol" points="34.662,32 22.934,44.066 27.438,48.55 43.629,32 27.438,15.45 22.934,19.934" />
+                        </svg>
+                    </button>
+                    <div id="share">
+                        Share on
+                        <a id="share-facebook" href="javascript:triggerShareOnFacebook();">
+                            <img class="img-share" src="https://share.catrob.at/images/social/share/desktop/facebook.png" alt="Share on Facebook" title="Share on Facebook">
+                        </a>
+                        <a id="share-gplus" href="javascript:triggerShareOnGooglePlus();">
+                            <img class="img-share" src="https://share.catrob.at/images/social/share/desktop/googleplus.png" alt="Share on Google+" title="Share on Google+">
+                        </a>
+                        <a id="share-twitter" href="javascript:triggerShareOnTwitter();">
+                            <img class="img-share" src="https://share.catrob.at/images/social/share/desktop/twitter.png" alt="Tweet on Twitter" title="Tweet on Twitter">
+                        </a>
+                        <a id="share-email" href="javascript:triggerShareViaMail('Tic-Tac-Toe Master', 'Three in one win. However, the computer is a master strategist!
+
+The text was composed using PicSay - http://catrob.at/PicSay as explained on http://catrob.at/WordBalloonExplanation
+
+#GalaxyGameJam', 'Seht Euch das Catrobat Programm an' );">
+                            <img class="img-share" src="https://share.catrob.at/images/social/share/desktop/mail.png" alt="Share via e-mail" title="Mail">
+                        </a>
+                    </div>
                 </div>
+
                 <div id="info">
                     <h2>Beschreibung</h2>
 
                     <div id="description">
-                        Three in one win. However, the computer is a master strategist! <br />
-                        <br />
-                        The text was composed using PicSay - http://catrob.at/PicSay as explained on http://catrob.at/WordBalloonExplanation
+                        Three in one win. However, the computer is a master strategist! <br>
+                        <br>
+                        The text was composed using PicSay - <a href="http://catrob.at/PicSay" target="_blank">http://catrob.at/PicSay</a>  as explained on <a href="http://catrob.at/WordBalloonExplanation" target="_blank">http://catrob.at/WordBalloonExplanation</a> <br>
+                        <br>
+                        #GalaxyGameJam
                     </div>
+
 
                     <div class="download-container">
-                        <a id="url-download" href="https://web-test.catrob.at/pocketcode/download/817.catrobat?fname=Tic-Tac-Toe+Master">
-                            <button id="download" class="btn btn-primary download-button">
-                                <table>
+                        <a id="url-download" href="                    /pocketcode/download/817.catrobat?fname=Tic-Tac-Toe+Master ">
+                        <button id="download" class="btn btn-primary download-button">
+                            <table>
+                                <tbody>
                                     <tr>
-                                        <td><img src="https://web-test.catrob.at/images/symbols/download.svg"> </td>
+                                        <td><img src="https://share.catrob.at/images/symbols/download.svg"> </td>
                                         <td>Als Programm herunterladen</td>
                                     </tr>
-                                </table>
-                            </button>
+                                </tbody>
+                            </table>
+                        </button>
                         </a>
 
-                        <button id="apk-generate" class="btn btn-apk download-button">
+                        <button id="apk-generate" class="btn btn-apk download-button" style="display: none;">
                             <table>
-                                <tr>
-                                    <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td>
-                                    <td>App erstellen</td>
-                                </tr>
+                                <tbody>
+                                    <tr>
+                                        <td><img src="https://share.catrob.at/images/symbols/apk_download.svg"> </td>
+                                        <td>App erstellen</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </button>
 
-                        <div id="apk-pending" class="btn-apk pending-container">
+                        <div id="apk-pending" class="btn-apk pending-container" style="display: none;">
                             <button class="btn download-button download-pending">
                                 <table>
-                                    <tr>
-                                        <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td>
-                                        <td>App wird vorbereitet</td>
-                                    </tr>
+                                    <tbody>
+                                        <tr>
+                                            <td><img src="https://share.catrob.at/images/symbols/apk_download.svg"> </td>
+                                            <td>App wird vorbereitet</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </button>
-                            <img class="pending-icon" src="https://web-test.catrob.at/images/symbols/loading.gif">
+                            <img class="pending-icon" src="https://share.catrob.at/images/symbols/loading.gif">
                         </div>
 
-                        <button id="apk-download" class="btn btn-apk download-button">
+                        <button id="apk-download" class="btn btn-apk download-button" style="display: inline-block;">
                             <table>
-                                <tr>
-                                    <td><img src="https://web-test.catrob.at/images/symbols/apk_download.svg"> </td>
-                                    <td>Als app herunterladen</td>
-                                </tr>
+                                <tbody>
+                                    <tr>
+                                        <td><img src="https://share.catrob.at/images/symbols/apk_download.svg"> </td>
+                                        <td>Als app herunterladen</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </button>
-
                     </div>
+
+
                     <br>
 
                     <table id="copy-link">
-                        <tr>
-                            <td><img src="https://web-test.catrob.at/images/symbols/link.svg"> </td>
-                            <td>
-                                <span>Link</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <input name="copy-link" id="url-link" value="https://web-test.catrob.at/pocketcode/program/817">
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <td id="copy-link-image"></td>
+                                <td>
+                                    <span>Link</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input name="copy-link" id="url-link" value="https://share.catrob.at/pocketcode/program/817">
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
-
-                    <div id="facebook-post-link">
-                        <a id="btn-facebook-post-link" target="_blank" href="#"><img src="https://web-test.catrob.at/images/social/FB-f-Logo__blue.png" alt="Facebook Post Link"></a>
-                    </div>
 
                     <p>
                         <span id="report">Als unpassend melden</span>
                         <br>
-                        Catrobat Language version: 0.91
+                        Catrobat Sprachversion: 0.91
                     </p>
                 </div>
+
                 <div class="clear"></div>
                 <div id="report-container" class="size-large">
-                    Bitte <a href="https://web-test.catrob.at/pocketcode/login">einloggen</a> um dieses Programm als unpassend zu melden.
+                    Bitte <a href="https://share.catrob.at/pocketcode/login">einloggen</a> um dieses Programm als unpassend zu melden.
                 </div>
             </div>
+
+
 
             <div id="program-bottom">
                 <div id="icon-author">
                     <div class="img-author-2 icon"></div>
-                    <a href="https://web-test.catrob.at/pocketcode/profile/70" class="icon-text">hej-wickie-hej</a>
+                    <a href="https://share.catrob.at/pocketcode/profile/70" class="icon-text">hej-wickie-hej</a>
                 </div>
                 <div>
                     <div class="img-age icon"></div>
@@ -207,12 +705,179 @@
                 </div>
                 <div>
                     <div class="img-downloads icon"></div>
-                    <span class="icon-text">10074 heruntergeladen</span>
+                    <span class="icon-text">25873 heruntergeladen</span>
                 </div>
                 <div>
                     <div class="img-views icon"></div>
-                    <span class="icon-text">8420 gesehen</span>
+                    <span class="icon-text">18120 gesehen</span>
                 </div>
+            </div>
+
+
+            <div id="comment-successfully-reported">
+                <h3>Gemeldet</h3>
+                <p>Der Kommentar wurde erfolgreich gemeldet.</p>
+                <button id="close-reported-popup">Ok</button>
+            </div>
+
+            <div id="program-comments">
+
+                <p>Kommentare</p>
+                <div id="user-comment-wrapper">
+                    <textarea class="msg" style="width: 100%; height: 100px"></textarea>
+                    <button id="post-button" class="post-button">Senden</button>
+                </div>
+
+                <div id="comments-wrapper">
+                    <div id="comment-2270" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/30761">
+                                    <div id="profile-comment-user-id-30761" class="usr-name">g4m3r_71</div>
+                                </a>
+                                <div class="date"> 2017-01-20</div>
+                                <button id="report-button-2270" class="report-button" data-commentid="2270">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>
+                                    Cooles spiel  bloß es giebt einen kleinen bug sonst geil
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-2254" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/30786">
+                                    <div id="profile-comment-user-id-30786" class="usr-name">mainwar</div>
+                                </a>
+                                <div class="date"> 2017-01-18</div>
+                                <button id="report-button-2254" class="report-button" data-commentid="2254">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>Тут чо тока англаизычные люди я не понимаю игра Русская а тут английские и не всё переведено </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-1997" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/25623">
+                                    <div id="profile-comment-user-id-25623" class="usr-name">valtsu0</div>
+                                </a>
+                                <div class="date"> 2016-12-27</div>
+                                <button id="report-button-1997" class="report-button" data-commentid="1997">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>Is this possible to win</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-540" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/19789">
+                                    <div id="profile-comment-user-id-19789" class="usr-name">Dron</div>
+                                </a>
+                                <div class="date"> 2016-10-22</div>
+                                <button id="report-button-540" class="report-button" data-commentid="540">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>Stupids is good the program </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-284" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/13281">
+                                    <div id="profile-comment-user-id-13281" class="usr-name">Gabriel10376@gmail.com</div>
+                                </a>
+                                <div class="date"> 2016-09-19</div>
+                                <button id="report-button-284" class="report-button" data-commentid="284">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>
+                                    A pessoa quando vai jogar ela se destrai e não quer mais sair
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-283" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/13281">
+                                    <div id="profile-comment-user-id-13281" class="usr-name">Gabriel10376@gmail.com</div>
+                                </a>
+                                <div class="date"> 2016-09-19</div>
+                                <button id="report-button-283" class="report-button" data-commentid="283">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>
+                                    A pessoa quando vai jogar ela se destrai e não quer mais sair
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-149" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/12408">
+                                    <div id="profile-comment-user-id-12408" class="usr-name">Ultro</div>
+                                </a>
+                                <div class="date"> 2016-09-03</div>
+                                <button id="report-button-149" class="report-button" data-commentid="149">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>Круто !!! </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comment-144" class="single-comment">
+                        <div class="avatar-wrapper">
+                            <div class="img-avatar"></div>
+                        </div>
+                        <div class="comment-payload-wrapper">
+                            <div class="name-date-wrapper">
+                                <a href="https://share.catrob.at/pocketcode/profile/5608">
+                                    <div id="profile-comment-user-id-5608" class="usr-name">Bigdk</div>
+                                </a>
+                                <div class="date"> 2016-09-03</div>
+                                <button id="report-button-144" class="report-button" data-commentid="144">Melden</button>
+                            </div>
+                            <div class="comment-text">
+                                <p>Hard, but good</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="show-more">
+                        <button id="show-more-button" style="display: none">Mehr anzeigen</button>
+                    </div>
+
+                </div>
+
             </div>
 
         </article>
@@ -222,20 +887,20 @@
         <div id="footer-menu-desktop" class="footer-padding">
             <div id="footer-menu-desktop-left">
                 <div>
-                    <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div>
+                    <div><a href="https://share.catrob.at/pocketcode/help">Tutorials</a></div>
                     <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div>
                     <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div>
-                    <div><a href="https://web-test.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div>
+                    <div><a href="https://share.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div>
                 </div>
                 <div>
                     <div><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></div>
-                    <div><a href="https://web-test.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div>
+                    <div><a href="https://share.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div>
                     <div><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></div>
                 </div>
             </div>
             <div id="footer-menu-desktop-right">
                 <div id="search-footer" class="img-magnifying-glass"></div>
-                <input id="search-input-footer" class="input-search" type="search" placeholder="Suche..." />
+                <input id="search-input-footer" class="input-search" type="search" placeholder="Suche...">
             </div>
         </div>
 
@@ -243,9 +908,15 @@
             <div>
                 <select id="switch-language" autocomplete="off">
                     <option value="ar">العربية</option>
+                    <option value="az">azərbaycan</option>
+                    <option value="az_AZ">azərbaycan (Azərbaycan)</option>
                     <option value="bs">bosanski</option>
+                    <option value="ca">català</option>
+                    <option value="ca_ES">català (Espanya)</option>
+                    <option value="cs">čeština</option>
+                    <option value="cs_CZ">čeština (Česká republika)</option>
                     <option value="da">dansk</option>
-                    <option value="de" selected>Deutsch</option>
+                    <option value="de" selected="">Deutsch</option>
                     <option value="en">English</option>
                     <option value="en_AU">English (Australia)</option>
                     <option value="en_CA">English (Canada)</option>
@@ -253,8 +924,11 @@
                     <option value="es">español</option>
                     <option value="fa">فارسی</option>
                     <option value="fr">français</option>
+                    <option value="gl">galego</option>
+                    <option value="gl_ES">galego (España)</option>
                     <option value="gu">ગુજરાતી</option>
-                    <option value="hi">हिंदी</option>
+                    <option value="he">עברית</option>
+                    <option value="hi">हिन्दी</option>
                     <option value="hr">hrvatski</option>
                     <option value="hu">magyar</option>
                     <option value="id">Bahasa Indonesia</option>
@@ -262,6 +936,8 @@
                     <option value="ja">日本語</option>
                     <option value="ko">한국어</option>
                     <option value="mk">македонски</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="ml_IN">മലയാളം (ഇന്ത്യ)</option>
                     <option value="ms">Bahasa Melayu</option>
                     <option value="nl">Nederlands</option>
                     <option value="no">Norwegian</option>
@@ -272,6 +948,8 @@
                     <option value="ro">română</option>
                     <option value="ru">русский</option>
                     <option value="sl">slovenščina</option>
+                    <option value="sq">shqip</option>
+                    <option value="sq_AL">shqip (Shqipëri)</option>
                     <option value="sr">српски</option>
                     <option value="sv">svenska</option>
                     <option value="ta">தமிழ்</option>
@@ -285,7 +963,7 @@
                 </select>
             </div>
             <div id="footer-copyright">
-                <a href="http://www.catrobat.org" target="_blank">&copy; Catrobat</a>
+                <a href="http://www.catrobat.org" target="_blank">© Catrobat</a>
             </div>
             <div id="footer-more-less">
                 <span id="footer-button-more"><span class="img-more"></span> mehr</span>
@@ -294,46 +972,16 @@
         </div>
 
         <div id="footer-menu-mobile">
-            <div><a href="https://web-test.catrob.at/pocketcode/help">Tutorials</a></div>
+            <div><a href="https://share.catrob.at/pocketcode/help">Tutorials</a></div>
             <div><a href="http://www.catrobat.org" target="_blank">Über Pocket Code</a></div>
             <div><a href="http://play.google.com/store/apps/details?id=org.catrobat.catroid" target="_blank">Google Play</a></div>
-            <div><a href="https://web-test.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div>
+            <div><a href="https://share.catrob.at/pocketcode/licenseToPlay">Lizenzbedingungen</a></div>
             <div><a href="http://developer.catrobat.org/privacy_policy" target="_blank">Datenschutzrichtlinien</a></div>
-            <div><a href="https://web-test.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div>
+            <div><a href="https://share.catrob.at/pocketcode/termsOfUse">Nutzungsbedingungen</a></div>
             <div><a href="http://developer.catrobat.org/imprint" target="_blank">Impressum</a></div>
         </div>
 
     </footer>
-
-
-    <script>
-        new Main('/pocketcode/search/0');
-    </script>
-    <script src="https://web-test.catrob.at/js/custom/Program.js"></script>
-    <script>
-        var program = new Program('/pocketcode/ci/status/817', '/pocketcode/ci/build/817',
-          'App wird vorbereitet', 'Der Vorgang kann eine Weile dauern', '/images/symbols/loading.gif',
-          'App aktualisieren', 'Bitte aktualisiere deine App auf die neueste Version, um dieses Programm herunterladen zu können.',
-          'Ok', '');
-        program.getApkStatus();
-        program.createLinks();
-        program.setReportListener(817, '/pocketcode/api/reportProgram/reportProgram.json');
-        program.generateFacebookPostLink();
-
-    </script>
-
-    <!--script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-          m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-42270417-5', 'auto');
-        ga('send', 'pageview');
-
-    </script-->
 
 </body>
 </html>

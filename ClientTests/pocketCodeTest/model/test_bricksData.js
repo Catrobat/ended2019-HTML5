@@ -10,6 +10,9 @@ QUnit.module("model/bricksData.js");
 
 QUnit.test("SetVariableBrick", function (assert) {
 
+    var done1 = assert.async();
+    var done2 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
@@ -19,7 +22,7 @@ QUnit.test("SetVariableBrick", function (assert) {
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var b = new PocketCode.Model.SetVariableBrick("device", sprite, { resourceId: "var1", value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._var instanceof PocketCode.Model.UserVariableSimple && b._value instanceof PocketCode.Formula , "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._value instanceof PocketCode.Formula , "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetVariableBrick, "instance check");
     assert.ok(b.objClassName === "SetVariableBrick", "objClassName check");
 
@@ -33,6 +36,7 @@ QUnit.test("SetVariableBrick", function (assert) {
         assert.equal(loopDelay, false, "loop delay check");
 
         assert.equal(sprite.getVariable("var1").value, 1.0, "variable set correctly (local)");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "setVar");
@@ -49,6 +53,7 @@ QUnit.test("SetVariableBrick", function (assert) {
 
         assert.equal(gameEngine.getVariable("var1").value, 1.0, "variable set correctly (global)");
         assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "setGlobalVar");
 
@@ -56,6 +61,10 @@ QUnit.test("SetVariableBrick", function (assert) {
 
 
 QUnit.test("ChangeVariableBrick", function (assert) {
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+    var done3 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -67,7 +76,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "var1", value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._var instanceof PocketCode.Model.UserVariableSimple && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._varId == "var1" && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ChangeVariableBrick, "instance check");
     assert.ok(b.objClassName === "ChangeVariableBrick", "objClassName check");
 
@@ -81,6 +90,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
         assert.equal(loopDelay, false, "loop delay check");
 
         assert.equal(sprite.getVariable("var1").value, 2.0, "variable set correctly (local)");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "changeVar");
@@ -90,6 +100,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
     b = new PocketCode.Model.ChangeVariableBrick("device", sprite, { resourceId: "varUnset", value: value });
     var executedHandlerBool = function (e) {
         assert.equal(sprite.getVariable("varUnset").value, true, "variable set correctly: change with not numeric");
+        done2();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandlerBool, this), "id");
 
@@ -105,12 +116,15 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 
         assert.equal(gameEngine.getVariable("var1").value, 2.0, "variable set correctly (global)");
         assert.equal(sprite.getVariable("var1"), gameEngine.getVariable("var1"), "global == local lookup instance");
+        done3();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler2, this), "changeGlobalVar");
 });
 
 
 QUnit.test("ShowVariableBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -138,16 +152,20 @@ QUnit.test("ShowVariableBrick", function (assert) {
         assert.equal(e.id, "showText", "event args id correct");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "showText");
 
     assert.equal(methodCalled.id, "var1", "sprite interface called: id checked");
     assert.equal(methodCalled.x, 1, "sprite interface called: positionX checked");
     assert.equal(methodCalled.y, 2, "sprite interface called: positionY checked");
+
 });
 
 
 QUnit.test("HideVariableBrick", function (assert) {
+
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -172,6 +190,7 @@ QUnit.test("HideVariableBrick", function (assert) {
         assert.equal(e.id, "hideText", "event args id correct");
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
+        done1();
     };
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "hideText");
 
@@ -182,19 +201,21 @@ QUnit.test("HideVariableBrick", function (assert) {
 
 QUnit.test("AppendToListBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
+    sprite._lists = [{ id: "list1", name: "list1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
-    var b = new PocketCode.Model.AppendToListBrick("device", sprite, { resourceId: "var1", value: value });
+    var b = new PocketCode.Model.AppendToListBrick("device", sprite, { resourceId: "list1", value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._listId == "list1" && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    //assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.AppendToListBrick, "instance check");
     assert.ok(b.objClassName === "AppendToListBrick", "objClassName check");
 
@@ -207,8 +228,9 @@ QUnit.test("AppendToListBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        var list = sprite.getList("var1");
+        var list = sprite.getList("list1");
         assert.equal(list.valueAt(4), 1.0, "list append");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "AppendToList");
@@ -218,19 +240,21 @@ QUnit.test("AppendToListBrick", function (assert) {
 
 QUnit.test("DeleteAtListBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
+    sprite._lists = [{ id: "list1", name: "list1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
-    var b = new PocketCode.Model.DeleteAtListBrick("device", sprite, { resourceId: "var1", index: idx });
+    var b = new PocketCode.Model.DeleteAtListBrick("device", sprite, { resourceId: "list1", index: idx });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._listId == "list1" && b._idx instanceof PocketCode.Formula, "brick created and properties set correctly");
+    //assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.DeleteAtListBrick, "instance check");
     assert.ok(b.objClassName === "DeleteAtListBrick", "objClassName check");
 
@@ -240,10 +264,11 @@ QUnit.test("DeleteAtListBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        var list = sprite.getList("var1");
+        var list = sprite.getList("list1");
         assert.equal(list.valueAt(1), 0, "list delete: 1st item");
         assert.equal(list.valueAt(2), 2, "list delete: 2nd item: moved 3rd to 2nd (+ cast to number)");
         assert.equal(list.length, 2, "list length after delete");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "DeleteAt");
@@ -253,20 +278,22 @@ QUnit.test("DeleteAtListBrick", function (assert) {
 
 QUnit.test("InsertAtListBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
+    sprite._lists = [{ id: "list1", name: "list1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var idx = JSON.parse('{"type":"NUMBER","value":"2","right":null,"left":null}');
-    var b = new PocketCode.Model.InsertAtListBrick("device", sprite, { resourceId: "var1", index: idx, value: value });
+    var b = new PocketCode.Model.InsertAtListBrick("device", sprite, { resourceId: "list1", index: idx, value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._listId == "list1" && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    //assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.InsertAtListBrick, "instance check");
     assert.ok(b.objClassName === "InsertAtListBrick", "objClassName check");
 
@@ -279,9 +306,10 @@ QUnit.test("InsertAtListBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        var list = sprite.getList("var1");
+        var list = sprite.getList("list1");
         assert.equal(list.valueAt(2), 1.0, "list insert");
         assert.equal(list.length, 4, "list length after insert");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "InsertAt");
@@ -291,20 +319,22 @@ QUnit.test("InsertAtListBrick", function (assert) {
 
 QUnit.test("ReplaceAtListBrick", function (assert) {
 
+    var done1 = assert.async();
+
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
     gameEngine._lists = [{ id: "var3", name: "var3name", value: ["6", "7px", "asd"] }, ];
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    sprite._lists = [{ id: "var1", name: "var1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
+    sprite._lists = [{ id: "list1", name: "list1name", value: [0, 1, "2"] }, { id: "var2", name: "var2name", value: [3, "4", 5] }, ];
 
     var value = JSON.parse('{"type":"NUMBER","value":"1.0","right":null,"left":null}');
     var idx = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
-    var b = new PocketCode.Model.ReplaceAtListBrick("device", sprite, { resourceId: "var1", index: idx, value: value });
+    var b = new PocketCode.Model.ReplaceAtListBrick("device", sprite, { resourceId: "list1", index: idx, value: value });
 
-    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._list === sprite.getList("var1") && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
+    assert.ok(b._device === "device" && b._sprite instanceof PocketCode.Model.Sprite && b._listId == "list1" && b._idx instanceof PocketCode.Formula && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    //assert.ok(b._list instanceof PocketCode.Model.UserVariableList, "variable found: type ok");
     assert.ok(b instanceof PocketCode.Model.ReplaceAtListBrick, "instance check");
     assert.ok(b.objClassName === "ReplaceAtListBrick", "objClassName check");
 
@@ -317,13 +347,13 @@ QUnit.test("ReplaceAtListBrick", function (assert) {
         var loopDelay = e.loopDelay ? e.loopDelay : false;
         assert.equal(loopDelay, false, "loop delay check");
 
-        var list = sprite.getList("var1");
+        var list = sprite.getList("list1");
         assert.equal(list.valueAt(3), 1.0, "list replace");
         assert.equal(list.length, 3, "list length after replace");
+        done1();
     };
 
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "ReplaceAt");
 
 });
-
 

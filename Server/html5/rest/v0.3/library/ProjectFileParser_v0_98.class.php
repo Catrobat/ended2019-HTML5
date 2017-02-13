@@ -311,7 +311,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -408,7 +408,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -424,7 +424,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {

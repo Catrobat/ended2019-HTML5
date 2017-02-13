@@ -157,11 +157,16 @@ PocketCode.Ui.merge({
 
         //cntr
         function Viewport() {
-            SmartJs.Ui.Viewport.call(this, {className: 'pc-playerViewport'});
+            SmartJs.Ui.Viewport.call(this, { className: 'pc-playerViewport' });
             this._dom.dir = 'ltr';
 
             this._disableBrowserGestures();
         }
+
+        ////events
+        //Object.defineProperties(Viewport.prototype, {
+
+        //});
 
         //properties
         Object.defineProperties(Viewport.prototype, {
@@ -171,11 +176,6 @@ PocketCode.Ui.merge({
                 },
             },
         });
-
-        ////events
-        //Object.defineProperties(Viewport.prototype, {
-
-        //});
 
         //methods
         Viewport.prototype.merge({
@@ -213,7 +213,7 @@ PocketCode.Ui.merge({
                 this._removeDomListener(this._dom, 'touchleave', this._touchLeaveandler);
                 this._removeDomListener(this._dom, 'touchmove', this._touchMoveHandler);
             },
-            addDialog: function(dialog) {
+            addDialog: function (dialog) {
                 if (!(dialog instanceof PocketCode.Ui.Dialog))
                     throw new Error('invalid parameter: dialog');
                 this._appendChild(dialog);

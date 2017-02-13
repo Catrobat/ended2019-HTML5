@@ -2,6 +2,7 @@
 
 class SpriteDto {
 
+    public $groupId;
     public $id;		//used for e.g. SetDirectionToBrick
     public $name;
     public $scripts = array();	//scripts

@@ -30,11 +30,11 @@ PocketCode.BaseController = (function () {
         hideView: function () {
             this._view.hide();
         },
-        updateViewState: function (viewState) { },
-        dispose: function () {
-            //use SmartJs.Ui.Control dispose to dispose view, as dispose() was overridden
-            SmartJs.Ui.Control.prototype.dispose.call(this._view);
-        },
+        //updateViewState: function (viewState) { },
+        //dispose: function () {
+        //    //use SmartJs.Ui.Control dispose to dispose view, as dispose() was overridden
+        //    SmartJs.Ui.Control.prototype.dispose.call(this._view);
+        //},
     });
 
     return BaseController;

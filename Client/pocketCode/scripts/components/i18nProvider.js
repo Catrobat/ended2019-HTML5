@@ -40,7 +40,9 @@ PocketCode.I18nProvider = (function (propObject) {
             //new:
             menuFullscreen: "fullscreen",
             menuTermsOfUse: "terms of use", //renamed to camel case
-            "lblDeviceGeoLocation": "? device feature geo location ?",
+            lblDeviceGeoLocation: "? device feature geo location ?",
+            lblEnterAnswer: "Enter your answer",
+            lblSubmitAnswer: "Submit answer",
         };  
 
         this._supportedLanguages = [];

@@ -66,7 +66,7 @@ class ProjectFileParser
         foreach($vars->programVariableList->children() as $userVar)
         {
             $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar->name));
+            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar->name));
         }
 
         array_pop($this->cpp);
@@ -275,7 +275,7 @@ class ProjectFileParser
         {
 			//not defined yet: add to local scope
 			$id = $this->getNewId();
-			array_push($this->currentSprite->variables, new VariableDto($id, $name));
+			array_push($this->currentSprite->variables, new IdNameDto($id, $name));
 			return $id;
         }
 
@@ -727,7 +727,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -777,7 +777,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -793,7 +793,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
