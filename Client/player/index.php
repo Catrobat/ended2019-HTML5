@@ -7,6 +7,7 @@ if( !empty( $_GET["lang"]) )
 
 $PROD_DOMAIN = "https://share.catrob.at/";
 $TEST_DOMAIN = "https://web-test.catrob.at/";
+$LOCAL_DOMAIN = "localhost/";
 $DOMAIN = $PROD_DOMAIN;
 $PLAYER_PATH = "html5/player/";
 ?>
