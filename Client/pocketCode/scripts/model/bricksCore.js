@@ -434,7 +434,7 @@ PocketCode.Model.merge({
                     this._return(id, false);
             },
             _execute: function (id, scope) {
-                if (this._disposed)
+                if (this._disposed || !this._pendingOps[id])
                     return;
                 this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id, scope);
             },
@@ -457,7 +457,7 @@ PocketCode.Model.merge({
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
                     else {
-                        window.setTimeout(this._execute.bind(this, id, po.scope), 1);
+                        window.setTimeout(this._execute.bind(this, id, po.scope), 0);
                     }
                 }
                 else

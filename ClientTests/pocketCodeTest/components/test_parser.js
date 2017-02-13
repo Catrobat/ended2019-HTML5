@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/pocketCode/scripts/core.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/publishSubscribe.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
@@ -350,7 +350,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     gameEngine._variables = [{ id: "s11", name: "global1" }, { id: "s12", name: "global2" }]; //global
     gameEngine.getVariable("s11").value = "global";
     sprite._variables = [{ id: "s13", name: "local1" }, { id: "s14", name: "local2" }]; //local
-    var uvh = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
+    var uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
     uvh._variables = [{ id: "s15", name: "proc1" }, { id: "s16", name: "proc2" }]; //procedure
 
     f.json = length2;   //use s11

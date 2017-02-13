@@ -94,11 +94,17 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
+            this._uiCache = {
+                visible: false,
+                x: 0,
+                y: 0,
+            };
             //this._defaultValue = 0.000001;
             //else
             //    this._value = 0.000001;   //prevent division by zero
             this._onChange = new SmartJs.Event.Event(this);
             //init
+            this._value = undefined;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
@@ -159,9 +165,31 @@ PocketCode.Model.merge({
                 //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
+                this._uiCache = {
+                    visible: false,
+                    x: 0,
+                    y: 0,
+                };
+
                 if (this.value === undefined)
-                    return;
+                    return; //no event is triggered
                 this.value = undefined;
+            },
+            showAt: function(x, y) {
+                this._uiCache = {
+                    visible: true,
+                    x: x,
+                    y: y,
+                };
+                //TODO event?
+            },
+            hide: function() {
+                this._uiCache.visible = false;
+                //TODO event?
+            },
+            asRenderingText: function (objectId) {
+                var uiCache = this._uiCache;
+                return new PocketCode.RenderingText({ objectId: objectId, id: this._id, text: this.toString(), x: uiCache.x, y: uiCache.y, visible: uiCache.visible });
             },
         });
 

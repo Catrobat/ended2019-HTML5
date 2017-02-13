@@ -6,13 +6,13 @@
 PocketCode.PhysicsWorld = (function () {
     PhysicsWorld.extends(SmartJs.Core.Component);
 
-    function PhysicsWorld(scene) {
+    function PhysicsWorld(collisionManager) {
         this._physicsSprites = {};
         this._registeredCollisions = {};
 
         this._gravityX = 0.0;
         this._gravityY = -10.0;
-        this._collisionManager = scene.collisionManager;
+        this._collisionManager = collisionManager;
     }
 
     ////properties
@@ -45,6 +45,9 @@ PocketCode.PhysicsWorld = (function () {
             this._registeredCollisions[sprite1] || (this._registeredCollisions[sprite1] = {});
             this._registeredCollisions[sprite1][sprite2] || (this._registeredCollisions[sprite1][sprite2] = []);
             this._registeredCollisions[sprite1][sprite2].push(listener);
+        },
+        unsubscribeCollision: function (sprite1, sprite2, listener) {
+            //alert('TODO: unsubscribe collision');   //TODO
         },
         _handleDetectedCollision: function (listeners) {
             if (!(listeners instanceof Array))

@@ -22,6 +22,16 @@ PocketCode.PublishSubscribeBroker = (function () {
             this._subscriptions[id] || (this._subscriptions[id] = []);
             this._subscriptions[id].push(handler);
         },
+        unsubscribe: function (id, handler) {
+            if (typeof id !== 'string')
+                throw new Error('invalid argument: message id, expected type: string');
+            if (typeof handler !== 'function')
+                throw new Error('invalid argument: subscription handler, expected type: function');
+
+            var subs = this._subscriptions[id];
+            if (subs || !(subs instanceof Array))
+                subs.remove(handler);
+        },
         publish: function (id, waitCallback) {//, threadId) {
             if (typeof id !== 'string')
                 throw new Error('invalid argument: message id not found');

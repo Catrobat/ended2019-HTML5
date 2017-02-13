@@ -1104,7 +1104,8 @@ class ProjectFileParser_v0_992
             {
                 $nestedCounter++;
             }
-            else if($name === "IfThenLogicEndBrick")
+            
+            if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
                 {
@@ -1291,20 +1292,20 @@ class ProjectFileParser_v0_992
 
             // Create clone of
             case "CloneBrick":
-                $brick;// = new CloneBrickDto();
+                $brick = new CloneBrickDto();
                 if(property_exists($script, "objectToClone")) {
                     $spriteXml = $this->getObject($script->objectToClone, $this->cpp);
 					$name = $this->getName($spriteXml);
 					foreach($this->currentScene->sprites as $s) {
 						if($s->name === $name)
 						{
-							$brick = new CloneBrickDto($s->id);
+							$brick->spriteId = $s->id;
 							break;
 						}
 					}
                 }
                 else {
-                    $brick = new CloneBrickDto((string)$this->currentSprite->id);
+                    $brick->ofMyself = true;
                 }
                 break;
 
@@ -1789,6 +1790,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "AskBrick":
+            case "AskSpeechBrick":
 				$var = null;
 				if(property_exists($script, "userVariable")) {
 					$varXml = $this->getObject($script->userVariable, $this->cpp);
@@ -1796,7 +1798,10 @@ class ProjectFileParser_v0_992
 				}
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
-                $brick = new AskBrickDto($this->parseFormula($fl->formula), $var);
+                if ($brickType == "AskBrick")
+                    $brick = new AskBrickDto($this->parseFormula($fl->formula), $var);
+                else
+                    $brick = new AskSpeechBrickDto($this->parseFormula($fl->formula), $var);
                 array_pop($this->cpp);
                 break;
 

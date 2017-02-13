@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
@@ -27,7 +27,7 @@ QUnit.test("Sprite", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
-    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
+    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
     //triggerOnChange
@@ -219,7 +219,6 @@ QUnit.test("Sprite", function (assert) {
     jsonSprite.variables = strProject11.variables;
 
     var testSprite = new PocketCode.Model.Sprite(gameEngine, scene, jsonSprite);
-    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
@@ -239,6 +238,43 @@ QUnit.test("Sprite", function (assert) {
     //}
     //assert.ok(soundsMatch, "Sounds set correctly");
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
+
+    // ********************* isBackground/pen *********************
+    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
+
+    //isBackground Tests
+    testBackgroundSprite.isBackground = false;
+    assert.equal(testBackgroundSprite.isBackground, false, "renderingSprite: isBackground set correctly");
+    testBackgroundSprite.isBackground = true;
+    assert.equal(testBackgroundSprite.isBackground, true, "renderingSprite: isBackground set correctly");
+
+    //penDown Test
+    assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false");
+    testSprite._penDown = true;
+    assert.equal(testSprite._penDown, true, "renderingSprite: penDown is true");
+
+    //penSize Test
+    assert.equal(testSprite._penSize, 4, "renderingSprite: penSize is 4");
+    testSprite._penSize = 8;
+    assert.equal(testSprite._penSize, 8, "renderingSprite: penSize is 8");
+
+    //penColor Test
+    var actualPenColor = testSprite._penColor;
+    var expectedPenColor = testSprite._penColor;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is blue");
+    actualPenColor.b = 0;
+    actualPenColor.r = 255;
+    expectedPenColor.b = 0;
+    expectedPenColor.r = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is red");
+    actualPenColor.r = 0;
+    actualPenColor.g = 255;
+    expectedPenColor.r = 0;
+    expectedPenColor.g = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is green");
+
+
+    // *************************************************************
 
 
     programExecAsync();
@@ -283,8 +319,7 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters
-    assert.equal(renderingSprite.isBackground, false, "renderingsprite: isBackground set correctly");
-    //assert.equal(testBackgroundSprite.isBackground, true, "testBackgroundSprite: is set correctly");
+
 
 
     var graphicEffectsSet = renderingSprite._graphicEffects && renderingSprite._graphicEffects instanceof Array;
@@ -1948,7 +1983,7 @@ QUnit.test("SpriteClone", function (assert) {
 
     var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
 
-    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost, "instance check");
+    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
 

@@ -21,10 +21,10 @@ PocketCode.PhysicsType = {
 
 
 PocketCode.Model.Sprite = (function () {
-    Sprite.extends(PocketCode.UserVariableHost, false);
+    Sprite.extends(PocketCode.Model.UserVariableHost, false);
 
     function Sprite(gameEngine, scene, propObject) {
-        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
+        PocketCode.Model.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
         this._scene = scene;
@@ -89,6 +89,11 @@ PocketCode.Model.Sprite = (function () {
 
     //properties
     Object.defineProperties(Sprite.prototype, {
+        renderingVariables: {
+            get: function() {
+                return this._getRenderingVariables(this._id);
+            },
+        },
         renderingSprite: {   //rendering image is created but not stored!
             get: function () {
                 return new PocketCode.RenderingSprite({
@@ -139,7 +144,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             get: function () {
-                return this._scene.getSpriteLayer(this);//.id);
+                return this._scene.getSpriteLayer(this);
             },
         },
         rotationStyle: {
@@ -173,6 +178,18 @@ PocketCode.Model.Sprite = (function () {
         currentLook: {
             get: function () {
                 return this._currentLook;
+            },
+        },
+        currentLookNumber: {
+            get: function () {
+                return this._looks.indexOf(this._currentLook) + 1;  //returns 0 for not found   //TODO?
+            },
+        },
+        currentLookName: {
+            get: function () {
+                if (!this._currentLook)
+                    return '';
+                return this._currentLook.name;
             },
         },
         visible: {
@@ -243,6 +260,48 @@ PocketCode.Model.Sprite = (function () {
 
                 this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
                 this._triggerOnChange({ penColor: this._penColor });
+            },
+        },
+
+        //collision: in formula
+        collidesWithEdge: {
+            get: function () {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                collision = collisionMgr.checkSpriteEdgeCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
+            },
+        },
+        collidesWithPointer: {
+            get: function () {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                collision = collisionMgr.checkSpritePointerCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
             },
         },
 
@@ -332,20 +391,20 @@ PocketCode.Model.Sprite = (function () {
                     scripts[i].resume();
             }
         },
-        stopScript: function (scriptId) {
+        stopScript: function (calledFromStopBrick, scriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id === scriptId) {
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
                     return false;
                 }
             }
         },
-        stopAllScripts: function (/*optional*/ exceptScriptId) {
+        stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== exceptScriptId)
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
             }
             return false;
         },
@@ -1094,8 +1153,7 @@ PocketCode.Model.Sprite = (function () {
                 _rotationStyle: this._rotationStyle,
                 _direction: this._direction,
 
-                ////looks
-                _currentLook: this._currentLook,
+                //looks
                 _scaling: this._scaling,
                 _visible: this._visible,
                 _transparency: this._transparency,
@@ -1107,13 +1165,22 @@ PocketCode.Model.Sprite = (function () {
                 _penSize: this._penSize,
                 _penColor: this._penColor,
 
-                currentLookId: this._currentLook.id, 
+                currentLookId: this._currentLook.id,
                 variables: this.getAllVariables().local,
                 lists: this.getAllLists().local,
             };
+
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
             return clone;
+        },
+        //collision: in formula
+        collidesWithSprite: function (spriteName) {
+            var sprite = this._scene.getSpriteByName(spriteName);
+            if (!sprite)
+                return false;
 
+            var collisionMgr = this._scene.collisionManager;
+            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
         },
         /* override */
         dispose: function () {
@@ -1131,7 +1198,7 @@ PocketCode.Model.Sprite = (function () {
             }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
 
     });
@@ -1197,6 +1264,11 @@ PocketCode.Model.merge({
             },
         });
 
+        //test only
+        SpriteClone.prototype.dispose = function () {
+            PocketCode.Model.Sprite.prototype.dispose.call(this);
+        };
+
         return SpriteClone;
     })(),
 });
@@ -1216,6 +1288,9 @@ PocketCode.Model.merge({
         BackgroundSprite.prototype.merge({
             subscribeOnLookChange: function (lookId, handler) {
                 this._lookChangeBroker.subscribe(lookId, handler);
+            },
+            unsubscribeFromLookChange: function (lookId, handler) {
+                this._lookChangeBroker.unsubscribe(lookId, handler);
             },
             /* override */
             setLook: function (lookId, waitCallback) {

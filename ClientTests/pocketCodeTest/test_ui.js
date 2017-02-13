@@ -1,5 +1,5 @@
 ﻿/// <reference path="../qunit/jquery-2.1.1.min.js" />
-/// <reference path="../qunit/qunit-1.23.0.js" />
+/// <reference path="../qunit/qunit-2.1.1.js" />
 /// <reference path="../../Client/pocketCode/scripts/core.js" />
 /// <reference path="../../Client/pocketCode/scripts/ui.js" />
 /// <reference path="../../Client/pocketCode/scripts/ui/dialog.js" />

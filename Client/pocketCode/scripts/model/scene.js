@@ -187,7 +187,7 @@ PocketCode.Model.Scene = (function () {
             this._onProgressChange.dispatchEvent({ bricksLoaded: this._bricksLoaded });
         },
         _spriteFactoryOnUnsupportedBricksFoundHandler: function (e) {
-            this._unsupportedBricks.concat(e.unsupportedBricks);
+            this._unsupportedBricks = this._unsupportedBricks.concat(e.unsupportedBricks);
         },
         initializeSprites: function () {
             var bg = this._background,
@@ -208,8 +208,16 @@ PocketCode.Model.Scene = (function () {
                 bg.init();
             }
 
+            var sprites = this._sprites,
+                clones = [];
+            for (var i = 0, l = sprites.length; i < l; i++)
+                if (sprites[i] instanceof PocketCode.Model.SpriteClone)
+                    clones.push(sprites[i]);    //do not edit indixes during iterating
+
+            for (var i = 0, l = clones.length; i < l; i++)
+                this.deleteClone(clones[i].id);
+
             this._sprites = this._originalSpriteOrder;
-            var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++)
                 sprites[i].init();
         },
@@ -293,15 +301,17 @@ PocketCode.Model.Scene = (function () {
             if (this._soundManager) //stop() may be called during dispose before loading the scene
                 this._soundManager.stopAllSounds(this._id);
 
+            this.stopAllScripts();
+            this._executionState = PocketCode.ExecutionState.STOPPED;
+        },
+        stopAllScripts: function (calledFromStopBrick) {
             if (this._background) {
-                this._background.stopAllScripts();
+                this._background.stopAllScripts(calledFromStopBrick);
             }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].stopAllScripts();
+                sprites[i].stopAllScripts(calledFromStopBrick);
             }
-
-            this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
             //    window.setTimeout(function () {
@@ -349,6 +359,18 @@ PocketCode.Model.Scene = (function () {
 
             throw new Error('unknown sprite with id: ' + spriteId);
         },
+        getSpriteByName: function (spriteName) {
+            if (this._background && this._background.name == spriteName)
+                return this._background;
+
+            var sprites = this._sprites;
+            for (var i = 0, l = sprites.length; i < l; i++) {
+                if (sprites[i].name === spriteName)
+                    return sprites[i];
+            }
+
+            throw new Error('unknown sprite with name: ' + spriteName);
+        },
         getLookImage: function (id) {
             //used by the sprite to access an image during look init
             return this._imageStore.getImage(id);
@@ -364,6 +386,12 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             this._background.subscribeOnLookChange(lookId, changeHandler);
+        },
+        unsubscribeFromBackgroundChange: function(lookId, changeHandler) {
+            if (!this._background)
+                return;
+
+            this._background.unsubscribeFromLookChange(lookId, changeHandler);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)
@@ -459,6 +487,8 @@ PocketCode.Model.Scene = (function () {
         },
         deleteClone: function (cloneId) {
             var clone = this.getSpriteById(cloneId);
+            if (!(clone instanceof PocketCode.Model.SpriteClone))
+                return;
 
             this._sprites.remove(clone);
             clone.dispose();
@@ -487,7 +517,7 @@ PocketCode.Model.Scene = (function () {
             }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
 
     });

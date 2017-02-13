@@ -157,7 +157,7 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateSprite(e.id, e.properties);
         },
         _varUpdateHandler: function (e) {
-            this._playerViewportController.updateVariable(e.id, e.properties);
+            this._playerViewportController.updateVariable(e.objectId, e.id, e.properties);
         },
         _cameraChangedHandler: function (e) {
             console.log("CAMERA TRIGGERED");
@@ -173,6 +173,10 @@ PocketCode.PlayerPageController = (function () {
                     history.back();
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.RESTART:
+                    if (this._screenshotDialog && !this._screenshotDialog.disposed) {
+                        this._dialogs.remove(this._screenshotDialog);
+                        this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)
+                    }
                     if (SmartJs.Device.isMobile) {    //create history entry
                         var state = history.state;
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');
@@ -184,6 +188,10 @@ PocketCode.PlayerPageController = (function () {
                     this._view.axesButtonDisabled = false;
                     break;
                 case PocketCode.Ui.PlayerBtnCommand.START:
+                    if (this._screenshotDialog && !this._screenshotDialog.disposed) {
+                        this._dialogs.remove(this._screenshotDialog);
+                        this._screenshotDialog.dispose();   //prevent several simultaneous dialogs (desktop)
+                    }
                     if (SmartJs.Device.isMobile) {    //create history entry
                         var state = history.state;
                         history.replaceState(new PocketCode.HistoryEntry(state.historyIdx, state.dialogsLength, this, PocketCode.ExecutionState.PAUSED, this._dialogs.length), document.title, '');

@@ -14,7 +14,7 @@ PocketCode.Ui.Canvas = (function () {
         args = args || { className: 'pc-canvasContainer' };
         SmartJs.Ui.Control.call(this, 'div', args);
 
-        this._renderingSprite = [];
+        this._renderingSprites = [];
         this._renderingTexts = [];
         this._scalingX = 1.0;
         this._scalingY = 1.0;
@@ -117,7 +117,7 @@ PocketCode.Ui.Canvas = (function () {
             set: function (list) {
                 if (!(list instanceof Array))
                     throw new Error('invalid argument: expectes type: list');
-                this._renderingSprite = list;
+                this._renderingSprites = list;
             },
         },
         renderingTexts: {
@@ -341,7 +341,7 @@ PocketCode.Ui.Canvas = (function () {
             return pointer;
         },
         _getTargetAt: function (point) {
-            var objects = this._renderingSprite;
+            var objects = this._renderingSprites;
             var object, target;
 
             for (var i = objects.length - 1; i >= 0; i--) {
@@ -371,27 +371,25 @@ PocketCode.Ui.Canvas = (function () {
             return hasTransparentAlpha;
         },
         render: function () {
-            var background_ctx = this._backgroundCanvasCtx;
+            var backgroundCtx = this._backgroundCanvasCtx;
             var ctx = this._spritesCanvasCtx;
 
-            background_ctx.clearRect(0, 0, this.width, this.height);
-            background_ctx.save();
-            background_ctx.translate(this._translation.x, this._translation.y);
-            background_ctx.scale(this._scalingX, this._scalingY);
+            backgroundCtx.clearRect(0, 0, this.width, this.height);
+            backgroundCtx.save();
+            backgroundCtx.translate(this._translation.x, this._translation.y);
+            backgroundCtx.scale(this._scalingX, this._scalingY);
 
             ctx.clearRect(0, 0, this.width, this.height);
             ctx.save();
             ctx.translate(this._translation.x, this._translation.y);
             ctx.scale(this._scalingX, this._scalingY);
 
-            var ro = this._renderingSprite;
-
-            //console.log(ro);
+            var ro = this._renderingSprites;
 
             // draw all sprites
             for (var i = 0, l = ro.length; i < l; i++) {
                 if (ro[i].isBackground)
-                    ro[i].draw(background_ctx);
+                    ro[i].draw(backgroundCtx);
                 else
                     ro[i].draw(ctx);
             }
@@ -405,7 +403,7 @@ PocketCode.Ui.Canvas = (function () {
             // draw current PenStampCanvas
             this._drawPenStampCacheCanvas();
 
-            background_ctx.restore();
+            backgroundCtx.restore();
             ctx.restore();
 
         },
@@ -436,7 +434,7 @@ PocketCode.Ui.Canvas = (function () {
             penStampCacheCanvasEl.width = screenSize.width;
 
             var ctx = penStampCacheCanvasEl.getContext('2d');
-            ctx.translate(screenSize.width * 0.5, screenSize.height * 0.5)
+            ctx.translate(screenSize.width * 0.5, screenSize.height * 0.5);
             //ctx.scale(1.0, -1.0);
 
             this._penStampCache[id] = {
@@ -473,7 +471,7 @@ PocketCode.Ui.Canvas = (function () {
             }
         },
         movePen: function (renderingSpriteId, toX, toY) {
-            var ro = this._renderingSprite,
+            var ro = this._renderingSprites,
                 ri;
             for (var i = 0, l = ro.length; i < l; i++) {
                 ri = ro[i];
@@ -496,7 +494,7 @@ PocketCode.Ui.Canvas = (function () {
             }
         },
         drawStamp: function (renderingSpriteId) {
-            var ro = this._renderingSprite;
+            var ro = this._renderingSprites;
             for (var i = 0, l = ro.length; i < l; i++) {
                 if (ro[i].id === renderingSpriteId) {
                     ro[i].draw(this._currentSceneCache.ctx);
@@ -526,7 +524,7 @@ PocketCode.Ui.Canvas = (function () {
         //screenshot
         toDataURL: function (width, height) {
             var currentWidth = this.width,
-              currentHeight = this.height;
+                currentHeight = this.height;
 
             this._helperCanvasEl.width = width;
             this._helperCanvasEl.height = height;
@@ -538,14 +536,33 @@ PocketCode.Ui.Canvas = (function () {
             ctx.translate(width * 0.5, height * 0.5);
             ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
-            var ro = this._renderingSprite;
-            for (var i = 0, l = ro.length; i < l; i++)
-                ro[i].draw(ctx);
+            var ro = this._renderingSprites;
+            //background
+            for (var i = 0, l = ro.length; i < l; i++) {
+                if (ro[i].isBackground) {
+                    ro[i].draw(ctx);
+                    break;
+                }
+            }
 
+            //pen stamp
+            ctx.drawImage(this._currentSceneCache.element, - width * 0.5, -height * 0.5);
+
+            //camera
+
+            //sprites
+            for (var i = 0, l = ro.length; i < l; i++)
+                if (!ro[i].isBackground)
+                    ro[i].draw(ctx);
+
+            //text
             ro = this._renderingTexts;
             for (var i = 0, l = ro.length; i < l; i++)
                 ro[i].draw(ctx);
             ctx.restore();
+
+            //bubbles
+
 
             var data = this._helperCanvasEl.toDataURL('image/png');
             this._helperCanvasEl.width = currentWidth;

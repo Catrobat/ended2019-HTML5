@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksPen.js" />
@@ -122,11 +122,55 @@ QUnit.test("SetPenColorBrick", function (assert) {
 
 
 QUnit.test("StampBrick", function (assert) {
-    assert.ok(false, "TODO");
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.StampBrick(device, sprite, {});
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.StampBrick, "instance check");
+    assert.ok(b.objClassName === "StampBrick", "objClassName check");
+
+    ///execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
 });
 
 
 QUnit.test("ClearBackgroundBrick", function (assert) {
-    assert.ok(false, "TODO");
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.ClearBackgroundBrick(device, sprite, scene, {});
+
+    assert.ok(b._device === device && b._sprite === sprite && b._scene === scene, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.ClearBackgroundBrick, "instance check");
+    assert.ok(b.objClassName === "ClearBackgroundBrick", "objClassName check");
+
+    ///execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
 });
 

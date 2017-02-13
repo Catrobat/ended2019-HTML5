@@ -151,6 +151,9 @@
         }
 
 [dir='rtl'] .pc-playerStartScreen button svg {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
     transform: rotate(180deg);
 }
 
@@ -303,6 +306,9 @@
     }
 
 [dir='rtl'] .pc-playerMenuPlayOverlay div {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
     transform: rotate(180deg);
 }
 
@@ -426,7 +432,6 @@
 .pc-playerMenuH .pc-playerMenuContainer {
     height: 11.7em;
     width: 100%;
-    left: 0;
     bottom: 0;
     text-align: center;
 }
@@ -449,6 +454,9 @@
 }
 
 [dir='rtl'] .pc-rtl svg {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
     transform: rotate(180deg);
 }
 

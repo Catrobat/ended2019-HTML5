@@ -216,8 +216,11 @@ PocketCode.merge({
                     case 'SetBackgroundAndWaitBrick':
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
+                    case 'AskSpeechBrick':
                     case 'AskBrick':
                     case 'WhenBackgroundChangesToBrick':
+                        if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
+                            type = 'AskBrick';
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
@@ -259,7 +262,7 @@ PocketCode.merge({
                         break;
 
                     case 'StopScriptBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._currentScriptId, jsonBrick);
+                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
@@ -353,8 +356,8 @@ PocketCode.merge({
                 return {
                     calculate: new Function(
                         'uvh',
-                        'this._userVariableHost = (uvh instanceof PocketCode.UserVariableHost) ? uvh : this._sprite;' +
-                        'return ' + formulaString + ';'),
+                        'uvh || (uvh = this._sprite); ' +
+                        'return (' + formulaString + ');'),
                     isStatic: this._isStatic
                 };
             },
@@ -364,7 +367,7 @@ PocketCode.merge({
                     return '';
 
                 /* package org.catrobat.catroid.formulaeditor: class FormulaElement: enum ElementType
-                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING
+                *  OPERATOR, FUNCTION, NUMBER, SENSOR, USER_VARIABLE, BRACKET, STRING, COLLISION_FORMULA
                 */
                 switch (jsonFormula.type) {
                     case 'OPERATOR':
@@ -395,7 +398,7 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._userVariableHost.getVariable("' + jsonFormula.value + '").value';
+                        return 'uvh.getVariable("' + jsonFormula.value + '").value';
 
                     case 'USER_LIST':
                         if (uiString) {
@@ -406,17 +409,34 @@ PocketCode.merge({
                         }
 
                         this._isStatic = false;
-                        return 'this._userVariableHost.getList("' + jsonFormula.value + '")';
+                        return 'uvh.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
-                        //if (!jsonFormula.right)
-                        //    return '()';
-
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        //if (uiString)
                         return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+
+                    case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
+                        this._isStatic = false;
+                        var params = jsonFormula.value.split(' ');  //e.g. 'sp1 touches sp2'
+                        if (params.length == 1) { //v0.993
+                            if (uiString)
+                                return 'touches_object(' + jsonFormula.value + ')';
+
+                            return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
+                        }
+                        else if (params.length == 3) { //v0.992
+                            if (uiString)
+                                return '\'' + jsonFormula.value + '\'';
+
+                            return 'this._sprite.collidesWithSprite(\'' + params[2] + '\')';
+                        }
+                        else { //not supported
+                            if (uiString)
+                                return '\'' + jsonFormula.value + '\'';
+                            return 'false';
+                        }
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?
@@ -608,8 +628,13 @@ PocketCode.merge({
 
                     case 'EXP':
                         if (uiString)
-                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
+
+                    case 'POWER':
+                        if (uiString)
+                            return 'power(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                        return 'Math.pow(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'FLOOR':
                         if (uiString)
@@ -733,7 +758,13 @@ PocketCode.merge({
                 *  X_ACCELERATION, Y_ACCELERATION, Z_ACCELERATION, COMPASS_DIRECTION, X_INCLINATION, Y_INCLINATION, LOUDNESS, FACE_DETECTED, FACE_SIZE, FACE_X_POSITION, FACE_Y_POSITION, OBJECT_X(true), OBJECT_Y(true), OBJECT_GHOSTEFFECT(true), OBJECT_BRIGHTNESS(true), OBJECT_SIZE(true), OBJECT_ROTATION(true), OBJECT_LAYER(true)
                 */
                 switch (jsonFormula.value) {
-                    //sensors
+                    //device
+                    case 'LOUDNESS':
+                        if (uiString)
+                            return 'loudness';
+
+                        return 'this._device.loudness';
+
                     case 'X_ACCELERATION':
                         if (uiString)
                             return 'acceleration_x';
@@ -752,12 +783,6 @@ PocketCode.merge({
 
                         return 'this._device.accelerationZ';
 
-                    case 'COMPASS_DIRECTION':
-                        if (uiString)
-                            return 'compass_direction';
-
-                        return 'this._device.compassDirection';
-
                     case 'X_INCLINATION':
                         if (uiString)
                             return 'inclination_x';
@@ -770,12 +795,64 @@ PocketCode.merge({
 
                         return 'this._device.inclinationY';
 
-                    case 'LOUDNESS':
+                    case 'COMPASS_DIRECTION':
                         if (uiString)
-                            return 'loudness';
+                            return 'compass_direction';
 
-                        return 'this._device.loudness';
+                        return 'this._device.compassDirection';
 
+                        //geo location
+                    case 'LATITUDE':
+                        if (uiString)
+                            return 'latitude';
+
+                        return 'this._device.geoLatitude';
+
+                    case 'LONGITUDE':
+                        if (uiString)
+                            return 'longitude';
+
+                        return 'this._device.geoLongitude';
+
+                    case 'ALTITUDE':
+                        if (uiString)
+                            return 'altitude';
+
+                        return 'this._device.geoAltitude';
+
+                    case 'ACCURACY':
+                    case 'LOCATION_ACCURACY':
+                        if (uiString)
+                            return 'location_accuracy';
+
+                        return 'this._device.geoAccuracy';
+
+                        //touch
+                    case 'FINGER_X':
+                        if (uiString)
+                            return 'screen_touch_x';
+
+                        return 'this._device.getTouchX(this._device.lastTouchIndex)';
+
+                    case 'FINGER_Y':
+                        if (uiString)
+                            return 'screen_touch_y';
+
+                        return 'this._device.getTouchY(this._device.lastTouchIndex)';
+
+                    case 'FINGER_TOUCHED':
+                        if (uiString)
+                            return 'screen_is_touched';
+
+                        return 'this._device.isTouched(this._device.lastTouchIndex)';
+
+                    case 'LAST_FINGER_INDEX':
+                        if (uiString)
+                            return 'last_screen_touch_index';
+
+                        return 'this._device.lastTouchIndex';
+
+                    //face detection
                     case 'FACE_DETECTED':
                         if (uiString)
                             return 'is_face_detected';
@@ -800,57 +877,7 @@ PocketCode.merge({
 
                         return 'this._device.facePositionY';
 
-                        //sprite
-                    case 'OBJECT_BRIGHTNESS':
-                        if (uiString)
-                            return 'brightness';
-
-                        return 'this._sprite.brightness';
-
-                    case 'OBJECT_TRANSPARENCY':
-                    case 'OBJECT_GHOSTEFFECT':
-                        if (uiString)
-                            return 'transparency';
-
-                        return 'this._sprite.transparency';
-
-                    case 'OBJECT_COLOR':
-                        if (uiString)
-                            return 'color';
-
-                        return 'this._sprite.colorEffect';
-
-                    case 'OBJECT_LAYER':
-                        if (uiString)
-                            return 'layer';
-
-                        return 'this._sprite.layer';
-
-                    case 'OBJECT_ROTATION': //=direction
-                        if (uiString)
-                            return 'direction';
-
-                        return 'this._sprite.direction';
-
-                    case 'OBJECT_SIZE':
-                        if (uiString)
-                            return 'size';
-
-                        return 'this._sprite.size';
-
-                    case 'OBJECT_X':
-                        if (uiString)
-                            return 'position_x';
-
-                        return 'this._sprite.positionX';
-
-                    case 'OBJECT_Y':
-                        if (uiString)
-                            return 'position_y';
-
-                        return 'this._sprite.positionY';
-
-                    //time(r)
+                        //date and time
                     case 'CURRENT_YEAR':
                         if (uiString)
                             return 'year';
@@ -904,58 +931,88 @@ PocketCode.merge({
                         //        return 'timer';
 
                         //    return 'this._sprite.projectTimerValue';
-
-                        //touch
-                    case 'FINGER_X':
+                        
+                    //sprite
+                    case 'OBJECT_BRIGHTNESS':
                         if (uiString)
-                            return 'screen_touch_x';
+                            return 'brightness';
 
-                        return 'this._device.getTouchX(this._device.lastTouchIndex)';
+                        return 'this._sprite.brightness';
 
-                    case 'FINGER_Y':
+                    case 'OBJECT_TRANSPARENCY':
+                    case 'OBJECT_GHOSTEFFECT':
                         if (uiString)
-                            return 'screen_touch_y';
+                            return 'transparency';
 
-                        return 'this._device.getTouchY(this._device.lastTouchIndex)';
+                        return 'this._sprite.transparency';
 
-                    case 'FINGER_TOUCHED':
+                    case 'OBJECT_COLOR':
                         if (uiString)
-                            return 'screen_is_touched';
+                            return 'color';
 
-                        return 'this._device.isTouched(this._device.lastTouchIndex)';
+                        return 'this._sprite.colorEffect';
 
-                    case 'LAST_FINGER_INDEX':
+                    case 'OBJECT_BACKGROUND_NUMBER':
                         if (uiString)
-                            return 'last_screen_touch_index';
-
-                        return 'this._device.lastTouchIndex';
-
-                        //geo location
-                    case 'LATITUDE':
+                            return 'background_number';
+                    case 'OBJECT_LOOK_NUMBER':
                         if (uiString)
-                            return 'latitude';  //TODO: check UI string
+                            return 'look_number';
+                        return 'this._sprite.currentLookNumber';
 
-                        return 'this._device.geoLatitude';
-
-                    case 'LONGITUDE':
+                    case 'OBJECT_BACKGROUND_NAME':
                         if (uiString)
-                            return 'longitude';  //TODO: check UI string
-
-                        return 'this._device.geoLongitude';
-
-                    case 'ALTITUDE':
+                            return 'background_name';
+                    case 'OBJECT_LOOK_NAME':
                         if (uiString)
-                            return 'altitude';  //TODO: check UI string
+                            return 'look_name';
+                        return 'this._sprite.currentLookName';
 
-                        return 'this._device.geoAltitude';
-
-                    case 'ACCURACY':
+                    case 'OBJECT_LAYER':
                         if (uiString)
-                            return 'location_accuracy';  //TODO: check UI string
+                            return 'layer';
 
-                        return 'this._device.geoAccuracy';
+                        return 'this._sprite.layer';
 
-                        //physics
+                    case 'OBJECT_ROTATION': //=direction
+                        if (uiString)
+                            return 'direction';
+
+                        return 'this._sprite.direction';
+
+                    case 'OBJECT_SIZE':
+                        if (uiString)
+                            return 'size';
+
+                        return 'this._sprite.size';
+
+                    case 'OBJECT_X':
+                        if (uiString)
+                            return 'position_x';
+
+                        return 'this._sprite.positionX';
+
+                    case 'OBJECT_Y':
+                        if (uiString)
+                            return 'position_y';
+
+                        return 'this._sprite.positionY';
+
+
+                    //collision
+                    case 'COLLIDES_WITH_EDGE':
+                        if (uiString)
+                            return 'touches_edge';
+
+                        return 'this._sprite.collidesWithEdge';
+
+                    case 'COLLIDES_WITH_FINGER':
+                        if (uiString)
+                            return 'touches_finger';
+
+                        return 'this._sprite.collidesWithPointer';
+
+                    //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -974,7 +1031,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
-                        //nxt
+                    //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';

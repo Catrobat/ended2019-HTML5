@@ -18,7 +18,7 @@ PocketCode.Model.merge({
 
             //we need a prototype object storing all procedure arguments to call fomula.toString(this._uvhPrototype)
             //otherwide we are not able to show a formula including (variable) argument names
-            //this._uvh = { prototype: new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite) }; //TODO: make sure sprite keeps the same and doesn't vary per call
+            //this._uvh = { prototype: new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite) }; //TODO: make sure sprite keeps the same and doesn't vary per call
 
             //this._onStart = startEvent;
             //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
@@ -33,7 +33,7 @@ PocketCode.Model.merge({
 
                 sprite = sprite || this._sprite;
                 var id = SmartJs.getNewId(),
-                    uvh = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);  // new this.uvh();
+                    uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);  // new this.uvh();
                 //TODO: init variables
 
                 this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };

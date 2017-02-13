@@ -77,7 +77,7 @@ PocketCode.merge({
 
         function Camera() {
             this._video = document.createElement('video');
-            var supported = this._getUserMedia && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
+            var supported = false;  //currently disabled// this._getUserMedia && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
             PocketCode.DeviceFeature.call(this, 'lblDeviceCamera', supported);
 
             this._cameraStream = undefined;

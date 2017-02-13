@@ -4,7 +4,7 @@
 /*
  * this is a base class for sprite and gameEngine introduced to avoid duplicated code for handling variables and lists
  */
-PocketCode.UserVariableHost = (function () {
+PocketCode.Model.UserVariableHost = (function () {
     UserVariableHost.extends(SmartJs.Core.Component);
 
     //ctr
@@ -16,8 +16,8 @@ PocketCode.UserVariableHost = (function () {
         this.__variableScope = scope;
 
         if (globalLookupHost) {
-            if (!(globalLookupHost instanceof PocketCode.UserVariableHost))
-                throw new Error('invalid argument: global lookup host: expectet type = PocketCode.UserVariableHost');
+            if (!(globalLookupHost instanceof PocketCode.Model.UserVariableHost))
+                throw new Error('invalid argument: global lookup host: expectet type = PocketCode.Model.UserVariableHost');
             if (scope === PocketCode.UserVariableScope.GLOBAL)
                 throw new Error('invalid argument: a global lookup host cannot refer to another global variable definition');
             if (scope == PocketCode.UserVariableScope.PROCEDURE && globalLookupHost.variableScope !== PocketCode.UserVariableScope.LOCAL ||
@@ -34,19 +34,18 @@ PocketCode.UserVariableHost = (function () {
         //this.__variablesList.onVariableChange.addEventListener(new SmartJs.Event.EventListener(this._valueChangeHandler, this));
     }
 
+    //events
+    //Object.defineProperties(UserVariableHost.prototype, {
+    //    _onVariableChange: {
+    //        get: function () { return this.__variablesSimple.onVariableChange },    //binding to internal event
+    //    },
+    //    _onListChange: {
+    //        get: function () { return this.__variablesList.onVariableChange },      //binding to internal event
+    //    },
+    //});
+
     //properties
     Object.defineProperties(UserVariableHost.prototype, {
-        renderingVariables: {
-            get: function () {
-                var list = [],
-                    vars = this.__variablesSimple.getVariables();
-                for (var v in vars) {   //{[id]: {}}
-                    if (vars.hasOwnProperty(v))
-                        list.push(new PocketCode.RenderingText({ id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }));
-                }
-                return list;
-            },
-        },
         variableScope: {
             get: function () {
                 return this.__variableScope;
@@ -64,18 +63,18 @@ PocketCode.UserVariableHost = (function () {
         },
     });
 
-    //events
-    //Object.defineProperties(UserVariableHost.prototype, {
-    //    _onVariableChange: {
-    //        get: function () { return this.__variablesSimple.onVariableChange },    //binding to internal event
-    //    },
-    //    _onListChange: {
-    //        get: function () { return this.__variablesList.onVariableChange },      //binding to internal event
-    //    },
-    //});
-
     //methods
     UserVariableHost.prototype.merge({
+        _getRenderingVariables: function (objectId) {
+            var list = [],
+                vars = this.__variablesSimple.getVariables();
+            for (var v in vars) {   //{[id]: {}}
+                if (vars.hasOwnProperty(v))
+                    list.push(vars[v].asRenderingText(objectId));
+                //list.push(new PocketCode.RenderingText({ objectId: objectId, id: v, text: vars[v].toString(), x: 0, y: 0, visible: false }));
+            }
+            return list;
+        },
         getVariable: function (id) {
             var tmp = this.__variablesSimple.getVariableById(id);
             if (!tmp && this.__variableLookupHost)
@@ -101,20 +100,36 @@ PocketCode.UserVariableHost = (function () {
             return tmp;
         },
         _valueChangeHandler: function (e) {
-            this._onVariableChange.dispatchEvent({ id: e.id, properties: { text: e.target.toString() } });
+            this._onVariableChange.dispatchEvent({ objectId: this._id, id: e.id, properties: { text: e.target.toString() } });
         },
         showVariableAt: function (id, positionX, positionY) {   //called as sprite.show.. from brick
-            var tmp = this.getVariable(id);
-
             if (isNaN(positionX) || isNaN(positionY))
                 throw new Error('show variable: invalid position');
-            this._onVariableChange.dispatchEvent({ id: id, properties: { text: tmp.toString(), visible: true, x: positionX, y: positionY } });
+
+            var tmp = this.__variablesSimple.getVariableById(id);
+            if (tmp) {
+                tmp.showAt(positionX, positionY);
+                this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { text: tmp.toString(), visible: true, x: positionX, y: positionY } });
+            }
+            else if (this.__variableLookupHost)
+                this.__variableLookupHost.showVariableAt(id, positionX, positionY);
+            //    tmp = this.__variableLookupHost.getVariable(id);
+            //var tmp = this.getVariable(id);
+
         },
         hideVariable: function (id) {    //called as sprite.hide.. from brick
-            var tmp = this.getVariable(id);
+            var tmp = this.__variablesSimple.getVariableById(id);
+            if (tmp) {
+                tmp.hide();
+                this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { visible: false } });
+            }
+            else if (this.__variableLookupHost)
+                this.__variableLookupHost.hideVariable(id);
+
+            //var tmp = this.getVariable(id);
             //if (!tmp)
             //    throw new Error('hide variable: variable with id = ' + id + 'could not be found');
-            this._onVariableChange.dispatchEvent({ id: id, properties: { visible: false } });
+            //this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { visible: false } });
         },
         getList: function (id) {
             var tmp = this.__variablesList.getVariableById(id);

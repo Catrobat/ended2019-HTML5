@@ -297,9 +297,15 @@ PocketCode.Model.merge({
             this._sceneId = propObject.sceneId;
         }
 
-        SceneTransitionBrick.prototype._execute = function () {
-            this._return(this._gameEngine.resumeOrStartScene(this._sceneId));
-        };
+        SceneTransitionBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._gameEngine.resumeOrStartScene(this._sceneId));
+            },
+            dispose: function () {
+                this._gameEngine = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return SceneTransitionBrick;
     })(),
@@ -309,14 +315,20 @@ PocketCode.Model.merge({
 
         function StartSceneBrick(device, sprite, gameEngine, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            
+
             this._gameEngine = gameEngine;
             this._sceneId = propObject.sceneId;
         }
 
-        StartSceneBrick.prototype._execute = function () {
-            this._return(this._gameEngine.startScene(this._sceneId));
-        };
+        StartSceneBrick.prototype.merge({
+            _execute: function () {
+                this._return(this._gameEngine.startScene(this._sceneId));
+            },
+            dispose: function () {
+                this._gameEngine = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return StartSceneBrick;
     })(),
@@ -328,13 +340,15 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
+            this._ofMyself = propObject.ofMyself;
             this._cloneId = propObject.spriteId;
         }
 
         CloneBrick.prototype.merge({
             _execute: function () {
                 //todo: bubbles
-                this._return(this._scene.cloneSprite(this._cloneId));
+                var id = this._ofMyself ? this._sprite.id : this._cloneId;
+                this._return(this._scene.cloneSprite(id));
             },
             dispose: function () {
                 this._scene = undefined;
@@ -378,8 +392,11 @@ PocketCode.Model.merge({
     StopScriptBrick: (function () {
         StopScriptBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function StopScriptBrick(device, sprite, scriptId, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, scriptId, propObject);
+        function StopScriptBrick(device, sprite, scene, scriptId, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._scene = scene;
+            this._scriptId = scriptId;
 
             switch (propObject.scriptType) {
                 case 'this':
@@ -392,24 +409,29 @@ PocketCode.Model.merge({
                     this._type = PocketCode.Model.StopScriptType.OTHER;
                     break;
             }
-            this._scriptId = scriptId;
         }
 
-        StopScriptBrick.prototype._execute = function () {
-            switch (this._type) {
-                case PocketCode.Model.StopScriptType.THIS:
-                    this._sprite.stopScript(this._scriptId);
-                    return; //no handler called: script was stopped
-                    break;
-                case PocketCode.Model.StopScriptType.ALL:
-                    this._sprite.stopAllScripts();
-                    return; //no handler called: script was stopped
-                    break;
-                case PocketCode.Model.StopScriptType.OTHER:
-                    this._return(this._sprite.stopAllScripts(this._scriptId));
-                    break;
-            }
-        };
+        StopScriptBrick.prototype.merge({
+            _execute: function () {
+                switch (this._type) {
+                    case PocketCode.Model.StopScriptType.THIS:
+                        this._sprite.stopScript(true, this._scriptId);
+                        return; //no handler called: script was stopped
+                        break;
+                    case PocketCode.Model.StopScriptType.ALL:
+                        this._scene.stopAllScripts(true);
+                        return; //no handler called: script was stopped
+                        break;
+                    case PocketCode.Model.StopScriptType.OTHER:
+                        this._return(this._sprite.stopAllScripts(true, this._scriptId));
+                        break;
+                }
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
 
         return StopScriptBrick;
     })(),
