@@ -1187,8 +1187,8 @@ PocketCode.Model.Sprite = (function () {
             this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
-            this._scene = undefined;   //make sure the scene is not disposed
-            this._onChange = undefined;     //make sure the game engines event is not disposed (shared event)
+            this._scene = undefined;        //make sure the scene is not disposed
+            this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
             var script,
                 scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
@@ -1213,6 +1213,7 @@ PocketCode.Model.merge({
 
         function SpriteClone(gameEngine, scene, jsonSprite, definition) {
             PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
+
             if (!definition || typeof definition != 'object')
                 throw new Error('clone needs a defnition object to merge paroperties from original sprite');
 
@@ -1264,10 +1265,26 @@ PocketCode.Model.merge({
             },
         });
 
-        //test only
-        SpriteClone.prototype.dispose = function () {
-            PocketCode.Model.Sprite.prototype.dispose.call(this);
-        };
+        SpriteClone.prototype.merge({
+            /* override */
+            dispose: function () {
+                this.stopAllScripts();
+
+                //this._gameEngine = undefined;   //make sure the game engine is not disposed
+                //this._scene = undefined;        //make sure the scene is not disposed
+                //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
+                //var script,
+                //    scripts = this._scripts;
+                //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
+                //    script = scripts[i];
+                //    if (script.onExecuted)  //supported by all (root container) scripts
+                //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+                //}
+
+                //call super
+                //PocketCode.Model.Sprite.prototype.dispose.call(this);
+            },
+        });
 
         return SpriteClone;
     })(),
@@ -1304,10 +1321,10 @@ PocketCode.Model.merge({
                 this._lookChangeBroker.publish(lookId, waitCallback);
                 return true;
             },
-            dispose: function () {
-                this._lookChangeBroker.dispose();
-                PocketCode.Model.Sprite.prototype.dispose.call(this);
-            },
+            //dispose: function () {
+            //    this._lookChangeBroker.dispose();
+            //    PocketCode.Model.Sprite.prototype.dispose.call(this);
+            //},
         });
 
         return BackgroundSprite;

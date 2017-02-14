@@ -38,6 +38,9 @@ PocketCode.PublishSubscribeBroker = (function () {
             if (waitCallback && typeof waitCallback !== 'function')
                 throw new Error('invalid argument: publish callback');
 
+            if (id == "s28")
+                var bp = true;
+
             //handle unknown messages or empty subscription list
             var subs = this._subscriptions[id];
             if (!subs || subs.length == 0) {

@@ -370,6 +370,9 @@ PocketCode.Model.merge({
             },
             /*override*/
             _returnHandler: function (e) {
+                if (this._id == "s26")
+                    var bp = true;
+
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();
 
@@ -457,7 +460,7 @@ PocketCode.Model.merge({
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
                     else {
-                        window.setTimeout(this._execute.bind(this, id, po.scope), 0);
+                        window.setTimeout(this._execute.bind(this, id, po.scope), 10);
                     }
                 }
                 else

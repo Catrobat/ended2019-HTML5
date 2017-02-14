@@ -68,11 +68,13 @@ PocketCode.Model.merge({
 
             this._msgId = propObject.receiveMsgId;
             this._callback = this._subscribeCallback.bind(this);
+            this._broadcastMgr = broadcastMgr;
             broadcastMgr.subscribe(this._msgId, this._callback);
         }
 
         WhenBroadcastReceiveBrick.prototype.dispose = function () {
-            broadcastMgr.unsubscribe(this._msgId, this._callback);
+            this._broadcastMgr.unsubscribe(this._msgId, this._callback);
+            this._broadcastMgr = undefined;
             PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
         };
 
@@ -206,12 +208,14 @@ PocketCode.Model.merge({
         function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
+            this._physicsWorld = physicsWorld;
             this._spriteId2 = propObject.any ? 'any' : propObject.spriteId;
             physicsWorld.subscribeCollision(sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
 
         WhenCollisionBrick.prototype.dispose = function () {
-            physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            this._physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            this._physicsWorld = undefined;
             PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
         };
 
@@ -224,6 +228,7 @@ PocketCode.Model.merge({
         function WhenBackgroundChangesToBrick(device, sprite, scene, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
+            this._scene = scene;
             this._lookId = propObject.lookId
             this._callback = this._subscribeCallback.bind(this);
             if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
@@ -234,7 +239,8 @@ PocketCode.Model.merge({
 
         //methods
         WhenBackgroundChangesToBrick.prototype.dispose = function () {
-            scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
+            this._scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
+            this._scene = undefined;
             PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
         };
 
