@@ -4,12 +4,6 @@ if( !empty( $_GET["projectId"]) )
 
 if( !empty( $_GET["lang"]) )
   $lang = $_GET["lang"];
-
-$PROD_DOMAIN = "https://share.catrob.at/";
-$TEST_DOMAIN = "https://web-test.catrob.at/";
-$LOCAL_DOMAIN = "localhost/";
-$DOMAIN = $PROD_DOMAIN;
-$PLAYER_PATH = "html5/player/";
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
@@ -22,10 +16,10 @@ $PLAYER_PATH = "html5/player/";
   <meta name="apple-touch-fullscreen" content="yes" />
   <link href="/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
 
-  <script src="<?php echo $DOMAIN.$PLAYER_PATH ?>pocketCodePlayer.min.js"></script>
+  <script src="/html5/player/pocketCodePlayer.min.js"></script>
   <script type="text/javascript">
-    launchProject(<?php if (isset($projectId))
-                            echo $projectId;
+    launchProject(<?php if (isset($projectId)) 
+                            echo $projectId; 
                         else
                             echo "0";
                         if (isset($lang))
