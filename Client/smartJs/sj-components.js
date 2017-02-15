@@ -46,7 +46,7 @@ SmartJs.Components = {
             },
             _errorHandler: function (e) {//error, fileName, lineNo) {
                 //console.log('SmartJs.Components.Application: global error: ' + error + ', ' + fileName + ', ' + lineNo);
-                this._onError.dispatchEvent({error: e});//{ error: error, file: fileName, lineNo: lineNo });
+                this._onError.dispatchEvent({ error: e });//{ error: error, file: fileName, lineNo: lineNo });
             },
             dispose: function () {
                 this._removeDomListener(window, 'offline', this._offlineListener);
@@ -132,7 +132,7 @@ SmartJs.Components = {
                 this._setTimeout(this._remainingTime);
                 this._paused = false;
             },
-            stop: function() {
+            stop: function () {
                 this._clearTimeout();
                 this._remainingTime = 0;
                 this._paused = false;
@@ -187,7 +187,7 @@ SmartJs.Components = {
 
         //methods
         Stopwatch.prototype.merge({
-            _init: function() {
+            _init: function () {
                 this._startDateTime = undefined;
                 this._pausedDateTime = undefined;   //only set if currently paused
                 this._pausedTimespan = 0.0;
@@ -218,115 +218,218 @@ SmartJs.Components = {
         return Stopwatch;
     })(),
 
-    /*
-    //adapters
-    CookieAdapter: (function () {
-        CookieAdapter.extends(SmartJs.Core.Component);
+    StorageAdapter: (function () {
+        StorageAdapter.extends(SmartJs.Core.Component);
 
-        function CookieAdapter() {
-            //this._expires = new Date().getTime() + 1000 * 60 * 60 * 24 * 365;  //in one year
-            this.enabled = navigator.cookieEnabled;
+        function StorageAdapter() {
+            this._onChange = new SmartJs.Event.Event(this);
+            this._supported = false;
         }
 
-        //TODO: implementation + exception when storage size out of range (full)
-        //enabled:
-        //get: function(key){},
-        CookieAdapter.prototype.merge({
-            get: function (key) {
-                var str = document.cookie;
-                if (str.match(new RegExp(key + '=([^;]*)', 'g')))
-                    return str.RegExp.$1;
+        //events
+        Object.defineProperties(StorageAdapter.prototype, {
+            onChange: {
+                get: function () {
+                    return this._onChange;
+                },
+            },
+        });
+
+        //properties
+        Object.defineProperties(StorageAdapter.prototype, {
+            supported: {
+                get: function () {
+                    return this._supported;
+                },
+            },
+        });
+
+        //methods
+        StorageAdapter.prototype.merge({
+            _validate: function (key) {
+                if (!key || typeof key != 'string')
+                    throw new Error('invalid argument: key, expected type = string');
+                if (!this._supported)
+                    throw new Error('Adapter not supported');
+                return true;
+            },
+            getValue: function (key) {
+                this._validate(key);
+
+                var item = this._getValue(key);
+                if (item) {
+                    item = JSON.parse(item);    //this may throw an error if it's not a value set by this adapter
+                    if (item.type == 'object')
+                        return JSON.parse(item.value);
+                    else if (item.type == 'number')
+                        return parseFloat(item.value);
+                    else if (item.type == 'boolean')
+                        return item.value == 'true' ? true : false;
+
+                    return item.value;
+                }
                 return undefined;
             },
-            set: function (key, value) {
-                document.cookie = key + '=' + value + ';';
+            _getValue: function (key) {
+                //to override in derived classes
             },
-            del: function (key) {
-                document.cookie = key + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            setValue: function (key, value) {
+                this._validate(key);
+                var oldValue = this.getValue(key),
+                    isObject = typeof value == 'object',
+                    item = {
+                        type: typeof value,
+                        value: isObject ? JSON.stringify(value) : value.toString(),
+                    };
+
+                this._setValue(key, JSON.stringify(item));
+                if ((isObject && JSON.stringify(this.getValue(key)) != item.value) ||   //using string compare for objects
+                    (!isObject && this.getValue(key) !== value))
+                    throw new Error('Adapter: value not set correctly');
+
+                this._onChange.dispatchEvent({
+                    key: key,
+                    oldValue: oldValue,
+                    newValue: value,
+                });
+            },
+            _setValue: function (key, value) {
+                //to override in derived classes
+            },
+            deleteKey: function (key) {
+                this._validate(key);
+                try {
+                    var oldValue = this.getValue(key);
+                }
+                catch (e) {
+                    return false;
+                }
+
+                this._deleteKey(key);
+                this._onChange.dispatchEvent({
+                    key: key,
+                    oldValue: oldValue,
+                    newValue: undefined,
+                });
+                return true;
+            },
+            _deleteKey: function (key) {
+                //to override in derived classes
             },
             clear: function () {
-                var cookies = document.cookie.split(';');
+                if (!this._supported)
+                    throw new Error('Adapter not supported');
+                this._clear();
+            },
+            _clear: function () {
+                //to override in derived classes
+            },
+        });
+
+        return StorageAdapter;
+    })(),
+};
+
+SmartJs.Components.merge({
+
+    //adapters
+    CookieAdapter: (function () {
+        CookieAdapter.extends(SmartJs.Components.StorageAdapter, false);
+
+        function CookieAdapter(daysUntilExpire) {
+            SmartJs.Components.StorageAdapter.call(this);
+
+            if (daysUntilExpire && typeof daysUntilExpire != 'number')
+                throw new Error('invalid argument: expected type: daysUntilExpire = number');
+
+            daysUntilExpire || (daysUntilExpire = 365);  //default: in one year
+            this._expires = new Date().getTime() + 1000 * 60 * 60 * 24 * daysUntilExpire;
+            this._supported = ('cookie' in document && (document.cookie.length > 0 ||
+                              (document.cookie = 'test').indexOf.call(document.cookie, 'test') > -1)) && !!JSON;
+        }
+
+        //methods
+        CookieAdapter.prototype.merge({
+            _setValue: function (key, value) {
+                document.cookie = key + '=' + value + '; path=/; expires=' + this._expires;
+            },
+            _getValue: function (key) {
+                var result = (document.cookie.match('(^|; )' + key + '=([^;]*)') || 0)[2];
+
+                if (result)
+                    return result;
+                return undefined;
+            },
+            _deleteKey: function (key) {
+                document.cookie = key + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            },
+            _clear: function () {
+                var cookies = document.cookie.split(';'),
+                    cookie;
                 for (var i = 0; i < cookies.length; i++) {
-                    var equal = cookies[i].indexOf('=');
-                    this.del(equal > -1 ? cookie.substr(0, equal) : cookie);
+                    cookie = cookies[i].trim();
+                    var splitPos = cookie.indexOf('=');
+                    if (splitPos > -1)
+                        this.deleteKey(cookie.substr(0, splitPos));
                 }
             },
         });
-        //set: function(key, value){},
-        //delete
+
         return CookieAdapter;
     })(),
 
-    SessionStorageAdapter: (function () {
-        SessionStorageAdapter.extends(SmartJs.Core.Component);
+    //SessionStorageAdapter: (function () {
+    //    SessionStorageAdapter.extends(SmartJs.Core.Component);
 
-        function SessionStorageAdapter() {
-        }
-        //enabled:
-        //get: function(key){},
-        //set: function(key, value){},
-        //delete
-        return SessionStorageAdapter;
-    })(),
+    //    function SessionStorageAdapter() {
+    //    }
+    //    //supported:
+    //    //get: function(key){},
+    //    //set: function(key, value){},
+    //    //delete
+    //    return SessionStorageAdapter;
+    //})(),
 
     LocalStorageAdapter: (function () {
-        LocalStorageAdapter.extends(SmartJs.Core.Component);
+        LocalStorageAdapter.extends(SmartJs.Components.StorageAdapter, false);
 
         function LocalStorageAdapter() {
+            SmartJs.Components.StorageAdapter.call(this);
+
+            try {   //check read/write access to handle brosers private mode
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                this._supported = true;
+            }
+            catch (e) {
+                this._supported = false;
+            }
         }
-        //enabled:
-        //get: function(key){},
-        //set: function(key, value){},
-        //delete
+
+        LocalStorageAdapter.prototype.merge({
+            _setValue: function (key, value) {
+                localStorage.setItem(key, value);
+            },
+            _getValue: function (key) {
+                return localStorage.getItem(key);
+                //return undefined;
+            },
+            _deleteKey: function (key) {
+                localStorage.removeItem(key);
+            },
+            _clear: function () {
+                //localStorage.clear(); //we want individual events
+                var keys = [];
+                for (var i = 0, l = localStorage.length; i < l; i++)
+                    keys.push(localStorage.key(i));
+
+                for (var i = 0, l = keys.length; i < l; i++)
+                    this.deleteKey(keys[i]);
+            },
+        });
+
         return LocalStorageAdapter;
     })(),
-    */
-    /*SettingsProvider: (function () {
-        function SettingsProvider() {
 
-        }
+});
 
-        return SettingsProvider;
-    })(),
-
-    NavigationProvider: (function () {
-        NavigationProvider.extends(SmartJs.Core.EventTarget);
-
-        function NavigationProvider() {
-
-        }
-
-        return NavigationProvider;
-    })(),
-
-    LocalizationProvider: (function () {
-        LocalizationProvider.extends(SmartJs.Core.EventTarget);
-
-        function LocalizationProvider() {
-
-        }
-
-        return LocalizationProvider;
-    })(),
-
-    FeedbackProvider: (function () {
-        FeedbackProvider.extends(SmartJs.Core.EventTarget);
-
-        function FeedbackProvider() {
-
-        }
-
-        return FeedbackProvider;
-    })(),
-
-*/
-};
-
-
-//navigator.getLanguage = function () {     //TODO: this should become part of the localization provider
-//    var lang = navigator.userLanguage || navigator.language;
-//    if (lang.length > 2)
-//        return lang.substring(0, 3);
-//    return lang;
-//}
-//navigator.defineProperty(navigator.prototype, 'getLanguage', { enumerable: false });
