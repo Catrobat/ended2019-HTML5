@@ -171,6 +171,7 @@ PocketCode.Device = (function () {
                 var unsupported = [], tmp;
                 for (var f in this._features) {
                     tmp = this._features[f];
+                    console.log("features:", this._features);
                     if (tmp.inUse && !tmp.supported)
                         unsupported.push(tmp.i18nKey);  //return i18nKeys only
                 }
@@ -662,6 +663,7 @@ PocketCode.MediaDevice = (function () {
         //events
         this._onInit = new SmartJs.Event.Event(this);
         this._onCameraChange = new SmartJs.Event.Event(this);
+        console.log("camera supported:", this._cam._supported);
     }
 
     //events
@@ -789,6 +791,7 @@ PocketCode.MediaDevice = (function () {
             return this._cam.setType(cameraType);
         },
         startCamera: function () {   //or resume
+            console.log("starting camera");
             var started = this._cam.start();
             //this._fd.start(); - will be started on update event
             return started;

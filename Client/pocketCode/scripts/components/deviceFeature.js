@@ -11,7 +11,7 @@ PocketCode.DeviceFeature = (function () {
 
     function DeviceFeature(i18nKey, supported) {
         this._i18nKey = i18nKey;
-        this._supported = supported || true;
+        this._supported = supported && true;
         this._inUse = false;
         this._initialized = false;
         this._indistinguishableCameras = false;
@@ -93,7 +93,7 @@ PocketCode.merge({
             };
             this._on = false;
             this._mediaDevices = {
-                supported: this.supported && !!navigator.mediaDevices,
+                supported: this._supported && !!navigator.mediaDevices,
                 devices: [],
                 //ids, features (facing mode), 
                 supportedConstraints: {},
@@ -155,6 +155,7 @@ PocketCode.merge({
             /* override */
             supported: {
                 get: function () {
+                    console.log("is camera supported:", this._supported);
                     return this._supported;
                 },
                 set: function (value) {
@@ -296,10 +297,12 @@ PocketCode.merge({
             //},
             _init: function (reinit) {
                 //var cam = this._cam;
-                if (!this._supported || (this._inUse && !reinit))
+                if (!this._supported || (this._inUse && !reinit)){
+                    this._inUse = true;
                     return; //already initialized
-
+                }
                 this._inUse = true;
+
                 this._front.inUse = true; //as soon the camera is used we have to set the default inUse
 
                 this._supported = true;  //make sure firefox makes onSuccess call
@@ -416,9 +419,11 @@ PocketCode.merge({
 
                 //var cam = this._cam;//,
                 //supported = cam.supported;
+                this._inUse = true;
+                console.log("starting camera, in use now:", this._inUse);
+                console.log(" starting camera, supported here:", this._supported);
                 if (!this._supported || this._on)
                     return false;
-
                 var video = this._video;
                 if (this._cameraStream) {
                     video.play();
@@ -616,6 +621,7 @@ PocketCode.merge({
                     return this._supported;
                 },
                 set: function (value) {
+                    console.log(" setting camera supported to:", value);
                     if (typeof value != 'boolean')
                         throw new Error('invalid setter: supported');
 
@@ -1196,6 +1202,7 @@ PocketCode.merge({
                 this.__detectFace(); */
             },
             stop: function () {
+                this._inUse = true;
                 this._on = false;   //TODO: handle async
             },
             //pause: function () {

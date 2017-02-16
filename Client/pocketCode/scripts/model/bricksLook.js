@@ -465,11 +465,10 @@ PocketCode.Model.merge({
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);
 
         function CameraBrick(device, sprite, propObject) {
-            console.log(" meraba od kamere");
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
 
-            this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
+           this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype.merge({
@@ -477,9 +476,10 @@ PocketCode.Model.merge({
                 if (this._turnOn) {
                     this._device._cam.setType(PocketCode.CameraType.BACK);
                     this._return(this._device.startCamera());
+                    this._return(true);
                 }
                 else
-                   // this._return(this._device.stopCamera());
+                    this._return(this._device.stopCamera());
                     this._return(true);
             }
         });
@@ -505,7 +505,8 @@ PocketCode.Model.merge({
 
         SelectCameraBrick.prototype._execute = function () {
             console.log("EXECUTING SELECT CAMERA");
-            this._return(this._device.setCameraType(1));
+           // this._return(this._device.setCameraType(1));
+            this._return(true);
         };
 
         return SelectCameraBrick;
