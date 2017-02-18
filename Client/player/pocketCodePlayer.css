@@ -351,3 +351,19 @@
         border: solid 0.2em #003041;
         width: 2.5em;
     }
+
+/* menu */
+.pc-githubIcon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top:-4px;
+    margin-bottom: -2px;
+    fill: currentColor;    
+    cursor: pointer;
+}
+
+.pc-githubIcon:hover {
+    fill: #33B5E5;
+    cursor: pointer;
+}
+

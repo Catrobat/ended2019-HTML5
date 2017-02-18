@@ -251,6 +251,16 @@ PocketCode.PlayerPageController = (function () {
                     if (win)    //browser has allowed new tab
                         win.focus();
                     break;
+                case PocketCode.Player.MenuCommand.GITHUB:
+                    var win = window.open('https://github.com/Catrobat/HTML5', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
+                    break;
+                case PocketCode.Player.MenuCommand.REPORT_ISSUE:
+                    var win = window.open('https://jira.catrob.at/secure/CreateIssue.jspa?pid=11100&issuetype=1', '_blank');
+                    if (win)    //browser has allowed new tab
+                        win.focus();
+                    break;
             }
         },
         _onUserActionHandler: function (e) {
