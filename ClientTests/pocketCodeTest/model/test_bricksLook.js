@@ -218,7 +218,7 @@ QUnit.test("CameraBrick", function (assert) {
     //execute
     var onHandler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(e.loopDelay, device._cam.supported, "1: loopDelay true: switched to on (if asupported)");
+        assert.equal(e.loopDelay, device._cam.supported, "1: loopDelay true: switched to on (if supported)");
         assert.equal(e.id, "thread_id", "1: threadId handled correctly");
         //assert.ok(device.cameraOn, "1: device camera set to on");
         done1();

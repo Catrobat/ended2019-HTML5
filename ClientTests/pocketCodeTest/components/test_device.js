@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';
@@ -9,11 +9,15 @@ QUnit.module("components/device.js");
 QUnit.test("Device", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.MediaDevice(sm);
+    assert.throws(function () { var dev = new PocketCode.Device("sm"); }, Error, "ERROR: invalid cntr argument");
+    var dev = new PocketCode.Device(sm);
 
     assert.ok(dev instanceof PocketCode.Device, "instance check");
     assert.ok(dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "onSpaceKeyDown event check");
 
+    assert.ok(dev.onInit instanceof SmartJs.Event.Event && dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "event check");
+
+    assert.ok(dev.initialized, "initialized getter");   //geo location not in use
     assert.equal(dev.isMobile, SmartJs.Device.isMobile, "isMobile: accessor");
     assert.equal(dev.isTouch, SmartJs.Device.isTouch, "isMobile: accessor");
 
@@ -59,19 +63,21 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.getArduinoDigitalPin()), "Arduino digital getter");
 
     assert.equal(dev.vibrate(''), false, "vibrate call without valid parameter");
-    assert.equal(dev.vibrate(10), true, "vibrate call with parameter");
-
+    dev._features.VIBRATE.supported = false; //disable
+    assert.notOk(dev.vibrate("10"), "vibrate: invalid argument");
+    assert.equal(dev.vibrate(10), false, "vibrate call with parameter");
+    
     assert.equal(dev.emulationInUse, false, "emulationInUse getter: should always return false");
 
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected");
-    assert.equal(dev.unsupportedFeatures.length, 9, "unsupported features: all");
+    assert.equal(dev.unsupportedFeatures.length, 8, "unsupported features: all");
 
     //dispose
     dev.dispose();
     assert.equal(dev._disposed, true, "dispose");
     assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
-    dev = new PocketCode.MediaDevice();  //recreate to check if there are any side effects
+    dev = new PocketCode.Device(sm);  //recreate to check if there are any side effects
 
 });
 
@@ -79,7 +85,7 @@ QUnit.test("Device", function (assert) {
 QUnit.test("Device: Touch", function (assert) {
 
     var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.MediaDevice(sm);
+    var dev = new PocketCode.Device(sm);
 
     assert.equal(dev.lastTouchIndex, 0, "initial: no touch");
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 0);
@@ -112,12 +118,28 @@ QUnit.test("Device: Touch", function (assert) {
     assert.equal(dev.getTouchX(0), 0.0, "x position: out of range (idx <= 0)");
     assert.equal(dev.getTouchY(0), 0.0, "y position: out of range (idx <= 0)");
 
-});
+    //getLatestActiveTouchPosition
+    assert.deepEqual(dev.getLatestActiveTouchPosition(), {}, "touch position: return empty object if not touch is active");
+    dev._touchEvents.active["test"] = {}; //to make sure the quick check does not return an empty object
+    dev._touchEvents.history = [{ active: true, x: 1, y: 2 }, { active: true, x: 3, y: 4 }];
+    var pos = dev.getLatestActiveTouchPosition();
+    assert.ok(pos.x == 3 && pos.y == 4, "latest active touch position");
 
+    //geoLocation
+    var sm = new PocketCode.SoundManager();
+    var dev = new PocketCode.Device(sm);
 
-QUnit.test("Device: GeoLoacation", function (assert) {
+    //setting internal values
+    dev._geoLocationData.latitude = 1;
+    dev._geoLocationData.longitude = 2;
+    dev._geoLocationData.altitude = 3;
+    dev._geoLocationData.accuracy = 4;
 
-    assert.ok(false, "TODO");
+    assert.equal(dev.geoLatitude, 1, "latitude getter");
+    assert.equal(dev.geoLongitude, 2, "longitude getter");
+    assert.equal(dev.geoAltitude, 3, "altitude getter");
+    assert.equal(dev.geoAccuracy, 4, "accuracy getter");
+
 });
 
 
@@ -125,6 +147,8 @@ QUnit.test("MediaDevice", function (assert) {
 
     var sm = new PocketCode.SoundManager();
     var dev = new PocketCode.MediaDevice(sm);
+
+    assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.MediaDevice, "instance check");
 
     dev._features.CAMERA.inUse = false;
     assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
@@ -163,7 +187,7 @@ QUnit.test("DeviceEmulator", function (assert) {
     var sm = new PocketCode.SoundManager();
     var dev = new PocketCode.DeviceEmulator(sm);
 
-    assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.DeviceEmulator, "instance check");
+    assert.ok(dev instanceof PocketCode.MediaDevice && dev instanceof PocketCode.DeviceEmulator, "instance check");
 
     assert.equal(dev.unsupportedFeatureDetected, false, "unsupported feature detected: initial = false");
     assert.equal(dev.unsupportedFeatures.length, 0, "unsupported features: initial = []");
@@ -173,7 +197,7 @@ QUnit.test("DeviceEmulator", function (assert) {
     assert.equal(dev._disposed, true, "dispose");
     assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
-    dev = new PocketCode.DeviceEmulator();  //recreate to check if there are any side effects
+    dev = new PocketCode.DeviceEmulator(sm);  //recreate to check if there are any side effects
     assert.equal(dev.emulationInUse, false, "emulationInUse getter: false on init");
     assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
     assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");

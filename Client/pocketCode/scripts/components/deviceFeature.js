@@ -154,7 +154,6 @@ PocketCode.merge({
             /* override */
             supported: {
                 get: function () {
-                    //console.log("is camera supported:", this._supported);
                     return this._supported;
                 },
                 set: function (value) {
@@ -331,7 +330,6 @@ PocketCode.merge({
                     video.play();
                     this._startCameraStreamOnInit = false;
                     this._on = true;
-                    //console.log(video.videoHeight + ', ' + video.videoWidth);
                     //var orientation = window.orientation || 0;
                     this._onChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth });
                 }
@@ -349,7 +347,6 @@ PocketCode.merge({
                     this._back.inUse = true;
             },
             setType: function (cameraType) {
-                //console.log("setting camera type to:", cameraType);
                 var found = false;
                 for (var type in PocketCode.CameraType) {
                     if (PocketCode.CameraType[type] == cameraType) {
@@ -395,7 +392,6 @@ PocketCode.merge({
                             this._init();
                         }
                     }
-                    //console.log("cameraTypeObject:", cameraTypeObject);
                     if (cameraTypeObject.deviceId) {
                         cameraTypeObject.inUse = true;
                         this._constraints = {
@@ -418,8 +414,6 @@ PocketCode.merge({
                 //var cam = this._cam;//,
                 //supported = cam.supported;
                 this._inUse = true;
-                //console.log("starting camera, in use now:", this._inUse);
-                //console.log(" starting camera, supported here:", this._supported);
                 if (!this._supported || this._on)
                     return false;
                 var video = this._video;
@@ -619,7 +613,6 @@ PocketCode.merge({
                     return this._supported;
                 },
                 set: function (value) {
-                    //console.log(" setting camera supported to:", value);
                     if (typeof value != 'boolean')
                         throw new Error('invalid setter: supported');
 
