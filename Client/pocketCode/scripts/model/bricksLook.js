@@ -491,21 +491,16 @@ PocketCode.Model.merge({
 
         function SelectCameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            //console.log("SELECT CAMERA prop object:", propObject);
-            if (propObject && propObject.selected == 0) {   //{0: back, 1: front}
-                this._selected = PocketCode.CameraType.FRONT;
-                this._device.setCameraInUse(1)
-            }
-            else {
+            if (propObject && propObject.selected == 1)   //{0: back, 1: front}
+                this._selected = PocketCode.CameraType.BACK;
+            else
                 this._selected = PocketCode.CameraType.FRONT;   //default
-                this._device.setCameraInUse(1)
-            }
+
+            this._device.setCameraInUse(this._selected)
         }
 
         SelectCameraBrick.prototype._execute = function () {
-            //console.log("EXECUTING SELECT CAMERA");
             this._return(this._device.setCameraType(this._selected));
-            //this._return(true);
         };
 
         return SelectCameraBrick;
