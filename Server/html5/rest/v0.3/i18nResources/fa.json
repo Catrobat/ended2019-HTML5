@@ -1,5 +1,5 @@
 {
-  "currentLanguage":"انگليسی",
+  "currentLanguage":"فارسی",
   "lblOk":"تایید",
   "lblCancel":"انصراف",
   "lblConfirm":"تایید",
@@ -65,9 +65,9 @@
   "menuTermsOfUse":"شرایط استفاده",
   "menuImprint":"مشخصات ناشر",
   "menuHelp":"راهنما",
-  "menuFitToScreen":"Fit to screen",
-  "menuReportIssue":"Report an issue",
-  "lblDeviceGeoLocation":"Device geo location",
-  "lblEnterAnswer":"Enter your answer",
-  "lblSubmitAnswer":"Submit answer"
+  "menuFitToScreen":"تناسب با صفحه",
+  "menuReportIssue":"گزارش مشکل",
+  "lblDeviceGeoLocation":"محل جغرافیایی دستگاه",
+  "lblEnterAnswer":"جواب را وارد کن",
+  "lblSubmitAnswer":"ارسال جواب"
 }
