@@ -1,4 +1,4 @@
-﻿﻿/// <reference path="../../../smartJs/sj.js" />
+﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../core.js" />
 /// <reference path="sprite.js" />
 /// <reference path="bricksCore.js" />
@@ -468,7 +468,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
 
-           this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
+            this._device.stopCamera();  //call on ctr to notify our device this feature is in use without changing the setting
         }
 
         CameraBrick.prototype.merge({
@@ -480,7 +480,6 @@ PocketCode.Model.merge({
                 }
                 else
                     this._return(this._device.stopCamera());
-                    this._return(true);
             }
         });
 
@@ -492,7 +491,7 @@ PocketCode.Model.merge({
 
         function SelectCameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-                console.log("SELECT CAMERA prop object:", propObject);
+            //console.log("SELECT CAMERA prop object:", propObject);
             if (propObject && propObject.selected == 0) {   //{0: back, 1: front}
                 this._selected = PocketCode.CameraType.FRONT;
                 this._device.setCameraInUse(1)
@@ -504,9 +503,9 @@ PocketCode.Model.merge({
         }
 
         SelectCameraBrick.prototype._execute = function () {
-            console.log("EXECUTING SELECT CAMERA");
-           // this._return(this._device.setCameraType(1));
-            this._return(true);
+            //console.log("EXECUTING SELECT CAMERA");
+            this._return(this._device.setCameraType(this._selected));
+            //this._return(true);
         };
 
         return SelectCameraBrick;
