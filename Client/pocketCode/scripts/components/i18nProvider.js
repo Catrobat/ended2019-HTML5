@@ -38,12 +38,6 @@ PocketCode.I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new:
-            menuFitToScreen: "Fit to screen",
-            menuReportIssue: "Report an issue",
-            menuTermsOfUse: "Terms of use", //renamed to camel case
-            lblDeviceGeoLocation: "Device geo location",
-            lblEnterAnswer: "Enter your answer",
-            lblSubmitAnswer: "Submit answer",
         };  
 
         this._supportedLanguages = [];

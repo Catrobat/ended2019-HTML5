@@ -51,7 +51,7 @@ PocketCode.Player.merge({
                 item = new PocketCode.Ui.MenuItem('menuTermsOfUse');
                 this.appendChild(item);
                 item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.TERMS_OF_USE }); }, this));
-                item = new PocketCode.Ui.MenuItem('menuImpressum');
+                item = new PocketCode.Ui.MenuItem('menuImprint');
                 this.appendChild(item);
                 item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.IMPRINT }); }, this));
                 item = new PocketCode.Ui.MenuItem('menuHelp');
