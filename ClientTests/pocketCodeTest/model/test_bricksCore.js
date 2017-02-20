@@ -479,7 +479,8 @@ QUnit.test("LoopBrick", function (assert) {
     b.execute(l1, "loopId");
 
     //loops including brick
-    var device = new PocketCode.MediaDevice("soundManager");
+    var sm = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(sm);
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
