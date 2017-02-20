@@ -473,11 +473,8 @@ PocketCode.Model.merge({
 
         CameraBrick.prototype.merge({
             _execute: function () {
-                if (this._turnOn) {
-                    this._device._cam.setType(PocketCode.CameraType.BACK);
+                if (this._turnOn)
                     this._return(this._device.startCamera());
-                    this._return(true);
-                }
                 else
                     this._return(this._device.stopCamera());
             }
@@ -491,12 +488,12 @@ PocketCode.Model.merge({
 
         function SelectCameraBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            if (propObject && propObject.selected == 1)   //{0: back, 1: front}
+            if (propObject && propObject.selected == 0)   //{0: back, 1: front}
                 this._selected = PocketCode.CameraType.BACK;
             else
                 this._selected = PocketCode.CameraType.FRONT;   //default
 
-            this._device.setCameraInUse(this._selected)
+            this._device.setCameraInUse(this._selected);    //notify device this cam is used in the project
         }
 
         SelectCameraBrick.prototype._execute = function () {

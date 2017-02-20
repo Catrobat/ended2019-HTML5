@@ -202,6 +202,8 @@ QUnit.test("SelectCameraBrick", function (assert) {
     var done3 = assert.async();
 
     var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    //set internal camera properties to allow tests to run
+    device._cam.supported = true;
     device._cam._on = true;
 
     var gameEngine = new PocketCode.GameEngine();
