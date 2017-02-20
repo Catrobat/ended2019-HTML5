@@ -125,6 +125,7 @@ QUnit.test("ChangeVariableBrick", function (assert) {
 QUnit.test("ShowVariableBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -160,12 +161,15 @@ QUnit.test("ShowVariableBrick", function (assert) {
     assert.equal(methodCalled.x, 1, "sprite interface called: positionX checked");
     assert.equal(methodCalled.y, 2, "sprite interface called: positionY checked");
 
+    done2();
+
 });
 
 
 QUnit.test("HideVariableBrick", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._background = "background";  //to avoid error on start
@@ -195,6 +199,8 @@ QUnit.test("HideVariableBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(executedHandler, this), "hideText");
 
     assert.equal(methodCalledId, "var1", "sprite interface called");
+
+    done2();
 
 });
 
