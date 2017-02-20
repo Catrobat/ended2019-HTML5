@@ -376,8 +376,11 @@ PocketCode.Model.Scene = (function () {
             return this._imageStore.getImage(id);
         },
         setBackground: function (lookId, waitCallback) {
-            if (!this._background)
+            if (!this._background) {
+                if (waitCallback)
+                    waitCallback(false);
                 return false;
+            }
 
             return this._background.setLook(lookId, waitCallback);
         },
