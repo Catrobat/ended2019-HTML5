@@ -262,5 +262,4 @@ PocketCode.Model.merge({
 
         return WhenStartAsCloneBrick;
     })(),
-
 });

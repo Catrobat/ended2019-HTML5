@@ -1265,26 +1265,26 @@ PocketCode.Model.merge({
             },
         });
 
-        SpriteClone.prototype.merge({
-            /* override */
-            dispose: function () {
-                this.stopAllScripts();
+        //SpriteClone.prototype.merge({
+        //    /* override */
+        //    dispose: function () {
+        //        this.stopAllScripts();
 
-                //this._gameEngine = undefined;   //make sure the game engine is not disposed
-                //this._scene = undefined;        //make sure the scene is not disposed
-                //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
-                //var script,
-                //    scripts = this._scripts;
-                //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
-                //    script = scripts[i];
-                //    if (script.onExecuted)  //supported by all (root container) scripts
-                //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
-                //}
+        //        //this._gameEngine = undefined;   //make sure the game engine is not disposed
+        //        //this._scene = undefined;        //make sure the scene is not disposed
+        //        //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
+        //        //var script,
+        //        //    scripts = this._scripts;
+        //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
+        //        //    script = scripts[i];
+        //        //    if (script.onExecuted)  //supported by all (root container) scripts
+        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+        //        //}
 
-                //call super
-                //PocketCode.Model.Sprite.prototype.dispose.call(this);
-            },
-        });
+        //        //call super
+        //        PocketCode.Model.Sprite.prototype.dispose.call(this);
+        //    },
+        //});
 
         return SpriteClone;
     })(),

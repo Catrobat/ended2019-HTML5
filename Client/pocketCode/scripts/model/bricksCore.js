@@ -370,9 +370,6 @@ PocketCode.Model.merge({
             },
             /*override*/
             _returnHandler: function (e) {
-                if (this._id == "s26")
-                    var bp = true;
-
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();
 
