@@ -370,8 +370,10 @@ PocketCode.Model.merge({
 
         DeleteCloneBrick.prototype.merge({
             _execute: function () {
-                if (!(this._sprite instanceof PocketCode.Model.SpriteClone))
+                if (!(this._sprite instanceof PocketCode.Model.SpriteClone)) {
                     this._return(false);
+                    return;
+                }
                 this._return(this._scene.deleteClone(this._sprite.id));
             },
             dispose: function () {
@@ -417,11 +419,11 @@ PocketCode.Model.merge({
                     case PocketCode.Model.StopScriptType.THIS:
                         this._sprite.stopScript(true, this._scriptId);
                         return; //no handler called: script was stopped
-                        break;
+                        //break;
                     case PocketCode.Model.StopScriptType.ALL:
                         this._scene.stopAllScripts(true);
                         return; //no handler called: script was stopped
-                        break;
+                        //break;
                     case PocketCode.Model.StopScriptType.OTHER:
                         this._return(this._sprite.stopAllScripts(true, this._scriptId));
                         break;
