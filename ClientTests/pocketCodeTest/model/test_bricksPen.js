@@ -163,6 +163,12 @@ QUnit.test("ClearBackgroundBrick", function (assert) {
     assert.ok(b instanceof PocketCode.Model.ClearBackgroundBrick, "instance check");
     assert.ok(b.objClassName === "ClearBackgroundBrick", "objClassName check");
 
+    b.dispose();
+    assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
+
+    //recreate
+    b = new PocketCode.Model.ClearBackgroundBrick(device, sprite, scene, {});
+
     ///execute
     var handler = function (e) {
         assert.ok(true, "executed");
