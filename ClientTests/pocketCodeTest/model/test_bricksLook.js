@@ -132,7 +132,66 @@ QUnit.test("PreviousLookBrick", function (assert) {
 
 
 QUnit.test("AskBrick", function (assert) {
-    assert.ok(false, "TODO");
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.AskBrick(device, sprite, scene, { question: { type: "STRING", value: "test", right: null, left: null }, resourceId: "s11" });
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.AskBrick, "instance check");
+    assert.ok(b.objClassName === "AskBrick", "objClassName check");
+
+    assert.ok(b._question instanceof PocketCode.Formula, "internal question set");
+    assert.equal(b._varId, "s11", "internal var reference set");
+    assert.ok(typeof scene.pause == "function" && typeof scene.resume == "function" && typeof scene.showAskDialog == "function", "scene interface valid");
+
+    b.dispose();
+    assert.ok(b._disposed && !gameEngine._disposed && !scene._disposed && !sprite._disposed, "disposed without disposing other objects");
+
+    var pauseCalled = 0,
+        resumeCalled = 0,
+        showAskDialogCalled = 0,
+        callbackFunction;
+    var mockScene = {
+        pause: function () {
+            pauseCalled++;
+        },
+        resume: function () {
+            resumeCalled++;
+        },
+        showAskDialog: function (question, callback) {
+            assert.equal(question, "test", "formula execution check");
+            callbackFunction = callback;
+            showAskDialogCalled++;
+        },
+    };
+
+    b = new PocketCode.Model.AskBrick(device, sprite, mockScene, { question: { type: "STRING", value: "test", right: null, left: null }, resourceId: "s11" });
+    var onExecutedHandler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.ok(pauseCalled ==1 && resumeCalled == 1 && showAskDialogCalled == 1, "sprite method called");
+        done1();
+    };
+    var answerVariable = { name: "mock", id: "mock", value: 3 },
+    mockScope = {
+        getVariable: function (id) {
+            return answerVariable;
+        },
+    };
+    b.execute(new SmartJs.Event.EventListener(onExecutedHandler, this), "thread_id", mockScope);
+    assert.ok(pauseCalled == 1 && resumeCalled == 0 && showAskDialogCalled == 1, "interface: show");
+    //simulate callback
+    callbackFunction("answer");
+    assert.ok(pauseCalled == 1 && resumeCalled == 1 && showAskDialogCalled == 1, "interface: show");
+    assert.equal(answerVariable.value, "answer", "answer stored correctly");
+    done2();    //we do not know which done is executed first
 });
 
 
