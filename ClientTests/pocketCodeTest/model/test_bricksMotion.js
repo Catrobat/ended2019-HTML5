@@ -205,8 +205,13 @@ QUnit.test("GoToBrick", function (assert) {
     var d = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "random", spriteId: "id" });
 
     assert.ok(b._device === device && b._sprite === sprite , "SPRITE brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.GoToBrick, " SPRITEinstance check");
+    assert.ok(b instanceof PocketCode.Model.GoToBrick, " SPRITE instance check");
     assert.ok(b.objClassName === "GoToBrick", "SPRITE objClassName check");
+
+    b.dispose();
+    assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
+    //recreate
+    b = new PocketCode.Model.GoToBrick(device, sprite, scene, { destinationType: "sprite", spriteId: "id" });
 
     assert.ok(c._device === device && c._sprite === sprite , "POINTER brick created and properties set correctly");
     assert.ok(c instanceof PocketCode.Model.GoToBrick, "POINTER instance check");
