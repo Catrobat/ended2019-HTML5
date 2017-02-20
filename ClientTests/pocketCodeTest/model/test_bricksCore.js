@@ -374,15 +374,34 @@ QUnit.test("SingleContainerBrick", function (assert) {
 QUnit.test("ScriptBlock", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
 
-    var b = new PocketCode.Model.ScriptBlock("device", "sprite", { id: "newId", commentedOut: false }); //, x: 10, y: 20 });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._commentedOut === false, "brick created and properties set correctly"); // && b._x == 10 && b._y == 20
+    var b = new PocketCode.Model.ScriptBlock("device", sprite, { id: "newId", commentedOut: false }); //, x: 10, y: 20 });
+
+    assert.ok(b._device === "device" && b._sprite === sprite && b._commentedOut === false, "brick created and properties set correctly"); // && b._x == 10 && b._y == 20
     assert.ok(b instanceof PocketCode.Model.ScriptBlock && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "ScriptBlock", "objClassName check");
 
     assert.equal(b.id, "newId", "id accessor");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
+
+    var beforeStop = new Date();
+    b._executionState = undefined;  //to test setter
+    b.stop();
+    assert.ok(Math.abs(new Date() - b._stoppedAt) < 10, "stopp called and stop time set");
+    assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "execution state = stopped");
+    b.executeEvent({ dispatchedAt: beforeStop });
+
+    b.dispose();
+    assert.ok(b._disposed && !sprite._disposed && !scene._disposed && !gameEngine._disposed, "disposed without disposing other objects");
+    b.executeEvent({});
+
+    //recreate brick
+    b = new PocketCode.Model.ScriptBlock("device", sprite, { id: "newId", commentedOut: false });
 
     //advanced tests using brick with delay
     var bricks = [];
@@ -424,22 +443,25 @@ QUnit.test("ScriptBlock", function (assert) {
 
     assert.equal(b._bricks, bc, "bricks setter");
 
-    var exec = 0;
-    var executedHandler = function (e) {
-        exec++;
-        assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
+    var brickExecutedHandler = function (e) {
+        //assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
         done1();
     };
+    var exec = 0;
+    var scriptExecutedHandler = function (e) {
+        exec++;
+        assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
+        done2();
+    };
 
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedHandler, this));
-    done1();
-    return; //TODO
+    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(scriptExecutedHandler, this));
 
-    b.execute();
+    b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId");
+    b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId"); //called twice to execute "stop pending ops" of first call
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
     var execState = b.executionState;
     b.pause();
-    assert.equal(b.executionState, PocketCode.ExecutionState.PAUSED, "exec state: updated on pause()");
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: running (even if paused)");
     assert.ok(b._bricks._bricks[0].paused && b._bricks._bricks[1].paused && b._bricks._bricks[2].paused && b._bricks._bricks[3].paused, "super call: pause");
     b.resume();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: resume");
@@ -447,7 +469,7 @@ QUnit.test("ScriptBlock", function (assert) {
     b.stop();
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state: stop");
     assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "super call: stop");
-    b.execute();
+    b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId");
 
 });
 
