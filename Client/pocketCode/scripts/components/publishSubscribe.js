@@ -29,7 +29,7 @@ PocketCode.PublishSubscribeBroker = (function () {
                 throw new Error('invalid argument: subscription handler, expected type: function');
 
             var subs = this._subscriptions[id];
-            if (subs || !(subs instanceof Array))
+            if (subs && subs instanceof Array)
                 subs.remove(handler);
         },
         publish: function (id, waitCallback) {//, threadId) {
@@ -50,7 +50,7 @@ PocketCode.PublishSubscribeBroker = (function () {
                 pid;
             for (pid in this._pendingOps) {
                 po = this._pendingOps[pid];
-                if (po.msgtId == id) {
+                if (po.msgId == id) {
                     delete this._pendingOps[pid];
                     break;
                 }
@@ -95,7 +95,6 @@ PocketCode.PublishSubscribeBroker = (function () {
     return PublishSubscribeBroker;
 })();
 
-
 PocketCode.BroadcastManager = (function () {
     BroadcastManager.extends(PocketCode.PublishSubscribeBroker, false);
 
@@ -131,4 +130,3 @@ PocketCode.BroadcastManager = (function () {
 
     return BroadcastManager;
 })();
-
