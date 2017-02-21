@@ -387,7 +387,7 @@ PocketCode.GameEngine = (function () {
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
             var cs = this._currentScene;
-            if (cs.executionState === PocketCode.ExecutionState.RUNNING)
+            if (cs.executionState === PocketCode.ExecutionState.RUNNING && cs.background)
                 cs.onSpriteTappedAction.dispatchEvent({ sprite: cs.background });
         },
         //project interaction

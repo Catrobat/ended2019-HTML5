@@ -130,11 +130,11 @@ PocketCode.Model.Scene = (function () {
         //        return this._sprites;
         //    }
         //},
-        //background: {
-        //    get: function () {
-        //        return this._background;
-        //    }
-        //},
+        background: {
+            get: function () {
+                return this._background;
+            }
+        },
         collisionManager: {
             get: function () {
                 return this._collisionManager;
