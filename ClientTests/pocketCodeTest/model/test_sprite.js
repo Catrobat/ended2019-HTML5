@@ -279,9 +279,7 @@ QUnit.test("Sprite", function (assert) {
         testSprite._penColor.b === 25,
         "penColor (r, g, b) set correctly 2");
 
-    //rgbObject = 25;
-    //testSprite.penColor = rgbObject;
-    //assert.ok(testSprite._penColor.r === 25 && testSprite._penColor.g === 25 && testSprite._penColor.b === 25, "penColor not changed (rgbObj !== 'object')"");
+    assert.throws(function () { testSprite.penColor = 25 }, Error, "ERROR: invalid argument on penColor");
 
     assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is blue");
     actualPenColor.b = 0;
@@ -327,18 +325,6 @@ QUnit.test("Sprite", function (assert) {
     var lookOffsetY = 2;
     testSprite._lookOffsetX = lookOffsetX;
     testSprite._lookOffsetY = lookOffsetY;
-
-    var renderingVariables = testSprite.renderingVariables;
-
-    assert.equal(renderingVariables.length, testSprite.renderingVariables.length, "renderingVariables: Variable list size correct");
-
-    var renderingVariablesCheck = true;
-    for(var i = 0; i < renderingVariables.length ; i++){
-        if(renderingVariables[i] !== testSprite.renderingVariables[i]){
-            renderingVariablesCheck = false;
-        }
-    }
-    assert.ok(renderingVariablesCheck == true, "renderingVariables set correctly");
 
     var renderingSprite = testSprite.renderingSprite;
 
