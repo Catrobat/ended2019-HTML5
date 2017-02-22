@@ -75,6 +75,11 @@ PocketCode.Model.Sprite = (function () {
             this.sounds = propObject.sounds;
         }
 
+        //scripts
+        if (propObject.scripts) {
+            this.scripts = propObject.scripts;
+        }
+
         //variables: a sprite may have no (local) variables
         this._variables = propObject.variables || [];
         this._lists = propObject.lists || [];
@@ -278,7 +283,7 @@ PocketCode.Model.Sprite = (function () {
                 //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
                 //check
-                collision = collisionMgr.checkSpriteEdgeCollision(this._positionX, this._positionY, boundary);
+                var collision = collisionMgr.checkSpriteEdgeCollision(this._positionX, this._positionY, boundary);
                 if (collision.occurs)
                     return true;
                 return false;
@@ -298,7 +303,7 @@ PocketCode.Model.Sprite = (function () {
                 //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
 
                 //check
-                collision = collisionMgr.checkSpritePointerCollision(this._positionX, this._positionY, boundary);
+                var collision = collisionMgr.checkSpritePointerCollision(this._positionX, this._positionY, boundary);
                 if (collision.occurs)
                     return true;
                 return false;
@@ -399,6 +404,7 @@ PocketCode.Model.Sprite = (function () {
                     return false;
                 }
             }
+            return false;
         },
         stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;

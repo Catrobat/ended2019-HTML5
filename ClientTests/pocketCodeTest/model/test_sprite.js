@@ -18,7 +18,7 @@ QUnit.test("Sprite", function (assert) {
 
 
 
-    var programExecAsync = assert.async();
+   // var programExecAsync = assert.async();
     var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
     var asyncCalls = 0; //check all async calls where executed before running dispose
@@ -39,7 +39,7 @@ QUnit.test("Sprite", function (assert) {
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
         if (asyncCalls < 2)
-            return;
+            //return;
         sprite.dispose();
         assert.ok(sprite._disposed, "sprite disposed");
         finalAsyncCall();
@@ -81,23 +81,24 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.colorEffect, 0, "colorEffect initial");
 
     //events
-    //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
-    //assert.equal(sprite.onChange, gameEngine.onSpriteUiChange, "program - sprite event sharing");
-    //assert.equal(sprite.onChange.target, gameEngine, "onSpriteUiChange target check");
+    assert.ok(sprite._onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
+    assert.equal(sprite._onChange, gameEngine.onSpriteUiChange, "program - sprite event sharing");
+    assert.equal(sprite._onChange.target, gameEngine, "onSpriteUiChange target check");
 
-    //assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
+    assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
-    //var props = { direction: 90 };
-    //var onChangeHandler = function (e) {
-    //    assert.equal(e.target, evSprite, "onChange target check");
-    //    assert.equal(e.id, "newId", " onChange id check");
-    //    assert.deepEqual(e.properties, props, "onChange event args properties check");
-    //};
-    //var prog2 = new PocketCode.GameEngine();
-    //var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
-    //evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    var props = { direction: 90 };
+    var onChangeHandler = function (e) {
+        assert.equal(e.target, evSprite, "onChange target check");
+        assert.equal(e.id, "newId", " onChange id check");
+        assert.deepEqual(e.properties, props, "onChange event args properties check");
+        evSprite._onChange.removeEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    };
+    var prog2 = new PocketCode.GameEngine();
+    var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
+    evSprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
-    //evSprite._triggerOnChange(props);
+    evSprite._triggerOnChange(props);
 
 
     sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
@@ -210,7 +211,8 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* Constructor *********************
 
-    var device = new PocketCode.MediaDevice(this._soundManager);
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
     gameEngine._brickFactory = new PocketCode.BrickFactory(device, gameEngine, gameEngine._broadcastMgr, gameEngine._soundManager, 20);
 
     var jsonProject = JSON.parse(JSON.stringify(projectSounds));
@@ -277,14 +279,13 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
 
-    programExecAsync();
-    testsExecAsync();
-    finalAsyncCall();
-    return; //TODO
+   // programExecAsync();
+    //testsExecAsync();
+    //finalAsyncCall();
 
     var bricksMatch = true;
     for (var i = 0, length = jsonSprite.scripts.length; i < length; i++) {
-        if (testSprite._scripts[i].imageId !== jsonSprite.scripts[i].id)
+        if (testSprite._scripts[i].id !== jsonSprite.scripts[i].id)
             bricksMatch = false;
     }
     assert.ok(bricksMatch, "Bricks set correctly");
@@ -478,22 +479,22 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -35 && sprite.positionY == -10 && sprite._direction == -90, "move steps -90°");
+    assert.ok(sprite.positionX == -35 && Math.round(sprite.positionY) == -10 && sprite._direction == -90, "move steps -90°");
 
     sprite.setDirection(-180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps -180°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps -180°");
 
     sprite.setDirection(180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps 180°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps 180°");
 
     sprite.setDirection(0, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
 
     triggerEvent = false;
     returnVal = sprite.setDirection(-90, triggerEvent);
@@ -728,10 +729,12 @@ QUnit.test("Sprite", function (assert) {
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick1._id = "first";
     var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick2._id = "second";
     //adding a test brick to the internal brick container
     var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
     var brick3 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick3._id = "third";
     //var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     //var brick5 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     var tmpBricks = [];
@@ -743,10 +746,6 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._scripts.length == 3, "bricks length");
 
     assert.ok(sprite.scriptsRunning == false, "scrips not running");
-    brick2._executionState = PocketCode.ExecutionState.PAUSED;  //simulate paused
-    assert.ok(sprite.scriptsRunning, "scrips running: paused");
-    brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
-    assert.ok(sprite.scriptsRunning, "scrips running: running");
 
     //start, pause, resume, stop + executed
     //binding program events
@@ -769,28 +768,41 @@ QUnit.test("Sprite", function (assert) {
     //scene.onStart.dispatchEvent();
     //assert.ok(sprite.scriptsRunning, "scrips running: onExecute (program)");
 
-    sprite.pauseScripts();
-    assert.ok(sprite.scriptsRunning, "scrips running: paused");
+    brick1._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
+    brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
+    brick3._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
 
     //making sure the script was really paused is quite a hack here
     var isPaused = function () {
-        for (var p in testBrick._pendingOps) {
-            if (testBrick._pendingOps.hasOwnProperty(p)) {
-                var po = testBrick._pendingOps[p];
-                if (po.timer._paused !== true)
-                    return false;
+        for (var i = 0; i < sprite._scripts.length; i++) {
+            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == true, "scrips running: paused");
+            for(var j = 0; j <sprite._scripts[i]._bricks._bricks.length; j++){
+                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == true, "bricks running: paused");
             }
         }
-        return true;
     };
 
-    assert.ok(isPaused(), "script paused correctly: deep check (timer)");
+    var isResumed = function () {
+        for (var i = 0; i < sprite._scripts.length; i++) {
+            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == false, "scrips running: running");
+            for(var j = 0; j <sprite._scripts[i]._bricks._bricks.length; j++){
+                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == false, "bricks running: running");
+            }
+        }
+    };
+
+    sprite.pauseScripts();
+    isPaused();
 
     sprite.resumeScripts();
+    isResumed();
     assert.ok(sprite.scriptsRunning, "scrips running: running");
-    assert.ok(!isPaused(), "script resumed correctly: deep check (timer)");
 
-    sprite.stopAllScripts();
+    sprite.stopScript(true, "first");
+    assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
+    assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
+
+    sprite.stopAllScripts(true);
     assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
     assert.ok(function () {
         for (var p in testBrick._pendingOps)
@@ -841,7 +853,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* point to *********************
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     sprite._id = "id1";
+    scene._sprites.push(sprite);
     newSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     newSprite._id = "id2";
     scene._sprites.push(newSprite);
@@ -861,7 +875,6 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(!returnVal, "point to: value not changed");
     //returnVal = sprite.SetDirectionTo(sprite.id);
     //assert.ok(!returnVal, "point to: self (no change)");
-    assert.throws(function () { sprite.SetDirectionTo(sprite.id); }, "ERROR: point to: self");
 
     newSprite.setPosition(0, 0);
     sprite.setPosition(0, 0);
@@ -1012,7 +1025,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._recalculateLookOffsets();
         var ox = sprite._lookOffsetX,
             oy = sprite._lookOffsetY;
-        assert.ok(ok != 0.0 && oy != 0.0, "offsets calculated for current look");
+        assert.ok(ox != 0.0 && oy != 0.0, "offsets calculated for current look");
 
         sprite._direction = 45.0;   //rotate
         sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
@@ -2081,9 +2094,6 @@ QUnit.test("SpriteClone", function (assert) {
 
         assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
     }
-
-
-    assert.ok(false, "TODO");
 });
 
 
