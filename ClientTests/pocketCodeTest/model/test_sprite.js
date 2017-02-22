@@ -252,17 +252,37 @@ QUnit.test("Sprite", function (assert) {
 
     //penDown Test
     assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false");
-    testSprite._penDown = true;
+    testSprite.penDown = false;
+    assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false (nothing changed)");
+    testSprite.penDown = true;
     assert.equal(testSprite._penDown, true, "renderingSprite: penDown is true");
 
     //penSize Test
+    testSprite.penSize = 4;
     assert.equal(testSprite._penSize, 4, "renderingSprite: penSize is 4");
-    testSprite._penSize = 8;
+    testSprite.penSize = 8;
     assert.equal(testSprite._penSize, 8, "renderingSprite: penSize is 8");
 
     //penColor Test
     var actualPenColor = testSprite._penColor;
     var expectedPenColor = testSprite._penColor;
+
+    var rgbObject = {r: 0, g: 0, b:255};
+    testSprite.penColor = rgbObject;
+    assert.equal(actualPenColor, testSprite._penColor, "penColor not changed");
+
+    rgbObject = {r: 25, g: 25, b:25};
+    testSprite.penColor = rgbObject;
+    assert.notEqual(actualPenColor, testSprite._penColor, "renderingSprite: penColor set correctly");
+    assert.ok(testSprite._penColor.r === 25 &&
+        testSprite._penColor.g === 25 &&
+        testSprite._penColor.b === 25,
+        "penColor (r, g, b) set correctly 2");
+
+    //rgbObject = 25;
+    //testSprite.penColor = rgbObject;
+    //assert.ok(testSprite._penColor.r === 25 && testSprite._penColor.g === 25 && testSprite._penColor.b === 25, "penColor not changed (rgbObj !== 'object')"");
+
     assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is blue");
     actualPenColor.b = 0;
     actualPenColor.r = 255;
@@ -274,7 +294,6 @@ QUnit.test("Sprite", function (assert) {
     expectedPenColor.r = 0;
     expectedPenColor.g = 255;
     assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is green");
-
 
     // *************************************************************
 
@@ -308,6 +327,18 @@ QUnit.test("Sprite", function (assert) {
     var lookOffsetY = 2;
     testSprite._lookOffsetX = lookOffsetX;
     testSprite._lookOffsetY = lookOffsetY;
+
+    var renderingVariables = testSprite.renderingVariables;
+
+    assert.equal(renderingVariables.length, testSprite.renderingVariables.length, "renderingVariables: Variable list size correct");
+
+    var renderingVariablesCheck = true;
+    for(var i = 0; i < renderingVariables.length ; i++){
+        if(renderingVariables[i] !== testSprite.renderingVariables[i]){
+            renderingVariablesCheck = false;
+        }
+    }
+    assert.ok(renderingVariablesCheck == true, "renderingVariables set correctly");
 
     var renderingSprite = testSprite.renderingSprite;
 
@@ -615,7 +646,14 @@ QUnit.test("Sprite", function (assert) {
     looks[0] = look1;
     looks[1] = look2;
 
+    assert.equal(sprite.currentLookNumber, "0", "currentLookNumber getter (currentLook undefined)");
+    assert.equal(sprite.currentLookName, "", "currentLookName getter (currentLook undefined");
+
     sprite.looks = looks;
+
+    assert.equal(sprite.currentLookNumber, "1", "currentLookNumber getter");
+    assert.equal(sprite.currentLookName, "look1", "currentLookName getter");
+
     //apply center to internal looks to run these tests
     sprite._looks[0]._center = { length: 0, angle: 0 };
     sprite._looks[0]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
@@ -661,6 +699,9 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
     assert.ok(returnVal, "next look is set correctly");
+
+    assert.equal(sprite.currentLookNumber, "2", "currentLookNumber getter 2");
+    assert.equal(sprite.currentLookName, "look2", "currentLookName getter 2");
 
     sprite._looks.pop();    //only one left
     returnVal = sprite.nextLook();
