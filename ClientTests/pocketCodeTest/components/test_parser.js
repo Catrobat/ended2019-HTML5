@@ -36,7 +36,7 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
     //disposing without effect on the object
     var isStatic = PocketCode.FormulaParser._isStatic;
-    PocketCode.FormulaParser.dispose()
+    PocketCode.FormulaParser.dispose();
     assert.ok(PocketCode.FormulaParser._isStatic != undefined && PocketCode.FormulaParser._isStatic === isStatic, "dispose: no effect");
 
     assert.notEqual((PocketCode.FormulaParser.parseJson(null)).calculate, undefined, "check created function on null value");
@@ -742,7 +742,8 @@ QUnit.test("BrickFactory", function (assert) {
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
     var soundMgr = new PocketCode.SoundManager();
 
-    var device = new PocketCode.MediaDevice();
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     gameEngine._variables = allBricksProject.variables;
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
@@ -839,7 +840,7 @@ QUnit.test("BrickFactory", function (assert) {
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
     var soundMgr = new PocketCode.SoundManager([]);
 
-    var device = new PocketCode.MediaDevice();
+    var device = new PocketCode.MediaDevice(soundManager);
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
@@ -915,7 +916,6 @@ QUnit.test("BrickFactory", function (assert) {
     assert.equal(unsupportedCalled, 2, "unsupported: unsupported bricks found, handler called once");
     assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
 
-
 });
 
 
@@ -925,9 +925,9 @@ QUnit.test("SpriteFactory", function (assert) {
     //^^ includes all types of bricks 
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager([]);
+    var soundMgr = new PocketCode.SoundManager();
 
-    var device = new PocketCode.MediaDevice();
+    var device = new PocketCode.MediaDevice(soundMgr);
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });

@@ -357,7 +357,7 @@ PocketCode.merge({
                     calculate: new Function(
                         'uvh',
                         'uvh || (uvh = this._sprite); ' +
-                        'return (' + formulaString + ');'),
+                        'return ' + formulaString + ';'),
                     isStatic: this._isStatic
                 };
             },
@@ -444,10 +444,10 @@ PocketCode.merge({
             },
 
             _concatOperatorFormula: function (jsonFormula, operator, uiString, numeric) {
-                //if (uiString) //|| !numeric)
+                if (uiString) //|| !numeric)
                     return this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString);
 
-                //return '(' + this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                return '(' + this._parseJsonType(jsonFormula.left, uiString) + operator + this._parseJsonType(jsonFormula.right, uiString) + ')';
             },
             _parseJsonOperator: function (jsonFormula, uiString) {
                 /* package org.catrobat.catroid.formulaeditor: enum Operators */
@@ -628,12 +628,12 @@ PocketCode.merge({
 
                     case 'EXP':
                         if (uiString)
-                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                            return 'exp(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'POWER':
                         if (uiString)
-                            return 'power(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
+                            return 'power(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
                         return 'Math.pow(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'FLOOR':
@@ -648,13 +648,13 @@ PocketCode.merge({
 
                     case 'MAX':
                         if (uiString)
-                            return 'max(' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ')';
-                        return 'Math.max(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
+                            return 'max(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                        return 'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'MIN':
                         if (uiString)
-                            return 'min(' + this._concatOperatorFormula(jsonFormula, ', ', uiString) + ')';
-                        return 'Math.min(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
+                            return 'min(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
+                        return 'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'TRUE':
                         if (uiString)
