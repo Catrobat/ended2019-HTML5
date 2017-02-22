@@ -80,10 +80,6 @@ QUnit.test("Canvas", function (assert) {
         var opaqueImageWidth = renderingSpriteOpaque._cacheCanvas.width;
         var opaqueImageHeight = renderingSpriteOpaque._cacheCanvas.height;
 
-        //for tests only
-        //document.body.appendChild(canvas._lowerCanvasEl);
-        //canvas._lowerCanvasEl.style.position = 'absolute';
-
         //move to top left
         renderingSpriteOpaque.x -= canvas.width * 0.5;
         renderingSpriteOpaque.y += canvas.height * 0.5;
@@ -174,12 +170,13 @@ QUnit.test("Canvas", function (assert) {
             //}
         };
 
-        var previousRenderingObjects = canvas._renderingSprite;
-        canvas._renderingSprite = [];
-        canvas._renderingSprite.push(createMockRenderingObject(1, false));
-        canvas._renderingSprite.push(createMockRenderingObject(2, false));
-        canvas._renderingSprite.push(createMockRenderingObject(4, true));
+        var previousRenderingObjects = canvas._renderingSprites;
+        var renderingSprites = [];
+        renderingSprites.push(createMockRenderingObject(1, false));
+        renderingSprites.push(createMockRenderingObject(2, false));
+        renderingSprites.push(createMockRenderingObject(4, true));
 
+        canvas.renderingSprites = renderingSprites;
         var target = canvas._getTargetAt(mockPointer);
         assert.strictEqual(target.id, 4, '_getTargetAt returns correct target');
 
@@ -187,19 +184,22 @@ QUnit.test("Canvas", function (assert) {
         target = canvas._getTargetAt(mockPointer);
         assert.ok(!target, "target not found if invisible");
 
-        canvas._renderingSprite.push(createMockRenderingObject(5, false));
-        canvas._renderingSprite.push(createMockRenderingObject(6, false));
-        canvas._renderingSprite.push(createMockRenderingObject(7, true));
+        renderingSprites.push(createMockRenderingObject(5, false));
+        renderingSprites.push(createMockRenderingObject(6, false));
+        renderingSprites.push(createMockRenderingObject(7, true));
 
+        canvas.renderingSprites = renderingSprites;
         assert.strictEqual(canvas._getTargetAt(mockPointer).id, 7, '_getTargetAt returns last correct target in renderingObjects');
 
-        canvas._renderingSprite = [];
+        canvas._renderingSprites = [];
+        renderingSprites = [];
         assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no rendering objects');
 
-        canvas._renderingSprite.push(createMockRenderingObject(1, false));
+        renderingSprites.push(createMockRenderingObject(1, false));
+        canvas.renderingSprites = renderingSprites;
         assert.ok(!canvas._getTargetAt(mockPointer), 'no target found if there are no target rendering objects');
 
-        canvas._renderingSprite = previousRenderingObjects;
+        canvas.renderingSprites = previousRenderingObjects;
         canvas.scale(previousScaling.x, previousScaling.y);
 
         //event tests
@@ -251,14 +251,23 @@ QUnit.test("Canvas", function (assert) {
 
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
+        canvas.initScene("id", { width: 400, height: 800 });    //required for screenshot rendering
         canvas.setDimensions(80, 40, viewportScaling, viewportScaling);
 
-        assert.equal(canvas._lowerCanvasEl.height, 40, 'setDimensions sets height for lower canvas');
-        assert.equal(canvas._lowerCanvasEl.width, 80, 'setDimensions sets width for lower canvas');
+        assert.equal(canvas._backgroundCanvasEl.height, 40, 'setDimensions sets height for background canvas');
+        assert.equal(canvas._backgroundCanvasEl.width, 80, 'setDimensions sets width for background canvas');
+        assert.equal(canvas._cameraCanvasEl.height, 40, 'setDimensions sets height for camera canvas');
+        assert.equal(canvas._cameraCanvasEl.width, 80, 'setDimensions sets width for camera canvas');
+        assert.equal(canvas._penStampCanvasEl.height, 40, 'setDimensions sets height for pen/stamp canvas');
+        assert.equal(canvas._penStampCanvasEl.width, 80, 'setDimensions sets width for pen/stamp canvas');
+        assert.equal(canvas._spritesCanvasEl.height, 40, 'setDimensions sets height for sprites canvas');
+        assert.equal(canvas._spritesCanvasEl.width, 80, 'setDimensions sets width for sprites canvas');
+        assert.equal(canvas._bubblesCanvasEl.height, 40, 'setDimensions sets height for bubbles canvas');
+        assert.equal(canvas._bubblesCanvasEl.width, 80, 'setDimensions sets width for bubbles canvas');
         assert.equal(canvas._upperCanvasEl.height, 40, 'setDimensions sets height for upper canvas');
         assert.equal(canvas._upperCanvasEl.width, 80, 'setDimensions sets width for upper canvas');
-        assert.equal(canvas._cacheCanvasEl.height, 40, 'setDimensions sets height for cache canvas');
-        assert.equal(canvas._cacheCanvasEl.width, 80, 'setDimensions sets width for cache canvas');
+        assert.equal(canvas._helperCanvasEl.height, 40, 'setDimensions sets height for helper canvas');
+        assert.equal(canvas._helperCanvasEl.width, 80, 'setDimensions sets width for helper canvas');
         assert.equal(canvas._scalingX, viewportScaling, 'setDimensions sets scalingX');
         assert.equal(canvas._scalingY, viewportScaling, 'setDimensions sets scalingY');
 
@@ -266,7 +275,7 @@ QUnit.test("Canvas", function (assert) {
         var drawCalledrenderingSprite = 0;
         var scaleX, scaleY;
 
-        var context = canvas._lowerCanvasEl.getContext('2d');
+        var context = canvas._spritesCanvasEl.getContext('2d');
 
         context.scale = function (x, y) {
             scaleX = x;
