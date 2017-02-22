@@ -29,7 +29,7 @@ QUnit.test("BaseController", function (assert) {
 
 QUnit.test("PageController", function (assert) {
 
-    assert.ok(true, "TODO:");
+    assert.ok(false, "TODO:");
     //var view = new PocketCode.Ui.I18nControl('div');    //any control derived from SmartJs.Ui.Control
     //var ctl = new PocketCode.BaseController(view);
     //assert.ok(ctl instanceof PocketCode.CoreController, "instance check");

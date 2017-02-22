@@ -25,6 +25,8 @@ QUnit.test("PlayerViewportController", function (assert) {
     var screenWidth = 100;
     var screenHeight = 200;
     controller.setProjectScreenSize(screenWidth, screenHeight);
+    controller.initScene("sceneId", { width: screenWidth, height: screenHeight });
+
     var dimensions = controller.dimensions;
     assert.ok(dimensions.width == screenWidth, "New project screen width set correctly");
     assert.ok(dimensions.height == screenHeight, "New project screen height set correctly");
@@ -40,7 +42,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     // taken from test_sprite.js, overwrite game engine look getter
     assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
     gameEngine.getLookImage = function () {
-    return { canvas: document.createElement('canvas'), center: { length: 0, angle: 0 }, initialScaling: 1 };
+        return { canvas: document.createElement('canvas'), center: { length: 0, angle: 0 }, initialScaling: 1 };
     };
 
     for (var i = 1; i < 5; i++) {
@@ -59,7 +61,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     spriteWithLook1._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
     sprites.splice(0, 0, spriteWithLook1.renderingSprite);
     var spriteWithLook2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [testLook] });
-    spriteWithLook2._looks[0].init({canvas: canvas});   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
+    spriteWithLook2._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
     sprites.splice(0, 0, spriteWithLook2.renderingSprite);
     var spriteWithLook3 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [testLook] });
     spriteWithLook3._looks[0].init({ canvas: canvas });   //._canvas = "canvas";  //set internally do not return undefined as look for this test;
@@ -75,15 +77,6 @@ QUnit.test("PlayerViewportController", function (assert) {
         for (var i = 0; i < len; i++) {
             if (images[i].id == id)
                 return images[i];
-        }
-    };
-
-    var getVariableWithId = function (id) {
-        var vars = controller._renderingTexts;
-        var len = vars.length;
-        for (var i = 0; i < len; i++) {
-            if (vars[i].id == id)
-                return vars[i];
         }
     };
 
@@ -134,9 +127,19 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.renderingTexts = variables;
     assert.ok(controller._renderingTexts.length == 5, "Check rendering variables init");
 
-    var testedVariable = getVariableWithId("id0");
-    controller.updateVariable("id0", { x: 5, y: 3 });
+    var getVariableById = function (id) {
+        var vars = controller._renderingTexts;
+        var len = vars.length;
+        for (var i = 0; i < len; i++) {
+            if (vars[i].id == id)
+                return vars[i];
+        }
+    };
 
+    var testedVariable = getVariableById("id0");
+    controller.updateVariable(undefined, "id0", { x: 5, y: 3 });    //TODO: rewrite test using an object id instead of undefined
+
+    testedVariable = getVariableById("id0");
     assert.equal(testedVariable.x, 5, "Updated Variable x position");
     assert.ok(testedVariable.y, 3, "Updated Variable y position");
     var scr = controller.takeScreenshot();
