@@ -199,6 +199,7 @@ PocketCode.merge({
             this._shadow = false;
 
             this.penDown = false;
+            this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -277,7 +278,7 @@ PocketCode.merge({
                 writable: true,
             },
             penSize: {
-                value: 4.0,
+                value: undefined,   //default calues are defined on sprite/bricks only
                 writable: true,
             },
             penColor: { //providing a setter/getter is important to make sure the object is merged correctly
