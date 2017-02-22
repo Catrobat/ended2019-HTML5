@@ -141,7 +141,7 @@ QUnit.test("UserVariableHost", function (assert) {
     compareAndAssert(l, "list: local and global: ", listsl, lists);
 
     //test ui rendering + updates
-    var renderingVars = uvhl.renderingVariables;
+    var renderingVars = uvhl._getRenderingVariables();
     var r0 = renderingVars[0], r1 = renderingVars[1];
     assert.ok(r0.id === "id1" && r0._text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
     assert.ok(r1.id === "id2" && r1._text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");

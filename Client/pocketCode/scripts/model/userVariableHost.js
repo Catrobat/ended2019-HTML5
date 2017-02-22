@@ -113,9 +113,8 @@ PocketCode.Model.UserVariableHost = (function () {
             }
             else if (this.__variableLookupHost)
                 this.__variableLookupHost.showVariableAt(id, positionX, positionY);
-            //    tmp = this.__variableLookupHost.getVariable(id);
-            //var tmp = this.getVariable(id);
-
+            else
+                throw new Error('variable not found: ' + id);
         },
         hideVariable: function (id) {    //called as sprite.hide.. from brick
             var tmp = this.__variablesSimple.getVariableById(id);
@@ -125,11 +124,8 @@ PocketCode.Model.UserVariableHost = (function () {
             }
             else if (this.__variableLookupHost)
                 this.__variableLookupHost.hideVariable(id);
-
-            //var tmp = this.getVariable(id);
-            //if (!tmp)
-            //    throw new Error('hide variable: variable with id = ' + id + 'could not be found');
-            //this._onVariableChange.dispatchEvent({ objectId: this._id, id: id, properties: { visible: false } });
+            else
+                throw new Error('variable not found: ' + id);
         },
         getList: function (id) {
             var tmp = this.__variablesList.getVariableById(id);
