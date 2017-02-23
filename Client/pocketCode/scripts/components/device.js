@@ -841,14 +841,14 @@ PocketCode.DeviceEmulator = (function () {
             Y: 0.0,
         };
         this._inclinationLimits = {
-            X_MIN: -36.0, //-90,
-            X_MAX: 36.0, //90,
-            Y_MIN: -36.0, //-90,
-            Y_MAX: 36.0, //90,
+            X_MIN: -46.0, //-90,
+            X_MAX: 46.0, //90,
+            Y_MIN: -46.0, //-90,
+            Y_MAX: 46.0, //90,
         };
         this._inclinationIncr = {
-            X: 6.0, //10,
-            Y: 6.0, //10
+            X: 8.0, //10,
+            Y: 8.0, //10
         };
         this._inclinationTimerDuration = 200;
 

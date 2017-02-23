@@ -17,7 +17,8 @@ PocketCode.Model.merge({
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._onStart = startEvent;
-            startEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            if (this._onStart)  //may be undefined on startAsClone
+                startEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
         }
 
         WhenProgramStartBrick.prototype.merge({
@@ -256,8 +257,9 @@ PocketCode.Model.merge({
         function WhenStartAsCloneBrick(device, sprite, propObject) {
 
             if (!(sprite instanceof PocketCode.Model.SpriteClone))
-                return;
-            PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
+                PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject);  //without ecent
+            else
+                PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
         }
 
         return WhenStartAsCloneBrick;

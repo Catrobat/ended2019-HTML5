@@ -489,12 +489,17 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         deleteClone: function (cloneId) {
-            var clone = this.getSpriteById(cloneId);
+            var clone;
+            try {   //make sure an already disposed clone does not throw an error (not found)
+                clone = this.getSpriteById(cloneId);
+            }
+            catch (e) { }
             if (!(clone instanceof PocketCode.Model.SpriteClone))
                 return;
 
             this._sprites.remove(clone);
-            clone.dispose();
+            //clone.dispose(); //dispose results in an error: hanging project 965 (dispose will stop scripts- no broadcastWait callback?)
+            window.setTimeout(clone.dispose.bind(clone), 50);   //dispose with delay to make sure scripts are not stopped immediately
             this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites
         },
         //physics

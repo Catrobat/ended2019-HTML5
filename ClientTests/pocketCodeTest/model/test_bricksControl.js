@@ -748,6 +748,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
+    var done3 = assert.async();
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
@@ -804,7 +805,10 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
         //execute
         var handler = function (e) {
-            assert.ok(clone._disposed, "disposed on delete");
+            window.setTimeout(function () {
+                assert.ok(clone._disposed, "disposed on delete (with delay)");
+                done3();
+            }, 100);
             //assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
             assert.equal(scene._sprites.length, 1, "clone deleted from list");
             done2();

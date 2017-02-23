@@ -89,7 +89,7 @@ PocketCode.Model.merge({
                     }
                 }
             },
-            stopPendingOperations: function () {
+            _stopPendingOperations: function () {
                 var po;
                 for (var id in this._pendingOps) {
                     po = this._pendingOps[id];
@@ -102,15 +102,15 @@ PocketCode.Model.merge({
                     delete this._pendingOps[id];
                 }
                 this._pendingOps = {};
+            },
+            stop: function () {
+                this._stopPendingOperations();
 
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].stop)
                         bricks[i].stop();
                 }
-            },
-            stop: function () {
-                this.stopPendingOperations();
                 this._paused = false;
             },
             dispose: function () {
@@ -289,13 +289,13 @@ PocketCode.Model.SingleContainerBrick = (function () {
             this._bricks.resume();
             PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
         },
-        _stopPendingOperations: function () {
-            this._bricks.stopPendingOperations();
-            PocketCode.Model.ThreadedBrick.prototype._stopPendingOperations.call(this);
-        },
+        //_stopPendingOperations: function () {
+        //    this._bricks.stopPendingOperations();
+        //    PocketCode.Model.ThreadedBrick.prototype._stopPendingOperations.call(this);
+        //},
         stop: function () {
-            this._bricks.stop();
             PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
+            this._bricks.stop();
         },
     });
 
@@ -349,8 +349,11 @@ PocketCode.Model.merge({
             _subscribeCallback: function (dispatchedAt, onExecutedListener, threadId) {
                 //if (dispatchedAt && dispatchedAt >/*=*/ this._stoppedAt) {  //TODO
                 if (onExecutedListener && threadId) {
-                    if (dispatchedAt && dispatchedAt <= this._stoppedAt)
+                    if ((dispatchedAt && dispatchedAt <= this._stoppedAt) || this._disposed) {
+                        //return;//
+                        onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
                         return;
+                    }
                     this.execute(onExecutedListener, threadId);
                 }
                 else {
@@ -361,11 +364,7 @@ PocketCode.Model.merge({
                 if (e && e.dispatchedAt && e.dispatchedAt <= this._stoppedAt)
                     return;
 
-                //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
-                //onExecutedListener = onExecutedListener || new SmartJs.Event.EventListener(function () { }, this);
-                //threadId = threadId || SmartJs.getNewId();
-
-                //this._executionState = PocketCode.ExecutionState.RUNNING;
+                //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
                 this.execute.call(this, /*undefined */new SmartJs.Event.EventListener(function () { }, this), SmartJs.getNewId());
             },
             /*override*/
@@ -379,25 +378,15 @@ PocketCode.Model.merge({
                 if (this._disposed)
                     return;
                 if (this._executionState == PocketCode.ExecutionState.RUNNING)// {
-                    this._stopPendingOperations();
-                    //PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //stop pending operations without triggering stop at script
-                    //this._cancalPendingOperations();
-                    //this.stop();    //called twice before finish => stop current thread and start from beginning (PocketCode specification)
+                    this.stop();//_stopPendingOperations();
 
-                    //if no arguments provided (typical case for script blocks), we create some dummy args to use our super method
-                    //onExecutedListener = onExecutedListener || new SmartJs.Event.EventListener(function () { }, this);
-                    //threadId = threadId || SmartJs.getNewId();
-                else
-                    this._executionState = PocketCode.ExecutionState.RUNNING;
-                //}
+                this._executionState = PocketCode.ExecutionState.RUNNING;
                 PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
-                //PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
-                //}, this), SmartJs.getNewId());
             },
             stop: function () {
+                this._stoppedAt = new Date();
                 PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._stoppedAt = new Date();
             },
         });
 
