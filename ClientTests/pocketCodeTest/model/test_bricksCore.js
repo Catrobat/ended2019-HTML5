@@ -122,7 +122,7 @@ QUnit.test("BrickContainer", function (assert) {
 
     function proceedTests() {
         var count = 0;
-        for (p in bc._pendingOps)
+        for (var p in bc._pendingOps)
             if (testBrick._pendingOps.hasOwnProperty(p))
                 count++;
         assert.ok(count === 0, "pending operations removed from queue");
@@ -263,7 +263,7 @@ QUnit.test("ThreadedBrick", function (assert) {
     assert.equal(handler1CallId, "callId", "call id handled corrrectly");
 
     var count = 0;
-    for (p in testBrick._pendingOps)
+    for (var p in testBrick._pendingOps)
         if (testBrick._pendingOps.hasOwnProperty(p))
             count++;
     assert.ok(count === 0, "pending operations removed from queue");
