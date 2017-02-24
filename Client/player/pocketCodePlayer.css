@@ -37,7 +37,6 @@
     -ms-user-select: none;
     user-select: none;
     cursor: default;
-    z-index: 100000;
 }
 /* overlay */
 .pc-webOverlay {
@@ -48,6 +47,7 @@
     top: 0;
     left: 0;
     overflow: hidden;
+    z-index: 100000;
 }
 
     /* override styles defined in page */
