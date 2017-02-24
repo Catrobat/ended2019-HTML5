@@ -825,6 +825,9 @@ QUnit.test("Sprite", function (assert) {
     isResumed();
     assert.ok(sprite.scriptsRunning, "scrips running: running");
 
+    sprite.stopScript(true, "1");
+    assert.ok(sprite.scriptsRunning, "scrips running: running (stopScript with non existing id)");
+
     sprite.stopScript(true, "first");
     assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
     assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
@@ -916,6 +919,13 @@ QUnit.test("Sprite", function (assert) {
 
     testsExecAsync();
     asyncCalls++;
+
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick1._id = "first";
+    var tmpBricks = [];
+    tmpBricks[0] = brick1;
+    sprite.scripts = tmpBricks;
+
     disposeTest();
 
 });
@@ -2013,19 +2023,50 @@ QUnit.test("PhysicsSprite", function (assert) {
 
 QUnit.test("SpriteClone", function (assert) {
 
-    //var programExecAsync = assert.async();
-    //var testsExecAsync = assert.async();
-    //var finalAsyncCall = assert.async();
-    var asyncCalls = 0; //check all async calls where executed before running dispose
-
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
+    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+
+    assert.throws(function () { new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId"}, undefined) }, Error, "ERROR: missing parameter for SpriteClone: definition");
 
     var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
 
     assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
+
+    //test if sound and look copied correctly //todo: looks
+    var tmpBricks = [];
+    var looks = [{ id: 1, imageId: "s1", name: "name1", resourceId: "s1" }];
+    var sound = [1, 2];
+
+    var sprite3 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "2", name: "newName", scripts: tmpBricks, sounds: sound}, {});
+    assert.ok(sprite3._sounds.length === 2, "Sounds in SpriteClone copied correct");
+
+    //test methode clone
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene2, { id: "2", name: "newName", scripts: tmpBricks});
+
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
+    brick1._id = "first";
+    tmpBricks[0] = brick1;
+    sprite2.scripts.push(tmpBricks);
+
+    sprite2.looks = looks;
+    scene2._sprites.push(sprite2);
+
+    sprite2.penDown = true;
+    sprite2.penSize = 6;
+    sprite2.setSize(40);
+    sprite2.hide();
+
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    assert.ok(clone_sprite2._penDown == sprite2._penDown &&
+        clone_sprite2._penSize == sprite2._penSize &&
+        clone_sprite2.size == sprite2.size &&
+        clone_sprite2.visible == sprite2.visible, "set properties for clone correct");
 
     //test clone
     var is = new PocketCode.ImageStore();   //recreate
@@ -2073,6 +2114,7 @@ QUnit.test("SpriteClone", function (assert) {
         var list2 = sprite.getList("s23");
         list2.append("test2");
         list2.append(1);
+       // var tmpSprite = new PocketCode.Model.SpriteClone(gameEngine, scene, {id: "2", name: "newName",  lists: list1._value}, {lists: list1._value});
 
         scene.start();
         setTimeout(validateClone, 10);
