@@ -22,7 +22,7 @@ PocketCode.Ui.Dialog = (function () {
 
     //cntr
     function Dialog(type, i18nCaptionKey, i18nMsgKey) {
-        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute' } });
+        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute', zIndex: 0 } });
 
         //settings
         this._minHeight = 200;
