@@ -315,6 +315,8 @@ PocketCode.merge({
                     if (json.header && json.header.device) {
                         var device = json.header.device;
                         this._onHWRatioChange.dispatchEvent({ ratio: device.screenHeight / device.screenWidth });
+                        var view = this._pages.PlayerPageController.view;
+                        view.onResize.dispatchEvent();   //make sure the control is notified about the resize
                     }
                     this._project.loadProject(json);
                 },
