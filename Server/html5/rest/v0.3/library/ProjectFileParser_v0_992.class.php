@@ -484,8 +484,8 @@ class ProjectFileParser_v0_992
                 }
                 else
                 {
-                    $size = 0;  //TODO: this is a fix until encoding was specified
-                    //throw new InvalidProjectFileException("image file '" . (string)$look->fileName . "' does not exist");
+                    //$size = 0;  //TODO: this is a fix until encoding was specified
+                    throw new InvalidProjectFileException("image file '" . $path . "' does not exist");
                 }
                 array_push($this->images, new ResourceDto($imageId, $url, $size));
             }
