@@ -37,6 +37,7 @@
     -ms-user-select: none;
     user-select: none;
     cursor: default;
+    z-index: 100000;
 }
 /* overlay */
 .pc-webOverlay {
