@@ -326,6 +326,9 @@ QUnit.test("Sprite", function (assert) {
     testSprite._lookOffsetX = lookOffsetX;
     testSprite._lookOffsetY = lookOffsetY;
 
+    var renderingVar = testSprite.renderingVariables;
+    assert.ok(renderingVar instanceof Array, "renderingVariables getter");
+
     var renderingSprite = testSprite.renderingSprite;
 
     assert.strictEqual(renderingSprite.id, testSprite.id, "renderingSprite: id set correctly");
@@ -919,6 +922,9 @@ QUnit.test("Sprite", function (assert) {
 
     testsExecAsync();
     asyncCalls++;
+
+    sprite.drawStamp();
+    assert.ok(lastOnChangeArgs.drawStamp === true , "Drawstamp set");
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick1._id = "first";
@@ -2062,7 +2068,7 @@ QUnit.test("SpriteClone", function (assert) {
     sprite2.setSize(40);
     sprite2.hide();
 
-    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr); //todo: clone clonen, clone verschieben
     assert.ok(clone_sprite2._penDown == sprite2._penDown &&
         clone_sprite2._penSize == sprite2._penSize &&
         clone_sprite2.size == sprite2.size &&
@@ -2168,6 +2174,61 @@ QUnit.test("SpriteClone", function (assert) {
 
 QUnit.test("Background", function (assert) {
 
-    assert.ok(false, "TODO");
+    var done1 = assert.async();
+    var done2 = assert.async();
+
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+
+    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, {id: "newId", name: "myName"});
+
+    var look1 = { name: "look1", id: "first", resourceId: "1" };
+    var look2 = { name: "look2", id: "second", resourceId: "2" };
+    testBackgroundSprite.looks = [look1, look2];
+
+    var handlerOneCalled = 0;
+    var handlerLookOne = function () {
+        handlerOneCalled++;
+        assert.ok(handlerOneCalled == 1 && handlerTwoCalled == 1, "Event called, Background changed to first");
+        done1();
+        testBackgroundSprite.unsubscribeFromLookChange("second", handlerLookTwo);
+        testBackgroundSprite.setLook("second");
+
+        window.setTimeout(function(){
+            assert.ok(handlerOneCalled == 1 && handlerTwoCalled == 1, "unsubscribed successfully");
+            runTest2();
+        },20);
+    };
+
+    var handlerTwoCalled = 0;
+    var handlerLookTwo = function () {
+        handlerTwoCalled++;
+        assert.ok(handlerOneCalled == 0 && handlerTwoCalled == 1, "Event called, Background changed to second");
+        testBackgroundSprite.setLook("second");
+        testBackgroundSprite.setLook("first");
+    };
+
+    testBackgroundSprite.subscribeOnLookChange("first", handlerLookOne);
+    testBackgroundSprite.subscribeOnLookChange("second", handlerLookTwo);
+    testBackgroundSprite.setLook("first");
+    testBackgroundSprite.setLook("second");
+
+    //change bg and wait callback
+    function runTest2() {
+        var called = 0,
+            changed;
+        var callbackHandler = function(args) {
+            called++;
+            changed = args;
+        };
+        testBackgroundSprite.setLook("second", callbackHandler);
+        assert.equal(called, 1, "wait callback called even if background not changed");
+        assert.equal(changed, false, "wait callback called even if background not changed- loop delay");
+
+        done2();
+    }
+
 });
 

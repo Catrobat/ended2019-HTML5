@@ -1137,7 +1137,7 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange(props);    //returns false for empty objects
         },
         drawStamp: function () {
-            return this._triggerOnChange({ drawStamp: true });  //TODO: introduce "action" parameter { canvasAction: penDown, penUp, stamp } ???
+            return this._triggerOnChange({ drawStamp: true });
         },
 
         showBubble: function (type, text) {
