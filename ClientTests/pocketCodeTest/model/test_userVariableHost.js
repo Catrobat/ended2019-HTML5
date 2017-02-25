@@ -201,3 +201,17 @@ QUnit.test("UserVariableHost", function (assert) {
     assert.ok(l.procedure !== undefined && l.local !== undefined && l.global !== undefined, "lists: object including procedure, local and global variables");
 
 });
+
+
+//------------------------------------------------------------------------------------------------------------------
+//moved from test_gameEngine
+//TODO: ^^ this tests should be moved to base class: UserVariableHost including tests for lists (we shouldn't use private vars for assets - that much - either)
+
+//var names = gameEngine.getAllVariables();
+//names = names.global;
+//assert.ok(names["1"].name === "name1" && names["2"].name === "name2" && names["3"].name === "name3", "varableNames set correctly");
+
+//assert.ok(gameEngine.getVariable("1").name === "name1", "Calling getNewVariable returned correct variable");
+//assert.deepEqual(gameEngine.getAllVariables(), gameEngine._variableNames, "getGlobalVariableNames returns gameEngine._variableNames");
+//assert.throws(function () { gameEngine.getGlobalVariable("invalid") }, Error, "ERROR: invalid argument used for getGlobalVariable");
+//------------------------------------------------------------------------------------------------------------------

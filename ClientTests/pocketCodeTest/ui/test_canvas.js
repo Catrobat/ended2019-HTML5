@@ -334,6 +334,47 @@ QUnit.test("Canvas", function (assert) {
         screenshotCanvasContext.drawImage(renderingSpriteOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
         assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
 
+        //clearPenStampCanvas
+        assert.equal(canvas.clearPenStampCanvas(), undefined, "penStampCanvas cleared");
+
+        //clearCurrentPenStampCache
+        assert.equal(canvas.clearCurrentPenStampCache(), undefined, "clearCurrentPenStampCache cleared");
+
+        //clearPenStampCache
+        assert.equal(canvas.clearPenStampCache(), undefined, "clearPenStampCache cleared");
+
+        //movePen
+        var ri = new PocketCode.RenderingItem({ id: "s01" , penX: 0, penY: 0});
+
+        canvas.renderingSprite = ri;
+        var penSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "s01", name: "myName", penX: 0, penY: 0});
+
+        var penCanvas = new PocketCode.Ui.Canvas();
+        penCanvas.renderingSprite = penSprite;
+        penCanvas.renderingSprite.penX = 10;
+
+        assert.equal(canvas.movePen("s01", 10, 0), penCanvas.movePen(), "Pen moved right");
+
+        penCanvas.renderingSprite.penX = 0;
+        penCanvas.renderingSprite.penY = 10;
+
+        assert.equal(canvas.movePen("s01", 0, 10), penCanvas.movePen(), "Pen moved top");
+
+        penCanvas.renderingSprite.penX = -10;
+        penCanvas.renderingSprite.penY = 0;
+
+        assert.equal(canvas.movePen("s01", -10, 0), penCanvas.movePen(), "Pen moved left");
+
+        penCanvas.renderingSprite.penX = 0;
+        penCanvas.renderingSprite.penY = -10;
+
+        assert.equal(canvas.movePen("s01", 0, 10), penCanvas.movePen(), "Pen moved bottom");
+
+        //drawStamp
+        penCanvas.renderingSprite.penY = 0;
+
+        assert.equal(canvas.drawStamp("s01"), penCanvas.drawStamp(), "drawStamp");
+
         canvas.dispose();
         assert.equal(canvas._disposed, true, "disposed");
 
