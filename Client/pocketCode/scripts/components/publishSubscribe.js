@@ -56,20 +56,23 @@ PocketCode.PublishSubscribeBroker = (function () {
                 }
             }
 
-            var handler;
+            var handler,
+                execTime = new Date();
             if (waitCallback) {
                 var pid = SmartJs.getNewId(),
                     po = this._pendingOps[pid] = { msgId: id, count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
                     handler = subs[i];
-                    window.setTimeout(handler.bind(this, new Date(), new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid), 0);
+                    window.setTimeout(handler.bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid), 0);
+                    //handler(execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid);
                 }
             }
             else {
                 for (var i = 0, l = subs.length; i < l; i++) {
                     handler = subs[i];
-                    window.setTimeout(handler.bind(this, new Date()), 0);
+                    window.setTimeout(handler.bind(this, execTime), 0);
+                    //handler(execTime);
                 }
             }
         },

@@ -53,13 +53,14 @@ PocketCode.PhysicsWorld = (function () {
             if (!(listeners instanceof Array))
                 throw new Error('invalid argument: expected listeners type of array');
 
-            var listener;
+            var listener,
+                dispatchedAt = new Date();
             for (var i = 0, l = listeners.length; i < l; i++) {
                 listener = listeners[i];
                 if (listener instanceof SmartJs.Event.AsyncEventListener)
-                    window.setTimeout(listener.handler.bind(listener.scope, { dispatchedAt: new Date() }), 0);
+                    window.setTimeout(listener.handler.bind(listener.scope, { dispatchedAt: dispatchedAt }), 0);
                 else
-                    listener.handler.call(listener.scope, {});
+                    listener.handler.call(listener.scope, { dispatchedAt: dispatchedAt });
             }
         },
         _testCollisionWithAnyPhysicsSprite: function (spriteId) {

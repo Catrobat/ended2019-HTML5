@@ -125,6 +125,8 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	y.divClicked.addEventListener(new SmartJs.Event.EventListener(z.testHandler, z));
 	y.divClicked.dispatchEvent({ a: 1, b: 2, c: 3 });
 	assert.deepEqual(z.testProp_1, returnVal, "calling handler using different scope");
+	assert.ok(Math.abs(eventArgs.dispatchedAt - new Date()) < 10, "including dispatchedAt");
+	delete eventArgs.dispatchedAt;
 	assert.deepEqual(eventArgs, { a: 1, b: 2, c: 3, bubbles: false, target: y }, "calling handler using different scope & event args");
 	
 	assert.throws(function () { var test = new SmartJs.Event.Event(23); },

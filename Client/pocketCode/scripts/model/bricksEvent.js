@@ -18,13 +18,13 @@ PocketCode.Model.merge({
 
             this._onStart = startEvent;
             if (this._onStart)  //may be undefined on startAsClone
-                startEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+                startEvent.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
         }
 
         WhenProgramStartBrick.prototype.merge({
             dispose: function () {
                 if (this._onStart) {
-                    this._onStart.removeEventListener(new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
                     this._onStart = undefined;  //make sure to disconnect from gameEngine
                 }
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
@@ -43,7 +43,7 @@ PocketCode.Model.merge({
             //this._action = propObject.action;   //'Tapped', 'TouchStart'
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
             this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.AsyncEventListener(this._onActionHandler, this));
+            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
         }
 
         WhenActionBrick.prototype.merge({
@@ -52,7 +52,7 @@ PocketCode.Model.merge({
                     this.executeEvent(e);
             },
             dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.AsyncEventListener(this._onActionHandler, this));
+                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
                 this._onAction = undefined;  //make sure to disconnect from gameEngine
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
@@ -211,11 +211,11 @@ PocketCode.Model.merge({
 
             this._physicsWorld = physicsWorld;
             this._spriteId2 = propObject.any ? 'any' : propObject.spriteId;
-            physicsWorld.subscribeCollision(sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            physicsWorld.subscribeCollision(sprite.id, this._spriteId2, new SmartJs.Event.EventListener(this.executeEvent, this));
         }
 
         WhenCollisionBrick.prototype.dispose = function () {
-            this._physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.AsyncEventListener(this.executeEvent, this));
+            this._physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.EventListener(this.executeEvent, this));
             this._physicsWorld = undefined;
             PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
         };
