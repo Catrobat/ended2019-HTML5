@@ -133,7 +133,6 @@ PocketCode.PlayerPageController = (function () {
         _beforeProjectStartHandler: function (e) {    //on start event dispatched by gameEngine
             if (e.reinit) {
             //    //this.initOnLoad();
-            //    //console.log("device on before project start:", this._gameEngine._device);
                 this._playerViewportController.clearViewport();
             }
             this._view.hideStartScreen();
@@ -160,9 +159,6 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateVariable(e.objectId, e.id, e.properties);
         },
         _cameraChangedHandler: function (e) {
-            console.log("CAMERA TRIGGERED");
-            //console.log("camera stream in page controller:", e.cameraStream);
-            console.log("e:", e);
             this._playerViewportController.updateCameraUse(e.on, e.src, e.width, e.height, e.transparency, e.orientation);
         },
         //user

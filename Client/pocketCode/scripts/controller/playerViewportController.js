@@ -132,8 +132,6 @@ PocketCode.PlayerViewportController = (function () {
         },
 
         updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params
-            console.log("CONTROLLER RENDER CAMERA");
-            //console.log("camera stream in viewport controller:", cameraStream);
             this._view.updateCameraUse(cameraOn, cameraStream);
         },
 
