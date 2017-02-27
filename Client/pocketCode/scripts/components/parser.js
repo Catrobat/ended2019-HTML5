@@ -465,12 +465,12 @@ PocketCode.merge({
                     case 'EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' = ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' === ');
+                        return this._concatOperatorFormula(jsonFormula, ' == ');
 
                     case 'NOT_EQUAL':
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ≠ ', uiString);
-                        return this._concatOperatorFormula(jsonFormula, ' !== ');
+                        return this._concatOperatorFormula(jsonFormula, ' != ');
 
                     case 'SMALLER_OR_EQUAL':
                         if (uiString)

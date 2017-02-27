@@ -334,24 +334,16 @@ QUnit.test("Canvas", function (assert) {
         screenshotCanvasContext.drawImage(renderingSpriteOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
         assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
 
-        //clearPenStampCanvas
-        assert.equal(canvas.clearPenStampCanvas(), undefined, "penStampCanvas cleared");
-
-        //clearCurrentPenStampCache
-        assert.equal(canvas.clearCurrentPenStampCache(), undefined, "clearCurrentPenStampCache cleared");
-
-        //clearPenStampCache
-        assert.equal(canvas.clearPenStampCache(), undefined, "clearPenStampCache cleared");
-
         //movePen
         var ri = new PocketCode.RenderingItem({ id: "s01" , penX: 0, penY: 0});
 
         canvas.renderingSprite = ri;
-        var penSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "s01", name: "myName", penX: 0, penY: 0});
+        var penSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "s01", name: "myName", x: 0, y: 0, penX: 0, penY: 0, penDown: false});
 
         var penCanvas = new PocketCode.Ui.Canvas();
         penCanvas.renderingSprite = penSprite;
         penCanvas.renderingSprite.penX = 10;
+        penCanvas.renderingSprite.penDown = true;
 
         assert.equal(canvas.movePen("s01", 10, 0), penCanvas.movePen(), "Pen moved right");
 
@@ -375,8 +367,42 @@ QUnit.test("Canvas", function (assert) {
 
         assert.equal(canvas.drawStamp("s01"), penCanvas.drawStamp(), "drawStamp");
 
+        //test with canvas
+        canvas.initScene("pen1", { width: 400, height: 800 });
+
+        var tmp = canvas.toDataURL(400, 800);
+        canvas.penDown = true;
+        canvas.x = 200;
+
+        var tmp2 = canvas.toDataURL(400, 800);
+
+
+        assert.notEqual(tmp, tmp2, "Pen moved right");
+
+        canvas.initScene("pen2", { width: 400, height: 800 });
+        var tmp = canvas.toDataURL(400, 800);
+        canvas.penDown = true;
+        canvas.y = 200;
+
+        var tmp3 = canvas.toDataURL(400, 800);
+        assert.notEqual(tmp, tmp3, "Pen moved up");
+
+        canvas.initScene("pen1", { width: 400, height: 800 });
+        assert.equal(canvas.toDataURL(400, 800), tmp2, "scene cached and reloaded");
+
+        //clearPenStampCanvas
+        assert.equal(canvas.clearPenStampCanvas(), undefined, "penStampCanvas cleared");
+
+        //clearCurrentPenStampCache
+        assert.equal(canvas.clearCurrentPenStampCache(), undefined, "clearCurrentPenStampCache cleared");
+
+        //clearPenStampCache
+        assert.equal(canvas.clearPenStampCache(), undefined, "clearPenStampCache cleared");
+
         canvas.dispose();
-        assert.equal(canvas._disposed, true, "disposed");
+        penCanvas.dispose();
+        assert.equal(canvas._disposed, true, "canvas disposed");
+        assert.equal(penCanvas._disposed, true, "penCanvas disposed");
 
         done();
     };

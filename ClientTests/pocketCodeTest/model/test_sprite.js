@@ -926,6 +926,31 @@ QUnit.test("Sprite", function (assert) {
     sprite.drawStamp();
     assert.ok(lastOnChangeArgs.drawStamp === true , "Drawstamp set");
 
+    //test methode clone
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene2, { id: "2", name: "newName", scripts: tmpBricks});
+
+    var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
+    brick4._id = "first";
+    var tmpBricks2 = [];
+    tmpBricks2[0] = brick4;
+    sprite2.scripts.push(tmpBricks2);
+
+    sprite2.looks = looks;
+    scene2._sprites.push(sprite2);
+
+    sprite2.penDown = true;
+    sprite2.penSize = 6;
+    sprite2.setSize(40);
+    sprite2.hide();
+
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    assert.ok(clone_sprite2._penDown == sprite2._penDown &&
+        clone_sprite2._penSize == sprite2._penSize &&
+        clone_sprite2.size == sprite2.size &&
+        clone_sprite2.visible == sprite2.visible, "set properties for clone correct");
+
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick1._id = "first";
     var tmpBricks = [];
@@ -2048,12 +2073,12 @@ QUnit.test("SpriteClone", function (assert) {
     var looks = [{ id: 1, imageId: "s1", name: "name1", resourceId: "s1" }];
     var sound = [1, 2];
 
-    var sprite3 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "2", name: "newName", scripts: tmpBricks, sounds: sound}, {});
+    var sprite3 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "3", name: "newName3", scripts: tmpBricks, sounds: sound}, {});
     assert.ok(sprite3._sounds.length === 2, "Sounds in SpriteClone copied correct");
 
     //test methode clone
     var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
-    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene2, { id: "2", name: "newName", scripts: tmpBricks});
+    var sprite2 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "2", name: "newName", scripts: tmpBricks}, {});
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
     brick1._id = "first";
@@ -2068,11 +2093,11 @@ QUnit.test("SpriteClone", function (assert) {
     sprite2.setSize(40);
     sprite2.hide();
 
-    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr); //todo: clone clonen, clone verschieben
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
     assert.ok(clone_sprite2._penDown == sprite2._penDown &&
         clone_sprite2._penSize == sprite2._penSize &&
         clone_sprite2.size == sprite2.size &&
-        clone_sprite2.visible == sprite2.visible, "set properties for clone correct");
+        clone_sprite2.visible == sprite2.visible, "set properties for clone correct (clone from SpriteClone)");
 
     //test clone
     var is = new PocketCode.ImageStore();   //recreate

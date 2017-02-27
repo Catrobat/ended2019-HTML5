@@ -34,10 +34,8 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.Model.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
 
-    //assert.throws(function () { gameEngine._imageStore._images = "invalid argument" }, Error, "ERROR: passed invalid arguments to images");
     assert.throws(function () { gameEngine._sounds = "invalid argument" }, Error, "ERROR: passed invalid arguments to sounds");
     assert.throws(function () { gameEngine._variables = "invalid argument" }, Error, "ERROR: passed invalid arguments to variables");
-    //assert.throws(function () { gameEngine._broadcasts = "invalid argument" }, Error, "ERROR: passed invalid arguments to broadcasts");
 
     //Hardcoded image Test
     var images = [{ id: "id1" }, { id: "id2" }, { id: "id3" }];
@@ -246,3 +244,19 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     return;
 });
+
+/*
+QUnit.test("GameEngine: tests with a testProject", function (assert) {
+
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    gameEngine.__currentScene = scene;
+
+    var testProject = strProject1976;
+    gameEngine.loadProject(testProject);
+
+
+
+    return;
+});
+*/
