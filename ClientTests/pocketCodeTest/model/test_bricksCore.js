@@ -445,18 +445,18 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.equal(b._bricks, bc, "bricks setter");
 
     var brickExecutedHandler = function (e) {
-        //assert.equal(exec, 1, "custom event onExecutionStateChange dispatched (once)");
+        assert.ok(true, "executed called after all bricks executed (after: pause/resume/stop)");
         done1();
     };
     var exec = 0;
     var executionStateChangeHandler = function (e) {
         exec++;
-        if (exec == 4) {
+        if (exec == 2) {
             assert.ok(true, "custom event onExecutionStateChange dispatched (twice: start/stop)");
             done2();
         }
-        else if (exec > 4) {
-            assert.ok(false, "executionStateChangeHandler called more than twice (start/stop)");
+        else if (exec > 2) {
+            assert.equal(exec, 2, "executionStateChangeHandler called more than twice (start/stop)");
         }
     };
 

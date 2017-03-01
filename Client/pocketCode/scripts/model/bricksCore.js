@@ -316,7 +316,7 @@ PocketCode.Model.merge({
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
             this._stoppedAt = new Date();
-
+            this._pendingExecutedCallback = undefined;  //make sure a wait callback is handled even the object get's disposed (clone)
             this._onExecutionStateChange = new SmartJs.Event.Event(this);
         }
 
@@ -350,10 +350,11 @@ PocketCode.Model.merge({
                 //if (dispatchedAt && dispatchedAt >/*=*/ this._stoppedAt) {  //TODO
                 if (onExecutedListener && threadId) {
                     if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
-                        //return;//
+                        //stopped before executed
                         onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
                         return;
                     }
+                    this._pendingExecutedCallback = onExecutedListener.handler.bind(onExecutedListener.scope, { id: threadId, loopDelay: false });;
                     this.execute(onExecutedListener, threadId);
                 }
                 else {
@@ -361,7 +362,7 @@ PocketCode.Model.merge({
                 }
             },
             executeEvent: function (e) {
-                if (e && e.dispatchedAt && e.dispatchedAt <= this._stoppedAt)
+                if (e && e.dispatchedAt && e.dispatchedAt < this._stoppedAt)
                     return;
 
                 //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
@@ -376,12 +377,15 @@ PocketCode.Model.merge({
             _execute: function (threadId) {
                 //if (this._disposed)
                 //    return;
-                if (this._executionState == PocketCode.ExecutionState.RUNNING)// {
-                    this.stop();    //execution state is set and _onExecutionStateChange dispatched
-                
-                this._executionState = PocketCode.ExecutionState.RUNNING;
-
-                this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+                if (this._executionState == PocketCode.ExecutionState.RUNNING) {
+                    //this.stop();    //execution state is set and _onExecutionStateChange dispatched
+                    this._stoppedAt = new Date();
+                    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+                }
+                else {
+                    this._executionState = PocketCode.ExecutionState.RUNNING;
+                    this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+                }
                 PocketCode.Model.SingleContainerBrick.prototype._execute.call(this, threadId);
             },
             stop: function () {
@@ -389,6 +393,14 @@ PocketCode.Model.merge({
                 PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+            },
+            dispose: function () {
+                //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose
+                if (this._sprite instanceof PocketCode.Model.SpriteClone && this._pendingExecutedCallback) {
+                    this._pendingExecutedCallback();
+                    this._pendingExecutedCallback = undefined;
+                }
+                PocketCode.Model.SingleContainerBrick.prototype.dispose.call(this);
             },
         });
 
