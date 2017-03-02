@@ -320,8 +320,8 @@ PocketCode.Model.Sprite = (function () {
                     script = scripts[i];
                     //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
-                    if (script.onExecuted)  //supported by all (root container) scripts
-                        script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+                    if (script.onExecutionStateChange)  //supported by all (root container) scripts
+                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
                 }
                 this._scripts = scripts;
             },
@@ -331,11 +331,13 @@ PocketCode.Model.Sprite = (function () {
         },
         scriptsRunning: {
             get: function () {
-                var scripts = this._scripts;
-                var es;
+                var scripts = this._scripts,
+                    script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
-                    es = scripts[i].executionState;
-                    if (es == PocketCode.ExecutionState.PAUSED || es == PocketCode.ExecutionState.RUNNING) {
+                    script = scripts[i];
+                    if (script.executionState == PocketCode.ExecutionState.RUNNING ||
+                        script instanceof PocketCode.Model.WhenActionBrick ||
+                        script instanceof PocketCode.Model.WhenConditionMetBrick) {
                         return true;
                     }
                 }
@@ -414,8 +416,8 @@ PocketCode.Model.Sprite = (function () {
             }
             return false;
         },
-        _scriptOnExecuted: function (e) {
-            if (!this.scriptsRunning) {
+        _scriptOnExecutionChangeHandler: function (e) {
+            if (e.executionState == PocketCode.ExecutionState.STOPPED && !this.scriptsRunning) {
                 this._onExecuted.dispatchEvent();
             }
         },
@@ -1200,7 +1202,7 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
                 script = scripts[i];
                 if (script.onExecuted)  //supported by all (root container) scripts
-                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
             }
 
             //call super
@@ -1284,7 +1286,7 @@ PocketCode.Model.merge({
         //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
         //        //    script = scripts[i];
         //        //    if (script.onExecuted)  //supported by all (root container) scripts
-        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
         //        //}
 
         //        //call super

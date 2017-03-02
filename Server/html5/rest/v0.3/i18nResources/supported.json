@@ -5,6 +5,8 @@
     { "languageCode" : "en", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English", "direction":  "ltr", "visible": true },
     { "languageCode" : "en-GB", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (UK)", "direction":  "ltr", "visible": false },
     { "languageCode" : "en-US", "crowdinRequestCode": "en-GB", "crowdinZipCode":  "en-GB", "uiString" : "English (US)", "direction":  "ltr", "visible": false },
+    { "languageCode" : "es", "crowdinRequestCode": "es-ES", "crowdinZipCode":  "es-ES", "uiString" : "Español", "direction":  "ltr", "visible": true },
+    { "languageCode" : "es-ES", "crowdinRequestCode": "es-ES", "crowdinZipCode":  "es-ES", "uiString" : "Español", "direction":  "ltr", "visible": false },
     { "languageCode" : "de", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch", "direction":  "ltr", "visible": true },
     { "languageCode" : "de-AT", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Österreich)", "direction":  "ltr", "visible": false },
     { "languageCode" : "de-CH", "crowdinRequestCode": "de", "crowdinZipCode":  "de-DE", "uiString" : "Deutsch (Schweiz)", "direction":  "ltr", "visible": false },

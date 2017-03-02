@@ -166,7 +166,7 @@ PocketCode.merge({
                     //case 'WhenConditionMetBrick':
                     //case 'StopScriptBrick':
                     //case 'SetBackgroundBrick':
-                    //case 'WhenCollisionBrick':
+                    case 'WhenCollisionBrick':
                     //case 'WhenStartAsCloneBrick':
                     //case 'CloneBrick':
                     //case 'DeleteCloneBrick':
@@ -179,8 +179,8 @@ PocketCode.merge({
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
 
-                    //case 'SelectCameraBrick':
-                    //case 'CameraBrick':
+                    case 'SelectCameraBrick':
+                    case 'CameraBrick':
 
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':

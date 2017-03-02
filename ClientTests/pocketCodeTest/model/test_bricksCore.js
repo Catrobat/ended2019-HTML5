@@ -386,13 +386,14 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.ok(b instanceof PocketCode.Model.ScriptBlock && b instanceof PocketCode.Model.SingleContainerBrick, "instance and inheritance check");
     assert.ok(b.objClassName === "ScriptBlock", "objClassName check");
 
+    assert.ok(b.onExecutionStateChange instanceof SmartJs.Event.Event, "event accessor check");
     assert.equal(b.id, "newId", "id accessor");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
 
     var beforeStop = new Date();
     b._executionState = undefined;  //to test setter
     b.stop();
-    assert.ok(Math.abs(new Date() - b._stoppedAt) < 10, "stopp called and stop time set");
+    assert.ok(Math.abs(new Date() - b._stoppedAt) < 10, "stop called and stop time set");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "execution state = stopped");
     b.executeEvent({ dispatchedAt: beforeStop });
 
@@ -444,21 +445,27 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.equal(b._bricks, bc, "bricks setter");
 
     var brickExecutedHandler = function (e) {
-        //assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
+        assert.ok(true, "executed called after all bricks executed (after: pause/resume/stop)");
         done1();
     };
     var exec = 0;
-    var scriptExecutedHandler = function (e) {
+    var executionStateChangeHandler = function (e) {
         exec++;
-        assert.equal(exec, 1, "custom event onExecuted dispatched (once)");
-        done2();
+        if (exec == 2) {
+            assert.ok(true, "custom event onExecutionStateChange dispatched (twice: start/stop)");
+            done2();
+        }
+        else if (exec > 2) {
+            assert.equal(exec, 2, "executionStateChangeHandler called more than twice (start/stop)");
+        }
     };
 
-    b.onExecuted.addEventListener(new SmartJs.Event.EventListener(scriptExecutedHandler, this));
+    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(executionStateChangeHandler, this));
 
     b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId");
     b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId"); //called twice to execute "stop pending ops" of first call
-    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: execute");
+    assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: running");
+
     var execState = b.executionState;
     b.pause();
     assert.equal(b.executionState, PocketCode.ExecutionState.RUNNING, "exec state: running (even if paused)");
@@ -469,6 +476,8 @@ QUnit.test("ScriptBlock", function (assert) {
     b.stop();
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state: stop");
     assert.ok(b._bricks._bricks[0].stopped && b._bricks._bricks[1].stopped && b._bricks._bricks[2].stopped && b._bricks._bricks[3].stopped, "super call: stop");
+
+    b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(executionStateChangeHandler, this));
     b.execute(new SmartJs.Event.EventListener(brickExecutedHandler, this), "threadId");
 
 });
