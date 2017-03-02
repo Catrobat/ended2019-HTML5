@@ -60,9 +60,27 @@ QUnit.test("PageController", function (assert) {
     var lastElem = ctl._view._container._childs.length -1;
     assert.ok(ctl._view._container._childs.length === length_childs +1 && ctl._view._container._childs[lastElem] instanceof  PocketCode.Ui.Dialog, "appendChild in _showDialog");
 
-    //dialog3.onCancel = new SmartJs.Event.Event(this);
-    //dialog3.onOK = new SmartJs.Event.Event(this);
-    //todo: add .onCancel, add .onOK
+   //execDialogDefaultOnEsc
+    var dialog4 = new PocketCode.Ui.ScreenshotDialog();
+    ctl._dialogs.push(dialog4);
+
+    var onCancelCounter = 0;
+    var cancelHandler = function () {
+        onCancelCounter++;
+        assert.ok(onCancelCounter == 1, "onCancelHandler called");
+    };
+    dialog4.onCancel.addEventListener(new SmartJs.Event.EventListener(cancelHandler, this));
+    ctl.execDialogDefaultOnEsc();
+
+    var dialog5 = new PocketCode.Ui.BrowserNotSupportedDialog();
+    ctl._dialogs.push(dialog5);
+
+    var onOkCounter = 0;
+    var okHandler = function () {
+        onOkCounter++;
+        assert.ok(onOkCounter == 1, "onOkHandler called");
+    };
+    dialog5.onOK.addEventListener(new SmartJs.Event.EventListener(okHandler, this));
     ctl.execDialogDefaultOnEsc();
 
 });
