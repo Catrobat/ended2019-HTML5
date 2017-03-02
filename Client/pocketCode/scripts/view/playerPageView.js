@@ -143,9 +143,9 @@ PocketCode.Ui.PlayerPageView = (function () {
         showStartScreen: function (title, thumbnailUrl) {
             this._startScreen.title = title;
             if (thumbnailUrl == "null")
-                this._startScreen.previewImage = PocketCode.domain + '/images/default/screenshot.png';
+                this._startScreen._previewImage = PocketCode.domain + '/images/default/screenshot.png';
             else if (thumbnailUrl)
-                this._startScreen.previewImage = thumbnailUrl;
+                this._startScreen._previewImage = thumbnailUrl;
 
             this._startScreen.setProgress(0);
             this._startScreen.show();

@@ -110,6 +110,20 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.updateSprite("id0", { layer: -2 });
     assert.equal(controller._renderingSprite.indexOf(updatedSprite), updatedLayer, "Test sprite layer move out of front-bound");
 
+    //showAskDialog
+    var child = controller._view._childs.length;
+    controller.updateSprite("id0", { showAskDialog: updatedX});
+    var lastElement = controller._view._childs.length -1;
+    assert.ok(controller._view._childs.length == child +1 && controller._view._childs[lastElement] instanceof  PocketCode.Ui.AskDialog, "showAskDialog");
+
+    //penX, penY
+    controller.updateSprite("id0", { penX: 70, penY: 80 });
+    assert.ok(updatedSprite.penX == 70 && updatedSprite.penY == 80, "PenX and PenY set");
+
+    //controller.updateSprite("id0", { drawStamp: true });
+
+    //controller.updateSprite("id0", { clearBackground: true  });
+
     spriteWithLook1.setPosition(100, 200);
     // rendering variables
 
@@ -161,6 +175,11 @@ QUnit.test("PlayerViewportController", function (assert) {
 
     controller.hideAxes();
     assert.ok(controller._view.axisVisible == false, "Axes hidden again");
+
+    child = controller._view._childs.length;
+    controller.clearViewport();
+    assert.ok(controller._view._childs.length == child - 1, "clearViewport, child removed");
+    assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined")
 
 });
 

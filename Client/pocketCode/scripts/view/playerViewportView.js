@@ -1,4 +1,4 @@
-﻿﻿/// <reference path="../core.js" />
+﻿/// <reference path="../core.js" />
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
