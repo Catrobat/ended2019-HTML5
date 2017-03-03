@@ -11,6 +11,8 @@ QUnit.module("controller/playerPageController.js");
 
 QUnit.test("PlayerPageController", function (assert) {
 
+    var done1 = assert.async();
+
     var controller = new PocketCode.PlayerPageController();
     var gameEngine = new PocketCode.GameEngine();
 
@@ -18,16 +20,14 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.ok(controller._playerViewportController instanceof PocketCode.PlayerViewportController , "Instance check playerViewPortController");
     assert.ok(controller._axesVisible == false && controller._playerViewportController._projectScreenHeight == 320 && controller._playerViewportController._projectScreenWidth == 200, "_axesVisible, _projectScreenHeight, _projectScreenWitdh set");
 
-    //properties
+    // ********************* properties *********************
     var menu = controller.menu;
     assert.equal(menu,  controller._view._menu, "menu getter");
 
     controller._view._startScreen = new PocketCode.Ui.PlayerStartScreen();
-    var json = {title: "json1", thumbnailUrl: "null", baseUrl:""};
-
-    controller.projectDetails = json;
-    assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage == "https://share.catrob.at//images/default/screenshot.png", "projectDetails")
-
+    //var json = {title: "json1", thumbnailUrl: "null", baseUrl:""};
+    //controller.projectDetails = json;
+    //assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage == "https://share.catrob.at//images/default/screenshot.png", "projectDetails")
 
     assert.throws(function () { controller.project = 0; }, Error, "Set gameEngine not instanceof PocketCode.GameEngine");
     controller.project = gameEngine;
@@ -38,9 +38,114 @@ QUnit.test("PlayerPageController", function (assert) {
     controller.project = gameEngine2;
     assert.equal(gameEngine2, controller._gameEngine, "gameEngine set 2");
 
-    //methods
+
+    // ********************* methods *********************
+
+    var soundManager = new PocketCode.SoundManager();
+    var scene = new PocketCode.Model.Scene(gameEngine2, undefined, soundManager, []);
+    scene._id = "1";
+    gameEngine2._scenes = ({"1":scene});
+    gameEngine2._currentScene = scene;
+
+    var dialog = new PocketCode.Ui.Dialog();
+    var dialog2 = new PocketCode.Ui.Dialog();
+    controller._dialogs = [dialog, dialog2];
+    controller._gameEngine._executionState = 1;
+    controller._gameEngine._currentScene._executionState = 1;
+
+    //loadViewState
+    controller.loadViewState(3,1);
+    assert.ok(controller._dialogs.length == 1, "loadViewState: one dialog disposed");
+    assert.ok(scene._executionState == 3, "loadViewState: scene executionstate: paused");
+    assert.ok(controller._view.executionState == 3, "loadViewState: playerPageView executionstate: paused");
+
+    controller.loadViewState(1,1);
+    assert.ok(scene._executionState == 0, "loadViewState: scene executionstate: stopped");
+    assert.ok(controller._view.executionState == 1, "loadViewState: playerPageView executionstate: 1");
+
+    //enableView
+    controller._view._toolbar._backButtonDisabled = false;
+    controller._view._toolbar._screenshotButtonDisabled = false;
+    controller.enableView();
+    assert.ok(controller._view._toolbar._backButton.disabled == false &&
+        controller._view._toolbar._restartButton.disabled == false &&
+        controller._view._toolbar._screenshotButton.disabled == false &&
+        controller._view._startScreen._startButton.disabled == false &&
+        controller._view._startScreen._previewImage.className == "" , "enableView");
+
+    //actionOnGlobalError
+    controller._view._toolbar._backButtonDisabled = true;
+    controller._view._toolbar._screenshotButtonDisabled = true;
+    controller.actionOnGlobalError();
+    assert.ok(controller._view._toolbar._backButton.disabled == true &&
+        controller._view._toolbar._restartButton.disabled == true &&
+        controller._view._toolbar._screenshotButton.disabled == true &&
+        controller._view._startScreen._startButton.disabled == true &&
+        controller._view._startScreen._previewImage.className == "disabled" , "actionOnGlobalError");
+
+
+    var sprites = [];
+    var variables = [];
+    sprites.push(new PocketCode.Model.Sprite(gameEngine2, scene, { id: "id1", name: "sprite1"}).renderingSprite);
+    variables.push(new PocketCode.RenderingText({ id: "id1", x: 1, y: 3, text: "placeholder", visible: true }));
+    var param = {visible: false, reinit: false, screenSize: {width: 40, height: 50}, renderingSprites: sprites, renderingTexts: variables, id: "1" };
+
+    //_visibilityChangeHandler
+    scene._executionState = 5;
+    controller._visibilityChangeHandler(param);
+    assert.ok(controller._view._executionState = 3, "_visibilityChangeHandler: playerPageView executionState: paused");
+
+    //_beforeProjectStartHandler
+    controller._beforeProjectStartHandler(param);
+    assert.ok(controller._view._startScreen._dom.style.display == 'none', "_beforeProjectStartHandler: display: none");
+
+    //sceneChangedHandler
+    controller.sceneChangedHandler(param);
+    assert.ok(controller._playerViewportController._renderingSprite.length == 1 &&
+        controller._playerViewportController._renderingTexts.length == 1 &&
+        controller._playerViewportController._projectScreenWidth == 40 &&
+        controller._playerViewportController._projectScreenHeight == 50, "sceneChangedHandler, set renderingSprite, rengeringTexts, projectScrrenWidth/Height");
+
+    //_projectExecutedHandler
+    controller._projectExecutedHandler();
+    assert.ok(controller._view.executionState == 0, "_projectExecutedHandler: playerPageView executionstate: stopped");
+
+    //_showScreenshotDialog
+    var screenshotDialog = new PocketCode.Ui.ScreenshotDialog();
+    var oldId = screenshotDialog.id;
+    controller._screenshotDialog = screenshotDialog;
+    var imageSrc = "https://share.catrob.at/images/logo/logo_text.png";
+    var length_childs = controller._view._container._childs.length;
+    controller._showScreenshotDialog(imageSrc);
+    assert.ok(controller._screenshotDialog.id != oldId, "new screenshotdialog set");
+
+    assert.ok(controller._dialogs.length === 2, "add dialog at _showScreenshotDialog");
+    var lastElem = controller._view._container._childs.length -1;
+    assert.ok(controller._view._container._childs.length === length_childs +1 && controller._view._container._childs[lastElem] instanceof  PocketCode.Ui.Dialog, "appendChild in _showScreenshotDialog");
+    assert.ok(controller._screenshotDialog._onDownload._listeners.length == 1 &&
+        controller._screenshotDialog._onCancel._listeners.length == 1, "add EventListener at _showScreenshotDialog");
+
+    //_onUserActionHandler
+    var scene2 = new PocketCode.Model.Scene(gameEngine2, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine2, scene2, { id: "spriteId", name: "spriteName" });
+    gameEngine2._currentScene = scene2;
+    scene2._sprites.push(sprite);
+
+    function spriteTapped(e){
+        assert.equal(true, true, "sprite tapped dispatched");
+        assert.deepEqual(e.sprite, scene2._sprites[0], "correct sprite passed in on sprite clicked");
+        disposed();
+    }
+
+    scene2._onSpriteTappedAction.addEventListener(new SmartJs.Event.EventListener(spriteTapped));
+    controller._onUserActionHandler({action: PocketCode.UserActionType.SPRITE_CLICKED, targetId: scene2._sprites[0].id});
+
+    //dispose
+    function disposed() {
+        controller.dispose();
+        assert.ok(controller._disposed == true, "controller disposed");
+        done1();
+    }
+
 
 });
-
-
-
