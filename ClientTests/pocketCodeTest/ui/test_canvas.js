@@ -61,6 +61,7 @@ QUnit.test("Canvas", function (assert) {
 
     assert.equal(canvas.contextTop, canvas._upperCanvasCtx, "upper context accessor");
 
+
     canvas.setDimensions(80, 40, 1, 1);
     is.loadImages(baseUrl, images, 1);
 
@@ -86,6 +87,7 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.renderingSprites = [renderingSpriteOpaque];
         canvas.render();
+
         assert.notOk(canvas._isTargetTransparent(renderingSpriteOpaque, renderingSpriteOpaque), "target not transparent");
 
         var canvasELement = canvas._spritesCanvasEl,
@@ -252,6 +254,7 @@ QUnit.test("Canvas", function (assert) {
 
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.initScene("id", { width: 400, height: 800 });    //required for screenshot rendering
+        //davor undefined
         canvas.setDimensions(80, 40, viewportScaling, viewportScaling);
 
         assert.equal(canvas._backgroundCanvasEl.height, 40, 'setDimensions sets height for background canvas');
@@ -298,15 +301,16 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.renderingSprites = [mockrenderingSprite];
         canvas.renderingTexts = [mockRenderingText];
-
+        //weiß
         canvas.scale(viewportScaling, viewportScaling); //scale triggers a render()
-
         canvas.render();
+
         assert.equal(contextScaling, viewportScaling, "viewportScaling used to scale context if it exists");
         assert.equal(drawCalledrenderingSprite, 2, "renderingSprite draw called on rendering");
         assert.equal(drawCalledRenderingText, 2, "renderingText draw called on rendering");
 
         canvas.render();
+
         assert.equal(contextScaling, canvas._scalingX, "canvas scalingX used to scale context if no viewportScaling passed");
 
         canvas.renderingSprites = [renderingSpriteOpaque];
@@ -328,83 +332,107 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.setDimensions(80, 40, 1, 1);
         canvas.render();
+        //roter punkt
+
 
         // draw the image at pc-canvas coordinates on standard canvas
         var imageWidth = renderingSpriteOpaque._width, imageHeight = renderingSpriteOpaque._height;
         screenshotCanvasContext.drawImage(renderingSpriteOpaque._cacheCanvas, -imageWidth * 0.5, -imageHeight * 0.5);
         assert.ok(screenshotCanvas.toDataURL() == canvas.toDataURL(80, 40), 'Screenshot is correct');
 
-        //movePen
-        var ri = new PocketCode.RenderingItem({ id: "s01" , penX: 0, penY: 0});
 
-        canvas.renderingSprite = ri;
-        var penSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "s01", name: "myName", x: 0, y: 0, penX: 0, penY: 0, penDown: false});
-
-        var penCanvas = new PocketCode.Ui.Canvas();
-        penCanvas.renderingSprite = penSprite;
-        penCanvas.renderingSprite.penX = 10;
-        penCanvas.renderingSprite.penDown = true;
-
-        assert.equal(canvas.movePen("s01", 10, 0), penCanvas.movePen(), "Pen moved right");
-
-        penCanvas.renderingSprite.penX = 0;
-        penCanvas.renderingSprite.penY = 10;
-
-        assert.equal(canvas.movePen("s01", 0, 10), penCanvas.movePen(), "Pen moved top");
-
-        penCanvas.renderingSprite.penX = -10;
-        penCanvas.renderingSprite.penY = 0;
-
-        assert.equal(canvas.movePen("s01", -10, 0), penCanvas.movePen(), "Pen moved left");
-
-        penCanvas.renderingSprite.penX = 0;
-        penCanvas.renderingSprite.penY = -10;
-
-        assert.equal(canvas.movePen("s01", 0, 10), penCanvas.movePen(), "Pen moved bottom");
-
-        //drawStamp
-        penCanvas.renderingSprite.penY = 0;
-
-        assert.equal(canvas.drawStamp("s01"), penCanvas.drawStamp(), "drawStamp");
-
-        //test with canvas
-        canvas.initScene("pen1", { width: 400, height: 800 });
-
-        var tmp = canvas.toDataURL(400, 800);
-        canvas.penDown = true;
-        canvas.x = 200;
-
-        var tmp2 = canvas.toDataURL(400, 800);
-
-
-        assert.notEqual(tmp, tmp2, "Pen moved right");
-
-        canvas.initScene("pen2", { width: 400, height: 800 });
-        var tmp = canvas.toDataURL(400, 800);
-        canvas.penDown = true;
-        canvas.y = 200;
-
-        var tmp3 = canvas.toDataURL(400, 800);
-        assert.notEqual(tmp, tmp3, "Pen moved up");
-
-        canvas.initScene("pen1", { width: 400, height: 800 });
-        assert.equal(canvas.toDataURL(400, 800), tmp2, "scene cached and reloaded");
-
-        //clearPenStampCanvas
-        assert.equal(canvas.clearPenStampCanvas(), undefined, "penStampCanvas cleared");
-
-        //clearCurrentPenStampCache
-        assert.equal(canvas.clearCurrentPenStampCache(), undefined, "clearCurrentPenStampCache cleared");
-
-        //clearPenStampCache
-        assert.equal(canvas.clearPenStampCache(), undefined, "clearPenStampCache cleared");
 
         canvas.dispose();
-        penCanvas.dispose();
         assert.equal(canvas._disposed, true, "canvas disposed");
-        assert.equal(penCanvas._disposed, true, "penCanvas disposed");
 
         done();
     };
 
+});
+
+QUnit.test("Canvas: tests for pen/stamp functions", function (assert) {
+
+    var done = assert.async();
+
+    //movePen
+    var penrenderingSprite = new PocketCode.RenderingSprite({id: "pen1", penDown: false, penX: 0, penY: 0, penColor: { r: 0, g: 255, b: 0 }});
+
+    penrenderingSprite.x = 0;
+    penrenderingSprite.y = 0;
+    penrenderingSprite.penDown = true;
+    penrenderingSprite.penX = 0;
+    penrenderingSprite.penY = 0;
+
+    var penCanvas = new PocketCode.Ui.Canvas();
+    penCanvas.initScene("penScene1", {width: 400, height: 400});
+    penCanvas._renderingSprites = [penrenderingSprite];
+    penCanvas.renderingSprites;
+
+    assert.equal(penCanvas.movePen("pen1", 10, 0), penCanvas._renderingSprites.id && penCanvas._renderingSprites.penX && penCanvas._renderingSprites.penY, "Pen moved right");
+
+    penCanvas._renderingSprites.penX = 0;
+    penCanvas._renderingSprites.penY = 10;
+
+    assert.equal(penCanvas.movePen("pen1", 0, 10), penCanvas._renderingSprites.id && penCanvas._renderingSprites.penX && penCanvas._renderingSprites.penY, "Pen moved top");
+
+    penCanvas._renderingSprites.penX = -10;
+    penCanvas._renderingSprites.penY = 0;
+
+    assert.equal(penCanvas.movePen("pen1", -10, 0), penCanvas._renderingSprites.id && penCanvas._renderingSprites.penX && penCanvas._renderingSprites.penY, "Pen moved left");
+
+    penCanvas._renderingSprites.penX = 0;
+    penCanvas._renderingSprites.penY = -10;
+
+    assert.equal(penCanvas.movePen("pen1", 0, 10), penCanvas._renderingSprites.id && penCanvas._renderingSprites.penX && penCanvas._renderingSprites.penY, "Pen moved bottom");
+
+    //drawStamp
+    penCanvas._renderingSprites.penY = 0;
+
+    assert.equal(penCanvas.drawStamp("pen1"), penCanvas._renderingSprites.id, "drawStamp");
+
+    //test with drawing on the canvas
+    penCanvas.initScene("penScene1", { width: 400, height: 400 });
+
+    var tmp = penCanvas.toDataURL(400, 400);
+    penCanvas.movePen("pen1", 100, 0);
+    var tmp_right = penCanvas.toDataURL(400, 400);
+    assert.notEqual(tmp, tmp_right, "Pen moved right");
+
+    penCanvas.initScene("penScene2", { width: 400, height: 400 });
+    var tmp = penCanvas.toDataURL(400, 400);
+    penCanvas.movePen("pen1", 0, 100);
+    var tmp_top = penCanvas.toDataURL(400, 400);
+    assert.notEqual(tmp, tmp_top, "Pen moved up");
+
+    penCanvas.initScene("penScene3", { width: 400, height: 400 });
+    var tmp = penCanvas.toDataURL(400, 400);
+    penCanvas.movePen("pen1", -100, 0);
+    var tmp_left = penCanvas.toDataURL(400, 400);
+    assert.notEqual(tmp, tmp_left, "Pen moved left");
+
+    penCanvas.initScene("penScene4", { width: 400, height: 400 });
+    var tmp = penCanvas.toDataURL(400, 400);
+    penCanvas.movePen("pen1", 0, -100);
+    var tmp_down = penCanvas.toDataURL(400, 400);
+    assert.notEqual(tmp, tmp_down, "Pen moved down");
+
+    penCanvas.initScene("penScene1", { width: 400, height: 400 });
+    assert.equal(penCanvas.toDataURL(400, 400), tmp_right, "scene cached and reloaded");
+
+    //clearPenStampCanvas
+    penCanvas.clearPenStampCanvas();
+    assert.ok(penCanvas.clearPenStampCanvas, "penStampCanvas cleared");
+
+    //clearCurrentPenStampCache
+    penCanvas.clearCurrentPenStampCache();
+    assert.ok(penCanvas.clearCurrentPenStampCache, "clearCurrentPenStampCache cleared");
+
+    //clearPenStampCache
+    penCanvas.clearPenStampCache();
+    assert.ok(penCanvas.clearPenStampCache, "clearPenStampCache cleared");
+
+    penCanvas.dispose();
+    assert.equal(penCanvas._disposed, true, "penCanvas disposed");
+
+    done();
 });

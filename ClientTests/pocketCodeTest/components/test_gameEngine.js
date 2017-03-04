@@ -1,5 +1,6 @@
 ﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
+/// <reference path="E:/Programmieren/Test/817.catrobat" />
 'use strict';
 
 QUnit.module("components/gameEngine.js");
@@ -98,68 +99,6 @@ QUnit.test("GameEngine", function (assert) {
     assert.ok(soundsMatch, "Sounds set correctly");
     assert.equal(soundMgr._registeredFiles.length, testProjectSounds.sounds.length, "sounds loaded: list length compare only");
 
-    //-----------------------------------------------------
-    /*
-    //add resource path to url
-    var testProject = JSON.parse(JSON.stringify( strProject719));
-    testProject.resourceBaseUrl = "";
-    for(i = 0, l = testProject.sounds.length; i< l; i++){
-        testProject.sounds[i].url = "_resources/"+testProject.sounds[i].url;
-    }
-
-    for(i = 0, l = testProject.images.length; i< l; i++){
-        testProject.images[i].url = "_resources/"+testProject.images[i].url;
-    }
-
-
-
-    var loadingHandled = assert.async();
-    var disposedHandled = assert.async();
-
-    //make sure sounds not already loaded
-    gameEngine._soundManager = new PocketCode.SoundManager();
-    //internal bindings have to be reattached to guarantee loading flags are set
-    gameEngine._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(gameEngine._resourceLoadingErrorHandler, gameEngine));
-    gameEngine._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(gameEngine._resourceProgressChangeHandler, gameEngine));
-    //gameEngine._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(gameEngine._spriteOnExecutedHandler, gameEngine));
-    //check if project has finished executing
-
-    // todo finsish on loading error and/or timeout
-    var calledNotReadyTestOnce = false;
-    gameEngine.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(function (e) {
-        if (e.progress !== 100) {
-            if (!calledNotReadyTestOnce) {
-                assert.ok(!gameEngine.projectLoaded, "Program not ready if loading not done");
-                calledNotReadyTestOnce = true;
-            }
-            return;
-        }
-    }));
-    gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(function (e) {
-        // assert.ok(gameEngine._soundsLoaded, "Set soundsLoaded to true when loading sounds is done");
-        assert.ok(gameEngine.projectLoaded, "Program ready set to true after loading is done");
-        loadingHandled();
-
-        window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get disposed before all tests were finished
-        //testDispose();
-
-        //var gameEngine2 = new PocketCode.GameEngine();
-        //gameEngine2.loadProject(strProject14);
-    }));
-
-
-    //make sure the testProject contains loadable sounds
-    //gameEngine.loadProject(testProjectSounds);
-
-
-    //finish async tests if browser does not support sounds
-    //TODO: QUICK FIX:if (!gameEngine._soundManager.supported) {
-    loadingHandled();
-    //window.setTimeout(function () { testDispose(); }, 20);  //make sure the test gameEngine doesn't get sidposed before all tests were finished
-    testDispose();
-    //}
-    */
-
     return;
 
 });
@@ -245,18 +184,37 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
     return;
 });
 
-/*
+
 QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    gameEngine.__currentScene = scene;
+    //var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    //gameEngine.__currentScene = scene;
 
-    var testProject = strProject1976;
-    gameEngine.loadProject(testProject);
+    //var testProject = strProject817;
+    gameEngine.loadProject(strProject817);
+    //gameEngine.executionState;
+    gameEngine.startScene("s1");
 
+    gameEngine._resourcesLoaded = true;
+    assert.ok(gameEngine.projectLoaded, "Project loaded");
 
+    assert.ok(gameEngine.onLoadingProgress, "onLoadingProgress");
+    assert.ok(gameEngine.onSceneChange, "onSceneChange");
+    assert.ok(gameEngine.onLoad, "onLoad");
+    assert.ok(gameEngine.onLoadingError, "onLoadingError");
+    assert.ok(gameEngine.onBeforeProgramStart, "onBeforeProgramStart");
+    assert.ok(gameEngine.onProgramExecuted, "onProgramExecuted");
+
+    gameEngine.runProject();
+    gameEngine._executionState = 1;
+    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Project running");
+
+    gameEngine.restartProject();
+    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "restartProject");
+
+    gameEngine.resumeOrStartScene("s1");
+    assert.ok(gameEngine.resumeOrStartScene("s1"), "resumeOrStartScene");
 
     return;
 });
-*/
