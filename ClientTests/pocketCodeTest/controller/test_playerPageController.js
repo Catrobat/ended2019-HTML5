@@ -12,6 +12,8 @@ QUnit.module("controller/playerPageController.js");
 QUnit.test("PlayerPageController", function (assert) {
 
     var done1 = assert.async();
+    var done2 = assert.async();
+
 
     var controller = new PocketCode.PlayerPageController();
     var gameEngine = new PocketCode.GameEngine();
@@ -93,7 +95,7 @@ QUnit.test("PlayerPageController", function (assert) {
     //_visibilityChangeHandler
     scene._executionState = 5;
     controller._visibilityChangeHandler(param);
-    assert.ok(controller._view._executionState = 3, "_visibilityChangeHandler: playerPageView executionState: paused");
+    assert.ok(controller._view.executionState == 3, "_visibilityChangeHandler: playerPageView executionState: paused");
 
     //_beforeProjectStartHandler
     controller._beforeProjectStartHandler(param);
@@ -124,6 +126,51 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.ok(controller._view._container._childs.length === length_childs +1 && controller._view._container._childs[lastElem] instanceof  PocketCode.Ui.Dialog, "appendChild in _showScreenshotDialog");
     assert.ok(controller._screenshotDialog._onDownload._listeners.length == 1 &&
         controller._screenshotDialog._onCancel._listeners.length == 1, "add EventListener at _showScreenshotDialog");
+
+    //_buttonClickedHandler
+    controller._view.executionState = 1;
+    param = {command: PocketCode.Ui.PlayerBtnCommand.PAUSE};
+    controller._buttonClickedHandler(param);
+    assert.ok(controller._view.executionState == 3, "_buttonClickedHandler PAUSE: playerPageView executionState: paused");
+
+    controller._view.executionState = 1;
+    var oldId = controller._screenshotDialog.id;
+    param = {command: PocketCode.Ui.PlayerBtnCommand.SCREENSHOT};
+    controller._buttonClickedHandler(param);
+    assert.ok(controller._view.executionState == 3, "_buttonClickedHandler SCREENSHOT: playerPageView executionState: paused");
+    assert.ok(controller._screenshotDialog.id != oldId, "_buttonClickedHandler: new screenshotDialog");
+
+    param = {command: PocketCode.Ui.PlayerBtnCommand.AXES};
+    controller._buttonClickedHandler(param);
+    assert.ok(controller._playerViewportController._view._axesVisible == true &&
+        controller._view._toolbar._axesButton.checked == true &&
+        controller._axesVisible == true, "_buttonClickedHandler: show axes");
+    controller._buttonClickedHandler(param);
+    assert.ok(controller._playerViewportController._view._axesVisible == false &&
+        controller._view._toolbar._axesButton.checked == false &&
+        controller._axesVisible == false, "_buttonClickedHandler: hide axes");
+
+    param = {command: PocketCode.Ui.PlayerBtnCommand.RESTART};
+    controller._buttonClickedHandler(param);
+
+    gameEngine2._startScene = scene;
+    gameEngine2._resourcesLoaded = true; //project loaded
+    gameEngine2._scenesLoaded = true;
+    param = {command: PocketCode.Ui.PlayerBtnCommand.START};
+    controller._buttonClickedHandler(param);
+
+    //_menuActionHandler
+    param = {command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: true};
+    controller._menuActionHandler(param);
+    assert.ok(controller._playerViewportController._zoomToFit == true, "_menuActionHandler FULLSCREEN, zoomToFit = true");
+
+    var languageChangeHandler = function (e) {
+        assert.equal(e.language, "en", "_menuActionHandler LANGUAGE_CHANGE, language changed");
+        done2();
+    };
+    param = {command: PocketCode.Player.MenuCommand.LANGUAGE_CHANGE, languageCode: "en-GB"};
+    controller._menuActionHandler(param);
+    PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler, this));
 
     //_onUserActionHandler
     var scene2 = new PocketCode.Model.Scene(gameEngine2, undefined, undefined, []);
