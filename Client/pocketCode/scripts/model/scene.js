@@ -313,26 +313,26 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].stopAllScripts(calledFromStopBrick);
             }
         },
-        _spriteOnExecutedHandler: function (e) {    //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
-            //    window.setTimeout(function () {
-            //        if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
-            //            return;
-            //        if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
-            //            return; //still waiting for user interaction
+        _spriteOnExecutedHandler: function (e) {
+            window.setTimeout(function () {
+                if (this._disposed || this.executionState === PocketCode.ExecutionState.STOPPED)   //do not trigger event more than once
+                    return;
+                if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
+                    return; //still waiting for user interaction
 
-            //        //if (this._soundManager.isPlaying)
-            //        //    return;
-            //        if (this._background && this._background.scriptsRunning)
-            //            return;
-            //        var sprites = this._sprites;
-            //        for (var i = 0, l = sprites.length; i < l; i++) {
-            //            if (sprites[i].scriptsRunning)
-            //                return;
-            //        }
+                if (this._soundManager.isPlaying(this._id))
+                    return;
+                if (this._background && this._background.scriptsRunning)
+                    return;
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    if (sprites[i].scriptsRunning)
+                        return;
+                }
 
-            //        this._executionState = PocketCode.ExecutionState.STOPPED;
-            //        this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
-            //    }.call(this), 100);  //delay neede to allow other scripts to start
+                this._executionState = PocketCode.ExecutionState.STOPPED;
+                this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
+            }.call(this), 100);  //delay neede to allow other scripts to start
         },
         handleUserAction: function (e) {
             switch (e.action) {
@@ -390,7 +390,7 @@ PocketCode.Model.Scene = (function () {
 
             this._background.subscribeOnLookChange(lookId, changeHandler);
         },
-        unsubscribeFromBackgroundChange: function(lookId, changeHandler) {
+        unsubscribeFromBackgroundChange: function (lookId, changeHandler) {
             if (!this._background)
                 return;
 
@@ -481,6 +481,7 @@ PocketCode.Model.Scene = (function () {
             var sprite = this.getSpriteById(id),
                 layer = this.getSpriteLayer(sprite),
                 clone = sprite.clone(this._device, this._soundManager, this._broadcastMgr);
+            clone.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
 
             this._sprites.insert(layer - 1, clone); //adding at position from original sprite
 
@@ -497,7 +498,9 @@ PocketCode.Model.Scene = (function () {
             if (!(clone instanceof PocketCode.Model.SpriteClone))
                 return;
 
+            clone.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
             this._sprites.remove(clone);
+            this._spriteOnExecutedHandler();    //call executed handler: the clone may be the last running script
             clone.dispose(); //dispose results in an error: hanging project 965 (dispose will stop scripts- no broadcastWait callback?)
             //window.setTimeout(clone.dispose.bind(clone), 50);   //dispose with delay to make sure scripts are not stopped immediately
             this._onUiChange.dispatchEvent();   //to remove clone from rendering sprites
