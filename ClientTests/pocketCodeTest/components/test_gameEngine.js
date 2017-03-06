@@ -103,6 +103,7 @@ QUnit.test("GameEngine", function (assert) {
 
 });
 
+
 QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();

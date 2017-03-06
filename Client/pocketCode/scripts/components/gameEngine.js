@@ -256,7 +256,7 @@ PocketCode.GameEngine = (function () {
                 scene.onUiChange.addEventListener(new SmartJs.Event.EventListener(this._dispatchOnSceneChange, this));
                 this._scenes[jsonScenes[i].id] = scene; //id not set until loaded
 
-                //TODO: bind to scene.onExecuted.. check for this._soundManager.isPlaying(this._currentScene) to check
+                scene.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._sceneExecutedHandler, this));
                 scene.load(jsonScenes[i]);
 
                 if (i == 0)
@@ -306,6 +306,10 @@ PocketCode.GameEngine = (function () {
         _sceneUnsupportedBricksHandler: function (e) {
             this._loadingAlerts.unsupportedBricks = this._loadingAlerts.unsupportedBricks.concat(e.unsupportedBricks);
             //this._onLoadingAlert.dispatchEvent({ bricks: e.unsupportedBricks });
+        },
+        _sceneExecutedHandler: function (e) {
+            if (e.target == this._currentScene)
+                this.this._onProgramExecuted.dispatchEvent();
         },
         //todo this initsialises all spritest from all scenes -> might be too much
         //_initSceneSprites: function () {
@@ -429,16 +433,16 @@ PocketCode.GameEngine = (function () {
             window.setTimeout(this.runProject.bind(this, reinitSprites), 100);   //some time needed to update callstack (running methods), as this method is called on a system (=click) event
         },
         pauseProject: function () {
-            if(this._device)
-            this._device.pause();
+            if (this._device)
+                this._device.pause();
             if (this._currentScene)
                 return this._currentScene.pause();
             return false;
         },
         resumeProject: function () {
             //console.log("current scene :", this._currentScene);
-            if(this._device)
-            this._device.resume();
+            if (this._device)
+                this._device.resume();
             if (this._currentScene)
                 return this._currentScene.resume();
             return false;
@@ -556,8 +560,11 @@ PocketCode.GameEngine = (function () {
             this._imageStore.abortLoading();
             //this._imageStore.dispose();
 
+            var scene;
             for (var id in this._scenes) {
-                this._scenes[id].dispose();
+                scene = this._scenes[id];
+                scene.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._sceneExecutedHandler, this));
+                scene.dispose();
                 delete this._scenes[id];
             }
 
