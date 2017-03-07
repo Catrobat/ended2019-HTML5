@@ -351,26 +351,27 @@ QUnit.test("Scene", function (assert) {
 
         scene2.setGravity(2, 2);
 
+        var renderingSprites = scene2.renderingSprites;
+        assert.equal(renderingSprites.length , scene2._sprites.length+1 , "correct number of rendering sprites returned");
+
+        for(var i=0; i< renderingSprites.length; i++){
+            assert.ok(renderingSprites[i] instanceof  PocketCode.RenderingSprite, "renderingSprite is instanceof RenderingSprite");
+        }
 
 
+        var renderingVariables = scene2.renderingVariables;
+        var rendVarLength =0;
 
+        for(var i=0; i< scene2._sprites.length; i++){
+            rendVarLength += scene2._sprites[i].renderingVariables.length;
+        }
 
-
-
-
-
-
-
-
-
-
-
-
+        rendVarLength +=  scene2._background.renderingVariables.length;
+        assert.equal(renderingVariables.length, rendVarLength, "renderingVariables returns correct number of variables");
 
         setTimeout(validate, 10);
 
     }
-
     function validate() {
         clone = scene2._sprites[0];
 
