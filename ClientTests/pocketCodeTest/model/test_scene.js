@@ -20,6 +20,8 @@ var TestSprite = (function () {
         this.subscribeOnLookChangeCounter = 0;
         this.unsubscribeFroLookChangeCounter = 0;
         this.setPositionCounter = 0;
+        this.onCloneStart = new SmartJs.Event.Event(this);
+        this.isClone = false;
     }
 
     TestSprite.prototype.merge({
@@ -58,6 +60,11 @@ var TestSprite = (function () {
         },
         setPosition: function () {
             this.setPositionCounter++;
+        },
+        clone:function(){
+            var clone = new TestSprite(this._gameEngine, this._scene, this._json);
+            clone.isClone = true;
+            return clone;
         }
     });
 
@@ -171,7 +178,15 @@ QUnit.test("Scene", function (assert) {
             onStartDispatched = true;
 
         }
+        var sceneExecuted = assert.async();
+        //var allFinished = assert.async();
 
+        function onExecuted(){
+
+            assert.equal(scene2._executionState, PocketCode.ExecutionState.STOPPED, " scene stopped after execution");
+            sceneExecuted();
+        }
+        scene2._onExecuted = new SmartJs.Event.EventListener(onExecuted);
         scene2._onStart.addEventListener(new SmartJs.Event.EventListener(onStart));
         var result = scene2.start();
         assert.equal(onStartDispatched, true, "onStart event dispatched");
@@ -193,7 +208,7 @@ QUnit.test("Scene", function (assert) {
         assert.equal(scene2._background.status, PocketCode.ExecutionState.PAUSED, "background scripts are paused");
         scene2.resume(true);
 
-        var allScriptsResumed = 0;
+        var allScriptsResumed = true;
         for (var i = 0; i < scene2._sprites.length; i++) {
             if (scene2._sprites[i].status != PocketCode.ExecutionState.RUNNING) {
                 allScriptsResumed = false;
@@ -330,6 +345,7 @@ QUnit.test("Scene", function (assert) {
         scene2._physicsWorld = {
             setGravity: function (x, y) {
                 assert.equal(true, true, "Set gravity called in physicsWorld");
+                //allFinished();
             }
         };
 
@@ -359,7 +375,7 @@ QUnit.test("Scene", function (assert) {
         clone = scene2._sprites[0];
 
 
-        assert.ok(clone instanceof PocketCode.Model.SpriteClone, "clone create successful");
+        assert.ok(clone.isClone, "clone create successful");
 
         var b = new PocketCode.Model.WhenStartAsCloneBrick("device", clone, { id: "spriteId" });
 

@@ -332,7 +332,7 @@ PocketCode.Model.Scene = (function () {
 
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecuted.dispatchEvent();    //check if project has been executed successfully: this will never happen if there is an endlessLoop or whenTapped brick 
-            }.call(this), 100);  //delay neede to allow other scripts to start
+            }.bind(this), 100);  //delay neede to allow other scripts to start
         },
         handleUserAction: function (e) {
             switch (e.action) {
