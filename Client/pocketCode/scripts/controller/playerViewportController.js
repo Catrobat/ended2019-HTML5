@@ -83,14 +83,10 @@ PocketCode.PlayerViewportController = (function () {
             else if (properties.drawStamp == true) {
                 this._view.drawStamp(spriteId);
                 delete properties.drawStamp;
-                if (Object.keys(properties).length == 0)
-                    return;
             }
             else if (properties.clearBackground == true) {
                 this._view.clearCurrentPenStampCache();
                 delete properties.clearBackground;
-                if (Object.keys(properties).length == 0)
-                    return;
             }
 
             for (var i = 0, l = imgs.length; i < l; i++) {

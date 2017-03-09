@@ -48,10 +48,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     for (var i = 1; i < 5; i++) {
         sprites.push(new PocketCode.Model.Sprite(gameEngine, scene, { id: "id" + i, name: "sprite" + i }).renderingSprite);
     }
-    // init with sprites without looks
-    controller.renderingSprites = sprites;
-    //assert.ok(controller._renderingSprite.length == 0, "Check rendering images init with no sprite having a look");
-    //^^ nonsense: even a sprite without a look has a layer
+
     var testLook = { id: "id_0", resourceId: "resourceId_0", name: "first" };
     var spriteWithLook1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [testLook] });
     var canvas = document.createElement('canvas');
@@ -90,8 +87,6 @@ QUnit.test("PlayerViewportController", function (assert) {
     assert.equal(updatedSprite.x, updatedX, "Updated Sprite x position");
     assert.equal(updatedSprite.y, updatedY, "Updated Sprite y position");
 
-    //test other sprite changes ? part of renderingSprite tests, as other changes are propagated directly
-
     // layer moving
     var oldLayer = 2;
     assert.ok(controller._renderingSprite.indexOf(updatedSprite) == oldLayer, "Test sprite layer");
@@ -116,14 +111,42 @@ QUnit.test("PlayerViewportController", function (assert) {
     var lastElement = controller._view._childs.length -1;
     assert.ok(controller._view._childs.length == child +1 && controller._view._childs[lastElement] instanceof  PocketCode.Ui.AskDialog, "showAskDialog");
 
+    var args;
+    var render = 0;
+    var mockView =  {
+        movePen: function (spriteId, penX, penY) {
+            args = {spriteId: spriteId, penX: penX, penY: penY};
+        },
+        drawStamp: function (spriteId) {
+            args = {spriteId: spriteId};
+        },
+        clearCurrentPenStampCache: function () {
+            args = {clear: 1};
+        },
+        render: function () {
+            render++;
+        }
+    };
+    assert.ok(typeof controller._view.movePen == "function" &&
+        typeof controller._view.drawStamp == "function" &&
+        typeof controller._view.clearCurrentPenStampCache == "function", "check interface");
+
+    var tempView = controller._view;
+    controller._view = mockView;
+
     //penX, penY
     controller.updateSprite("id0", { penX: 70, penY: 80 });
-    assert.ok(updatedSprite.penX == 70 && updatedSprite.penY == 80, "PenX and PenY set");
+    assert.ok(args.spriteId == "id0" && args.penX == 70 && args.penY == 80, "updateSprite movePen");
 
-    //controller.updateSprite("id0", { drawStamp: true });
+    controller.updateSprite("id0", { drawStamp: true });
+    assert.ok(args.spriteId == "id0", "updateSprite drawStamp");
 
-    //controller.updateSprite("id0", { clearBackground: true  });
+    controller.updateSprite("id0", { clearBackground: true  });
+    assert.ok(args.clear == 1, "updateSprite clearCurrentPenStampCache");
 
+    assert.ok(render == 3, "render called 3 times");
+
+    controller._view = tempView;
     spriteWithLook1.setPosition(100, 200);
     // rendering variables
 
@@ -137,7 +160,7 @@ QUnit.test("PlayerViewportController", function (assert) {
     for (var i = 0; i < 5; i++) {
         variables.push(new PocketCode.RenderingText({ id: "id" + i, x: i, y: i * 3, text: "placeholder", visible: true }));
     }
-
+    variables[0]._objectId = "id";
     controller.renderingTexts = variables;
     assert.ok(controller._renderingTexts.length == 5, "Check rendering variables init");
 
@@ -150,16 +173,13 @@ QUnit.test("PlayerViewportController", function (assert) {
         }
     };
 
-    var testedVariable = getVariableById("id0");
-    controller.updateVariable(undefined, "id0", { x: 5, y: 3 });    //TODO: rewrite test using an object id instead of undefined
+    controller.updateVariable("id", "id0", { x: 5, y: 3 });
 
-    testedVariable = getVariableById("id0");
+    var testedVariable = getVariableById("id0");
     assert.equal(testedVariable.x, 5, "Updated Variable x position");
-    assert.ok(testedVariable.y, 3, "Updated Variable y position");
+    assert.equal(testedVariable.y, 3, "Updated Variable y position");
     var scr = controller.takeScreenshot();
     assert.ok(scr != undefined, "Screenshot generated");
-
-    // TODO compare screenshots... not possible without accessing private vars, move to view tests?
 
     // test various axes visibility states consecutively
     controller.hideAxes();
@@ -179,7 +199,6 @@ QUnit.test("PlayerViewportController", function (assert) {
     child = controller._view._childs.length;
     controller.clearViewport();
     assert.ok(controller._view._childs.length == child - 1, "clearViewport, child removed");
-    assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined")
-
+    assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined");
 });
 

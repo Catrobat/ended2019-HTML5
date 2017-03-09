@@ -27,9 +27,9 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.equal(menu,  controller._view._menu, "menu getter");
 
     controller._view._startScreen = new PocketCode.Ui.PlayerStartScreen();
-    //var json = {title: "json1", thumbnailUrl: "null", baseUrl:""};
-    //controller.projectDetails = json;
-    //assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage == "https://share.catrob.at//images/default/screenshot.png", "projectDetails")
+    var json = {title: "json1", thumbnailUrl: "null", baseUrl:""};
+    controller.projectDetails = json;
+    assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage.src == "https://share.catrob.at//images/default/screenshot.png", "projectDetails")
 
     assert.throws(function () { controller.project = 0; }, Error, "Set gameEngine not instanceof PocketCode.GameEngine");
     controller.project = gameEngine;
@@ -149,15 +149,6 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.ok(controller._playerViewportController._view._axesVisible == false &&
         controller._view._toolbar._axesButton.checked == false &&
         controller._axesVisible == false, "_buttonClickedHandler: hide axes");
-
-    param = {command: PocketCode.Ui.PlayerBtnCommand.RESTART};
-    controller._buttonClickedHandler(param);
-
-    gameEngine2._startScene = scene;
-    gameEngine2._resourcesLoaded = true; //project loaded
-    gameEngine2._scenesLoaded = true;
-    param = {command: PocketCode.Ui.PlayerBtnCommand.START};
-    controller._buttonClickedHandler(param);
 
     //_menuActionHandler
     param = {command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: true};
