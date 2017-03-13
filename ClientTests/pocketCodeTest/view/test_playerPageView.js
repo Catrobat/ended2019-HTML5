@@ -81,12 +81,6 @@ QUnit.test("PlayerPageView", function (assert) {
 
     // ********************* events *********************
 
-    /*function onToolbarButtonClicked(){
-        assert(true, "onToolbarButtonClicked Event dispatched");
-        done1();
-    }
-    PlayerPageView.onToolbarButtonClicked.addEventListener(new SmartJs.Event.EventListener(onToolbarButtonClicked));*/
-
     assert.ok(PlayerPageView.onToolbarButtonClicked instanceof SmartJs.Event.Event, "onToolbarButtonClicked getter");
     assert.ok(PlayerPageView.onMenuAction instanceof SmartJs.Event.Event, "onMenuAction getter");
     assert.ok(PlayerPageView.onMenuOpen instanceof SmartJs.Event.Event, "onMenuOpen getter");
@@ -98,11 +92,8 @@ QUnit.test("PlayerPageView", function (assert) {
     //showStartScreen
     PlayerPageView.showStartScreen("title1", "null");
     assert.ok(PlayerPageView._startScreen.title == "title1" &&
-        PlayerPageView._startScreen._previewImage == "https://share.catrob.at//images/default/screenshot.png", "title and previewImage set");
-    assert.ok(PlayerPageView._startScreen._dom.style.display == "", "display == ''");
-    PlayerPageView.showStartScreen("title2", "url");
-    assert.ok(PlayerPageView._startScreen.title == "title2" &&
-        PlayerPageView._startScreen._previewImage == "url", "title and previewImage set 2");
+        PlayerPageView._startScreen._previewImage.src == "https://share.catrob.at//images/default/screenshot.png", "title and previewImage set");
+    assert.ok(PlayerPageView._startScreen._dom.style.display == "", "display == ' '");
 
     //hideStartScreen
     PlayerPageView.hideStartScreen();
@@ -117,5 +108,4 @@ QUnit.test("PlayerPageView", function (assert) {
     //closeMenu
     PlayerPageView.closeMenu();
     assert.ok(PlayerPageView._menu._subMenu._dom.style.display == "none", "close menu, submenu display: none");
-    //assert.ok(PlayerPageView._menu._menuButton._dom.className == "", "classname removed");
 });
