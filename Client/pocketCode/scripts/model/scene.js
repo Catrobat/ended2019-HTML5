@@ -371,6 +371,8 @@ PocketCode.Model.Scene = (function () {
 
             throw new Error('unknown sprite with name: ' + spriteName);
         },
+
+        //TODO scene doesn't have _imageStore property. Should this function be removed ?
         getLookImage: function (id) {
             //used by the sprite to access an image during look init
             return this._imageStore.getImage(id);

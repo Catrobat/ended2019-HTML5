@@ -7,10 +7,12 @@
 
 QUnit.module("model/scene.js");
 
-var TestSprite = (function () {
-    TestSprite.extends(PocketCode.Model.SpriteClone, false);
 
-    function TestSprite(program, scene, args) {
+
+var TestSpriteClone = (function () {
+    TestSpriteClone.extends(PocketCode.Model.SpriteClone, false);
+
+    function TestSpriteClone(program, scene, args) {
         PocketCode.Model.SpriteClone.call(this, program, scene, args, {});
         this.status = PocketCode.ExecutionState.STOPPED;
         //this.MOCK = true;   //flag makes debugging much easier
@@ -22,9 +24,10 @@ var TestSprite = (function () {
         this.setPositionCounter = 0;
         this._onCloneStart = new SmartJs.Event.Event(this);
         this.isClone = false;
+        this.stopAllScriptsCalled=0;
     }
 
-    TestSprite.prototype.merge({
+    TestSpriteClone.prototype.merge({
         //execute: function () {
         //    this.status = PocketCode.ExecutionState.RUNNING;
         //    this.timesStarted++;
@@ -34,9 +37,6 @@ var TestSprite = (function () {
         },
         resumeScripts: function () {
             this.status = PocketCode.ExecutionState.RUNNING;
-        },
-        stopAllScripts: function () {
-            this.status = PocketCode.ExecutionState.STOPPED;
         },
         init: function () {
             this.initCalled++;
@@ -62,7 +62,79 @@ var TestSprite = (function () {
             this.setPositionCounter++;
         },
         clone:function(){
-            var clone = new TestSprite(this._gameEngine, this._scene, this._json);
+            var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
+            clone.isClone = true;
+            return clone;
+        },
+        stopAllScripts: function(){
+        this.stopAllScriptsCalled ++;
+
+        }
+    });
+
+
+
+    return TestSpriteClone;
+})();
+
+var TestSprite = (function () {
+    TestSprite.extends(PocketCode.Model.Sprite, false);
+
+    function TestSprite(program, scene, args) {
+        PocketCode.Model.Sprite.call(this, program, scene, args);
+        this.status = PocketCode.ExecutionState.STOPPED;
+        //this.MOCK = true;   //flag makes debugging much easier
+        this.initCalled = 0;
+        this.initLooksCalled = 0;
+        this.setLookCounter = 0;
+        this.subscribeOnLookChangeCounter = 0;
+        this.unsubscribeFroLookChangeCounter = 0;
+        this.setPositionCounter = 0;
+        this._onCloneStart = new SmartJs.Event.Event(this);
+        this.isClone = false;
+        this.stopAllScriptsCalled=0;
+    }
+
+    TestSprite.prototype.merge({
+        //execute: function () {
+        //    this.status = PocketCode.ExecutionState.RUNNING;
+        //    this.timesStarted++;
+        //},
+        pauseScripts: function () {
+            this.status = PocketCode.ExecutionState.PAUSED;
+        },
+        resumeScripts: function () {
+            this.status = PocketCode.ExecutionState.RUNNING;
+        },
+        stopAllScripts: function(){
+            this.stopAllScriptsCalled ++;
+
+        },
+        init: function () {
+            this.initCalled++;
+            return true;    //required to test stop/restart
+        },
+        initLooks: function () {
+            this.initLooksCalled++;
+            return true;
+        },
+
+        setLook: function () {
+            this.setLookCounter++;
+        },
+
+        subscribeOnLookChange: function () {
+            this.subscribeOnLookChangeCounter++;
+        },
+
+        unsubscribeFromLookChange: function () {
+            this.unsubscribeFroLookChangeCounter++;
+        },
+        setPosition: function () {
+            this.setPositionCounter++;
+        },
+        clone:function(){
+            var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
             clone.isClone = true;
             return clone;
         }
@@ -123,9 +195,21 @@ QUnit.test("Scene", function (assert) {
     var clone, sprite;
     function startTest() {
 
+
+        assert.ok(scene2.onProgressChange instanceof  SmartJs.Event.Event , "onProgressChange is an event");
+        assert.ok(scene2.onUnsupportedBricksFound instanceof SmartJs.Event.Event, "onUnsupportedBricksFound is an event");
+        assert.ok(scene2.onStart instanceof  SmartJs.Event.Event, "onStart is an event");
+        assert.ok(scene2.onExecuted instanceof  SmartJs.Event.Event, "onExecuted is an event");
+        assert.ok(scene2.onUiChange instanceof  SmartJs.Event.Event, "onUiChange is an event");
+        assert.ok(scene2.onSpriteUiChange instanceof  SmartJs.Event.Event, "onSpriteUiChange is an event");
+        assert.ok(scene2.onSpriteTappedAction instanceof  SmartJs.Event.Event, "onSpriteTappedAction is an event");
+        assert.ok(scene2.onTouchStartAction instanceof  SmartJs.Event.Event, "onTouchStartAction is an event");
+
+
         // testing scene load
         scene2.load(cloneScene); //global ressource defined in _resources/testDataProject
-
+        assert.ok(scene2.collisionManager instanceof  PocketCode.CollisionManager, "collisionManager is instance of PocketCode.CollisionManager");
+        assert.ok(scene2.physicsWorld instanceof PocketCode.PhysicsWorld, "physicsWOrld is instance of PocketCode.PhysicsWorld");
         assert.equal(scene2.id, cloneScene.id, "id is set correctly");
         assert.equal(scene2.screenSize.height, cloneScene.screenHeight, "height is set correctly");
         assert.equal(scene2.screenSize.width, cloneScene.screenWidth, "width is set correctly");
@@ -135,19 +219,21 @@ QUnit.test("Scene", function (assert) {
         for (var i = 0; i < scene2._sprites.length; i++) {
             assert.notEqual(scene2._sprites[i], null, "sprite is not null");
         }
-        assert.notEqual(scene2._background, undefined, "background is defined");
+        assert.notEqual(scene2.background, undefined, "background is defined");
         assert.deepEqual(scene2._sprites, scene2._originalSpriteOrder, "original sprite order is preserved");
 
         var spriteInitCounter = 0;
         var spriteInitLooksCounter = 0;
-        var backgroundInitCounter = 0;
-        var backgroundInitLooksCounter = 0;
 
         // mocking sprites
         scene2._sprites = scene2._sprites.map(function (sprite, ind) {
             var testSprite = new TestSprite(gameEngine, scene2, cloneScene.sprites[ind]);
             return testSprite;
         });
+        scene2._originalSpriteOrder =[];
+        for ( var i=0; i< scene2._sprites.length; i++){
+            scene2._originalSpriteOrder.push(scene2._sprites[i]);
+        }
         scene2._background = new TestSprite(gameEngine, scene2, cloneScene.background);
 
         scene2._soundManager = {
@@ -182,8 +268,6 @@ QUnit.test("Scene", function (assert) {
             onStartDispatched = true;
 
         }
-        //var sceneExecuted = assert.async();
-        //var allFinished = assert.async();
 
         function onExecuted(){
 
@@ -209,6 +293,12 @@ QUnit.test("Scene", function (assert) {
         }
         assert.equal(allScriptsPaused, true, "all scripts are paused");
         assert.equal(scene2._background.status, PocketCode.ExecutionState.PAUSED, "background scripts are paused");
+        var ret = scene2.pause(true);
+
+        assert.equal(ret, false, "already paused for interaction");
+
+        var ret = scene2.pause(false);
+        assert.equal(ret, true, "already paused");
         scene2.resume(true);
 
         var allScriptsResumed = true;
@@ -250,6 +340,7 @@ QUnit.test("Scene", function (assert) {
         var backgroundSprite = scene2.getSpriteById(scene2._background.id);
         assert.deepEqual(backgroundSprite, scene2._background, "background correctly returned");
 
+        //getLookImage
 
         // getSpriteByName
         sprite = scene2.getSpriteByName(scene2._sprites[0].name);
@@ -384,6 +475,57 @@ QUnit.test("Scene", function (assert) {
 
 
         assert.ok(clone.isClone, "clone create successful");
+
+        //deleteClone
+        var cloneId = scene2._sprites[0].id;
+
+        scene2.deleteClone(cloneId);
+
+        var cloneStillExists = false;
+
+        for (var i=0; i< scene2._sprites.length; i++){
+            if (scene2._sprites[i].id == cloneId)
+                cloneStillExists = true;
+        }
+        assert.equal(cloneStillExists, false, "clone has been deleted");
+
+
+        //reinitializeSprites
+
+        scene2.reinitializeSprites();
+            spriteInitCounter =0;
+        for (var i = 0; i < scene2._sprites.length; i++) {
+            spriteInitCounter += scene2._sprites[i].initCalled;
+        }
+
+
+
+        assert.equal(spriteInitCounter, scene2._sprites.length*2 ,  "every sprite is reinitialized");
+        assert.equal(scene2._background.initCalled, 2, "background reinitialized");
+
+        //stopAllScripts
+
+        scene2.stopAllScripts();
+        var stopScriptsCounter =0;
+        for (var i = 0; i < scene2._sprites.length; i++) {
+            stopScriptsCounter += scene2._sprites[i].stopAllScriptsCalled;
+        }
+
+
+        assert.equal(stopScriptsCounter, scene2._sprites.length, "all scripts stopped");
+        assert.equal(scene2.background.stopAllScriptsCalled, true, "background scripts stopped");
+
+            scene2._soundManager = {
+                stopAllSounds: function(){
+
+                }
+            }
+        scene2.dispose();
+
+        assert.equal(scene2._device, undefined, "device disposed");
+        assert.equal(scene2._soundManager, undefined, "soundManager disposed");
+        assert.equal(scene2._originalSpriteOrder, undefined, "originalSpriteOrder disposed");
+
 
         done();
 
