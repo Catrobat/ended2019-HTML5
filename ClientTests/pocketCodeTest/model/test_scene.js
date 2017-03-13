@@ -8,10 +8,10 @@
 QUnit.module("model/scene.js");
 
 var TestSprite = (function () {
-    TestSprite.extends(PocketCode.Model.Sprite, false);
+    TestSprite.extends(PocketCode.Model.SpriteClone, false);
 
     function TestSprite(program, scene, args) {
-        PocketCode.Model.Sprite.call(this, program, scene, args);
+        PocketCode.Model.SpriteClone.call(this, program, scene, args, {});
         this.status = PocketCode.ExecutionState.STOPPED;
         //this.MOCK = true;   //flag makes debugging much easier
         this.initCalled = 0;
@@ -20,7 +20,7 @@ var TestSprite = (function () {
         this.subscribeOnLookChangeCounter = 0;
         this.unsubscribeFroLookChangeCounter = 0;
         this.setPositionCounter = 0;
-        this.onCloneStart = new SmartJs.Event.Event(this);
+        this._onCloneStart = new SmartJs.Event.Event(this);
         this.isClone = false;
     }
 
@@ -72,13 +72,17 @@ var TestSprite = (function () {
 
     return TestSprite;
 })();
+
+
 QUnit.test("Scene", function (assert) {
+
+    var done = assert.async();
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     assert.ok(scene instanceof PocketCode.Model.Scene && scene instanceof SmartJs.Core.Component, "instance check");
     assert.ok(scene.objClassName === "Scene", "objClassName check");
 
-    assert.equal(scene._executionState, PocketCode.ExecutionState.INITIALIZED, "Created scene: status initialized");
+    assert.equal(scene.executionState, PocketCode.ExecutionState.INITIALIZED, "Created scene: status initialized");
 
     //init tests todo
     //var gameEngine = "gameEngine";
@@ -178,13 +182,12 @@ QUnit.test("Scene", function (assert) {
             onStartDispatched = true;
 
         }
-        var sceneExecuted = assert.async();
+        //var sceneExecuted = assert.async();
         //var allFinished = assert.async();
 
         function onExecuted(){
 
-            assert.equal(scene2._executionState, PocketCode.ExecutionState.STOPPED, " scene stopped after execution");
-            sceneExecuted();
+            assert.equal(scene2.executionState, PocketCode.ExecutionState.STOPPED, " scene stopped after execution");
         }
         scene2._onExecuted = new SmartJs.Event.EventListener(onExecuted);
         scene2._onStart.addEventListener(new SmartJs.Event.EventListener(onStart));
@@ -197,7 +200,7 @@ QUnit.test("Scene", function (assert) {
 
         // pause and resume
         scene2.pause(true);
-        assert.equal(scene2._executionState, PocketCode.ExecutionState.PAUSED_USERINTERACTION, " paused for user interaction");
+        assert.equal(scene2.executionState, PocketCode.ExecutionState.PAUSED_USERINTERACTION, " paused for user interaction");
         var allScriptsPaused = true;
         for (var i = 0; i < scene2._sprites.length; i++) {
             if (scene2._sprites[i].status != PocketCode.ExecutionState.PAUSED) {
@@ -369,49 +372,20 @@ QUnit.test("Scene", function (assert) {
         rendVarLength +=  scene2._background.renderingVariables.length;
         assert.equal(renderingVariables.length, rendVarLength, "renderingVariables returns correct number of variables");
 
-        setTimeout(validate, 10);
 
-    }
-    function validate() {
+        assert.deepEqual(scene2.background, scene2._background, "background getter works correctly");
+
+        var screenSize = scene2.screenSize;
+
+        assert.equal(screenSize.height, scene2._originalScreenHeight,  "screenSize has correct Height");
+        assert.equal(screenSize.width, scene2._originalScreenWidth, "screenSize has correct Width");
+
         clone = scene2._sprites[0];
 
 
         assert.ok(clone.isClone, "clone create successful");
 
-        var b = new PocketCode.Model.WhenStartAsCloneBrick("device", clone, { id: "spriteId" });
+        done();
 
-        var handlerCalled = 0;
-
-        function handler(e) {
-            if (e.executionState == PocketCode.ExecutionState.STOPPED) {
-                handlerCalled++;
-                assert.equal(handlerCalled, 1, "dispatchEvent onCloneStart");
-                runTest2();
-            }
-        }
-
-        b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(handler));
-        clone.onCloneStart.dispatchEvent();
-
-        function runTest2() {
-            b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(handler));
-
-            handlerCalled = 0;
-            function handler2(e) {
-                handlerCalled++;
-                assert.equal(handlerCalled, 1, "dispatchEvent _onUiChange");
-                runTest3();
-            }
-
-            //b.onExecuted.addEventListener(new SmartJs.Event.EventListener(handler2));
-            //scene2.onChange.dispatchEvent();
-        }
-
-        function runTest3() {
-            b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(handler2));
-
-
-
-        }
     }
 });
