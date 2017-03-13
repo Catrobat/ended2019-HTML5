@@ -188,34 +188,58 @@ QUnit.test("GameEngine: variable UI updates", function (assert) {
 
 QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
+    var done = assert.async();
     var gameEngine = new PocketCode.GameEngine();
-    //var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    //gameEngine.__currentScene = scene;
+    var onLoadHandler = function () {
+        assert.ok(gameEngine.projectLoaded, "Project Loaded");
+        runTests();
+    };
 
-    //var testProject = strProject817;
+    gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
     gameEngine.loadProject(strProject817);
-    //gameEngine.executionState;
     gameEngine.startScene("s1");
 
-    gameEngine._resourcesLoaded = true;
-    assert.ok(gameEngine.projectLoaded, "Project loaded");
+    function runTests() {
+        gameEngine.startScene("s1");
+        assert.ok(gameEngine._startScene, "Scene started");
 
+        gameEngine.runProject();
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "runProject: Project running");
+
+        gameEngine.restartProject();
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "restartProject: Project restarted");
+
+        gameEngine.runProject();
+        gameEngine.pauseProject();
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.PAUSED, "pausedProject: Project paused");
+
+        gameEngine.resumeProject();
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeProject: Project resumed");
+
+        gameEngine.stopProject();
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.STOPPED, "stoppedProject: Project stopped");
+
+        gameEngine.runProject();
+        gameEngine.resumeOrStartScene("s1");
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: Scene already running");
+
+        gameEngine.pauseProject();
+        gameEngine.resumeOrStartScene("s1");
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: resuming Scene");
+
+        gameEngine.stopProject();
+        gameEngine.resumeOrStartScene("s1");
+        assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: starting Scene");
+
+        done();
+    };
+
+    /*
     assert.ok(gameEngine.onLoadingProgress, "onLoadingProgress");
     assert.ok(gameEngine.onSceneChange, "onSceneChange");
-    assert.ok(gameEngine.onLoad, "onLoad");
     assert.ok(gameEngine.onLoadingError, "onLoadingError");
     assert.ok(gameEngine.onBeforeProgramStart, "onBeforeProgramStart");
     assert.ok(gameEngine.onProgramExecuted, "onProgramExecuted");
-
-    gameEngine.runProject();
-    gameEngine._executionState = 1;
-    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "Project running");
-
-    gameEngine.restartProject();
-    assert.deepEqual(gameEngine._executionState, PocketCode.ExecutionState.RUNNING, "restartProject");
-
-    gameEngine.resumeOrStartScene("s1");
-    assert.ok(gameEngine.resumeOrStartScene("s1"), "resumeOrStartScene");
-
+    */
     return;
 });
