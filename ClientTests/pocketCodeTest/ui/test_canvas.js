@@ -250,11 +250,8 @@ QUnit.test("Canvas", function (assert) {
         canvas._touchMoveHandler({ which: 0, clientX: 0, clientY: 0, preventDefault: function () { }, stopPropagation: function () { } });   //mouse move
         assert.equal(touchMoveEventArgs, undefined, "mouse move without button pressed");
 
-
-
         // ********************* TEST WITH CANVAS SCALING ******************************************************************
         canvas.initScene("id", { width: 400, height: 800 });    //required for screenshot rendering
-        //davor undefined
         canvas.setDimensions(80, 40, viewportScaling, viewportScaling);
 
         assert.equal(canvas._backgroundCanvasEl.height, 40, 'setDimensions sets height for background canvas');
@@ -301,7 +298,6 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.renderingSprites = [mockrenderingSprite];
         canvas.renderingTexts = [mockRenderingText];
-        //weiß
         canvas.scale(viewportScaling, viewportScaling); //scale triggers a render()
         canvas.render();
 
@@ -332,8 +328,6 @@ QUnit.test("Canvas", function (assert) {
 
         canvas.setDimensions(80, 40, 1, 1);
         canvas.render();
-        //roter punkt
-
 
         // draw the image at pc-canvas coordinates on standard canvas
         var imageWidth = renderingSpriteOpaque._width, imageHeight = renderingSpriteOpaque._height;
