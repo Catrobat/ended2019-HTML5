@@ -82,8 +82,6 @@ QUnit.test("PlayerViewportView", function (assert) {
         "canvas height, width and scaling not changed (__resizeLocked == true;)");
     view.__resizeLocked = false;
 
-    //todo: change width/height for _updateCanvasSize();
-
     //setOriginalViewportSize
     view.setOriginalViewportSize(80, 70);
     assert.ok(view._originalHeight == 70 && view._originalWidth == 80, "change originalViewportSize");
@@ -145,21 +143,27 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //showAxes //drawAxes
     view._axesVisible = false;
+    var dataUrl = view._canvas._upperCanvasEl.toDataURL('image/png');
     view.showAxes();
     assert.ok(view._axesVisible == true, "showAxes");
-    //todo: assert drawAxes
+    assert.notEqual(dataUrl, view._canvas._upperCanvasEl.toDataURL('image/png'), "drawAxes");
     view.showAxes();
     assert.ok(view._axesVisible == true, "showAxes 2");
 
     //hideAxes //clearAxes
+    dataUrl = view._canvas._upperCanvasEl.toDataURL('image/png');
     view.hideAxes();
     assert.ok(view._axesVisible == false, "hideAxes");
-    //todo: assert clearAxes
+    assert.notEqual(dataUrl, view._canvas._upperCanvasEl.toDataURL('image/png'), "clearAxes");
     view.hideAxes();
     assert.ok(view._axesVisible == false, "hideAxes 2");
 
     //getCanvasDataURL
-    //todo getCanvasDataURL
+    view._canvas.toDataURL = function () {
+        return "dataUrl";
+    };
+    dataUrl = view.getCanvasDataURL();
+    assert.ok(dataUrl == "dataUrl", "getCanvasDataURL");
 
     //dispose
     view.dispose();
