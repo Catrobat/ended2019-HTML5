@@ -122,7 +122,6 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     view.initScene("scene1", {width: 400, height: 300}, true);
     assert.ok(args.id == "scene1" && args.width == 400 && args.height == 300, "initScene, id and screenSize set");
-    assert.ok(view._redrawRequired == true && view._redrawInProgress == true, "initScene, render");
 
     view.drawStamp("id1");
     assert.ok(args.spriteId == "id1", "drawStamp");
