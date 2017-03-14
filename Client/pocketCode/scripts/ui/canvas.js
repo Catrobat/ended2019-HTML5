@@ -232,6 +232,16 @@ PocketCode.Ui.Canvas = (function () {
             this.render();
         },
 
+        updateCamera: function(e)
+        {
+            this._cameraOn = e.on;
+            this._cameraStream = e.src;
+            if(e.width && e.height){
+                this._cameraCanvasEl.width = e.width;
+                this._cameraCanvasEl.height = e.height;
+            }
+            this.renderCamera();
+        }
         clear: function () {
             this._upperCanvasCtx.clearRect(0, 0, this.width, this.height);
             this._bubblesCanvasCtx.clearRect(0, 0, this.width, this.height);

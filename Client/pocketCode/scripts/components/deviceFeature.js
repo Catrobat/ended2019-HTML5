@@ -76,7 +76,7 @@ PocketCode.merge({
 
         function Camera() {
             this._video = document.createElement('video');
-            var supported = false;  //currently disabled// this._getUserMedia && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
+            var supported =  this._getUserMedia && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
             PocketCode.DeviceFeature.call(this, 'lblDeviceCamera', supported);
 
             this._cameraStream = undefined;
@@ -98,7 +98,10 @@ PocketCode.merge({
                 supportedConstraints: {},
             };
             this._selected = PocketCode.CameraType.FRONT;   //default
-            this._constraints = { video: true, audio: false };
+            this._constraints = { video:  {mandatory: {
+                maxWidth: 640,
+                    maxHeight: 360
+            }}, audio: false };
             //    initFaceDetection: false,   //set to true if faceDetection is called before cameraOn (wait for initalization until we know a camera is used)
             //this._initialized = false;  //if true: do not dispatch onInit
 
@@ -250,7 +253,7 @@ PocketCode.merge({
                     var _url = window.URL || window.webkitURL;
                     video.src = _url.createObjectURL(stream);
                 }
-                //this._videoInitializedHandler(); //try to start
+                this._videoInitializedHandler(); //try to start
             },
             _streamInactiveHandler: function (e) {
                 if (this._disposed)
@@ -410,7 +413,7 @@ PocketCode.merge({
                 return true;
             },
             start: function () {   //or resume
-
+                this._init();
                 //var cam = this._cam;//,
                 //supported = cam.supported;
                 this._inUse = true;
@@ -424,9 +427,14 @@ PocketCode.merge({
                 }
                 else {
                     this._startCameraStreamOnInit = true;
-                    this._init();
+
                     if (!this._supported) //this may change during init
+                    {
                         return false;
+                    }
+                    this._init();
+                    return false;
+
                 }
                 return true;
             },
@@ -1177,7 +1185,7 @@ PocketCode.merge({
             start: function (src, width, height, orientation) { //TODO
                 /* if (!src || !width || !height)
                        throw new Error('invalid arguments: start()');
-   
+
                        if (this._on)
                            this.stop();
    

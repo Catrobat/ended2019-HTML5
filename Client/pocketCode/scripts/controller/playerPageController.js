@@ -159,7 +159,7 @@ PocketCode.PlayerPageController = (function () {
             this._playerViewportController.updateVariable(e.objectId, e.id, e.properties);
         },
         _cameraChangedHandler: function (e) {
-            this._playerViewportController.updateCameraUse(e.on, e.src, e.width, e.height, e.transparency, e.orientation);
+            this._playerViewportController.updateCameraUse(e);
         },
         //user
         _buttonClickedHandler: function (e) {

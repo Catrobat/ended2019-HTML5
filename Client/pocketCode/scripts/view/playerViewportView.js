@@ -189,10 +189,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clearPenStampCache();
         },
         //camera
-        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params, ...
+        updateCameraUse: function (e) {    //TODO: params, ...
             //console.log("camera stream in view:", cameraStream);
-            this._canvas.cameraStream = cameraStream;
-            this._canvas.cameraOn = cameraOn;
+            this._canvas.cameraStream = e.src;
+            this._canvas.cameraOn = e.on;
+            this._canvas._cameraCanvasEl.width = e.width;
+            this._canvas._cameraCanvasCtx.height = e.height;
         },
         //axes
         showAxes: function () {
