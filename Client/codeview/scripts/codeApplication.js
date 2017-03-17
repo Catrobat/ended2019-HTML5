@@ -13,19 +13,18 @@ PocketCode.merge({
             alert('application'); //test
             Application.extends(SmartJs.Components.Application, false);
 
-            function Application(viewportContainer, rfc3066, mobileInitialized) {
+            function Application() {
                 var vp = new PocketCode.Ui.Viewport();
                 vp.hide();
                 this._dialogs = [];
 
                 SmartJs.Components.Application.call(this, vp);
-                this._mobileInitialized = mobileInitialized;
                 this._noPromtOnLeave = false;   //TODO: settings (do not show promt on leave again?)
                 this._forwardNavigationAllowed = false;
                 this._loadingError = false;
 
                 if (!vp.rendered)
-                    vp.addToDom(viewportContainer || document.body);
+                    vp.addToDom(document.body);
                 this._vp = vp;
 
                 //events
@@ -35,53 +34,116 @@ PocketCode.merge({
                 this._onHWRatioChange = new SmartJs.Event.Event(this);      //triggered to notify weboverlay on device resolution change
                 this._onExit = new SmartJs.Event.Event(this);               //triggered to notify weboverlay to be closed & disposed
 
-               // this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
-
-                //init i18n
-                PocketCode.I18nProvider.onError.addEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
-                PocketCode.I18nProvider.onDirectionChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._vp.uiDirection = e.direction; }, this));
-                if (!mobileInitialized || rfc3066 && PocketCode.I18nProvider.currentLanguage != rfc3066) {   //do not load twice on mobile reinit or opening the same player overlay twice on the same page
-                    PocketCode.I18nProvider.init(rfc3066);  //make sure all supported are loaded before loading dictionary
-                    //PocketCode.I18nProvider.loadSuppordetLanguages();
-                    //PocketCode.I18nProvider.loadDictionary(rfc3066);
-                }
-                else {
-                    //if the language is not (re)loaded we have to check for rtl as our default direction is ltr
-                    if (PocketCode.I18nProvider.currentLanguageDirection === PocketCode.Ui.Direction.RTL)
-                        PocketCode.I18nProvider.onDirectionChange.dispatchEvent({ direction: PocketCode.Ui.Direction.RTL });
-                }
-                //init
-                if (SmartJs.Device.isMobile && !mobileInitialized) {    //do not initialize the UI if app needs to be recreated for mobile
-                    var state = history.state;
-                    if (state !== null && state.historyIdx > 0) //refresh pressed
-                        history.go(-state.historyIdx);  //not to init page but to start page
-                    return;
-                }
+                if (PocketCode.I18nProvider.currentLanguageDirection === PocketCode.Ui.Direction.RTL)
+                    PocketCode.I18nProvider.onDirectionChange.dispatchEvent({ direction: PocketCode.Ui.Direction.RTL });
 
                 this._pages = {
-                    _InitialPopStateController: new PocketCode._InitialPopStateController(),
                     CodePageController: new PocketCode.CodePageController(),
                 };
+                this._currentProjectId = undefined;
             }
 
-            //accessors
             Object.defineProperties(Application.prototype, {
-                hasOpenDialogs: {
+                onInit: {
                     get: function () {
-                        return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
+                        return this._onInit;
+                    }
+                },
+                onExit: {
+                    get: function () {
+                        return this._onExit;
                     }
                 },
             });
 
             //methods
             Application.prototype.merge({
-                _i18nControllerErrorHandler: function (e) {
-                    PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
-                    throw new Error('i18nControllerError: ' + e.responseText);
+                _requestProjectDetails: function () {
+                    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
+                    req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestLoadHandler, this));
+                    PocketCode.Proxy.send(req);
+                },
+                _projectDetailsRequestLoadHandler: function (e) {
+                    if (this._disposing || this._disposed)
+                        return;
+                    var json = e.target.responseJson;
+                    if (SmartJs.Device.isMobile)
+                        this._onInit.dispatchEvent();
+                    else
+                        this._onInit.dispatchEvent({ menu: this._pages.PlayerPageController.menu });
+                    this._pages.PlayerPageController.projectDetails = json;
+                    this._viewport.show();
+                    this._requestProject();
+                },
+                _requestProject: function () {
+                    var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT, SmartJs.RequestMethod.GET, { id: this._currentProjectId });
+                    req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectRequestLoadHandler, this));
+                    PocketCode.Proxy.send(req);
+                },
+                _projectRequestLoadHandler: function (e) {
+                    if (this._disposing || this._disposed)
+                        return;
+                    var json = e.target.responseJson;
+
+                    if (json.header && json.header.device) {
+                        var device = json.header.device;
+                        this._onHWRatioChange.dispatchEvent({ ratio: device.screenHeight / device.screenWidth });
+                        var view = this._pages.PlayerPageController.view;
+                        view.onResize.dispatchEvent();   //make sure the control is notified about the resize
+                    }
+                    this._project.loadProject(json);
                 },
                 _showPage: function (page) {
-                  this._currentPage = page;
+                    if (!(page instanceof PocketCode.PageController))
+                        throw new Error('invalid argument: page, expectet type: PocketCode.PageController');
+
+                    this._currentPage = page;
                   this._vp.loadPageView(page.view);
+                },
+                loadProject: function (projectId) {
+                    if (this._disposing || this._disposed)// || this._projectLoaded)    //prevent loading more than once
+                        return;
+
+                    this._loadingError = false;
+                    //check browser compatibility
+                    var pc = PocketCode.isPlayerCompatible();
+                    var compatible = pc.result;
+
+                    if (!compatible) {	//framework not loaded correctly or compatibility failed
+                        if (!pc.tests.SmartJs) {
+                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
+                            this._onExit.dispatchEvent();
+                        }
+                        else {
+                            var d = new PocketCode.Ui.BrowserNotSupportedDialog();
+                            d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                            //d.bodyInnerHTML += '<br /><br />Application will be closed.';
+                            this._onInit.dispatchEvent();   //hide splash screen
+                            this._showDialog(d, false);
+                        }
+                        return;
+                    }
+
+                    if (SmartJs.Device.isMobile && !this._mobileInitialized) {
+                        //to reinit app in the scope of an user event
+                        var d = new PocketCode.Ui.MobileRestrictionDialog();
+                        d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                        d.onConfirm.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                            this._viewport.hide();
+                            this._onMobileInitRequired.dispatchEvent(e);
+                        }, this));
+                        this._onInit.dispatchEvent();   //hide splash screen
+                        this._showDialog(d, false);
+                        return;
+                    }
+
+                    //show
+                    this._showPage(this._pages.PlayerPageController);
+                    //set project in page controller
+                    this._currentPage.project = this._project;
+
+                    this._currentProjectId = projectId;
+                    this._requestProjectDetails();
                 },
                 //navigation
                 dispose: function () {
