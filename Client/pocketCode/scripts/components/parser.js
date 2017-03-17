@@ -182,6 +182,11 @@ PocketCode.merge({
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
 
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
+
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
@@ -231,11 +236,14 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
+                    case 'PlaySoundAndWaitBrick':   //disabled
+                    case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                        break;
+
                     case 'PlaySoundBrick':
-                    case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
                     case 'SpeakBrick':
-                    case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
                         break;
 
@@ -879,42 +887,49 @@ PocketCode.merge({
 
                         //date and time
                     case 'CURRENT_YEAR':
+                    case 'DATE_YEAR':
                         if (uiString)
                             return 'year';
 
                         return '(new Date()).getFullYear()';
 
                     case 'CURRENT_MONTH':
+                    case 'DATE_MONTH':
                         if (uiString)
                             return 'month';
 
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':
+                    case 'DATE_DAY':
                         if (uiString)
                             return 'day';
 
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':
+                    case 'DATE_WEEKDAY':
                         if (uiString)
                             return 'weekday';
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':
+                    case 'TIME_HOUR':
                         if (uiString)
                             return 'hour';
 
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':
+                    case 'TIME_MINUTE':
                         if (uiString)
                             return 'minute';
 
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':
+                    case 'TIME_SECOND':
                         if (uiString)
                             return 'second';
 
