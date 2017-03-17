@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="PocketCode HTML5 Player" />
+    <meta name="author" content="Catrobat HTML5 team: https://github.com/Catrobat/HTML5" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <link href="https://web-test.catrob.at/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
+
+    <link rel="stylesheet" href="../smartJs/sj.css">
+
+    <!-- script -->
+    <script src="pocketCodeCodeView.js"></script>
+    <script src="scripts/codeApplication.js"></script>
+
+    <!-- view -->
+    <script src="../pocketCode/scripts/view/pageView.js"></script>
+    <script src="../pocketCode/scripts/view/codeViewportView.js" data-cover></script>
+    <script src="../pocketCode/scripts/view/codePageView.js" data-cover></script>
+
+    <!-- controller -->
+    <script src="../pocketCode/scripts/controller/controllerCore.js" data-cover></script>
+    <script src="../pocketCode/scripts/controller/codeViewportController.js" data-cover></script>
+    <script src="../pocketCode/scripts/controller/codePageController.js" data-cover></script>
+
+    <title>PocketCode HTML5 CodeView</title>
+    <script>
+    window.onload = function () {
+        //alert('Dokument geladen');
+        var app;
+        app = new PocketCode.CodeView.Application();
+    }
+    </script>
+
+
+
+</head>
+<body class="pc-webBody pc-webBodyMobile">
+<noscript id="97F79358-0DA5-4243-8C1C-A1AE3BF226C0">This application needs javascript to be enabled!</noscript>
+</body>
+</html>
