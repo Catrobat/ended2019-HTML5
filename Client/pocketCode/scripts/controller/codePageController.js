@@ -10,12 +10,6 @@ PocketCode.CodePageController = (function () {
     function CodePageController() {
 
         PocketCode.PageController.call(this, new PocketCode.Ui.CodePageView());
-        this._codeViewportController = new PocketCode.CodeViewportController();
-        this._view.insertAt(0, this._codeViewportController.view);
-        this._axesVisible = false;
-
-        this._codeViewportController.setProjectScreenSize(200, 320);
-
         this._gameEngine = undefined;
     }
 
@@ -32,25 +26,25 @@ PocketCode.CodePageController = (function () {
                     this._gameEngine.dispose();
                 }
                 this._gameEngine = value;
+                this._initProject();
             },
         },
     });
 
     //methods
     CodePageController.prototype.merge({
-        enableView: function () {
-            this._view.disabled = false;
+        _initProject: function() {
+            //TODO:
+            alert('project loaded- time to create a code view');
         },
-        //user
-        _onUserActionHandler: function (e) {
-            this._gameEngine.handleUserAction(e);
-        },
+        //enableView: function () {
+        //    this._view.disabled = false;
+        //},
+        /* override */
         dispose: function () {
-            //this._pauseProject();
             if (this._gameEngine && !this._gameEngine._disposing && !this._gameEngine._disposed) {
                 this._gameEngine = undefined;
             }
-            this._codeViewportController.onUserAction.removeEventListener(new SmartJs.Event.EventListener(this._onUserActionHandler, this));
             PocketCode.PageController.prototype.dispose.call(this);
         },
     });

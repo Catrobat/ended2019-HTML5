@@ -1,0 +1,101 @@
+﻿
+/* body to be set to avoid overlay spacings - set in javascript on html & body element */
+.pc-webBody {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+
+.pc-webBodyMobile {
+    background-color: #003041;
+    position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/* override styles: last entry in file to enable overwriting properties */
+.pc-webBodyMobile *, .pc-webBodyMobile *:before, .pc-webBodyMobile *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    /*margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    user-select: none;
+    cursor: default;
+    color: #000;*/
+}
+
+.pc-webBody div, .pc-webBody span {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+/* overlay */
+.pc-webOverlay {
+    font-family: sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 100000;
+}
+
+    /* override styles defined in page */
+    .pc-webOverlay *, .pc-webOverlay *:before, .pc-webOverlay *:after {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        /*margin: auto;
+        padding: auto;
+        background-color: none;*/
+        border: 0;
+        border-radius: 0;
+        user-select: none;
+        cursor: default;
+        /*color: #000;*/
+    }
+
+.pc-webLayout {
+    position: absolute;
+    display: table;
+    height: 100% !important;
+    width: 100% !important;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    border-spacing: 0;
+}
+
+.pc-webLayoutRow {
+    display: table-row;
+    height: 100%;
+}
+
+.pc-leftCol, .pc-rightCol, .pc-centerCol {
+    display: table-cell;
+    vertical-align: top;
+}
+
+.pc-leftCol, .pc-rightCol {
+    width: 50%;
+    min-width: 95px;
+}
+
+.pc-rightCol {
+    min-width: 50px;
+}
+
+.pc-centerCol {
+    vertical-align: middle;
+}

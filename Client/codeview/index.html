@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" class="pc-webBody">
 <head>
     <meta charset="UTF-8" />
@@ -9,35 +9,118 @@
     <meta name="apple-touch-fullscreen" content="yes" />
     <link href="https://web-test.catrob.at/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
 
-    <link rel="stylesheet" href="../smartJs/sj.css">
+    <!-- libs -->
+    <script src="../pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
+    <script src="../pocketCode/libs/iscroll/iscroll-5.3.1.custom.js"></script>
 
-    <!-- script -->
-    <script src="pocketCodeCodeView.js"></script>
-    <script src="scripts/codeApplication.js"></script>
+    <!-- smartJs -->
+    <script src="../../Client/smartJs/sj.js"></script>
+    <script src="../../Client/smartJs/sj-core.js"></script>
+    <script src="../../Client/smartJs/sj-event.js"></script>
+    <script src="../../Client/smartJs/sj-components.js"></script>
+    <script src="../../Client/smartJs/sj-animation.js"></script>
+    <script src="../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../Client/smartJs/sj-ui.js"></script>
+
+    <!-- pocketCode -->
+    <link href="css/codeView.css" rel="stylesheet" />
+    <link href="../pocketCode/css/pocketCode.css" rel="stylesheet" />
+
+    <script>
+        //define namespace and service endpoint as soon as namespace is available
+        var PocketCode = {};
+        PocketCode.domain = 'https://share.catrob.at/';
+    </script>
+    <script src="../pocketCode/scripts/core.js"></script>
+    <script src="../pocketCode/scripts/ui.js"></script>
+
+    <script src="../pocketCode/scripts/model/bricksCore.js"></script>
+    <script src="../pocketCode/scripts/model/bricksControl.js"></script>
+    <script src="../pocketCode/scripts/model/bricksData.js"></script>
+    <script src="../pocketCode/scripts/model/bricksEvent.js"></script>
+    <script src="../pocketCode/scripts/model/bricksLook.js"></script>
+    <script src="../pocketCode/scripts/model/bricksMotion.js"></script>
+    <script src="../pocketCode/scripts/model/bricksPen.js"></script>
+    <script src="../pocketCode/scripts/model/bricksSound.js"></script>
+    <script src="../pocketCode/scripts/model/bricksUserScript.js"></script>
+    <script src="../pocketCode/scripts/model/userVariable.js"></script>
+    <script src="../pocketCode/scripts/model/userVariableHost.js"></script>
+    <script src="../pocketCode/scripts/model/look.js"></script>
+    <script src="../pocketCode/scripts/model/sprite.js"></script>
+    <script src="../pocketCode/scripts/model/scene.js"></script>
+
+    <!-- components -->
+    <script src="../pocketCode/scripts/components/loggingProvider.js"></script>
+    <script src="../pocketCode/scripts/components/proxy.js"></script>
+    <script src="../pocketCode/scripts/components/soundManager.js"></script>
+    <script src="../pocketCode/scripts/components/publishSubscribe.js"></script>
+    <script src="../pocketCode/scripts/components/collisionManager.js"></script>
+    <script src="../pocketCode/scripts/components/physicsWorld.js"></script>
+    <script src="../pocketCode/scripts/components/deviceFeature.js"></script>
+    <script src="../pocketCode/scripts/components/device.js"></script>
+    <script src="../pocketCode/scripts/components/formula.js"></script>
+    <script src="../pocketCode/scripts/components/parser.js"></script>
+    <script src="../pocketCode/scripts/components/imageHelper.js"></script>
+    <script src="../pocketCode/scripts/components/gameEngine.js"></script>
+    <script src="../pocketCode/scripts/components/i18nProvider.js"></script>
+    <script src="../pocketCode/scripts/components/imageStore.js"></script>
+    <script src="../pocketCode/scripts/components/renderingItem.js"></script>
+    <script src="../pocketCode/scripts/components/settingsProvider.js"></script>
+
+    <!-- ui -->
+    <script src="../pocketCode/scripts/ui/button.js"></script>
+    <script src="../pocketCode/scripts/ui/input.js"></script>
+    <script src="../pocketCode/scripts/ui/accordion.js"></script>
+    <script src="../pocketCode/scripts/ui/menu.js"></script>
+    <script src="../pocketCode/scripts/ui/scrollContainer.js"></script>
+    <script src="../pocketCode/scripts/ui/dialog.js"></script>
 
     <!-- view -->
     <script src="../pocketCode/scripts/view/pageView.js"></script>
-    <script src="../pocketCode/scripts/view/codeViewportView.js" data-cover></script>
-    <script src="../pocketCode/scripts/view/codePageView.js" data-cover></script>
+    <script src="../pocketCode/scripts/view/codePageView.js"></script>
 
     <!-- controller -->
-    <script src="../pocketCode/scripts/controller/controllerCore.js" data-cover></script>
-    <script src="../pocketCode/scripts/controller/codeViewportController.js" data-cover></script>
-    <script src="../pocketCode/scripts/controller/codePageController.js" data-cover></script>
+    <script src="../pocketCode/scripts/controller/controllerCore.js"></script>
+    <script src="../pocketCode/scripts/controller/codePageController.js"></script>
+
+    <!-- codeView -->
+    <script src="scripts/codeViewApplication.js"></script>
+    <script src="scripts/ui/codeViewMenu.js"></script>
 
     <title>PocketCode HTML5 CodeView</title>
     <script>
-    window.onload = function () {
-        //alert('Dokument geladen');
+        'use strict';
         var app;
-        app = new PocketCode.CodeView.Application();
-    }
+
+        function loadProject(projectId, rfc3066, containerElement) {
+            if (!window.addEventListener) {
+                alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
+                return;
+            }
+            //this._redirected = !!document.getElementById('97F79358-0DA5-4243-8C1C-A1AE3BF226C0'); //on our index page
+
+            if (!app || !PocketCode.crossOrigin.initialized) {
+                //IE needs some more time
+                window.setTimeout(loadProject.bind(this, projectId, rfc3066, containerElement), 100);
+                return;
+            }
+            //if ((this._isMobile && window.location.href !== expectedUrl && window.location.hostname !== 'localhost') || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
+            //    window.location = expectedUrl;
+
+            app.loadProject(projectId);
+        }
+
+        //start onLoad
+        window.onload = function () {
+            //alert('Dokument geladen');
+            app = new PocketCode.CodeView.Application();
+            loadProject(718);
+            //error test: loadProject(718123);
+        }
     </script>
-
-
 
 </head>
 <body class="pc-webBody pc-webBodyMobile">
-<noscript id="97F79358-0DA5-4243-8C1C-A1AE3BF226C0">This application needs javascript to be enabled!</noscript>
+    <noscript id="97F79358-0DA5-4243-8C1C-A1AE3BF226C0">This application needs javascript to be enabled!</noscript>
 </body>
 </html>
