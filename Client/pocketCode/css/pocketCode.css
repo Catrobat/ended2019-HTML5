@@ -185,11 +185,15 @@
 }
 
 .pc-pageHeader {
-    height: 4.8em;
+    height: 76.8px;
     border-bottom: solid 1px #385F6E;
     background-color: #003041;
     /*display: table;
 	*/ border-spacing: 0;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    padding-top: 10px;
 }
     /*	.pc-pageHeader div {
 		display: table-cell;

@@ -35,7 +35,7 @@ PocketCode.CodePageController = (function () {
     CodePageController.prototype.merge({
         _initProject: function() {
             //TODO:
-            alert('project loaded- time to create a code view');
+            //alert('project loaded- time to create a code view');
         },
         //enableView: function () {
         //    this._view.disabled = false;
