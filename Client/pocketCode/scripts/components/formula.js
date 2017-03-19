@@ -35,7 +35,7 @@ PocketCode.Formula = (function () {
                     this.isStatic = true;
                     this.calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
                     var val = this.calculate();
-                    val = (typeof val === 'string') ? '\'' + val.replace(/'/g, '\\\'').replace(/\n/g, '\\n').replace(/\\/g, '\\\\') + '\'' : val;
+                    val = (typeof val === 'string') ? '\'' + val.replace(/('|\n|\\)/g, '\\\$1') + '\'' : val;
                     val = 'return ' + val + ';';
                     this.calculate = new Function(val);
                 }

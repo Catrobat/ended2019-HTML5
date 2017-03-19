@@ -309,7 +309,7 @@ PocketCode.GameEngine = (function () {
         },
         _sceneExecutedHandler: function (e) {
             if (e.target == this._currentScene)
-                this.this._onProgramExecuted.dispatchEvent();
+                this._onProgramExecuted.dispatchEvent();
         },
         //todo this initsialises all spritest from all scenes -> might be too much
         //_initSceneSprites: function () {

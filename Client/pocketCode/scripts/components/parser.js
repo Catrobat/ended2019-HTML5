@@ -423,10 +423,11 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
-                        if (uiString)
-                            return '\'' + tmp + '\'';
-                        return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
+                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
+                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
+                        //if (uiString)
+                        //    return '\'' + tmp + '\'';
+                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
 
                     case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
                         this._isStatic = false;
