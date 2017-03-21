@@ -431,18 +431,18 @@ PocketCode.merge({
 
                     case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
                         this._isStatic = false;
-                        var params = jsonFormula.value.split(' ');  //e.g. 'sp1 touches sp2'
+                        var params = jsonFormula.value.split(' touches ');  //e.g. 'sp1 touches sp2'
                         if (params.length == 1) { //v0.993
                             if (uiString)
                                 return 'touches_object(' + jsonFormula.value + ')';
 
                             return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
                         }
-                        else if (params.length == 3) { //v0.992
+                        else if (params.length == 2) { //v0.992
                             if (uiString)
                                 return '\'' + jsonFormula.value + '\'';
 
-                            return 'this._sprite.collidesWithSprite(\'' + params[2] + '\')';
+                            return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
                         }
                         else { //not supported
                             if (uiString)
