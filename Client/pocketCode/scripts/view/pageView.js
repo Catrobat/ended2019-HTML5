@@ -21,6 +21,7 @@ PocketCode.Ui.PageView = (function () {
         this._captionArea.appendChild(this._caption);
 
         //define body as inner container: override
+        this._header.appendChild(this._captionArea);
         this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBody' });  //TODO: style really needed?
         this._bodyLayout = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBodyLayout' });
         this._bodyLayout.appendChild(this._container);
