@@ -16,12 +16,15 @@ PocketCode.Ui.PageView = (function () {
 
         this._header = new SmartJs.Ui.ContainerControl({ className: 'pc-pageHeader' });
         this._appendChild(this._header);
-        this._captionArea = new SmartJs.Ui.ContainerControl();
+        this._iconButton = new PocketCode.Ui.HeaderIconButton();
+        //this._iconButton.disabled = true;
+        this._header.appendChild(this._iconButton);
+        this._captionArea = new SmartJs.Ui.ContainerControl({ className: 'pc-pageCaption' });
+        this._header.appendChild(this._captionArea);
         this._caption = new SmartJs.Ui.TextNode();  //TODO: not needed right now
         this._captionArea.appendChild(this._caption);
 
         //define body as inner container: override
-        this._header.appendChild(this._captionArea);
         this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBody' });  //TODO: style really needed?
         this._bodyLayout = new SmartJs.Ui.ContainerControl({ className: 'pc-pageBodyLayout' });
         this._bodyLayout.appendChild(this._container);
@@ -37,16 +40,16 @@ PocketCode.Ui.PageView = (function () {
     //});
 
     //properties
-    //Object.defineProperties(PageView.prototype, {
-        //caption: {  //TODO: not needed right now
-        //    get: function () {
-        //        return this._caption.text;
-        //    },
-        //    set: function (value) {
-        //        this._caption.text = value;
-        //    },
-        //}
-    //});
+    Object.defineProperties(PageView.prototype, {
+        caption: {
+            get: function () {
+                return this._caption.text;
+            },
+            set: function (value) {
+                this._caption.text = value;
+            },
+        }
+    });
 
     //methods
     PageView.prototype.merge({

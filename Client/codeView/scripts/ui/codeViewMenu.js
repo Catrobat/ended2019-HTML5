@@ -9,13 +9,13 @@
 
 PocketCode.CodeView.merge({
 
-    MenuCommand: {
+    /*MenuCommand: {
         TERMS_OF_USE: 3,
         IMPRINT: 4,
         HELP: 5,
         GITHUB: 6,
         REPORT_ISSUE: 7,
-    },
+    },*/
 
     Ui: {
         Menu: (function () {
@@ -25,12 +25,25 @@ PocketCode.CodeView.merge({
             function Menu(args) {
                 PocketCode.Ui.Menu.call(this);
 
-                //var item;
+                this.className = 'pc-headerMenu';
+                var item;
                 //if (SmartJs.Device.isMobile) {
                 //    this.hide();
                 //    //temporarely disabled
-                //    //item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
-                //    //this.appendChild(item);
+
+                item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
+                this.appendChild(item);
+                item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
+                this.appendChild(item);
+
+                this._sep = new PocketCode.Ui.MenuSeparator();
+                this.appendChild(this._sep);
+
+                item = new PocketCode.Ui.MenuItem('menuFitToScreen');
+                this.appendChild(item);
+                item = new PocketCode.Ui.MenuItem('menuFitToScreen');
+                this.appendChild(item);
+
                 //    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 //    //    this.close();
                 //    //    this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.FULLSCREEN, checked: e.checked });

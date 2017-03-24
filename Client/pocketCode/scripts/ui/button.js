@@ -68,6 +68,19 @@ PocketCode.Ui.Button = (function () {
     return Button;
 })();
 
+PocketCode.Ui.HeaderIconButton = (function () {
+    HeaderIconButton.extends(PocketCode.Ui.Button, false);
+
+    //cntr
+    function HeaderIconButton() {
+        PocketCode.Ui.Button.call(this, '', { className: 'pc-headerIcon' });
+        this._textNode.dispose();
+        this._icon = new SmartJs.Ui.Control('div');
+        this._appendChild(this._icon);
+    }
+
+    return HeaderIconButton;
+})();
 
 PocketCode.Ui.PlayerSvgButton = (function () {
     PlayerSvgButton.extends(PocketCode.Ui.Button, false);
