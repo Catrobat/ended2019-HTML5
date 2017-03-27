@@ -900,6 +900,20 @@
     border-radius: 2px 0px 2px 2px;
 }
 
+.pc-headerMenu .pc-subMenu {
+    position: absolute;
+    min-width: 150px;
+    overflow: hidden;
+    z-index: 1;
+    top: 56px;
+    right: 0px;
+    padding: 1px 0px;
+    float: right;
+    background-color: #282828;
+    border: 1px solid #484848;
+    border-radius: 2px 0px 2px 2px;
+}
+
 [dir='rtl'] .pc-subMenu {
     margin-right: 4px;
     right: auto;
@@ -925,7 +939,7 @@
     text-transform: none;
 }
 
-.pc-menuSymbol {
+.pc-menuSymbol, .pc-headerMenu {
     margin-right: 0 !important;
 }
 
@@ -933,7 +947,11 @@
         display: none;
     }
 
-.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
+    .pc-headerMenu span {
+        display: none;
+    }
+
+  .pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
     color: #33B5E5;
     cursor: pointer;
 }

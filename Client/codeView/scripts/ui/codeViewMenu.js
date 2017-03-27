@@ -20,9 +20,8 @@ PocketCode.CodeView.merge({
     Ui: {
         Menu: (function () {
             Menu.extends(PocketCode.Ui.Menu, false);
-
             //cntr
-            function Menu(args) {
+            function Menu() {
                 PocketCode.Ui.Menu.call(this);
 
                 this.className = 'pc-headerMenu';
@@ -31,17 +30,19 @@ PocketCode.CodeView.merge({
                 //    this.hide();
                 //    //temporarely disabled
 
-                item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
+                item = new PocketCode.Ui.I18nCheckbox('testing purpose');
                 this.appendChild(item);
-                item = new PocketCode.Ui.I18nCheckbox('menuFitToScreen');
+                item = new PocketCode.Ui.I18nCheckbox('menuTermsOfUse');
                 this.appendChild(item);
+                //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.TERMS_OF_USE }); }, this));
 
                 this._sep = new PocketCode.Ui.MenuSeparator();
                 this.appendChild(this._sep);
 
-                item = new PocketCode.Ui.MenuItem('menuFitToScreen');
+                item = new PocketCode.Ui.MenuItem('menuHelp');
                 this.appendChild(item);
-                item = new PocketCode.Ui.MenuItem('menuFitToScreen');
+                //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
+                item = new PocketCode.Ui.MenuItem('menuReportIssue');
                 this.appendChild(item);
 
                 //    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
