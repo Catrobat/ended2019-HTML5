@@ -44,6 +44,11 @@ PocketCode.CodeView.merge({
                 //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
                 item = new PocketCode.Ui.MenuItem('menuReportIssue');
                 this.appendChild(item);
+                item = new PocketCode.Ui.MenuItem('menuHelp');
+                this.appendChild(item);
+                //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
+                item = new PocketCode.Ui.MenuItem('menuReportIssue');
+                this.appendChild(item);
 
                 //    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
                 //    //    this.close();

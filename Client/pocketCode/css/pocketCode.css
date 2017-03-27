@@ -842,10 +842,11 @@
     border-color: transparent;
     border-radius: 2px 2px 0 0;
     background-color: transparent;
-    margin: 3px;
+    /*margin: 3px;*/
     margin-bottom: 0;
     position: absolute;
     z-index: 2;
+    height: 48px;
 }
 
 .pc-menu .pc-menuButton span {
@@ -856,6 +857,13 @@
     border-color: #484848;
     background-color: #282828;
 }
+
+.pc-headerMenu .pc-menuButtonOpened {
+    border-color: #484848;
+    background-color: #282828;
+    height: 48px;
+}
+
 
 /* mobile menu */
 .pc-menuMobile {
@@ -905,7 +913,7 @@
     min-width: 150px;
     overflow: hidden;
     z-index: 1;
-    top: 56px;
+    top: 47px;
     right: 0px;
     padding: 1px 0px;
     float: right;
