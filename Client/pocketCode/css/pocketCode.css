@@ -245,12 +245,18 @@
 }
 
 .pc-pageCaption {
-    position: relative;
+    position: absolute;
     float: left;
+    width: 80%;
+    left: 2.1em;
     height: 100%;
     color: #8699A4;
     font-size: 23px;
     line-height: 48px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pc-headerMenu {
