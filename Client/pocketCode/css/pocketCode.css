@@ -245,10 +245,10 @@
 }
 
 .pc-pageCaption {
-    position: absolute;
+    position: relative;
     float: left;
-    width: 80%;
-    left: 2.1em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
     height: 100%;
     color: #8699A4;
     font-size: 23px;
@@ -848,11 +848,17 @@
     border-color: transparent;
     border-radius: 2px 2px 0 0;
     background-color: transparent;
-    /*margin: 3px;*/
+    margin: -2px;
+    margin-left: -5px;
     margin-bottom: 0;
     position: absolute;
     z-index: 2;
     height: 48px;
+}
+
+.pc-headerMenu .pc-menuButton {
+    margin: 0px;
+    margin-left: -2px;
 }
 
 .pc-menu .pc-menuButton span {
@@ -865,6 +871,8 @@
 }
 
 .pc-headerMenu .pc-menuButtonOpened {
+    margin: 0px;
+    margin-left: -2px;
     border-color: #484848;
     background-color: #282828;
     height: 48px;
