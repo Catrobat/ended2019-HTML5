@@ -1002,7 +1002,7 @@
 
 .pc-checkbox label, .pc-radio label, .pc-accordion label {
     line-height: 15px;
-    display: block;
+    display: inline-block;
     position: relative;
     white-space: nowrap;
     cursor: pointer;
