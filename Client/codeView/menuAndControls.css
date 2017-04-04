@@ -3,9 +3,9 @@
     width: 100%;
 }
 
-.pc-menuAlign ul {
-    list-style-type: none;
-}
+    .pc-menuAlign ul {
+        list-style-type: none;
+    }
 
 .pc-mainMenu {
     position: absolute;
@@ -17,7 +17,7 @@
 
 [dir='rtl'] .pc-mainMenu {
     left: 0;
-    right: auto ; /* important, otherwise overwriting is not working */
+    right: auto; /* important, otherwise overwriting is not working */
 }
 
 .pc-menuContainer {
@@ -36,24 +36,24 @@
     position: relative;
 }
 
-.pc-menu .pc-menuTitle {
-    position: relative;
-    padding: 5px 10px 6px;
-    display: inline-block;
-    border: 1px solid transparent;
-    border-width: 1px 1px 0;
-    text-decoration: none !important;
-    border-color: #484848;
-    border-radius: 2px 2px 0 0;
-    z-index: 10000;
-    background: #303030;
-    float: right;
-    min-width:200px;
-}
+    .pc-menu .pc-menuTitle {
+        position: relative;
+        padding: 5px 10px 6px;
+        display: inline-block;
+        border: 1px solid transparent;
+        border-width: 1px 1px 0;
+        text-decoration: none !important;
+        border-color: #484848;
+        border-radius: 2px 2px 0 0;
+        z-index: 10000;
+        background: #303030;
+        float: right;
+        min-width: 200px;
+    }
 
 [dir='rtl'] .pc-menu .pc-menuTitle {
     padding: 5px 10px 6px 10px;
-    border-width: 1px 1px 0px 1px ;
+    border-width: 1px 1px 0px 1px;
     border-radius: 2px 0px 0px 2px;
     float: left;
 }
@@ -62,17 +62,17 @@
     display: inline;
 }
 
-.pc-menu .pc-submenu {
-    clear: right;
-    min-width: 180px;
-    position: relative;
-    overflow: hidden;
-    margin-top: -1px;
-    float: right;
-    background: #303030;
-    border: 1px solid #484848;
-    border-radius: 2px 0px 2px 2px;
-}
+    .pc-menu .pc-submenu {
+        clear: right;
+        min-width: 180px;
+        position: relative;
+        overflow: hidden;
+        margin-top: -1px;
+        float: right;
+        background: #303030;
+        border: 1px solid #484848;
+        border-radius: 2px 0px 2px 2px;
+    }
 
 [dir='rtl'] .pc-menu .pc-submenu {
     clear: left;
@@ -81,24 +81,24 @@
 }
 
 /* menu item, separator*/
-.pc-menuItem, .pc-checkbox, .pc-radio {/*}, .pc-accordion > label {*/
+.pc-menuItem, .pc-checkbox, .pc-radio { /*}, .pc-expander > label {*/
     position: relative;
     white-space: nowrap;
     padding: 10px 14px 10px 11px;
     /*cursor: pointer;*/
 }
 
-[dir='rtl'] .pc-menuItem, .pc-checkbox, .pc-radio {/*}, .pc-accordion > label {*/
+[dir='rtl'] .pc-menuItem, .pc-checkbox, .pc-radio { /*}, .pc-expander > label {*/
     padding: 10px 11px 10px 14px;
 }
-/*
+    /*
 .pc-menuItem {
 	cursor: pointer;
 }
 */
-.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover/*, .pc-accordion > label:hover*/ {
-    color: #33B5E5;
-}
+    .pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover /*, .pc-expander > label:hover*/ {
+        color: #33B5E5;
+    }
 
 .pc-menuItemSep hr {
     /*border: 0;*/
@@ -109,42 +109,50 @@
 }
 
 /* accordion */
-.pc-accordion{
+.pc-expander {
     border: 0px;
     /*border: solid 1px #484848;*/
 }
-.pc-accordion > label {
-    display: inline-block;
-    padding: 8px 14px 8px 24px;
-    height: 15px;
-    border-right: solid 1px #484848;
-    vertical-align: middle; /*to show text in the middle of the block*/
-}
 
-.pc-accordion .pc-button {
-   /* height: 15px;*/
-    background-color: #303030;
-    border-style: none;
-    color: #FFFFFF;
-}
+    .pc-expander > label {
+        display: inline-block;
+        padding: 8px 14px 8px 24px;
+        margin: 3px 0px;
+        height: 15px;
+        border-right: solid 2px #484848;
+        vertical-align: middle; /*to show text in the middle of the block*/
+    }
 
-[dir='rtl'] .pc-accordion > label {
+    .pc-expander .pc-button {
+        /* height: 15px;*/
+        background-color: #303030;
+        border-style: none;
+        color: #FFFFFF;
+    }
+
+[dir='rtl'] .pc-expander > label {
     padding: 8px 30px 8px 14px;
 }
 
 
-.pc-accordion input:checked + label{
+.pc-expander input:checked + label {
     color: #17a5b8;
 }
 /*
-.pc-accordion input:not(:checked) + label:hover{
+.pc-expander input:not(:checked) + label:hover{
     color: #33B5E5;
 }
 */
-.pc-accordion .pc-button:hover{
+.pc-expander .pc-button:hover {
     color: #33B5E5;
 }
-.pc-accordion section {
+
+.pc-expander label {
+    /* line-height: 15px;
+     */ display: inline-block;
+}
+
+.pc-expander section {
     overflow: hidden;
     max-height: 0px;
     position: relative;
@@ -157,22 +165,20 @@
     border-top: solid 1px #484848;
 }
 
-.pc-accordion input:checked ~ section {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 40px;
+.pc-expander input:checked ~ section {
+    padding: 0px 5px;
     -webkit-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -o-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -ms-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
-    border-top: solid 1px #17a5b8;
-    border-bottom: solid 1px #17a5b8;
+    border-top: 0px;
+    border-bottom: solid 1px #484848;
     max-height: 1000px;
     vertical-align: middle;
 }
 
-.pc-accordion input:not(:checked) ~ section {
+.pc-expander input:not(:checked) ~ section {
     -webkit-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -o-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
@@ -180,84 +186,87 @@
     transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
 }
 
-.pc-accordion input:checked ~ section p::before {
+.pc-expander input:checked ~ section p::before {
     content: '•';
 }
 /*
-.pc-accordion input:not(:checked) ~ section p::before {
+.pc-expander input:not(:checked) ~ section p::before {
     padding-left: 40px;
     content: '•';
     vertical-align: text-top;
 }*/
 
 
-.pc-accordion label:after {
+.pc-expander label:after {
     float: left;
     content: '+';
     width: 20px;
     font: 22px "Consolas", monospace;
     font-weight: bold;
     left: 13px;
-    top: 2px;
+    top: 1px;
     /*border: 0px;*/
     position: absolute;
     pointer-events: none;
 }
 
 
-[dir='rtl'] .pc-accordion label:after {
+[dir='rtl'] .pc-expander label:after {
     content: '+';
     position: absolute;
     right: 13px;
     left: auto;
-    top: 2px;
-    height: 100%;
+    /*top: 1px;
+    */height: 100%;
 }
 
 
-.pc-accordion input:checked + label:after {
+.pc-expander input:checked + label:after {
     content: '-';
-    top: 3px;
+    top: 2px;
 }
 
 
 /* checkbox, radio button */
-.pc-checkbox input, .pc-radio input, .pc-accordion input {
+.pc-checkbox input, .pc-radio input, .pc-expander input {
     display: none;
 }
 
-.pc-checkbox label, .pc-radio label, .pc-accordion label{
+.pc-checkbox label, .pc-radio label, .pc-expander label {
     display: inline-block;
     position: relative;
     white-space: nowrap;
     cursor: pointer;
 }
+
 .pc-checkbox label, .pc-radio label {
     padding-left: 25px;
 }
 
 
-.pc-checkbox label:before, .pc-radio label:before {
-    content: '';
-    position: absolute;
-    left: 0px;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #4C6168;
-    top: -2px;
-}
+    .pc-checkbox label:before, .pc-radio label:before {
+        content: '';
+        position: absolute;
+        left: 0px;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #4C6168;
+        top: -2px;
+    }
+
 [dir='rtl'] .pc-checkbox label, .pc-radio label {
     padding-right: 25px;
 }
 
-[dir='rtl'] .pc-checkbox label:before, .pc-radio label:before {
-    right: 0px;
-}
-.pc-radio label:before {
-    border-radius: 50%;
-    width: 15px;
-    height: 15px;
-}
+    [dir='rtl'] .pc-checkbox label:before, .pc-radio label:before {
+        right: 0px;
+    }
+
+    .pc-radio label:before {
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+    }
 
 /* checked mark aspect */
 .pc-checkbox label:after {
