@@ -19,7 +19,7 @@ PocketCode.Ui.PageView = (function () {
         this._iconButton = new PocketCode.Ui.HeaderIconButton();
         //this._iconButton.disabled = true;
         this._header.appendChild(this._iconButton);
-        this._captionArea = new SmartJs.Ui.ContainerControl({ className: 'pc-pageCaption' });
+        this._captionArea = new SmartJs.Ui.HtmlTag('div', { className: 'pc-pageCaption' });
         this._header.appendChild(this._captionArea);
         this._caption = new SmartJs.Ui.TextNode();  //TODO: not needed right now
         this._captionArea.appendChild(this._caption);
@@ -46,7 +46,10 @@ PocketCode.Ui.PageView = (function () {
                 return this._caption.text;
             },
             set: function (value) {
+                if (typeof value !== 'string')
+                    throw new error('invalid argument: title: expected type = string');
                 this._caption.text = value;
+                this._captionArea.dom.dir = PocketCode.I18nProvider.getTextDirection(value);
             },
         }
     });

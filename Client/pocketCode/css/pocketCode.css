@@ -266,8 +266,7 @@
 .pc-pageCaption {
     position: relative;
     float: left;
-    padding-left: 7px;
-    padding-right: 7px;
+    padding: 0px 8px;
     height: 100%;
     color: #8699A4;
     font-size: 23px;
