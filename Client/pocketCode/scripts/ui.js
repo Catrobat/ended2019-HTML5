@@ -108,6 +108,9 @@ PocketCode.Ui.merge({
         //methods
         I18nTextNode.prototype.merge({
             _updateUiStrings: function () {
+                if (!this._i18n)
+                    return;
+
                 var text = '';
                 if (this._i18n instanceof PocketCode.Core.I18nString)
                     text = this._i18n.toString();

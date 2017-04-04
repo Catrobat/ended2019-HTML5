@@ -10,12 +10,20 @@ PocketCode.Ui.CodePageView = (function () {
         this.caption = 'this is a very long caption textthis is a very long caption textthis is a very long caption text';
 
         this._menu = new PocketCode.CodeView.Ui.Menu();
-        this._menu.addToDom(this._dom);
+        this._header.appendChild(this._menu);
     }
 
-
     //properties
-    Object.defineProperties(CodePageView.prototype, {
+    //Object.defineProperties(CodePageView.prototype, {
+    //});
+
+    //methods
+    CodePageView.prototype.merge({
+        /* override */
+        verifyResize: function () {
+            this._menu.verifyResize();  //menu is positioned absolute
+            PocketCode.Ui.PageView.prototype.verifyResize.call(this);
+        },
     });
 
     return CodePageView;

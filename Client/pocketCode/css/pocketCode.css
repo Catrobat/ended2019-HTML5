@@ -24,8 +24,8 @@
     .pc-playerViewport button {
         border: 0;
         border-radius: 0;
-        display: inline-block;
-        /*padding: 0;*/
+        /*display: inline-block;
+        padding: 0;*/
         margin: 0;
         background: none;
         font-weight: normal;
@@ -188,14 +188,9 @@
     height: 4.8em;
     border-bottom: solid 1px #385F6E;
     background-color: #003041;
-    overflow: hidden;
-
     /*display: table;
-	 border-spacing: 0;
-    color: white;
-    font-size: 50px;
-    text-align: center;
-    padding-top: 10px;*/
+	border-spacing: 0;
+*/
 }
 
     /*	.pc-pageHeader div {
@@ -219,19 +214,34 @@
 		overflow: hidden;
 	}
 */
+    /*    .pc-pageHeader .pc-menuButton {
+        width: 4.8em;
+        min-width: 4.8em;
+    }
+    */
+    .pc-pageHeader .pc-headerIcon {
+        position: relative;
+        float: left;
+        height: 100%;
+        padding: 0;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAYAAAASVl2WAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAAEGSURBVChTY0AGukGJSgXdU97VTZv3v27a/P82CblboFIQABR40zB9wf/66fP/R1e2fOc0dTGBSgF1hySHVk6a/R+koHLSrP92Cbm+UCkICCqq/Q6SbJgx/79DSuFdqDAEaAclbGyYsRAoueB/WnPvfxmPMFOoFAMDh7mHTWpTz796oO6aqfP+m8dkl0OlIMAprWh306xF/xuBJoSWNt7lt/EWhEpBgEt6MVxBSHEdpgKQFUB7cVsBAjrBiRtBJmB1JAyElDR8BykAYQxvgoBBeFpo1eQ5YAWgALNLLkANKBCwTcp/AzYF6J7Y6rbvnFaeiKAGAZOoTKXCnqnv6oBxAcI2iXlbAGXxj7p9JhqRAAAAAElFTkSuQmCC');
+        background-repeat: no-repeat;
+        background-position: 6px 18px;
+    }
 
-.pc-pageHeader .pc-headerIcon {
-    position: relative;
-    float: left;
-    height: 100%;
-    padding: 0;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAYAAAASVl2WAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAAEGSURBVChTY0AGukGJSgXdU97VTZv3v27a/P82CblboFIQABR40zB9wf/66fP/R1e2fOc0dTGBSgF1hySHVk6a/R+koHLSrP92Cbm+UCkICCqq/Q6SbJgx/79DSuFdqDAEaAclbGyYsRAoueB/WnPvfxmPMFOoFAMDh7mHTWpTz796oO6aqfP+m8dkl0OlIMAprWh306xF/xuBJoSWNt7lt/EWhEpBgEt6MVxBSHEdpgKQFUB7cVsBAjrBiRtBJmB1JAyElDR8BykAYQxvgoBBeFpo1eQ5YAWgALNLLkANKBCwTcp/AzYF6J7Y6rbvnFaeiKAGAZOoTKXCnqnv6oBxAcI2iXlbAGXxj7p9JhqRAAAAAElFTkSuQmCC');
-    background-repeat: no-repeat;
+[dir='rtl'] .pc-pageHeader .pc-headerIcon {
+    float: right;
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
     background-position: 6px 18px;
 }
-.pc-pageHeader .pc-headerIcon:disabled{
+
+.pc-pageHeader .pc-headerIcon:disabled {
     background-image: none;
 }
+
 .pc-pageHeader .pc-headerIcon div {
     cursor: pointer;
     height: 100%;
@@ -240,6 +250,15 @@
     background-repeat: no-repeat;
     background-position: 18px 8px;
 }
+
+[dir='rtl'] .pc-pageHeader .pc-headerIcon div {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    background-position: 4px 8px;
+}
+
 .pc-pageHeader .pc-headerIcon:disabled div {
     cursor: default;
 }
@@ -247,8 +266,8 @@
 .pc-pageCaption {
     position: relative;
     float: left;
-    padding-left: 0.3em;
-    padding-right: 0.3em;
+    padding-left: 7px;
+    padding-right: 7px;
     height: 100%;
     color: #8699A4;
     font-size: 23px;
@@ -259,23 +278,10 @@
     text-overflow: ellipsis;
 }
 
-.pc-headerMenu {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    top: 0px;
-    right: 3px;
-    color: #8699A4;
-    font-size: 15px;
-    z-index: 10000;
+[dir='rtl'] .pc-pageCaption {
+    float: right;
 }
-.pc-headerMenu .pc-webButton {
-    width: 48px;
-    height: 48px;
-}
-.pc-headerMenu svg {
-    fill: #FFFFFF;
-}
+
 .pc-pageBodyLayout, .pc-pageBody {
     position: relative;
     height: 100%;
@@ -722,30 +728,31 @@
     font-weight: 500;
     padding: 17px 4px;
 }
+
 [dir='rtl'] .pc-askDialogBody {
     text-align: right;
 }
 
-    .pc-askDialogBody div {
-        padding: 0px 11px;
-    }
+.pc-askDialogBody div {
+    padding: 0px 11px;
+}
 
-    .pc-askDialogBody input {
-        outline-width: 0px;
-        width: 100%;
-        border: solid 2px #282828;
-        background-color: white;
-        height: 35px;
-        margin-top: 20px;
-        padding-left: 5px;
-        padding-right: 5px;
-        font-size: 16px;
-    }
+.pc-askDialogBody input {
+    outline-width: 0px;
+    width: 100%;
+    border: solid 2px #282828;
+    background-color: white;
+    height: 35px;
+    margin-top: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 16px;
+}
 
-        .pc-askDialogBody input:focus {
-            border: solid 2px #FB9B27;
-            border-radius: 2px;
-        }
+    .pc-askDialogBody input:focus {
+        border: solid 2px #FB9B27;
+        border-radius: 2px;
+    }
 
 .pc-dialogBody .pc-dialogContent {
     padding-top: 14px;
@@ -842,27 +849,58 @@
     z-index: 10000;
 }
 
+.pc-pageHeader .pc-menu {
+    /*    position: absolute;
+    width: 48px;
+    height: 48px;
+    top: 0px;
+    right: 3px;
+*/ color: #8699A4;
+    /*    font-size: 15px;
+    z-index: 10000;
+*/
+}
+
+    .pc-pageHeader .pc-menu .pc-webButton {
+        /*    width: 48px;
+    height: 48px;
+*/
+    }
+
+    .pc-pageHeader .pc-menu svg {
+        fill: #8699A4;
+    }
+
 .pc-menuButton {
     border-style: solid;
     border-width: 1px 1px 0;
     border-color: transparent;
     border-radius: 2px 2px 0 0;
     background-color: transparent;
-    margin: -2px;
-    margin-left: -5px;
+    width: 44px;
+    height: 42px;
+    margin: 3px;
     margin-bottom: 0;
     position: absolute;
     z-index: 2;
-    height: 48px;
 }
 
-.pc-headerMenu .pc-menuButton {
-    margin: 0px;
-    margin-left: -2px;
+.pc-menu .pc-menuButton .pc-webButton {
+    margin: 2px;
 }
 
 .pc-menu .pc-menuButton span {
     visibility: hidden;
+}
+
+.pc-menu .pc-menuButton svg {
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
 }
 
 .pc-menuButtonOpened {
@@ -870,74 +908,96 @@
     background-color: #282828;
 }
 
-.pc-headerMenu .pc-menuButtonOpened {
-    margin: 0px;
-    margin-left: -2px;
-    border-color: #484848;
-    background-color: #282828;
-    height: 48px;
-}
-
-
 /* mobile menu */
 .pc-menuMobile {
-    width: 50px;
+    /*    width: 50px;
     height: 50px;
-    position: absolute;
+*/ position: absolute;
     top: 15px;
     right: 15px;
 }
 
-    .pc-menuMobile .pc-menuButton {
-        background-color: #00475E;
-        background-color: rgba(0,71,94,0.8);
-        border-radius: 2px;
-    }
-
-    .pc-menuMobile .pc-menuButtonOpened {
-        border-color: #484848;
-        background-color: #282828;
-        border-width: 1px 1px 0;
-        border-radius: 2px 2px 0 0;
-    }
-
 [dir='rtl'] .pc-menuMobile {
-    margin-right: 4px;
-    right: auto;
+    /*margin-right: 4px;
+    */ right: auto;
     left: 15px;
 }
 
-
-.pc-subMenu {
-    position: absolute;
-    min-width: 150px;
-    overflow: hidden;
-    z-index: 1;
-    top: 45px;
-    right: 3px;
-    padding: 1px 0px;
-    float: right;
-    background-color: #282828;
-    border: 1px solid #484848;
-    border-radius: 2px 0px 2px 2px;
+.pc-pageHeader .pc-menu {
+    top: 0px;
+    right: 0px;
+    background-color: transparent;
 }
 
-.pc-headerMenu .pc-subMenu {
-    position: absolute;
-    min-width: 150px;
+[dir='rtl'] .pc-pageHeader .pc-menu {
+    /*margin-right: 4px;
+    */ right: auto;
+    left: 0px;
+}
+
+
+.pc-menuMobile .pc-menuButton {
+    right: 0px;
+    height: 44px;
+    background-color: rgba(0,71,94,0.8);
+    border-radius: 2px;
+}
+
+[dir='rtl'] .pc-menuMobile .pc-menuButton {
+    right: auto;
+    left: 0px;
+}
+
+.pc-pageHeader .pc-menuButton {
+    background-color: transparent;
+}
+
+    .pc-pageHeader .pc-menuButton button {
+        padding: 0;
+        margin: 6px;
+        /* margin-bottom: 10px; */
+        border-radius: 0;
+        cursor: pointer;
+        position: relative;
+        width: 38px;
+        height: 38px;
+        border: none;
+        fill: #A9DCF1;
+        color: #A9DCF1;
+        outline: none;
+        background: none;
+    }
+
+/*    .pc-pageHeader .pc-menuButton svg {
+        fill:;
+    }
+    */
+.pc-menuMobile .pc-menuButtonOpened {
+    height: 42px;
+    border-color: #484848;
+    background-color: #282828;
+    border-width: 1px 1px 0;
+    border-radius: 2px 2px 0 0;
+}
+
+.pc-subMenu {
+    position: relative;
     overflow: hidden;
     z-index: 1;
-    top: 47px;
-    right: 0px;
-    padding: 1px 0px;
     float: right;
+    top: 44px;
+    right: 3px;
+    /*margin-left: 5px;
+    */ padding: 1px 0px;
     background-color: #282828;
     border: 1px solid #484848;
     border-radius: 2px 0px 2px 2px;
 }
 
 [dir='rtl'] .pc-subMenu {
-    margin-right: 4px;
+    /*margin-left: 0px;
+    margin-right: 5px;
+    */ float: left;
     right: auto;
     left: 3px;
 }
@@ -946,7 +1006,7 @@
 .pc-menuItem, .pc-checkbox, .pc-radio {
     position: relative;
     white-space: nowrap;
-    padding: 10px 16px 10px 11px;
+    padding: 10px 22px 10px 11px;
     margin: 0px;
     width: 100%;
     height: 35px;
@@ -961,7 +1021,7 @@
     text-transform: none;
 }
 
-.pc-menuSymbol, .pc-headerMenu {
+.pc-menuSymbol {
     margin-right: 0 !important;
 }
 
@@ -969,11 +1029,7 @@
         display: none;
     }
 
-    .pc-headerMenu span {
-        display: none;
-    }
-
-  .pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
+.pc-menuItem:hover, .pc-checkbox label:hover, .pc-radio label:hover {
     color: #33B5E5;
     cursor: pointer;
 }
@@ -1002,7 +1058,7 @@
 
 .pc-checkbox label, .pc-radio label, .pc-accordion label {
     line-height: 15px;
-    display: inline-block;
+    display: block;
     position: relative;
     white-space: nowrap;
     cursor: pointer;

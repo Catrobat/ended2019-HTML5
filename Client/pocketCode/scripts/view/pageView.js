@@ -54,12 +54,8 @@ PocketCode.Ui.PageView = (function () {
     //methods
     PageView.prototype.merge({
         _handleResize: function (e) {
-            this._captionArea.width = this.width - (this._iconButton.width * 2 + 3);
-            // TODO: make sure to edit the caption area as well to enable text-overflow: ellipsis (max-width)
-            // console.log(e);
-            //this.height = this.height;   //width/height is defined as 100% -> has to be set as px valiu to enablel page transitions
-            //this.width = this.width;
-            //this._container.height = this.height - this._header.height - this._footer.height;
+            this._captionArea.width = this.width - (2 * this._iconButton.width);
+
             var style = this._bodyLayout.style,
                 hh = this._header.hidden,
                 fh = this._footer.hidden;

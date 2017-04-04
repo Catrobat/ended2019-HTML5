@@ -20,7 +20,6 @@ PocketCode.Ui.Menu = (function () {
         this.appendChild(this._menuButton);
 
         var btnControl = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.MENU, undefined, false, true);
-        //btnControl.style.margin = '2px'; //TODO
         btnControl.onClick.addEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
         this._menuButton.appendChild(btnControl);
         this._subMenu = new SmartJs.Ui.ContainerControl({ className: 'pc-subMenu' });

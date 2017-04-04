@@ -1,62 +1,70 @@
-/**
- * Created by alexandra on 27.03.17.
- */
+/// <reference path="../../../smartJs/sj.js" />
+/// <reference path="../../../smartJs/sj-core.js" />
+/// <reference path="../../../smartJs/sj-event.js" />
+/// <reference path="../../../smartJs/sj-ui.js" />
+/// <reference path="../core.js" />
+/// <reference path="../ui.js" />
+'use strict';
 
-//TODO tab - control bsp:
-// https://www.webcomponents.org/element/PolymerElements/paper-tabs
-// http://jsfiddle.net/syahrasi/Us8uc/
-// https://os.alfajango.com/easytabs/#tabs1-css
-/*
-PocketCode.Ui.Tabs = (function () {
-    Menu.extends(SmartJs.Ui.ContainerControl, false);
+PocketCode.Ui.merge({
+    TabControl: (function () {
+        TabControl.extends(SmartJs.Ui.ContainerControl, false);
 
-    //cntr
-    function Menu(args) {
-        SmartJs.Ui.ContainerControl.call(this, {className: 'pc-tabs'});
-    }
+        //cntr
+        function TabControl(i18nKey) {
+            SmartJs.Ui.ContainerControl.call(this, { className: 'pc-menuItem' });
 
-    this._tab = new SmartJs.Ui.ContainerControl({ className: 'pc-tabButton' });
-    this.appendChild(this._tab);
+        }
 
-    var li = document.createElement('li');
-    var a = document.createElement('a');
-    var ul = document.createElement('ul');
-    ul.appendChild(li);
-    li.appendChild(a);
+        TabControl.prototype.merge({
+            /* override */
+            appendChild: function (uiControl) {
+                if (!(uiControl instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab page');
+                SmartJs.Ui.ContainerControl.prototype.appendChild.call(this, uiControl);
+            },
+            insertAt: function (idx, uiControl) {
+                if (!(uiControl instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab page');
+                SmartJs.Ui.ContainerControl.prototype.insertAt.call(this, idx, uiControl);
+            },
+            insertBefore: function (newUiC, existingUiC) {
+                if (!(newUiC instanceof PocketCode.Ui.TabPage) || !(existingUiC instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab page');
+                SmartJs.Ui.ContainerControl.prototype.insertBefore.call(this, newUiC, existingUiC);
+            },
+            insertAfter: function (newUiC, existingUiC) {
+                if (!(newUiC instanceof PocketCode.Ui.TabPage) || !(existingUiC instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab page');
+                SmartJs.Ui.ContainerControl.prototype.insertAfter.call(this, newUiC, existingUiC);
+            },
+            replaceChild: function (newUiC, existingUiC) {
+                if (!(newUiC instanceof PocketCode.Ui.TabPage) || !(existingUiC instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab page');
+                SmartJs.Ui.ContainerControl.prototype.replaceChild.call(this, newUiC, existingUiC);
+            },
+            removeChild: function (uiControl) {
+                if (!(uiControl instanceof PocketCode.Ui.TabPage))
+                    throw new Error('invalid argument: tab');
+                SmartJs.Ui.ContainerControl.prototype.appendChild.call(this, uiControl);
+            },
+        });
 
-    this._dom.appendChild(document.createElement('ul'));
+        return TabControl;
+    })(),
 
+    TabPage: (function () {
+        TabPage.extends(SmartJs.Ui.ContainerControl, false);
 
-}
-*/
+        //cntr
+        function TabPage(i18nKey) {
+            SmartJs.Ui.ContainerControl.call(this, { className: 'pc-menuItem' });
 
-PocketCode.Ui.TabControl = (function () {
-    TabControl.extends(SmartJs.Ui.ContainerControl, false);
+            //this._removeDomListener(this._dom, 'touchstart', this._btnListener);    //make sure events for scrolling get passed
+            //this._addDomListener(this._dom, 'touchstart', function (e) { }, { stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
+        }
 
-    //cntr
-    /*
-    function TabControl(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-menuItem' });
+        return TabPage;
+    })(),
 
-        this._removeDomListener(this._dom, 'touchstart', this._btnListener);    //make sure events for scrolling get passed
-        this._addDomListener(this._dom, 'touchstart', function (e) { }, { stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
-    }
-*/
-
-    return TabControl;
-})();
-
-PocketCode.Ui.TabPage = (function () {
-    TabPage.extends(SmartJs.Ui.ContainerControl, false);
-/*
-    //cntr
-    function TabPage(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-menuItem' });
-
-        this._removeDomListener(this._dom, 'touchstart', this._btnListener);    //make sure events for scrolling get passed
-        this._addDomListener(this._dom, 'touchstart', function (e) { }, { stopPropagation: false, systemAllowed: true });   //allow system events to show css (pressed) on buttons
-    }
-*/
-
-    return TabPage;
-})();
+});

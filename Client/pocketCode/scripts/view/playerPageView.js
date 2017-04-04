@@ -11,6 +11,8 @@ PocketCode.Ui.PlayerPageView = (function () {
     function PlayerPageView() {
         PocketCode.Ui.PageView.call(this);  //even if we do not pass argument, ui is built in the constructor so we have to call the ctr to reinit
         if (SmartJs.Device.isMobile) {
+            this._iconButton.hide();
+            this._captionArea.hide();
             var exitBtn = new PocketCode.Ui.PlayerSvgButton(PocketCode.Ui.SvgImageString.BACK, 'lblExit');
             exitBtn.className = 'pc-webButton pc-backButton pc-rtl';
             exitBtn.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) {
