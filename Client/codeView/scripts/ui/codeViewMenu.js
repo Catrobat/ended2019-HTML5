@@ -31,10 +31,21 @@ PocketCode.CodeView.Ui.merge({
             this.addClassName('pc-menuMobile');
             var item;
 
-            var exp = new PocketCode.Ui.Expander();
-            exp.appendChild(exp);
+            var testObject = [{
+                sceneid: "sceneid1",
+                name: "scene1",
+                sprites: [{id: "spriteid1", name: "sprite1"}, {id: "spriteid2", name: "sprite2"}]
+            },
+                {
+                    sceneid: "sceneid2",
+                    name: "scene2",
+                    sprites: [{id: "spriteid3", name: "sprite3"}, {id: "spriteid4", name: "sprite4"}]
+                }];
 
-            item = new PocketCode.Ui.I18nCheckbox('testing purpose');
+            var exp = new PocketCode.Ui.ExpanderTree(testObject);
+            this._subMenu.appendChild(exp);
+
+           /* item = new PocketCode.Ui.I18nCheckbox('testing purpose');
             this.appendChild(item);
             item = new PocketCode.Ui.I18nCheckbox('menuTermsOfUse');
             this.appendChild(item);
@@ -52,7 +63,7 @@ PocketCode.CodeView.Ui.merge({
             this.appendChild(item);
             //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
             item = new PocketCode.Ui.MenuItem('menuReportIssue');
-            this.appendChild(item);
+            this.appendChild(item);*/
 
             //    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
             //    //    this.close();

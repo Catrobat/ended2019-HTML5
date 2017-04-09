@@ -12,19 +12,10 @@ PocketCode.Ui.Expander = (function () {
     function Expander(args) {
         SmartJs.Ui.ContainerControl.call(this, {className: 'pc-expander'});
 
-        var testObject = [{
-            sceneid: "sceneid1",
-            name: "scene1",
-            sprites: [{id: "spriteid1", name: "sprite1"}, {id: "spriteid2", name: "sprite2"}]
-        },
-            {
-                sceneid: "sceneid2",
-                name: "scene2",
-                sprites: [{id: "spriteid3", name: "sprite3"}, {id: "spriteid4", name: "sprite4"}]
-            }];
+        this.appendChild(new SmartJs.Ui.HtmlTag('div', {className: 'pc-expander'}));
 
-        var tree = PocketCode.Ui.ExpanderTree(testObject);
-        this.appendChild(tree);
+        //var tree = new PocketCode.Ui.ExpanderTree(args);
+        //this.appendChild(tree);
 
         //this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
         //this._appendChild(this._textNode);
@@ -90,23 +81,24 @@ PocketCode.Ui.ExpanderTree = (function () {
     ExpanderTree.extends(PocketCode.Ui.Expander, false);
 
     function ExpanderTree(object) {
-        //PocketCode.Ui.ExpanderTree.call(this, { className: 'pc-menu' });
-
-        this.appendChild(new SmartJs.Ui.HtmlTag('div'));
+        PocketCode.Ui.Expander.call(this);
 
         for (var scenes in object) {
-            this._checkbox = new SmartJs.Ui.HtmlTag('checkbox');
+
+            this._checkbox = new SmartJs.Ui.HtmlTag('input');
+            /*var newlabel = new HTMLElement();
+            newlabel.htmlFor = this._checkbox._id;*/
             this.appendChild(this._checkbox);
 
             this._button = new PocketCode.Ui.Button(scenes.name);
             this.appendChild(this._button);
 
-            this._container = new SmartJs.Ui.HtmlTag('section', {className: 'pc-menuItem'}); //TODO???
-            this._checkbox._appendChild(this._container);
+            this._section = new SmartJs.Ui.HtmlTag('section', {className: 'pc-menuItem'}); //TODO???
+            this._appendChild(this._section);
 
             for (var sprites in scenes.sprites) {
                 this._subbutton = new PocketCode.Ui.Button(sprites.name);
-                _container.appendChild(this._subbutton);
+                this._section.appendChild(this._subbutton);
             }
         }
     }
