@@ -1051,11 +1051,11 @@
 }
 
 /* checkbox, radio button */
-.pc-checkbox input, .pc-radio input, .pc-accordion input {
+.pc-checkbox input, .pc-radio input, .pc-expander input {
     display: none;
 }
 
-.pc-checkbox label, .pc-radio label, .pc-accordion label {
+.pc-checkbox label, .pc-radio label, .pc-expander label {
     line-height: 15px;
     display: block;
     position: relative;

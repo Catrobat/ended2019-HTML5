@@ -31,6 +31,9 @@ PocketCode.CodeView.Ui.merge({
             this.addClassName('pc-menuMobile');
             var item;
 
+            var exp = new PocketCode.Ui.Expander();
+            exp.appendChild(exp);
+
             item = new PocketCode.Ui.I18nCheckbox('testing purpose');
             this.appendChild(item);
             item = new PocketCode.Ui.I18nCheckbox('menuTermsOfUse');
