@@ -84,20 +84,24 @@ PocketCode.Ui.ExpanderTree = (function () {
         PocketCode.Ui.Expander.call(this);
 
         for (var scenes in object) {
+            var scenes_ = object[scenes];
 
             this._checkbox = new SmartJs.Ui.HtmlTag('input');
-            /*var newlabel = new HTMLElement();
-            newlabel.htmlFor = this._checkbox._id;*/
+            this._checkbox.dom.setAttribute("type", "checkbox");
+            this._label = new SmartJs.Ui.HtmlTag('label');
+            this._label.dom.htmlFor = this._checkbox._id;
             this.appendChild(this._checkbox);
+            this.appendChild(this._label);
 
-            this._button = new PocketCode.Ui.Button(scenes.name);
+            this._button = new PocketCode.Ui.Button(scenes_.name, {className: 'pc-button'});
             this.appendChild(this._button);
 
             this._section = new SmartJs.Ui.HtmlTag('section', {className: 'pc-menuItem'}); //TODO???
             this._appendChild(this._section);
 
-            for (var sprites in scenes.sprites) {
-                this._subbutton = new PocketCode.Ui.Button(sprites.name);
+            for (var sprites in scenes_.sprites) {
+                var sprites_ = scenes_.sprites[sprites];
+                this._subbutton = new PocketCode.Ui.Button(sprites_.name);
                 this._section.appendChild(this._subbutton);
             }
         }
