@@ -140,7 +140,9 @@
     }
 
 [dir='rtl'] .pc-expander .pc-expanderTree > label {
-    padding: 8px 30px 8px 14px;
+    padding: 8px 24px 8px 14px;
+    border-left: solid 2px #484848;
+    border-right: none;
 }
 
 
@@ -187,6 +189,10 @@
     border-bottom: solid 1px #484848;
     max-height: 1000px;
     vertical-align: middle;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderTree input:checked ~ section {
+    padding: 0px 5px;
 }
 
 .pc-expander .pc-expanderTree input:not(:checked) ~ section {
