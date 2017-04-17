@@ -80,9 +80,18 @@
     border-radius: 2px 2px 2px 0px;
 }
 
+.pc-expander .pc-expanderTree input:not(:checked) ~ section .pc-menuItem {
+    overflow: hidden;
+    position: relative;
+}
+
+.pc-expander .pc-expanderTree input:checked ~ section .pc-menuItem {
+    position: relative;
+}
+
 /* menu item, separator*/
 .pc-menuItem, .pc-checkbox, .pc-radio { /*}, .pc-expander > label {*/
-    position: relative;
+    position: fixed;
     white-space: nowrap;
     padding: 10px 14px 10px 11px;
     /*cursor: pointer;*/
@@ -109,12 +118,12 @@
 }
 
 /* accordion */
-.pc-expander {
+.pc-expander .pc-expanderTree {
     border: 0px;
     /*border: solid 1px #484848;*/
 }
 
-    .pc-expander > label {
+    .pc-expander .pc-expanderTree > label {
         display: inline-block;
         padding: 8px 14px 8px 24px;
         margin: 3px 0px;
@@ -123,36 +132,36 @@
         vertical-align: middle; /*to show text in the middle of the block*/
     }
 
-    .pc-expander .pc-button {
+    .pc-expander .pc-expanderTree .pc-button {
         /* height: 15px;*/
         background-color: #303030;
         border-style: none;
         color: #FFFFFF;
     }
 
-[dir='rtl'] .pc-expander > label {
+[dir='rtl'] .pc-expander .pc-expanderTree > label {
     padding: 8px 30px 8px 14px;
 }
 
 
-.pc-expander input:checked + label {
+.pc-expander .pc-expanderTree input:checked + label {
     color: #17a5b8;
 }
 /*
-.pc-expander input:not(:checked) + label:hover{
+.pc-expander .pc-expanderTree input:not(:checked) + label:hover{
     color: #33B5E5;
 }
 */
-.pc-expander .pc-button:hover {
+.pc-expander .pc-expanderTree .pc-button:hover {
     color: #33B5E5;
 }
 
-.pc-expander label {
+.pc-expander .pc-expanderTree label {
     /* line-height: 15px;
      */ display: inline-block;
 }
 
-.pc-expander section {
+.pc-expander .pc-expanderTree section {
     overflow: hidden;
     max-height: 0px;
     position: relative;
@@ -165,7 +174,9 @@
     border-top: solid 1px #484848;
 }
 
-.pc-expander input:checked ~ section {
+
+
+.pc-expander .pc-expanderTree input:checked ~ section {
     padding: 0px 5px;
     -webkit-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
@@ -178,7 +189,7 @@
     vertical-align: middle;
 }
 
-.pc-expander input:not(:checked) ~ section {
+.pc-expander .pc-expanderTree input:not(:checked) ~ section {
     -webkit-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -o-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
@@ -186,18 +197,18 @@
     transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
 }
 
-.pc-expander input:checked ~ section p::before {
+.pc-expander .pc-expanderTree input:checked ~ section p::before {
     content: '•';
 }
 /*
-.pc-expander input:not(:checked) ~ section p::before {
+.pc-expander .pc-expanderTree input:not(:checked) ~ section p::before {
     padding-left: 40px;
     content: '•';
     vertical-align: text-top;
 }*/
 
 
-.pc-expander label:after {
+.pc-expander .pc-expanderTree label:after {
     float: left;
     content: '+';
     width: 20px;
@@ -211,7 +222,7 @@
 }
 
 
-[dir='rtl'] .pc-expander label:after {
+[dir='rtl'] .pc-expander .pc-expanderTree label:after {
     content: '+';
     position: absolute;
     right: 13px;
@@ -221,18 +232,18 @@
 }
 
 
-.pc-expander input:checked + label:after {
+.pc-expander .pc-expanderTree input:checked + label:after {
     content: '-';
     top: 2px;
 }
 
 
 /* checkbox, radio button */
-.pc-checkbox input, .pc-radio input, .pc-expander input {
+.pc-checkbox input, .pc-radio input, .pc-expander .pc-expanderTree input {
     display: none;
 }
 
-.pc-checkbox label, .pc-radio label, .pc-expander label {
+.pc-checkbox label, .pc-radio label, .pc-expander .pc-expanderTree label {
     display: inline-block;
     position: relative;
     white-space: nowrap;
