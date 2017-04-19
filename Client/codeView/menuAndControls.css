@@ -80,14 +80,21 @@
     border-radius: 2px 2px 2px 0px;
 }
 
-.pc-expander .pc-expanderTree input:not(:checked) ~ section .pc-menuItem {
+.pc-expanderHeader{
+    background-color: #303030;
+    font-size: 22px;
+}
+
+.pc-expander input:not(:checked) ~ .pc-expanderBody {
     overflow: hidden;
     position: relative;
 }
 
-.pc-expander .pc-expanderTree input:checked ~ section .pc-menuItem {
+.pc-expander input:checked ~ .pc-expanderBody {
     position: relative;
+    overflow: visible;
 }
+
 
 /* menu item, separator*/
 .pc-menuItem, .pc-checkbox, .pc-radio { /*}, .pc-expander > label {*/
@@ -109,6 +116,12 @@
         color: #33B5E5;
     }
 
+
+.pc-expander{
+    width: 400px;
+    margin: 10px auto 30px auto;
+    background: #303030;
+}
 .pc-menuItemSep hr {
     /*border: 0;*/
     margin: 1px 0px;
@@ -117,36 +130,51 @@
     height: 1px;
 }
 
-/* accordion */
-.pc-expander .pc-expanderTree {
-    border: 0px;
-    /*border: solid 1px #484848;*/
+.pc-expanderHeader > label {
+    display: inline-block;
+    padding: 6px 19px 9px 26px;
+    height: 15px;
+    border-right: solid 2px #484848;
+    vertical-align: middle; /*to show text in the middle of the block*/
+    text-align: center;
 }
 
-    .pc-expander .pc-expanderTree > label {
-        display: inline-block;
-        padding: 8px 14px 8px 24px;
-        margin: 3px 0px;
-        height: 15px;
-        border-right: solid 2px #484848;
-        vertical-align: middle; /*to show text in the middle of the block*/
-    }
+.pc-expander .pc-expanderHeader button {
+    /* height: 15px;*/
+    background-color: #303030;
+    border-style: none;
+    color: #FFFFFF;
+    font-size: 17px;
+    cursor: pointer;
+}
 
-    .pc-expander .pc-expanderTree .pc-button {
-        /* height: 15px;*/
-        background-color: #303030;
-        border-style: none;
-        color: #FFFFFF;
-    }
+.pc-expander .pc-expanderBody button{
+    background-color: #303030;
+    border-style: none;
+    color: #FFFFFF;
+    text-align: left;
+    width: 100%;
+    font-size: 16px;
+    padding: 2px 0px 3px 9px;
+    cursor: pointer;
+}
 
-[dir='rtl'] .pc-expander .pc-expanderTree > label {
-    padding: 8px 24px 8px 14px;
+.pc-expander .pc-expanderTree .pc-expanderHeader button{
+    width: inherit;
+}
+
+
+[dir='rtl'] .pc-expanderTree .pc-expanderBody button{
+    text-align: right;
+}
+
+[dir='rtl'] .pc-expanderHeader > label {
     border-left: solid 2px #484848;
     border-right: none;
 }
 
 
-.pc-expander .pc-expanderTree input:checked + label {
+.pc-expanderHeader input:checked + label {
     color: #17a5b8;
 }
 /*
@@ -154,16 +182,12 @@
     color: #33B5E5;
 }
 */
-.pc-expander .pc-expanderTree .pc-button:hover {
+.pc-expander button:hover {
     color: #33B5E5;
 }
 
-.pc-expander .pc-expanderTree label {
-    /* line-height: 15px;
-     */ display: inline-block;
-}
-
-.pc-expander .pc-expanderTree section {
+.pc-expander .pc-expanderBody {
+    background-color: #303030;
     overflow: hidden;
     max-height: 0px;
     position: relative;
@@ -178,7 +202,7 @@
 
 
 
-.pc-expander .pc-expanderTree input:checked ~ section {
+.pc-expander .pc-expanderTree input:checked ~ .pc-expanderBody {
     padding: 0px 5px;
     -webkit-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: max-height 0.5s ease-in-out, box-shadow 0.1s linear;
@@ -191,11 +215,11 @@
     vertical-align: middle;
 }
 
-[dir='rtl'] .pc-expander .pc-expanderTree input:checked ~ section {
+[dir='rtl'] .pc-expander .pc-expanderTree input:checked ~ .pc-expanderBody {
     padding: 0px 5px;
 }
 
-.pc-expander .pc-expanderTree input:not(:checked) ~ section {
+.pc-expander .pc-expanderTree input:not(:checked) ~ .pc-expanderBody {
     -webkit-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -moz-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
     -o-transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
@@ -203,18 +227,33 @@
     transition: min-height 0.5s ease-in-out, box-shadow 0.1s linear;
 }
 
-.pc-expander .pc-expanderTree input:checked ~ section p::before {
-    content: '•';
+.pc-expander .pc-expanderHeader label:after {
+    float: left;
+    content: '<';
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+    width: 20px;
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    left: 13px;
+    top: 1px;
+    /*border: 0px;*/
+    position: absolute;
+    pointer-events: none;
 }
-/*
-.pc-expander .pc-expanderTree input:not(:checked) ~ section p::before {
-    padding-left: 40px;
-    content: '•';
-    vertical-align: text-top;
-}*/
+
+.pc-expander .pc-expanderHeader label:hover {
+    color: #33B5E5;
+}
 
 
-.pc-expander .pc-expanderTree label:after {
+.pc-expander .pc-expanderHeader input[type=checkbox]:checked label:after {
+    content: 'd';
+}
+
+.pc-expanderTree .pc-expanderHeader label:after {
     float: left;
     content: '+';
     width: 20px;
@@ -228,7 +267,7 @@
 }
 
 
-[dir='rtl'] .pc-expander .pc-expanderTree label:after {
+[dir='rtl'] .pc-expanderTree .pc-expanderHeader label:after {
     content: '+';
     position: absolute;
     right: 13px;
@@ -238,8 +277,13 @@
 }
 
 
-.pc-expander .pc-expanderTree input:checked + label:after {
+.pc-expanderTree .pc-expanderHeader input:checked + label:after {
     content: '-';
+    top: 2px;
+}
+
+.pc-expander .pc-expanderHeader input:checked + label:after {
+    content: '>';
     top: 2px;
 }
 
@@ -249,12 +293,6 @@
     display: none;
 }
 
-.pc-checkbox label, .pc-radio label, .pc-expander .pc-expanderTree label {
-    display: inline-block;
-    position: relative;
-    white-space: nowrap;
-    cursor: pointer;
-}
 
 .pc-checkbox label, .pc-radio label {
     padding-left: 25px;

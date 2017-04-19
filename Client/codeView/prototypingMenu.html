@@ -68,54 +68,64 @@
     </script>
 </head>
 <body>
-<div style="width: 400px; margin: 10px auto 30px auto; background: #303030;" dir="rtl">
+<div dir="ltr">
     <div class="pc-expander">
-        <div class="pc-expanderTree">
-            <input id="acId1" name="accordion-1" type="checkbox" />
-            <label for="acId1"></label>
-            <button id="sj24" class="pc-menuItem">scene 1</button>
-            <section>
-                <button id="sj40" class="pc-menuItem">sprite 1</button>
-                <button id="sj42" class="pc-menuItem">sprite 2</button>
-                <button id="sj43" class="pc-menuItem">sprite 3</button>
-            </section>
+        <input id="headerId1" name="accordion-1" type="checkbox" />
+        <div class="pc-expanderHeader">
+            <label for="headerId1"></label>
+            <button id="sj22">Navigation</button>
         </div>
-    </div>
 
+        <div class="pc-expanderBody">
+            <div class="pc-expanderTree">
+                <input id="acId1" name="accordion-1" type="checkbox" />
+                <div class="pc-expanderHeader">
+                    <label for="acId1"></label>
+                    <button id="sj1">scene 1</button>
+                </div>
+                <div class="pc-expanderBody">
+                    <button id="sj2">sprite 1</button>
+                    <button id="sj3">sprite 2</button>
+                    <button id="sj43">sprite 3</button>
+                </div>
+            </div>
 
-    <div class="pc-expander">
-        <div class="pc-expanderTree">
-        <input id="acId2" name="accordion-2" type="checkbox" />
-        <label for="acId2"></label>
-        <button id="sj21" class="pc-menuItem">scene 2</button>
-        <section>
-            <button id="sj4" class="pc-menuItem">sprite 4</button>
-            <button id="sj5" class="pc-menuItem">sprite 5</button>
-        </section>
-        </div>
-    </div>
-    <div class="pc-expander">
-        <div class="pc-expanderTree">
-        <input id="acId3" name="accordion-3" type="checkbox" />
-        <label for="acId3"></label>
-        <button id="sj25" class="pc-menuItem">scene 3</button>
-        <section>
-            <button id="sj6" class="pc-menuItem">sprite 6</button>
-            <button id="sj7" class="pc-menuItem">sprite 7</button>
-        </section>
-        </div>
-    </div>
-    <div class="pc-expander">
-        <div class="pc-expanderTree">
-        <input id="acId4" name="accordion-4" type="checkbox" />
-        <label for="acId4"></label>
-        <button id="sj26" class="pc-menuItem">scene 4</button>
-        <section>
-            <button id="sj8" class="pc-menuItem">sprite 8</button>
-            <button id="sj9" class="pc-menuItem">sprite 9</button>
-            <button id="sj10" class="pc-menuItem">sprite 10</button>
-            <button id="sj11" class="pc-menuItem">sprite 11</button>
-        </section>
+            <div class="pc-expanderTree">
+                <input id="acId2" name="accordion-1" type="checkbox" />
+                <div class="pc-expanderHeader">
+                    <label for="acId2"></label>
+                    <button id="sj4">scene 2</button>
+                </div>
+                <div class="pc-expanderBody">
+                    <button id="sj5">sprite 4</button>
+                    <button id="sj42">sprite 5</button>
+                </div>
+            </div>
+
+            <div class="pc-expanderTree">
+                <input id="acId3" name="accordion-1" type="checkbox" />
+                <div class="pc-expanderHeader">
+                    <label for="acId3"></label>
+                    <button id="sj24">scene 3</button>
+                </div>
+                <div class="pc-expanderBody">
+                    <button id="sj40">sprite 6</button>
+                </div>
+            </div>
+
+            <button id="sj41">sprite 7</button>
+            <button id="sj46">sprite 8</button>
+            <button id="sj47">sprite 9</button>
+            <!--<div class="pc-expanderTree">
+                <input id="acId4" name="accordion-1" type="checkbox" />
+                <div class="pc-expanderHeader">
+                    <label for="acId4"></label>
+                    <button id="sj21">scene 4</button>
+                </div>
+                <div class="pc-expanderBody">-
+                    <button id="sj41">sprite 7</button>
+                </div>
+            </div>-->
         </div>
     </div>
 </div>
