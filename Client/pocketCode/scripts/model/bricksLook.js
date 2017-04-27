@@ -204,11 +204,6 @@ PocketCode.Model.merge({
         return AskBrick;
     })(),
 
-    BubbleType: {
-        THINK: 0,
-        SAY: 1
-    },
-
     SayBrick: (function () {
         SayBrick.extends(PocketCode.Model.BaseBrick, false);
 
@@ -222,7 +217,7 @@ PocketCode.Model.merge({
             var text = this._text.calculate(scope);
 
             if (text !== '')
-                this._return(this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text));
+                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, text));
             else
                 this._return(false);
         };
@@ -242,14 +237,14 @@ PocketCode.Model.merge({
         SayForBrick.prototype.merge({
             /* override */
             _timerExpiredHandler: function (e) {
-                var update = this._sprite.hideBubble(PocketCode.Model.BubbleType.SAY);
+                var update = this._sprite.hideBubble(PocketCode.Ui.BubbleType.SPEECH);
                 this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
             },
             /* override */
             _execute: function (id, scope) {
                 var text = this._text.calculate(scope);
                 if (text !== '' && !isNaN(this._duration.calculate(scope)))
-                    this._sprite.showBubble(PocketCode.Model.BubbleType.SAY, text);
+                    this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, text);
 
                 PocketCode.Model.WaitBrick.prototype._execute.call(this, id, scope); //call super
             },
@@ -271,7 +266,7 @@ PocketCode.Model.merge({
             var text = this._text.calculate(scope);
 
             if (text !== '')
-                this._return(this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text));
+                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, text));
             else
                 this._return(false);
         };
@@ -291,7 +286,7 @@ PocketCode.Model.merge({
         ThinkForBrick.prototype.merge({
             /* override */
             _timerExpiredHandler: function (e) {
-                var update = this._sprite.hideBubble(PocketCode.Model.BubbleType.THINK);
+                var update = this._sprite.hideBubble(PocketCode.Ui.BubbleType.THINK);
                 this._return(e.callId, update); //PocketCode.Model.WaitBrick.prototype._timerExpiredHandler.call(this, e.callId); //call super
             },
             /* override */
@@ -299,7 +294,7 @@ PocketCode.Model.merge({
                 var text = this._text.calculate(scope);
 
                 if (text !== '' && !isNaN(this._duration.calculate(scope)))
-                    this._sprite.showBubble(PocketCode.Model.BubbleType.THINK, text);
+                    this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, text);
 
                 PocketCode.Model.WaitBrick.prototype._execute.call(this, id); //call super
             },
