@@ -29,9 +29,9 @@ PocketCode.Ui.Button = (function () {
             get: function () {
                 return this._textNode.text;
             },
-            //set: function (value) {
-            //    this._textNode.text = value;
-            //},
+            set: function (value) {
+                this._textNode.text = value;
+            },
         },
         i18nKey: {
             set: function (i18n) {

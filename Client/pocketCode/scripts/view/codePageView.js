@@ -11,6 +11,10 @@ PocketCode.Ui.CodePageView = (function () {
 
         this._menu = new PocketCode.CodeView.Ui.Menu();
         this._header.appendChild(this._menu);
+        this._menu.navigationJson = ""; //TODO
+        this._menu._onNavigation.addEventListener(new SmartJs.Event.EventListener( function(e) {
+            console.log(e.sceneId + ", " + e.spriteId);
+        }));
     }
 
     //properties

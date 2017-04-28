@@ -28,22 +28,11 @@ PocketCode.CodeView.Ui.merge({
         function Menu() {
             PocketCode.Ui.Menu.call(this);
 
-            this.addClassName('pc-menuMobile');
-            var item;
+            //this.addClassName('pc-menuMobile');
+            //var item;
 
-            var testObject = [{
-                sceneid: "sceneid1",
-                name: "scene1",
-                sprites: [{id: "spriteid1", name: "sprite1"}, {id: "spriteid2", name: "sprite2"}]
-            },
-                {
-                    sceneid: "sceneid2",
-                    name: "scene2",
-                    sprites: [{id: "spriteid3", name: "sprite3"}, {id: "spriteid4", name: "sprite4"}]
-                }];
-
-            var exp = new PocketCode.Ui.ExpanderTree(testObject);
-            this._subMenu.appendChild(exp);
+            this._exp = new PocketCode.Ui.Expander('menuNavigation'); //TODO merge
+            this._subMenu.appendChild(this._exp);
 
            /* item = new PocketCode.Ui.I18nCheckbox('testing purpose');
             this.appendChild(item);
@@ -103,7 +92,81 @@ PocketCode.CodeView.Ui.merge({
 
             //PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._onLanguageChange, this));   //dispatched onLoad too
             //this._onLanguageChange({ language: PocketCode.I18nProvider.currentLanguage });   //mobile: menu may be created after loading languages
+
+            //event
+            this._onNavigation = new SmartJs.Event.Event(this);
         }
+
+        //events
+        Object.defineProperties(Menu.prototype, {
+            onNavigation: {
+                get: function () {
+                    return this._onNavigation;
+                },
+            },
+        });
+
+        //properties
+        Object.defineProperties(Menu.prototype, {
+            navigationJson: {
+                set: function (scenes) {
+                    scenes = [{
+                        id: "sceneid1",
+                        name: "scene1",
+                        sprites: [{id: "spriteid1", name: "sprite1"}, {id: "spriteid2", name: "sprite2"}]
+                    },
+                    {
+                        id: "sceneid2",
+                        name: "scene2",
+                        sprites: [{id: "spriteid3", name: "sprite3"}, {id: "spriteid4", name: "sprite4"}]
+                    }];
+                    var scene;
+                    if (scenes.length > 1) {
+                        for (var i = 0, l = scenes.length; i < l; i++) {
+                            scene = scenes[i];
+                            var expander = new PocketCode.Ui.ExpanderTree();
+                            expander.caption.text = scene.name;
+                            expander.onCaptionClick.addEventListener(new SmartJs.Event.EventListener(
+                                function(e) {
+                                    this._onNavigation.dispatchEvent(e);
+                                }.bind(this, {sceneId: scene.id})
+                            ));
+
+                            var sprite;
+                            for (var j = 0, k = scene.sprites.length; j < k; j++) {
+                                sprite = scene.sprites[j];
+                                var item = new PocketCode.Ui.MenuItem();
+                                item.text = sprite.name;
+                                item.onClick.addEventListener(new SmartJs.Event.EventListener(
+                                    function(e) {
+                                        this._onNavigation.dispatchEvent(e);
+                                    }.bind(this, {sceneId: scene.id, spriteId: sprite.id})
+                                ));
+                                expander.appendChild(item);
+                            }
+                            this._exp.appendChild(expander);
+                        }
+                    }
+                    else {
+                        if (scenes.length == 0) {
+                            return;
+                        }
+                        for (var j = 0, k = scenes[0].sprites.length; j < k; j++) {
+                            sprite = scenes[0].sprites[j];
+                            var item = new PocketCode.Ui.MenuItem();
+                            item.text = sprite.name;
+                            item.onClick.addEventListener(new SmartJs.Event.EventListener(
+                                function(e) {
+                                    this._onNavigation.dispatchEvent(e);
+                                }.bind(this, {sceneId: scene.id, spriteId: sprite.id})
+                            ));
+                            this._exp.appendChild(item);
+                        }
+                    }
+                }
+            }
+        });
+
 
         //methods
         Menu.prototype.merge({
