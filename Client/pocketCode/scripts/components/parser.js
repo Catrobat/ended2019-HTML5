@@ -522,9 +522,6 @@ PocketCode.merge({
                             return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
                         return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
 
-                        //case 'POW':
-                        //    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
-
                     case 'LOGICAL_NOT':
                         if (uiString)
                             return ' NOT ' + this._parseJsonType(jsonFormula.right, uiString);
