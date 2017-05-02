@@ -15,6 +15,8 @@ if( !empty( $_GET["lang"]) )
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-touch-fullscreen" content="yes" />
   <link href="/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
+    <!-- required for camera to work -->
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 
   <script src="/html5/player/pocketCodePlayer.min.js"></script>
   <script type="text/javascript">

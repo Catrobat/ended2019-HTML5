@@ -448,7 +448,7 @@ PocketCode.merge({
                 if (cameraTypeObject.deviceId) {
 
                     console.log("setType deviceId");
-                    this._constraints.video.deviceId =  cameraTypeObject.deviceId ;
+                    this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId} ;
                     this.init(true);
                 }
 
