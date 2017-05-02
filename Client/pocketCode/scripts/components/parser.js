@@ -193,7 +193,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model.SelectCameraBrick(this._device, currentSprite, jsonBrick);
                         break;
                     case 'CameraBrick':
-                        brick = new PocketCode.Model.CameraBrick(this._device, currentSprite, jsonBrick);
+                        brick = new PocketCode.Model.CameraBrick(this._device, currentSprite,this._gameEngine, jsonBrick);
                         break;
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':

@@ -89,8 +89,10 @@ PocketCode.PlayerPageController = (function () {
                 this._gameEngine.onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(this._uiUpdateHandler, this));
                 this._gameEngine.onVariableUiChange.addEventListener(new SmartJs.Event.EventListener(this._varUpdateHandler, this));
                 this._gameEngine.onCameraUsageChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangedHandler, this));
+                this._gameEngine.onCanvasSizeUpdated = this._playerViewportController.onCanvasSizeUpdated;
             },
         },
+
     });
 
     //methods

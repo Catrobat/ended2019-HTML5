@@ -75,6 +75,7 @@ PocketCode.GameEngine = (function () {
         this._onCameraUsageChange = new SmartJs.Event.Event(this);
         //map the base class (global variable host) to our public event
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableUiChange.dispatchEvent({ objectId: e.objectId, id: e.id, properties: e.properties }, e.target); }, this));
+        this._onCanvasSizeUpdated = null;
     }
 
     //events
@@ -120,6 +121,15 @@ PocketCode.GameEngine = (function () {
                 return this._onCameraUsageChange;  //TODO: in use?
             }
         },
+        onCanvasSizeUpdated: {
+            get: function() {
+                return this._onCanvasSizeUpdated
+            },
+
+            set: function(canvasSizeUpdatedEvent){
+                this._onCanvasSizeUpdated =canvasSizeUpdatedEvent;
+            }
+        }
     });
 
     //properties

@@ -60,6 +60,13 @@ PocketCode.PlayerViewportController = (function () {
                 return this._view.onUserAction;
             },
         },
+
+        onCanvasSizeUpdated: {
+            get: function(){
+                return this._view._onCanvasSizeUpdated;
+            }
+        }
+
     });
 
     //methods

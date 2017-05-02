@@ -767,17 +767,7 @@ PocketCode.MediaDevice = (function () {
             PocketCode.Device.prototype.reset.call(this);   //call super()
         },
 
-        //camera
-        setSceneSize: function (width, height) { //TODO: set wehen scene gets loaded: try to set the camera contraints and reload the stream (reinit)
-            //TODO: needed for position/size calculations for face detection too
-            //needed to calculate camera rotation (portrait or landscape project)
 
-            //    var video = this._cameraVideo;
-            //    video.width = width;
-            //    video.height = height;
-            //    if (this._cam.on)
-            //        this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
-        },
         setCameraTransparency: function (value) {
             if (value < 0.0)
                 value = 0.0;
@@ -801,14 +791,18 @@ PocketCode.MediaDevice = (function () {
         setCameraType: function (cameraType) {
             return this._cam.setType(cameraType);
         },
-        startCamera: function () {   //or resume
-            var started = this._cam.start();
+        startCamera: function (screenSize) {   //or resume
+            var started = this._cam.start(screenSize);
             //this._fd.start(); - will be started on update event
             return started;
         },
-        stopCamera: function () {   //also called during parsing to set camera inUse
+        stopCamera: function (screenSize) {   //also called during parsing to set camera inUse
             //this._fd.stop(); - will be stopped on update event
-            return this._cam.stop();
+            return this._cam.stop(screenSize);
+        },
+
+        initCamera: function(reinit, width, height){
+            this._cam.init(reinit, width, height);
         },
         disableCamera: function () {    //set by user (dialog) if he/she doesn't want to use the camera
             this._cam.supported = false;    //override
