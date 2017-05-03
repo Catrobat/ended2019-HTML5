@@ -1018,6 +1018,7 @@
     /*display: block;*/
     text-shadow: none;
     text-transform: none;
+    /*white-space: nowrap;*/
 }
 
 .pc-menuSymbol {
@@ -1060,6 +1061,15 @@
     position: relative;
     white-space: nowrap;
     cursor: pointer;
+    padding-left: 40px;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderHeader label {
+    padding-right: 40px;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderTree .pc-expanderHeader label {
+    padding-right: 0px;
 }
 
 .pc-checkbox label, .pc-radio label {
@@ -1163,4 +1173,145 @@
     -moz-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
+}
+
+.pc-expander {
+    width: 400px;
+    background: #303030;
+}
+
+.pc-expanderHeader {
+    background-color: #303030;
+    font-size: 22px;
+    padding: 3px 0px 3px;
+}
+
+.pc-expanderHeader input:checked + label {
+    color: #17a5b8;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderHeader label:after {
+    content: '>';
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+    position: absolute;
+    right: 13px;
+    left: auto;
+    top: 2px;
+}
+
+.pc-expander .pc-expanderHeader label:after {
+    /*float: left;
+    content: '<';
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+    width: 20px;
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    left: 13px;
+    top: 1px;
+    position: absolute;
+    pointer-events: none;*/
+
+    content: '>';
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    left: 13px;
+    top: 2px;
+    border: 0px;
+    position: absolute;
+    pointer-events: none;
+}
+
+.pc-expander .pc-expanderBody {
+    position: relative;
+    overflow: hidden;
+    max-height: 0px;
+}
+
+.pc-expander .pc-bodyVisible {
+    overflow: visible;
+    max-height: 100%;
+}
+
+.pc-expander .pc-expanderBody button {
+    background-color: #303030;
+    border-style: none;
+    color: #FFFFFF;
+    text-align: left;
+    font-size: 16px;
+    padding: 2px 0px 3px 9px;
+    cursor: pointer;
+}
+
+.pc-expanderTree .pc-expanderHeader label:after {
+    float: left;
+    content: '+';
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    left: 13px;
+    top: 1px;
+    /*border: 0px;*/
+    position: absolute;
+    pointer-events: none;
+    transform: rotate(180deg);
+}
+
+[dir='rtl'] .pc-expanderTree .pc-expanderHeader label:after {
+    content: '+';
+    position: absolute;
+    right: 13px;
+    left: auto;
+    height: 100%;
+    transform: rotate(180deg);
+}
+
+.pc-expanderTree .pc-expanderHeader input:checked + label:after {
+    content: '-';
+    top: 2px;
+    transform: rotate(180deg);
+}
+
+[dir='rtl'] .pc-expander .pc-expanderBody button {
+    text-align: right;
+}
+
+[dir='rtl'] .pc-expanderTree .pc-expanderBody {
+    padding-right: 40px;
+}
+
+.pc-expanderTree .pc-expanderBody {
+    padding-left: 30px;
+}
+
+[dir='rtl'] .pc-expanderTree .pc-expanderBody {
+    padding-right: 40px;
+}
+
+.pc-expanderTree .pc-expanderHeader div{
+    display: inline-block;
+}
+
+.pc-expanderTree .pc-expanderHeader label{
+    padding-left: 30px;
+}
+
+[dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
+    padding-right: 30px;
+}
+
+.pc-expanderTree .pc-expanderHeader{
+    border-top: solid 1px #5B676E;
+}
+
+[dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
+    padding-left: 40px;
 }

@@ -23,14 +23,21 @@ PocketCode.Ui.Expander = (function () {
         this._appendChild(this._container);
 
         //events
-        checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._handleResize));
+        checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
     }
 
     //methods
     Expander.prototype.merge({
-        _handleResize: function(e) {
+        _onChangeHandler: function(e) {
+            if(e.checked){
+                this._container.addClassName("pc-bodyVisible");
+            }
+            else{
+                this._container.removeClassName("pc-bodyVisible");
+            }
+
           window.setTimeout(function(){
-              this.onResize.dispatchEvent();
+              this.verifyResize();
           }.bind(this), 1000);
         },
     });
