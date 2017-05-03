@@ -22,9 +22,10 @@ PocketCode.logoUrl = PocketCode.domain + 'html5/pocketCode/img/logo.png';
 
 //add css file
 document.addEventListener('DOMContentLoaded', function () {
-    var hn = window.location.hostname;
+    var hn = window.location.hostname,
+        localFile = window.location.protocol == 'file:';
     var href;
-    if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
+    if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
         href = 'pocketCodePlayer.css';
     else
         href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
@@ -1079,8 +1080,9 @@ PocketCode.Web = {
 /* Resources: scripts & styles */
 PocketCode.Web.resources = {
     root: function () {
-        var hn = window.location.hostname;
-        if (hn === 'localhost' || hn === '')// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
+        var hn = window.location.hostname,
+            localFile = window.location.protocol == 'file:';
+        if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
             return '../';
 
         return PocketCode.domain + '/html5/';
