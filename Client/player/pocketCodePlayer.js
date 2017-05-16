@@ -6,7 +6,7 @@
 if (!PocketCode)
     var PocketCode = {};
 
-PocketCode.Local = 0;
+PocketCode.Local = 1;
 
 
 if (PocketCode.Local === 1)
@@ -887,8 +887,8 @@ PocketCode.Web = {
                     window.setTimeout(this.launchProject.bind(this, projectId, rfc3066, containerElement), 100);
                     return;
                 }
-                if ((this._isMobile && window.location.href !== expectedUrl && window.location.hostname !== 'localhost') || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
-                    window.location = expectedUrl;
+                //if ((this._isMobile && window.location.href !== expectedUrl && window.location.hostname !== 'localhost') || (PocketCode.crossOrigin.current && !PocketCode.crossOrigin.supported))
+                   // window.location = expectedUrl;
                 if (this._isMobile) {
                     this._launchMobile();
                     return;
