@@ -113,7 +113,6 @@ PocketCode.merge({
             if (this._mediaDevices.supported) {
                 if (navigator.mediaDevices.getSupportedConstraints)
                     this._mediaDevices.supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-                    console.log("SUPPORTED_CONSTRAINTS:"+ JSON.stringify(this._mediaDevices.supportedConstraints));
                 this._getMediaDevices();
             }
 
@@ -197,7 +196,6 @@ PocketCode.merge({
             }(),
             _getMediaDevices: function () {
                 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-                    console.log("DOING the MEDIA DEVICES");
                     navigator.mediaDevices.enumerateDevices().then(function (deviceInfos) {
                         this._updateMediaDevices(deviceInfos);
                     }.bind(this)).catch(function (error) {
@@ -210,13 +208,11 @@ PocketCode.merge({
                 }
 
                 else if (MediaStreamTrack && MediaStreamTrack.getSources){
-                    console.log("DOING THE MEDIA STREAM TRACK");
                     MediaStreamTrack.getSources(this._updateMediaDevices);
                 }
             },
 
             _updateMediaDevices: function(deviceInfos){
-                console.log("media devices:"+JSON.stringify(deviceInfos));//devices
                 var devices = [];
                 for (var i = 0, l = deviceInfos.length; i < l; i++) {
                     var deviceInfo = deviceInfos[i];
@@ -225,7 +221,6 @@ PocketCode.merge({
 
                         if (deviceInfo.label.indexOf('FRONT') >= 0 || deviceInfo.label.indexOf('front') >= 0) {
                             this._front.deviceId = deviceInfo.deviceId;
-                            console.log("frontId:"+deviceInfo.deviceId);
                         }
 
                         if (deviceInfo.label.indexOf('BACK') >= 0 || deviceInfo.label.indexOf('back') >= 0) {
@@ -321,31 +316,28 @@ PocketCode.merge({
             //    //TODO
             //},
             init: function (reinit, width, height) {
-                console.log("setType init");
                 //var cam = this._cam;
                 if (!this._supported || (this._inUse && !reinit)) {
                     this._inUse = true;
                     return; //already initialized
                 }
 
-                if(! typeof  this._constraints.video == "object"){
                     this._constraints.video = {};
-                }
-                if(width && height && ( width != this._canvasWidth || height != this._canvasHeight)){
-                    this._canvasHeight = height;
-                    this._canvasWidth = width;
+                    this._constraints.video.height = { ideal: 480 }
+                // if(width && height && ( width !== this._canvasWidth || height !== this._canvasHeight)){
+                //     this._canvasHeight = height;
+                //     this._canvasWidth = width;
+                //
+                //     this._constraints.video.optional = undefined;
+                //     if(height > width) {
+                //         this._constraints.video.height = { min:Math.round(height*0.4), ideal: height };
+                //     }
+                //
+                //     else {
+                //         this._constraints.video.width = { ideal: width };
+                //     }
+                // }
 
-                    this._constraints.video.optional = undefined;
-                    if(height > width) {
-                        this._constraints.video.height = { min:Math.round(height*0.4), ideal: height };
-                    }
-
-                    else {
-                        this._constraints.video.width = { ideal: width };
-                    }
-                }
-
-                console.log("constraints:"+ JSON.stringify(this._constraints));
                 var onSuccess = function (stream) {
                     this._supported = true;
                     this._getMediaDevices();
@@ -364,7 +356,6 @@ PocketCode.merge({
 
 
                         this._getUserMedia(this._constraints, onSuccess, onError);
-                        console.log("KRUH");
 
 
             },
@@ -411,7 +402,6 @@ PocketCode.merge({
 
             },
             setType: function (cameraType) {
-                console.log("setType initialized");
                 var found = false;
                 for (var type in PocketCode.CameraType) {
                     if (PocketCode.CameraType[type] == cameraType) {
@@ -443,29 +433,22 @@ PocketCode.merge({
                 if( ! typeof  this._constraints.video == "object")
                     this._constraints.video = {};
                 cameraTypeObject.inUse = true;
-                console.log("setType cameraObject:"+JSON.stringify(cameraTypeObject));
 
                 if (cameraTypeObject.deviceId) {
-
-                    console.log("setType deviceId");
                     this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId} ;
                     this.init(true);
                 }
 
                 else if (this._mediaDevices.supported) {
-                    console.log("setType mediaDevices supported");
                     if (this._mediaDevices.supportedConstraints.facingMode) {
-                        console.log("setType facingMode");
                         this._constraints.video.facingMode = cameraTypeObject.facingMode;
                         this.init(true);
                     }
                 }
                 else {
                     // do nothing
-                    console.log("setType else");
                 }
 
-                console.log("constraints after setType:"+ JSON.stringify(this._constraints));
 
 
                 if (!this._on)

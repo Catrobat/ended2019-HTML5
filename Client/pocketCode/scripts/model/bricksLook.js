@@ -498,7 +498,6 @@ PocketCode.Model.merge({
         }
 
         SelectCameraBrick.prototype._execute = function () {
-            console.log("setType really selected:"+this._selected);
             this._return(this._device.setCameraType(this._selected));
         };
 
