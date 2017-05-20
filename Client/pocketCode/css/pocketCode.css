@@ -923,15 +923,13 @@
 }
 
 .pc-pageHeader .pc-menu {
-    top: 0px;
-    right: 0px;
-    background-color: transparent;
+    float: left;
+    width: 48px;
 }
 
 [dir='rtl'] .pc-pageHeader .pc-menu {
-    /*margin-right: 4px;
-    */ right: auto;
     left: 0px;
+    float: right;
 }
 
 
@@ -946,10 +944,10 @@
     right: auto;
     left: 0px;
 }
-
+/*
 .pc-pageHeader .pc-menuButton {
     background-color: transparent;
-}
+}*/
 
     .pc-pageHeader .pc-menuButton button {
         padding: 0;
@@ -985,12 +983,12 @@
     z-index: 1;
     float: right;
     top: 44px;
-    right: 3px;
-    /*margin-left: 5px;
-    */ padding: 1px 0px;
+    right: -1px;
+    padding: 1px 0px;
     background-color: #282828;
     border: 1px solid #484848;
     border-radius: 2px 0px 2px 2px;
+    margin: 2px;
 }
 
 [dir='rtl'] .pc-subMenu {
@@ -998,7 +996,6 @@
     margin-right: 5px;
     */ float: left;
     right: auto;
-    left: 3px;
 }
 
 /* menu item, separator*/
@@ -1066,6 +1063,7 @@
 
 [dir='rtl'] .pc-expander .pc-expanderHeader label {
     padding-right: 40px;
+    float: left;
 }
 
 [dir='rtl'] .pc-expander .pc-expanderTree .pc-expanderHeader label {
@@ -1189,7 +1187,7 @@
 .pc-expanderHeader input:checked + label {
     color: #17a5b8;
 }
-
+/*
 [dir='rtl'] .pc-expander .pc-expanderHeader label:after {
     content: '>';
     -webkit-transform: rotate(270deg);
@@ -1201,21 +1199,8 @@
     left: auto;
     top: 2px;
 }
-
-.pc-expander .pc-expanderHeader label:after {
-    /*float: left;
-    content: '<';
-    -webkit-transform: rotate(270deg);
-    -moz-transform: rotate(270deg);
-    -ms-transform: rotate(270deg);
-    transform: rotate(270deg);
-    width: 20px;
-    font: 22px "Consolas", monospace;
-    font-weight: bold;
-    left: 13px;
-    top: 1px;
-    position: absolute;
-    pointer-events: none;*/
+*/
+.pc-expander .pc-expanderHeader label::after {
 
     content: '>';
     font: 22px "Consolas", monospace;
@@ -1224,11 +1209,26 @@
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
-    left: 13px;
-    top: 2px;
+    /*left: 13px;*/
     border: 0px;
     position: absolute;
     pointer-events: none;
+    margin-left: 7px;
+    margin-top: -4px;
+    margin-right: 7px;
+}
+
+.pc-expander .pc-expanderHeader input:checked + label::after {
+
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+}
+
+.pc-expanderTree .pc-expanderHeader label::after {
+    margin-left: 0px;
+
 }
 
 .pc-expander .pc-expanderBody {
@@ -1263,6 +1263,7 @@
     position: absolute;
     pointer-events: none;
     transform: rotate(180deg);
+    margin-top: 0px;
 }
 
 [dir='rtl'] .pc-expanderTree .pc-expanderHeader label:after {
@@ -1314,4 +1315,36 @@
 
 [dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
     padding-left: 40px;
+}
+
+.pc-expander .pc-expanderHeader{
+    height: 32px;
+    padding-right: 30px;
+    width: 100%;
+}
+/*
+.pc-expander .pc-expanderTree .pc-expanderHeader{
+    float: none;
+    padding-right: 0px;
+}*/
+
+.pc-expander .pc-expanderHeader label{
+    float: right;
+    margin-top: 5px;
+}
+
+.pc-expander .pc-expanderTree .pc-expanderHeader label{
+    float: none;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderHeader{
+    padding-right: 0px;
+}
+
+.pc-expander .pc-expanderBody button:hover{
+    color: #17a5b8;
+}
+
+.pc-expander .pc-expanderHeader label:hover{
+    color: #17a5b8;
 }
