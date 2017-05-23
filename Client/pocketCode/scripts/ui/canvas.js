@@ -254,7 +254,6 @@ PocketCode.Ui.Canvas = (function () {
 
         updateCamera: function(e)
         {
-            console.log("updateCamera");
             this._camera.on = e.on;
             this._camera.stream = e.src;
             this.updateCameraSize();
@@ -262,9 +261,7 @@ PocketCode.Ui.Canvas = (function () {
         },
 
         updateCameraSize: function(){
-            console.log("update camera size");
             if(this.cameraStream){
-                console.log("camera stream");
                 if(this._camera.stream.videoHeight && this._camera.stream.videoWidth){
                     if( this.height > this.width){
 
