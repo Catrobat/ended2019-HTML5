@@ -30,7 +30,8 @@ PocketCode.Ui.Canvas = (function () {
             renderingHeight: 0,
             offsetX: 0,
             offsetY: 0,
-            scale: 1
+            scale: 1,
+            flipped: false
         }
         //handling click/touch/multi-touch
         this._activeTouchEvents = [];
@@ -177,11 +178,6 @@ PocketCode.Ui.Canvas = (function () {
                 this._upperCanvasEl.height = value;
 
                 this._helperCanvasEl.height = value;
-
-
-                if(this._setIdealCameraResolution){
-                    this._setIdealCameraResolution(this.width, this.height);
-                }
                 this.updateCameraSize();
                 this._translation = { x: Math.round(this.width * 0.5), y: Math.round(value * 0.5) };
             },
@@ -190,8 +186,6 @@ PocketCode.Ui.Canvas = (function () {
         cameraStream: {
             set: function (cameraStream) {
                 this._camera.stream  = cameraStream;
-
-                //console.log("camera stream in setter:", this._cameraStream);
             },
             get: function () {
                 return this._camera.stream;
@@ -199,7 +193,6 @@ PocketCode.Ui.Canvas = (function () {
         },
         cameraOn: {
             set: function (cameraOn) {
-                //console.log("setting camera on in canvas to :", cameraOn);
                 this._camera.on = cameraOn;
                 this.renderCamera();
             },
@@ -277,12 +270,15 @@ PocketCode.Ui.Canvas = (function () {
 
 
                 else {
-                        var scalingFactor =this.width /  this.cameraStream.videoWidth ;
-                        var newWidth = this.cameraStream.videoWidth* scalingFactor,
-                            newHeight = this.cameraStream.videoHeight*scalingFactor;
-                        this._cameraCanvasEl.width = newWidth;
-                        this._cameraCanvasEl.height = newHeight;
-                        this._cameraCanvasCtx.translate(- ( Math.abs( this.width - newWidth) / 2), - ( Math.abs( this.height - newHeight) / 2));
+
+                        this._camera.scale=this.width /  this.cameraStream.videoHeight ;
+
+                        this._camera.renderingWidth = this._camera.stream.videoWidth*  this._camera.scale;
+                        this._camera.renderingHeight = this._camera.stream.videoHeight * this._camera.scale;
+                        this._cameraCanvasEl.width = this.width;
+                        this._cameraCanvasEl.height = this.height;
+                        this._camera.offsetX =  (this.width - this._camera.renderingWidth) / 2;
+                        this._camera.offsetY =   (this.height - this._camera.renderingHeight) / 2;
                     }
                 }
 
@@ -482,12 +478,28 @@ PocketCode.Ui.Canvas = (function () {
         //camera
         renderCamera: function () {
             if (this._camera.on && this._camera.stream) {
+                // firefox mobile flips image upside down
+                var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+                var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+
+                    if(is_firefox && SmartJs.Device.isMobile ) {
+                        this._cameraCanvasCtx.translate(0, this.height);
+                        this._cameraCanvasCtx.scale(1, -1);
+                    }
                 this._cameraCanvasCtx.drawImage(
                     this._camera.stream,
                     this._camera.offsetX,
                     this._camera.offsetY,
                     this._camera.renderingWidth,
                     this._camera.renderingHeight);
+
+                    if(is_firefox && SmartJs.Device.isMobile) {
+                        this._cameraCanvasCtx.translate(0, this.height);
+                        this._cameraCanvasCtx.scale(1, -1);
+                    }
+
+
+
 
                 setTimeout(this.renderCamera.bind(this), 10);
             }

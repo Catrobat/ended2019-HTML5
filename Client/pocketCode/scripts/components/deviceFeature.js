@@ -101,7 +101,7 @@ PocketCode.merge({
                 supportedConstraints: {}
             };
             this._selected = PocketCode.CameraType.FRONT;   //default
-            this._constraints = { video: { facingMode: this._front.facingMode }, audio: false };
+            this._constraints = { video:{ facingMode: { exact: "user"}}, audio: false };
             this._width = null;
             this._height = null;
 
@@ -316,31 +316,14 @@ PocketCode.merge({
             //    //TODO
             //},
             init: function (reinit, width, height) {
-
-
-                //var cam = this._cam;
                 if (!this._supported || (this._inUse && !reinit)) {
                     this._inUse = true;
                     return; //already initialized
                 }
                 this._stopStream();
 
-                if( ! typeof  this._constraints == 'object')
+                if( typeof  this._constraints !== 'object')
                     this._constraints = {};
-                // if(width && height && ( width !== this._canvasWidth || height !== this._canvasHeight)){
-                //     this._canvasHeight = height;
-                //     this._canvasWidth = width;
-                //
-                //     this._constraints.video.optional = undefined;
-                //     if(height > width) {
-                //         this._constraints.video.height = { min:Math.round(height*0.4), ideal: height };
-                //     }
-                //
-                //     else {
-                //         this._constraints.video.width = { ideal: width };
-                //     }
-                // }
-
                 var onSuccess = function (stream) {
                     this._supported = true;
                     this._getMediaDevices();
@@ -349,7 +332,6 @@ PocketCode.merge({
                     this._initStream(stream);
                 }.bind(this),
                     onError = function (error) {
-
                         //supported already set to false if an error occurs
                         if (this._initialized)
                             return;
@@ -357,8 +339,11 @@ PocketCode.merge({
                         this._onInit.dispatchEvent();
                     }.bind(this);
 
-                console.log("init constraints:", this._constraints);
-
+                var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+                var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+                if( is_firefox && ! is_android){
+                    this._constraints = { video: true, audio: false};
+                }
                         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
                         navigator.mediaDevices.getUserMedia(this._constraints).then(onSuccess).catch(onError);
                          }
@@ -414,7 +399,7 @@ PocketCode.merge({
             setType: function (cameraType) {
                 var found = false;
                 for (var type in PocketCode.CameraType) {
-                    if (PocketCode.CameraType[type] == cameraType) {
+                    if (PocketCode.CameraType[type] === cameraType) {
                         found = true;
                         break;
                     }
@@ -430,7 +415,7 @@ PocketCode.merge({
 
                 var cameraTypeObject;
 
-                if (cameraType == PocketCode.CameraType.BACK) {
+                if (cameraType === PocketCode.CameraType.BACK) {
                     cameraTypeObject = this._back;
                     this._front.inUse = false;
                 }
@@ -440,34 +425,16 @@ PocketCode.merge({
                 }
 
 
-                if( ! typeof  this._constraints== "object"){
+                if(typeof  this._constraints !== "object"){
                     this._constraints = {};
                 }
-                if (! typeof  this._constraints.video == "object"){
+                if ( typeof  this._constraints.video !== "object"){
                     this._constraints.video = {};
                 }
-                    this._constraints.video = {};
                 cameraTypeObject.inUse = true;
 
                 this._constraints.video.facingMode = cameraTypeObject.facingMode;
                 this.init(true);
-                console.log("constraints:", this._constraints);
-
-                // if (cameraTypeObject.deviceId) {
-                //     this._constraints.video.deviceId = { exact: cameraTypeObject.deviceId} ;
-                //     this.init(true);
-                // }
-                //
-                // else if (this._mediaDevices.supported) {
-                //     if (this._mediaDevices.supportedConstraints.facingMode) {
-                //         this._constraints.video.facingMode = cameraTypeObject.facingMode;
-                //         this.init(true);
-                //     }
-                // }
-                // else {
-                //     console.log("cannot change camera ");
-                //     this._constraints.video = true;
-                // }
 
 
 
