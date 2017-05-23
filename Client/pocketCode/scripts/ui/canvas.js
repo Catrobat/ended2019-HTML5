@@ -591,6 +591,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         //screenshot
         toDataURL: function (width, height) {
+            console.log("toDataURL");
             var currentWidth = this.width,
                 currentHeight = this.height;
 
@@ -605,6 +606,16 @@ PocketCode.Ui.Canvas = (function () {
             ctx.scale(width * this._scalingX / currentWidth, height * this._scalingY / currentHeight);
 
             var ro = this._renderingSprites;
+
+            //camera
+            if ( this._camera.stream) {
+                console.log("drawing camera");
+                ctx.drawImage(
+                    this._camera.stream,
+                    this._camera.offsetX -width * 0.5 ,
+                    this._camera.offsetY- height*0.5,
+                    this._camera.renderingWidth , this._camera.renderingHeight);
+            }
             //background
             for (var i = 0, l = ro.length; i < l; i++) {
                 if (ro[i].isBackground) {
@@ -615,8 +626,7 @@ PocketCode.Ui.Canvas = (function () {
 
             //pen stamp
             ctx.drawImage(this._currentSceneCache.element, - width * 0.5, -height * 0.5);
-            //camera
-            //TODO
+
             //sprites
             for (var i = 0, l = ro.length; i < l; i++)
                 if (!ro[i].isBackground)
