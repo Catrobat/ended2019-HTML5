@@ -791,8 +791,8 @@ PocketCode.MediaDevice = (function () {
         setCameraType: function (cameraType) {
             return this._cam.setType(cameraType);
         },
-        startCamera: function (screenSize) {   //or resume
-            var started = this._cam.start(screenSize);
+        startCamera: function () {   //or resume
+            var started = this._cam.start();
             //this._fd.start(); - will be started on update event
             return started;
         },

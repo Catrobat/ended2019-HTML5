@@ -14,6 +14,7 @@ var videoWidth,
     backgroundCtx,
     fdCanvasContainer,
     cycleTime,
+    video,
     device;
 
 window.addEventListener('load', onLoad);
@@ -96,7 +97,7 @@ function onLoad() {
     });
 
     //device
-    device = new PocketCode.DeviceEmulator();
+    device = new PocketCode.DeviceEmulator(new PocketCode.SoundManager());
     var detected = device.faceDetected; //make sure face detection is initialized
     
     //TODO: device.setSceneSize(videoWidth, videoHeight);    //= set at scene change
@@ -130,12 +131,13 @@ function cameraUsageChangeHandler(e) {
             window.clearTimeout(timeout);
 
         video = e.src;
-        streamWidth = e.width;
-        streamHeight = e.height;
+        streamWidth = video.videoWidth;
+        streamHeight = video.videoHeight;
         startRendering();
     }
     else {
-        //stop rendering
+        if (timeout)
+            window.clearTimeout(timeout);
     }
 }
 
@@ -143,6 +145,6 @@ function startRendering() {
     backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
     backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
 
-    timeout = window.setTimeout(startRendering, 200);
+    timeout = window.setTimeout(startRendering, 20);
 }
 

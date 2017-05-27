@@ -315,12 +315,13 @@ PocketCode.merge({
             //_streamEndedHandler: function (e) {
             //    //TODO
             //},
-            init: function (reinit, width, height) {
+            init: function (reinit) {
                 if (!this._supported || (this._inUse && !reinit)) {
                     this._inUse = true;
                     return; //already initialized
                 }
                 this._stopStream();
+                this._inUse = true;
 
                 if( typeof  this._constraints !== 'object')
                     this._constraints = {};
@@ -357,10 +358,7 @@ PocketCode.merge({
             _videoInitializedHandler: function (e) {
                 var video = this._video;
                 this._onChange.dispatchEvent({ on: this._on,
-                    src: video,
-                    height: video.videoHeight,
-                    width: video.videoWidth,
-                    setIdealCameraResolution: this.setIdealCameraResolution.bind(this) });
+                    src: video});
                 if (!video.paused)
                     return;
                 if (this._startCameraStreamOnInit) {
@@ -369,10 +367,7 @@ PocketCode.merge({
                     this._on = true;
                     //var orientation = window.orientation || 0;
                     this._onChange.dispatchEvent({ on: this._on,
-                        src: video,
-                        height: video.videoHeight,
-                        width: video.videoWidth,
-                        setIdealCameraResolution: this.setIdealCameraResolution.bind(this) });
+                        src: video});
                 }
 
                 if (this._initialized)
@@ -445,23 +440,10 @@ PocketCode.merge({
                 return true;
             },
 
-            //  sets the constraints for the camera resolution ( obtained resolution depends on the camera )
-            setIdealCameraResolution: function (width, height) {
-                var reinit = false;
-                if( this._height != height || this._width != width){
-                    reinit = true;
-                }
-                this._height = height;
-                this._width = width;
-                this._init(reinit);
-
-            },
-
 
             start: function () {   //or resume
                 //var cam = this._cam;//,
                 //supported = cam.supported;
-                this._inUse = true;
                 if (!this._supported || this._on)
                     return false;
                 var video = this._video;
@@ -484,13 +466,13 @@ PocketCode.merge({
                     {
                         return false;
                     }
-                    this.init(false  , this._canvasWidth, this._canvasHeight);
+                    this.init(false);
                     return false;
 
                 }
                 return true;
             },
-            stop: function (screenSize) {
+            stop: function () {
                 //var cam = this._cam;
                 if (!this._on && !this._cameraStream)  //even if camera not started but stream available
                     return false;
