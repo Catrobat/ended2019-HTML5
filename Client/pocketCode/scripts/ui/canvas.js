@@ -498,10 +498,7 @@ PocketCode.Ui.Canvas = (function () {
                         this._cameraCanvasCtx.scale(1, -1);
                     }
 
-
-
-
-                setTimeout(this.renderCamera.bind(this), 10);
+                window.requestAnimationFrame(this.renderCamera.bind(this));
             }
         },
         //pen, stamp
