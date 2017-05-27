@@ -456,7 +456,6 @@ PocketCode.merge({
                         src: video,
                         height: video.videoHeight,
                         width: video.videoWidth,
-                        setIdealCameraResolution: this.setIdealCameraResolution.bind(this)
                     });
                 }
                 else {
@@ -483,12 +482,14 @@ PocketCode.merge({
             },
             pause: function () {
                 if (this._on) {
+                    this._video.pause();
                     this._onChange.dispatchEvent({ on: false, src: this._video });
                 }
 
             },
             resume: function () {
                 if (this._on) {
+                    this._video.play();
                     this._onChange.dispatchEvent({ on: true, src: this._video });
                 }
 

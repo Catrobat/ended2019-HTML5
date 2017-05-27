@@ -66,7 +66,7 @@ function onLoad() {
     elem = document.getElementById('cameraSelect');
     elem.addEventListener('change', function (e) {
         camera = parseInt(e.target.value);
-        onCameraSelectChange();
+        onCameraSelectChange(camera);
     });
     camera = parseInt(elem.value);
     document.getElementById('on').addEventListener('click', function (e) {
@@ -109,8 +109,8 @@ function onVideoSizeChange() {
     device.setSceneSize(videoWidth, videoHeight);
 }
 
-function onCameraSelectChange() {
-
+function onCameraSelectChange(cameraType) {
+    device.setCameraType(cameraType);
 }
 
 function cameraInitHandler(e) {

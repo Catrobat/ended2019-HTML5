@@ -477,7 +477,7 @@ PocketCode.Ui.Canvas = (function () {
         },
         //camera
         renderCamera: function () {
-            if (this._camera.on && this._camera.stream) {
+            if (this._camera.stream) {
                 // firefox mobile flips image upside down
                 var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
                 var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
@@ -497,7 +497,7 @@ PocketCode.Ui.Canvas = (function () {
                         this._cameraCanvasCtx.translate(0, this.height);
                         this._cameraCanvasCtx.scale(1, -1);
                     }
-
+                if(this._camera.on)
                 window.requestAnimationFrame(this.renderCamera.bind(this));
             }
         },
