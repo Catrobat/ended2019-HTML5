@@ -1,4 +1,4 @@
-﻿﻿/// <reference path="../../../smartJs/sj.js" />
+﻿﻿﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../../../smartJs/sj-ui.js" />
@@ -610,11 +610,19 @@ PocketCode.Ui.Canvas = (function () {
             //camera
             if ( this._camera.stream) {
                 console.log("drawing camera");
+
+
+                var cameraScale = height /  currentHeight;
+
+                var cameraWidth = this._camera.renderingWidth*  cameraScale;
+                var cameraHeight  = this._camera.renderingHeight* cameraScale;
+                var cameraOffsetX =  (this._camera.offsetX* cameraScale) -width * 0.5 ;
+                var cameraOffsetY =   (this._camera.offsetY * cameraScale) - height * 0.5;
                 ctx.drawImage(
                     this._camera.stream,
-                    this._camera.offsetX -width * 0.5 ,
-                    this._camera.offsetY- height*0.5,
-                    this._camera.renderingWidth , this._camera.renderingHeight);
+                    cameraOffsetX ,
+                    cameraOffsetY,
+                    cameraWidth , cameraHeight);
             }
             //background
             for (var i = 0, l = ro.length; i < l; i++) {
