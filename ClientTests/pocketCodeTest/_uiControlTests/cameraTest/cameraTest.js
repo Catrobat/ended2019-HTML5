@@ -14,6 +14,7 @@ var videoWidth,
     backgroundCtx,
     fdCanvasContainer,
     cycleTime,
+    cameraOn,
     video,
     device;
 
@@ -115,10 +116,9 @@ function onCameraSelectChange(cameraType) {
 
 function cameraInitHandler(e) {
     var fd = device._features.FACE_DETECTION;
-    if (fd.inUse) {
-        fdCanvasContainer.appendChild(fd._canvas);  //for tests only
+        fdCanvasContainer.appendChild(fd._canvas);
+        fd.start//for tests only
         //fdCanvasContainer.appendChild(fd._haarCanvas);
-    }
 }
 
 var timeout, //to enable debugging I use timouts instead of requestAnimationFrame or interval
@@ -133,18 +133,21 @@ function cameraUsageChangeHandler(e) {
         video = e.src;
         streamWidth = video.videoWidth;
         streamHeight = video.videoHeight;
+        cameraOn = true;
         startRendering();
     }
     else {
-        if (timeout)
-            window.clearTimeout(timeout);
+        cameraOn = false;
     }
 }
 
 function startRendering() {
-    backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
-    backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
+    if(cameraOn){
+        backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
+        backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
 
-    timeout = window.setTimeout(startRendering, 20);
+        window.requestAnimationFrame(startRendering);
+    }
+
 }
 

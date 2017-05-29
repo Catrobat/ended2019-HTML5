@@ -800,10 +800,6 @@ PocketCode.MediaDevice = (function () {
             //this._fd.stop(); - will be stopped on update event
             return this._cam.stop(screenSize);
         },
-
-        initCamera: function(reinit, width, height){
-            this._cam.init(reinit, width, height);
-        },
         disableCamera: function () {    //set by user (dialog) if he/she doesn't want to use the camera
             this._cam.supported = false;    //override
             this._fd.supported = false;     //override

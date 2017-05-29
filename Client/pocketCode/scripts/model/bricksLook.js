@@ -468,7 +468,7 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
             this._turnOn = parseInt(propObject.selected) == 1;    //{0: off, 1: on}
             gameEngine.onCanvasSizeUpdated.addEventListener(new SmartJs.Event.EventListener(function(e){
-                this._device.initCamera(false, e.width, e.height);
+                this._device.startCamera(false, e.width, e.height);
             }.bind(this)))  //call on ctr to notify our device this feature is in use without changing the setting
         }
 
