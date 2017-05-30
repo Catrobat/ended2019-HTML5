@@ -214,7 +214,7 @@ PocketCode.Model.merge({
         }
 
         SayBrick.prototype._execute = function (scope) {
-            var text = this._text.calculate(scope);
+            var text = this._text.calculate(scope).toString().trim();
 
             if (text !== '')
                 this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, text));

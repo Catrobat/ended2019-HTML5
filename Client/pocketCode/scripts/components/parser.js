@@ -182,10 +182,7 @@ PocketCode.merge({
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
 
-                    case 'SayBrick':
-                    case 'SayForBrick':
-                    case 'ThinkBrick':
-                    case 'ThinkForBrick':
+
 
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':
@@ -223,6 +220,13 @@ PocketCode.merge({
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
+
+                        //Bubbles
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
+
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';

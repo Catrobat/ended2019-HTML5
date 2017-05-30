@@ -1144,10 +1144,11 @@ PocketCode.Model.Sprite = (function () {
 
         showBubble: function (type, text) {
             //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
-            var  rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
-                //^^ sprite has a direction but is not rotated
-                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
-            return this._triggerOnChange({ bubble: { type: type, text: text, visible: true, screenSize: sprite._scene.screenSize,  boundary: look.getBoundary(scaling, rotationCW, flipX, true) } });
+            console.log("show");
+
+            var  rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+            return this._triggerOnChange({ bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize,  boundary: this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true) } });
         },
         hideBubble: function (type) {
             //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
