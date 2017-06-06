@@ -199,7 +199,6 @@ PocketCode.Ui.PlayerViewportView = (function () {
         },
         //camera
         updateCameraUse: function (e) {    //TODO: params, ...
-            //console.log("camera stream in view:", cameraStream);
             this._canvas.updateCamera(e);
 
         },

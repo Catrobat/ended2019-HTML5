@@ -138,12 +138,6 @@ QUnit.test("PlayerViewportView", function (assert) {
     assert.ok(view._activeAskDialog._disposed == true, "clear: askdialog disposed")
 
     view._canvas = tempCanvas;
-
-    //updateCameraUse
-    var cameraStream = {width: 40, height: 30};
-    view.updateCameraUse(false, cameraStream);
-    assert.ok(view._canvas._cameraStream == cameraStream, "updateCameraUse");
-
     //showAxes //drawAxes
     view._axesVisible = false;
     view.showAxes();
@@ -161,6 +155,14 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //getCanvasDataURL
     //todo getCanvasDataURL
+
+    view._canvas.updateCamera = function(e){
+        assert.ok(true, "update camera calls canvas.updateCamera");
+        assert.ok(e.on, "camera should be on");
+        assert.equal(e.src, "Hello World", "camera src should be hello world");
+    };
+
+    view.updateCameraUse({ on: true, src:"Hello World"});
 
     //dispose
     view.dispose();
