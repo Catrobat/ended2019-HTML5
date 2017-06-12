@@ -1058,11 +1058,10 @@
     position: relative;
     white-space: nowrap;
     cursor: pointer;
-    padding-left: 40px;
+    width: 34%;
 }
 
 [dir='rtl'] .pc-expander .pc-expanderHeader label {
-    padding-right: 40px;
     float: left;
 }
 
@@ -1319,7 +1318,6 @@
 
 .pc-expander .pc-expanderHeader{
     height: 32px;
-    padding-right: 30px;
     width: 100%;
 }
 /*
