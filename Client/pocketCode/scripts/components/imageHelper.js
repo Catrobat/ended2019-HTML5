@@ -40,7 +40,7 @@ PocketCode.ImageFilter = {
      *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_reference.pdf
      *   https://www.adobe.com/content/dam/Adobe/en/devnet/pixelbender/pdfs/pixelbender_guide.pdf
      * 
-     * DOTO: (for each filter)
+     * TODO: (for each filter)
      * - define input parameters (check correctness of existing parameters)
      * - set default values for input parameters if undefined
      * - validate input parameters
@@ -528,7 +528,6 @@ PocketCode.ImageHelper = (function () {
                 pixels = imgf.brightness(pixels, _effects[ge.BRIGHTNESS]);
             }
             if(_effects[ge.GHOST]){
-                ctx.globalAlpha *= (1 - _effects[ge.GHOST] / 100.0);
             }
             //.. for all filters
 
