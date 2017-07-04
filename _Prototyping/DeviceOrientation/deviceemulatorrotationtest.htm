@@ -72,6 +72,10 @@
                 <td>Inclination Y</td>
                 <td id="doInclinationY"></td>
             </tr>
+            <tr>
+                <td>Scale Factor</td>
+                <td><input id="scaling" type="range" min="0" max="100" value="50"/></td>
+            </tr>
         </table>
     </div>
 
@@ -100,6 +104,9 @@
         //var logo2 = document.getElementById("imgLogoY");
 
         function deviceOrientationHandler(eventData) {
+            var scaleFactor = document.querySelector('#scaling');
+            var scaling = scaleFactor.value * 0.1;
+
             document.getElementById("doTiltLR").innerHTML = Math.round(device._gamma);
             document.getElementById("doTiltFB").innerHTML = Math.round(device._beta);
             document.getElementById("doDirection").innerHTML = Math.round(device._alpha);
@@ -110,8 +117,8 @@
             // Apply the transform to the image
             //var logo = document.getElementById("imgLogo");
             //logo.style.webkitTransform = "rotate3d(0,1,0, "+ (device.inclinationX)+"deg) rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
-            logo.style.webkitTransform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
-            logo.style.transform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
+            logo.style.webkitTransform = "rotateX(" + -device.inclinationY * scaling + "deg) rotateY(" + -device.inclinationX * scaling+ "deg)";
+            logo.style.transform = "rotateX(" + -device.inclinationY * scaling + "deg) rotateY(" + -device.inclinationX * scaling + "deg)";
             //var logo2 = document.getElementById("imgLogoY");
             //logo2.style.webkitTransform = "rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
         }
