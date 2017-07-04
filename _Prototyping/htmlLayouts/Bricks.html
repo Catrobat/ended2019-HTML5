@@ -1,0 +1,716 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<head>
+    <title></title>
+    <meta content="width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta content="yes" name="mobile-web-app-capable">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <style type="text/css">
+                html, body {
+                    height: 100% !important;
+                    width: 100% !important;
+                    padding: 0;
+                    margin: 0;
+                    border: 0 none;
+                }
+
+                div {
+                    -moz-user-select: none;
+                    -khtml-user-select: none;
+                    -webkit-user-select: none;
+                    -o-user-select: none;
+                }
+/*                html[dir="rtl"] input {
+                    direction: rtl;
+                }
+*/
+                .appContainer {
+                    font-size: 10px;
+                    background-color: #1F1F1F; /* fix to IE9 100% sizing */
+                    padding: 20px;
+                    padding-left: 60px;
+                    width: 500px;
+                    background-color: #04222C;
+                }
+
+                    .appContainer, .appContainer div {
+                        box-sizing: border-box;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing: border-box;
+                    }
+
+                        .appContainer ul {
+                            /*position: relative;
+                            */ margin: 0;
+                            padding: 0;
+                            min-height: 20px;
+                        }
+
+                        .appContainer li {
+                            display: block;
+                        }
+
+
+                /*pocketcode brick colors and borders*/
+                .pc-brickControlColor {
+                    background-color: #F99761;
+                    border-color: #FBC1A0 #A2573A #A2573A #FBC1A0;
+                }
+
+                .pc-brickMotionColor {
+                    background-color: #3D85C0;
+                    border-color: #8CB9DC #004C87 #004C87 #8CB9DC;
+                }
+
+                .pc-brickSoundColor {
+                    background-color: #8D49BC;
+                    border-color: #BC94D6 #433A56 #433A56 #BC94D6;
+                }
+
+                .pc-brickLookColor {
+                    background-color: #669845;
+                    border-color: #A6C492 #0F581E #0F581E #A6C492;
+                }
+
+                .pc-brickVariableColor {
+                    background-color: #F24E50;
+                    border-color: #F4898A #9B0E29 #9B0E29 #F4898A;
+                }
+
+                .pc-brickInput {
+                    /*rgba(C6, C6, C6, 0.57)    ???*/
+                }
+
+                /*.pc-brickShadow {
+                    -webkit-box-shadow: 0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+                    -moz-box-shadow: 0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+                    box-shadow: 0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+                }
+
+                .pc-brickTopShadow {
+                    -webkit-box-shadow: 0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+                    -moz-box-shadow: 0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+                    box-shadow: 0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+                }
+
+                .pc-brickBottomShadow {
+                    -webkit-box-shadow: 0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+                    -moz-box-shadow: 0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+                    box-shadow: 0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+                }
+        */
+                .pc-brick, .pc-functionBrick {
+                    position: relative;
+                }
+                /*            display: block;
+                    min-width: 100px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                    -moz-box-sizing: border-box;
+                }
+        */
+                .pc-functionBrick {
+                    margin-top: 40px;
+                }
+
+                    .pc-brick > div, .pc-functionBrick > div {
+                        display: table;
+                        width: 100%;
+                        padding: 0;
+                        margin: 0;
+                        /*position: relative;*/
+                    }
+
+                        .pc-brick > div > div, .pc-functionBrick > div > div {
+                            display: table-cell;
+                        }
+
+                    .pc-brick .pc-brickHeaderIndent, .pc-functionBrick .pc-brickHeaderIndent {
+                        border-left-width: 2px;
+                        border-left-style: solid;
+                        border-top-width: 2px;
+                        border-top-style: solid;
+                        border-top-left-radius: 2px;
+                        width: 21px;
+                    }
+
+                /*.pc-conditionEndHeader {
+                    position: relative;
+                }*/
+
+                .pc-conditionEndHeader .pc-brickHeaderIndent {
+                    border-left: 0 none;
+                    border-radius: 0;
+                    width: 23px;
+                }
+
+                .pc-dockTopDownControl, .pc-dockTopDownMotion, .pc-dockTopDownSound, .pc-dockTopDownLook, .pc-dockTopDownVariable {
+                    width: 34px;
+                    border: solid 2px #FBC1A0;
+                    border-top: 0px;
+                    border-bottom-left-radius: 4px;
+                    border-bottom-right-radius: 4px;
+                    height: 10px;
+                    vertical-align: top;
+                }
+
+                    .pc-dockTopDownControl > div, .pc-dockTopDownMotion > div, .pc-dockTopDownSound > div, .pc-dockTopDownLook > div, .pc-dockTopDownVariable > div {
+                        position: relative;
+                        float: left;
+                    }
+
+                .pc-dockTopDownMotion {
+                    border: solid 2px #8CB9DC;
+                    border-top: 0;
+                }
+
+                .pc-dockTopDownSound {
+                    border: solid 2px #BC94D6;
+                    border-top: 0;
+                }
+
+                .pc-dockTopDownLook {
+                    border: solid 2px #A6C492;
+                    border-top: 0;
+                }
+
+                .pc-dockTopDownVariable {
+                    border: solid 2px #F4898A;
+                    border-top: 0;
+                }
+
+                .pc-fillTop {
+                    border-right-width: 2px;
+                    border-right-style: solid;
+                    border-top-width: 2px;
+                    border-top-style: solid;
+                    border-top-right-radius: 2px;
+                }
+
+                .pc-brickRoundedCornerFixControl,
+                .pc-brickRoundedCornerFixMotion,
+                .pc-brickRoundedCornerFixSound,
+                .pc-brickRoundedCornerFixLook,
+                .pc-brickRoundedCornerFixVariable {
+                    display: block;
+                    position: absolute;
+                    overflow: hidden;
+                    left: -4px;
+                    top: 2px;
+                    height: 10px;
+                    width: 38px;
+                    border: 2px solid #F99761;
+                    border-top: 0;
+                    border-bottom-left-radius: 7px;
+                    border-bottom-right-radius: 7px;
+                }
+
+                .pc-brickRoundedCornerFixMotion {
+                    border: 2px solid #3D85C0;
+                    border-top: 0;
+                }
+
+                .pc-brickRoundedCornerFixSound {
+                    border: 2px solid #8D49BC;
+                    border-top: 0;
+                }
+
+                .pc-brickRoundedCornerFixLook {
+                    border: 2px solid #669845;
+                    border-top: 0;
+                }
+
+                .pc-brickRoundedCornerFixVariable {
+                    border: 2px solid #F24E50;
+                    border-top: 0;
+                }
+
+                /*        .pc-conditionEndHeader .pc-brickRoundedCornerFixControl {
+                    left: 29px;
+                }
+        */
+                .pc-brickHeader {
+                    /*display: table;
+                    height: 10px;*/
+                    width: 100%;
+                }
+
+                .pc-functionBrickHeader {
+                    /*display: table;
+                    height: 10px;*/
+                    width: 100%;
+                }
+
+                .pc-brickCommand {
+                    /*display: table;
+                    height: 10px;*/
+                    border-left-width: 2px;
+                    border-left-style: solid;
+                    border-right-width: 2px;
+                    border-right-style: solid;
+                    overflow: hidden;
+                }
+
+                .pc-brickFooter {
+                    /*position: relative;
+                    display: table;
+                    height: 10px;*/
+                    height: 2px;
+                    border-width: 2px;
+                    border-style: solid;
+                    border-top: 0px;
+                    border-bottom-left-radius: 2px;
+                    border-bottom-right-radius: 2px;
+                }
+
+                    .pc-brickFooter > div {
+                        position: relative;
+                    }
+
+                .pc-conditionStartHeader .pc-brickFooter {
+                    border-bottom-left-radius: 0;
+                    border-left: 0;
+                }
+
+                .pc-brickBottomDockControl,
+                .pc-brickBottomDockMotion,
+                .pc-brickBottomDockSound,
+                .pc-brickBottomDockLook,
+                .pc-brickBottomDockVariable,
+                .pc-brickInnerBottomDock {
+                    position: absolute;
+                    overflow: hidden;
+                    left: 21px;
+                    /*bottom: -10px;
+                     display: block;
+                   */ height: 10px;
+                    width: 30px;
+                    background-color: #F99761;
+                    border: solid 2px #A2573A;
+                    border-top: 0;
+                    border-bottom-left-radius: 3px;
+                    border-bottom-right-radius: 3px;
+                }
+
+                .pc-brickBottomDockMotion {
+                    background-color: #3D85C0;
+                    border: solid 2px #004C87;
+                    border-top: 0;
+                }
+
+                .pc-brickBottomDockSound {
+                    background-color: #8D49BC;
+                    border: solid 2px #433A56;
+                    border-top: 0;
+                }
+
+                .pc-brickBottomDockLook {
+                    background-color: #669845;
+                    border: solid 2px #0F581E;
+                    border-top: 0;
+                }
+
+                .pc-brickBottomDockVariable {
+                    background-color: #F24E50;
+                    border: solid 2px #9B0E29;
+                    border-top: 0;
+                }
+
+                .pc-brickInnerBottomDock {
+                    left: 25px;
+                    bottom: -10px;
+                }
+
+                .pc-functionBrick .pc-functionBrickHeaderLayout {
+                    position: absolute;
+                    overflow: hidden;
+                    width: 166px;
+                    height: 21px;
+                    /*left: 2px;
+                    */ top: -20px;
+                }
+
+                .pc-functionBrick .pc-brickHeaderIndent {
+                    position: relative;
+                }
+
+                .pc-functionBrick .pc-functionBrickHeaderLayout div {
+                    display: block;
+                    border: solid 2px #FBC1A0;
+                    border-radius: 200px;
+                    height: 400px;
+                    width: 400px;
+                    margin-left: -118px;
+                    background-color: #F99761;
+                }
+
+                .pc-brickIndentPlaceHolder {
+                    background-color: #F99761;
+                    width: 8px;
+                    border-left: solid 2px #FBC1A0;
+                }
+
+                .pc-brickContainerBody {
+                    border-left: solid 2px #A2573A;
+                    margin-left: 8px;
+                }
+
+                    .pc-brickContainerBody ul {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                .pc-brickMoveShadow {
+                    -webkit-box-shadow: 0px 0px 13px 6px rgba(102, 102, 102, 0.75);
+                    -moz-box-shadow: 0px 0px 13px 6px rgba(102, 102, 102, 0.75);
+                    box-shadow: 0px 0px 13px 6px rgba(102, 102, 102, 0.75);
+                }
+    </style>
+</head>
+<body>
+    <div class="appContainer">
+        <ul>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        <div class="dragDragContainer" style="padding: 6px; vertical-align: top; width: 45px;">
+                            <div style="margin: 4px; width:35px; height:34px; background: url('../images/dragGrip.png'); background-repeat: repeat-y; cursor: pointer;"></div>
+                            <!--div style="position: absolute; top:0px; bottom:0px;left:-24px; width: 24px; font-size: 26px; background-color:transparent; cursor:pointer;color:red; text-align: center;line-height:28px; padding-top:18px; background-color:blue">●</!--div-->
+                        </div>
+                        <div class="brickCaptionContainer" style="position: relative; font-size: 18px; font-weight: bold; color: white; margin-top: 8px; margin-right: 6px; float:right; margin-bottom: 12px;">
+                            <div class="brickText brickFloatLeft" style="position:relative; white-space:nowrap; white-space: nowrap;
+    overflow:hidden !important; width: 100px;
+    text-overflow: ellipsis; float:inherit; margin: 2px; line-height:28px;">Set X toSet X toSet X toSet X to toSet X to toSet X to</div>
+                            <div class="brickText" style="position:relative; float:inherit; margin: 2px; ">
+                                <input type="text" value="123" style=" text-align: center; color: inherit; font-size: inherit; font-weight: inherit; padding-left:2px; padding-right:2px; height: 28px; width: 70px; background-color: transparent; background-image:url(../images/brickInputBgNumber.png), url(../images/brickInputBgNumberEnd.png); background-position: left bottom, right bottom; background-repeat: no-repeat; border:0px;" />
+                            </div>
+                            <div class="brickText" style="position:relative; float:inherit; margin: 2px; line-height:28px;">Set X to 3</div>
+                        </div>
+                    </div>
+                    <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickMotionColor"></div>
+                        <div class="pc-dockTopDownMotion"><div><div class="pc-brickRoundedCornerFixMotion"></div></div></div>
+                        <div class="pc-fillTop pc-brickMotionColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickMotionColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickMotionColor"><div><div class="pc-brickBottomDockMotion"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickSoundColor"></div>
+                        <div class="pc-dockTopDownSound"><div><div class="pc-brickRoundedCornerFixSound"></div></div></div>
+                        <div class="pc-fillTop pc-brickSoundColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickSoundColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickSoundColor"><div><div class="pc-brickBottomDockSound"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickLookColor"></div>
+                        <div class="pc-dockTopDownLook"><div><div class="pc-brickRoundedCornerFixLook"></div></div></div>
+                        <div class="pc-fillTop pc-brickLookColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickLookColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickLookColor"><div><div class="pc-brickBottomDockLook"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickVariableColor"></div>
+                        <div class="pc-dockTopDownVariable"><div><div class="pc-brickRoundedCornerFixVariable"></div></div></div>
+                        <div class="pc-fillTop pc-brickVariableColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickVariableColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickVariableColor"><div><div class="pc-brickBottomDockVariable"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-conditionStartHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                    </div>
+                    <div>
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickContainerBody">
+                            <ul>
+                                <li>
+                                    <div class="pc-brick">
+
+                                        <div class="pc-brickHeader">
+                                            <div class="pc-brickHeaderIndent pc-brickMotionColor"></div>
+                                            <div class="pc-dockTopDownMotion"><div><div class="pc-brickRoundedCornerFixMotion"></div></div></div>
+                                            <div class="pc-fillTop pc-brickMotionColor"></div>
+                                        </div>
+                                        <div class="pc-brickCommand pc-brickMotionColor">
+                                            <!--div style="position: absolute; top:0px; right:0px; width: 100%; font-size: 26px; background-color:transparent; color:red; text-align: center;line-height:28px;padding-top: 10px;padding-bottom: 14px;">●</div-->
+                                            <div class="dragDragContainer" style="position:relative; vertical-align: top; padding: 6px; width: 45px;">
+                                                <div style="position: absolute; top:0px; bottom: 0px;margin: 4px; background: url('../images/dragGrip.png'); background-repeat: repeat-y; cursor: pointer;"></div>
+                                            </div>
+                                            <div class="brickCaptionContainer" style="position: relative; font-size: 18px; font-weight: bold; color: white; margin-top: 8px; margin-right: 6px; float:left; margin-bottom: 14px;">
+                                                <div class="brickText brickFloatLeft" style="position:relative; float:inherit; margin: 2px; line-height:28px;">Set X to</div>
+                                                <div class="brickText" style="position:relative; float:inherit; margin: 2px; ">
+                                                    <input type="text" value="123" style=" text-align: center; color: inherit; font-size: inherit; font-weight: inherit; padding-left:2px; padding-right:2px; height: 28px; width: 70px; background-color: transparent; background-image:url(../images/brickInputBgNumber.png), url(../images/brickInputBgNumberEnd.png); background-position: left bottom, right bottom; background-repeat: no-repeat; border:0px;" />
+                                                </div>
+                                                <div class="brickText" style="position:relative; float:inherit; margin: 2px; line-height:28px;">Set X to 3</div>
+                                            </div>
+                                        </div>
+                                        <div class="pc-brickFooter pc-brickMotionColor"><div><div class="pc-brickBottomDockMotion"></div></div></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="pc-conditionEndHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-brick">
+                    <div class="pc-brickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-conditionStartHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                    </div>
+                    <div>
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickContainerBody">
+                            <ul>
+                                <!--li>
+                                    <div class="pc-brick">
+
+                                        <div class="pc-brickHeader">
+                                            <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                            <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                            <div class="pc-fillTop pc-brickControlColor"></div>
+                                        </div>
+                                        <div class="pc-brickCommand pc-brickControlColor">
+                                            TEXT
+                                        </div>
+                                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                                    </div>
+                                </li-->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="pc-conditionEndHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-conditionStartHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                    </div>
+                    <div>
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickContainerBody">
+                            <ul>
+                                <!--li>
+                                    <div class="pc-brick">
+
+                                        <div class="pc-brickHeader">
+                                            <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                            <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                            <div class="pc-fillTop pc-brickControlColor"></div>
+                                        </div>
+                                        <div class="pc-brickCommand pc-brickControlColor">
+                                            TEXT
+                                        </div>
+                                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                                    </div>
+                                </li-->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="pc-conditionEndHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                </div>
+            </li>
+            <li>
+                <div class="pc-functionBrick">
+                    <div class="pc-functionBrickHeader">
+                        <div class="pc-brickHeaderIndent pc-brickControlColor">
+                            <div class="pc-functionBrickHeaderLayout">
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-conditionStartHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                    </div>
+                    <div>
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickContainerBody">
+                            <ul>
+                                <!--li>
+                                    <div class="pc-brick">
+
+                                        <div class="pc-brickHeader">
+                                            <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                            <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                            <div class="pc-fillTop pc-brickControlColor"></div>
+                                        </div>
+                                        <div class="pc-brickCommand pc-brickControlColor">
+                                            TEXT
+                                        </div>
+                                        <div class="pc-conditionStartHeader">
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickContainerBody">
+                                                <ul>
+                                                    <li>
+                                                        <div class="pc-brick">
+
+                                                            <div class="pc-brickHeader">
+                                                                <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                                                <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                                                <div class="pc-fillTop pc-brickControlColor"></div>
+                                                            </div>
+                                                            <div class="pc-brickCommand pc-brickControlColor">
+                                                                TEXT
+                                                            </div>
+                                                            <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="pc-conditionEndHeader">
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                            <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                            <div class="pc-fillTop pc-brickControlColor"></div>
+                                        </div>
+
+                                        <div class="pc-brickCommand pc-brickControlColor">
+                                            TEXT
+                                        </div>
+                                        <div class="pc-conditionStartHeader">
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickInnerBottomDock pc-brickControlColor"></div></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickContainerBody">
+                                                <ul>
+                                                    <li>
+                                                        <div class="pc-brick">
+
+                                                            <div class="pc-brickHeader">
+                                                                <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                                                <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                                                <div class="pc-fillTop pc-brickControlColor"></div>
+                                                            </div>
+                                                            <div class="pc-brickCommand pc-brickControlColor">
+                                                                TEXT
+                                                            </div>
+                                                            <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="pc-conditionEndHeader">
+                                            <div class="pc-brickIndentPlaceHolder"></div>
+                                            <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                                            <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                                            <div class="pc-fillTop pc-brickControlColor"></div>
+                                        </div>
+
+                                        <div class="pc-brickCommand pc-brickControlColor">
+                                            TEXT
+                                        </div>
+                                        <div class="pc-brickFooter pc-brickControlColor"><div><div class="pc-brickBottomDockControl"></div></div></div>
+                                    </div>
+                                </li-->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="pc-conditionEndHeader">
+                        <div class="pc-brickIndentPlaceHolder"></div>
+                        <div class="pc-brickHeaderIndent pc-brickControlColor"></div>
+                        <div class="pc-dockTopDownControl"><div><div class="pc-brickRoundedCornerFixControl"></div></div></div>
+                        <div class="pc-fillTop pc-brickControlColor"></div>
+                    </div>
+                    <div class="pc-brickCommand pc-brickControlColor">
+                        TEXT
+                    </div>
+                    <div class="pc-brickFooter pc-brickControlColor"></div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
+

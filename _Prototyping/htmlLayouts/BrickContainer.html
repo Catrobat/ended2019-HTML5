@@ -1,0 +1,605 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta content="width=device-width, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta content="yes" name="mobile-web-app-capable">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <style type="text/css">
+        html, body {
+            height: 100% !important;
+            width: 100% !important;
+            padding: 0;
+            margin: 0;
+            border: 0 none;
+        }
+        .appContainer {
+            font-size: 10px;
+            background-color: #1F1F1F;  /* fix to IE9 100% sizing */
+            padding: 2em;
+            width: 50em;
+            background-color: white;
+        }
+        .appContainer, .appContainer div {
+            /*padding: 0;
+            margin: 0;
+            */box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /*overflow: hidden;*/
+        }
+
+        /*colors and borders*/
+        .pc-brickConrolColor {
+            background-color: #F99761;
+        }
+        .pc-brickConrolBorder {
+            /*border-style: solid;
+            */border-top-color: #FBC1A0;
+            border-left-color: #FBC1A0;
+            border-bottom-color: #A2573A;
+            border-right-color: #A2573A;
+        }
+
+        .pc-brickMotionColor {
+            background-color: #3D85C0;
+        }
+        .pc-brickMotionBorder {
+            border-top-color: #8CB9DC;
+            border-left-color: #8CB9DC;
+            border-bottom-color: #272742;
+            border-right-color: #272742;
+        }
+
+        .pc-brickSoundColor {
+            background-color: #8D49BC;
+        }
+        .pc-brickSoundBorder {
+            border-top-color: #BC94D6;
+            border-left-color: #BC94D6;
+            border-bottom-color: #433A56;
+            border-right-color: #433A56;
+        }
+
+        .pc-brickLookColor {
+            background-color: #669845;
+        }
+        .pc-brickLookBorder {
+            border-top-color: #A6C492;
+            border-left-color: #A6C492;
+            border-bottom-color: #2E3E12;
+            border-right-color: #2E3E12;
+        }
+
+        .pc-brickVariableColor {
+            background-color: #F24E50;
+        }
+        .pc-brickVariableBorder {
+            border-top-color: #F79596;
+            border-left-color: #F79596;
+            border-bottom-color: #541D17;
+            border-right-color: #541D17;
+        }
+        .pc-brickInput {
+            /*rgba(C6, C6, C6, 0.57)    ???*/
+        }
+        .pc-brickShadow {
+            -webkit-box-shadow: 0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+            -moz-box-shadow:    0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+            box-shadow:         0px 0px 9px 15px rgba(165, 154, 156, 0.41);
+        }
+        .pc-brickTopShadow {
+            -webkit-box-shadow: 0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+            -moz-box-shadow:    0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+            box-shadow:         0px -12px 13px 7px rgba(165, 154, 156, 0.41);
+        }
+        .pc-brickBottomShadow {
+            -webkit-box-shadow: 0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+            -moz-box-shadow:    0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+            box-shadow:         0px 9px 12px 7px rgba(165, 154, 156, 0.41);
+        }
+
+        .pc-commandBrick, .pc-blockBrick, .pc-functionBrick {
+            overflow: hidden;
+            display: table;
+            min-width: 10em;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+        .pc-functionBrick {
+            margin-top: 3.8em;
+        }
+        .pc-commandBrick div, .pc-blockBrick div, .pc-functionBrick div {
+            display: table-row;
+            position: relative;
+        }
+
+        .pc-commandBrick div div, .pc-blockBrick div div, .pc-functionBrick div div {
+            display: table-cell;
+        }
+
+
+
+        /*.. OLD STYLES BELOW ..*/
+
+        .brickSingle {
+            /*test*/
+            min-width: 100px;
+            /*width: 250px;*/
+            position: relative;
+            /*background-color: grey;*/
+            box-shadow: 0.1em 0.3em 1em rgba(0, 0, 0, 0.5);
+        }
+        .brickRoundedCornerFix, .brickRoundedCornerFixInner {
+            position: absolute;
+            overflow: hidden;
+            left: 2.0em;
+            top: 0.1em;
+            height: 1.1em;
+            width: 3.6em;
+            background-color: transparent;
+            /*border-left: 0.1em solid black;
+            border-right: 0.1em solid black;
+            border-bottom: 0.1em solid black;*/
+            border: 0.2em solid orange;
+            border-top: 0;
+            border-bottom-left-radius: 0.7em;
+            border-bottom-right-radius: 0.7em;
+        }
+        .brickRoundedCornerFixInner {
+            /*left: 1.8em;
+            border-color:orange;*/
+        }
+        .brickBody {
+            position: relative;
+            /*top: -0.1em;*/
+            width: 100%;
+            /*height: 6em;*/
+            /*background-color: orange;
+            border: 0.1em solid black;
+            border-top: 0px;
+            border-radius: 0.1em;
+            padding-bottom: 0.9em;
+              border-bottom: 0.1em solid black;
+              border-bottom-left-radius: 0.2em;
+            */border-bottom-right-radius: 0.2em;
+        }
+        .statement {
+            border: 0.1em solid black;
+            border-top: 0px;
+            /*border-radius: 0.1em;*/
+            background-color: orange;
+            border-bottom-left-radius: 0.2em;
+            border-bottom-right-radius: 0.2em;
+        }
+        .brickFooter, .brickFooterInner {
+            position: absolute;
+            overflow: hidden;
+            left: 2.3em;
+            bottom: -0.9em;
+            height: 1.0em;
+            width: 3em;
+            background-color: orange;
+            /*border-left: 0.1em solid black;
+            border-right: 0.1em solid black;
+            border-bottom: 0.1em solid black;*/
+            border: 0.1em solid black;
+            border-top: 0;
+            border-bottom-left-radius: 0.3em;
+            border-bottom-right-radius: 0.3em;
+        }
+        .brickFooterInner {
+            left: 2.4em;
+            bottom: -1em;
+        }
+        div.header {
+            /*position: relative;
+            */display: table;
+            width: 100%;
+            /*white-space: nowrap;*/
+        }
+
+        .row {
+            display: table-row;
+            
+        }
+            div.header .row div {
+                display: table-cell;
+                height: 1em;
+                /*position: relative;*/
+            }
+        div.header .left {
+            border-left: solid 0.1em black;
+            border-top: solid 0.1em black;
+            border-top-left-radius: 0.2em;
+            width: 2.2em;
+            background-color: orange;
+        }
+        div.header .center {
+            width: 3.2em;
+            border-top: 0;
+            border: solid 0.1em black;
+            border-top: 0;
+            border-bottom-left-radius: 0.4em;
+            border-bottom-right-radius: 0.4em;/*background-color: green;
+            vertical-align: middle;*/
+        }
+        div.header .right {
+            border-right: solid 0.1em black;
+            border-top: solid 0.1em black;
+            background-color: orange;
+            border-top-right-radius: 0.2em;
+            /*width: 270px;
+            background-color:yellow;
+            position: relative;
+            white-space:nowrap;*/
+        }
+
+        ul {
+            /*width:  600px;*/
+            position: relative;
+            margin: 0;
+            padding: 0;
+            min-height: 1em;
+        }
+        li {
+            display:  block;
+            /*width: 300px;
+            background: Red;*/
+        }
+                
+        .condition1 {
+            /*height: 2em;
+            width: 100%;
+            */padding: 0.2em;
+              padding-bottom: 0;
+            background-color: orange;
+            border-left: solid 0.1em black;
+            border-right: solid 0.1em black;
+        }
+        .conditionFooter {
+            position: relative;
+            margin-left: 0.8em;
+            background-color: orange;
+            padding-left: 1em;
+            border-right: solid 0.1em black;
+              border-bottom: solid 0.1em black;
+              /*border-bottom-left-radius: 0.2em;
+              */border-bottom-right-radius: 0.2em;
+              height: 0.3em
+        }
+        .containerBody {
+            margin-left: 0.8em;
+            /*background-color: transparent;*/
+            border-left: solid 0.1em black;
+            /*padding-left: 1em;*/
+        }
+        .conditionEndHeader {
+            position: relative;
+            /*padding-left: 0.8em;*/
+        }
+        .conditionEndHeader .row .left {
+            border-left: 0;
+            border-radius: 0;
+        }
+        .containerFooter {
+            background-color: orange;
+            min-height: 0.7em;
+            padding-left: 0.8em;
+              border-right: solid 0.1em black;
+              border-bottom: solid 0.1em black;
+              border-bottom-left-radius: 0.2em;
+              border-bottom-right-radius: 0.2em;
+            
+        }
+        .container {
+            padding: initial;
+            /*margin-bottom: 1em;
+            width: 100%;
+            background-color: red;
+             */ border-left: solid 0.1em black;
+              border-bottom-left-radius: 0.2em;
+        }
+        .indentLeft {
+            left: 2.9em;
+        }
+        div.header .innerLeft {
+            width: 2.3em;
+        }
+        .indentPlaceHolder {
+            width: 0.8em;
+            display: table-cell;
+            background-color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="appContainer">
+        <ul>
+            <li>
+                <div class="brickSingle">
+                    <div class="brickRoundedCornerFix"></div>
+                    <div class="header">
+                        <div class="row">
+                            <div class="left"></div>
+                            <div class="center"></div>
+                            <div class="right"></div>
+                        </div>
+                    </div>
+                    <div class="brickBody">
+                        <div class="condition1">condition</div>
+                        <div class="container">
+                            <div style="display:table; height: 0.3em; width: 100%;">
+                                <div class="indentPlaceHolder"></div>
+                                <div class="conditionFooter" style="display:table-cell;">
+                                    <div class="brickFooterInner"></div>
+                                </div>
+                            </div>
+                            <div style="display:table; height: 1.3em; width: 100%;">
+                                <div class="indentPlaceHolder"></div>
+                                <div class="containerBody" style="display:table-cell;">
+                                    <ul style="width: 100%; height: 100%;">
+                                        <li>
+                                            <div class="brickSingle">
+                                                <div class="brickRoundedCornerFix">&nbsp;</div>
+                                                <div class="header">
+                                                    <div class="row">
+                                                        <div class="left"></div>
+                                                        <div class="center"></div>
+                                                        <div class="right"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="brickBody">
+                                                    <div class="statement">
+                                                        &nbsp;<br />&nbsp;<br />&nbsp;<br />
+                                                    </div>
+                                                </div>
+                                                <div class="brickFooter"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="brickSingle">
+                                                <div class="brickRoundedCornerFix">&nbsp;</div>
+                                                <div class="header">
+                                                    <div class="row">
+                                                        <div class="left"></div>
+                                                        <div class="center"></div>
+                                                        <div class="right"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="brickBody">
+                                                    <div class="statement">
+                                                        &nbsp;<br />&nbsp;<br />&nbsp;<br />
+                                                    </div>
+                                                </div>
+                                                <div class="brickFooter"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="brickSingle">
+                                                <div class="brickRoundedCornerFix"></div>
+                                                <div class="header">
+                                                    <div class="row">
+                                                        <div class="left"></div>
+                                                        <div class="center"></div>
+                                                        <div class="right"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="brickBody">
+                                                    <div class="condition1">condition</div>
+                                                    <div class="container">
+                                                        <div style="display:table; height: 0.3em; width: 100%;">
+                                                            <div class="indentPlaceHolder"></div>
+                                                            <div class="conditionFooter" style="display:table-cell;">
+                                                                <div class="brickFooterInner"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="display:table; height: 1.3em; width: 100%;">
+                                                            <div class="indentPlaceHolder"></div>
+                                                            <div class="containerBody" style="display:table-cell;">
+                                                                <ul style="width: 100%; height: 100%;">
+                                                                    <li>
+                                                                        <div class="brickSingle">
+                                                                            <div class="brickRoundedCornerFix">&nbsp;</div>
+                                                                            <div class="header">
+                                                                                <div class="row">
+                                                                                    <div class="left"></div>
+                                                                                    <div class="center"></div>
+                                                                                    <div class="right"></div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="brickBody">
+                                                                                <div class="statement">
+                                                                                    &nbsp;<br />&nbsp;<br />&nbsp;<br />
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="brickFooter"></div>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="header conditionEndHeader" style="display:table; width: 100%;">
+                                                            <div class="brickRoundedCornerFixInner indentLeft"></div>
+                                                            <div style="display:table-cell;"></div>
+                                                            <div class="row">
+                                                                <div class="indentPlaceHolder"></div>
+                                                                <div class="left innerLeft"></div>
+                                                                <div class="center"></div>
+                                                                <div class="right"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="containerFooter">
+                                                            <div style="padding: 0.2em; margin-left: -0.8em;">end: condition</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="brickFooter"></div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="header conditionEndHeader" style="display:table; width: 100%;">
+
+                                <div class="brickRoundedCornerFixInner indentLeft"></div>
+                                <div style="display:table-cell;"></div>
+                                <div class="row">
+                                    <div class="indentPlaceHolder"></div>
+                                    <div class="left innerLeft"></div>
+                                    <div class="center"></div>
+                                    <div class="right"></div>
+                                </div>
+                            </div>
+                            <div class="containerFooter">
+                                <div style="padding: 0.2em; margin-left: -0.8em;">end: condition</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="brickFooter"></div>
+                </div>
+            </li>
+            <li>
+                <div class="brickSingle">
+                    <div class="brickRoundedCornerFix"></div>
+                    <div class="header">
+                        <div class="row">
+                            <div class="left"></div>
+                            <div class="center"></div>
+                            <div class="right"></div>
+                        </div>
+                    </div>
+                    <div class="brickBody">
+                        <div class="condition1">condition</div>
+                        <div class="container">
+                            <div style="display:table; height: 0.3em; width: 100%;">
+                                <div class="indentPlaceHolder"></div>
+                                <div class="conditionFooter" style="display:table-cell;">
+                                    <div class="brickFooterInner"></div>
+                                </div>
+                            </div>
+                            <div style="display:table; height: 1.3em; width: 100%;">
+                                <div class="indentPlaceHolder"></div>
+                                <div class="containerBody" style="display:table-cell;">
+                                    <ul style="width: 100%; height: 100%;"></ul>
+                                </div>
+                            </div>
+                            <div class="header conditionEndHeader" style="display:table; width: 100%;">
+
+                                <div class="brickRoundedCornerFixInner indentLeft"></div>
+                                <div style="display:table-cell;"></div>
+                                <div class="row">
+                                    <div class="indentPlaceHolder"></div>
+                                    <div class="left innerLeft"></div>
+                                    <div class="center"></div>
+                                    <div class="right"></div>
+                                </div>
+                            </div>
+                            <div class="containerFooter">
+                                <div style="padding: 0.2em; margin-left: -0.8em;">end: condition</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="brickFooter"></div>
+                </div>
+            </li>
+
+        </ul>        
+        <br />
+        <br />
+        <div class="brickSingle">
+            
+            <div class="header">
+                <div class="row" style="height: 1.8em; position: relative;">
+                    <div class="roundedHeadet" style="width: 16.1em; height: 1.9em; top: 0.1em; left:0.1em;position: absolute; overflow: hidden;" >
+                        <div style="display: block; border: solid 0.1em black; border-radius: 20em; height:40em; width:40em; margin-left:-12em; background-color: orange;" ></div>
+                    </div>
+                    <div class=""></div>
+                </div>
+                <div class="row">
+                    <div class="left"></div>
+                    <div class="right"></div>
+                </div>
+            </div>
+            <div class="brickBody">
+                <div class="condition1">condition</div>
+                <div class="container">
+                    <div style="display:table; height: 0.3em; width: 100%;">
+                        <div class="indentPlaceHolder"></div>
+                        <div class="conditionFooter" style="display:table-cell;">
+                            <div class="brickFooterInner"></div>
+                        </div>
+                    </div>
+                    <div style="display:table; height: 1.3em; width: 100%;">
+                        <div class="indentPlaceHolder"></div>
+                        <div class="containerBody" style="display:table-cell;">
+                            <ul style="width: 100%; height: 100%;">
+                                <li>
+                                    <div class="brickSingle">
+                                        <div class="brickRoundedCornerFix"></div>
+                                        <div class="header">
+                                            <div class="row">
+                                                <div class="left"></div>
+                                                <div class="center"></div>
+                                                <div class="right"></div>
+                                            </div>
+                                        </div>
+                                        <div class="brickBody">
+                                            <div class="condition1">condition</div>
+                                            <div class="container">
+                                                <div style="display:table; height: 0.3em; width: 100%;">
+                                                    <div class="indentPlaceHolder"></div>
+                                                    <div class="conditionFooter" style="display:table-cell;">
+                                                        <div class="brickFooterInner"></div>
+                                                    </div>
+                                                </div>
+                                                <div style="display:table; height: 1.3em; width: 100%;">
+                                                    <div class="indentPlaceHolder"></div>
+                                                    <div class="containerBody" style="display:table-cell;">
+                                                        <ul style="width: 100%; height: 100%;"></ul>
+                                                    </div>
+                                                </div>
+                                                <div class="header conditionEndHeader" style="display:table; width: 100%;">
+
+                                                    <div class="brickRoundedCornerFixInner indentLeft"></div>
+                                                    <div style="display:table-cell;"></div>
+                                                    <div class="row">
+                                                        <div class="indentPlaceHolder"></div>
+                                                        <div class="left innerLeft"></div>
+                                                        <div class="center"></div>
+                                                        <div class="right"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="containerFooter">
+                                                    <div style="padding: 0.2em; margin-left: -0.8em;">end: condition</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="brickFooter"></div>
+                                    </div>                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="header conditionEndHeader" style="display:table; width: 100%;">
+
+                        <div class="brickRoundedCornerFixInner indentLeft"></div>
+                        <div style="display:table-cell;"></div>
+                        <div class="row">
+                            <div class="indentPlaceHolder"></div>
+                            <div class="left innerLeft"></div>
+                            <div class="center"></div>
+                            <div class="right"></div>
+                        </div>
+                    </div>
+                    <div class="containerFooter">
+                        <div style="padding: 0.2em; margin-left: -0.8em;">end: condition</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
