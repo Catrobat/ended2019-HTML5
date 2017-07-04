@@ -85,12 +85,12 @@ PocketCode.merge({
             this._front = {
                 facingMode:{exact:'user'},
                 inUse: false,   //selected by brick
-                deviceId: undefined
+                deviceId: null
             };
             this._back = {
                 facingMode:  { exact: 'environment'} ,
                 inUse: false,   //selected by brick
-                deviceId: undefined
+                deviceId: null
             };
             this._on = false;
             this._mediaDevices = {
@@ -256,9 +256,6 @@ PocketCode.merge({
                 else {
                     var _url = window.URL || window.webkitURL;
                     video.src = _url.createObjectURL(stream);
-                }
-                if(this._on && video.paused){
-                    video.play();
                 }
 
 
@@ -466,13 +463,19 @@ PocketCode.merge({
                 if ( typeof  this._constraints.video !== "object"){
                     this._constraints.video = {};
                 }
+                console.log('cameraTypeObject:', cameraTypeObject);
                 cameraTypeObject.inUse = true;
-                if(cameraTypeObject.deviceId)
-                this._constraints.video.deviceId = {exact:cameraTypeObject.deviceId};
-                else
+                if(cameraTypeObject.deviceId){
+                    this._constraints.video.deviceId = {exact:cameraTypeObject.deviceId};
+                    this._init(true);
+                    return true;
+                }
+
+                else {
                     delete this._constraints.video.deviceId;
-                this._init(true);
-                return true;
+                    return false;
+                }
+
             },
 
 
