@@ -20,6 +20,12 @@ PocketCode.Device = (function () {
         this._y = null;
         this._z = null;
 
+        //Scale Factor
+        //degreePerSecond = movement speed
+        this._degreePerSecond = null;
+        //maxDegree = maximal Inclination
+        this._maxDegree = null;
+
         this._windowOrientation = 0;
 
         //sensor support
@@ -687,30 +693,66 @@ PocketCode.DeviceEmulator = (function () {
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
                 this._keyDownTime.LEFT += 1.0;
-                this._sensorData.X_INCLINATION += this._inclinationIncr.X;
-                if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
-                    this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
+                this._sensorData.X_INCLINATION += this._inclinationIncr.X * this._degreePerSecond;
+
+                if (this._maxDegree == this._inclinationLimits.X_MAX)
+                {
+                    if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
+                        this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
+                }
+                else
+                {
+                    if (this._sensorData.X_INCLINATION > this._maxDegree)
+                        this._sensorData.X_INCLINATION = this._maxDegree;
+                }
             }
             else if (this._keyPress.RIGHT && !this._keyPress.LEFT) {
                 // right
                 this._keyDownTime.RIGHT += 1.0;
-                this._sensorData.X_INCLINATION -= this._inclinationIncr.X;
-                if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
-                    this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
+                this._sensorData.X_INCLINATION -= this._inclinationIncr.X * this._degreePerSecond;
+
+                if ((this._maxDegree * -1) == this._inclinationLimits.X_MIN)
+                {
+                    if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
+                        this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
+                }
+                else
+                {
+                    if (this._sensorData.X_INCLINATION < (this._maxDegree * -1))
+                        this._sensorData.X_INCLINATION = (this._maxDegree * -1);
+                }
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
                 this._keyDownTime.UP += 1.0;
-                this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y;
-                if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
-                    this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
+                this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y * this._degreePerSecond;
+
+                if ((this._maxDegree * -1) == this._inclinationLimits.Y_MIN)
+                {
+                    if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
+                        this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
+                }
+                else
+                {
+                    if (this._sensorData.Y_INCLINATION < (this._maxDegree * -1))
+                        this._sensorData.Y_INCLINATION = (this._maxDegree * -1);
+                }
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
                 this._keyDownTime.DOWN += 1.0;
-                this._sensorData.Y_INCLINATION += this._inclinationIncr.Y;
-                if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
-                    this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
+                this._sensorData.Y_INCLINATION += this._inclinationIncr.Y * this._degreePerSecond;
+
+                if (this._maxDegree == this._inclinationLimits.Y_MAX)
+                {
+                    if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
+                        this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
+                }
+                else
+                {
+                    if (this._sensorData.Y_INCLINATION > this._maxDegree)
+                        this._sensorData.Y_INCLINATION = this._maxDegree;
+                }
             }
         },
         /* override */
