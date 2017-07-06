@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Created by alexandra on 25.06.17.
  */
@@ -7,11 +9,11 @@
 PocketCode.View.LoopBrickView = (function(){
     LoopBrickView.extends(PocketCode.View.BaseBrick, false);
 
-    function LoopBrickView(commentedOut) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut);
+    function LoopBrickView(commentedOut, content) {
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content); //todo content -> only content
 
-        this._bricks = new SmartJs.Ui.Control('ul', {className: ''});
-        this._appendChild(this._bricks);
+        this._addContent(content);
+
         this._redraw(); //commentedOut or Indent
     }
 
@@ -28,6 +30,19 @@ PocketCode.View.LoopBrickView = (function(){
         _redraw: function() {
             //
         },
+        _addContent: function (content) {
+
+            this._bricks = new SmartJs.Ui.Control('ul', {className: ''});
+            this._appendChild(this._bricks);
+
+            for (var key in content) {
+                if(key != 'content') {
+                    PocketCode.View.BaseBrick._createAndAppend(content[key], this); //todo param parent
+                }
+            }
+
+
+        }
     });
 
     return LoopBrickView;

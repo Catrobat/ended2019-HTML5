@@ -8,243 +8,300 @@
 'use strict';
 
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     WhenProgramStartBrick: (function () {
-        WhenProgramStartBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenProgramStartBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenProgramStartBrick(device, sprite, propObject, startEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenProgramStartBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenProgramStartBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._onStart = startEvent;
-            if (this._onStart)  //may be undefined on startAsClone
-                startEvent.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        WhenProgramStartBrick.prototype.merge({
-            dispose: function () {
-                if (this._onStart) {
-                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
-                    this._onStart = undefined;  //make sure to disconnect from gameEngine
-                }
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            },
-        });
 
         return WhenProgramStartBrick;
     })(),
 
     WhenActionBrick: (function () {
-        WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenActionBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenActionBrick(device, sprite, propObject, actionEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenActionBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenActionBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            //this._action = propObject.action;   //'Tapped', 'TouchStart'
-            //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
-            this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+            //todo: 2 different bricks: wenn angetippt, wenn der bildschirm berührt wird
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        WhenActionBrick.prototype.merge({
-            _onActionHandler: function (e) {
-                if (!e.sprite || e.sprite === this._sprite)
-                    this.executeEvent(e);
-            },
-            dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
-                this._onAction = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            },
-        });
 
         return WhenActionBrick;
     })(),
 
     WhenBroadcastReceiveBrick: (function () {
-        WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenBroadcastReceiveBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenBroadcastReceiveBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenBroadcastReceiveBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._msgId = propObject.receiveMsgId;
-            this._callback = this._subscribeCallback.bind(this);
-            this._broadcastMgr = broadcastMgr;
-            broadcastMgr.subscribe(this._msgId, this._callback);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from message??
+                        //name: 'WhenBroadcastReceiveBrick'+ PocketCode.WhenBroadcastReceiveBrick.content[2].id,
+                        value: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        WhenBroadcastReceiveBrick.prototype.dispose = function () {
-            this._broadcastMgr.unsubscribe(this._msgId, this._callback);
-            this._broadcastMgr = undefined;
-            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-        };
 
         return WhenBroadcastReceiveBrick;
     })(),
 
     BroadcastBrick: (function () {
-        BroadcastBrick.extends(PocketCode.Model.BaseBrick, false);
+        BroadcastBrick.extends(PocketCode.BaseBrick, false);
 
-        function BroadcastBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function BroadcastBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.BroadcastBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._broadcastMgr = broadcastMgr;
-            this._broadcastMsgId = propObject.broadcastMsgId;
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from message??
+                        //name: 'BroadcastBrick'+ PocketCode.BroadcastBrick.content[2].id,
+                        value: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        BroadcastBrick.prototype.merge({
-            _execute: function () {
-                this._broadcastMgr.publish(this._broadcastMsgId);
-                this._return();
-            },
-            dispose: function () {
-                this._broadcastMgr = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
 
         return BroadcastBrick;
     })(),
 
     BroadcastAndWaitBrick: (function () {
-        BroadcastAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
+        BroadcastAndWaitBrick.extends(PocketCode.BaseBrick, false);
 
-        function BroadcastAndWaitBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
+        function BroadcastAndWaitBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.BroadcastAndWaitBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._broadcastMgr = broadcastMgr;
-            this._broadcastMsgId = propObject.broadcastMsgId;
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from message??
+                        //name: 'BroadcastAndWaitBrick'+ PocketCode.BroadcastAndWaitBrick.content[2].id,
+                        value: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        BroadcastAndWaitBrick.prototype.merge({
-            _execute: function (id) {
-                this._broadcastMgr.publish(this._broadcastMsgId, this._return.bind(this, id));
-            },
-            dispose: function () {
-                this._broadcastMgr = undefined;
-                PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
-            },
-        });
 
         return BroadcastAndWaitBrick;
     })(),
 
     WhenConditionMetBrick: (function () {
-        WhenConditionMetBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenConditionMetBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenConditionMetBrick(device, sprite, minLoopCycleTime, propObject, startEvent) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
-
-            this._previousMet = false;
-            this._cycleTime = minLoopCycleTime;
-            this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
-
-            if (this._sprite instanceof PocketCode.Model.SpriteClone) {
-                this._onStart = this._sprite.onCloneStart;
-                this._onStart.addEventListener(new SmartJs.Event.EventListener(this._onCloneStartHandler, this));
+        function WhenConditionMetBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenConditionMetBrick)){
+                throw new Error("Invalid argument Model");
             }
-            else {
-                this._onStart = startEvent;
-                this._onStart.addEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
-            }
+
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'WhenConditionMetBrick'+ PocketCode.WhenConditionMetBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        WhenConditionMetBrick.prototype.merge({
-            _onCloneStartHandler: function () {  //to make sure all whenStartAsClone scripts where executed before evaluating the condition
-                window.setTimeout(this.executeEvent.bind(this), this._cycleTime);
-            },
-            //a When.. brick cannot be part of a user script, so we do not have to take care of the execution scope (always sprite)
-            _execute: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
-
-                var met = false;
-                try {
-                    met = this._condition.calculate();
-                }
-                catch (e) { }
-
-                if (!this._previousMet && met) {
-                    this._previousMet = met;
-                    PocketCode.Model.ScriptBlock.prototype._execute.call(this, SmartJs.getNewId());
-                }
-                else {
-                    this._previousMet = met;
-                    this._timeoutHandler = window.setTimeout(this._execute.bind(this), this._cycleTime);
-                }
-            },
-            pause: function () {
-                if (this._timeoutHandler)
-                    window.clearTimeout(this._timeoutHandler);
-                PocketCode.Model.ScriptBlock.prototype.pause.call(this);
-            },
-            resume: function () {
-                PocketCode.Model.ScriptBlock.prototype.resume.call(this);
-                this._execute();
-            },
-            stop: function (calledFromStopBrick) {
-                if (!calledFromStopBrick) {
-                    window.clearTimeout(this._timeoutHandler);
-                    this._previousMet = false;  //reinit
-                }
-                PocketCode.Model.ScriptBlock.prototype.stop.call(this);
-            },
-            dispose: function () {
-                window.clearTimeout(this._timeoutHandler);
-                if (this._sprite instanceof PocketCode.Model.SpriteClone)
-                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this._onCloneStartHandler, this));
-                else
-                    this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.executeEvent, this));
-                this._onStart = undefined;
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-            },
-        });
 
         return WhenConditionMetBrick;
     })(),
 
     WhenCollisionBrick: (function () {
-        WhenCollisionBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenCollisionBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenCollisionBrick(device, sprite, physicsWorld, propObject) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenCollisionBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenCollisionBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._physicsWorld = physicsWorld;
-            this._spriteId2 = propObject.any ? 'any' : propObject.spriteId;
-            physicsWorld.subscribeCollision(sprite.id, this._spriteId2, new SmartJs.Event.EventListener(this.executeEvent, this));
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(),
+                        //name: 'WhenCollisionBrick'+ PocketCode.WhenCollisionBrick.content[2].id,
+                        value: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        WhenCollisionBrick.prototype.dispose = function () {
-            this._physicsWorld.unsubscribeCollision(this._sprite.id, this._spriteId2, new SmartJs.Event.EventListener(this.executeEvent, this));
-            this._physicsWorld = undefined;
-            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-        };
 
         return WhenCollisionBrick;
     })(),
 
     WhenBackgroundChangesToBrick: (function () {
-        WhenBackgroundChangesToBrick.extends(PocketCode.Model.ScriptBlock, false);
+        WhenBackgroundChangesToBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenBackgroundChangesToBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+        function WhenBackgroundChangesToBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenBackgroundChangesToBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            this._scene = scene;
-            this._lookId = propObject.lookId
-            this._callback = this._subscribeCallback.bind(this);
-            if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
-                sprite.subscribeOnLookChange(this._lookId, this._callback);
-            else
-                scene.subscribeToBackgroundChange(this._lookId, this._callback);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from background
+                        //name: 'WhenBackgroundChangesToBrick'+ PocketCode.WhenBackgroundChangesToBrick.content[2].id,
+                        value: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        //methods
-        WhenBackgroundChangesToBrick.prototype.dispose = function () {
-            this._scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
-            this._scene = undefined;
-            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
-        };
-
         return WhenBackgroundChangesToBrick;
     })(),
 });
@@ -252,14 +309,30 @@ PocketCode.Model.merge({
 PocketCode.Model.merge({
 
     WhenStartAsCloneBrick: (function () {
-        WhenStartAsCloneBrick.extends(PocketCode.Model.WhenProgramStartBrick, false);
+        WhenStartAsCloneBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenStartAsCloneBrick(device, sprite, propObject) {
+        function WhenStartAsCloneBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenStartAsCloneBrick)){
+                throw new Error("Invalid argument Model");
+            }
 
-            if (!(sprite instanceof PocketCode.Model.SpriteClone))
-                PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject);  //without ecent
-            else
-                PocketCode.Model.WhenProgramStartBrick.call(this, device, sprite, propObject, sprite.onCloneStart);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content); //todo: controlBrick oder EventBrick?
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
         return WhenStartAsCloneBrick;

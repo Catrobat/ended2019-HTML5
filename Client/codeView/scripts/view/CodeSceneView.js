@@ -1,3 +1,4 @@
+'use strict';
 
 PocketCode.CodeSceneView = (function () {
     CodeSceneView.extends(PocketCode.Ui.TabPage, false);

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Created by alexandra on 25.06.17.
  */
@@ -7,19 +9,17 @@
 PocketCode.View.IfThenElseBrickView = (function(){
     IfThenElseBrickView.extends(PocketCode.View.BaseBrick, false);
 
-    function IfThenElseBrickView(commentedOut, elseVisible) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut);
+    function IfThenElseBrickView(commentedOut, elseVisible, content) {
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);  //todo content -> only content
 
         this._elseVisible = elseVisible || true;
-        this._ifBricks = new SmartJs.Ui.Control('ul', {className: ''});
-        this._elseBricks = new SmartJs.Ui.Control('ul', {className: ''});
 
-        this._appendChild(this._ifBricks);
-        this._appendChild(this._elseBricks);
+        this._addContent(content);
+
         this._redraw();
     }
 
-//properties
+    //properties
     Object.defineProperties(IfThenElseBrickView.prototype, {
         elseVisible: {
             get: function () {
@@ -32,7 +32,7 @@ PocketCode.View.IfThenElseBrickView = (function(){
         }
     });
 
-//methods
+    //methods
     IfThenElseBrickView.prototype.merge({
         /* override */
         _drawBackground: function() {
@@ -41,6 +41,20 @@ PocketCode.View.IfThenElseBrickView = (function(){
         _redraw: function() {
             //commentedOut or Indent, show elseBricks
         },
+        _addContent: function (content) {
+
+            this._ifBricks = new SmartJs.Ui.Control('ul', {className: ''});
+            this._elseBricks = new SmartJs.Ui.Control('ul', {className: ''});
+
+            for (var key in content) {
+                if(key != 'content') {
+                    PocketCode.View.BaseBrick._createAndAppend(content[key], this); //todo param parent
+                }
+            }
+
+            this._insertAt(1, this._ifBricks);
+            this._insertAt(3, this._elseBricks);
+        }
     });
 
     return IfThenElseBrickView;

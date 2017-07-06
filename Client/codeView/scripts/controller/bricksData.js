@@ -4,182 +4,386 @@
 'use strict';
 
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     SetVariableBrick: (function () {
-        SetVariableBrick.extends(PocketCode.Model.BaseBrick, false);
+        SetVariableBrick.extends(PocketCode.BaseBrick, false);
 
-        function SetVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function SetVariableBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetVariableBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._varId = propObject.resourceId;
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from scene??
+                        //name: 'SetVariableBrick'+ PocketCode.SetVariableBrick.content[2].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'SetVariableBrick'+ PocketCode.SetVariableBrick.content[5].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetVariableBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var variable = scope.getVariable(this._varId);
-            if (variable)  //can be undefined
-                variable.value = this._value.calculate(scope);
-            this._return();
-        };
 
         return SetVariableBrick;
     })(),
 
     ChangeVariableBrick: (function () {
-        ChangeVariableBrick.extends(PocketCode.Model.BaseBrick, false);
+        ChangeVariableBrick.extends(PocketCode.BaseBrick, false);
 
-        function ChangeVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._varId = propObject.resourceId;
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
-        }
-
-        ChangeVariableBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var variable = scope.getVariable(this._varId);
-            var value = this._value.calculate(scope);
-
-            if (variable) {   //this._var can be undefined
-                if (!isNaN(variable.value) && !isNaN(value))
-                    variable.value += value;
-                else //overwrite existing if values not numeric
-                    variable.value = value;
+        function ChangeVariableBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ChangeVariableBrick)) {
+                throw new Error("Invalid argument Model");
             }
-            this._return();
-        };
+
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from var??
+                        //name: 'ChangeVariableBrick'+ PocketCode.ChangeVariableBrick.content[2].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'ChangeVariableBrick'+ PocketCode.ChangeVariableBrick.content[5].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
 
         return ChangeVariableBrick;
     })(),
 
     ShowVariableBrick: (function () {
-        ShowVariableBrick.extends(PocketCode.Model.BaseBrick, false);
+        ShowVariableBrick.extends(PocketCode.BaseBrick, false);
 
-        function ShowVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function ShowVariableBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ShowVariableBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._varId = propObject.resourceId;
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from var??
+                        //name: 'ShowVariableBrick'+ PocketCode.ShowVariableBrick.content[2].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'ShowVariableBrick'+ PocketCode.ShowVariableBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'ShowVariableBrick'+ PocketCode.ShowVariableBrick.content[7].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ShowVariableBrick.prototype._execute = function (scope) {
-            if (this._varId)    //can be null
-                this._sprite.showVariableAt(this._varId, this._x.calculate(scope), this._y.calculate(scope));
-            this._return();
-        };
 
         return ShowVariableBrick;
     })(),
 
     HideVariableBrick: (function () {
-        HideVariableBrick.extends(PocketCode.Model.BaseBrick, false);
+        HideVariableBrick.extends(PocketCode.BaseBrick, false);
 
-        function HideVariableBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function HideVariableBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.HideVariableBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._varId = propObject.resourceId;
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from var??
+                        //name: 'HideVariableBrick'+ PocketCode.HideVariableBrick.content[2].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        HideVariableBrick.prototype._execute = function () {
-            if (this._varId)    //can be null
-                this._sprite.hideVariable(this._varId);
-            this._return();
-        };
 
         return HideVariableBrick;
     })(),
 
     AppendToListBrick: (function () {
-        AppendToListBrick.extends(PocketCode.Model.BaseBrick, false);
+        AppendToListBrick.extends(PocketCode.BaseBrick, false);
 
-        function AppendToListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function AppendToListBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.AppendToListBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._listId = propObject.resourceId;
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'AppendToListBrick'+ PocketCode.AppendToListBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from list??
+                        //name: 'AppendToListBrick'+ PocketCode.AppendToListBrick.content[4].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        AppendToListBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var list = scope.getList(this._listId);
-            if (list) //can be null
-                list.append(this._value.calculate(scope));
-            this._return();
-        };
 
         return AppendToListBrick;
     })(),
 
     DeleteAtListBrick: (function () {
-        DeleteAtListBrick.extends(PocketCode.Model.BaseBrick, false);
+        DeleteAtListBrick.extends(PocketCode.BaseBrick, false);
 
-        function DeleteAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function DeleteAtListBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.DeleteAtListBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._listId = propObject.resourceId;
-            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from list?
+                        //name: 'DeleteAtListBrick'+ PocketCode.DeleteAtListBrick.content[2].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'DeleteAtListBrick'+ PocketCode.DeleteAtListBrick.content[5].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        DeleteAtListBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var list = scope.getList(this._listId),
-                idx = this._idx.calculate(scope);
-
-            if (list && !isNaN(idx))
-                list.deleteAt(idx);
-            this._return();
-        };
 
         return DeleteAtListBrick;
     })(),
 
     InsertAtListBrick: (function () {
-        InsertAtListBrick.extends(PocketCode.Model.BaseBrick, false);
+        InsertAtListBrick.extends(PocketCode.BaseBrick, false);
 
-        function InsertAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function InsertAtListBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.InsertAtListBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._listId = propObject.resourceId;
-            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'InsertAtListBrick'+ PocketCode.InsertAtListBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from list?
+                        //name: 'InsertAtListBrick'+ PocketCode.InsertAtListBrick.content[4].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'InsertAtListBrick'+ PocketCode.InsertAtListBrick.content[7].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        InsertAtListBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var list = scope.getList(this._listId),
-                idx = this._idx.calculate(scope);
-
-            if (list && !isNaN(idx))
-                list.insertAt(idx, this._value.calculate(scope));
-            this._return();
-        };
 
         return InsertAtListBrick;
     })(),
 
     ReplaceAtListBrick: (function () {
-        ReplaceAtListBrick.extends(PocketCode.Model.BaseBrick, false);
+        ReplaceAtListBrick.extends(PocketCode.BaseBrick, false);
 
-        function ReplaceAtListBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        function ReplaceAtListBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ReplaceAtListBrick)) {
+                throw new Error("Invalid argument Model");
+            }
 
-            this._listId = propObject.resourceId;
-            this._idx = new PocketCode.Formula(device, sprite, propObject.index);
-            this._value = new PocketCode.Formula(device, sprite, propObject.value);
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(), //todo take id from list?
+                        //name: 'ReplaceAtListBrick'+ PocketCode.ReplaceAtListBrick.content[2].id,
+                        value: ''
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'ReplaceAtListBrick'+ PocketCode.ReplaceAtListBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: ''
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        //name: 'ReplaceAtListBrick'+ PocketCode.ReplaceAtListBrick.content[7].id,
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.DATA, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ReplaceAtListBrick.prototype._execute = function (scope) {
-            scope = scope || this._sprite;
-            var list = scope.getList(this._listId),
-                idx = this._idx.calculate(scope);
-
-            if (list && !isNaN(idx))
-                list.replaceAt(idx, this._value.calculate(scope));
-            this._return();
-        };
 
         return ReplaceAtListBrick;
     })(),
