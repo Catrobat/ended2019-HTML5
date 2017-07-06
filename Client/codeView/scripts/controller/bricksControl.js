@@ -48,7 +48,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: '',
+                        i18n: 'brick_note'
                     },
                     {
                         type: 'formula',
@@ -77,13 +77,13 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: '',
+                        i18n: 'brick_forever',
                     }
                 ],
                 endContent: [
                     {
                         type: 'text',
-                        i18n: '',
+                        i18n: 'brick_loop_end',
                     }
                 ]
 
@@ -108,7 +108,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_if_begin'
                     },
                     {
                         type: 'formula',
@@ -118,19 +118,19 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_if_begin_second_part'
                     }
                 ],
                 elseContent: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_if_else'
                     }
                 ],
                 endContent: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_if_end'
                     }
                 ]
 
@@ -158,7 +158,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_wait_until'
                     },
                     {
                         type: 'formula',
@@ -168,7 +168,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_wait_until_second_part'
                     }
                 ]
             };
@@ -192,7 +192,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_repeat'
                     },
                     {
                         type: 'formula',
@@ -202,7 +202,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: '' //todo
                     }
                 ]
             };
@@ -226,7 +226,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_repeat_until'
                     },
                     {
                         type: 'formula',
@@ -236,7 +236,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_wait_until_second_part'
                     }
                 ]
             };
@@ -261,7 +261,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_scene_transition'
                     },
                     {
                         type: 'lf'
@@ -295,7 +295,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_scene_start'
                     },
                     {
                         type: 'lf'
@@ -328,7 +328,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_clone'
                     },
                     {
                         type: 'lf'
@@ -360,7 +360,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_delete_this_clone'
                     }
                 ]
             };
@@ -390,7 +390,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_stop_script'
                     },
                     {
                         type: 'lf'

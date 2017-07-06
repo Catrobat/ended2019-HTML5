@@ -18,7 +18,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_set_variable'
                     },
                     {
                         type: 'lf'
@@ -34,7 +34,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'to_label' // todo ??
                     },
                     {
                         type: 'formula',
@@ -64,7 +64,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_change_variable'
                     },
                     {
                         type: 'lf'
@@ -80,7 +80,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'to_label' // todo ??
                     },
                     {
                         type: 'formula',
@@ -110,7 +110,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_show_variable'
                     },
                     {
                         type: 'lf'
@@ -126,7 +126,11 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_show_variable_position'
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'x_label'
                     },
                     {
                         type: 'formula',
@@ -136,7 +140,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'y_label'
                     },
                     {
                         type: 'formula',
@@ -166,7 +170,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_hide_variable'
                     },
                     {
                         type: 'lf'
@@ -199,7 +203,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_add_item_to_userlist_add'
                     },
                     {
                         type: 'formula',
@@ -209,7 +213,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_add_item_to_userlist'
                     },
                     {
                         type: 'lf'
@@ -242,7 +246,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_delete_item_from_userlist_delete'
                     },
                     {
                         type: 'lf'
@@ -258,7 +262,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_delete_item_from_userlist'
                     },
                     {
                         type: 'formula',
@@ -288,7 +292,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_insert_item_into_userlist_insert_into'
                     },
                     {
                         type: 'formula',
@@ -298,7 +302,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_insert_item_into_userlist_into_list'
                     },
                     {
                         type: 'lf'
@@ -314,7 +318,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_insert_item_into_userlist_at_position'
                     },
                     {
                         type: 'formula',
@@ -344,7 +348,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_replace_item_in_userlist_replace_in_list'
                     },
                     {
                         type: 'lf'
@@ -360,7 +364,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_replace_item_in_userlist_item_at_index'
                     },
                     {
                         type: 'formula',
@@ -370,7 +374,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: ''
+                        i18n: 'brick_replace_item_in_userlist_with_value'
                     },
                     {
                         type: 'formula',
