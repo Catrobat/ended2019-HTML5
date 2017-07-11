@@ -140,10 +140,10 @@ PocketCode.Device = (function () {
             },
         },
         isMobile: {
-            value: SmartJs.Device.isMobile,
+            value: SmartJs.Device.isMobile
         },
         isTouch: {
-            value: SmartJs.Device.isTouch,
+            value: SmartJs.Device.isTouch
         },
         emulationInUse: {
             get: function () {
@@ -154,7 +154,7 @@ PocketCode.Device = (function () {
             get: function () {
                 if (!this.isMobile)
                     return false;
-                var tmp = this._features
+                var tmp = this._features;
                 if (tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse)
                     return true;
                 return false;
@@ -169,13 +169,10 @@ PocketCode.Device = (function () {
                         return true;
                 }
                 return false;
-            },
+            }
         },
-        //features: {
-        //    get: function () {
 
-        //    },
-        //},
+
         unsupportedFeatures: {
             get: function () {
                 var unsupported = [], tmp;
@@ -184,9 +181,25 @@ PocketCode.Device = (function () {
                     if (tmp.inUse && !tmp.supported)
                         unsupported.push(tmp.i18nKey);  //return i18nKeys only
                 }
+
                 return unsupported;
-            },
+            }
         },
+
+
+        blockedFeatures: {
+            get: function () {
+                var blocked = [], tmp;
+                for (var f in this._features) {
+                    tmp = this._features[f];
+                    if (tmp.inUse && tmp.blockedByUser)
+                        blocked.push(tmp.i18nKey);  //return i18nKeys only
+                }
+
+                return blocked;
+            }
+        },
+
         accelerationX: {
             get: function () {
                 if (this._deviceMotionListener) { //supported
@@ -425,6 +438,8 @@ PocketCode.Device = (function () {
                 return this._geoLocationData.accuracy;
             },
         },
+
+
     });
 
     //methods

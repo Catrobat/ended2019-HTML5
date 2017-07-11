@@ -374,9 +374,10 @@ PocketCode.GameEngine = (function () {
             loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
             loadingAlerts.deviceEmulation = device.emulationInUse;
             loadingAlerts.deviceLockRequired = device.mobileLockRequired;
+            loadingAlerts.deviceBlockedFeatures = device.blockedFeatures;
 
-            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
-                loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
+            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length !== 0 ||
+                loadingAlerts.unsupportedBricks.length !== 0 || loadingAlerts.deviceUnsupportedFeatures.length !== 0 || loadingAlerts.deviceBlockedFeatures.length !== 0) {
                 this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }

@@ -180,7 +180,6 @@ PocketCode.merge({
                     case 'SetFrictionBrick':
 
 
-
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);

@@ -113,7 +113,6 @@ QUnit.test("DeviceFeature: Camera", function (assert) {
         df.onChange.addEventListener(new SmartJs.Event.EventListener(onCameraError, this));
         df.supported = true;
         df.setIdealResolution(800, 600, false);
-        console.log("constraints:", df.constraints);
         assert.equal(df.constraints.video.height.ideal, 600, "should set correct ideal height");
         assert.equal(df.constraints.video.width.ideal, 800 , "should set correct ideal width");
         df.setMinimumResolution(10000, 10000, true); // intentional overconstrain to force error
@@ -123,7 +122,6 @@ QUnit.test("DeviceFeature: Camera", function (assert) {
         stage = "onCameraError";
         df.onInit.removeEventListener(new SmartJs.Event.EventListener(onCameraError, this));
         assert.equal(e.on, false, "camera should not be on if there was an error");
-        console.log("error:", e.error);
         assert.equal(df.supported, false, "camera should not be supported if there was an error");
         assert.ok(e.error.name === "ConstraintNotSatisfiedError" || e.error.name === "OverconstrainedError", " correct error dispatched on change" );
         df.dispose();

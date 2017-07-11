@@ -13,6 +13,7 @@ PocketCode.DeviceFeature = (function () {
         this._supported = supported !== undefined ? supported : false;
         this._inUse = false;
         this._initialized = false;
+        this._blockedByUser = false;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
@@ -53,6 +54,11 @@ PocketCode.DeviceFeature = (function () {
             get: function(){
                 return this._on;
             }
+        },
+        blockedByUser: {
+            get: function () {
+                return this._blockedByUser;
+            }
         }
     });
 
@@ -79,7 +85,8 @@ PocketCode.merge({
 
         function Camera() {
             this._video = document.createElement('video');
-            var supported =  this._getUserMedia && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
+            var supported =  this._getUserMedia !== false  && ('srcObject' in this._video || 'mozSrcObject' in this._video || window.URL || window.webkitURL);
+
             PocketCode.DeviceFeature.call(this, 'lblDeviceCamera', supported);
             this._cameraStream = undefined;
             this._front = {
@@ -193,6 +200,8 @@ PocketCode.merge({
                 var userMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
                 if (userMedia)
                     return userMedia.bind(navigator);
+                else
+                    return false;
             }(),
             _getMediaDevices: function () {
                 if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
@@ -297,8 +306,8 @@ PocketCode.merge({
             //_streamEndedHandler: function (e) {
             //    //TODO
             //},
-            _init: function (reinit) {
-                if (!this._supported || (this._on && !reinit)) {
+            _init: function (reInit) {
+                if (!this._supported || (this._on && !reInit)) {
                     this._inUse = true;
                     return; //already initialized
                 }
@@ -315,7 +324,14 @@ PocketCode.merge({
                     this._initStream(stream);
                 }.bind(this),
                     onError = function (error) {
-                        this._supported = false;
+                        if(error && error.name && (error.name === 'PermissionDeniedError' || error.name === 'NotAllowedError' )) {
+                            this._blockedByUser = true;
+                        }
+
+                        else {
+                            this._supported = false;
+                        }
+
                         this._on = false;
                         this._initialized = false;
                         this.onChange.dispatchEvent({on : false, error: error, src: this._video});
@@ -463,7 +479,6 @@ PocketCode.merge({
                 if ( typeof  this._constraints.video !== "object"){
                     this._constraints.video = {};
                 }
-                console.log('cameraTypeObject:', cameraTypeObject);
                 cameraTypeObject.inUse = true;
                 if(cameraTypeObject.deviceId){
                     this._constraints.video.deviceId = {exact:cameraTypeObject.deviceId};
@@ -480,8 +495,7 @@ PocketCode.merge({
 
 
             start: function () {   //or resume
-                //var cam = this._cam;//,
-                //supported = cam.supported;
+               this._inUse = true;
                 if (!this._supported || this._on)
                     return false;
                 var video = this._video;
@@ -668,10 +682,10 @@ PocketCode.merge({
                     return this._inUse;
                 },
                 set: function (value) {
-                    if (typeof value != 'boolean')
+                    if (typeof value !== 'boolean')
                         throw new Error('invalid setter: inUse');
 
-                    if (value == this._inUse)
+                    if (value === this._inUse)
                         return;
                     else if (!value)
                         this.stop();
