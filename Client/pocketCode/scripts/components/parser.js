@@ -1018,6 +1018,11 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    //case 'OBJECT_DISTANCE_TO':    //TODO
+                    //    if (uiString)
+                    //        return 'position_y';
+
+                    //    return 'this._sprite.positionY';
 
                     //collision
                     case 'COLLIDES_WITH_EDGE':
