@@ -7,8 +7,10 @@ PocketCode.CollisionManager = (function () {
     CollisionManager.extends(SmartJs.Core.Component);
 
     function CollisionManager(projectScreenWidth, projectScreenHeight) {
-        this._sprites = [];
+
         this._background = undefined;
+        this._sprites = [];
+
         this._projectScreenWidth = projectScreenWidth;
         this._projectScreenHeight = projectScreenHeight;
         this._registeredCollisions = {};
@@ -49,14 +51,17 @@ PocketCode.CollisionManager = (function () {
 
     //methods
     CollisionManager.prototype.merge({
-        setProjectScreen: function (width, height) {
-            this._projectScreenWidth = width;
-            this._projectScreenHeight = height;
-        },
+        //setProjectScreen: function (width, height) {
+        //    this._projectScreenWidth = width;
+        //    this._projectScreenHeight = height;
+        //},
         _publish: function () {
             //private here: call registered handlers on collisions
         },
         _getSprite: function (spriteId) {
+            if (this._background.id == spriteId)
+                return this._background;
+
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 if (sprites[i].id === spriteId)
@@ -64,9 +69,13 @@ PocketCode.CollisionManager = (function () {
             }
             throw new Error('unknown sprite with id: ' + spriteId);
         },
-        checkSpritePointerCollision: function (sprite) {
+        checkSpritePointerCollision: function (x, y, spriteBoundary, activeTouches) {
+            var collision = { occurs: false };
+            if (!activeTouches || !(activeTouches instanceof Array) || activeTouches.length == 0)
+                return collision;
+
             //TODO
-            return false;
+            return collision;
         },
         checkSpriteEdgeCollision: function (x, y, spriteBoundary) {
             //returns { occurs: true/false, overflow: { top: ?, right: ?, bottom: ?, left: ? } }
@@ -93,10 +102,14 @@ PocketCode.CollisionManager = (function () {
             return collision;
         },
         checkSpriteCollision: function (spriteId1, spriteId2) {
-
+            return false;   //temporarely disabled to avoid errors
             var sprite1, sprite2;
-            for (var i = 0, l = this._sprites.length; i < l; i++)
-            {
+            if (this._background.id == spriteId1)
+                sprite1 = this._background;
+            else if (this._background.id == spriteId2)
+                sprite2 = this._background;
+
+            for (var i = 0, l = this._sprites.length; i < l; i++) {
                 var tmp = this._sprites[i];
                 if (tmp._id === spriteId1)
                     sprite1 = tmp;
@@ -106,8 +119,8 @@ PocketCode.CollisionManager = (function () {
                 if (sprite1 && sprite2)
                     break;
             }
-            
-            if (!sprite1.visible || !sprite2.visible || sprite1.transparency == 100.0 || sprite2.transparency == 100.0) //!visible, transparent
+
+            if (!sprite1 || !sprite2 || !sprite1.visible || !sprite2.visible || sprite1.transparency == 100.0 || sprite2.transparency == 100.0) //!visible, transparent
                 return false; // return 1;
 
             var l1 = sprite1.currentLook,
@@ -118,11 +131,11 @@ PocketCode.CollisionManager = (function () {
 
             var x1 = sprite1.positionX,
                 y1 = sprite1.positionY,
-                l1ri = sprite1.renderingImage,
+                l1ri = sprite1.renderingSprite,
                 l1b = l1.getBoundary(l1ri.scaling, l1ri.rotation, l1ri.flipX, false),  //we do not calculate exact boundaries- less performant
                 x2 = sprite2.positionX,
                 y2 = sprite2.positionY,
-                l2ri = sprite2.renderingImage,
+                l2ri = sprite2.renderingSprite,
                 l2b = l2.getBoundary(l2ri.scaling, l2ri.rotation, l2ri.flipX, false);
 
             //l1 = {
@@ -154,7 +167,7 @@ PocketCode.CollisionManager = (function () {
                 l: Math.max(x1 + l1b.left, x2 + l2b.left),
             };
 
-            if ( area.t - area.b <= 0 || area.r - area.l <= 0 )   //no overlapping
+            if (area.t - area.b <= 0 || area.r - area.l <= 0)   //no overlapping
                 return false; //return 3;
 
             //check pixels in range
@@ -218,7 +231,7 @@ PocketCode.CollisionManager = (function () {
             var length = width * height;
 
             //Loop to find the collision
-            for (var cnt = 3; cnt < length * 4; cnt += 4){
+            for (var cnt = 3; cnt < length * 4; cnt += 4) {
 
                 if (pixels1[cnt] !== 0 && pixels2[cnt] !== 0) {
                     return true; // return 4;
@@ -228,7 +241,7 @@ PocketCode.CollisionManager = (function () {
             return false;
             //return 5;
 
-            
+
         },
         //-------------------------------------------------------------------------------------
         checkSpriteColorCollision: function (sprite, color) {

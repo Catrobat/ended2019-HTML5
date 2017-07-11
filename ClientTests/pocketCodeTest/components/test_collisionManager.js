@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/collisionManager.js" />
 'use strict';
@@ -27,48 +27,48 @@ QUnit.test("checkSpriteEdgeCollision", function (assert) {
         left: 0,
     };
     var collision = cm.checkSpriteEdgeCollision(0, 0, boundary);
-    assert.deepEqual(collision, {occurs: false, overflow: {}}, "simple check without collision: center");
+    assert.deepEqual(collision, { occurs: false, overflow: {} }, "simple check without collision: center");
 
     collision = cm.checkSpriteEdgeCollision(-5, 9, boundary);
-    assert.deepEqual(collision, {occurs: false, overflow: {}}, "check without collision: top left");
+    assert.deepEqual(collision, { occurs: false, overflow: {} }, "check without collision: top left");
     collision = cm.checkSpriteEdgeCollision(4, 9, boundary);
-    assert.deepEqual(collision, {occurs: false, overflow: {}}, "check without collision: top right");
+    assert.deepEqual(collision, { occurs: false, overflow: {} }, "check without collision: top right");
     collision = cm.checkSpriteEdgeCollision(-5, -10, boundary);
-    assert.deepEqual(collision, {occurs: false, overflow: {}}, "check without collision: bottom left");
+    assert.deepEqual(collision, { occurs: false, overflow: {} }, "check without collision: bottom left");
     collision = cm.checkSpriteEdgeCollision(4, -10, boundary);
-    assert.deepEqual(collision, {occurs: false, overflow: {}}, "check without collision: bottom right");
+    assert.deepEqual(collision, { occurs: false, overflow: {} }, "check without collision: bottom right");
 
     //without pixelAccuracy
     collision = cm.checkSpriteEdgeCollision(-5, 10, boundary);
-    assert.deepEqual(collision, {occurs: true, overflow: {}}, "check with collision: top");
+    assert.deepEqual(collision, { occurs: true, overflow: {} }, "check with collision: top");
     collision = cm.checkSpriteEdgeCollision(5, 9, boundary);
-    assert.deepEqual(collision, {occurs: true, overflow: {}}, "check with collision: right");
+    assert.deepEqual(collision, { occurs: true, overflow: {} }, "check with collision: right");
     collision = cm.checkSpriteEdgeCollision(-5, -11, boundary);
-    assert.deepEqual(collision, {occurs: true, overflow: {}}, "check with collision: bottom");
+    assert.deepEqual(collision, { occurs: true, overflow: {} }, "check with collision: bottom");
     collision = cm.checkSpriteEdgeCollision(-6, -10, boundary);
-    assert.deepEqual(collision, {occurs: true, overflow: {}}, "check with collision: left");
+    assert.deepEqual(collision, { occurs: true, overflow: {} }, "check with collision: left");
 
     //with pixelAccuracy
     boundary.pixelAccuracy = true;
     collision = cm.checkSpriteEdgeCollision(-6, 11, boundary);
     assert.deepEqual(collision, {
         occurs: true,
-        overflow: {top: 2, right: -10, bottom: -21, left: 1}
+        overflow: { top: 2, right: -10, bottom: -21, left: 1 }
     }, "check with collision incl. pixelAccuracy: top left");
     collision = cm.checkSpriteEdgeCollision(5, 11, boundary);
     assert.deepEqual(collision, {
         occurs: true,
-        overflow: {top: 2, right: 1, bottom: -21, left: -10}
+        overflow: { top: 2, right: 1, bottom: -21, left: -10 }
     }, "check with collision incl. pixelAccuracy: top right");
     collision = cm.checkSpriteEdgeCollision(-6, -12, boundary);
     assert.deepEqual(collision, {
         occurs: true,
-        overflow: {top: -21, right: -10, bottom: 2, left: 1}
+        overflow: { top: -21, right: -10, bottom: 2, left: 1 }
     }, "check with collision incl. pixelAccuracy: bottom left");
     collision = cm.checkSpriteEdgeCollision(5, -12, boundary);
     assert.deepEqual(collision, {
         occurs: true,
-        overflow: {top: -21, right: 1, bottom: 2, left: -10}
+        overflow: { top: -21, right: 1, bottom: 2, left: -10 }
     }, "check with collision incl. pixelAccuracy: bottom right");
 
     //all edges
@@ -82,7 +82,7 @@ QUnit.test("checkSpriteEdgeCollision", function (assert) {
     collision = cm.checkSpriteEdgeCollision(0, 0, boundary);
     assert.deepEqual(collision, {
         occurs: true,
-        overflow: {top: 1, right: 2, bottom: 3, left: 4}
+        overflow: { top: 1, right: 2, bottom: 3, left: 4 }
     }, "check with collision incl. pixelAccuracy: all sides");
 });
 
@@ -135,7 +135,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         l2.init(img); //loading from image store directly instead of handling through GameEngine
 
         var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "sp1", name: "myName" });
-        sprite1._looks = [ l1, l2 ];
+        sprite1._looks = [l1, l2];
         sprite1._currentLook = l1;
         //sprite1.setDirection(45);
         sprite1.setSize(200);
@@ -144,7 +144,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         //sprite1._transparency = 100.0;
         //gameEngine._sprites.push(sprite1);
         var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "sp2", name: "myName" });
-        sprite2._looks = [ l1, l2 ];
+        sprite2._looks = [l1, l2];
         sprite2._currentLook = l1;
         //sprite2.setDirection(45);
         sprite2.setSize(200);
@@ -192,9 +192,9 @@ QUnit.test("checkSpriteCollision", function (assert) {
 
         //CurrentLook Tests
         var sL1, sL2;
-        assert.throws(function () { cm.checkSpriteCollision(sL1, sL2); }, Error,"Sprites undefined");
-        assert.throws(function () { cm.checkSpriteCollision(sL1, sprite2Id); }, Error,"Sprite1 undefined");
-        assert.throws(function () { cm.checkSpriteCollision(sprite1Id, sL2); }, Error,"Sprite2 undefined");
+        assert.throws(function () { cm.checkSpriteCollision(sL1, sL2); }, Error, "Sprites undefined");
+        assert.throws(function () { cm.checkSpriteCollision(sL1, sprite2Id); }, Error, "Sprite1 undefined");
+        assert.throws(function () { cm.checkSpriteCollision(sprite1Id, sL2); }, Error, "Sprite2 undefined");
 
         //No Collision Test
         sprite1._positionX = 20;
@@ -297,9 +297,8 @@ QUnit.test("checkSpriteCollision", function (assert) {
         sprite1._positionY = -5;
         test = cm.checkSpriteCollision(sprite1Id, sprite2Id);
         assert.deepEqual(test, true, "Collision Bottom Look2");
-        
-            done();
-    }
 
+        done();
+    }
 
 });
