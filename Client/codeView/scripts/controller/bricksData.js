@@ -80,7 +80,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'to_label' // todo ??
+                        i18n: 'by_label' // todo ??
                     },
                     {
                         type: 'formula',

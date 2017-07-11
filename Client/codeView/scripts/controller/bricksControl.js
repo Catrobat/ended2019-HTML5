@@ -24,7 +24,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'nxt_seconds' //todo: plural
+                        i18n: 'nxt_seconds' //todo: plural second_plural
                     }
                 ]
             };
@@ -202,7 +202,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: '' //todo
+                        i18n: '' //todo time_plural
                     }
                 ]
             };

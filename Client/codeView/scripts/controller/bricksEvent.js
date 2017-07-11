@@ -53,7 +53,7 @@ PocketCode.merge({
                 content: [
                     {
                         type: 'text',
-                        i18n: 'brick_when'
+                        i18n: 'brick_when' //todo brick_when_touched
                     }
                 ],
                 endContent: [

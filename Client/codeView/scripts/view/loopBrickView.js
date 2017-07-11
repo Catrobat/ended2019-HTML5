@@ -10,7 +10,7 @@ PocketCode.View.LoopBrickView = (function(){
     LoopBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function LoopBrickView(commentedOut, content) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content); //todo content -> only content
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);
 
         this._addContent(content);
 
@@ -38,6 +38,7 @@ PocketCode.View.LoopBrickView = (function(){
             for (var key in content) {
                 if(key != 'content') {
                     PocketCode.View.BaseBrick._createAndAppend(content[key], this); //todo param parent
+                    //todo div in li
                 }
             }
 

@@ -10,7 +10,7 @@ PocketCode.View.IfThenElseBrickView = (function(){
     IfThenElseBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function IfThenElseBrickView(commentedOut, elseVisible, content) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);  //todo content -> only content
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);
 
         this._elseVisible = elseVisible || true;
 

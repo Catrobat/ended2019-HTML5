@@ -74,10 +74,12 @@ PocketCode.View.BaseBrick = (function(){
                         parent._background._appendChild(parent._textNode);
                         break;
                     case 'formula':
-                        //todo button
+                        parent._btnFormula = new PocketCode.Ui.Button(obj.value, { className: 'pc-formulaBtn' });
+                        parent._background._appendChild(parent._btnFormula); //todo: className??
                         break;
                     case 'select':
-                        //todo button
+                        parent._btnSelect = new PocketCode.Ui.Button(obj.value, { className: 'pc-SelectBtn' });
+                        parent._background._appendChild(parent._btnSelect);
                         break;
                 }
             }
