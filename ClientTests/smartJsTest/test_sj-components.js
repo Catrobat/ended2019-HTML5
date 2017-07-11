@@ -1,4 +1,4 @@
-﻿/// <reference path="../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../qunit/qunit-2.1.1.js" />
 /// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-error.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
@@ -59,8 +59,12 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	//var done11 = assert.async();
 
 	
-	var testHandler1 = function () {
+	var testHandler1 = function (e) {
 		assert.ok(true, "constructor + event dispatched");
+
+		var timer = e.target;
+		timer.dispose();
+		assert.ok(timer._disposed, "disposing and recreate");
 		done1();
 	};
 	var testHandler2 = function () {
@@ -73,7 +77,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	};
 
 	var t = new SmartJs.Components.Timer(800, new SmartJs.Event.EventListener(testHandler1, this), true);
-	assert.ok(t instanceof SmartJs.Components.Timer, "instance check");
+	assert.ok(t instanceof SmartJs.Components.Timer && t instanceof SmartJs.Core.Component, "instance check");
 	assert.throws(function () { t = new SmartJs.Components.Timer(800.1, new SmartJs.Event.EventListener(testHandler1, this), true); }, Error, "ERROR: invalid argument: ctr");
 
 	t = new SmartJs.Components.Timer(500, new SmartJs.Event.EventListener(testHandler2, this), true);
@@ -182,7 +186,6 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 
 	//done11();
 
-
 });
 
 
@@ -247,4 +250,156 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
     };
 
 });
+
+
+QUnit.test("SmartJs.Components.StorageAdapter", function (assert) {
+
+    var adapter = new SmartJs.Components.StorageAdapter();
+
+    assert.ok(adapter.onChange instanceof SmartJs.Event.Event, "event check");
+    assert.equal(adapter.supported, false, "getter: supported");
+
+    assert.throws(function () { adapter.getValue(1); }, Error, "ERROR: invalid key on getValue");
+    assert.throws(function () { adapter.getValue("key"); }, Error, "ERROR: unsupported");
+
+    adapter._supported = true;    //override supported for tests
+    assert.equal(adapter.getValue("key"), undefined, "getValue");
+    assert.throws(function () { adapter.setValue("key", 1); }, Error, "ERROR: setValue (not successful");
+
+    var handlerCalled = 0,
+        handler = function (e) {
+            handlerCalled++;
+        };
+    adapter.onChange.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    adapter.deleteKey("key");
+    assert.equal(handlerCalled, 1, "onChange handler called on delete");
+
+    adapter.clear();
+    adapter._supported = false; //setting default
+    assert.throws(function () { adapter.clear(); }, Error, "ERROR: unsupported (on clear)");
+});
+
+
+QUnit.test("SmartJs.Components.CookieAdapter", function (assert) {
+
+    var adapter = new SmartJs.Components.CookieAdapter(25);
+    assert.throws(function () { var a = new SmartJs.Components.CookieAdapter("25"); }, Error, "ERROR: invalid cntr argument");
+
+    var delay = Math.abs(adapter._expires - (new Date().getTime() + 1000 * 60 * 60 * 24 * 25));
+    assert.ok(delay < 10, "set individual expiration date");
+    adapter.clear();    //clear cookie before running the tests
+
+    assert.ok(adapter.onChange instanceof SmartJs.Event.Event, "event check");
+    assert.equal(adapter.supported, true, "getter: supported");
+
+    assert.throws(function () { adapter.getValue(1); }, Error, "ERROR: invalid key on getValue");
+    assert.equal(adapter.getValue("key"), undefined, "key not found: undefined");
+
+    var handlerCalled = 0,
+        handlerEventArgs = undefined,
+        handler = function (e) {
+            handlerCalled++;
+            handlerEventArgs = e;
+        };
+    adapter.onChange.addEventListener(new SmartJs.Event.EventListener(handler, this));
+
+    //set/get
+    adapter.setValue("keyNumber", 12);
+    assert.equal(handlerCalled, 1, "handler called on set value");
+    assert.equal(handlerEventArgs.key, "keyNumber", "handler event args: key");
+    assert.equal(handlerEventArgs.oldValue, undefined, "handler event args: oldValue");
+    assert.equal(handlerEventArgs.newValue, 12, "handler event args: newValue");
+    assert.equal(adapter.getValue("keyNumber"), 12, "setValue/getValue: type number");
+
+    adapter.setValue("keyString", "string");
+    assert.equal(handlerCalled, 2, "handler called on set value");
+    assert.equal(handlerEventArgs.newValue, "string", "handler event args: newValue (string)");
+    assert.equal(adapter.getValue("keyString"), "string", "setValue/getValue: type string");
+
+    adapter.setValue("keyBoolean", true);
+    assert.equal(handlerCalled, 3, "handler called on set value");
+    assert.equal(handlerEventArgs.newValue, true, "handler event args: newValue (boolean)");
+    assert.equal(adapter.getValue("keyBoolean"), true, "setValue/getValue: type boolean");
+
+    adapter.setValue("keyObject", { number: 12, string: "string", object: { nested: false } });
+    assert.equal(handlerCalled, 4, "handler called on set value");
+    assert.deepEqual(handlerEventArgs.newValue, { number: 12, string: "string", object: { nested: false } }, "handler event args: newValue (object)");
+    assert.deepEqual(adapter.getValue("keyObject"), { number: 12, string: "string", object: { nested: false } }, "setValue/getValue: type object");
+
+    //change
+    adapter.setValue("keyObject", false);
+    assert.equal(handlerCalled, 5, "handler called on set value");
+    assert.deepEqual(handlerEventArgs.oldValue, { number: 12, string: "string", object: { nested: false } }, "handler event args: oldValue (change)");
+    assert.equal(handlerEventArgs.newValue, false, "handler event args: oldValue (change)");
+    assert.equal(adapter.getValue("keyObject"), false, "setValue/getValue: change");
+
+    //delete
+    handlerCalled = 0;
+    adapter.deleteKey("key");
+    assert.equal(handlerCalled, 1, "onChange handler called on delete");
+
+    adapter.clear();
+    assert.equal(handlerCalled, 5, "onChange handler called on clear");
+});
+
+
+QUnit.test("SmartJs.Components.LocalStorageAdapter", function (assert) {
+
+    var adapter = new SmartJs.Components.LocalStorageAdapter();
+    adapter.clear();    //clear cookie before running the tests
+
+    assert.ok(adapter.onChange instanceof SmartJs.Event.Event, "event check");
+    assert.equal(adapter.supported, true, "getter: supported");
+
+    assert.throws(function () { adapter.getValue(1); }, Error, "ERROR: invalid key on getValue");
+    assert.equal(adapter.getValue("key"), undefined, "key not found: undefined");
+
+    var handlerCalled = 0,
+        handlerEventArgs = undefined,
+        handler = function (e) {
+            handlerCalled++;
+            handlerEventArgs = e;
+        };
+    adapter.onChange.addEventListener(new SmartJs.Event.EventListener(handler, this));
+
+    //set/get
+    adapter.setValue("keyNumber", 12);
+    assert.equal(handlerCalled, 1, "handler called on set value");
+    assert.equal(handlerEventArgs.key, "keyNumber", "handler event args: key");
+    assert.equal(handlerEventArgs.oldValue, undefined, "handler event args: oldValue");
+    assert.equal(handlerEventArgs.newValue, 12, "handler event args: newValue");
+    assert.equal(adapter.getValue("keyNumber"), 12, "setValue/getValue: type number");
+
+    adapter.setValue("keyString", "string");
+    assert.equal(handlerCalled, 2, "handler called on set value");
+    assert.equal(handlerEventArgs.newValue, "string", "handler event args: newValue (string)");
+    assert.equal(adapter.getValue("keyString"), "string", "setValue/getValue: type string");
+
+    adapter.setValue("keyBoolean", true);
+    assert.equal(handlerCalled, 3, "handler called on set value");
+    assert.equal(handlerEventArgs.newValue, true, "handler event args: newValue (boolean)");
+    assert.equal(adapter.getValue("keyBoolean"), true, "setValue/getValue: type boolean");
+
+    adapter.setValue("keyObject", { number: 12, string: "string", object: { nested: false } });
+    assert.equal(handlerCalled, 4, "handler called on set value");
+    assert.deepEqual(handlerEventArgs.newValue, { number: 12, string: "string", object: { nested: false } }, "handler event args: newValue (object)");
+    assert.deepEqual(adapter.getValue("keyObject"), { number: 12, string: "string", object: { nested: false } }, "setValue/getValue: type object");
+
+    //change
+    adapter.setValue("keyObject", false);
+    assert.equal(handlerCalled, 5, "handler called on set value");
+    assert.deepEqual(handlerEventArgs.oldValue, { number: 12, string: "string", object: { nested: false } }, "handler event args: oldValue (change)");
+    assert.equal(handlerEventArgs.newValue, false, "handler event args: oldValue (change)");
+    assert.equal(adapter.getValue("keyObject"), false, "setValue/getValue: change");
+
+    //delete
+    handlerCalled = 0;
+    adapter.deleteKey("key");
+    assert.equal(handlerCalled, 1, "onChange handler called on delete");
+
+    adapter.clear();
+    assert.equal(handlerCalled, 5, "onChange handler called on clear");
+
+});
+
 

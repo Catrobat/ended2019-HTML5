@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/player/scripts/playerApplication.js" />
 'use strict';
 

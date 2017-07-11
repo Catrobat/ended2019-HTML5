@@ -110,6 +110,7 @@ PocketCode.Ui.MenuItem = (function () {
 })();
 
 /*
+
 PocketCode.Ui.SubMenu = (function () {
     SubMenu.extends(SmartJs.Ui.ContainerControl, false);
 
@@ -117,6 +118,17 @@ PocketCode.Ui.SubMenu = (function () {
     //cntr
     function SubMenu() {
         SmartJs.Ui.ContainerControl.call(this, { className: 'pc-topElement2' });
+
+        this._subMenu = new SmartJs.Ui.ContainerControl({ className: 'pc-subMenu' });
+        this._subMenu.show();   //default
+        this._appendChild(this._subMenu);
+        this._container = new PocketCode.Ui.ScrollContainer();
+        this._subMenu.appendChild(this._container);
+
+        //events
+        this._onMenuAction = new SmartJs.Event.Event(this);
+        this._onOpen = new SmartJs.Event.Event(this);
+        /*
 
         this._states = {
             CLOSED: 'open',
@@ -143,6 +155,35 @@ PocketCode.Ui.SubMenu = (function () {
         //this._dom = test;
 
     }
+
+    //methods
+    SubMenu.prototype.merge({
+        _openCloseHandler: function (e) {
+            if (this._subMenu.hidden) {
+                this._subMenu.show();
+                this.verifyResize();
+                //this._menuButton.addClassName('pc-menuButtonOpened');
+                this._onOpen.dispatchEvent();
+            } else {
+                this.close();
+            }
+        },
+        close: function (e) {
+            this._subMenu.hide();
+            //this._menuButton.removeClassName('pc-menuButtonOpened');
+        },
+
+        verifyResize: function () {
+            if (!this._subMenu) //called during constructor call
+                return;
+            var clientRect = this._subMenu.clientRect,
+              parentHeight = this._parent ? this._parent.height : document.body.clientHeight;
+            this._container.style.maxHeight = (parentHeight - clientRect.top - 10) + 'px';
+
+            SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
+            this._container.verifyResize();
+        },
+    });
 
     return SubMenu;
 })();

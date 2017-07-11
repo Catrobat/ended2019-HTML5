@@ -18,34 +18,65 @@ PocketCode.Model.merge({
 
             //we need a prototype object storing all procedure arguments to call fomula.toString(this._uvhPrototype)
             //otherwide we are not able to show a formula including (variable) argument names
-            this._uvhPrototype = new PocketCode.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
+            //this._uvh = { prototype: new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite) }; //TODO: make sure sprite keeps the same and doesn't vary per call
 
             //this._onStart = startEvent;
             //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         UserScriptBrick.prototype.merge({
-            dispose: function () {
-                //this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
-                //this._onStart = undefined;  //make sure to disconnect from gameEngine
-                PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+            execute: function (onExecutedListener, threadId, sprite) {
+                if (this._disposed)
+                    return;
+                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+                    throw new Error('UserScriptBrick (ThreadedBrick): missing or invalid arguments on execute()');
+
+                sprite = sprite || this._sprite;
+                var id = SmartJs.getNewId(),
+                    uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);  // new this.uvh();
+                //TODO: init variables
+
+                this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
+                //if (this._commentedOut === true)  //user scripts cannot be commented out
+                //    return this._return(id, false);
+
+                //this._execute(id);
+
+                this._executionState = PocketCode.ExecutionState.RUNNING;   //TODO make sure all instances are STOPPED
+                PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
+                    if (Object.keys(this._pendingOps).length > 0) {
+                        this._executionState = PocketCode.ExecutionState.STOPPED;
+                        this._onExecuted.dispatchEvent();
+                    }
+                    this._return(e.id, e.loopDelay);    //TODO: ??
+                }, this), id, uvh);
             },
+            stopThread: function(threadId) {
+                //TODO
+            },
+            //stop: function () {
+            //    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+            //    this._executionState = PocketCode.ExecutionState.STOPPED;
+            //},
+            //dispose: function () {
+            //    //this._onStart.removeEventListener(new SmartJs.Event.EventListener(this.execute, this));
+            //    //this._onStart = undefined;  //make sure to disconnect from gameEngine
+            //    PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+            //},
         });
 
         return UserScriptBrick;
     })(),
 
 
-    CallUserScriptBrick: (function () {
+    CallUserScriptBrick: (function () { //TODO make sure a script called can be canceled/stopped if the calling script gets stopped
         CallUserScriptBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function CallUserScriptBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite);
+            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
-            //this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            //this._y = new PocketCode.Formula(device, sprite, propObject.y);
-            //this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-            //this._paused = false;
+            //get user script by id
+            //this._userScript = 
         }
 
         CallUserScriptBrick.prototype.merge({
@@ -57,66 +88,21 @@ PocketCode.Model.merge({
                 this._return(callId, true); //TODO: is this method really necessary??? inheritace???
             },
             _execute: function (callId) {
-                //var sprite = this._sprite;
-                //var po = this._pendingOps[callId];
-                //po.paused = this._paused;
-                //var duration = this._duration.calculate(),
-				//	x = this._x.calculate(),
-				//	y = this._y.calculate();
-                //if (isNaN(duration)) {
-                //    if (!isNaN(x) && !isNaN(y))
-                //        this._updatePositionHandler({ value: { x: x, y: y } });
-                //    this._returnHandler({ callId: callId });
-                //    return;
-                //}
 
-                //var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
-                //animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                //animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._returnHandler, this));
-                //po.animation = animation;
-                //animation.start({ callId: callId });
-                //if (this._paused)
-                //    animation.pause();
+                //this._userScript.execute(..) //always include this._sprite in case user bricks are moved (defined in sprite right now)
+                
 
-                this._returnHandler({ callId: callId });
+                //this._returnHandler({ callId: callId });
             },
             pause: function () {
-                //this._paused = true;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.animation)
-                //        po.animation.pause();
-                //    po.paused = true;
-                //}
+                //pause user script thread
             },
             resume: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.paused) {
-                //        po.paused = false;
-                //        if (po.animation)
-                //            po.animation.resume();
-                //    }
-                //}
+                //resume user script thread
             },
-            stop: function () {
-                //this._paused = false;
-                //var po, pos = this._pendingOps;
-                //for (var p in pos) {
-                //    if (!pos.hasOwnProperty(p))
-                //        continue;
-                //    po = pos[p];
-                //    if (po.animation)
-                //        po.animation.stop();
-                //}
-                //this._pendingOps = {};
+            stop: function () { //TODO: 
+                //stop user script thread
+                //call super
             },
         });
 
