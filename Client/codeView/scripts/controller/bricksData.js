@@ -34,7 +34,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'to_label' // todo ??
+                        i18n: 'to_label'
                     },
                     {
                         type: 'formula',
@@ -80,7 +80,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'by_label' // todo ??
+                        i18n: 'by_label'
                     },
                     {
                         type: 'formula',

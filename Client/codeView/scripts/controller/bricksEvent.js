@@ -28,7 +28,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end' //todo (bei allen bricks)
+                        i18n: ''
                     }
                 ]
             };
@@ -59,7 +59,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -98,7 +98,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -137,7 +137,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -176,7 +176,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -216,7 +216,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -255,7 +255,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -294,7 +294,7 @@ PocketCode.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
@@ -326,12 +326,12 @@ PocketCode.Model.merge({
                 endContent: [
                     {
                         type: 'text',
-                        i18n: 'brick_loop_end'
+                        i18n: ''
                     }
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content); //todo: controlBrick oder EventBrick?
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 

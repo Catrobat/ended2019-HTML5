@@ -24,11 +24,8 @@ PocketCode.View.BaseBrick = (function(){
         this._brickType = type;
         this._commentedOut = commentedOut;
 
-        for (var key in content) {
-            if(key == 'content') { //todo: falsche abfrge?
-                this._createAndAppend(content[key], this); //todo param parent???
-            }
-        }
+        this._createAndAppend(content.content, this);
+
         this._drawBackground();
     }
 
@@ -58,11 +55,10 @@ PocketCode.View.BaseBrick = (function(){
         _createAndAppend: function(content, parent) {
 
             parent._background = new SmartJs.Ui.ContainerControl({className : 'pc-brickBgContainer'}); //position: absolute
-            parent.appendChild(parent._background);
+            parent._appendChild(parent._background);
 
-            //todo change content parse
-            for (var key in content) {
-                var obj = content[key];
+            for (var i = 0, l= content.length; i < l; i++) {
+                var obj = content[i];
 
                 switch (obj.type) {
                     case 'text':
@@ -74,12 +70,10 @@ PocketCode.View.BaseBrick = (function(){
                         parent._background._appendChild(parent._textNode);
                         break;
                     case 'formula':
-                        parent._btnFormula = new PocketCode.Ui.Button(obj.value, { className: 'pc-formulaBtn' });
-                        parent._background._appendChild(parent._btnFormula); //todo: className??
+                        //todo
                         break;
                     case 'select':
-                        parent._btnSelect = new PocketCode.Ui.Button(obj.value, { className: 'pc-SelectBtn' });
-                        parent._background._appendChild(parent._btnSelect);
+                        //todo
                         break;
                 }
             }
@@ -87,4 +81,4 @@ PocketCode.View.BaseBrick = (function(){
     });
 
     return BaseBrick;
-});
+})();
