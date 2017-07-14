@@ -70,10 +70,12 @@ PocketCode.View.BaseBrick = (function(){
                         parent._background._appendChild(parent._textNode);
                         break;
                     case 'formula':
-                        //todo
+                        parent._formula = new PocketCode.brickFormula(obj.value);
+                        parent._background._appendChild(parent._formula);
                         break;
                     case 'select':
-                        //todo
+                        parent._select = new PocketCode.brickSelect(obj.value);
+                        parent._background._appendChild(parent._select);
                         break;
                 }
             }

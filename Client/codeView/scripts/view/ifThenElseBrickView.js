@@ -10,7 +10,7 @@ PocketCode.View.IfThenElseBrickView = (function(){
     IfThenElseBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function IfThenElseBrickView(commentedOut, elseVisible, content) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content.content);
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);
 
         this._elseVisible = elseVisible || true;
 
@@ -46,15 +46,15 @@ PocketCode.View.IfThenElseBrickView = (function(){
             this._ifBricks = new SmartJs.Ui.Control('ul', {className: ''});
             this._appendChild(this._ifBricks);
 
-            PocketCode.View.BaseBrick._createAndAppend(content.elseContent, this);
+            //this._createAndAppend(content.elseContent, this);
+            this._createAndAppend(content.elseContent, this);
 
             this._elseBricks = new SmartJs.Ui.Control('ul', {className: ''});
             this._appendChild(this._elseBricks);
 
-            PocketCode.View.BaseBrick._createAndAppend(content.endContent, this);
-
+            this._createAndAppend(content.endContent, this);
         }
     });
 
     return IfThenElseBrickView;
-});
+})();

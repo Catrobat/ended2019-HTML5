@@ -4,7 +4,7 @@ PocketCode.View.EventBrickView = (function(){
     EventBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function EventBrickView(commentedOut, content) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.EVENT, commentedOut, content.content);
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.EVENT, commentedOut, content);
 
         this._addContent(content);
 
@@ -29,10 +29,10 @@ PocketCode.View.EventBrickView = (function(){
             this._bricks = new SmartJs.Ui.Control('ul', {className: ''});
             this._appendChild(this._bricks);
 
-            PocketCode.View.BaseBrick._createAndAppend(content.endContent, this);
+            this._createAndAppend(content.endContent, this);
 
         }
     });
 
     return EventBrickView;
-});
+})();
