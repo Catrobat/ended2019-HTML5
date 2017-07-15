@@ -7,110 +7,161 @@
 PocketCode.Model.merge({
 
     PenDownBrick: (function () {
-        PenDownBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function PenDownBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        PenDownBrick.extends(PocketCode.BaseBrick, false);
+        function PenDownBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.PenDownBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_pen_down'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        PenDownBrick.prototype._execute = function () {
-            this._sprite.penDown = true;
-            this._return(false);
-        };
-
         return PenDownBrick;
     })(),
 
     PenUpBrick: (function () {
-        PenUpBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function PenUpBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        PenUpBrick.extends(PocketCode.BaseBrick, false);
+        function PenUpBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.PenUpBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_pen_up'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        PenUpBrick.prototype._execute = function () {
-            this._sprite.penDown = false;
-            this._return(false);
-        };
-
         return PenUpBrick;
     })(),
 
     SetPenSizeBrick: (function () {
-        SetPenSizeBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetPenSizeBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._penSize = new PocketCode.Formula(device, sprite, propObject.size);
+        SetPenSizeBrick.extends(PocketCode.BaseBrick, false);
+        function SetPenSizeBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetPenSizeBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_pen_size'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetPenSizeBrick' + PocketCode.SetPenSizeBrick.content[1].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetPenSizeBrick.prototype._execute = function (scope) {
-            var penSize = this._penSize.calculate(scope);
-            if (!isNaN(penSize))
-                this._sprite.penSize = penSize;
-            this._return(false);
-        };
-
         return SetPenSizeBrick;
     })(),
 
     SetPenColorBrick: (function () {
-        SetPenColorBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetPenColorBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._r = new PocketCode.Formula(device, sprite, propObject.r);
-            this._g = new PocketCode.Formula(device, sprite, propObject.g);
-            this._b = new PocketCode.Formula(device, sprite, propObject.b);
+        SetPenColorBrick.extends(PocketCode.BaseBrick, false);
+        function SetPenColorBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetPenColorBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_pen_color'
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'color_red'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[3].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'color_green'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'color_blue'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[7].id,
+                        value: ''
+                    },
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetPenColorBrick.prototype._execute = function (scope) {
-            var r = this._r.calculate(scope),
-                g = this._g.calculate(scope),
-                b = this._b.calculate(scope);
-            if (!isNaN(r) && !isNaN(g) && !isNaN(b))
-                this._sprite.penColor = { r: r, g: g, b: b };
-
-            this._return(false);
-        };
-
         return SetPenColorBrick;
     })(),
 
     StampBrick: (function () {
-        StampBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function StampBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+        StampBrick.extends(PocketCode.BaseBrick, false);
+        function StampBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.StampBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_stamp'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        StampBrick.prototype._execute = function () {
-            this._return(this._sprite.drawStamp());
-        };
-
         return StampBrick;
     })(),
 
     ClearBackgroundBrick: (function () {
-        ClearBackgroundBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ClearBackgroundBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
+        ClearBackgroundBrick.extends(PocketCode.BaseBrick, false);
+        function ClearBackgroundBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ClearBackgroundBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_wipe_painted_away'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.PEN, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ClearBackgroundBrick.prototype.merge({
-            _execute: function () {
-                this._return(this._scene.clearPenStampBackground());
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
         return ClearBackgroundBrick;
     })(),
 

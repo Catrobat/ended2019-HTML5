@@ -88,8 +88,15 @@ PocketCode.I18nProvider = (function (propObject) {
             "brick_insert_item_into_userlist_into_list":"into list",
             "brick_insert_item_into_userlist_at_position":"at position",
             "brick_replace_item_in_userlist_replace_in_list":"Replace item in list",
-            "brick_replace_item_in_userlist_item_at_index":"at position",
-            "brick_replace_item_in_userlist_with_value":"with",
+            "brick_replace_item_in_userlist_item_at_index":"at position ",
+            "brick_replace_item_in_userlist_with_value":"with ",
+            "brick_ask_and_save_entered_value":"and save the entered",
+            "brick_change_ghost_effect_by":"Change transparency by ",
+            "brick_set_brightness_to":"set brightness to ",
+            "brick_change_brightness_by":"Change brightness by ",
+            "brick_set_color_to":"Set color to ",
+            "brick_change_color_by":"Change color by ",
+            "brick_wipe_painted_away":"Wipe painted away"
 
         };  
 

@@ -10,659 +10,789 @@
 PocketCode.Model.merge({
 
     GoToPositionBrick: (function () {
-        GoToPositionBrick.extends(PocketCode.Model.BaseBrick, false);
+        GoToPositionBrick.extends(PocketCode.BaseBrick, false);
+        function GoToPositionBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.GoToPositionBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_go_to'
+                    },
+                    {
+                        type: 'lf' //line feed
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'x_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[3].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'y_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[5].id,
+                        value: ''
+                    }
+                ]
+            };
 
-        function GoToPositionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        GoToPositionBrick.prototype._execute = function (scope) {
-            var x = this._x.calculate(scope),
-                y = this._y.calculate(scope);
-            if (isNaN(x) || isNaN(y))
-                this._return(false);
-            else
-                this._return(this._sprite.setPosition(x, y));
-        };
-
         return GoToPositionBrick;
     })(),
 
     SetXBrick: (function () {
-        SetXBrick.extends(PocketCode.Model.BaseBrick, false);
+        SetXBrick.extends(PocketCode.BaseBrick, false);
+        function SetXBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetXBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_x'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetXBrick' + PocketCode.SetXBrick.content[1].id,
+                        value: ''
+                    }
+                ]
+            };
 
-        function SetXBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._x = new PocketCode.Formula(device, sprite, propObject.value);
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetXBrick.prototype._execute = function (scope) {
-            var x = this._x.calculate(scope);
-            if (isNaN(x))
-                this._return(false);
-            else
-                this._return(this._sprite.setPositionX(x));
-        };
-
         return SetXBrick;
     })(),
 
     SetYBrick: (function () {
-        SetYBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetYBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._y = new PocketCode.Formula(device, sprite, propObject.value);
+        SetYBrick.extends(PocketCode.BaseBrick, false);
+        function SetYBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetYBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_y'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetYBrick' + PocketCode.SetYBrick.content[1].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetYBrick.prototype._execute = function (scope) {
-            var y = this._y.calculate(scope);
-            if (isNaN(y))
-                this._return(false);
-            else
-                this._return(this._sprite.setPositionY(y));
-        };
-
         return SetYBrick;
     })(),
 
     ChangeXBrick: (function () {
-        ChangeXBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ChangeXBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._x = new PocketCode.Formula(device, sprite, propObject.value);
+        ChangeXBrick.extends(PocketCode.BaseBrick, false);
+        function ChangeXBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ChangeXBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_change_x_by'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'ChangeXBrick' + PocketCode.ChangeXBrick.content[1].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ChangeXBrick.prototype._execute = function (scope) {
-            var x = this._x.calculate(scope);
-            if (isNaN(x))
-                this._return(false);
-            else
-                this._return(this._sprite.changePositionX(x));
-        };
-
         return ChangeXBrick;
     })(),
 
     ChangeYBrick: (function () {
-        ChangeYBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ChangeYBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._y = new PocketCode.Formula(device, sprite, propObject.value);
+        ChangeYBrick.extends(PocketCode.BaseBrick, false);
+        function ChangeYBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ChangeYBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_change_y_by'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'ChangeYBrick' + PocketCode.ChangeYBrick.content[1].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ChangeYBrick.prototype._execute = function (scope) {
-            var y = this._y.calculate(scope);
-            if (isNaN(y))
-                this._return(false);
-            else
-                this._return(this._sprite.changePositionY(y));
-        };
-
         return ChangeYBrick;
     })(),
 
     SetRotionStyleBrick: (function () {
-        SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetRotionStyleBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            if (!propObject)
-                this._style = PocketCode.RotationStyle.ALL_AROUND;
-            else
-                switch (propObject.selected) {  //{ 0: left-right, 1: all around, 2: don't rotate }
-                    case 0:
-                        this._style = PocketCode.RotationStyle.LEFT_TO_RIGHT;
-                        break;
-                    case 2:
-                        this._style = PocketCode.RotationStyle.DO_NOT_ROTATE;
-                        break;
-                    default:
-                        this._style = PocketCode.RotationStyle.ALL_AROUND;
-                        break;
-                }
+        SetRotionStyleBrick.extends(PocketCode.BaseBrick, false);
+        function SetRotionStyleBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetRotionStyleBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_rotation_style'
+                    },
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(),
+                        name: 'SetRotionStyleBrick' + PocketCode.SetRotionStyleBrick.content[2].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetRotionStyleBrick.prototype._execute = function () {
-            this._return(this._sprite.setRotationStyle(this._style));
-        };
-
         return SetRotionStyleBrick;
     })(),
 
-    GoToType: {
-        POINTER: 1,
-        RANDOM: 2,
-        SPRITE: 3
-    },
 
     GoToBrick: (function () {
-        GoToBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function GoToBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-
-            // this._gameEngine = gameEngine;
-            this._scene = scene;
-            this._destinationSpriteId = propObject.spriteId;
-            switch (propObject.destinationType) {
-                case 'pointer':
-                    this._type = PocketCode.Model.GoToType.POINTER;
-                    break;
-                case 'random':
-                    this._type = PocketCode.Model.GoToType.RANDOM;
-                    break;
-                case 'sprite':
-                    this._type = PocketCode.Model.GoToType.SPRITE;
-                    break;
+        GoToBrick.extends(PocketCode.BaseBrick, false);
+        function GoToBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.GoToBrick)) {
+                throw new Error("Invalid argument Model");
             }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_go_to'
+                    },
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(),
+                        name: 'GoToBrick' + PocketCode.GoToBrick.content[2].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        GoToBrick.prototype.merge({
-            _execute: function () {
-                this._return(this._scene.setSpritePosition(this._sprite.id, this._type, this._destinationSpriteId));
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
         return GoToBrick;
     })(),
 
-    IfOnEdgeBounceBrick: (function () {
-        IfOnEdgeBounceBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function IfOnEdgeBounceBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
+    IfOnEdgeBounceBrick: (function () { //Pralle vom Rand ab
+        IfOnEdgeBounceBrick.extends(PocketCode.BaseBrick, false);
+        function IfOnEdgeBounceBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.IfOnEdgeBounceBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_if_on_edge_bounce'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        IfOnEdgeBounceBrick.prototype._execute = function () {
-            this._return(this._sprite.ifOnEdgeBounce());
-        };
-
         return IfOnEdgeBounceBrick;
     })(),
 
     MoveNStepsBrick: (function () {
-        MoveNStepsBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function MoveNStepsBrick(device, sprite, minLoopCycleTime, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._minLoopCycleTime = minLoopCycleTime || 20;
-            this._steps = new PocketCode.Formula(device, sprite, propObject.steps);
-        }
-
-        MoveNStepsBrick.prototype._execute = function (scope) {
-            var val = this._steps.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else {
-                this._return(this._sprite.move(val, val / this._minLoopCycleTime));
+        MoveNStepsBrick.extends(PocketCode.BaseBrick, false);
+        function MoveNStepsBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.MoveNStepsBrick)) {
+                throw new Error("Invalid argument Model");
             }
-        };
-
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_move'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'MoveNStepsBrick' + PocketCode.MoveNStepsBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_move_n_step_plural'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
         return MoveNStepsBrick;
     })(),
 
     TurnLeftBrick: (function () {
-        TurnLeftBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function TurnLeftBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+        TurnLeftBrick.extends(PocketCode.BaseBrick, false);
+        function TurnLeftBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.TurnLeftBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_turn_left'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'TurnLeftBrick' + PocketCode.TurnLeftBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'degrees'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        TurnLeftBrick.prototype._execute = function (scope) {
-            var val = this._degrees.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else
-                this._return(this._sprite.turnLeft(val));
-        };
-
         return TurnLeftBrick;
     })(),
 
     TurnRightBrick: (function () {
-        TurnRightBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function TurnRightBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+        TurnRightBrick.extends(PocketCode.BaseBrick, false);
+        function TurnRightBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.TurnRightBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_turn_right'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'TurnRightBrick' + PocketCode.TurnRightBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'degrees'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        TurnRightBrick.prototype._execute = function (scope) {
-            var val = this._degrees.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else
-                this._return(this._sprite.turnRight(val));
-        };
-
         return TurnRightBrick;
     })(),
 
     SetDirectionBrick: (function () {
-        SetDirectionBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetDirectionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degrees = new PocketCode.Formula(device, sprite, propObject.degrees);
+        SetDirectionBrick.extends(PocketCode.BaseBrick, false);
+        function SetDirectionBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetDirectionBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_point_in_direction'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetDirectionBrick' + PocketCode.SetDirectionBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'degrees'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetDirectionBrick.prototype._execute = function (scope) {
-            var val = this._degrees.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else
-                this._return(this._sprite.setDirection(val));
-        };
-
         return SetDirectionBrick;
     })(),
 
     SetDirectionToBrick: (function () {
-        SetDirectionToBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetDirectionToBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._spriteId = propObject.spriteId;
+        SetDirectionToBrick.extends(PocketCode.BaseBrick, false);
+        function SetDirectionToBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetDirectionToBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_point_to'
+                    },
+                    {
+                        type: 'lf'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetDirectionToBrick' + PocketCode.SetDirectionToBrick.content[2].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetDirectionToBrick.prototype._execute = function () {
-            this._return(this._sprite.SetDirectionTo(this._spriteId));
-        };
-
         return SetDirectionToBrick;
     })(),
 
-    GlideToBrick: (function () {
-        GlideToBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function GlideToBrick(device, sprite, propObject) {
-            PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
-
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
-            this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-            this._velocity = 0; //initial
-        }
-
-        GlideToBrick.prototype.merge({
-            _updatePositionHandler: function (e) {
-                this._sprite.setPosition(e.value.x, e.value.y, true, this._pendingOps[this._callId].cancelCallback, this._velocity);
-            },
-            //_returnHandler: function (e) {
-            //    //var callId = e.callId;
-            //    this._return(e.callId, true);
-            //},
-            _cancel: function (id) {
-                var po = this._pendingOps[id];
-                if (!po)    //make sure a internaly canceled op does not get canceled again from sprite callback
-                    return;
-                po.animation.stop();
-                this._return(id, false);
-            },
-            _execute: function (id, scope) {
-                this._callId = id;  //in this brick there can only be one active animation
-                var sprite = this._sprite;
-
-                var po;
-                //terminate pending ops to avoid conflicts
-                for (var p in this._pendingOps)
-                    if (p != id)
-                        this._cancel(p);
-
-                po = this._pendingOps[id];
-                po.cancelCallback = this._cancel.bind(this, id);    //make sure callback is only created once per animation
-                //po.paused = this._paused;
-                var duration = this._duration.calculate(scope),
-                    x = this._x.calculate(scope),
-                    y = this._y.calculate(scope);
-                if (isNaN(duration)) {
-                    if (!isNaN(x) && !isNaN(y)) {
-                        this._updatePositionHandler({ value: { x: x, y: y } });
-                        this._return(id, true);
+    GlideToBrick: (function () { //Gleite 1 Sekunde zu X: .. Y: ...
+        GlideToBrick.extends(PocketCode.BaseBrick, false);
+        function GlideToBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.GlideToBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_glide'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'second_plural'
+                    },
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_glide_to_x'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'y_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[7].id,
+                        value: ''
                     }
-                    else
-                        this._return(id, false);
-                    return;
-                }
-
-                var dx = Math.abs(x - sprite.positionX),
-                    dy = Math.abs(y - sprite.positionY);
-                this._velocity = Math.sqrt(dx * dx + dy * dy) / duration;
-
-                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
-                animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true)));
-                po.animation = animation;
-                animation.start();//{ callId: id });
-                if (this._paused)
-                    animation.pause();
-            },
-            pause: function () {
-                var po, pos = this._pendingOps;
-                for (var id in pos) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
-                    po = pos[id];
-                    if (po.animation)
-                        po.animation.pause();
-                    //po.paused = true;
-                }
-                PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
-            },
-            resume: function () {
-                var po, pos = this._pendingOps;
-                for (var id in pos) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
-                    po = pos[id];
-                    //if (po.paused) {
-                    //    po.paused = false;
-                        if (po.animation)
-                            po.animation.resume();
-                    //}
-                }
-                PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
-            },
-            stop: function () {
-                var po, pos = this._pendingOps;
-                for (var id in pos) {
-                    //if (!pos.hasOwnProperty(p))
-                    //    continue;
-                    po = pos[id];
-                    if (po.animation)
-                        po.animation.stop();
-                }
-                PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
-            },
-        });
-
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
         return GlideToBrick;
     })(),
 
     GoBackBrick: (function () {
-        GoBackBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function GoBackBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._layers = new PocketCode.Formula(device, sprite, propObject.layers);
+        GoBackBrick.extends(PocketCode.BaseBrick, false);
+        function GoBackBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.GoBackBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_go_back'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'GoBackBrick' + PocketCode.GoBackBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_go_back_layer_plural'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        GoBackBrick.prototype._execute = function (scope) {
-            var val = this._layers.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else
-                this._return(this._sprite.goBack(val));
-        };
-
         return GoBackBrick;
     })(),
 
     ComeToFrontBrick: (function () {
-        ComeToFrontBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function ComeToFrontBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
+        ComeToFrontBrick.extends(PocketCode.BaseBrick, false);
+        function ComeToFrontBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ComeToFrontBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_come_to_front'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        ComeToFrontBrick.prototype._execute = function () {
-            this._return(this._sprite.comeToFront());
-        };
-
         return ComeToFrontBrick;
     })(),
 
     VibrationBrick: (function () {
-        VibrationBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function VibrationBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
-            this._device.vibrate();    //call on ctr to notify our device this feature is in use
+        VibrationBrick.extends(PocketCode.BaseBrick, false);
+        function VibrationBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.VibrationBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_vibration'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'VibrationBrick' + PocketCode.VibrationBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'second_plural'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        VibrationBrick.prototype._execute = function (scope) {
-            var val = this._duration.calculate(scope);
-            if (isNaN(val))
-                this._return(false);
-            else
-                this._return(this._device.vibrate(val));
-        };
-
         return VibrationBrick;
     })(),
 
 
     /* PHYSICS BRICKS */
     SetPhysicsObjectTypeBrick: (function () {
-        SetPhysicsObjectTypeBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetPhysicsObjectTypeBrick(device, sprite, physicsWorld, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-            this._physicsWorld = physicsWorld;
-
-            if (!propObject) {
-                this._physicsType = PocketCode.PhysicsType.NONE;
+        SetPhysicsObjectTypeBrick.extends(PocketCode.BaseBrick, false);
+        function SetPhysicsObjectTypeBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetPhysicsObjectTypeBrick)) {
+                throw new Error("Invalid argument Model");
             }
-            else {
-                switch (propObject.physicsType) {
-                    case 'FIXED':
-                        this._physicsType = PocketCode.PhysicsType.FIXED;
-                        break;
-                    case 'DYNAMIC':
-                        this._physicsType = PocketCode.PhysicsType.DYNAMIC;
-                        break;
-                    default:
-                        this._physicsType = PocketCode.PhysicsType.NONE;
-                        break;
-                }
-            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_physics_object_type'
+                    },
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'select',
+                        id: SmartJs.getNewId(),
+                        name: 'SetPhysicsObjectTypeBrick' + PocketCode.SetPhysicsObjectTypeBrick.content[2].id,
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetPhysicsObjectTypeBrick.prototype.merge({
-            _execute: function () {
-                //TODO:
-                var physicsEnabled = this._physicsType !== PocketCode.PhysicsType.NONE;
-
-                this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
-                this._sprite.physicsType = this._physicsType;
-
-                this._return(false);
-            },
-            dispose: function () {
-                this._physicsWorld = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
         return SetPhysicsObjectTypeBrick;
     })(),
 
     SetVelocityBrick: (function () {
-        SetVelocityBrick.extends(PocketCode.Model.BaseBrick, false);
+        SetVelocityBrick.extends(PocketCode.BaseBrick, false);
+        function SetVelocityBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetVelocityBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_velocity_to'
+                    },
 
-        function SetVelocityBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'x_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[3].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'y_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_velocity_unit'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetVelocityBrick.prototype._execute = function (scope) {
-            var x = this._x.calculate(scope),
-                y = this._y.calculate(scope);
-            if (isNaN(x) || isNaN(y))
-                this._return(false);
-
-            this._sprite.setVelocity(x, y); //TODO: velocity/sek ->direction?
-            this._return(false);
-        };
-
         return SetVelocityBrick;
     })(),
 
     RotationSpeedLeftBrick: (function () {
-        RotationSpeedLeftBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function RotationSpeedLeftBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
+        RotationSpeedLeftBrick.extends(PocketCode.BaseBrick, false);
+        function RotationSpeedLeftBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.RotationSpeedLeftBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_rotate_left'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'RotationSpeedLeftBrick' + PocketCode.RotationSpeedLeftBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_turn_speed_unit'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        RotationSpeedLeftBrick.prototype._execute = function (scope) {
-            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
-
-            if (isNaN(degreesPerSecond))
-                this._return(false);
-
-            this._sprite.turnNDegreePerSecond = -degreesPerSecond;
-            this._return(false);
-        };
-
         return RotationSpeedLeftBrick;
     })(),
 
     RotationSpeedRightBrick: (function () {
-        RotationSpeedRightBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function RotationSpeedRightBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._degreesPerSecond = new PocketCode.Formula(device, sprite, propObject.degreesPerSec);
+        RotationSpeedRightBrick.extends(PocketCode.BaseBrick, false);
+        function RotationSpeedRightBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.RotationSpeedRightBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_rotate_right'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'RotationSpeedRightBrick' + PocketCode.RotationSpeedRightBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_turn_speed_unit'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        RotationSpeedRightBrick.prototype._execute = function (scope) {
-            var degreesPerSecond = this._degreesPerSecond.calculate(scope);
-
-            if (isNaN(degreesPerSecond))
-                this._return(false);
-
-            this._sprite.turnNDegreePerSecond = degreesPerSecond;
-            this._return(false);
-        };
-
         return RotationSpeedRightBrick;
     })(),
 
     SetGravityBrick: (function () {
-        SetGravityBrick.extends(PocketCode.Model.BaseBrick, false);
+        SetGravityBrick.extends(PocketCode.BaseBrick, false);
+        function SetGravityBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetGravityBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_gravity_to'
+                    },
 
-        function SetGravityBrick(device, sprite, scene, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
-            this._x = new PocketCode.Formula(device, sprite, propObject.x);
-            this._y = new PocketCode.Formula(device, sprite, propObject.y);
+                    {
+                        type: 'lf',
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'x_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[3].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'y_label'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[5].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_gravity_unit'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetGravityBrick.prototype.merge({
-            _execute: function (scope) {
-                var x = this._x.calculate(scope),
-                    y = this._y.calculate(scope);
-                if (isNaN(x) || isNaN(y))
-                    this._return(false);
-
-                this._scene.setGravity(x, y);
-                this._return(false);
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
         return SetGravityBrick;
     })(),
 
     SetMassBrick: (function () {
-        SetMassBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetMassBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._mass = new PocketCode.Formula(device, sprite, propObject.value);
+        SetMassBrick.extends(PocketCode.BaseBrick, false);
+        function SetMassBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetMassBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_mass'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetMassBrick' + PocketCode.SetMassBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_mass_unit'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetMassBrick.prototype._execute = function (scope) {
-            var mass = this._mass.calculate(scope);
-
-            if (isNaN(mass))
-                this._return(false);
-
-            this._sprite.mass = mass;
-            this._return(false);
-        };
-
         return SetMassBrick;
     })(),
 
     SetBounceFactorBrick: (function () {
-        SetBounceFactorBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetBounceFactorBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._bounceFactor = new PocketCode.Formula(device, sprite, propObject.percentage);
+        SetBounceFactorBrick.extends(PocketCode.BaseBrick, false);
+        function SetBounceFactorBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetBounceFactorBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_bounce_factor'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetBounceFactorBrick' + PocketCode.SetBounceFactorBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'ev3_tone_percent'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetBounceFactorBrick.prototype._execute = function (scope) {
-            var bounceFactor = this._bounceFactor.calculate(scope);
-
-            if (isNaN(bounceFactor))
-                this._return(false);
-
-            this._sprite.bounceFactor = bounceFactor;
-            this._return(false);
-        };
-
         return SetBounceFactorBrick;
     })(),
 
     SetFrictionBrick: (function () {
-        SetFrictionBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function SetFrictionBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._friction = new PocketCode.Formula(device, sprite, propObject.percentage);
+        SetFrictionBrick.extends(PocketCode.BaseBrick, false);
+        function SetFrictionBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetFrictionBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_friction'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        name: 'SetFrictionBrick' + PocketCode.SetFrictionBrick.content[1].id,
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'ev3_tone_percent'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-
-        SetFrictionBrick.prototype._execute = function (scope) {
-            var friction = this._friction.calculate(scope);
-            if (isNaN(friction))
-                this._return(false);
-
-            this._sprite.friction = friction;
-            this._return(false);
-        };
-
         return SetFrictionBrick;
     })(),
 
