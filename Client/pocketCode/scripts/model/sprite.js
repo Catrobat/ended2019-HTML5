@@ -53,6 +53,8 @@ PocketCode.Model.Sprite = (function () {
         this._brightness = 100.0;
         this._colorEffect = 0.0;
 
+        this._bubbleVisible = false;
+
         //pen
         this._penDown = false;
         this._penSize = 4;
@@ -95,7 +97,7 @@ PocketCode.Model.Sprite = (function () {
     //properties
     Object.defineProperties(Sprite.prototype, {
         renderingVariables: {
-            get: function() {
+            get: function () {
                 return this._getRenderingVariables(this._id);
             },
         },
@@ -427,6 +429,16 @@ PocketCode.Model.Sprite = (function () {
                     if (properties.x || properties.y) { //include sprite positions for pen
                         properties.penX = this._positionX;
                         properties.penY = this._positionY;
+                    }
+                    //add boundaries for bubbles if visible and roation has changed
+                    if (properties.rotation != undefined && this._bubbleVisible) {
+                        var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+                        if (this._currentLook && this._transparency < 100.0) {
+                            var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                            boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                        }
+                        properties.boundary = boundary;
                     }
                     this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
                     return true;
@@ -778,11 +790,12 @@ PocketCode.Model.Sprite = (function () {
             });
         },
         hide: function () {
-            if (!this._visible)
+            if (!this._visible && !this._bubbleVisible)
                 return false;
-
+            
             this._visible = false;
-            return this._triggerOnChange({ visible: false });
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ visible: false, bubble: { visible: false } });
         },
         show: function () {
             if (this._visible)
@@ -1144,15 +1157,20 @@ PocketCode.Model.Sprite = (function () {
 
         showBubble: function (type, text) {
             //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
-            console.log("show");
-
-            var  rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
-                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
-            return this._triggerOnChange({ bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize,  boundary: this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true) } });
+            //console.log("show");
+            this._bubbleVisible = true;
+            var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+            if (this._currentLook && this._transparency < 100.0) {
+                var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+            }
+            return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
         },
         hideBubble: function (type) {
             //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
-            return this._triggerOnChange({ bubble: { type: type, visible: false } });
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ bubble: { visible: false } });
         },
 
         clone: function (device, soundManager, broadcastMgr) {
