@@ -1,3 +1,24 @@
 ﻿li {
     list-style-type: none;
 }
+
+
+.pc-brickFormula {
+    background-color: transparent;
+    border-right: transparent;
+    border-left: transparent;
+    border-top: transparent;
+    border-bottom-color: black;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.pc-brickSelect {
+    background-color: transparent;
+    border-right: transparent;
+    border-left: transparent;
+    border-top: transparent;
+    border-bottom-color: black;
+    margin-left: 2px;
+    margin-right: 2px;
+}

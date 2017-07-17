@@ -24,7 +24,7 @@ PocketCode.View.BaseBrick = (function(){
         this._brickType = type;
         this._commentedOut = commentedOut;
 
-        this._createAndAppend(content.content, this);
+        this._createAndAppend(content.content);
 
         this._drawBackground();
     }
@@ -52,34 +52,34 @@ PocketCode.View.BaseBrick = (function(){
             //use: brickTpe, commentedOut, ...
         },
 
-        _createAndAppend: function(content, parent) {
+        _createAndAppend: function(content) {
 
-            parent._background = new SmartJs.Ui.ContainerControl({className : 'pc-brickBgContainer'}); //position: absolute
-            parent._appendChild(parent._background);
+            this._background = new SmartJs.Ui.ContainerControl({className : 'pc-brickBgContainer'}); //position: absolute
+            this._appendChild(this._background);
 
             for (var i = 0, l= content.length; i < l; i++) {
                 var obj = content[i];
 
                 switch (obj.type) {
                     case 'text':
-                        parent._textNode = new PocketCode.Ui.I18nTextNode(obj.i18n);
-                        parent._background._appendChild(parent._textNode);
+                        this._textNode = new PocketCode.Ui.I18nTextNode(obj.i18n);
+                        this._background._appendChild(this._textNode);
                         break;
                     case 'lf':
-                        parent._textNode = new PocketCode.Ui.I18nTextNode("\n");
-                        parent._background._appendChild(parent._textNode);
+                        this._textNode = new PocketCode.Ui.I18nTextNode("\n");
+                        this._background._appendChild(this._textNode);
                         break;
                     case 'formula':
-                        parent._formula = new PocketCode.brickFormula(obj.value);
-                        parent._background._appendChild(parent._formula);
+                        this._formula = new PocketCode.brickFormula(obj.value);
+                        this._background._appendChild(this._formula);
                         break;
                     case 'select':
-                        parent._select = new PocketCode.brickSelect(obj.value);
-                        parent._background._appendChild(parent._select);
+                        this._select = new PocketCode.brickSelect(obj.value);
+                        this._background._appendChild(this._select);
                         break;
                 }
             }
-        },
+        }
     });
 
     return BaseBrick;

@@ -52,7 +52,7 @@ PocketCode.View.IfThenElseBrickView = (function(){
             this._elseBricks = new SmartJs.Ui.Control('ul', {className: ''});
             this._appendChild(this._elseBricks);
 
-            this._createAndAppend(content.endContent, this);
+            this._createAndAppend(content.endContent);
         }
     });
 

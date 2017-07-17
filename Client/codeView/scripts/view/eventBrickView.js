@@ -29,7 +29,7 @@ PocketCode.View.EventBrickView = (function(){
             this._bricks = new SmartJs.Ui.Control('ul', {className: ''});
             this._appendChild(this._bricks);
 
-            this._createAndAppend(content.endContent, this);
+            this._createAndAppend(content.endContent);
 
         }
     });
