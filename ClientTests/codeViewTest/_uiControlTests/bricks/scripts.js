@@ -38,4 +38,13 @@ window.onload = function () {
     brick = new PocketCode.WhenProgramStartBrick(b, false);
     container._appendChild(brick._view);
 
+
+    b = new PocketCode.Model.CloneBrick("device", "sprite", scene, { spriteId: "23" });
+    brick = new PocketCode.CloneBrick(b, false);
+    container._appendChild(brick._view);
+
+
+    b = new PocketCode.Model.SetVariableBrick("device", "sprite", { resourceId: "var1"});
+    brick = new PocketCode.SetVariableBrick(b, false);
+    container._appendChild(brick._view);
 }
