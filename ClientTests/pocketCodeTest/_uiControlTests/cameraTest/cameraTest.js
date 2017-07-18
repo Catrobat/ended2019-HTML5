@@ -14,6 +14,8 @@ var videoWidth,
     backgroundCtx,
     fdCanvasContainer,
     cycleTime,
+    cameraOn,
+    video,
     device;
 
 window.addEventListener('load', onLoad);
@@ -65,7 +67,7 @@ function onLoad() {
     elem = document.getElementById('cameraSelect');
     elem.addEventListener('change', function (e) {
         camera = parseInt(e.target.value);
-        onCameraSelectChange();
+        onCameraSelectChange(camera);
     });
     camera = parseInt(elem.value);
     document.getElementById('on').addEventListener('click', function (e) {
@@ -96,7 +98,7 @@ function onLoad() {
     });
 
     //device
-    device = new PocketCode.DeviceEmulator();
+    device = new PocketCode.DeviceEmulator(new PocketCode.SoundManager());
     var detected = device.faceDetected; //make sure face detection is initialized
     
     //TODO: device.setSceneSize(videoWidth, videoHeight);    //= set at scene change
@@ -108,16 +110,15 @@ function onVideoSizeChange() {
     device.setSceneSize(videoWidth, videoHeight);
 }
 
-function onCameraSelectChange() {
-
+function onCameraSelectChange(cameraType) {
+    device.setCameraType(cameraType);
 }
 
 function cameraInitHandler(e) {
     var fd = device._features.FACE_DETECTION;
-    if (fd.inUse) {
-        fdCanvasContainer.appendChild(fd._canvas);  //for tests only
+        fdCanvasContainer.appendChild(fd._canvas);
+        fd.start//for tests only
         //fdCanvasContainer.appendChild(fd._haarCanvas);
-    }
 }
 
 var timeout, //to enable debugging I use timouts instead of requestAnimationFrame or interval
@@ -130,19 +131,23 @@ function cameraUsageChangeHandler(e) {
             window.clearTimeout(timeout);
 
         video = e.src;
-        streamWidth = e.width;
-        streamHeight = e.height;
+        streamWidth = video.videoWidth;
+        streamHeight = video.videoHeight;
+        cameraOn = true;
         startRendering();
     }
     else {
-        //stop rendering
+        cameraOn = false;
     }
 }
 
 function startRendering() {
-    backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
-    backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
+    if(cameraOn){
+        backgroundCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
+        backgroundCtx.drawImage(video, 0, 0, streamWidth, streamHeight);
 
-    timeout = window.setTimeout(startRendering, 200);
+        window.requestAnimationFrame(startRendering);
+    }
+
 }
 

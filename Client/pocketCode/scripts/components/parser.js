@@ -179,8 +179,6 @@ PocketCode.merge({
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
 
-                    case 'SelectCameraBrick':
-                    case 'CameraBrick':
 
 
 
@@ -191,6 +189,13 @@ PocketCode.merge({
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
                         //active:
+
+                    case 'SelectCameraBrick':
+                        brick = new PocketCode.Model.SelectCameraBrick(this._device, currentSprite, jsonBrick);
+                        break;
+                    case 'CameraBrick':
+                        brick = new PocketCode.Model.CameraBrick(this._device, currentSprite,this._gameEngine, jsonBrick);
+                        break;
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);

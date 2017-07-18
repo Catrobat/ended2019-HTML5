@@ -243,10 +243,10 @@ PocketCode.merge({
                 value: PocketCode.Ui.BubbleType.SPEECH,
                 writable: true,
             },
-            orientation: {
+           /* orientation: {
                 value: PocketCode.BubbleOrientation.TOPRIGHT,
                 writable: true,
-            },
+            },*/
             offsetX: {
                 get: function () {
                     return this._offsetX;

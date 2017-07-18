@@ -44,6 +44,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
         this._canvas.onTouchEnd.addEventListener(new SmartJs.Event.EventListener(function (e) {
             this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_END }));
         }, this));
+
+        this._onCanvasSizeUpdated = new SmartJs.Event.Event(this);
+
     }
 
     // events
@@ -53,6 +56,11 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 return this._onUserAction;
             }
         },
+        onCanvasSizeUpdated: {
+            get function(){
+                return this._onCanvasSizeUpdated
+            }
+        }
     });
 
     //properties
@@ -127,6 +135,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 cw = Math.ceil(ow * scaling * 0.5) * 2.0,
                 ch = Math.ceil(oh * scaling * 0.5) * 2.0;
             canvas.setDimensions(cw, ch, scaling, scaling);
+            this._onCanvasSizeUpdated.dispatchEvent({width:  cw, height: ch, scaling: scaling });
             //canvas.style.margin = 'auto'
             if (SmartJs.Device.isMobile) {  //canvas != viewport
                 canvas.style.left = Math.floor((w - cw) * 0.5) + 'px';  //including border
@@ -189,10 +198,9 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clearPenStampCache();
         },
         //camera
-        updateCameraUse: function (cameraOn, cameraStream) {    //TODO: params, ...
-            //console.log("camera stream in view:", cameraStream);
-            this._canvas.cameraStream = cameraStream;
-            this._canvas.cameraOn = cameraOn;
+        updateCameraUse: function (e) {    //TODO: params, ...
+            this._canvas.updateCamera(e);
+
         },
         //axes
         showAxes: function () {

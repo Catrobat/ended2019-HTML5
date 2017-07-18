@@ -163,6 +163,19 @@ QUnit.test("PlayerPageController", function (assert) {
     controller._menuActionHandler(param);
     PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler, this));
 
+    var doneCamera = assert.async();
+    var event = { on: true, src: "Hello World"};
+    controller._cameraChangedHandler = function(e){
+        assert.ok(true, "should respond on camera change");
+
+    }
+    controller._playerViewportController.updateCameraUse = function(e){
+        assert.equal(e, event, "passes the correct camera parameters to playerViewportController");
+        doneCamera();
+    }
+    controller._gameEngine.onCameraUsageChange.dispatchEvent(event);
+
+
     //_onUserActionHandler
     var scene2 = new PocketCode.Model.Scene(gameEngine2, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine2, scene2, { id: "spriteId", name: "spriteName" });
@@ -177,6 +190,9 @@ QUnit.test("PlayerPageController", function (assert) {
 
     scene2._onSpriteTappedAction.addEventListener(new SmartJs.Event.EventListener(spriteTapped));
     controller._onUserActionHandler({action: PocketCode.UserActionType.SPRITE_CLICKED, targetId: scene2._sprites[0].id});
+
+
+
 
     //dispose
     function disposed() {

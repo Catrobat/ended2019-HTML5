@@ -200,5 +200,13 @@ QUnit.test("PlayerViewportController", function (assert) {
     controller.clearViewport();
     assert.ok(controller._view._childs.length == child - 1, "clearViewport, child removed");
     assert.ok(controller._view._canvas._currentSceneCache == undefined, "clearViewport, _currentSceneCache undefined");
+
+    var event = { on: true, src:"Hello World"};
+    controller._view.updateCameraUse = function(e){
+        assert.equal(event, e, "passes correct camera paremeters to the view");
+    }
+
+    controller.updateCameraUse(event);
+
 });
 

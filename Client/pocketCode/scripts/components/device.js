@@ -140,10 +140,10 @@ PocketCode.Device = (function () {
             },
         },
         isMobile: {
-            value: SmartJs.Device.isMobile,
+            value: SmartJs.Device.isMobile
         },
         isTouch: {
-            value: SmartJs.Device.isTouch,
+            value: SmartJs.Device.isTouch
         },
         emulationInUse: {
             get: function () {
@@ -154,7 +154,7 @@ PocketCode.Device = (function () {
             get: function () {
                 if (!this.isMobile)
                     return false;
-                var tmp = this._features
+                var tmp = this._features;
                 if (tmp.ACCELERATION.inUse || tmp.COMPASS.inUse || tmp.INCLINATION.inUse)
                     return true;
                 return false;
@@ -169,13 +169,10 @@ PocketCode.Device = (function () {
                         return true;
                 }
                 return false;
-            },
+            }
         },
-        //features: {
-        //    get: function () {
 
-        //    },
-        //},
+
         unsupportedFeatures: {
             get: function () {
                 var unsupported = [], tmp;
@@ -184,9 +181,25 @@ PocketCode.Device = (function () {
                     if (tmp.inUse && !tmp.supported)
                         unsupported.push(tmp.i18nKey);  //return i18nKeys only
                 }
+
                 return unsupported;
-            },
+            }
         },
+
+
+        blockedFeatures: {
+            get: function () {
+                var blocked = [], tmp;
+                for (var f in this._features) {
+                    tmp = this._features[f];
+                    if (tmp.inUse && tmp.blockedByUser)
+                        blocked.push(tmp.i18nKey);  //return i18nKeys only
+                }
+
+                return blocked;
+            }
+        },
+
         accelerationX: {
             get: function () {
                 if (this._deviceMotionListener) { //supported
@@ -425,6 +438,8 @@ PocketCode.Device = (function () {
                 return this._geoLocationData.accuracy;
             },
         },
+
+
     });
 
     //methods
@@ -769,17 +784,7 @@ PocketCode.MediaDevice = (function () {
             PocketCode.Device.prototype.reset.call(this);   //call super()
         },
 
-        //camera
-        setSceneSize: function (width, height) { //TODO: set wehen scene gets loaded: try to set the camera contraints and reload the stream (reinit)
-            //TODO: needed for position/size calculations for face detection too
-            //needed to calculate camera rotation (portrait or landscape project)
 
-            //    var video = this._cameraVideo;
-            //    video.width = width;
-            //    video.height = height;
-            //    if (this._cam.on)
-            //        this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
-        },
         setCameraTransparency: function (value) {
             if (value < 0.0)
                 value = 0.0;
@@ -808,9 +813,9 @@ PocketCode.MediaDevice = (function () {
             //this._fd.start(); - will be started on update event
             return started;
         },
-        stopCamera: function () {   //also called during parsing to set camera inUse
+        stopCamera: function (screenSize) {   //also called during parsing to set camera inUse
             //this._fd.stop(); - will be stopped on update event
-            return this._cam.stop();
+            return this._cam.stop(screenSize);
         },
         disableCamera: function () {    //set by user (dialog) if he/she doesn't want to use the camera
             this._cam.supported = false;    //override
