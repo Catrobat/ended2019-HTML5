@@ -1,0 +1,225 @@
+body {
+    background-color: #04222C;
+    padding: 30px;
+    font-family: sans-serif;
+    line-height: 1;
+    font-size: 15px;
+    font-weight: 500;
+    height: 100%;
+    overflow: hidden;
+    color: #A9DCF1;
+}
+
+.slider {
+    border-radius: 12px;
+    background-color: transparent;
+    min-width: 125px;
+    width: 100%;
+    max-width: 420px;
+
+}
+
+button.accordionMain {
+    background-color: transparent;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: #A9DCF1;
+    cursor: pointer;
+    padding: 0 20px;
+    min-width: 175px;
+    width: 28.15%;
+    max-width: 450px;
+    height: 4%;
+    outline: none;
+    transition: 0.4s;
+    border: 3px solid #17A5B8;
+}
+
+[dir='rtl'] button.accordionMain {
+    left: 0;
+    right: auto;
+}
+
+button.accordionMain.active {
+    background-color: transparent;
+    border-top: 0;
+}
+button.accordionMain:hover {
+    background-color: transparent;
+}
+
+button.accordionMain:after {
+    float: right;
+    content: '<';
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+    width: 20px;
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    bottom: 1px;
+    right: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+[dir='rtl'] button.accordionMain:after {
+    left: 0;
+    right: auto;
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+}
+
+button.accordionMain.active:after {
+    float: right;
+    content: '<';
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+    width: 20px;
+    font: 22px "Consolas", monospace;
+    font-weight: bold;
+    bottom: 1px;
+    right: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+[dir='rtl'] button.accordionMain.active:after {
+    left: 0;
+    right: auto;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+div.accordionSub {
+    position: absolute;
+    bottom: 4%;
+    right: 0;
+    padding: 0 17px;
+    background-color: transparent;
+    min-width: 135px;
+    width: 25.45%;
+    max-width: 420px;
+    display: none;
+    border: 3px solid #17A5B8;
+    border-bottom: 0;
+}
+
+[dir='rtl'] div.accordionSub {
+    left: 0;
+    right: auto;
+}
+
+.logo {
+    min-width: 75px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    padding: 15px;
+}
+
+.container {
+    -webkit-perspective: 300px;
+    perspective: 300px;
+}
+
+input[type=range] {
+    /*removes default webkit styles*/
+    -webkit-appearance: none;
+
+    border-radius: 3px;
+    /*required for proper track sizing in FF*/
+    min-width: 125px;
+    width: 100%;
+    max-width: 420px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    min-width: 125px;
+    width: 100%;
+    max-width: 420px;
+    height: 5px;
+    background: #17A5B8;
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #A9DCF1;
+    margin-top: -4px;
+}
+input[type=range]:focus {
+    outline: none;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #17A5B8;
+}
+
+input[type=range]::-moz-range-track {
+    min-width: 125px;
+    width: 100%;
+    max-width: 420px;
+    height: 5px;
+    background: #17A5B8;
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-moz-range-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #A9DCF1;
+}
+
+input[type=range]:-moz-focusring{
+    outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+input[type=range]:focus::-moz-range-track {
+    background: #ccc;
+}
+
+input[type=range]::-ms-track {
+    min-width: 125px;
+    width: 100%;
+    max-width: 420px;
+    height: 5px;
+    background: transparent;
+    border-color: transparent;
+    border-width: 6px 0;
+    color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+    background: #17A5B8;
+    border-radius: 10px;
+}
+input[type=range]::-ms-fill-upper {
+    background: #17A5B8;
+    border-radius: 10px;
+}
+input[type=range]::-ms-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #A9DCF1;
+}
+input[type=range]:focus::-ms-fill-lower {
+    background: #17A5B8;
+}
+input[type=range]:focus::-ms-fill-upper {
+    background: #17A5B8;
+}
