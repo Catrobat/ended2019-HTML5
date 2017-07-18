@@ -66,8 +66,8 @@ PocketCode.View.BaseBrick = (function(){
                         this._background._appendChild(this._textNode);
                         break;
                     case 'lf':
-                        this._textNode = new PocketCode.Ui.I18nTextNode("\n");
-                        this._background._appendChild(this._textNode);
+                        this._lineFeed = new SmartJs.Ui.Control('br', {className: '' });
+                        this._background._appendChild(this._lineFeed);
                         break;
                     case 'formula':
                         this._formula = new PocketCode.brickFormula(obj.value);
