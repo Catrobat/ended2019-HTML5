@@ -21,6 +21,10 @@ PocketCode.Ui = {
         FORWARD: 0,
         BACKWARD: 1,
     },
+    BubbleType: {
+        THINK: 0,
+        SPEECH: 1
+    },
 };
 
 PocketCode.Ui.merge({

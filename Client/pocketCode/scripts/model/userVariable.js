@@ -55,7 +55,7 @@ PocketCode.Model.merge({
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
                             tmp = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({id: e.id}, e.target); }, this)); //target override
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this)); //target override
                             this._variables[variable.id] = tmp;
                             break;
 
@@ -120,7 +120,8 @@ PocketCode.Model.merge({
                     if (this._value == value)
                         return;
                     this._value = value;
-                    this._onChange.dispatchEvent({ id: this._id });
+                    if (this._uiCache.visible)
+                        this._onChange.dispatchEvent({ id: this._id });
                 },
             },
             valueAsNumber: {
@@ -175,7 +176,7 @@ PocketCode.Model.merge({
                     return; //no event is triggered
                 this.value = undefined;
             },
-            showAt: function(x, y) {
+            showAt: function (x, y) {
                 this._uiCache = {
                     visible: true,
                     x: x,
@@ -183,7 +184,7 @@ PocketCode.Model.merge({
                 };
                 //TODO event?
             },
-            hide: function() {
+            hide: function () {
                 this._uiCache.visible = false;
                 //TODO event?
             },
@@ -249,7 +250,8 @@ PocketCode.Model.merge({
             },
             append: function (value) {
                 this._value.push(this._toTypedValue(value));
-                this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
             },
             _validIndex: function (idx) {
                 if (parseInt(idx) !== idx || idx < 1 || idx > this._value.length)
@@ -268,24 +270,27 @@ PocketCode.Model.merge({
                 return 0;
             },
             insertAt: function (idx, value) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value.insert(idx - 1, this._toTypedValue(value));
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
                 else if (idx == this._value.length + 1)
                     this.append(this._toTypedValue(value));
             },
             replaceAt: function (idx, value) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value[idx - 1] = this._toTypedValue(value);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
             },
             deleteAt: function (idx) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value.splice(idx - 1, 1);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
             },
             contains: function (value) {
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
@@ -293,10 +298,11 @@ PocketCode.Model.merge({
                 return false;
             },
             reset: function () {
-                if (this._value.length === 0)
-                    return;
+                //if (this._value.length === 0)
+                //    return;
                 this._value = [];
-                this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
             },
         });
 

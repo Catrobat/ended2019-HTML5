@@ -342,12 +342,12 @@ QUnit.test("SayForBrick", function (assert) {
     };
     b = new PocketCode.Model.SayForBrick(device, spriteMock, { text: text, duration: duration });
     var mockHandler = function(e) {
-        assert.equal(lastType, PocketCode.Model.BubbleType.SAY, "show bubble ok: type");
+        assert.equal(lastType, PocketCode.UI.BubbleType.SPEECH, "show bubble ok: type");
         done2();
     }
     b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
     assert.equal(lastText, "good morning", "show bubble ok: text");
-    assert.equal(lastType, PocketCode.Model.BubbleType.SAY, "show bubble ok: type");
+    assert.equal(lastType, PocketCode.UI.BubbleType.SPEECH, "show bubble ok: type");
     lastType = undefined;
 });
 
@@ -420,12 +420,12 @@ QUnit.test("ThinkForBrick", function (assert) {
     };
     b = new PocketCode.Model.ThinkForBrick(device, spriteMock, { text: text, duration: duration });
     var mockHandler = function(e) {
-        assert.equal(lastType, PocketCode.Model.BubbleType.THINK, "show bubble ok: type");
+        assert.equal(lastType, PocketCode.UI.BubbleType.THINK, "show bubble ok: type");
         done2();
     }
     b.execute(new SmartJs.Event.EventListener(mockHandler, this), "sdf");
     assert.equal(lastText, "sdf", "show bubble ok: text");
-    assert.equal(lastType, PocketCode.Model.BubbleType.THINK, "show bubble ok: type");
+    assert.equal(lastType, PocketCode.UI.BubbleType.THINK, "show bubble ok: type");
     lastType = undefined;
 });
 

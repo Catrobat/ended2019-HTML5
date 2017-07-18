@@ -355,22 +355,28 @@ class ProjectFileParser_v0_992
     protected function parseGlobalData()
     {
         // parse global vars
-        array_push($this->cpp, $this->simpleXml->programVariableList);
-        foreach($this->simpleXml->programVariableList->children() as $userVar)
+        if(property_exists($this->simpleXml, "programVariableList"))
         {
-            $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
+            array_push($this->cpp, $this->simpleXml->programVariableList);
+            foreach($this->simpleXml->programVariableList->children() as $userVar)
+            {
+                $userVar = $this->getObject($userVar, $this->cpp);
+                array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
+            }
+            array_pop($this->cpp);
         }
-        array_pop($this->cpp);
 
         // parse global lists
-        array_push($this->cpp, $this->simpleXml->programListOfLists);
-        foreach($this->simpleXml->programListOfLists->children() as $userList)
+        if(property_exists($this->simpleXml, "programListOfLists"))
         {
-            $userList = $this->getList($userList);
-            array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
+            array_push($this->cpp, $this->simpleXml->programListOfLists);
+            foreach($this->simpleXml->programListOfLists->children() as $userList)
+            {
+                $userList = $this->getList($userList);
+                array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
+            }
+            array_pop($this->cpp);
         }
-        array_pop($this->cpp);
     }
 
     //stores background $ sprites to $this.currentScene->background/sprites[]
@@ -1104,7 +1110,7 @@ class ProjectFileParser_v0_992
             {
                 $nestedCounter++;
             }
-            
+
             if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)

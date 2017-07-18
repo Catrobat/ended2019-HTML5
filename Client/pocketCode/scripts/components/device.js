@@ -70,7 +70,7 @@ PocketCode.Device = (function () {
             GEO_LOCATION: {
                 i18nKey: 'lblDeviceGeoLocation',
                 inUse: false,
-                supported: navigator.geolocation ? true : false,
+                supported: false,   //temporarely disabled navigator.geolocation ? true : false,
             },
         };
 
@@ -606,6 +606,8 @@ PocketCode.Device = (function () {
             return pos;
         },
         isTouched: function (idx) {
+            if (isNaN(idx))
+                return false;
             idx--;
             if (idx < 0 || idx >= this._touchEvents.history.length)
                 return false;

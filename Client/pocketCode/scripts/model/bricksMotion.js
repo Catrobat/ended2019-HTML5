@@ -338,7 +338,7 @@ PocketCode.Model.merge({
                 var duration = this._duration.calculate(scope),
                     x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
-                if (isNaN(duration)) {
+                if (isNaN(duration) || isNaN(x) || isNaN(y)) {
                     if (!isNaN(x) && !isNaN(y)) {
                         this._updatePositionHandler({ value: { x: x, y: y } });
                         this._return(id, true);

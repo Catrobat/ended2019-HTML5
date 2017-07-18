@@ -369,7 +369,7 @@ PocketCode.Model.Scene = (function () {
                     return sprites[i];
             }
 
-            throw new Error('unknown sprite with name: ' + spriteName);
+            //throw new Error('unknown sprite with name: ' + spriteName);
         },
 
         //TODO scene doesn't have _imageStore property. Should this function be removed ?

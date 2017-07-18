@@ -180,6 +180,8 @@ PocketCode.merge({
                     case 'SetFrictionBrick':
 
 
+
+
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
@@ -223,6 +225,13 @@ PocketCode.merge({
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
+
+                        //Bubbles
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
+
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
@@ -236,11 +245,14 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
+                    case 'PlaySoundAndWaitBrick':   //disabled
+                    case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
+                        break;
+
                     case 'PlaySoundBrick':
-                    case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
                     case 'SpeakBrick':
-                    case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
                         break;
 
@@ -420,22 +432,26 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
                     case 'STRING':
-                        return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
+                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
+                        //if (uiString)
+                        //    return '\'' + tmp + '\'';
+                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
 
                     case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
                         this._isStatic = false;
-                        var params = jsonFormula.value.split(' ');  //e.g. 'sp1 touches sp2'
+                        var params = jsonFormula.value.split(' touches ');  //e.g. 'sp1 touches sp2'
                         if (params.length == 1) { //v0.993
                             if (uiString)
                                 return 'touches_object(' + jsonFormula.value + ')';
 
                             return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
                         }
-                        else if (params.length == 3) { //v0.992
+                        else if (params.length == 2) { //v0.992
                             if (uiString)
                                 return '\'' + jsonFormula.value + '\'';
 
-                            return 'this._sprite.collidesWithSprite(\'' + params[2] + '\')';
+                            return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
                         }
                         else { //not supported
                             if (uiString)
@@ -510,9 +526,6 @@ PocketCode.merge({
                         if (uiString)
                             return this._concatOperatorFormula(jsonFormula, ' ÷ ', uiString, true);
                         return this._concatOperatorFormula(jsonFormula, ' / ', uiString, true);
-
-                        //case 'POW':
-                        //    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
                     case 'LOGICAL_NOT':
                         if (uiString)
@@ -884,42 +897,49 @@ PocketCode.merge({
 
                         //date and time
                     case 'CURRENT_YEAR':
+                    case 'DATE_YEAR':
                         if (uiString)
                             return 'year';
 
                         return '(new Date()).getFullYear()';
 
                     case 'CURRENT_MONTH':
+                    case 'DATE_MONTH':
                         if (uiString)
                             return 'month';
 
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':
+                    case 'DATE_DAY':
                         if (uiString)
                             return 'day';
 
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':
+                    case 'DATE_WEEKDAY':
                         if (uiString)
                             return 'weekday';
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':
+                    case 'TIME_HOUR':
                         if (uiString)
                             return 'hour';
 
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':
+                    case 'TIME_MINUTE':
                         if (uiString)
                             return 'minute';
 
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':
+                    case 'TIME_SECOND':
                         if (uiString)
                             return 'second';
 
@@ -1003,6 +1023,11 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    //case 'OBJECT_DISTANCE_TO':    //TODO
+                    //    if (uiString)
+                    //        return 'position_y';
+
+                    //    return 'this._sprite.positionY';
 
                     //collision
                     case 'COLLIDES_WITH_EDGE':
