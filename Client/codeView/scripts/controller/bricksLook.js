@@ -273,7 +273,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'nxt_seconds'
+                        i18n: 'nxt_second_s'
                     }
                 ]
             };
@@ -342,7 +342,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'nxt_seconds'
+                        i18n: 'nxt_second_s'
                     }
                 ]
             };
@@ -676,15 +676,6 @@ PocketCode.Model.merge({
         }
         return SelectCameraBrick;
     })(),
-
-    //currently not planned?
-    //SetCameraTransparencyBrick: (function () {
-    //    SetCameraTransparencyBrick.extends(PocketCode.BaseBrick, false);
-    //
-    //    function ....
-    //
-    //    return SetCameraTransparencyBrick;
-    //})(),
 
     FlashBrick: (function () {
         FlashBrick.extends(PocketCode.BaseBrick, false);

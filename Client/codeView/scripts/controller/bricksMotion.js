@@ -257,7 +257,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'brick_move_n_step_plural'
+                        i18n: 'brick_move_n_step_s'
                     }
                 ]
             };
@@ -406,7 +406,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'second_plural'
+                        i18n: 'nxt_second_s'
                     },
                     {
                         type: 'lf',
@@ -459,7 +459,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'brick_go_back_layer_plural'
+                        i18n: 'brick_go_back_layer_s'
                     }
                 ]
             };
@@ -509,7 +509,7 @@ PocketCode.Model.merge({
                     },
                     {
                         type: 'text',
-                        i18n: 'second_plural'
+                        i18n: 'nxt_second_s'
                     }
                 ]
             };

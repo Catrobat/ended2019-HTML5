@@ -171,12 +171,3 @@ PocketCode.Model.merge({
         return SpeakBrick;
     })(),
 });
-
-/*
-PocketCode.Model.SpeakAndWaitBrick = (function () {
-    SpeakAndWaitBrick.extends(PocketCode.BaseBrick, false);
-
-    return SpeakAndWaitBrick;
-})();
-
-*/
