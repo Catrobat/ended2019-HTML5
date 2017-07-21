@@ -769,7 +769,7 @@ class ProjectFileParser_v0_992
 
             //WhenTouchDown
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenTouchBrickDto($this->getNewId(), "TouchStart");
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 

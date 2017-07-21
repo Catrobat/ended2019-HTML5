@@ -201,14 +201,18 @@ PocketCode.merge({
                         break;
 
                     case 'WhenActionBrick':
-                        switch (jsonBrick.action) {
-                            case 'Tapped':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
-                                break;
-                            case 'TouchStart':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
-                                break;
-                        }
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
+                        break;
+                    case 'WhenTouchBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
+                        //switch (jsonBrick.action) {
+                        //    case 'Tapped':
+                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
+                        //        break;
+                        //    case 'TouchStart':
+                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
+                        //        break;
+                        //}
                         break;
 
                     case 'CloneBrick':
