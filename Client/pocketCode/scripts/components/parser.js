@@ -231,6 +231,7 @@ PocketCode.merge({
                     case 'ThinkBrick':
                     case 'ThinkForBrick':
 
+                    case 'SetBackgroundByIndexBrick':
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
@@ -285,15 +286,15 @@ PocketCode.merge({
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
-                        //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
+                        //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
+                        //      .. all filters, .. ClearGraphicEffect
                         //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
                         //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
                     default:
                         if (PocketCode.Model[type])
                             brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
-                        else {
+                        else
                             brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                        }
                 }
 
                 if (brick instanceof PocketCode.Model.UnsupportedBrick) {
