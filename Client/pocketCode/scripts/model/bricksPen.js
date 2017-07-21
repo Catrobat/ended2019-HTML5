@@ -15,7 +15,7 @@ PocketCode.Model.merge({
 
         PenDownBrick.prototype._execute = function () {
             this._sprite.penDown = true;
-            this._return(false);
+            this._return();
         };
 
         return PenDownBrick;
@@ -30,7 +30,7 @@ PocketCode.Model.merge({
 
         PenUpBrick.prototype._execute = function () {
             this._sprite.penDown = false;
-            this._return(false);
+            this._return();
         };
 
         return PenUpBrick;
@@ -48,7 +48,7 @@ PocketCode.Model.merge({
             var penSize = this._penSize.calculate(scope);
             if (!isNaN(penSize))
                 this._sprite.penSize = penSize;
-            this._return(false);
+            this._return();
         };
 
         return SetPenSizeBrick;
@@ -72,7 +72,7 @@ PocketCode.Model.merge({
             if (!isNaN(r) && !isNaN(g) && !isNaN(b))
                 this._sprite.penColor = { r: r, g: g, b: b };
 
-            this._return(false);
+            this._return();
         };
 
         return SetPenColorBrick;

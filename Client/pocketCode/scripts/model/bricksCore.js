@@ -144,11 +144,12 @@ PocketCode.Model.merge({
                 this._onExecutedListener = onExecutedListener;
                 this._threadId = threadId;
                 if (this._commentedOut === true)
-                    return this._return(false);
-                this._execute(scope);
+                    this._return();
+                else
+                    this._execute(scope);
             },
             _execute: function (scope) {
-                this._return(false);
+                this._return();
             },
             _return: function (loopDelay) {
                 if (this._disposed)
@@ -199,9 +200,9 @@ PocketCode.Model.ThreadedBrick = (function () {
                 scope: scope,
             };
             if (this._commentedOut === true)
-                return this._return(id, false);
-
-            this._execute(id, scope);
+                this._return(id, false);
+            else
+                this._execute(id, scope);
         },
         /* method to override in derived classes */
         _execute: function (id, scope) {
@@ -429,9 +430,8 @@ PocketCode.Model.merge({
                     startTime: new Date(),
                 };
                 if (this._commentedOut === true)
-                    return this._return(id, false);
-
-                if (this._loopConditionMet(this._pendingOps[id]))
+                    this._return(id, false);
+                else if (this._loopConditionMet(this._pendingOps[id]))
                     this._execute(id, scope);
                 else
                     this._return(id, false);

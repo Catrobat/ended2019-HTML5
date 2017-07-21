@@ -58,7 +58,7 @@ PocketCode.Model.merge({
                 if (instanceId === false)
                     this._return(id);
                 else
-                    po.soundInstanceId = instanceId;
+                    po.soundInstanceId = instanceId;    //TODO: check for timing error on small sound files (timeout needed for ^^this._return.bind(thi.. ?)
             },
             pause: function () {
                 var po, pos = this._pendingOps;
@@ -133,12 +133,9 @@ PocketCode.Model.merge({
         SetVolumeBrick.prototype.merge({
             _execute: function (scope) {
                 var val = this._percentage.calculate(scope);
-                if (isNaN(val))
-                    this._return();
-                else {
+                if (!isNaN(val))
                     this._soundManager.volume = val;
-                    this._return();
-                }
+                this._return();
             },
             dispose: function () {
                 this._soundManager = undefined;
@@ -162,12 +159,9 @@ PocketCode.Model.merge({
         ChangeVolumeBrick.prototype.merge({
             _execute: function (scope) {
                 var val = this._value.calculate(scope);
-                if (isNaN(val))
-                    this._return(false);
-                else {
+                if (!isNaN(val))
                     this._soundManager.volume += val;
-                    this._return();
-                }
+                this._return();
             },
             dispose: function () {
                 this._soundManager = undefined;
@@ -265,11 +259,14 @@ PocketCode.Model.SpeakAndWaitBrick = (function () {
                 if (instanceId === false)
                     this._return(id);
                 else
-                    po.soundInstanceId = instanceId;
+                    po.soundInstanceId = instanceId;    //TODO: timing error on small sounds? (like PlaySoundAndWait)
             }
             else {
                 var text = this._text.calculate(scope).toString().replace(/\n,\r/g, '');
-                if (text !== '') {
+                if (text == '') {
+                    this._return(id);
+                }
+                else {
                     //we use a request object here to generate an url
                     var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
                     this._soundManager.startSoundFromUrl(this._sceneId, request.url, this._onLoadHandler.bind(this, id), this._return.bind(this, id, false));
