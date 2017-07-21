@@ -1,10 +1,6 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
-/// <reference path="../core.js" />
-/// <reference path="sprite.js" />
-/// <reference path="bricksCore.js" />
-'use strict';
+﻿'use strict';
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     PenDownBrick: (function () {
         PenDownBrick.extends(PocketCode.BaseBrick, false);

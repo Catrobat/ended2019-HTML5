@@ -1,13 +1,7 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
-/// <reference path="../../../smartJs/sj-core.js" />
-/// <reference path="../../../smartJs/sj-event.js" />
-/// <reference path="../../../smartJs/sj-animation.js" />
-/// <reference path="../core.js" />
-/// <reference path="bricksCore.js" />
-'use strict';
+﻿'use strict';
 
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     GoToPositionBrick: (function () {
         GoToPositionBrick.extends(PocketCode.BaseBrick, false);
@@ -176,7 +170,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SetRotionStyleBrick' + PocketCode.SetRotionStyleBrick.content[2].id,
+                        //name: 'SetRotionStyleBrick' + PocketCode.SetRotionStyleBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -206,7 +200,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'GoToBrick' + PocketCode.GoToBrick.content[2].id,
+                        //name: 'GoToBrick' + PocketCode.GoToBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -539,7 +533,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SetPhysicsObjectTypeBrick' + PocketCode.SetPhysicsObjectTypeBrick.content[2].id,
+                        //name: 'SetPhysicsObjectTypeBrick' + PocketCode.SetPhysicsObjectTypeBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -573,7 +567,7 @@ PocketCode.Model.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[3].id,
+                        //name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[3].id,
                         value: ''
                     },
                     {

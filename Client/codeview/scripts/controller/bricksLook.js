@@ -1,10 +1,6 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
-/// <reference path="../core.js" />
-/// <reference path="sprite.js" />
-/// <reference path="bricksCore.js" />
-'use strict';
+﻿'use strict';
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     SetLookBrick: (function () {
         SetLookBrick.extends(PocketCode.BaseBrick, false);
@@ -24,7 +20,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SetLookBrick' + PocketCode.SetLookBrick.content[2].id,
+                        //name: 'SetLookBrick' + PocketCode.SetLookBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -565,7 +561,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SetBackgroundBrick' + PocketCode.SetBackgroundBrick.content[2].id,
+                        //name: 'SetBackgroundBrick' + PocketCode.SetBackgroundBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -596,7 +592,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SetBackgroundAndWaitBrick' + PocketCode.SetBackgroundAndWaitBrick.content[2].id,
+                        //name: 'SetBackgroundAndWaitBrick' + PocketCode.SetBackgroundAndWaitBrick.content[2].id,
                         value: ''
                     },
                     {
@@ -634,7 +630,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'CameraBrick' + PocketCode.CameraBrick.content[2].id,
+                        //name: 'CameraBrick' + PocketCode.CameraBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -665,7 +661,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'SelectCameraBrick' + PocketCode.SelectCameraBrick.content[2].id,
+                        //name: 'SelectCameraBrick' + PocketCode.SelectCameraBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -696,7 +692,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'FlashBrick' + PocketCode.FlashBrick.content[2].id,
+                        //name: 'FlashBrick' + PocketCode.FlashBrick.content[2].id,
                         value: ''
                     }
                 ]

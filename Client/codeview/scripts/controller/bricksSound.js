@@ -1,11 +1,6 @@
-﻿/// <reference path="../../../smartJs/sj.js" />
-/// <reference path="../core.js" />
-/// <reference path="bricksCore.js" />
-/// <reference path="../components/soundManager.js" />
-/// <reference path="../components/proxy.js" />
-'use strict';
+﻿'use strict';
 
-PocketCode.Model.merge({
+PocketCode.merge({
 
     PlaySoundBrick: (function () {
         PlaySoundBrick.extends(PocketCode.BaseBrick, false);
@@ -26,7 +21,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'PlaySoundBrick' + PocketCode.PlaySoundBrick.content[2].id,
+                        //name: 'PlaySoundBrick' + PocketCode.PlaySoundBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -57,7 +52,7 @@ PocketCode.Model.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        name: 'PlaySoundAndWaitBrick' + PocketCode.PlaySoundAndWaitBrick.content[2].id,
+                        //name: 'PlaySoundAndWaitBrick' + PocketCode.PlaySoundAndWaitBrick.content[2].id,
                         value: ''
                     }
                 ]
