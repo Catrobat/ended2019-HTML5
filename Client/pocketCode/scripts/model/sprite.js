@@ -189,7 +189,9 @@ PocketCode.Model.Sprite = (function () {
         },
         currentLookNumber: {
             get: function () {
-                return this._looks.indexOf(this._currentLook) + 1;  //returns 0 for not found   //TODO?
+                if (!this._currentLook) //returns 1 if not found
+                    return 1;
+                return this._looks.indexOf(this._currentLook) + 1;
             },
         },
         currentLookName: {
@@ -197,6 +199,16 @@ PocketCode.Model.Sprite = (function () {
                 if (!this._currentLook)
                     return '';
                 return this._currentLook.name;
+            },
+        },
+        sceneBackgroundNumber: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundNumber;
+            },
+        },
+        sceneBackgroundName: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundName;
             },
         },
         visible: {
@@ -696,6 +708,18 @@ PocketCode.Model.Sprite = (function () {
                 }
             }
             throw new Error('look image with id ' + lookId + ' could not be found');
+        },
+        setLookByIndex: function (lookIdx) {
+            if (isNaN(lookIdx) || lookIdx < 1 || this._currentLook && this.currentLookNumber === lookIdx || lookIdx > this._looks.length)
+                return false;
+
+            this._currentLook = this._looks[lookIdx - 1];
+            update = { look: this._currentLook.canvas };
+
+            this._recalculateLookOffsets();
+            update.x = this._positionX + this._lookOffsetX;
+            update.y = this._positionY + this._lookOffsetY;
+            return this._triggerOnChange(update);
         },
         previousLook: function () {
             if (this._currentLook == undefined || this._looks.length == 0)

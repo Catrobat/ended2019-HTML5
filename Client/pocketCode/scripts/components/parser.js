@@ -979,14 +979,18 @@ PocketCode.merge({
                     case 'OBJECT_BACKGROUND_NUMBER':
                         if (uiString)
                             return 'background_number';
+                        return 'this._sprite.sceneBackgroundNumber';    //scene not accessible directly in formula
+
+                    case 'OBJECT_BACKGROUND_NAME':
+                        if (uiString)
+                            return 'background_name';
+                        return 'this._sprite.sceneBackgroundName';    //scene not accessible directly in formula
+
                     case 'OBJECT_LOOK_NUMBER':
                         if (uiString)
                             return 'look_number';
                         return 'this._sprite.currentLookNumber';
 
-                    case 'OBJECT_BACKGROUND_NAME':
-                        if (uiString)
-                            return 'background_name';
                     case 'OBJECT_LOOK_NAME':
                         if (uiString)
                             return 'look_name';

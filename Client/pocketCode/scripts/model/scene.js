@@ -135,6 +135,16 @@ PocketCode.Model.Scene = (function () {
                 return this._background;
             }
         },
+        currentBackgroundNumber: {  //to accesss scene properties in formula
+            get: function () {
+                return this._background.currentLookNumber;
+            },
+        },
+        currentBackgroundName: {    //to accesss scene properties in formula
+            get: function () {
+                return this._background.currentLookName;
+            },
+        },
         collisionManager: {
             get: function () {
                 return this._collisionManager;
@@ -383,8 +393,13 @@ PocketCode.Model.Scene = (function () {
                     waitCallback(false);
                 return false;
             }
-
             return this._background.setLook(lookId, waitCallback);
+        },
+        setLookByIndex: function (lookIdx) {
+            if (!this._background) {
+                return false;
+            }
+            return this._background.setLookByIndex(lookId);
         },
         subscribeToBackgroundChange: function (lookId, changeHandler) {
             if (!this._background)

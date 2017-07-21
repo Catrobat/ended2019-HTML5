@@ -1740,6 +1740,13 @@ class ProjectFileParser_v0_992
                 $brick->lookId = $lookObject->id;
                 break;
 
+            case "SetBackgroundByIndexBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SetBackgroundByIndexBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
             case "SetLookBrick":
                 $brick = new SetLookBrickDto(null);
                 if(!property_exists($script, "look"))   // when no look set, look => empty
@@ -1761,6 +1768,13 @@ class ProjectFileParser_v0_992
 
                 //the image has already been included in the resources & look[]
                 $brick->lookId = $lookObject->id;
+                break;
+
+            case "SetLookByIndexBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SetLookByIndexBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
                 break;
 
             case "NextLookBrick":
