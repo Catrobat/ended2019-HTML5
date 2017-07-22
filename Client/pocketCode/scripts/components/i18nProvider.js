@@ -44,6 +44,7 @@ PocketCode.I18nProvider = (function (propObject) {
 
             "brick_wait":"Wait",
             "nxt_second_s":"second/s", //singular & plural
+            "times_s":"time/s",
             "brick_note":"Note",
             "brick_forever":"Forever",
             "brick_loop_end":"End of loop",
@@ -162,7 +163,11 @@ PocketCode.I18nProvider = (function (propObject) {
             "brick_stop_all_sounds":"Stop all sounds",
             "brick_set_volume_to":"Set volume to",
             "brick_change_volume_by":"Change volume by",
-            "brick_speak":"Speak"
+            "brick_speak":"Speak",
+
+
+            //formula
+            "formula_editor_logic_and":"AND",
         };
 
         this._supportedLanguages = [];

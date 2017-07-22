@@ -43,6 +43,15 @@ PocketCode.View.BaseBrick = (function(){
 
     //methods
     BaseBrick.prototype.merge({
+
+        _selectOnClickHandler: function (e) {
+            //todo
+        },
+
+        _formulaOnClickHandler: function (e) {
+            //todo
+        },
+
         showIndents: function(bool) {
 
         },
@@ -57,28 +66,28 @@ PocketCode.View.BaseBrick = (function(){
             this._background = new SmartJs.Ui.ContainerControl({className : 'pc-brickBgContainer'}); //position: absolute
             this._appendChild(this._background);
 
+            var item;
             for (var i = 0, l= content.length; i < l; i++) {
                 var obj = content[i];
 
                 switch (obj.type) {
                     case 'text':
-                        this._textNode = new PocketCode.Ui.I18nTextNode(obj.i18n);
-                        this._background._appendChild(this._textNode);
+                        item = new PocketCode.Ui.I18nTextNode(obj.i18n);
+                        this._background._appendChild(item);
                         break;
                     case 'lf':
-                        this._textNode = new PocketCode.Ui.I18nTextNode("\n");
-                        this._background._appendChild(this._textNode);
-                        //wird in [] Klammern dastehen??? Vorschlag:
-                        //this._linefeed = new SmartJs.Ui.Control('br');
-                        //this._background._appendChild(this._linefeed);
+                        item = new SmartJs.Ui.Control('br');
+                        this._background._appendChild(item);
                         break;
                     case 'formula':
-                        this._formula = new PocketCode.brickFormula(obj.value);
-                        this._background._appendChild(this._formula);
+                        item = new PocketCode.brickFormula(obj.value);
+                        item.onClick.addEventListener(new SmartJs.Event.EventListener(this._formulaOnClickHandler, this));
+                        this._background._appendChild(item);
                         break;
                     case 'select':
-                        this._select = new PocketCode.brickSelect(obj.value);
-                        this._background._appendChild(this._select);
+                        item = new PocketCode.brickSelect(obj.value);
+                        item.onClick.addEventListener(new SmartJs.Event.EventListener(this._selectOnClickHandler, this));
+                        this._background._appendChild(item);
                         break;
                 }
             }
