@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+    
+    var x = 10;
+    var y = 30;
+    var radius = 15;
+    var height = 50
+    var width = 75
+    
+    //-------------------------------------------------------------
+    //Standard Bubble
+    //Start
+    ctx.beginPath();
+
+    //Path Begin Top Left Curve
+    ctx.moveTo(radius*(5/2), radius);
+    ctx.quadraticCurveTo(radius*(5/2), 0, radius*(7/2), 0);
+    //Line to Top Right Curve
+    ctx.lineTo(width+radius*(5/2)-radius, 0);
+    ctx.quadraticCurveTo(width+radius*(5/2), 0, width+radius*(5/2), radius);
+    //Line to Bottom Right Curve
+    ctx.lineTo(width+radius*(5/2), height-radius);
+    ctx.quadraticCurveTo(width+radius*(5/2), height, width+radius*(5/2)-radius, height);
+    //Line to left site
+    ctx.lineTo(radius*(7/2), height);
+    //Last Curve and Ending Line for Think Bubble
+    ctx.quadraticCurveTo(radius*(5/2), height, radius*(5/2), height-radius);
+    ctx.lineTo(radius*(5/2), radius);
+    
+    //-------------------------------------------------------------
+    
+    //think left
+    //Think bubbles with ellipse
+    //ctx.moveTo(radius*(9/4), radius/2 + height*(1/8))
+    //ctx.ellipse(radius*(7/4), radius/2 + height*(1/8), radius/2, radius/4, 0, 0, 2 * Math.PI);
+    //ctx.moveTo(radius*(5/4), radius/2 + height*(3/8))
+    //ctx.ellipse(radius*(3/4), radius/2 + height*(3/8), radius/2, radius/6, 0, 0, 2 * Math.PI);
+
+    //Think bubbles with scaling
+    ctx.save();
+    ctx.scale(0.75, 0.5);
+      
+    ctx.moveTo(radius*3, radius/2 + height*(3/8));
+    ctx.arc(radius*(17/8), radius/2 + height*(3/8), radius, Math.PI*2, false);
+    ctx.moveTo(radius*(9/8), radius/2 + height*(6/8));
+    ctx.arc(radius*(6/8), radius/2 + height*(6/8), radius/2, Math.PI*2, false);
+      
+    ctx.restore();
+      
+    ctx.stroke();
+    //-------------------------------------------------------------
+      
+</script> 
+
+</body>
+</html>

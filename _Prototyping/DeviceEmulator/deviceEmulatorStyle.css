@@ -13,9 +13,7 @@ body {
 .slider {
     border-radius: 12px;
     background-color: transparent;
-    min-width: 125px;
-    width: 100%;
-    max-width: 420px;
+    width: 310px;
 
 }
 
@@ -27,13 +25,13 @@ button.accordionMain {
     color: #A9DCF1;
     cursor: pointer;
     padding: 0 20px;
-    min-width: 175px;
-    width: 28.15%;
-    max-width: 450px;
+    width: 350px;
     height: 4%;
     outline: none;
     transition: 0.4s;
     border: 3px solid #17A5B8;
+    font-weight: bold;
+    font-size: larger;
 }
 
 [dir='rtl'] button.accordionMain {
@@ -43,8 +41,9 @@ button.accordionMain {
 
 button.accordionMain.active {
     background-color: transparent;
-    border-top: 0;
+    bottom: 454px;
 }
+
 button.accordionMain:hover {
     background-color: transparent;
 }
@@ -101,16 +100,14 @@ button.accordionMain.active:after {
 
 div.accordionSub {
     position: absolute;
-    bottom: 4%;
+    bottom: 0;
     right: 0;
     padding: 0 17px;
     background-color: transparent;
-    min-width: 135px;
-    width: 25.45%;
-    max-width: 420px;
+    width: 310px;
+    height: 451px;
     display: none;
     border: 3px solid #17A5B8;
-    border-bottom: 0;
 }
 
 [dir='rtl'] div.accordionSub {
@@ -119,16 +116,17 @@ div.accordionSub {
 }
 
 .logo {
-    min-width: 75px;
+    width: 75px;
+    height: 140px;
     margin-left: auto;
     margin-right: auto;
     display: block;
-    padding: 15px;
+    padding: 7px;
 }
 
 .container {
-    -webkit-perspective: 300px;
-    perspective: 300px;
+    -webkit-perspective: 215px;
+    perspective: 215px;
 }
 
 input[type=range] {
@@ -137,18 +135,14 @@ input[type=range] {
 
     border-radius: 3px;
     /*required for proper track sizing in FF*/
-    min-width: 125px;
-    width: 100%;
-    max-width: 420px;
+    width: 310px;
 }
 input[type=range]::-webkit-slider-runnable-track {
-    min-width: 125px;
-    width: 100%;
-    max-width: 420px;
+    width: 310px;
     height: 5px;
     background: #17A5B8;
-    border: none;
     border-radius: 3px;
+
 }
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -167,14 +161,13 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 input[type=range]::-moz-range-track {
-    min-width: 125px;
-    width: 100%;
-    max-width: 420px;
+    width: 310px;
     height: 5px;
     background: #17A5B8;
     border: none;
     border-radius: 3px;
 }
+
 input[type=range]::-moz-range-thumb {
     border: none;
     height: 16px;
@@ -193,9 +186,7 @@ input[type=range]:focus::-moz-range-track {
 }
 
 input[type=range]::-ms-track {
-    min-width: 125px;
-    width: 100%;
-    max-width: 420px;
+    width: 310px;
     height: 5px;
     background: transparent;
     border-color: transparent;
@@ -204,12 +195,13 @@ input[type=range]::-ms-track {
 }
 input[type=range]::-ms-fill-lower {
     background: #17A5B8;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 input[type=range]::-ms-fill-upper {
     background: #17A5B8;
-    border-radius: 10px;
+    border-radius: 5px;
 }
+
 input[type=range]::-ms-thumb {
     border: none;
     height: 16px;
