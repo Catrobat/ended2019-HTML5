@@ -2,22 +2,18 @@
 /// <reference path="../../../smartJs/sj-core.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="../components/userVariableHost.js" />
+/// <reference path="userVariableHost.js" />
 /// <reference path="../components/renderingItem.js" />
 /// <reference path="../model/scene.js" />
 'use strict';
 
-/**
- * RotationStyles
- * @type {{DO_NOT_ROTATE: string, LEFT_TO_RIGHT: string, ALL_AROUND: string}}
- */
 PocketCode.RotationStyle = {
     DO_NOT_ROTATE: 'don\'t rotate',
     LEFT_TO_RIGHT: 'left-right',
     ALL_AROUND: 'all around',
 };
 
-PocketCode.MovementStyle = {
+PocketCode.PhysicsType = {
     NONE: 'no bouncing',
     FIXED: 'others bounce off it',
     DYNAMIC: 'bouncing with gravity'
@@ -25,21 +21,16 @@ PocketCode.MovementStyle = {
 
 
 PocketCode.Model.Sprite = (function () {
-    Sprite.extends(PocketCode.UserVariableHost, false);
+    Sprite.extends(PocketCode.Model.UserVariableHost, false);
 
-    /**
-     * initialization of properties
-     * @param gameEngine gameEngine instance as a reference
-     * @param scene scene instance as a reference
-     * @param propObject object which can contains properties
-     */
     function Sprite(gameEngine, scene, propObject) {
-        PocketCode.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
+        PocketCode.Model.UserVariableHost.call(this, PocketCode.UserVariableScope.LOCAL, gameEngine);
 
         this._gameEngine = gameEngine;
         this._scene = scene;
+        this._json = propObject;
         this._onChange = scene.onSpriteUiChange;    //mapping event (defined in scene)
-        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this)); //TODO: _scene: should we define this event in scene/gameEngine?
+        this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
         this._scripts = [];
@@ -62,17 +53,12 @@ PocketCode.Model.Sprite = (function () {
         this._brightness = 100.0;
         this._colorEffect = 0.0;
 
+        this._bubbleVisible = false;
+
         //pen
         this._penDown = false;
         this._penSize = 4;
-        this._penColorBlue = 255.0;
-        this._penColorRed = 0.0;
-        this._penColorGreen = 0.0;
-        this._penXPosition = 0;
-        this._penYPosition = 0;
-
-        this._stamp = false;
-
+        this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
         this._onExecuted = new SmartJs.Event.Event(this);
@@ -91,44 +77,36 @@ PocketCode.Model.Sprite = (function () {
             this.sounds = propObject.sounds;
         }
 
-        //variables: a sprite may have no (local) variables
-        this._variables = propObject.variables || [];
-        this._lists = propObject.lists || [];
-
         //scripts
         if (propObject.scripts) {
             this.scripts = propObject.scripts;
         }
+
+        //variables: a sprite may have no (local) variables
+        this._variables = propObject.variables || [];
+        this._lists = propObject.lists || [];
     }
+
+    //events
+    Object.defineProperties(Sprite.prototype, {
+        onExecuted: {
+            get: function () { return this._onExecuted; },
+        },
+    });
 
     //properties
     Object.defineProperties(Sprite.prototype, {
-        //renderingProperties: {   //all rendering propeties as object
-        //    get: function () {
-        //        return {
-        //            id: this._id,
-        //            x: Math.round(this._positionX + this._lookOffsetX),
-        //            y: Math.round(this._positionY + this._lookOffsetY),
-        //            rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
-        //            flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
-        //            look: this._currentLook ? this._currentLook.canvas : undefined,
-        //            scaling: this._scaling,
-        //            visible: this._visible,
-        //            graphicEffects: [
-        //                { effect: PocketCode.GraphicEffect.GHOST, value: this._transparency },
-        //                { effect: PocketCode.GraphicEffect.BRIGHTNESS, value: this._brightness - 100.0 },  //send +-100 instead of 0..200
-        //                { effect: PocketCode.GraphicEffect.COLOR, value: this._colorEffect },
-        //                //TODO: add other filters as soon as available
-        //            ],
-        //        };
-        //    },
-        //},
+        renderingVariables: {
+            get: function () {
+                return this._getRenderingVariables(this._id);
+            },
+        },
         renderingSprite: {   //rendering image is created but not stored!
             get: function () {
                 return new PocketCode.RenderingSprite({
                     id: this._id,
-                    x: Math.round(this._positionX + this._lookOffsetX),
-                    y: Math.round(this._positionY + this._lookOffsetY),
+                    x: this._positionX + this._lookOffsetX,
+                    y: this._positionY + this._lookOffsetY,
                     rotation: this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this._direction - 90.0 : 0.0,
                     flipX: this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0,
                     look: this._currentLook ? this._currentLook.canvas : undefined,
@@ -142,15 +120,10 @@ PocketCode.Model.Sprite = (function () {
                     ],
                     penDown: this._penDown,
                     penSize: this._penSize,
-                    penColorBlue: this._penColorBlue,
-                    penColorRed: this._penColorRed,
-                    penColorGreen: this._penColorGreen,
-                    penXPosition: this._penXPosition,
-                    penYPosition: this._penYPosition,
-                    stamp: this._stamp,
-                    offsetX: this._lookOffsetX,
-                    offsetY: this._lookOffsetY,
-
+                    penColor: this._penColor,
+                    penX: this._positionX,
+                    penY: this._positionY,
+                    isBackground: this instanceof PocketCode.Model.BackgroundSprite,
                 });
             },
         },
@@ -178,7 +151,7 @@ PocketCode.Model.Sprite = (function () {
         },
         layer: {
             get: function () {
-                return this._scene.getSpriteLayer(this);//.id);
+                return this._scene.getSpriteLayer(this);
             },
         },
         rotationStyle: {
@@ -214,7 +187,35 @@ PocketCode.Model.Sprite = (function () {
                 return this._currentLook;
             },
         },
-
+        currentLookNumber: {
+            get: function () {
+                if (!this._currentLook) //returns 1 if not found
+                    return 1;
+                return this._looks.indexOf(this._currentLook) + 1;
+            },
+        },
+        currentLookName: {
+            get: function () {
+                if (!this._currentLook)
+                    return '';
+                return this._currentLook.name;
+            },
+        },
+        sceneBackgroundNumber: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundNumber;
+            },
+        },
+        sceneBackgroundName: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundName;
+            },
+        },
+        visible: {
+            get: function () {
+                return this._visible;
+            },
+        },
         size: {     //percentage
             get: function () {
                 return Math.round(this._scaling * 100.0);
@@ -236,7 +237,7 @@ PocketCode.Model.Sprite = (function () {
             },
         },
 
-
+        //sound
         sounds: {
             set: function (sounds) {
                 if (!(sounds instanceof Array))
@@ -248,11 +249,81 @@ PocketCode.Model.Sprite = (function () {
                 return this._sounds;
             },
         },
-        //projectTimerValue: {    //used in formula (gameEngine not accessible)
-        //    get: function() {
-        //        return this._gameEngine.projectTimer.value;
-        //    },
-        //},
+        //pen & stamp
+        penDown: {
+            set: function (penDown) {
+                if (this._penDown == penDown)
+                    return;
+
+                this._penDown = penDown;
+                this._triggerOnChange({ penDown: this._penDown });
+            },
+        },
+        penSize: {
+            set: function (penSize) {
+                if (this._penSize == penSize)
+                    return;
+
+                this._penSize = penSize;
+                this._triggerOnChange({ penSize: this._penSize });
+            },
+        },
+        penColor: {
+            set: function (rgbObj) {
+                if (typeof rgbObj !== 'object')
+                    throw new Error('invalid setter: rgb object');
+
+                var c = this._penColor;
+                if (rgbObj.r == c.r && rgbObj.g == c.g && rgbObj.b == c.b)
+                    return;
+
+                this._penColor = { r: rgbObj.r, g: rgbObj.g, b: rgbObj.b };
+                this._triggerOnChange({ penColor: this._penColor });
+            },
+        },
+
+        //collision: in formula
+        collidesWithEdge: {
+            get: function () {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                var collision = collisionMgr.checkSpriteEdgeCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
+            },
+        },
+        collidesWithPointer: {
+            get: function () {
+                if (!this._currentLook) //sprite/background without look
+                    return false;
+                var collisionMgr = this._scene.collisionManager,
+                    dir = this.direction,
+                    rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? dir - 90.0 : 0.0,
+                    //^^ sprite has a direction but is not rotated
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && dir < 0.0 ? true : false;
+
+                var boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                //{top, right, bottom, left, pixelAccuracy} from look center to bounding area borders (may be negative as well, e.g. if the center is outside of visisble pixels)
+
+                //check
+                var collision = collisionMgr.checkSpritePointerCollision(this._positionX, this._positionY, boundary);
+                if (collision.occurs)
+                    return true;
+                return false;
+            },
+        },
+
         scripts: {
             set: function (scripts) {
                 if (!(scripts instanceof Array))
@@ -263,8 +334,8 @@ PocketCode.Model.Sprite = (function () {
                     script = scripts[i];
                     //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
-                    if (script.onExecuted)  //supported by all (root container) scripts
-                        script.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+                    if (script.onExecutionStateChange)  //supported by all (root container) scripts
+                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
                 }
                 this._scripts = scripts;
             },
@@ -272,36 +343,20 @@ PocketCode.Model.Sprite = (function () {
                 return this._scripts;
             },
         },
-
-        visible: {
-            get: function () {
-                return this._visible;
-            },
-        },
-
         scriptsRunning: {
             get: function () {
-                var scripts = this._scripts;
-                var es;
+                var scripts = this._scripts,
+                    script;
                 for (var i = 0, l = scripts.length; i < l; i++) {
-                    es = scripts[i].executionState;
-                    if (es == PocketCode.ExecutionState.PAUSED || es == PocketCode.ExecutionState.RUNNING) {
+                    script = scripts[i];
+                    if (script.executionState == PocketCode.ExecutionState.RUNNING ||
+                        script instanceof PocketCode.Model.WhenActionBrick ||
+                        script instanceof PocketCode.Model.WhenConditionMetBrick) {
                         return true;
                     }
                 }
                 return false;
             },
-        },
-    });
-
-    //events
-    Object.defineProperties(Sprite.prototype, {
-        /**
-         * @event
-         * indicates whether the sprite finished execution
-         */
-        onExecuted: {
-            get: function () { return this._onExecuted; },
         },
     });
 
@@ -335,12 +390,14 @@ PocketCode.Model.Sprite = (function () {
             this._colorEffect = 0.0;
             this._recalculateLookOffsets();
 
+            this._penDown = false;
+            this._penSize = 4;
+            this._penColor = { r: 0, g: 0, b: 255 };
+
             //variables
             this._resetVariables();
         },
-        /**
-         * calls pause() on every script as long as method is available
-         */
+
         pauseScripts: function () {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
@@ -348,9 +405,6 @@ PocketCode.Model.Sprite = (function () {
                     scripts[i].pause();
             }
         },
-        /**
-         * calls resume() on every script as long as method is available
-         */
         resumeScripts: function () {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
@@ -358,43 +412,46 @@ PocketCode.Model.Sprite = (function () {
                     scripts[i].resume();
             }
         },
-        /**
-         * calls stop() on every scripts
-         */
-        stopScript: function (scriptId) {
+        stopScript: function (calledFromStopBrick, scriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id === scriptId) {
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
                     return false;
                 }
             }
+            return false;
         },
-        stopAllScripts: function (exceptScriptId) {
+        stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== exceptScriptId)
-                    scripts[i].stop();
+                    scripts[i].stop(calledFromStopBrick);
             }
             return false;
         },
-        /**
-         * @event handler
-         * @private
-         */
-        _scriptOnExecuted: function (e) {
-            if (!this.scriptsRunning) {
+        _scriptOnExecutionChangeHandler: function (e) {
+            if (e.executionState == PocketCode.ExecutionState.STOPPED && !this.scriptsRunning) {
                 this._onExecuted.dispatchEvent();
             }
         },
-        /**
-         * @event helper
-         * @param properties
-         * @private
-         */
         _triggerOnChange: function (properties) {
             for (var prop in properties) {
                 if (properties[prop] != undefined && properties.hasOwnProperty(prop)) { //at least one item to update
+                    if (properties.x || properties.y) { //include sprite positions for pen
+                        properties.penX = this._positionX;
+                        properties.penY = this._positionY;
+                    }
+                    //add boundaries for bubbles if visible and roation has changed
+                    if (properties.rotation != undefined && this._bubbleVisible) {
+                        var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+                        if (this._currentLook && this._transparency < 100.0) {
+                            var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                            boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                        }
+                        properties.boundary = boundary;
+                    }
                     this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
                     return true;
                 }
@@ -421,27 +478,28 @@ PocketCode.Model.Sprite = (function () {
         },
 
         //motion: position
-        /**
-         * sets the position(x,y) of the sprite
-         * @param {number} x
-         * @param {number} y
-         * @param {boolean} triggerEvent
-         * @returns {boolean}
-         */
-        setPosition: function (x, y, triggerEvent) {
+        setPosition: function (x, y, triggerEvent, animationCancelCallback, velocity) {
             if (isNaN(x) || isNaN(y))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback && this._animationCancelCallback != animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
+            if (animationCancelCallback) {   //used to cancel animations
+                this._animationCancelCallback = animationCancelCallback;
+                //TODO: velocity
+            }
+
             if (this._positionX === x && this._positionY === y)
                 return false;
 
             var ops = {};
             if (this._positionX != x) {
                 this._positionX = x;
-                ops.x = Math.round(x + this._lookOffsetX);
+                ops.x = x + this._lookOffsetX;
             }
             if (this._positionY != y) {
                 this._positionY = y;
-                ops.y = Math.round(y + this._lookOffsetY);
+                ops.y = y + this._lookOffsetY;
             }
 
             if (triggerEvent == false)
@@ -449,107 +507,77 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(ops);
         },
-        /**
-         * sets the x position of the sprite
-         * @param {number} x
-         * @returns {boolean}
-         */
         setPositionX: function (x) {
             if (isNaN(x))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (this._positionX === x)
                 return false;
 
             this._positionX = x;
-            return this._triggerOnChange({ x: Math.round(x + this._lookOffsetX) });
+            return this._triggerOnChange({ x: x + this._lookOffsetX });
         },
-        /**
-         * changes the x position of the sprite by a value
-         * @param {number} value
-         * @returns {boolean}
-         */
         changePositionX: function (value) {
             if (isNaN(value))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (!value)
                 return false;
 
             this._positionX += value;
-            return this._triggerOnChange({ x: Math.round(this._positionX + this._lookOffsetX) });
+            return this._triggerOnChange({ x: this._positionX + this._lookOffsetX });
         },
-        /**
-         * sets the y position of the sprite
-         * @param {number} y
-         * @returns {boolean}
-         */
         setPositionY: function (y) {
             if (isNaN(y))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (this._positionY === y)
                 return false;
 
             var center = { length: 0, angle: 0 };
             this._positionY = y;
-            return this._triggerOnChange({ y: Math.round(y + this._lookOffsetY) });
+            return this._triggerOnChange({ y: y + this._lookOffsetY });
         },
-        /**
-         * changes the y position of the sprite by a value
-         * @param {number} value
-         * @returns {boolean}
-         */
         changePositionY: function (value) {
             if (isNaN(value))
                 throw new Error('invalid argument: position');
+
+            if (this._animationCancelCallback)  //cancel pending updates caused by animations
+                this._animationCancelCallback();
             if (!value)
                 return false;
 
             var center = { length: 0, angle: 0 };
             this._positionY += value;
-            return this._triggerOnChange({ y: Math.round(this._positionY + this._lookOffsetY) });
+            return this._triggerOnChange({ y: this._positionY + this._lookOffsetY });
         },
-        /**
-        /**
-         * moves the sprite "value" steps in the direction of the current direction
-         * @param {number} steps
-         * @returns {boolean}
-         */
-        move: function (steps) {
+        move: function (steps, velocity) {
             if (!steps || isNaN(steps))
                 return false;
 
             var rad = (90.0 - this._direction) * Math.PI / 180.0;
-            var offsetX = Math.round(Math.cos(rad) * steps),    //make sure the value is an int
-                offsetY = Math.round(Math.sin(rad) * steps);
+            var offsetX = Math.cos(rad) * steps,
+                offsetY = Math.sin(rad) * steps;
 
-            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY);
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, velocity);
         },
         //motion:direction
-        /**
-         * turns the sprite "value" degree left
-         * @param {number} degree
-         * @returns {*}
-         */
         turnLeft: function (degree) {
             if (!degree)
                 return false;
             return this.setDirection(this._direction - degree);
         },
-        /**
-         * turns the sprite "value" degree right
-         * @param degree
-         * @returns {boolean}
-         */
         turnRight: function (degree) {
             if (!degree)
                 return false;
             return this.setDirection(this._direction + degree);
         },
-        /**
-         * sets the direction of the sprite to degree value
-         * @param {number} degree
-         * @param triggerEvent
-         * @returns {boolean}
-         */
         setDirection: function (degree, triggerEvent) {
             if (degree === undefined || this._direction === degree)
                 return false;
@@ -585,24 +613,19 @@ PocketCode.Model.Sprite = (function () {
             if (triggerEvent == false)
                 return true;
 
-            props.x = Math.round(this._positionX + this._lookOffsetX);
-            props.y = Math.round(this._positionY + this._lookOffsetY);
+            props.x = this._positionX + this._lookOffsetX;
+            props.y = this._positionY + this._lookOffsetY;
 
             return this._triggerOnChange(props);
         },
-        /**
-         * sets the direction of current sprite so that it points to a given sprite
-         * @param spriteId
-         * @returns {boolean}
-         */
-        pointTo: function (spriteId) {
+        SetDirectionTo: function (spriteId) {
             if (!spriteId)
                 return false;
 
-            var pointTo = this._scene.getSpriteById(spriteId); //throws error if undefined
+            var SetDirectionTo = this._scene.getSpriteById(spriteId); //throws error if undefined
 
-            var offsetX = pointTo.positionX - this.positionX;
-            var offsetY = pointTo.positionY - this.positionY;
+            var offsetX = SetDirectionTo.positionX - this.positionX;
+            var offsetY = SetDirectionTo.positionY - this.positionY;
 
             if (offsetX === 0 && offsetY === 0)
                 return false;
@@ -610,25 +633,12 @@ PocketCode.Model.Sprite = (function () {
             return this.setDirection(90.0 - Math.atan2(offsetY, offsetX) * 180.0 / Math.PI);
         },
         //motion: layer
-        /**
-         * sets the sprite "value" layers back
-         * @param {number} layers
-         * @returns {*}
-         */
         goBack: function (layers) {
             return this._scene.setSpriteLayerBack(this, layers);
         },
-        /**
-         * sets the layer of the sprite to the foremost one
-         * @returns {*}
-         */
         comeToFront: function () {
             return this._scene.setSpriteLayerToFront(this);
         },
-        /**
-         * sets the rotation style of the sprite (enum value)
-         * @returns {*}
-         */
         setRotationStyle: function (value) {
             var old = this._rotationStyle,
                 props = {};
@@ -644,8 +654,8 @@ PocketCode.Model.Sprite = (function () {
                     if (this._direction != 90.0) {  //rotation changed
                         this._recalculateLookOffsets();
                         props.rotation = this._direction - 90.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 case PocketCode.RotationStyle.LEFT_TO_RIGHT:
@@ -654,32 +664,30 @@ PocketCode.Model.Sprite = (function () {
                     if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 case PocketCode.RotationStyle.DO_NOT_ROTATE:
                     if (this._direction != 90.0 && old == PocketCode.RotationStyle.ALL_AROUND) {
                         this._recalculateLookOffsets();
                         props.rotation = 0.0;
-                        props.x = Math.round(this._positionX + this._lookOffsetX);
-                        props.y = Math.round(this._positionY + this._lookOffsetY);
+                        //props.x = Math.round(this._positionX + this._lookOffsetX);
+                        //props.y = Math.round(this._positionY + this._lookOffsetY);
                     }
                     break;
                 default:
                     throw new Error('invalid argument: unknown rotation style');
             }
 
+            props.x = this._positionX + this._lookOffsetX;
+            props.y = this._positionY + this._lookOffsetY;
+
             if (props.flipX == undefined && props.rotation == undefined)
                 return false;
             return this._triggerOnChange(props);
         },
         //looks
-        /**
-         * sets the look of the sprite
-         * @param lookId
-         * @returns {boolean}
-         */
         setLook: function (lookId) {
             if (this._currentLook && this._currentLook.id === lookId || this._looks.length == 0)
                 return false;
@@ -694,18 +702,25 @@ PocketCode.Model.Sprite = (function () {
                     update = { look: look.canvas };
 
                     this._recalculateLookOffsets();
-                    update.x = Math.round(this._positionX + this._lookOffsetX);
-                    update.y = Math.round(this._positionY + this._lookOffsetY);
+                    update.x = this._positionX + this._lookOffsetX;
+                    update.y = this._positionY + this._lookOffsetY;
                     return this._triggerOnChange(update);
                 }
             }
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
+        setLookByIndex: function (lookIdx) {
+            if (isNaN(lookIdx) || lookIdx < 1 || this._currentLook && this.currentLookNumber === lookIdx || lookIdx > this._looks.length)
+                return false;
 
-        /**
-         * sets the current look of the sprite to the previous one in the list
-         * @returns {boolean}
-         */
+            this._currentLook = this._looks[lookIdx - 1];
+            update = { look: this._currentLook.canvas };
+
+            this._recalculateLookOffsets();
+            update.x = this._positionX + this._lookOffsetX;
+            update.y = this._positionY + this._lookOffsetY;
+            return this._triggerOnChange(update);
+        },
         previousLook: function () {
             if (this._currentLook == undefined || this._looks.length == 0)
                 return false;
@@ -725,16 +740,12 @@ PocketCode.Model.Sprite = (function () {
 
                     this._recalculateLookOffsets();
                     update = { look: this._currentLook.canvas };
-                    update.x = Math.round(this._positionX + this._lookOffsetX);
-                    update.y = Math.round(this._positionY + this._lookOffsetY);
+                    update.x = this._positionX + this._lookOffsetX;
+                    update.y = this._positionY + this._lookOffsetY;
                     return this._triggerOnChange(update);
                 }
             }
         },
-        /**
-         * sets the current look of the sprite to the next one in the list
-         * @returns {boolean}
-         */
         nextLook: function () {
             if (this._currentLook == undefined || this._looks.length == 0)
                 return false;
@@ -754,17 +765,12 @@ PocketCode.Model.Sprite = (function () {
 
                     this._recalculateLookOffsets();
                     update = { look: this._currentLook.canvas };
-                    update.x = Math.round(this._positionX + this._lookOffsetX);
-                    update.y = Math.round(this._positionY + this._lookOffsetY);
+                    update.x = this._positionX + this._lookOffsetX;
+                    update.y = this._positionY + this._lookOffsetY;
                     return this._triggerOnChange(update);
                 }
             }
         },
-        /**
-         * sets the size of the sprite with percentage "value"
-         * @param {number} percentage
-         * @returns {boolean}
-         */
         setSize: function (percentage) {
             if (percentage === undefined || isNaN(percentage) || percentage == null)
                 throw new Error('invalid percentage ');
@@ -780,15 +786,10 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange({
                 scaling: this._scaling,
-                x: Math.round(this._positionX + this._lookOffsetX),
-                y: Math.round(this._positionY + this._lookOffsetY),
+                x: this._positionX + this._lookOffsetX,
+                y: this._positionY + this._lookOffsetY,
             });
         },
-        /**
-         * changes the current size by "value"
-         * @param {number} value
-         * @returns {boolean}
-         */
         changeSize: function (value) {  //TODO: checkout default behaviour on <0
             if (value === undefined || isNaN(value) || value == null)
                 throw new Error('invalid value');
@@ -808,25 +809,18 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange({
                 scaling: scaling,
-                x: Math.round(this._positionX + this._lookOffsetX),
-                y: Math.round(this._positionY + this._lookOffsetY),
+                x: this._positionX + this._lookOffsetX,
+                y: this._positionY + this._lookOffsetY,
             });
         },
-        /**
-         * sets the sprite as not visible
-         * @returns {boolean}
-         */
         hide: function () {
-            if (!this._visible)
+            if (!this._visible && !this._bubbleVisible)
                 return false;
-
+            
             this._visible = false;
-            return this._triggerOnChange({ visible: false });
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ visible: false, bubble: { visible: false } });
         },
-        /**
-         * sets the sprite as visible
-         * @returns {boolean}
-         */
         show: function () {
             if (this._visible)
                 return false;
@@ -834,12 +828,6 @@ PocketCode.Model.Sprite = (function () {
             this._visible = true;
             return this._triggerOnChange({ visible: true });
         },
-        /**
-         * sets the graphicEffect of the sprite with a given effect and value of the effect
-         * @param {PocketCode.GraphicEffect} effect
-         * @param {number} value
-         * @returns {*}
-         */
         setGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value))
                 return false;
@@ -861,12 +849,6 @@ PocketCode.Model.Sprite = (function () {
                     throw new Error('unknown graphic effect: ' + effect);
             }
         },
-        /**
-         * changes the graphicEffect with a given effect and value of the effect
-         * @param {PocketCode.GraphicEffect} effect
-         * @param {number} value
-         * @returns {*}
-         */
         changeGraphicEffect: function (effect, value) {
             if (value === undefined || isNaN(value))
                 return false;
@@ -889,12 +871,6 @@ PocketCode.Model.Sprite = (function () {
             }
         },
         /* set to private and called from set/change graphic effect*/
-        /**
-         * sets the transparency of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
         _setTransparency: function (value) {
             if (value < 0.0)
                 value = 0.0;
@@ -908,12 +884,6 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] });
         },
         /* set to private and called from set/change graphic effect*/
-        /**
-         * sets the brightness of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
         _setBrightness: function (value) {
             if (value < 0.0)
                 value = 0.0;
@@ -927,12 +897,6 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.BRIGHTNESS, value: value - 100.0 }] });  //send +-100 instead of 0..200
         },
         /* set to private and called from set/change graphic effect*/
-        /**
-         * sets the color effect of the sprite by the "value" percentage
-         * @param {number} percentage
-         * @returns {boolean}
-         * @private
-         */
         _setColorEffect: function (value) {
             while (value < 0.0)
                 value += 200.0;
@@ -945,10 +909,6 @@ PocketCode.Model.Sprite = (function () {
             this._colorEffect = value;
             return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.COLOR, value: value }] });
         },
-        /**
-         * clears all graphicEffects of the sprite
-         * @returns {boolean}
-         */
         clearGraphicEffects: function () {
             var graphicEffects = [];
 
@@ -970,10 +930,6 @@ PocketCode.Model.Sprite = (function () {
                 return false;
             return this._triggerOnChange({ graphicEffects: graphicEffects });
         },
-        ///**
-        // * checks if sprite flips at the edge
-        // * @returns {*}
-        // */
         ifOnEdgeBounce: function (vpEdges, changes) {
 
             if (!this._currentLook)   //no look defined (cannot be changed either): no need to handle this
@@ -1205,10 +1161,10 @@ PocketCode.Model.Sprite = (function () {
             }
 
             if (this.positionX !== newX) {
-                props.x = Math.round(newX + this._lookOffsetX);
+                props.x = newX + this._lookOffsetX;
             }
             if (this.positionY !== newY) {
-                props.y = Math.round(newY + this._lookOffsetY);
+                props.y = newY + this._lookOffsetY;
             }
             if (props.x || props.y)
                 this.setPosition(newX, newY, false);
@@ -1219,106 +1175,210 @@ PocketCode.Model.Sprite = (function () {
 
             return this._triggerOnChange(props);    //returns false for empty objects
         },
+        drawStamp: function () {
+            return this._triggerOnChange({ drawStamp: true });
+        },
 
-        penDown: function(penDown) {
-            if(this._penDown == penDown)
+        showBubble: function (type, text) {
+            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
+            //console.log("show");
+            this._bubbleVisible = true;
+            var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+            if (this._currentLook && this._transparency < 100.0) {
+                var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+            }
+            return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
+        },
+        hideBubble: function (type) {
+            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ bubble: { visible: false } });
+        },
+
+        clone: function (device, soundManager, broadcastMgr) {
+            if (!this._spriteFactory)
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
+
+            var definition = {
+                _positionX: this._positionX,
+                _positionY: this._positionY,
+                _rotationStyle: this._rotationStyle,
+                _direction: this._direction,
+
+                //looks
+                _scaling: this._scaling,
+                _visible: this._visible,
+                _transparency: this._transparency,
+                _brightness: this._brightness,
+                _colorEffect: this._colorEffect,
+
+                //pen
+                _penDown: this._penDown,
+                _penSize: this._penSize,
+                _penColor: this._penColor,
+
+                currentLookId: this._currentLook.id,
+                variables: this.getAllVariables().local,
+                lists: this.getAllLists().local,
+            };
+
+            var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
+            return clone;
+        },
+        //collision: in formula
+        collidesWithSprite: function (spriteName) {
+            var sprite = this._scene.getSpriteByName(spriteName);
+            if (!sprite)
                 return false;
 
-            console.log("pendown");
-
-            this._penDown = penDown;
-            return this._triggerOnChange({penDown:this._penDown});
-
+            var collisionMgr = this._scene.collisionManager;
+            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
         },
-        penSize: function(penSize) {
-
-            console.log("pensize");
-
-            if(this._penSize == penSize)
-                return false;
-            this._penSize = penSize;
-            return this._triggerOnChange({penSize:this._penSize});
-        },
-        penColor: function(blue, red, green) {
-
-            console.log("pencolor");
-
-            if(this._penColorBlue == blue && this._penColorRed == red && this._penColorGreen == green)
-                return false;
-            this._penColorBlue = blue;
-            this._penColorRed = red;
-            this._penColorGreen = green;
-            return this._triggerOnChange({ color : {blue: this._penColorBlue, red: this._penColorRed, green: this._penColorGreen}});
-        },
-        penStamp: function(){
-            this._stamp = true;
-            return this._triggerOnChange({stamp:this._stamp});
-        },
-
-        showBubble: function(type, text) {
-
-            return this._triggerOnChange({bubble: { type: type, text: text, visible: true}});
-        },
-        hideBubble: function(type) {
-            return this._triggerOnChange({bubble: { type: type, visible: false}});
-        },
-
-
         /* override */
         dispose: function () {
             this.stopAllScripts();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
-            this._onChange = undefined;     //make sure the game engines event is not disposed (shared event)
+            this._scene = undefined;        //make sure the scene is not disposed
+            this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
             var script,
                 scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
                 script = scripts[i];
                 if (script.onExecuted)  //supported by all (root container) scripts
-                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecuted, this));
+                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
             }
 
             //call super
-            PocketCode.UserVariableHost.prototype.dispose.call(this);
+            PocketCode.Model.UserVariableHost.prototype.dispose.call(this);
         },
+
     });
 
     return Sprite;
 })();
+
+
+PocketCode.Model.merge({
+    SpriteClone: (function () {
+        SpriteClone.extends(PocketCode.Model.Sprite, false);
+
+        function SpriteClone(gameEngine, scene, jsonSprite, definition) {
+            PocketCode.Model.Sprite.call(this, gameEngine, scene, jsonSprite);
+
+            if (!definition || typeof definition != 'object')
+                throw new Error('clone needs a defnition object to merge paroperties from original sprite');
+
+            this._id = SmartJs.getNewId();
+
+            //looks: a sprite doesn't always have a look
+            if (jsonSprite.looks != undefined)
+                this.looks = jsonSprite.looks;
+
+            this.initLooks();
+
+            //sounds
+            if (jsonSprite.sounds) {
+                this.sounds = jsonSprite.sounds;
+            }
+
+            //variables: a sprite may have no (local) variables
+            this._variables = jsonSprite.variables || [];
+            this._lists = jsonSprite.lists || [];
+
+            this.setLook(definition.currentLookId);
+            delete definition.currentLookId;
+
+            for (var id in definition.variables) {
+                this.getVariable(id).value = definition.variables[id].value;
+            }
+            delete definition.variables;
+
+            var list;
+            for (var id in definition.lists) {
+                list = this.getList(id);
+                for (var i = 0, l = definition.lists[id].length; i < l; i++)
+                    list.append(definition.lists[id].valueAt(i + 1));
+            }
+            delete definition.lists;
+
+            this.merge(definition);
+            this._recalculateLookOffsets();
+
+            this._onCloneStart = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(SpriteClone.prototype, {
+            onCloneStart: {
+                get: function () {
+                    return this._onCloneStart;
+                }
+            },
+        });
+
+        //SpriteClone.prototype.merge({
+        //    /* override */
+        //    dispose: function () {
+        //        this.stopAllScripts();
+
+        //        //this._gameEngine = undefined;   //make sure the game engine is not disposed
+        //        //this._scene = undefined;        //make sure the scene is not disposed
+        //        //this._onChange = undefined;     //make sure the scene event is not disposed (shared event)
+        //        //var script,
+        //        //    scripts = this._scripts;
+        //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
+        //        //    script = scripts[i];
+        //        //    if (script.onExecuted)  //supported by all (root container) scripts
+        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+        //        //}
+
+        //        //call super
+        //        PocketCode.Model.Sprite.prototype.dispose.call(this);
+        //    },
+        //});
+
+        return SpriteClone;
+    })(),
+});
+
 
 PocketCode.Model.merge({
     BackgroundSprite: (function () {
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 
         function BackgroundSprite(gameEngine, scene, propObject) {
-
             PocketCode.Model.Sprite.call(this, gameEngine, scene, propObject);
 
-            this._cameraTransparency = 0.5; //default
+            this._lookChangeBroker = new PocketCode.PublishSubscribeBroker();
         }
-
-        //properties
-        //Object.defineProperties(BackgroundSprite.prototype, {
-        //    isBackground: {
-        //        value: true,
-        //    },
-        //});
 
         //methods
         BackgroundSprite.prototype.merge({
-            //TODO: setTransparency: to include cameraTransparency? Notify Background on device.onCameraUsageChanged to chagne this?
-            setCameraTransparency: function(value) {
-                if (value < 0.0)
-                    value = 0.0;
-                if (value > 100.0)
-                    value = 100.0;
-
-                if (this._cameraTransparency === value)
+            subscribeOnLookChange: function (lookId, handler) {
+                this._lookChangeBroker.subscribe(lookId, handler);
+            },
+            unsubscribeFromLookChange: function (lookId, handler) {
+                this._lookChangeBroker.unsubscribe(lookId, handler);
+            },
+            /* override */
+            setLook: function (lookId, waitCallback) {
+                var success = PocketCode.Model.Sprite.prototype.setLook.call(this, lookId);
+                if (!success) {
+                    if (waitCallback)
+                        waitCallback(false);
                     return false;
+                }
 
-                this._cameraTransparency = value;
-                //return this._triggerOnChange({ graphicEffects: [{ effect: PocketCode.GraphicEffect.GHOST, value: value }] }); //TODO: combine _transparency & _cameraTransparency
-            }
+                this._lookChangeBroker.publish(lookId, waitCallback);
+                return true;
+            },
+            //dispose: function () {
+            //    this._lookChangeBroker.dispose();
+            //    PocketCode.Model.Sprite.prototype.dispose.call(this);
+            //},
         });
 
         return BackgroundSprite;
@@ -1333,7 +1393,7 @@ PocketCode.Model.merge({
 
             this._mass = 1.0;
             this._density = 1.0;
-            this._movementStyle = PocketCode.MovementStyle.NONE;
+            this._physicsType = PocketCode.PhysicsType.NONE;
             this._velocityX = 0;
             this._velocityY = 0;
             this._friction = 0.2;
@@ -1359,13 +1419,13 @@ PocketCode.Model.merge({
                 }
             },
             bounceFactor: {
-                set: function(value) {
+                set: function (value) {
                     this._bounceFactor = value;
                 }
             },
-            movementStyle: {
-                set: function(value) {
-                    this._movementStyle = value;
+            physicsType: {
+                set: function (value) {
+                    this._physicsType = value;
                     //todo
                 }
             }
@@ -1373,9 +1433,9 @@ PocketCode.Model.merge({
 
         //methods
         PhysicsSprite.prototype.merge({
-            setGravity: function(x, y) {    //TODO: why method and not prop?
-                this._scene.setGravity(x, y);
-            },
+            //setGravity: function(x, y) {    //TODO: why method and not prop? DEFINED IN SCENE
+            //    this._scene.setGravity(x, y);
+            //},
             setVelocity: function (x, y) {    //TODO: why method and not prop?
                 this._velocityX = x;
                 this._velocityY = y;

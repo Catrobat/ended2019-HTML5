@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksControl.js" />
@@ -12,28 +12,34 @@ QUnit.module("model/sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var programExecAsync = assert.async();
+    //assert.ok(false, "TODO");
+    //return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
+
+   // var programExecAsync = assert.async();
     var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
-    var prog = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
-    var sprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
-    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
+    assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
     assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
     //triggerOnChange
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
     //timer (currently not in use)
-    //assert.equal(sprite.projectTimerValue, prog.projectTimer.value, "timer getter");
+    //assert.equal(sprite.projectTimerValue, gameEngine.projectTimer.value, "timer getter");
 
     //dispose: this is called after the last async test to avoid errors 
     var disposeTest = function () {
         if (asyncCalls < 2)
-            return;
+            //return;
         sprite.dispose();
         assert.ok(sprite._disposed, "sprite disposed");
         finalAsyncCall();
@@ -47,7 +53,7 @@ QUnit.test("Sprite", function (assert) {
     sprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     //properties
-    assert.throws(function () { var err = new PocketCode.Model.Sprite(prog, scene); }, Error, "missing ctr arguments");
+    assert.throws(function () { var err = new PocketCode.Model.Sprite(gameEngine, scene); }, Error, "missing ctr arguments");
     assert.equal(sprite.id, "newId", "id ctr setter");
     assert.equal(sprite.name, "myName", "name ctr setter");
 
@@ -75,26 +81,27 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.colorEffect, 0, "colorEffect initial");
 
     //events
-    //assert.ok(sprite.onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
-    //assert.equal(sprite.onChange, prog.onSpriteUiChange, "program - sprite event sharing");
-    //assert.equal(sprite.onChange.target, prog, "onSpriteUiChange target check");
+    assert.ok(sprite._onChange instanceof SmartJs.Event.Event, "event: onChange accessor and instance");
+    assert.equal(sprite._onChange, gameEngine.onSpriteUiChange, "program - sprite event sharing");
+    assert.equal(sprite._onChange.target, gameEngine, "onSpriteUiChange target check");
 
-    //assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
+    assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
-    //var props = { direction: 90 };
-    //var onChangeHandler = function (e) {
-    //    assert.equal(e.target, evSprite, "onChange target check");
-    //    assert.equal(e.id, "newId", " onChange id check");
-    //    assert.deepEqual(e.properties, props, "onChange event args properties check");
-    //};
-    //var prog2 = new PocketCode.GameEngine();
-    //var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
-    //evSprite.onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    var props = { direction: 90 };
+    var onChangeHandler = function (e) {
+        assert.equal(e.target, evSprite, "onChange target check");
+        assert.equal(e.id, "newId", " onChange id check");
+        assert.deepEqual(e.properties, props, "onChange event args properties check");
+        evSprite._onChange.removeEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+    };
+    var prog2 = new PocketCode.GameEngine();
+    var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
+    evSprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
-    //evSprite._triggerOnChange(props);
+    evSprite._triggerOnChange(props);
 
 
-    sprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     var returnVal;
 
     // ********************* GraphicEffects *********************
@@ -204,15 +211,16 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* Constructor *********************
 
-    var device = new PocketCode.Device(this._soundManager);
-    prog._brickFactory = new PocketCode.BrickFactory(device, prog, prog._broadcastMgr, prog._soundManager, 20);
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
+    gameEngine._brickFactory = new PocketCode.BrickFactory(device, gameEngine, gameEngine._broadcastMgr, gameEngine._soundManager, 20);
 
     var jsonProject = JSON.parse(JSON.stringify(projectSounds));
     var jsonSprite = jsonProject.sprites[0];
     jsonSprite.sounds = jsonProject.sounds;
     jsonSprite.variables = strProject11.variables;
 
-    var testSprite = new PocketCode.Model.Sprite(prog, scene, jsonSprite);
+    var testSprite = new PocketCode.Model.Sprite(gameEngine, scene, jsonSprite);
 
     assert.deepEqual(testSprite.id, jsonSprite.id, "Id set correctly");
     assert.deepEqual(testSprite.name, jsonSprite.name, "Name set correctly");
@@ -233,9 +241,68 @@ QUnit.test("Sprite", function (assert) {
     //assert.ok(soundsMatch, "Sounds set correctly");
     assert.equal(testSprite.sounds, jsonSprite.sounds, "Sounds set correctly");
 
+    // ********************* isBackground/pen *********************
+    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, jsonSprite);
+
+    //isBackground Tests
+    testBackgroundSprite.isBackground = false;
+    assert.equal(testBackgroundSprite.isBackground, false, "renderingSprite: isBackground set correctly");
+    testBackgroundSprite.isBackground = true;
+    assert.equal(testBackgroundSprite.isBackground, true, "renderingSprite: isBackground set correctly");
+
+    //penDown Test
+    assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false");
+    testSprite.penDown = false;
+    assert.equal(testSprite._penDown, false, "renderingSprite: penDown is false (nothing changed)");
+    testSprite.penDown = true;
+    assert.equal(testSprite._penDown, true, "renderingSprite: penDown is true");
+
+    //penSize Test
+    testSprite.penSize = 4;
+    assert.equal(testSprite._penSize, 4, "renderingSprite: penSize is 4");
+    testSprite.penSize = 8;
+    assert.equal(testSprite._penSize, 8, "renderingSprite: penSize is 8");
+
+    //penColor Test
+    var actualPenColor = testSprite._penColor;
+    var expectedPenColor = testSprite._penColor;
+
+    var rgbObject = {r: 0, g: 0, b:255};
+    testSprite.penColor = rgbObject;
+    assert.equal(actualPenColor, testSprite._penColor, "penColor not changed");
+
+    rgbObject = {r: 25, g: 25, b:25};
+    testSprite.penColor = rgbObject;
+    assert.notEqual(actualPenColor, testSprite._penColor, "renderingSprite: penColor set correctly");
+    assert.ok(testSprite._penColor.r === 25 &&
+        testSprite._penColor.g === 25 &&
+        testSprite._penColor.b === 25,
+        "penColor (r, g, b) set correctly 2");
+
+    assert.throws(function () { testSprite.penColor = 25 }, Error, "ERROR: invalid argument on penColor");
+
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is blue");
+    actualPenColor.b = 0;
+    actualPenColor.r = 255;
+    expectedPenColor.b = 0;
+    expectedPenColor.r = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is red");
+    actualPenColor.r = 0;
+    actualPenColor.g = 255;
+    expectedPenColor.r = 0;
+    expectedPenColor.g = 255;
+    assert.equal(actualPenColor, expectedPenColor, "renderingSprite: penColor is green");
+
+    // *************************************************************
+
+
+   // programExecAsync();
+    //testsExecAsync();
+    //finalAsyncCall();
+
     var bricksMatch = true;
     for (var i = 0, length = jsonSprite.scripts.length; i < length; i++) {
-        if (testSprite._scripts[i].imageId !== jsonSprite.scripts[i].id)
+        if (testSprite._scripts[i].id !== jsonSprite.scripts[i].id)
             bricksMatch = false;
     }
     assert.ok(bricksMatch, "Bricks set correctly");
@@ -259,6 +326,9 @@ QUnit.test("Sprite", function (assert) {
     testSprite._lookOffsetX = lookOffsetX;
     testSprite._lookOffsetY = lookOffsetY;
 
+    var renderingVar = testSprite.renderingVariables;
+    assert.ok(renderingVar instanceof Array, "renderingVariables getter");
+
     var renderingSprite = testSprite.renderingSprite;
 
     assert.strictEqual(renderingSprite.id, testSprite.id, "renderingSprite: id set correctly");
@@ -270,6 +340,8 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters
+
+
 
     var graphicEffectsSet = renderingSprite._graphicEffects && renderingSprite._graphicEffects instanceof Array;
     assert.ok(graphicEffectsSet, "renderingSprite: graphicEffects created as array");
@@ -308,19 +380,19 @@ QUnit.test("Sprite", function (assert) {
 
     var corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.scripts = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for bricks.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.sounds = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for sounds.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.variables = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for variables.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for variables.");
 
     corruptSprite = JSON.parse(JSON.stringify(projectSounds.sprites[0]));
     corruptSprite.looks = {};
-    assert.throws(function () { new PocketCode.Model.Sprite(prog, scene, corruptSprite); }, Error, "Error: incorrect argument for looks.");
+    assert.throws(function () { new PocketCode.Model.Sprite(gameEngine, scene, corruptSprite); }, Error, "Error: incorrect argument for looks.");
 
 
     // *************************************************************
@@ -401,9 +473,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     //if on edge, bounce
-    //assert.ok(typeof prog.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
+    //assert.ok(typeof gameEngine.ifSpriteOnEdgeBounce === "function", "sprite-program interface: if on edge bounce");
     //var ioeCalled = false;
-    //prog.ifSpriteOnEdgeBounce = function () {    //override to check call
+    //gameEngine.ifSpriteOnEdgeBounce = function () {    //override to check call
     //    ioeCalled = true;
     //};
     //sprite.ifOnEdgeBounce();
@@ -427,22 +499,22 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.setDirection() == false, "setDirection return value false (no parameter)");
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -35 && sprite.positionY == -10 && sprite._direction == -90, "move steps -90°");
+    assert.ok(sprite.positionX == -35 && Math.round(sprite.positionY) == -10 && sprite._direction == -90, "move steps -90°");
 
     sprite.setDirection(-180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps -180°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps -180°");
 
     sprite.setDirection(180, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps 180°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == -35 && sprite._direction == 180, "move steps 180°");
 
     sprite.setDirection(0, triggerEvent);
     sprite.setPosition(-10, -10);
     sprite.move(25);
-    assert.ok(sprite.positionX == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
+    assert.ok(Math.round(sprite.positionX) == -10 && sprite.positionY == 15 && sprite._direction == 0, "move steps 0°");
 
     triggerEvent = false;
     returnVal = sprite.setDirection(-90, triggerEvent);
@@ -563,7 +635,14 @@ QUnit.test("Sprite", function (assert) {
     looks[0] = look1;
     looks[1] = look2;
 
+    assert.equal(sprite.currentLookNumber, "0", "currentLookNumber getter (currentLook undefined)");
+    assert.equal(sprite.currentLookName, "", "currentLookName getter (currentLook undefined");
+
     sprite.looks = looks;
+
+    assert.equal(sprite.currentLookNumber, "1", "currentLookNumber getter");
+    assert.equal(sprite.currentLookName, "look1", "currentLookName getter");
+
     //apply center to internal looks to run these tests
     sprite._looks[0]._center = { length: 0, angle: 0 };
     sprite._looks[0]._canvas = "canvas";    //we have to set this as this property will be returned as look in the event args
@@ -580,8 +659,8 @@ QUnit.test("Sprite", function (assert) {
 
     //we do have to overide the gameEngine look equest to test this, as there are no looks registered
     //game engine: getLookImage
-    assert.ok(typeof prog.getLookImage === "function", "sprite-program interface: get look from store");
-    //prog.getLookImage = function (id) {
+    assert.ok(typeof gameEngine.getLookImage === "function", "sprite-program interface: get look from store");
+    //gameEngine.getLookImage = function (id) {
     //    return { canvas: new Image(), center: { length: 0, angle: 0 }, initialScaling: 0.5 };
     //};
     returnVal = sprite.setLook("second");
@@ -609,6 +688,9 @@ QUnit.test("Sprite", function (assert) {
     returnVal = sprite.nextLook();
     assert.ok(sprite._currentLook.name == "look2", "next look 2");
     assert.ok(returnVal, "next look is set correctly");
+
+    assert.equal(sprite.currentLookNumber, "2", "currentLookNumber getter 2");
+    assert.equal(sprite.currentLookName, "look2", "currentLookName getter 2");
 
     sprite._looks.pop();    //only one left
     returnVal = sprite.nextLook();
@@ -666,9 +748,9 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* start/pause/resume/stop *********************
-    //var device = new PocketCode.Device();
+    //var device = new PocketCode.MediaDevice();
     var programAsync = new PocketCode.GameEngine();
-    scene = new PocketCode.Model.Scene();
+    scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     programAsync._executionState = PocketCode.ExecutionState.RUNNING;
     programAsync.getLookImage = function (id) { //override to test look center 
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
@@ -677,10 +759,12 @@ QUnit.test("Sprite", function (assert) {
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     brick1._id = "first";
     var brick2 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick2._id = "second";
     //adding a test brick to the internal brick container
     var testBrick = new PocketCode.Model.WaitBrick(device, sprite, { duration: { type: "NUMBER", value: 0.2, right: null, left: null } });
     brick2._bricks._bricks.push(testBrick);
     var brick3 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick3._id = "third";
     //var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     //var brick5 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
     var tmpBricks = [];
@@ -692,10 +776,6 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite._scripts.length == 3, "bricks length");
 
     assert.ok(sprite.scriptsRunning == false, "scrips not running");
-    brick2._executionState = PocketCode.ExecutionState.PAUSED;  //simulate paused
-    assert.ok(sprite.scriptsRunning, "scrips running: paused");
-    brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
-    assert.ok(sprite.scriptsRunning, "scrips running: running");
 
     //start, pause, resume, stop + executed
     //binding program events
@@ -718,28 +798,44 @@ QUnit.test("Sprite", function (assert) {
     //scene.onStart.dispatchEvent();
     //assert.ok(sprite.scriptsRunning, "scrips running: onExecute (program)");
 
-    sprite.pauseScripts();
-    assert.ok(sprite.scriptsRunning, "scrips running: paused");
+    brick1._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
+    brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
+    brick3._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
 
     //making sure the script was really paused is quite a hack here
     var isPaused = function () {
-        for (var p in testBrick._pendingOps) {
-            if (testBrick._pendingOps.hasOwnProperty(p)) {
-                var po = testBrick._pendingOps[p];
-                if (po.timer._paused !== true)
-                    return false;
+        for (var i = 0; i < sprite._scripts.length; i++) {
+            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == true, "scrips running: paused");
+            for(var j = 0; j <sprite._scripts[i]._bricks._bricks.length; j++){
+                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == true, "bricks running: paused");
             }
         }
-        return true;
     };
 
-    assert.ok(isPaused(), "script paused correctly: deep check (timer)");
+    var isResumed = function () {
+        for (var i = 0; i < sprite._scripts.length; i++) {
+            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == false, "scrips running: running");
+            for(var j = 0; j <sprite._scripts[i]._bricks._bricks.length; j++){
+                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == false, "bricks running: running");
+            }
+        }
+    };
+
+    sprite.pauseScripts();
+    isPaused();
 
     sprite.resumeScripts();
+    isResumed();
     assert.ok(sprite.scriptsRunning, "scrips running: running");
-    assert.ok(!isPaused(), "script resumed correctly: deep check (timer)");
 
-    sprite.stopAllScripts();
+    sprite.stopScript(true, "1");
+    assert.ok(sprite.scriptsRunning, "scrips running: running (stopScript with non existing id)");
+
+    sprite.stopScript(true, "first");
+    assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
+    assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
+
+    sprite.stopAllScripts(true);
     assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
     assert.ok(function () {
         for (var p in testBrick._pendingOps)
@@ -753,19 +849,19 @@ QUnit.test("Sprite", function (assert) {
     scene.onStart.dispatchEvent();
 
     // ********************* come to front/go back *********************
-    var program = new PocketCode.GameEngine();
-    program.getLookImage = function (id) { //override to test look center 
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine.getLookImage = function (id) { //override to test look center 
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
     };
 
-    var newSprite = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var newSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(newSprite);
     var firstLayer = newSprite.layer;
 
-    var newSprite2 = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var newSprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(newSprite2);
 
-    var tmpsprite = new PocketCode.Model.Sprite(program, scene, { id: "newId", name: "myName" });
+    var tmpsprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     scene._sprites.push(tmpsprite);
 
     newSprite.comeToFront();
@@ -790,8 +886,10 @@ QUnit.test("Sprite", function (assert) {
     // *************************************************************
 
     // ********************* point to *********************
+    sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     sprite._id = "id1";
-    newSprite = new PocketCode.Model.Sprite(prog, scene, { id: "newId", name: "myName" });
+    scene._sprites.push(sprite);
+    newSprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     newSprite._id = "id2";
     scene._sprites.push(newSprite);
     var tmp = scene.getSpriteById("id2");
@@ -800,37 +898,76 @@ QUnit.test("Sprite", function (assert) {
     newSprite.setPosition(100, 100);
     sprite.setPosition(50, 50);
 
-    returnVal = sprite.pointTo();
-    assert.ok(!returnVal, "pointTo: missing argument");
-    returnVal = sprite.pointTo("id2");
+    returnVal = sprite.SetDirectionTo();
+    assert.ok(!returnVal, "SetDirectionTo: missing argument");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(sprite.direction == 45, "point to right up sprite");
     assert.ok(returnVal, "point to: value changed");
-    assert.ok(lastOnChangeArgs.rotation !== undefined, "pointTo event args");
-    returnVal = sprite.pointTo("id2");
+    assert.ok(lastOnChangeArgs.rotation !== undefined, "SetDirectionTo event args");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(!returnVal, "point to: value not changed");
-    //returnVal = sprite.pointTo(sprite.id);
+    //returnVal = sprite.SetDirectionTo(sprite.id);
     //assert.ok(!returnVal, "point to: self (no change)");
-    assert.throws(function () { sprite.pointTo(sprite.id); }, "ERROR: point to: self");
 
     newSprite.setPosition(0, 0);
     sprite.setPosition(0, 0);
-    returnVal = sprite.pointTo("id2");
+    returnVal = sprite.SetDirectionTo("id2");
     assert.ok(!returnVal, "point to: sprite on same position: ignored");
 
     sprite.setPosition(50, 50);
 
-    sprite.pointTo("id2");
+    sprite.SetDirectionTo("id2");
     assert.ok(sprite.direction == -180 + 45, "point to left down sprite");
     // *************************************************************
 
     testsExecAsync();
     asyncCalls++;
+
+    sprite.drawStamp();
+    assert.ok(lastOnChangeArgs.drawStamp === true , "Drawstamp set");
+
+    //test methode clone
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene2, { id: "2", name: "newName", scripts: tmpBricks});
+
+    var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
+    brick4._id = "first";
+    var tmpBricks2 = [];
+    tmpBricks2[0] = brick4;
+    sprite2.scripts.push(tmpBricks2);
+
+    sprite2.looks = looks;
+    scene2._sprites.push(sprite2);
+
+    sprite2.penDown = true;
+    sprite2.penSize = 6;
+    sprite2.setSize(40);
+    sprite2.hide();
+
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    assert.ok(clone_sprite2._penDown == sprite2._penDown &&
+        clone_sprite2._penSize == sprite2._penSize &&
+        clone_sprite2.size == sprite2.size &&
+        clone_sprite2.visible == sprite2.visible, "set properties for clone correct");
+
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite, { x: 1, y: 2 }, scene.onStart);
+    brick1._id = "first";
+    var tmpBricks = [];
+    tmpBricks[0] = brick1;
+    sprite.scripts = tmpBricks;
+
     disposeTest();
 
 });
 
 
 QUnit.test("Sprite offsets", function (assert) {
+    //assert.ok(false, "TODO");
+    //return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
     var testsDone = assert.async();
 
     var onLoadHandler = function () {
@@ -870,7 +1007,7 @@ QUnit.test("Sprite offsets", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._imageStore = is;
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
     is.loadImages(baseUrl, images, 1);
@@ -879,12 +1016,17 @@ QUnit.test("Sprite offsets", function (assert) {
 
 
 QUnit.test("Sprite: rotation style", function (assert) {
+    //assert.ok(false, "TODO");
+    //return;
+    //TODO:: refactoring, scenes + cntr arguments
+
+
     //all sprite features are tested where rotation style has an impact: except ifOnEdgeBounce- there is another test routine for this feature
     var done = assert.async();
 
     var gameEngine = new PocketCode.GameEngine(),
         is = new PocketCode.ImageStore(),
-        scene = new PocketCode.Model.Scene(),
+        scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []),
         baseUrl = "_resources/images/",
         images = [
             { id: "s1", url: "imgHelper17.png", size: 1 },
@@ -930,7 +1072,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
         sprite._direction = -1.0;
         result = sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
-        assert.deepEqual(props, { flipX: false }, "turn back to flipX = false when switch to DO_NOT_ROTATE")
+        assert.notOk(props.flipX, "turn back to flipX = false when switch to DO_NOT_ROTATE");
         props = undefined;
 
         sprite._rotationStyle = PocketCode.RotationStyle.LEFT_TO_RIGHT;
@@ -951,7 +1093,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
         sprite._recalculateLookOffsets();
         var ox = sprite._lookOffsetX,
             oy = sprite._lookOffsetY;
-        assert.ok(ok != 0.0 && oy != 0.0, "offsets calculated for current look");
+        assert.ok(ox != 0.0 && oy != 0.0, "offsets calculated for current look");
 
         sprite._direction = 45.0;   //rotate
         sprite.setRotationStyle(PocketCode.RotationStyle.DO_NOT_ROTATE);
@@ -1007,12 +1149,16 @@ QUnit.test("Sprite: rotation style", function (assert) {
 
 
 QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
+    //assert.ok(false, "TODO");
+    //return;
+    //TODO:: refactoring, scenes + cntr arguments
+
 
     var done = assert.async();
 
     var gameEngine = new PocketCode.GameEngine(),
         is = new PocketCode.ImageStore(),
-        scene = new PocketCode.Model.Scene(),
+        scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []),
         baseUrl = "_resources/images/",
         images = [
             { id: "i1", url: "imgHelper1.png", size: 1 },
@@ -1029,12 +1175,12 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
         ];
 
     //simulate loading a json Project: setting required properties (internal)
-    gameEngine._originalScreenWidth = 50;
-    gameEngine._originalScreenHeight = 100;
-    gameEngine._collisionManager = new PocketCode.CollisionManager(gameEngine._originalScreenWidth, gameEngine._originalScreenHeight);
+    scene._originalScreenWidth = 50;
+    scene._originalScreenHeight = 100;
+    scene._collisionManager = new PocketCode.CollisionManager(scene._originalScreenWidth, scene._originalScreenHeight);
 
-    var sh2 = gameEngine._originalScreenHeight * 0.5,
-        sw2 = gameEngine._originalScreenWidth * 0.5;
+    var sh2 = scene._originalScreenHeight * 0.5,
+        sw2 = scene._originalScreenWidth * 0.5;
     var is = new PocketCode.ImageStore();
     gameEngine._imageStore = is;    //inject image store
 
@@ -1855,10 +2001,14 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 });
 
 
-QUnit.test("Sprite: physics", function (assert) {
+QUnit.test("PhysicsSprite", function (assert) {
+    //assert.ok(false, "TODO");
+    //return;
+    //TODO:: refactoring, scenes + cntr arguments
+
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "id", name: "name" });
 
@@ -1879,24 +2029,231 @@ QUnit.test("Sprite: physics", function (assert) {
     sprite.bounceFactor = value;
     assert.equal(sprite._bounceFactor, value, "bounceFactor set correctly");
 
-    sprite.movementStyle = value;
-    assert.equal(sprite._movementStyle, value, "movementStyle set correctly");
+    sprite.physicsType = value;
+    assert.equal(sprite._physicsType, value, "movementStyle set correctly");
 
-    var x = 23;
-    var y = 234;
-    var setGravityCalled = false;
-    sprite._gameEngine.setGravity = function (gravityX, gravityY) {
-        setGravityCalled = gravityX === x && gravityY === y;
-    };
+    //var x = 23;
+    //var y = 234;
+    //var setGravityCalled = false;
+    //scene.setGravity = function (gravityX, gravityY) {
+    //    setGravityCalled = gravityX === x && gravityY === y;
+    //};
 
-    sprite.setGravity(x, y);
-    assert.ok(setGravityCalled, "set gravity sets gravity in GE");
+    //sprite.setGravity(x, y);
+    //assert.ok(setGravityCalled, "set gravity sets gravity in GE");
 
-    x = 84;
-    y = 2;
+    var x = 84;
+    var y = 2;
 
     sprite.setVelocity(x, y);
     assert.equal(sprite._velocityX, x, "velocityX set correctly");
     assert.equal(sprite._velocityY, y, "velocityY set correctly");
+});
+
+
+
+QUnit.test("SpriteClone", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
+    var gameEngine = new PocketCode.GameEngine();
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
+    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+
+    assert.throws(function () { new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId"}, undefined) }, Error, "ERROR: missing parameter for SpriteClone: definition");
+
+    var sprite = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId", name: "myName" }, {});
+
+    assert.ok(sprite instanceof PocketCode.Model.SpriteClone && sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost, "instance check");
+
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
+
+    //test if sound and look copied correctly //todo: looks
+    var tmpBricks = [];
+    var looks = [{ id: 1, imageId: "s1", name: "name1", resourceId: "s1" }];
+    var sound = [1, 2];
+
+    var sprite3 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "3", name: "newName3", scripts: tmpBricks, sounds: sound}, {});
+    assert.ok(sprite3._sounds.length === 2, "Sounds in SpriteClone copied correct");
+
+    //test methode clone
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var sprite2 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "2", name: "newName", scripts: tmpBricks}, {});
+
+    var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
+    brick1._id = "first";
+    tmpBricks[0] = brick1;
+    sprite2.scripts.push(tmpBricks);
+
+    sprite2.looks = looks;
+    scene2._sprites.push(sprite2);
+
+    sprite2.penDown = true;
+    sprite2.penSize = 6;
+    sprite2.setSize(40);
+    sprite2.hide();
+
+    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    assert.ok(clone_sprite2._penDown == sprite2._penDown &&
+        clone_sprite2._penSize == sprite2._penSize &&
+        clone_sprite2.size == sprite2.size &&
+        clone_sprite2.visible == sprite2.visible, "set properties for clone correct (clone from SpriteClone)");
+
+    //test clone
+    var is = new PocketCode.ImageStore();   //recreate
+    gameEngine._imageStore = is;
+
+    //init tests
+    var baseUrl = "_resources/images/",
+        images = [
+            { id: "s4", url: "imgHelper15.png", size: 2 },
+            { id: "s5", url: "imgHelper16.png", size: 2 },
+        ];
+
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
+    is.loadImages(baseUrl, images);
+
+    var clone;
+    function startTest() {
+        scene.load(cloneScene); //global ressource defined in _resources/testDataProject
+        scene.initializeSprites();  //images already loaded- initilaze look objects
+        sprite = scene._sprites[0];
+
+
+        sprite.penDown = true;
+        sprite.penSize = 6;
+        sprite.penColor = { r: 255, g: 20, b: 20 };
+        sprite.setPositionX(300);
+        sprite.setPositionY(100);
+        sprite.turnLeft(-10);
+        sprite.setRotationStyle(PocketCode.RotationStyle.LEFT_TO_RIGHT);
+        sprite.nextLook();  //set this._currentLook
+        sprite.setSize(50);
+        sprite.hide();
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.GHOST, 10);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.BRIGHTNESS, 20);
+        sprite.setGraphicEffect(PocketCode.GraphicEffect.COLOR, 30);
+        // show/hide bubble
+
+        var variable1 = sprite.getVariable("s20");
+        variable1.value = 5;
+        var variable2 = sprite.getVariable("s21");
+        variable2.value = 10;
+        var list1 = sprite.getList("s22");
+        list1.append("test");
+        list1.append(34);
+        var list2 = sprite.getList("s23");
+        list2.append("test2");
+        list2.append(1);
+       // var tmpSprite = new PocketCode.Model.SpriteClone(gameEngine, scene, {id: "2", name: "newName",  lists: list1._value}, {lists: list1._value});
+
+        scene.start();
+        setTimeout(validateClone, 10);
+    }
+
+    function validateClone() {
+        clone = scene._sprites[0];
+
+        //check looks
+        assert.ok(clone._penDown == sprite._penDown &&
+            clone._penSize == sprite._penSize &&
+            clone._penColor.b == sprite._penColor.b &&
+            clone._penColor.r == sprite._penColor.r &&
+            clone._penColor.g == sprite._penColor.g &&
+            clone._penColor != sprite._penColor &&
+            clone.positionX == sprite.positionX &&
+            clone.positionY == sprite.positionY &&
+            clone._lookOffsetX == sprite._lookOffsetX &&
+            clone._lookOffsetY == sprite._lookOffsetY &&
+            clone.direction == sprite.direction &&
+            clone.rotationStyle == sprite.rotationStyle &&
+            clone.size == sprite.size &&
+            clone.visible == sprite.visible &&
+            clone.transparency == sprite.transparency &&
+            clone.brightness == sprite.brightness &&
+            clone.colorEffect == sprite.colorEffect, "set properties correct");
+
+        assert.equal(clone._currentLook.id, sprite._currentLook.id, "current look id set");
+        assert.notEqual(clone._currentLook, sprite._currentLook, "Individual Look objects");
+
+        assert.ok(clone._scripts.length > 0, "brick created");
+        assert.ok(clone.getVariable("s20") !== sprite.getVariable("s20") &&
+            clone.getVariable("s21") !== sprite.getVariable("s21") &&
+            clone.getList("s22")._value !== sprite.getList("s22")._value &&
+            clone.getList("s23")._value !== sprite.getList("s23")._value, "Variables and Lists created");
+
+        assert.ok(clone.getVariable("s20").value == sprite.getVariable("s20").value &&
+            clone.getVariable("s21").value == sprite.getVariable("s21").value &&
+            clone.getList("s22")._value[0] == sprite.getList("s22")._value[0] &&
+            clone.getList("s22")._value[1] == sprite.getList("s22")._value[1] &&
+            clone.getList("s23")._value[0] == sprite.getList("s23")._value[0] &&
+            clone.getList("s23")._value[1] == sprite.getList("s23")._value[1], "Variables and List values set");
+
+        var list1 = sprite.getList("s22");
+        list1.replaceAt(2, 40);
+
+        assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
+    }
+});
+
+
+QUnit.test("Background", function (assert) {
+
+    var done1 = assert.async();
+    var done2 = assert.async();
+
+    var soundManager = new PocketCode.SoundManager();
+    var device = new PocketCode.MediaDevice(soundManager);
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+
+    var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, {id: "newId", name: "myName"});
+
+    var look1 = { name: "look1", id: "first", resourceId: "1" };
+    var look2 = { name: "look2", id: "second", resourceId: "2" };
+    testBackgroundSprite.looks = [look1, look2];
+
+    var handlerOneCalled = 0;
+    var handlerLookOne = function () {
+        handlerOneCalled++;
+        assert.ok(handlerOneCalled == 1 && handlerTwoCalled == 1, "Event called, Background changed to first");
+        done1();
+        testBackgroundSprite.unsubscribeFromLookChange("second", handlerLookTwo);
+        testBackgroundSprite.setLook("second");
+
+        window.setTimeout(function(){
+            assert.ok(handlerOneCalled == 1 && handlerTwoCalled == 1, "unsubscribed successfully");
+            runTest2();
+        },20);
+    };
+
+    var handlerTwoCalled = 0;
+    var handlerLookTwo = function () {
+        handlerTwoCalled++;
+        assert.ok(handlerOneCalled == 0 && handlerTwoCalled == 1, "Event called, Background changed to second");
+        testBackgroundSprite.setLook("second");
+        testBackgroundSprite.setLook("first");
+    };
+
+    testBackgroundSprite.subscribeOnLookChange("first", handlerLookOne);
+    testBackgroundSprite.subscribeOnLookChange("second", handlerLookTwo);
+    testBackgroundSprite.setLook("first");
+    testBackgroundSprite.setLook("second");
+
+    //change bg and wait callback
+    function runTest2() {
+        var called = 0,
+            changed;
+        var callbackHandler = function(args) {
+            called++;
+            changed = args;
+        };
+        testBackgroundSprite.setLook("second", callbackHandler);
+        assert.equal(called, 1, "wait callback called even if background not changed");
+        assert.equal(changed, false, "wait callback called even if background not changed- loop delay");
+
+        done2();
+    }
+
 });
 

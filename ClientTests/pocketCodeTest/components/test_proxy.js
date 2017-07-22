@@ -1,4 +1,4 @@
-/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -71,39 +71,39 @@ QUnit.test("TestRequestLimitedNrOfProjects", function(assert) {
     assert.notOk(ids.indexOf(receivedProject.id) == -1, 'received project (' + receivedProject.id + ') handeled... finish!')
   };
 
-  var onLoadAllProjectsHandler = function(e)
-  {
-    var receivedAllProjects = e.responseJson;
-    assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
-    //console.log(receivedAllProjects);
+  //var onLoadAllProjectsHandler = function(e)
+  //{
+  //  var receivedAllProjects = e.responseJson;
+  //  assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
+  //  //console.log(receivedAllProjects);
 
-    var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
-    //console.log(projectCount);
-    assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
+  //  var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
+  //  //console.log(projectCount);
+  //  assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
 
-    var mask = receivedAllProjects.mask;
-    //console.log(mask);
-    assert.equal(mask, 'recent', 'correct mask: recent');
+  //  var mask = receivedAllProjects.mask;
+  //  //console.log(mask);
+  //  assert.equal(mask, 'recent', 'correct mask: recent');
 
-    var projects = receivedAllProjects.items;
-    //console.log(projects);
-    assert.ok(projects instanceof Array, 'array of projects');
+  //  var projects = receivedAllProjects.items;
+  //  //console.log(projects);
+  //  assert.ok(projects instanceof Array, 'array of projects');
 
-    for(var i = 0; i < projectCount; i++)
-    {
-      var project = projects[i];
-      var urlSingleProject = PocketCode.Services.PROJECT;
-      var params = { id : project['id'] };
-      ids.push(parseInt(project['id']));
-      var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
-      srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
-      //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
-      PocketCode.Proxy.send(srSingleProject);
-    }
-  };
+  //  for(var i = 0; i < projectCount; i++)
+  //  {
+  //    var project = projects[i];
+  //    var urlSingleProject = PocketCode.Services.PROJECT;
+  //    var params = { id : project['id'] };
+  //    ids.push(parseInt(project['id']));
+  //    var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
+  //    srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
+  //    //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
+  //    PocketCode.Proxy.send(srSingleProject);
+  //  }
+  //};
 
-  srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
-  PocketCode.Proxy.send(srAllProjects);
+  //srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+  //PocketCode.Proxy.send(srAllProjects);
 });
 
 
@@ -178,11 +178,16 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
 
-    var onLoadAllProjectsHandler = function(e)
+    var onErrorAllProjectsHandler = function(e)
     {
+        if (e.responseJson == undefined) {
+            assert.ok(false, "Did not receive exception an client- CORS problem?");
+            return;
+        }
+
         var receivedAllProjects = e.responseJson;
         assert.ok(receivedAllProjects instanceof Object, 'received object is valid');
-        console.log(receivedAllProjects);
+        //console.log(receivedAllProjects);
 
         var requestType = receivedAllProjects.type;
         var requestMessage = receivedAllProjects.message;
@@ -194,7 +199,7 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     };
 
 
-    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+    srAllProjects._onError.addEventListener(new SmartJs.Event.EventListener(onErrorAllProjectsHandler, this));
     PocketCode.Proxy.send(srAllProjects);
 });
 
@@ -250,7 +255,7 @@ QUnit.test("JsonpRequest", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: cors call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: cors call to https://share.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -290,7 +295,7 @@ QUnit.test("JsonpRequest", function (assert) {
         //console.log('onProgressSupportedChange ' + e.progressSupport);
     };
 
-    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/824/details");//, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
+    var req = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/824/details");//, SmartJs.RequestMethod.GET, { id: "824", prop1: "prop_1", prop2: "prop_2" });
 
     req.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler, this));
     req.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
@@ -323,7 +328,7 @@ QUnit.test("JsonpRequest", function (assert) {
         onLoad = 0;
         onProgressChange = 0;
 
-        req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+        req2 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
 
         req2.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler2, this));
         req2.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler2, this));
@@ -332,7 +337,7 @@ QUnit.test("JsonpRequest", function (assert) {
         req2.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
         req2.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
-        req2.send({ deleteId: 123 }, SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+        req2.send({ deleteId: 123 }, SmartJs.RequestMethod.DELETE, "https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
     };
 
     //invalid tag
@@ -397,7 +402,7 @@ QUnit.test("JsonpRequest", function (assert) {
     //    onProgressChange = 0;
     //    onError = 0;
 
-    //    req4 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.2/projects/8744/details");
+    //    req4 = new PocketCode.JsonpRequest("https://web-test.catrob.at/html5/rest/v0.3/projects/8744/details");
 
     //    req4.onLoadStart.addEventListener(new SmartJs.Event.EventListener(onLoadStartHandler4, this));
     //    req4.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler4, this));
@@ -406,7 +411,7 @@ QUnit.test("JsonpRequest", function (assert) {
     //    //req4.onProgressChange.addEventListener(new SmartJs.Event.EventListener(onProgressChangeHandler2, this));
     //    //req4.onProgressSupportedChange.addEventListener(new SmartJs.Event.EventListener(onProgressSupportedChangeHandler2, this));
 
-    //    req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.2/projects/817");
+    //    req4.send(SmartJs.RequestMethod.GET, "https://web-test.catrob.at/html5/rest/v0.3/projects/817");
     //};
 
 
@@ -462,7 +467,7 @@ QUnit.test("Proxy", function (assert) {
         runTest2();
     };
     var onErrorHandler = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler: call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
         done1();
 
         runTest2();
@@ -537,7 +542,7 @@ QUnit.test("Proxy", function (assert) {
         runTest4();
     };
     var onErrorHandler3 = function (e) {
-        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.2/projects/824/details failed - this may be an error caused by the server");
+        assert.ok(false, "WARNING: onErrorHandler3: call to https://web-test.catrob.at/html5/rest/v0.3/projects/824/details failed - this may be an error caused by the server");
 
         done3();
         runTest4();

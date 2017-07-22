@@ -7,6 +7,7 @@ class ProjectFileParser
     protected $cacheDir = "";
     protected $simpleXml = null;
     protected $background = null;
+    protected $spriteGroups = [];
     protected $sprites = [];
     protected $bricksCount = 0;
     protected $images = [];
@@ -34,6 +35,7 @@ class ProjectFileParser
 
     //the object (sprite) the parser is currently parsing
     protected $currentSprite = null;
+    protected $currentSpriteGroup = null;
 
     public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml)
     {
@@ -55,7 +57,7 @@ class ProjectFileParser
         foreach($vars->programVariableList->children() as $userVar)
         {
             $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar->name));
+            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar->name));
         }
 
         array_pop($this->cpp);
@@ -70,7 +72,8 @@ class ProjectFileParser
 
             //header
             $project->header = $this->parseHeader();
-            array_push($project->scenes, new SceneDto($this->getNewId(), "Scene 1", $project->header->device->screenHeight, $project->header->device->screenWidth));
+            $defaultScene = new SceneDto($this->getNewId(), "Scene 1", $project->header->device->screenWidth, $project->header->device->screenHeight);
+            array_push($project->scenes, $defaultScene);
 
             //global variables
             $this->includeGlobalData();
@@ -96,6 +99,9 @@ class ProjectFileParser
                 }
                 else
                 {
+                    if((string)$sprite["type"] == "GroupSprite") {
+                        continue;
+                    }
                     array_push($this->sprites, new SpriteDto($this->getNewId(), $this->getName($sprite)));
                 }
             }
@@ -117,6 +123,10 @@ class ProjectFileParser
                     $project->scenes[0]->background = $this->parseSprite($sprite, $this->background->id);
                     $bg = false;
                 }
+                else if ((string)$sprite["type"] == "GroupSprite") {
+                    $this->currentSpriteGroup = new IdNameDto($this->getNewId(), $this->getName($sprite));
+                    array_push($this->spriteGroups, $this->currentSpriteGroup);
+                }
                 else
                 {
                     $name = $this->getName($sprite);
@@ -136,13 +146,16 @@ class ProjectFileParser
 
                     //override existing object with completely parsed sprite
                     $this->sprites[$idx] = $this->parseSprite($sprite, $id);
+                    if (isset($this->currentSpriteGroup))
+                        $this->sprites[$idx]->groupId = $this->currentSpriteGroup->id;
                 }
             }
             $this->cpp = $cppSaved; //restore path
 
             array_pop($this->cpp);
 
-            $project->scenes[0]->sprites = $this->sprites;
+            $defaultScene->sprites = $this->sprites;
+            $defaultScene->spriteGroups = $this->spriteGroups;
 
             //set total number of bricks in header
             $project->header->bricksCount = $this->bricksCount;
@@ -267,22 +280,17 @@ class ProjectFileParser
             return null;
         }
 
-        // global search
-        $res = $this->findItemInArrayByName($name, $this->variables);
+		//local search
+		$res = $this->findItemInArrayByName($name, $this->currentSprite->variables);
+        //global search
+		if($res === false)
+			$res = $this->findItemInArrayByName($name, $this->variables);
         if($res === false)
         {
-            //dto to insert
-            $obj = $this->currentSprite;
-            //local search
-            $res = $this->findItemInArrayByName($name, $obj->variables);
-            if($res === false)
-            {
-                //not defined yet
-                $id = $this->getNewId();
-                array_push($obj->variables, new VariableDto($id, $name));
-
-                return $id;
-            }
+			//not defined yet: add to local scope
+			$id = $this->getNewId();
+			array_push($this->currentSprite->variables, new IdNameDto($id, $name));
+			return $id;
         }
 
         return $res->id;
@@ -731,7 +739,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -781,7 +789,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -797,7 +805,7 @@ class ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -868,7 +876,7 @@ class ProjectFileParser
 
             case "PointInDirectionBrick":
                 $degrees = $this->parseFormula($script->degrees->formulaTree);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "PointToBrick":
@@ -894,7 +902,7 @@ class ProjectFileParser
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":

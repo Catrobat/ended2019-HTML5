@@ -76,16 +76,14 @@ PocketCode.Ui.PlayerSvgButton = (function () {
     function PlayerSvgButton(icon, i18nKey, big, menuButton) {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-playerButton' });
 
-        //this.className = 'pc-playerButton';
+        if (!icon)
+            throw new Error('invalid argument: icon');
         if (big)
             this.addClassName('pc-menuBigButton');
         if(menuButton) {
             this.removeClassName('pc-playerButton');
             this.addClassName('pc-webButton');
         }
-
-        if (!icon)
-            throw new Error('invalid argument: icon');
 
         var span = document.createElement('span');
         span.appendChild(this._textNode._dom);

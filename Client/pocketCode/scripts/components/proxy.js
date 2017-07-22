@@ -7,22 +7,23 @@
 
 PocketCode.merge({
 
-    //_serviceEndpoint: 'https://share.catrob.at/html5/rest/v0.2/',    //TODO:
-    //_serviceEndpoint: 'https://web-test.catrob.at/html5/rest/v0.2/',   //TODO:
-    //_serviceEndpoint: 'http://localhost/html5/rest/v0.2/',  //TODO:
-    _serviceEndpoint: function () {
-        switch (window.location.hostname) {
-            case "player.localhost":
-                return 'http://localhost/html5/rest/v0.3/';
-            case "localhost":
-                // To test with local projects
-                //return 'http://localhost/html5/rest/v0.2/';
-            case "web-test.catrob.at":
-                return 'https://web-test.catrob.at/html5/rest/v0.3/';
-            default:
-                return 'https://share.catrob.at/html5/rest/v0.3/';
-        }
-    }(),
+    //_serviceEndpoint: 'https://share.catrob.at/html5/rest/v0.3/',    //TODO:
+    //_serviceEndpoint: 'https://web-test.catrob.at/html5/rest/v0.3/',   //TODO:
+    //_serviceEndpoint: 'http://localhost/html5/rest/v0.3/',  //TODO:
+    _serviceEndpoint: PocketCode.domain + 'html5/rest/v0.3/',    //based on settings in pocketCodePlayer.js
+    //    function () {
+    //    switch (window.location.hostname) {
+    //        case "player.localhost":
+    //            return 'http://localhost/html5/rest/v0.3/';
+    //        case "localhost":
+    //            // To test with local projects
+    //            //return 'http://localhost/html5/rest/v0.3/';
+    //        case "web-test.catrob.at":
+    //            return 'https://web-test.catrob.at/html5/rest/v0.3/';
+    //        default:
+    //            return 'https://share.catrob.at/html5/rest/v0.3/';
+    //    }
+    //}(),
 
     Services: {
         PROJECT_SEARCH: 'projects',

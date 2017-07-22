@@ -22,7 +22,7 @@ PocketCode.Ui.Dialog = (function () {
 
     //cntr
     function Dialog(type, i18nCaptionKey, i18nMsgKey) {
-        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute' } });
+        SmartJs.Ui.ContainerControl.call(this, { className: 'pc-webOverlay', style: { position: 'absolute', zIndex: 0 } });
 
         //settings
         this._minHeight = 200;
@@ -153,7 +153,7 @@ PocketCode.Ui.Dialog = (function () {
 
             this._footer.appendChild(button);
         },
-        execDefaultBtnAction: function() {
+        execDefaultBtnAction: function () {
             if (this.onCancel)
                 this.onCancel.dispatchEvent();
             else if (this.onOK)
@@ -164,75 +164,176 @@ PocketCode.Ui.Dialog = (function () {
     return Dialog;
 })();
 
-PocketCode.Ui.ErrorDialog = (function () {
-    ErrorDialog.extends(PocketCode.Ui.Dialog, false);
+PocketCode.Ui.merge({
+    AskDialog: (function () {
+        AskDialog.extends(PocketCode.Ui.Dialog, false);
 
-    //cntr
-    function ErrorDialog(i18nCaptionKey, i18nMsgKey) {
-        PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, i18nCaptionKey, i18nMsgKey);
-        // i18n: lblOk
-        this._btnOK = new PocketCode.Ui.Button('lblOk');
-        this.addButton(this._btnOK);
+        //cntr
+        function AskDialog(question) {
+            PocketCode.Ui.Dialog.call(this);
 
-        this._sorryMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorSorry','',' ');
-        this.insertAt(0, this._sorryMessageTextNode);
+            this._minHeight = 250;
+            if (SmartJs.Device.isMobile) {
+                this.style.position = '';   //not absolute to enable resize for mobile browsers keyboard
+                this.style.minHeight = (this._minHeight + 2 * this._marginTopBottom) + 'px';
+            }
 
-        this._br1 = new SmartJs.Ui.HtmlTag('br');
-        this.appendChild(this._br1);
-        this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorReportGenerated');
-        this.appendChild(this._logMessageTextNode);
-        this._br1.hide();                   //default
-        this._logMessageTextNode.hide();    //default
+            this._captionTextNode.dispose();
+            this._captionTextNode = new SmartJs.Ui.TextNode(question);
 
-        this._br2 = new SmartJs.Ui.HtmlTag('br');
-        this._br3 = new SmartJs.Ui.HtmlTag('br');
-        this.appendChild(this._br2);
-        this.appendChild(this._br3);
-        this._closeMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorExit');
-        this.appendChild(this._closeMessageTextNode);
-    }
+            this._scrollContainer = new PocketCode.Ui.ScrollContainer();
+            this._header.className = 'pc-askDialogHeader';
+            this._header.appendChild(this._scrollContainer);  //scrollcontainer in header
+            this._scrollContainer.appendChild(this._captionTextNode);
+            var dir = PocketCode.I18nProvider.getTextDirection(question);
+            this._header._dom.dir = dir;    //no public accessor available
 
-    //events
-    Object.defineProperties(ErrorDialog.prototype, {
-        onOK: {
-            get: function () {
-                return this._btnOK.onClick;
+            this._container.dispose();  //this._messageTextNode is getting disposed as well
+            this._container = new SmartJs.Ui.ContainerControl({ className: 'pc-askDialogBody' });
+            this._messageTextNode = new PocketCode.Ui.I18nTextNode('lblEnterAnswer', '', ':');
+            var layout = new SmartJs.Ui.ContainerControl();
+            layout.appendChild(this._messageTextNode);
+            this._container.appendChild(layout);
+
+            this._answerInput = new SmartJs.Ui.HtmlTag('input');
+            this._answerInput.setDomAttribute('dir', 'auto');
+            this._answerInput.setDomAttribute('type', 'text');
+            this._addDomListener(this._answerInput.dom, 'keypress', function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    this._onSubmit.dispatchEvent({ answer: this.answer });
+                }
+            });
+            this._container.appendChild(this._answerInput);
+            this._dialog.insertAt(1, this._container);
+
+            this._btnSubmit = new PocketCode.Ui.Button('lblSubmitAnswer');
+            this._btnSubmit.onClick.addEventListener(new SmartJs.Event.EventListener(function () {
+                this._onSubmit.dispatchEvent({ answer: this.answer });
+            }, this));
+            this.addButton(this._btnSubmit);
+
+            //event
+            this._onSubmit = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(AskDialog.prototype, {
+            onSubmit: {
+                get: function () {
+                    return this._onSubmit;
+                },
             },
-        },
-    });
+        });
 
-    //properties
-    Object.defineProperties(ErrorDialog.prototype, {
-        logMsgVisible: {
-            set: function (bool) {
-                if (bool) {
-                    this._br1.show();
-                    this._logMessageTextNode.show();
-                }
-                else {
-                    this._br1.hide();
-                    this._logMessageTextNode.hide();
-                }
+        //properties
+        Object.defineProperties(AskDialog.prototype, {
+            answer: {
+                get: function () {
+                    return this._answerInput.dom.value;
+                },
             },
-        },
-        closeMsgVisible: {
-            set: function (bool) {
-                if (bool) {
-                    this._br2.show();
-                    this._br3.show();
-                    this._closeMessageTextNode.show();
-                }
-                else {
-                    this._br2.hide();
-                    this._br3.hide();
-                    this._closeMessageTextNode.hide();
-                }
-            },
-        },
-    });
+        });
 
-    return ErrorDialog;
-})();
+        //methods           
+        AskDialog.prototype.merge({
+            focusInputField: function () {
+                this._answerInput.dom.focus();
+            },
+            /* override */
+            _resizeHandler: function (e) {
+                var availableHeight = this.height - (this._container.height + this._footer.height + 2 * this._marginTopBottom + 34);    //including header padding
+                var minHeight = this._minHeight - (this._container.height + this._footer.height);
+                if (availableHeight > minHeight)
+                    this._scrollContainer.style.maxHeight = availableHeight + 'px';
+                else
+                    this._scrollContainer.style.maxHeight = minHeight + 'px';
+                this._dialog.style.width = (this.width - 30) + 'px';
+
+                var buttons = this._footer._dom.children;
+                for (var i = 0, l = buttons.length; i < l; i++) {
+                    if (l == 1)
+                        buttons[i].style.width = '100%';
+                    else
+                        buttons[i].style.width = ((this._dialog.width - 2 * (l - 1)) / l) + 'px';
+                }
+                this._scrollContainer.onResize.dispatchEvent();
+            },
+        });
+
+        return AskDialog;
+    })(),
+
+    ErrorDialog: (function () {
+        ErrorDialog.extends(PocketCode.Ui.Dialog, false);
+
+        //cntr
+        function ErrorDialog(i18nCaptionKey, i18nMsgKey) {
+            PocketCode.Ui.Dialog.call(this, PocketCode.Ui.DialogType.ERROR, i18nCaptionKey, i18nMsgKey);
+            // i18n: lblOk
+            this._btnOK = new PocketCode.Ui.Button('lblOk');
+            this.addButton(this._btnOK);
+
+            this._sorryMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorSorry', '', ' ');
+            this.insertAt(0, this._sorryMessageTextNode);
+
+            this._br1 = new SmartJs.Ui.HtmlTag('br');
+            this.appendChild(this._br1);
+            this._logMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorReportGenerated');
+            this.appendChild(this._logMessageTextNode);
+            this._br1.hide();                   //default
+            this._logMessageTextNode.hide();    //default
+
+            this._br2 = new SmartJs.Ui.HtmlTag('br');
+            this._br3 = new SmartJs.Ui.HtmlTag('br');
+            this.appendChild(this._br2);
+            this.appendChild(this._br3);
+            this._closeMessageTextNode = new PocketCode.Ui.I18nTextNode('msgErrorExit');
+            this.appendChild(this._closeMessageTextNode);
+        }
+
+        //events
+        Object.defineProperties(ErrorDialog.prototype, {
+            onOK: {
+                get: function () {
+                    return this._btnOK.onClick;
+                },
+            },
+        });
+
+        //properties
+        Object.defineProperties(ErrorDialog.prototype, {
+            logMsgVisible: {
+                set: function (bool) {
+                    if (bool) {
+                        this._br1.show();
+                        this._logMessageTextNode.show();
+                    }
+                    else {
+                        this._br1.hide();
+                        this._logMessageTextNode.hide();
+                    }
+                },
+            },
+            closeMsgVisible: {
+                set: function (bool) {
+                    if (bool) {
+                        this._br2.show();
+                        this._br3.show();
+                        this._closeMessageTextNode.show();
+                    }
+                    else {
+                        this._br2.hide();
+                        this._br3.hide();
+                        this._closeMessageTextNode.hide();
+                    }
+                },
+            },
+        });
+
+        return ErrorDialog;
+    })(),
+});
 
 PocketCode.Ui.merge({
     GlobalErrorDialog: (function () {
@@ -537,7 +638,7 @@ PocketCode.Ui.merge({
             this._btnCancel = new PocketCode.Ui.Button('lblClose');
             this._btnCancel.onClick.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onCancel.dispatchEvent(); }, this));
             this.addButton(this._btnCancel);
-            
+
             this._screenshotImage = new SmartJs.Ui.Image({ style: { width: '100%' } });
             this._screenshotImage.onLoad.addEventListener(new SmartJs.Event.EventListener(this._imageOnLoadHandler, this));
 
@@ -545,7 +646,7 @@ PocketCode.Ui.merge({
                 this._addDomListener(this._screenshotImage._dom, 'touchstart', function (e) {
                     //make sure event is bubbled to enable image download
                 }, { stopPropagation: false, systemAllowed: true });
-                
+
                 this._screenshotImage.style.paddingTop = '10px';
                 this._messageTextNode.i18n = 'msgScreenshotMobile';
                 //this._container.appendChild(new PocketCode.Ui.I18nTextNode('msgScreenshotMobile'));
@@ -558,7 +659,7 @@ PocketCode.Ui.merge({
                 this._downloadForm.style.margin = 0;
                 this._downloadForm.style.padding = 0;
                 this._downloadForm.method = 'POST';
-                this._downloadForm.action = 'https://web-test.catrob.at/html5/rest/v0.2/file/screenshot/';
+                this._downloadForm.action = PocketCode._serviceEndpoint + 'file/screenshot/';
                 this._downloadInput = document.createElement('input');
                 this._downloadInput.type = 'hidden';
                 this._downloadInput.name = 'base64string';
@@ -603,11 +704,11 @@ PocketCode.Ui.merge({
                 },
             },
         });
-                
+
         //methods
         ScreenshotDialog.prototype.merge({
             _imageOnLoadHandler: function () {
-                if(this._btnDownload)
+                if (this._btnDownload)
                     this._btnDownload.disabled = false;
                 window.setTimeout(this._container.onResize.dispatchEvent.bind(this._container.onResize), 10);
             },

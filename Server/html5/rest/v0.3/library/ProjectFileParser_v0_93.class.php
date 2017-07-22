@@ -26,7 +26,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
         foreach($vars->programVariableList->children() as $userVar)
         {
             $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new VariableDto($this->getNewId(), (string)$userVar));
+            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
         }
 
         array_pop($this->cpp);
@@ -68,7 +68,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -84,7 +84,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -197,7 +197,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 array_push($this->cpp, $fl);
                 $degrees = $this->parseFormula($fl->formula);
                 array_pop($this->cpp);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "Vibration":
@@ -231,7 +231,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":

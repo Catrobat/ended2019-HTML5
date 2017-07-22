@@ -1,5 +1,5 @@
 {
-  "currentLanguage":"انگليسی",
+  "currentLanguage":"فارسی",
   "lblOk":"تایید",
   "lblCancel":"انصراف",
   "lblConfirm":"تایید",
@@ -61,5 +61,13 @@
   "lblDeviceVibrate":"لرزش دستگاه",
   "lblDeviceLegoNXT":"لگو طوفان ذهنی آجرها یا سنسورهای NXT",
   "lblDevicePhiro":"آجرها یا سنسورهای PHIRO",
-  "lblDeviceArduino":"آجرها یا سنسورهای آردوینو"
+  "lblDeviceArduino":"آجرها یا سنسورهای آردوینو",
+  "menuTermsOfUse":"شرایط استفاده",
+  "menuImprint":"مشخصات ناشر",
+  "menuHelp":"راهنما",
+  "menuFitToScreen":"تناسب با صفحه",
+  "menuReportIssue":"گزارش مشکل",
+  "lblDeviceGeoLocation":"محل جغرافیایی دستگاه",
+  "lblEnterAnswer":"جواب را وارد کن",
+  "lblSubmitAnswer":"ارسال جواب"
 }

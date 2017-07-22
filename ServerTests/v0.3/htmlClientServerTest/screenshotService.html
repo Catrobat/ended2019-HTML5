@@ -123,9 +123,9 @@
       // Obtain a blob: URL for the image data.
       //var arrayBufferView = new Uint8Array( this.response );
       var base64 = e.target.responseText.substr(24);
-      console.log("------>" + base64);
+      //console.log("------>" + base64);
       var buffer = base64toBlob(base64, "image/png");
-      console.log("------>" + e.target.responseText);
+      //console.log("------>" + e.target.responseText);
       //var blob = new Blob( [ arrayBufferView ], { type: "image/jpeg" } );
 
       var filename = "yolo";

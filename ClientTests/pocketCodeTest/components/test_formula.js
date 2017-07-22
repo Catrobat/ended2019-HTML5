@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -11,14 +11,14 @@ QUnit.module("components/formula.js");
 
 QUnit.test("Formula", function (assert) {
 
-    var scene = new PocketCode.Model.Scene();
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var soundManager = new PocketCode.SoundManager([]);
-    var device = new PocketCode.Device(soundManager);
+    var device = new PocketCode.MediaDevice(soundManager);
 
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
-    var program = new PocketCode.GameEngine();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     assert.throws(function () { var f = new PocketCode.Formula(undefined, sprite, json); }, Error, "");
     var f = new PocketCode.Formula(device, sprite, json);
@@ -73,11 +73,11 @@ QUnit.test("Formula", function (assert) {
 QUnit.test("Formula: string encoding", function (assert) {
     //using: _resources/testDataFormula.js
     var soundManager = new PocketCode.SoundManager([]);
-    var device = new PocketCode.Device(soundManager);
+    var device = new PocketCode.MediaDevice(soundManager);
 
-    var program = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene();
-    var sprite = new PocketCode.Model.Sprite(program, scene, { id: "spriteId", name: "spriteName" });
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite, encoding1);
     assert.equal(f.calculate(), "Los seres vivos son los que tienen vida, esto quiere decir, que son toda la variedad de seres que habitan nuestro planeta, desde los más pequeños hasta los más grandes, todas las plantas, animales e incluso nosotros los seres humanos. \nPodemos reconocer a los seres vivos porque tienen en común el ciclo de vida, los cambios que sufren a lo largo de su vida y cómo se van transformando. \nPara conocer mejor las fases que compone el ciclo de vida pulsa “Comenzar”.", "encoding1 output");

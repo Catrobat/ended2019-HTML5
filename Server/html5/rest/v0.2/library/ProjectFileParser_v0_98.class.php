@@ -190,7 +190,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
             {
                 $nestedCounter++;
             }
-            else if($name === "IfThenLogicEndBrick")
+            
+            if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
                 {
@@ -313,7 +314,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -410,7 +411,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -426,7 +427,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 if($res === false)
                 {
                     $id = $this->getNewId();
-                    array_push($this->broadcasts, new VariableDto($id, $msg));
+                    array_push($this->broadcasts, new IdNameDto($id, $msg));
                 }
                 else
                 {
@@ -551,7 +552,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $degrees = $this->parseFormula($fl->formula);
                 array_pop($this->cpp);
-                $brick = new PointInDirectionBrickDto($degrees);
+                $brick = new SetDirectionBrickDto($degrees);
                 break;
 
             case "VibrationBrick":    /*name changed?*/
@@ -585,7 +586,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 }
 
                 /** @noinspection PhpUndefinedVariableInspection */
-                $brick = new PointToBrickDto($spriteId);
+                $brick = new SetDirectionToBrickDto($spriteId);
                 break;
 
             case "GlideToBrick":
@@ -671,7 +672,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new TurnLeftSpeedBrickDto($value);
+                $brick = new RotationSpeedLeftBrickDto($value);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -679,7 +680,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new TurnRightSpeedBrickDto($value);
+                $brick = new RotationSpeedRightBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y

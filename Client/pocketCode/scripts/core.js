@@ -90,7 +90,8 @@ PocketCode.merge({
         STOPPED: 0,
         RUNNING: 1,
         PAUSED: 3,  //and running
-        ERROR: 4,
+        PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
+        ERROR: 6,
     },
 
     isPlayerCompatible: function () {

@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -12,6 +12,10 @@ QUnit.module("ui/playerToolbar.js");
 
 
 QUnit.test("PlayerToolbar", function (assert) {
+
+    var dom = document.getElementById("qunit-fixture");
+    var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
+    dom.appendChild(container._dom);    //this should trigger a resize- code coverage
 
     assert.throws(function () { new PocketCode.Ui.PlayerToolbar(); }, Error, "ERROR: invalaid ctr call");
     var tb = new PocketCode.Ui.PlayerToolbar(PocketCode.Ui.PlayerToolbarSettings.DESKTOP);
@@ -27,6 +31,7 @@ QUnit.test("PlayerToolbar", function (assert) {
 
     tb.executionState = PocketCode.ExecutionState.INITIALIZED;
     tb.executionState = PocketCode.ExecutionState.RUNNING;
+    assert.equal(tb.executionState, PocketCode.ExecutionState.RUNNING, "execution state: getter");
 
     assert.throws(function () { tb.disabled = "invalid"; }, Error, "ERROR: invalaid argument: disabled");
     tb.disabled = true;
@@ -53,8 +58,8 @@ QUnit.test("PlayerToolbar", function (assert) {
     tb.screenshotButtonDisabled = true;
     tb.screenshotButtonDisabled = false;
 
+    container.appendChild(tb);
 
-    assert.ok(false, "TODO");   //add to dom + check resize handling, add asserts for existing code, code coverage
 });
 
 

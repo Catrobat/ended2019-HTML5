@@ -1,5 +1,5 @@
 
-/* body to be set to avoid overlay spacings */
+/* body to be set to avoid overlay spacings - set in javascript on html & body element */
 .pc-webBody {
     height: 100%;
     width: 100%;
@@ -7,18 +7,36 @@
     margin: 0px;
     overflow: hidden;
 }
+
 .pc-webBodyMobile {
     background-color: #003041;
     position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/* override styles: last entry in file to enable overwriting properties */
+.pc-webBodyMobile *, .pc-webBodyMobile *:before, .pc-webBodyMobile *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    /*margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    user-select: none;
+    cursor: default;
+    color: #000;*/
 }
 
 .pc-webBody div, .pc-webBody span {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none; 
-  cursor: default;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
 }
 /* overlay */
 .pc-webOverlay {
@@ -29,12 +47,22 @@
     top: 0;
     left: 0;
     overflow: hidden;
+    z-index: 100000;
 }
-    .pc-webOverlay * {
-        /*background: none;*/
-        background-color: transparent;
+
+    /* override styles defined in page */
+    .pc-webOverlay *, .pc-webOverlay *:before, .pc-webOverlay *:after {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        /*margin: auto;
+        padding: auto;
+        background-color: none;*/
         border: 0;
         border-radius: 0;
+        user-select: none;
+        cursor: default;
+        /*color: #000;*/
     }
 
 .pc-webOpacity {
@@ -97,6 +125,7 @@
     width: 50%;
     min-width: 95px;
 }
+
 .pc-rightCol {
     min-width: 50px;
 }
@@ -114,7 +143,7 @@
     /*min-height: 450px;
     min-width: 270px;
     background-color: #fff;
-    */-webkit-box-sizing: border-box;
+    */ -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
@@ -122,7 +151,9 @@
     box-sizing: border-box;
 }
 
-    .pc-playerViewport * {
+    .pc-playerViewport *, .pc-playerViewport *:before, .pc-playerViewport *:after {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
         box-sizing: border-box;
     }
 
@@ -132,6 +163,7 @@
     margin: 10px;
     margin-left: 5px;
 }
+
 [dir='rtl'] .pc-webMenu {
     float: left;
     margin: 10px;
@@ -163,37 +195,39 @@
         cursor: default;
     }
 
-.pc-webButton svg {
-    position: absolute;
-    width: inherit;
-    height: inherit;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
-}
+    .pc-webButton svg {
+        position: absolute;
+        width: inherit;
+        height: inherit;
+        padding: 0;
+        margin: 0;
+        top: 0;
+        left: 0;
+    }
 
-.pc-webButton:hover {
-    fill: #fff;
-    color: #fff;
-}
+    .pc-webButton:hover {
+        fill: #fff;
+        color: #fff;
+    }
 
-.pc-webButton:active {
-    fill: #17a5b8;
-    color: #17a5b8;
-}
+    .pc-webButton:active {
+        fill: #17a5b8;
+        color: #17a5b8;
+    }
 
-.pc-webButton:disabled {
-    fill: #A5A5A5;
-}
+    .pc-webButton:disabled {
+        fill: #A5A5A5;
+    }
+
 .pc-webButtonChecked {
     color: #ef7716;
     fill: #ef7716;
     border-color: #ef7716;
 }
-.pc-webButtonChecked:hover {
-    fill: #E8CCB9;
-}
+
+    .pc-webButtonChecked:hover {
+        fill: #E8CCB9;
+    }
 
 .pc-backButton {
     position: relative;
@@ -201,29 +235,32 @@
     height: 30px;
     margin: 8px;
 }
+
     .pc-backButton svg {
         width: 30px;
     }
-    [dir='rtl'] .pc-backButton svg {
-        transform: rotate(180deg);
-        left: auto;
-        right: 0px;
-    }
 
-    .pc-backButton span {
-        position: relative;
-        float: left;
-        left: 34px;
-        font-size: 18px;
-        line-height: 32px;
-        /*color: #A9DCF1;
-        */cursor: pointer;
-    }
-    [dir='rtl'] .pc-backButton span {
-        float: right;
-        left: auto;
-        right: 34px;
-    }
+[dir='rtl'] .pc-backButton svg {
+    transform: rotate(180deg);
+    left: auto;
+    right: 0px;
+}
+
+.pc-backButton span {
+    position: relative;
+    float: left;
+    left: 34px;
+    font-size: 18px;
+    line-height: 32px;
+    /*color: #A9DCF1;
+        */ cursor: pointer;
+}
+
+[dir='rtl'] .pc-backButton span {
+    float: right;
+    left: auto;
+    right: 34px;
+}
 
 /* splashScreen */
 .pc-splashScreen {
@@ -317,3 +354,18 @@
         border: solid 0.2em #003041;
         width: 2.5em;
     }
+
+/* menu */
+.pc-githubIcon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -5px;
+    fill: currentColor;    
+    cursor: pointer;
+}
+
+.pc-githubIcon:hover {
+    fill: #33B5E5;
+    cursor: pointer;
+}
+

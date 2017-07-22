@@ -2,7 +2,7 @@
 /// <reference path="../../client/smartJs/sj-error.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
-/// <reference path="../qunit/qunit-1.23.0.js" />
+/// <reference path="../qunit/qunit-2.1.1.js" />
 'use strict';
 
 QUnit.module("sj-event.js");
@@ -125,6 +125,8 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 	y.divClicked.addEventListener(new SmartJs.Event.EventListener(z.testHandler, z));
 	y.divClicked.dispatchEvent({ a: 1, b: 2, c: 3 });
 	assert.deepEqual(z.testProp_1, returnVal, "calling handler using different scope");
+	assert.ok(Math.abs(eventArgs.dispatchedAt - new Date()) < 10, "including dispatchedAt");
+	delete eventArgs.dispatchedAt;
 	assert.deepEqual(eventArgs, { a: 1, b: 2, c: 3, bubbles: false, target: y }, "calling handler using different scope & event args");
 	
 	assert.throws(function () { var test = new SmartJs.Event.Event(23); },
@@ -215,12 +217,13 @@ QUnit.test("SmartJs.Event.EventListener", function (assert) {
 
 QUnit.test("SmartJs.Event.AsyncEventListener", function (assert) {
 
-	assert.expect(5);   //init async asserts (to wait for)
+	assert.expect(6);   //init async asserts (to wait for)
 	var done1 = assert.async();
 	var done2 = assert.async();
 
 	var hdl = function (e) {
-		assert.ok(true, "async handler 1 called");
+	    assert.ok(true, "async handler 1 called");
+	    assert.ok(e.dispatchedAt < new Date(), "event including dispatchedAt property");
 		done1();
 	};
 	var hdl2 = function (e) {

@@ -198,6 +198,7 @@ PocketCode.merge({
 
                     //stop gameEngine + loading
                     this._project.dispose();
+                    this._project = undefined;
                 },
                 _i18nControllerErrorHandler: function (e) {
                     PocketCode.I18nProvider.onError.removeEventListener(new SmartJs.Event.EventListener(this._i18nControllerErrorHandler, this));
@@ -241,7 +242,7 @@ PocketCode.merge({
                     d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         e.target.dispose();
-                        this._pages.PlayerPageController.initOnLoad(e.sceneIds);
+                        this._pages.PlayerPageController.enableView();
                     }, this));
                     this._showDialog(d, false);
                 },
@@ -267,6 +268,10 @@ PocketCode.merge({
                     this._requestProject();
                 },
                 _projectDetailsRequestErrorHandler: function (e) {
+                    if (PocketCode._serviceEndpoint.indexOf('http://localhost/') >= 0) {   //disable error on details-service for local debugging
+                        this._projectDetailsRequestLoadHandler({ target: { responseJson: { title: 'DEBUG MODE', baseUrl: '', thumbnailUrl: '' } } });
+                        return;
+                    }
                     if (this._disposing || this._disposed)
                         return;
 
@@ -314,6 +319,8 @@ PocketCode.merge({
                     if (json.header && json.header.device) {
                         var device = json.header.device;
                         this._onHWRatioChange.dispatchEvent({ ratio: device.screenHeight / device.screenWidth });
+                        var view = this._pages.PlayerPageController.view;
+                        view.onResize.dispatchEvent();   //make sure the control is notified about the resize
                     }
                     this._project.loadProject(json);
                 },
@@ -510,8 +517,12 @@ PocketCode.merge({
                     if (this._project && this._project.onLoadingError)
                         this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
                     //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
-                    for (var page in this._pages)   //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
+
+                    this._currentPage = undefined;
+                    for (var page in this._pages) {  //objects (dictionaries) are not handled by the core dispose functionality- make sure we do not miss them
                         this._pages[page].dispose();
+                        delete this._pages[page];
+                    }
 
                     SmartJs.Components.Application.prototype.dispose.call(this);    //call super()
                 },

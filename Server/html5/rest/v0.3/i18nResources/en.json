@@ -24,7 +24,7 @@
   "lblBrowserNotSupportedErrorCaption":"Browser Not Supported",
   "msgBrowserNotSupportedError":"Your browser does not meet the minimal requirements to run this application.",
   "msgBrowserNotSupportedErrorOther":"Please try again using another browser.",
-  "lblMobileRestrictionsWarningCaption":"Please Confirm",
+  "lblMobileRestrictionsWarningCaption":"Please confirm",
   "msgMobileRestrictionsWarning":"Due to mobile browser restrictions you have to confirm that this application is allowed to download, cache, show\/play images and audio\/video content required in the requested project.",
   "msgMobileRestrictionsDebug":"There is currently NO official support for mobile devices- this is an experimental preview only! So please do NOT file bugs until there is an official release available.",
   "lblExitDialogCaption":"Exit Application",
@@ -62,7 +62,12 @@
   "lblDeviceLegoNXT":"Lego Mindstorms NXT bricks or sensors",
   "lblDevicePhiro":"PHIRO bricks or sensors",
   "lblDeviceArduino":"Arduino bricks or sensors",
-  "menutermsOfUse":"Terms of Use",
-  "menuImpressum":"Impressum",
-  "menuHelp":"Help"
+  "menuTermsOfUse":"Terms of Use",
+  "menuImprint":"Imprint",
+  "menuHelp":"Help",
+  "menuFitToScreen":"Fit to screen",
+  "menuReportIssue":"Report an issue",
+  "lblDeviceGeoLocation":"Device geo location",
+  "lblEnterAnswer":"Enter your answer",
+  "lblSubmitAnswer":"Submit answer"
 }
