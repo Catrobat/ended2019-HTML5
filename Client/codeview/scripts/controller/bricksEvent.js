@@ -48,12 +48,11 @@ PocketCode.merge({
                 throw new Error("Invalid argument Model");
             }
 
-            //todo: 2 different bricks: wenn angetippt, wenn der bildschirm berührt wird
             var content = {
                 content: [
                     {
                         type: 'text',
-                        i18n: 'brick_when' //todo brick_when_touched
+                        i18n: 'brick_when'
                     }
                 ],
                 endContent: [
@@ -69,6 +68,36 @@ PocketCode.merge({
         }
 
         return WhenActionBrick;
+    })(),
+
+    WhenTouchBrick: (function () {
+        WhenTouchBrick.extends(PocketCode.BaseBrick, false); //todo extends WhenAction brick?
+
+        function WhenTouchBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.WhenTouchBrick)){
+                throw new Error("Invalid argument Model");
+            }
+
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_when_touched'
+                    }
+                ],
+                endContent: [
+                    {
+                        type: 'text',
+                        i18n: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
+
+        return WhenTouchBrick;
     })(),
 
     WhenBroadcastReceiveBrick: (function () {
