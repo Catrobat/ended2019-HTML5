@@ -268,6 +268,10 @@ PocketCode.merge({
                     this._requestProject();
                 },
                 _projectDetailsRequestErrorHandler: function (e) {
+                    if (PocketCode._serviceEndpoint.indexOf('http://localhost/') >= 0) {   //disable error on details-service for local debugging
+                        this._projectDetailsRequestLoadHandler({ target: { responseJson: { title: 'DEBUG MODE', baseUrl: '', thumbnailUrl: '' } } });
+                        return;
+                    }
                     if (this._disposing || this._disposed)
                         return;
 

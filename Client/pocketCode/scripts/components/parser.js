@@ -183,7 +183,6 @@ PocketCode.merge({
                     case 'CameraBrick':
 
 
-
                     //case 'PlaySoundAndWaitBrick':
                     //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
@@ -224,13 +223,12 @@ PocketCode.merge({
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
-
-                        //Bubbles
+                    //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
                     case 'ThinkBrick':
                     case 'ThinkForBrick':
-
+                    //background
                     case 'SetBackgroundByIndexBrick':
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
@@ -304,8 +302,9 @@ PocketCode.merge({
                 else {
                     //load sub bricks
                     //if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
-                    if (jsonBrick.bricks)   //all loops
+                    if (jsonBrick.bricks) { //all loops
                         brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
+                    }
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
                         brick._ifBricks = this._createList(currentSprite, jsonBrick.ifBricks);
                         brick._elseBricks = this._createList(currentSprite, jsonBrick.elseBricks);
