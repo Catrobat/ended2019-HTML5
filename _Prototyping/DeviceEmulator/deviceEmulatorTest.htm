@@ -1,0 +1,92 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PocketCode HTML5 Device Emulator Rotation Test - based on HTML5Rocks sample</title>
+
+    <script>
+        PocketCode = {};
+    </script>
+    <link href="deviceEmulatorStyle.css" rel="stylesheet" />
+    <link href="../player/pocketCodePlayer.css" rel="stylesheet" />
+    <link href="../pocketCode/css/pocketCode.css" rel="stylesheet" />
+    <script src="scripts/sj.js"></script>
+    <script src="scripts/sj-core.js"></script>
+    <script src="scripts/sj-event.js"></script>
+    <script src="scripts/device.js"></script>
+
+</head>
+<body>
+    <div dir="rtl">
+        <button class="accordionMain">Device Emulator</button>
+        <div class="accordionSub">
+            <div class="slider">
+                <p>Inclination X <var id="doInclinationX"></var></p>
+                <p>Inclination Y <var id="doInclinationY"></var></p>
+                <p>Degree per Second</p>
+                <p><input id="degreePerSecond" type="range" min="1" max="100" value="50"/></p>
+                <p>Max Degree</p>
+                <p><input id="maxDegree" type="range" min="1" max="90" value="90"/></p>
+            </div>
+            <div class="container">
+                <img src="mobilePhone.png" style="height: 190px; width: 105px;" id="imgLogo" class="logo">
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var acc = document.getElementsByClassName("accordionMain");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].onclick = function(){
+                /* Toggle between adding and removing the "active" class,
+                 to highlight the button that controls the panel */
+                this.classList.toggle("active");
+
+                /* Toggle between hiding and showing the active panel */
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            }
+        }
+
+        initDeviceEmulation();
+
+        function initDeviceEmulation() {
+            var handler = function (e) {
+                console.log('space pressed');
+            }
+
+            device = new PocketCode.DeviceEmulator();
+            var x = device.inclinationX;    //just make sure to start internal events
+            device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(handler, this));
+            setInterval(function () { this.deviceOrientationHandler(); }, 100);
+        }
+
+        var logo = document.getElementById("imgLogo");
+
+        function deviceOrientationHandler(eventData) {
+            var degreePerSecondFactor = document.querySelector('#degreePerSecond');
+            var maxDegreeFactor = document.querySelector('#maxDegree');
+            device._degreePerSecond = degreePerSecondFactor.value * 0.02;
+            device._maxDegree = maxDegreeFactor.value / 2.5;
+
+            document.getElementById("doInclinationX").innerHTML = Math.round(device.inclinationX * 2.5);
+            document.getElementById("doInclinationY").innerHTML = Math.round(device.inclinationY * 2.5);
+
+            // Apply the transform to the image
+            //var logo = document.getElementById("imgLogo");
+            //logo.style.webkitTransform = "rotate3d(0,1,0, "+ (device.inclinationX)+"deg) rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
+            logo.style.webkitTransform = "rotateX(" + -device.inclinationY  + "deg) rotateY(" + -device.inclinationX + "deg)";
+            logo.style.transform = "rotateX(" + -device.inclinationY  + "deg) rotateY(" + -device.inclinationX  + "deg)";
+            //var logo2 = document.getElementById("imgLogoY");
+            //logo2.style.webkitTransform = "rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
+        }
+    </script>
+</body>
+</html>

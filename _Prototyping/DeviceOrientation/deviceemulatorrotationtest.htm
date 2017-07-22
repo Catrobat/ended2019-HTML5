@@ -22,7 +22,7 @@
             box-shadow: 10px 10px 5px #888;
             border-radius: 12px;
             padding: 20px;
-            background-color: #ddd;
+            background-color: #A6C492;
             margin: 25px;
             width: 450px;
             margin-left: auto;
@@ -72,6 +72,14 @@
                 <td>Inclination Y</td>
                 <td id="doInclinationY"></td>
             </tr>
+            <tr>
+                <td>Degree per Second</td>
+                <td><input id="degreePerSecond" type="range" min="1" max="100" value="50"/></td>
+            </tr>
+            <tr>
+                <td>Max Degree</td>
+                <td><input id="maxDegree" type="range" min="1" max="90" value="90"/></td>
+            </tr>
         </table>
     </div>
 
@@ -100,6 +108,11 @@
         //var logo2 = document.getElementById("imgLogoY");
 
         function deviceOrientationHandler(eventData) {
+            var degreePerSecondFactor = document.querySelector('#degreePerSecond');
+            var maxDegreeFactor = document.querySelector('#maxDegree')
+            device._degreePerSecond = degreePerSecondFactor.value * 0.02;
+            device._maxDegree = maxDegreeFactor.value / 2.5;
+
             document.getElementById("doTiltLR").innerHTML = Math.round(device._gamma);
             document.getElementById("doTiltFB").innerHTML = Math.round(device._beta);
             document.getElementById("doDirection").innerHTML = Math.round(device._alpha);
@@ -110,8 +123,8 @@
             // Apply the transform to the image
             //var logo = document.getElementById("imgLogo");
             //logo.style.webkitTransform = "rotate3d(0,1,0, "+ (device.inclinationX)+"deg) rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
-            logo.style.webkitTransform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
-            logo.style.transform = "rotateX(" + -device.inclinationY + "deg) rotateY(" + -device.inclinationX + "deg)";
+            logo.style.webkitTransform = "rotateX(" + -device.inclinationY  + "deg) rotateY(" + -device.inclinationX + "deg)";
+            logo.style.transform = "rotateX(" + -device.inclinationY  + "deg) rotateY(" + -device.inclinationX  + "deg)";
             //var logo2 = document.getElementById("imgLogoY");
             //logo2.style.webkitTransform = "rotate("+ 0 +"deg) rotate3d(1,0,0, "+ (device.inclinationY)+"deg)";
         }
