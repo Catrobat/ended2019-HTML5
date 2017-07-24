@@ -954,7 +954,7 @@ PocketCode.merge({
                 writable: true,
             },
             penSize: {
-                value: undefined,   //default calues are defined on sprite/bricks only
+                value: undefined,   //default values are defined on sprite/bricks only
                 writable: true,
             },
             penColor: { //providing a setter/getter is important to make sure the object is merged correctly

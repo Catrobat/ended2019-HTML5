@@ -57,7 +57,7 @@ PocketCode.Model.Sprite = (function () {
 
         //pen
         this._penDown = false;
-        this._penSize = 4;
+        this._penSize = 3;
         this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
@@ -391,7 +391,7 @@ PocketCode.Model.Sprite = (function () {
             this._recalculateLookOffsets();
 
             this._penDown = false;
-            this._penSize = 4;
+            this._penSize = 3;
             this._penColor = { r: 0, g: 0, b: 255 };
 
             //variables
