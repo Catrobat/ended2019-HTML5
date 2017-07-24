@@ -174,7 +174,7 @@ PocketCode.Model.merge({
 
                 if (this.value === undefined)
                     return; //no event is triggered
-                this.value = undefined;
+                this.value = 0;
             },
             showAt: function (x, y) {
                 this._uiCache = {
