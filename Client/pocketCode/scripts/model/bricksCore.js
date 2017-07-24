@@ -460,7 +460,8 @@ PocketCode.Model.merge({
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
                     else {
-                        window.setTimeout(this._execute.bind(this, id, po.scope), 10);
+                        this._execute(id, po.scope);
+                        //window.setTimeout(this._execute.bind(this, id, po.scope), 0);
                     }
                 }
                 else
