@@ -104,7 +104,7 @@ PocketCode.Model.merge({
             //    this._value = 0.000001;   //prevent division by zero
             this._onChange = new SmartJs.Event.Event(this);
             //init
-            this._value = undefined;
+            this._value = 0;//undefined;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
