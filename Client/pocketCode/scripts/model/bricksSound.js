@@ -130,6 +130,15 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
+        //formula accessors
+        Object.defineProperties(SetVolumeBrick.prototype, {
+            volumeFormula: {
+                get: function () {
+                    return this._percentage;
+                },
+            },
+        });
+
         SetVolumeBrick.prototype.merge({
             _execute: function (scope) {
                 var val = this._percentage.calculate(scope);
@@ -155,6 +164,15 @@ PocketCode.Model.merge({
             this._soundManager = soundManager;
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
+
+        //formula accessors
+        Object.defineProperties(ChangeVolumeBrick.prototype, {
+            volumeFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+        });
 
         ChangeVolumeBrick.prototype.merge({
             _execute: function (scope) {
@@ -194,6 +212,15 @@ PocketCode.Model.merge({
                 this._soundManager.loadSound(request.url, this._soundId, 'mp3');
             }
         }
+
+        //formula accessors
+        Object.defineProperties(SpeakBrick.prototype, {
+            textFormula: {
+                get: function () {
+                    return this._text;  //TODO: onChange Event needed for preloading sounds
+                },
+            },
+        });
 
         SpeakBrick.prototype.merge({
             _execute: function (scope) {
@@ -240,6 +267,15 @@ PocketCode.Model.SpeakAndWaitBrick = (function () {
             this._soundManager.loadSound(request.url, this._soundId, 'mp3');
         }
     }
+
+    //formula accessors
+    Object.defineProperties(SpeakAndWaitBrick.prototype, {
+        textFormula: {
+            get: function () {
+                return this._text;  //TODO: onChange Event needed for preloading sounds
+            },
+        },
+    });
 
     SpeakAndWaitBrick.prototype.merge({
         _onLoadHandler: function (id, instanceId) {

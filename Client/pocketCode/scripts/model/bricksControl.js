@@ -19,6 +19,15 @@ PocketCode.Model.merge({
             this._duration = new PocketCode.Formula(device, sprite, propObject.duration);
         }
 
+        //formula accessors
+        Object.defineProperties(WaitBrick.prototype, {
+            durationFormula: {
+                get: function () {
+                    return this._duration;
+                },
+            },
+        });
+
         WaitBrick.prototype.merge({
             _timerExpiredHandler: function (e) {
                 this._return(e.callId);
@@ -136,6 +145,15 @@ PocketCode.Model.merge({
             this._elseBricks = new PocketCode.Model.BrickContainer([]);
         }
 
+        //formula accessors
+        Object.defineProperties(IfThenElseBrick.prototype, {
+            conditionFormula: {
+                get: function () {
+                    return this._condition;
+                },
+            },
+        });
+
         //properties
         Object.defineProperties(IfThenElseBrick.prototype, {
             ifBricks: {
@@ -200,6 +218,15 @@ PocketCode.Model.merge({
             this._timeoutHandler = false;
         }
 
+        //formula accessors
+        Object.defineProperties(WaitUntilBrick.prototype, {
+            conditionFormula: {
+                get: function () {
+                    return this._condition;
+                },
+            },
+        });
+
         WaitUntilBrick.prototype.merge({
             _execute: function () {
                 if (this._timeoutHandler)
@@ -240,6 +267,15 @@ PocketCode.Model.merge({
             this._timesToRepeat = new PocketCode.Formula(device, sprite, propObject.timesToRepeat);
         }
 
+        //formula accessors
+        Object.defineProperties(RepeatBrick.prototype, {
+            timesToRepeatFormula: {
+                get: function () {
+                    return this._timesToRepeat;
+                },
+            },
+        });
+
         RepeatBrick.prototype.merge({
             /* override */
             _loopConditionMet: function (po) {
@@ -273,6 +309,15 @@ PocketCode.Model.merge({
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
         }
+
+        //formula accessors
+        Object.defineProperties(RepeatUntilBrick.prototype, {
+            conditionFormula: {
+                get: function () {
+                    return this._condition;
+                },
+            },
+        });
 
         RepeatUntilBrick.prototype.merge({
             /* override */

@@ -16,6 +16,15 @@ PocketCode.Model.merge({
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
 
+        //formula accessors
+        Object.defineProperties(SetGraphicEffectBrick.prototype, {
+            valueFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+        });
+
         SetGraphicEffectBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
             if (isNaN(val))
@@ -36,6 +45,15 @@ PocketCode.Model.merge({
             this._effect = propObject.effect;    //typeof PocketCode.GraphicEffect
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
+
+        //formula accessors
+        Object.defineProperties(ChangeGraphicEffectBrick.prototype, {
+            changeFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+        });
 
         ChangeGraphicEffectBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
@@ -80,6 +98,15 @@ PocketCode.Model.merge({
 
             this._lookIdx = new PocketCode.Formula(device, sprite, propObject.idx);
         }
+
+        //formula accessors
+        Object.defineProperties(SetLookByIndexBrick.prototype, {
+            indexFormula: {
+                get: function () {
+                    return this._lookIdx;
+                },
+            },
+        });
 
         SetLookByIndexBrick.prototype._execute = function (scope) {
             var idx = this._lookIdx.calculate(scope);
@@ -129,6 +156,15 @@ PocketCode.Model.merge({
             this._percentage = new PocketCode.Formula(device, sprite, propObject.percentage);
         }
 
+        //formula accessors
+        Object.defineProperties(SetSizeBrick.prototype, {
+            valueFormula: {
+                get: function () {
+                    return this._percentage;
+                },
+            },
+        });
+
         SetSizeBrick.prototype._execute = function (scope) {
             var val = this._percentage.calculate(scope);
             if (isNaN(val))
@@ -148,6 +184,15 @@ PocketCode.Model.merge({
 
             this._value = new PocketCode.Formula(device, sprite, propObject.value);
         }
+
+        //formula accessors
+        Object.defineProperties(ChangeSizeBrick.prototype, {
+            changeFormula: {
+                get: function () {
+                    return this._value;
+                },
+            },
+        });
 
         ChangeSizeBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
@@ -199,6 +244,15 @@ PocketCode.Model.merge({
             this._varId = propObject.resourceId;
         }
 
+        //formula accessors
+        Object.defineProperties(AskBrick.prototype, {
+            questionFormula: {
+                get: function () {
+                    return this._question;
+                },
+            },
+        });
+
         AskBrick.prototype.merge({
             _onAnswerHandler: function (scope, answer) {
                 var variable = scope.getVariable(this._varId);
@@ -233,6 +287,15 @@ PocketCode.Model.merge({
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
 
+        //formula accessors
+        Object.defineProperties(SayBrick.prototype, {
+            textFormula: {
+                get: function () {
+                    return this._text;
+                },
+            },
+        });
+
         SayBrick.prototype._execute = function (scope) {
             var text = this._text.calculate(scope).toString().trim();
 
@@ -253,6 +316,15 @@ PocketCode.Model.merge({
 
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
+
+        //formula accessors
+        Object.defineProperties(SayForBrick.prototype, {
+            textFormula: {
+                get: function () {
+                    return this._text;
+                },
+            },
+        });
 
         SayForBrick.prototype.merge({
             /* override */
@@ -282,6 +354,15 @@ PocketCode.Model.merge({
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
 
+        //formula accessors
+        Object.defineProperties(ThinkBrick.prototype, {
+            textFormula: {
+                get: function () {
+                    return this._text;
+                },
+            },
+        });
+
         ThinkBrick.prototype._execute = function (scope) {
             var text = this._text.calculate(scope);
 
@@ -302,6 +383,15 @@ PocketCode.Model.merge({
 
             this._text = new PocketCode.Formula(device, sprite, propObject.text);
         }
+
+        //formula accessors
+        Object.defineProperties(ThinkForBrick.prototype, {
+            textFormula: {
+                get: function () {
+                    return this._text;
+                },
+            },
+        });
 
         ThinkForBrick.prototype.merge({
             /* override */
@@ -490,6 +580,15 @@ PocketCode.Model.merge({
             this._lookIdx = new PocketCode.Formula(device, sprite, propObject.idx);
         }
 
+        //formula accessors
+        Object.defineProperties(SetBackgroundByIndexBrick.prototype, {
+            indexFormula: {
+                get: function () {
+                    return this._lookIdx;
+                },
+            },
+        });
+
         SetBackgroundByIndexBrick.prototype.merge({
             _execute: function (scope) {
                 var idx = this._lookIdx.calculate(scope);
@@ -559,6 +658,15 @@ PocketCode.Model.merge({
     //        this._scene = scene;
     //        this._value = new PocketCode.Formula(device, sprite, propObject.value);
     //    }
+
+    ////formula accessors
+    //Object.defineProperties(SetCameraTransparencyBrick.prototype, {
+    //    valueFormula: {
+    //        get: function () {
+    //            return this._value;
+    //        },
+    //    },
+    //});
 
     //    SetCameraTransparencyBrick.prototype._execute = function (scope) {
     //        var val = this._value.calculate(scope);

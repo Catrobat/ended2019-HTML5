@@ -478,7 +478,7 @@ PocketCode.Model.Sprite = (function () {
         },
 
         //motion: position
-        setPosition: function (x, y, triggerEvent, animationCancelCallback, velocity) {
+        setPosition: function (x, y, triggerEvent, animationCancelCallback) {
             if (isNaN(x) || isNaN(y))
                 throw new Error('invalid argument: position');
 
@@ -486,7 +486,6 @@ PocketCode.Model.Sprite = (function () {
                 this._animationCancelCallback();
             if (animationCancelCallback) {   //used to cancel animations
                 this._animationCancelCallback = animationCancelCallback;
-                //TODO: velocity
             }
 
             if (this._positionX === x && this._positionY === y)
@@ -557,7 +556,7 @@ PocketCode.Model.Sprite = (function () {
             this._positionY += value;
             return this._triggerOnChange({ y: this._positionY + this._lookOffsetY });
         },
-        move: function (steps, velocity) {
+        move: function (steps) {
             if (!steps || isNaN(steps))
                 return false;
 
@@ -565,7 +564,7 @@ PocketCode.Model.Sprite = (function () {
             var offsetX = Math.cos(rad) * steps,
                 offsetY = Math.sin(rad) * steps;
 
-            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined, velocity);
+            return this.setPosition(this._positionX + offsetX, this._positionY + offsetY, true, undefined);
         },
         //motion:direction
         turnLeft: function (degree) {

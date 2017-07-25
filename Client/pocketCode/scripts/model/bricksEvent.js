@@ -163,6 +163,15 @@ PocketCode.Model.merge({
             }
         }
 
+        //formula accessors
+        Object.defineProperties(WhenConditionMetBrick.prototype, {
+            conditionFormula: {
+                get: function () {
+                    return this._condition;
+                },
+            },
+        });
+
         WhenConditionMetBrick.prototype.merge({
             _onCloneStartHandler: function () {  //to make sure all whenStartAsClone scripts where executed before evaluating the condition
                 window.setTimeout(this.executeEvent.bind(this), this._cycleTime);
