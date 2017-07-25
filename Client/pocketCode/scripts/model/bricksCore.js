@@ -428,7 +428,6 @@ PocketCode.Model.merge({
                     threadId: threadId,
                     scope: scope,
                     startTime: new Date(),
-                    //callstackCount: 5,
                 };
                 if (this._commentedOut === true)
                     this._return(id, false);
@@ -457,17 +456,12 @@ PocketCode.Model.merge({
                         executionDelay = this._minLoopCycleTime - (new Date() - po.startTime);  //20ms min loop cycle time
                     }
                     po.startTime = new Date();  //re-init for each loop
-                    //po.callstackCount--;
                     if (executionDelay > 0) {
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
-                    //else if (po.callstackCount == 0) {  //performance optimization: prevent timout on each loop cycle
-                    //    po.callstackCount = 5;
-                    //    window.setTimeout(this._execute.bind(this, id, po.scope), 0);
-                    //}
                     else {
                         window.setTimeout(this._execute.bind(this, id, po.scope), 0);
-                        //this._execute(id, po.scope);    //default: no delay
+                        //this._execute(id, po.scope);    //caution: callstack error on some projects, e.g. 27686
                     }
                 }
                 else
