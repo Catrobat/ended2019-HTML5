@@ -41,6 +41,30 @@ PocketCode.SoundManager = (function () {
         createjs.Sound.addEventListener('fileerror', this._fileErrorProxy);
     }
 
+    //events
+    Object.defineProperties(SoundManager.prototype, {
+        onLoadingProgress: {
+            get: function () {
+                return this._onLoadingProgress;
+            },
+        },
+        onLoad: {
+            get: function () {
+                return this._onLoad;
+            },
+        },
+        onLoadingError: {
+            get: function () {
+                return this._onLoadingError;
+            },
+        },
+        onFinishedPlaying: {    //executed if isPlaying = false
+            get: function () {
+                return this._onFinishedPlaying;
+            },
+        },
+    });
+
     //properties
     Object.defineProperties(SoundManager.prototype, {
         supported: {
@@ -91,30 +115,6 @@ PocketCode.SoundManager = (function () {
                     for (var i = 0, l = sounds.length; i < l; i++)
                         sounds[i].muted = value;
                 }
-            },
-        },
-    });
-
-    //events
-    Object.defineProperties(SoundManager.prototype, {
-        onLoadingProgress: {
-            get: function () {
-                return this._onLoadingProgress;
-            },
-        },
-        onLoad: {
-            get: function () {
-                return this._onLoad;
-            },
-        },
-        onLoadingError: {
-            get: function () {
-                return this._onLoadingError;
-            },
-        },
-        onFinishedPlaying: {    //executed if isPlaying = false
-            get: function () {
-                return this._onFinishedPlaying;
             },
         },
     });
@@ -296,6 +296,8 @@ PocketCode.SoundManager = (function () {
             this._loading = false;
         },
         startSound: function (sceneId, id, loadedCallback, finishedCallback) {
+            if (!sceneId || !id)
+                throw new Error('missing argument: sceneId or soundId');
             if (!this.supported) {
                 if (finishedCallback)
                     finishedCallback(false);
@@ -350,6 +352,8 @@ PocketCode.SoundManager = (function () {
             return soundInstance.uniqueId;
         },
         startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {
+            if (!sceneId)
+                throw new Error('missing argument: sceneId');
             if (!this.supported) {
                 if (finishedCallback)
                     finishedCallback(false);
@@ -367,13 +371,15 @@ PocketCode.SoundManager = (function () {
         },
         isPlaying: function (sceneId) {
             if (!sceneId)
-                throw new Error('missing argument: scene id');
+                throw new Error('missing argument: sceneId');
             var active = this._activeSounds[sceneId];
             if (active && active.length > 0)
                 return true;
             return false;
         },
         pauseSound: function (sceneId, id) {
+            if (!sceneId || !id)
+                throw new Error('missing argument: sceneId or soundId');
             var active = this._activeSounds[sceneId];
             if (!active)
                 return;
@@ -415,6 +421,8 @@ PocketCode.SoundManager = (function () {
             }
         },
         resumeSound: function (sceneId, id) {
+            if (!sceneId || !id)
+                throw new Error('missing argument: sceneId or soundId');
             var active = this._activeSounds[sceneId];
             if (!active)
                 return;
@@ -446,6 +454,8 @@ PocketCode.SoundManager = (function () {
             }
         },
         stopSound: function (sceneId, id) {
+            if (!sceneId || !id)
+                throw new Error('missing argument: sceneId or soundId');
             var active = this._activeSounds[sceneId];
             if (!active)
                 return;

@@ -477,7 +477,7 @@ PocketCode.Ui.Canvas = (function () {
                     ctx.moveTo(ri.penX, -ri.penY);
                     ctx.lineTo(toX, -toY);
                     ctx.strokeStyle = "rgb( " + ri.penColor.r + ", " + ri.penColor.g + ", " + ri.penColor.b + " )";
-                    ctx.lineWidth = ri._penSize;
+                    ctx.lineWidth = ri.penSize;
                     ctx.stroke();
                     ctx.closePath();
 

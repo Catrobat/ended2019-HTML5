@@ -61,6 +61,20 @@ PocketCode.Model.merge({
         return WhenActionBrick;
     })(),
 
+});
+
+PocketCode.Model.merge({
+
+    WhenTouchBrick: (function () {
+        WhenTouchBrick.extends(PocketCode.Model.WhenActionBrick, false);
+
+        function WhenTouchBrick(device, sprite, propObject, actionEvent) {
+            PocketCode.Model.WhenActionBrick.call(this, device, sprite, propObject, actionEvent);
+        }
+
+        return WhenTouchBrick;
+    })(),
+
     WhenBroadcastReceiveBrick: (function () {
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
 

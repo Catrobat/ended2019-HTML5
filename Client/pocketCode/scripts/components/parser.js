@@ -199,14 +199,18 @@ PocketCode.merge({
                         break;
 
                     case 'WhenActionBrick':
-                        switch (jsonBrick.action) {
-                            case 'Tapped':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
-                                break;
-                            case 'TouchStart':
-                                brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
-                                break;
-                        }
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
+                        break;
+                    case 'WhenTouchBrick':
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
+                        //switch (jsonBrick.action) {
+                        //    case 'Tapped':
+                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
+                        //        break;
+                        //    case 'TouchStart':
+                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
+                        //        break;
+                        //}
                         break;
 
                     case 'CloneBrick':
@@ -218,6 +222,13 @@ PocketCode.merge({
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
+                    //bubbles
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
+                    //background
+                    case 'SetBackgroundByIndexBrick':
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
@@ -229,6 +240,11 @@ PocketCode.merge({
                     case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
+                        break;
+
+                    case 'PlaySoundAndWaitBrick':   //disabled
+                    case 'SpeakAndWaitBrick':
+                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
 
                     case 'PlaySoundBrick':
@@ -269,15 +285,15 @@ PocketCode.merge({
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
-                        //look: SetLook, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, .. all filters, .. ClearGraphicEffect
+                        //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
+                        //      .. all filters, .. ClearGraphicEffect
                         //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
                         //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
                     default:
                         if (PocketCode.Model[type])
                             brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
-                        else {
+                        else
                             brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                        }
                 }
 
                 if (brick instanceof PocketCode.Model.UnsupportedBrick) {
@@ -287,8 +303,9 @@ PocketCode.merge({
                 else {
                     //load sub bricks
                     //if (!(brick instanceof PocketCode.Model.UnsupportedBrick)) {
-                    if (jsonBrick.bricks)   //all loops
+                    if (jsonBrick.bricks) { //all loops
                         brick._bricks = this._createList(currentSprite, jsonBrick.bricks);
+                    }
                     else if (jsonBrick.ifBricks) {  // && jsonBrick.elseBricks) {  //if then else
                         brick._ifBricks = this._createList(currentSprite, jsonBrick.ifBricks);
                         brick._elseBricks = this._createList(currentSprite, jsonBrick.elseBricks);
@@ -435,11 +452,15 @@ PocketCode.merge({
                         return '(' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
 
                     case 'STRING':
-                        return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
+                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
+                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
+                        //if (uiString)
+                        //    return '\'' + tmp + '\'';
+                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
 
                     case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
                         this._isStatic = false;
-                        var params = jsonFormula.value.split(' ');  //e.g. 'sp1 touches sp2'
+                        var params = jsonFormula.value.split(' touches ');  //e.g. 'sp1 touches sp2'
                         if (params.length == 1) { //v0.993
                             if (asUiObject)
                                 return 'touches_object(' + jsonFormula.value + ')';
@@ -450,7 +471,7 @@ PocketCode.merge({
                             if (asUiObject)
                                 return '\'' + jsonFormula.value + '\'';
 
-                            return 'this._sprite.collidesWithSprite(\'' + params[2] + '\')';
+                            return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
                         }
                         else { //not supported
                             if (asUiObject)
@@ -560,9 +581,6 @@ PocketCode.merge({
                             break;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' / ', asUiObject, true);
-
-                        //case 'POW':
-                        //    return 'Math.pow(' + this._concatOperatorFormula(jsonFormula, ', ') + ')';
 
                     case 'LOGICAL_NOT':
                         if (asUiObject){
@@ -984,58 +1002,44 @@ PocketCode.merge({
 
                         //date and time
                     case 'CURRENT_YEAR':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_year');
-                            break;
-                        }
+                        if (uiString)
+                            return 'year';
 
                         return '(new Date()).getFullYear()';
 
                     case 'CURRENT_MONTH':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_month');
-                            break;
-                        }
+                        if (uiString)
+                            return 'month';
 
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_day');
-                            break;
-                        }
+                        if (uiString)
+                            return 'day';
 
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_weekday');
-                            break;
-                        }
+                        if (uiString)
+                            return 'weekday';
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_hour');
-                            break;
-                        }
+                        if (uiString)
+                            return 'hour';
 
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_minute');
-                            break;
-                        }
+                        if (uiString)
+                            return 'minute';
 
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_second');
-                            break;
-                        }
+                        if (uiString)
+                            return 'second';
 
                         return '(new Date()).getSeconds()';
 
@@ -1078,10 +1082,8 @@ PocketCode.merge({
                         return 'this._sprite.colorEffect';
 
                     case 'OBJECT_BACKGROUND_NUMBER':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_object_background_number');
-                            break;
-                        }
+                        if (uiString)
+                            return 'background_number';
                     case 'OBJECT_LOOK_NUMBER':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_look_number');
@@ -1090,10 +1092,8 @@ PocketCode.merge({
                         return 'this._sprite.currentLookNumber';
 
                     case 'OBJECT_BACKGROUND_NAME':
-                        if (asUiObject){
-                            this._addKeyRecursive(jsonFormula, 'formula_editor_object_background_name');
-                            break;
-                        }
+                        if (uiString)
+                            return 'background_name';
                     case 'OBJECT_LOOK_NAME':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_look_name');
@@ -1141,6 +1141,11 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
+                    //case 'OBJECT_DISTANCE_TO':    //TODO
+                    //    if (uiString)
+                    //        return 'position_y';
+
+                    //    return 'this._sprite.positionY';
 
                     //collision
                     case 'COLLIDES_WITH_EDGE':

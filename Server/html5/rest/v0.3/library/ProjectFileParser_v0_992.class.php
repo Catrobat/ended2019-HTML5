@@ -355,22 +355,28 @@ class ProjectFileParser_v0_992
     protected function parseGlobalData()
     {
         // parse global vars
-        array_push($this->cpp, $this->simpleXml->programVariableList);
-        foreach($this->simpleXml->programVariableList->children() as $userVar)
+        if(property_exists($this->simpleXml, "programVariableList"))
         {
-            $userVar = $this->getObject($userVar, $this->cpp);
-            array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
+            array_push($this->cpp, $this->simpleXml->programVariableList);
+            foreach($this->simpleXml->programVariableList->children() as $userVar)
+            {
+                $userVar = $this->getObject($userVar, $this->cpp);
+                array_push($this->variables, new IdNameDto($this->getNewId(), (string)$userVar));
+            }
+            array_pop($this->cpp);
         }
-        array_pop($this->cpp);
 
         // parse global lists
-        array_push($this->cpp, $this->simpleXml->programListOfLists);
-        foreach($this->simpleXml->programListOfLists->children() as $userList)
+        if(property_exists($this->simpleXml, "programListOfLists"))
         {
-            $userList = $this->getList($userList);
-            array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
+            array_push($this->cpp, $this->simpleXml->programListOfLists);
+            foreach($this->simpleXml->programListOfLists->children() as $userList)
+            {
+                $userList = $this->getList($userList);
+                array_push($this->lists, new IdNameDto($this->getNewId(), (string)$userList));
+            }
+            array_pop($this->cpp);
         }
-        array_pop($this->cpp);
     }
 
     //stores background $ sprites to $this.currentScene->background/sprites[]
@@ -763,7 +769,7 @@ class ProjectFileParser_v0_992
 
             //WhenTouchDown
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenTouchBrickDto($this->getNewId(), "TouchStart");
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1104,7 +1110,7 @@ class ProjectFileParser_v0_992
             {
                 $nestedCounter++;
             }
-            
+
             if($name === "IfThenLogicEndBrick")
             {
                 if($nestedCounter === 0)
@@ -1734,6 +1740,13 @@ class ProjectFileParser_v0_992
                 $brick->lookId = $lookObject->id;
                 break;
 
+            case "SetBackgroundByIndexBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SetBackgroundByIndexBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
+                break;
+
             case "SetLookBrick":
                 $brick = new SetLookBrickDto(null);
                 if(!property_exists($script, "look"))   // when no look set, look => empty
@@ -1755,6 +1768,13 @@ class ProjectFileParser_v0_992
 
                 //the image has already been included in the resources & look[]
                 $brick->lookId = $lookObject->id;
+                break;
+
+            case "SetLookByIndexBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brick = new SetLookByIndexBrickDto($this->parseFormula($fl->formula));
+                array_pop($this->cpp);
                 break;
 
             case "NextLookBrick":

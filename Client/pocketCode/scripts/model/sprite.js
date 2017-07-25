@@ -53,9 +53,11 @@ PocketCode.Model.Sprite = (function () {
         this._brightness = 100.0;
         this._colorEffect = 0.0;
 
+        this._bubbleVisible = false;
+
         //pen
         this._penDown = false;
-        this._penSize = 4;
+        this._penSize = 3;
         this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
@@ -95,7 +97,7 @@ PocketCode.Model.Sprite = (function () {
     //properties
     Object.defineProperties(Sprite.prototype, {
         renderingVariables: {
-            get: function() {
+            get: function () {
                 return this._getRenderingVariables(this._id);
             },
         },
@@ -187,7 +189,9 @@ PocketCode.Model.Sprite = (function () {
         },
         currentLookNumber: {
             get: function () {
-                return this._looks.indexOf(this._currentLook) + 1;  //returns 0 for not found   //TODO?
+                if (!this._currentLook) //returns 1 if not found
+                    return 1;
+                return this._looks.indexOf(this._currentLook) + 1;
             },
         },
         currentLookName: {
@@ -195,6 +199,16 @@ PocketCode.Model.Sprite = (function () {
                 if (!this._currentLook)
                     return '';
                 return this._currentLook.name;
+            },
+        },
+        sceneBackgroundNumber: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundNumber;
+            },
+        },
+        sceneBackgroundName: {    //to accesss scene properties in formula
+            get: function () {
+                return this._scene.currentBackgroundName;
             },
         },
         visible: {
@@ -377,7 +391,7 @@ PocketCode.Model.Sprite = (function () {
             this._recalculateLookOffsets();
 
             this._penDown = false;
-            this._penSize = 4;
+            this._penSize = 3;
             this._penColor = { r: 0, g: 0, b: 255 };
 
             //variables
@@ -427,6 +441,16 @@ PocketCode.Model.Sprite = (function () {
                     if (properties.x || properties.y) { //include sprite positions for pen
                         properties.penX = this._positionX;
                         properties.penY = this._positionY;
+                    }
+                    //add boundaries for bubbles if visible and roation has changed
+                    if (properties.rotation != undefined && this._bubbleVisible) {
+                        var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+                        if (this._currentLook && this._transparency < 100.0) {
+                            var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                                flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                            boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+                        }
+                        properties.boundary = boundary;
                     }
                     this._onChange.dispatchEvent({ id: this._id, properties: properties }, this);
                     return true;
@@ -685,6 +709,18 @@ PocketCode.Model.Sprite = (function () {
             }
             throw new Error('look image with id ' + lookId + ' could not be found');
         },
+        setLookByIndex: function (lookIdx) {
+            if (isNaN(lookIdx) || lookIdx < 1 || this._currentLook && this.currentLookNumber === lookIdx || lookIdx > this._looks.length)
+                return false;
+
+            this._currentLook = this._looks[lookIdx - 1];
+            update = { look: this._currentLook.canvas };
+
+            this._recalculateLookOffsets();
+            update.x = this._positionX + this._lookOffsetX;
+            update.y = this._positionY + this._lookOffsetY;
+            return this._triggerOnChange(update);
+        },
         previousLook: function () {
             if (this._currentLook == undefined || this._looks.length == 0)
                 return false;
@@ -778,11 +814,12 @@ PocketCode.Model.Sprite = (function () {
             });
         },
         hide: function () {
-            if (!this._visible)
+            if (!this._visible && !this._bubbleVisible)
                 return false;
-
+            
             this._visible = false;
-            return this._triggerOnChange({ visible: false });
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ visible: false, bubble: { visible: false } });
         },
         show: function () {
             if (this._visible)
@@ -1143,12 +1180,21 @@ PocketCode.Model.Sprite = (function () {
         },
 
         showBubble: function (type, text) {
-            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
-            return this._triggerOnChange({ bubble: { type: type, text: text, visible: true } });
+            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
+            //console.log("show");
+            this._bubbleVisible = true;
+            var boundary = { top: 0, right: 0, bottom: 0, left: 0 };
+            if (this._currentLook && this._transparency < 100.0) {
+                var rotationCW = this.rotationStyle === PocketCode.RotationStyle.ALL_AROUND ? this.direction - 90.0 : 0.0,
+                    flipX = this.rotationStyle === PocketCode.RotationStyle.LEFT_TO_RIGHT && this.direction < 0.0 ? true : false;
+                boundary = this._currentLook.getBoundary(this._scaling, rotationCW, flipX, true);
+            }
+            return this._triggerOnChange({ boundary: boundary, bubble: { type: type, text: text, visible: true, screenSize: this._scene.screenSize } });
         },
         hideBubble: function (type) {
-            //TODO validation: PocketCode.Model.BubbleType.SAY/THINK
-            return this._triggerOnChange({ bubble: { type: type, visible: false } });
+            //TODO validation: PocketCode.Ui.BubbleType.SPEECH/THINK
+            this._bubbleVisible = false;
+            return this._triggerOnChange({ bubble: { visible: false } });
         },
 
         clone: function (device, soundManager, broadcastMgr) {

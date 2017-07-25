@@ -23,7 +23,7 @@ PocketCode.Model.merge({
             var x = this._x.calculate(scope),
                 y = this._y.calculate(scope);
             if (isNaN(x) || isNaN(y))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setPosition(x, y));
         };
@@ -43,7 +43,7 @@ PocketCode.Model.merge({
         SetXBrick.prototype._execute = function (scope) {
             var x = this._x.calculate(scope);
             if (isNaN(x))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setPositionX(x));
         };
@@ -63,7 +63,7 @@ PocketCode.Model.merge({
         SetYBrick.prototype._execute = function (scope) {
             var y = this._y.calculate(scope);
             if (isNaN(y))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setPositionY(y));
         };
@@ -83,7 +83,7 @@ PocketCode.Model.merge({
         ChangeXBrick.prototype._execute = function (scope) {
             var x = this._x.calculate(scope);
             if (isNaN(x))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.changePositionX(x));
         };
@@ -103,7 +103,7 @@ PocketCode.Model.merge({
         ChangeYBrick.prototype._execute = function (scope) {
             var y = this._y.calculate(scope);
             if (isNaN(y))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.changePositionY(y));
         };
@@ -187,7 +187,6 @@ PocketCode.Model.merge({
 
         function IfOnEdgeBounceBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
         }
 
         IfOnEdgeBounceBrick.prototype._execute = function () {
@@ -210,10 +209,9 @@ PocketCode.Model.merge({
         MoveNStepsBrick.prototype._execute = function (scope) {
             var val = this._steps.calculate(scope);
             if (isNaN(val))
-                this._return(false);
-            else {
+                this._return();
+            else
                 this._return(this._sprite.move(val, val / this._minLoopCycleTime));
-            }
         };
 
         return MoveNStepsBrick;
@@ -231,7 +229,7 @@ PocketCode.Model.merge({
         TurnLeftBrick.prototype._execute = function (scope) {
             var val = this._degrees.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.turnLeft(val));
         };
@@ -251,7 +249,7 @@ PocketCode.Model.merge({
         TurnRightBrick.prototype._execute = function (scope) {
             var val = this._degrees.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.turnRight(val));
         };
@@ -271,7 +269,7 @@ PocketCode.Model.merge({
         SetDirectionBrick.prototype._execute = function (scope) {
             var val = this._degrees.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setDirection(val));
         };
@@ -338,7 +336,7 @@ PocketCode.Model.merge({
                 var duration = this._duration.calculate(scope),
                     x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
-                if (isNaN(duration)) {
+                if (isNaN(duration) || isNaN(x) || isNaN(y)) {
                     if (!isNaN(x) && !isNaN(y)) {
                         this._updatePositionHandler({ value: { x: x, y: y } });
                         this._return(id, true);
@@ -414,7 +412,7 @@ PocketCode.Model.merge({
         GoBackBrick.prototype._execute = function (scope) {
             var val = this._layers.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.goBack(val));
         };
@@ -450,7 +448,7 @@ PocketCode.Model.merge({
         VibrationBrick.prototype._execute = function (scope) {
             var val = this._duration.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._device.vibrate(val));
         };
@@ -493,7 +491,7 @@ PocketCode.Model.merge({
                 this._physicsWorld.subscribe(this._sprite.id, physicsEnabled);
                 this._sprite.physicsType = this._physicsType;
 
-                this._return(false);
+                this._return();
             },
             dispose: function () {
                 this._physicsWorld = undefined;
@@ -517,11 +515,10 @@ PocketCode.Model.merge({
         SetVelocityBrick.prototype._execute = function (scope) {
             var x = this._x.calculate(scope),
                 y = this._y.calculate(scope);
-            if (isNaN(x) || isNaN(y))
-                this._return(false);
 
-            this._sprite.setVelocity(x, y); //TODO: velocity/sek ->direction?
-            this._return(false);
+            if (!isNaN(x) || !isNaN(y))
+                this._sprite.setVelocity(x, y); //TODO: velocity/sek ->direction?
+            this._return();
         };
 
         return SetVelocityBrick;
@@ -539,11 +536,10 @@ PocketCode.Model.merge({
         RotationSpeedLeftBrick.prototype._execute = function (scope) {
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
-            if (isNaN(degreesPerSecond))
-                this._return(false);
-
-            this._sprite.turnNDegreePerSecond = -degreesPerSecond;
-            this._return(false);
+            if (!isNaN(degreesPerSecond))
+                this._sprite.turnNDegreePerSecond = -degreesPerSecond;
+            
+            this._return();
         };
 
         return RotationSpeedLeftBrick;
@@ -561,11 +557,10 @@ PocketCode.Model.merge({
         RotationSpeedRightBrick.prototype._execute = function (scope) {
             var degreesPerSecond = this._degreesPerSecond.calculate(scope);
 
-            if (isNaN(degreesPerSecond))
-                this._return(false);
-
-            this._sprite.turnNDegreePerSecond = degreesPerSecond;
-            this._return(false);
+            if (!isNaN(degreesPerSecond))
+                this._sprite.turnNDegreePerSecond = degreesPerSecond;
+            
+            this._return();
         };
 
         return RotationSpeedRightBrick;
@@ -586,11 +581,10 @@ PocketCode.Model.merge({
             _execute: function (scope) {
                 var x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
-                if (isNaN(x) || isNaN(y))
-                    this._return(false);
-
-                this._scene.setGravity(x, y);
-                this._return(false);
+                if (!isNaN(x) || !isNaN(y))
+                    this._scene.setGravity(x, y);
+                
+                this._return();
             },
             dispose: function () {
                 this._scene = undefined;
@@ -612,12 +606,10 @@ PocketCode.Model.merge({
 
         SetMassBrick.prototype._execute = function (scope) {
             var mass = this._mass.calculate(scope);
+            if (!isNaN(mass))
+                this._sprite.mass = mass;
 
-            if (isNaN(mass))
-                this._return(false);
-
-            this._sprite.mass = mass;
-            this._return(false);
+            this._return();
         };
 
         return SetMassBrick;
@@ -635,11 +627,10 @@ PocketCode.Model.merge({
         SetBounceFactorBrick.prototype._execute = function (scope) {
             var bounceFactor = this._bounceFactor.calculate(scope);
 
-            if (isNaN(bounceFactor))
-                this._return(false);
-
-            this._sprite.bounceFactor = bounceFactor;
-            this._return(false);
+            if (!isNaN(bounceFactor))
+                this._sprite.bounceFactor = bounceFactor;
+            
+            this._return();
         };
 
         return SetBounceFactorBrick;
@@ -656,11 +647,10 @@ PocketCode.Model.merge({
 
         SetFrictionBrick.prototype._execute = function (scope) {
             var friction = this._friction.calculate(scope);
-            if (isNaN(friction))
-                this._return(false);
-
-            this._sprite.friction = friction;
-            this._return(false);
+            if (!isNaN(friction))
+                this._sprite.friction = friction;
+            
+            this._return();
         };
 
         return SetFrictionBrick;
