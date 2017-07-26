@@ -25,8 +25,6 @@ QUnit.module("components/parser.js");
 
 QUnit.test("FormulaParser: operators", function (assert) {
 
-
-    //todo hilfsmethode: recursive parse formel -> existiert i18n key ?
     assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus); }, Error, "ERROR: accessing uiString without providing variable names");
     assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
 
@@ -76,40 +74,51 @@ QUnit.test("FormulaParser: operators", function (assert) {
 
     assert.equal(f.calculate(), 3, "calc plus: int");
     assert.equal(f.isStatic, true, "calc plus: isStatic");
-    assert.equal(f.toString(), "1 + 2", "string plus: int");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "PLUS i18nKey added");
 
     f.json = plus2;
     assert.equal(Math.round(f.calculate() * 100) / 100, 3.6, "plus: float");
-    assert.equal(f.toString(), "1 + 2.6", "string plus: float");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "PLUS2 i18nKey added");
 
     f.json = signed;
     assert.equal(Math.round(f.calculate() * 100) / 100, -3.6, "signed (negative)");
-    assert.equal(f.toString(), "-1 + -2.6", "string: signed");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "PLUS2 i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_minus", "MINUS i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_operator_minus", "MINUS2 i18nKey added");
 
     f.json = minus;
     assert.equal(f.calculate(), 1, "calc minus: int");
     assert.equal(f.isStatic, true, "calc minus: isStatic");
-    assert.equal(f.toString(), "2 - 1", "string minus: int");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_minus", "MINUS3 i18nKey added");
 
     f.json = minus2;
     assert.equal(Math.round(f.calculate() * 100) / 100, 1.2, "calc minus: float");
-    assert.equal(f.toString(), "2.2 - 1", "string minus: float");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_minus", "MINUS4 i18nKey added");
 
     f.json = divide;
     assert.equal(f.calculate(), 2, "calc divide");
     assert.equal(f.isStatic, true, "calc divide: isStatic");
-    assert.equal(f.toString(), "5 ÷ 2.5", "string divide: int");    //string compare does not work- parsed correctly
-    //assert.ok(f.toString().substr(0,2), "5 ", "string divide: int");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_divide", "DIVIDE i18nKey added");
 
     f.json = mult;
     assert.equal(f.calculate(), 1, "calc mult");
     assert.equal(f.isStatic, true, "calc mult: isStatic");
-    assert.equal(f.toString(), "0.5 x 2", "string mult");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_mult", "MULT i18nKey added");
 
     f.json = mult2;
     assert.equal(f.calculate(), 1.5, "calc mult with brackets");
-    assert.equal(f.toString(), "0.5 x (-1 + 2.0 x 2)", "string mult with brackets");
-
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_mult", "MULT2 i18nKey added");
+    assert.equal(f.json.right.right.i18nKey, "formula_editor_operator_plus", "MULT2 PLUS i18nKey added");
+    assert.equal(f.json.right.right.left.i18nKey, "formula_editor_operator_minus", "MULT2 MINUS i18nKey added");
+    assert.equal(f.json.right.right.right.i18nKey, "formula_editor_operator_mult", "MULT2 MULT i18nKey added");
 });
 
 
