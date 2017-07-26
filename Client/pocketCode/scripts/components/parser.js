@@ -285,7 +285,7 @@ PocketCode.merge({
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
-                        //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
+                        //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency,
                         //      .. all filters, .. ClearGraphicEffect
                         //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
                         //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
@@ -414,7 +414,7 @@ PocketCode.merge({
                     case 'NUMBER':
                         if (asUiObject){
                             jsonFormula.left = jsonFormula.right = undefined;
-                            break;
+                            return jsonFormula;
                         }
 
                         var num = Number(jsonFormula.value);
@@ -431,7 +431,9 @@ PocketCode.merge({
                             var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
                                 this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
                                 this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            return '"' + variable.name + '"';
+                            jsonFormula.objRef = variable;
+                            return jsonFormula;
+                            //return '"' + variable.name + '"';
                         }
 
                         this._isStatic = false;
@@ -442,34 +444,47 @@ PocketCode.merge({
                             var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
                                 this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
                                 this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                            return '*' + list.name + '*';
+                            jsonFormula.objRef = list;
+                            return jsonFormula;
+                            //return '*' + list.name + '*';
                         }
 
                         this._isStatic = false;
                         return 'uvh.getList("' + jsonFormula.value + '")';
 
                     case 'BRACKET':
+                        if(asUiObject){
+                            jsonFormula.right = this._parseJsonType(jsonFormula.right, asUiObject);
+                            return jsonFormula;
+                        }
                         return '(' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
 
                     case 'STRING':
-                        return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
-                        //var tmp = jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n');
-                        //if (uiString)
-                        //    return '\'' + tmp + '\'';
-                        //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
+                        if (asUiObject){
+                            jsonFormula.left = jsonFormula.right = undefined;
+                            return jsonFormula;
+                        }
+                        //return '\'' + jsonFormula.value.replace(/('|\n|\\)/g, '\\\$1') + '\'';
+                        return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
 
-                    case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
+                    case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog //handles sprite collides with sprite only
                         this._isStatic = false;
                         var params = jsonFormula.value.split(' touches ');  //e.g. 'sp1 touches sp2'
                         if (params.length == 1) { //v0.993
-                            if (asUiObject)
-                                return 'touches_object(' + jsonFormula.value + ')';
+                            if (asUiObject){
+                                jsonFormula.i18nKey = "formula_editor_function_collision";
+                                jsonFormula.objRef = undefined; //todo
+                                return jsonFormula;
+                            }
 
                             return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
                         }
                         else if (params.length == 3) { //v0.992
-                            if (asUiObject)
-                                return '\'' + jsonFormula.value + '\'';
+                            if (asUiObject){
+                                jsonFormula.i18nKey = "formula_editor_function_collision";
+                                jsonFormula.objRef = undefined; //todo
+                                return jsonFormula;
+                            }
 
                             return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
                         }
@@ -498,63 +513,63 @@ PocketCode.merge({
                     case 'LOGICAL_AND':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_and');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' && ');
 
                     case 'LOGICAL_OR':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_or');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' || ');
 
                     case 'EQUAL':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_equal');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' == ');
 
                     case 'NOT_EQUAL':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_notequal');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' != ');
 
                     case 'SMALLER_OR_EQUAL':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_leserequal');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' <= ');
 
                     case 'GREATER_OR_EQUAL':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_greaterequal');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' >= ');
 
                     case 'SMALLER_THAN':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_lesserthan');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' < ', asUiObject);
 
                     case 'GREATER_THAN':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_greaterthan');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' > ', asUiObject);
 
                     case 'PLUS':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_operator_plus');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' + ', asUiObject, true);
 
@@ -562,7 +577,7 @@ PocketCode.merge({
                         if (asUiObject){
                             //todo: left === null?
                             this._addKeyRecursive(jsonFormula, 'formula_editor_operator_minus');
-                            break;
+                            return jsonFormula;
                         }
                         if (jsonFormula.left === null)    //singed number
                             return this._concatOperatorFormula(jsonFormula, '-', asUiObject);
@@ -571,21 +586,21 @@ PocketCode.merge({
                     case 'MULT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_operator_mult');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' * ', asUiObject, true);
 
                     case 'DIVIDE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_operator_divide');
-                            break;
+                            return jsonFormula;
                         }
                         return this._concatOperatorFormula(jsonFormula, ' / ', asUiObject, true);
 
                     case 'LOGICAL_NOT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_logic_not');
-                            break;
+                            return jsonFormula;
                         }
                         return '!' + this._parseJsonType(jsonFormula.right);
 
@@ -593,61 +608,65 @@ PocketCode.merge({
                         throw new Error('formula parser: unknown operator: ' + jsonFormula.value);  //TODO: do we need an onError event? -> new and unsupported operators?
                 }
             },
-            /*_parseFunctionAndAddKey: function (jsonFormula, i18nKey, rightExists) {
-                //i18nKey -> object
-
-
-                jsonFormula.i18nKey = i18nKey;
-                jsonFormula.left = this._parseJsonType(jsonFormula.left, true);
-
-                jsonFormula.right = this._parseJsonType(jsonFormula.right, true);
-            },*/
             _parseJsonFunction: function (jsonFormula, asUiObject) {
                 /* package org.catrobat.catroid.formulaeditor: enum Functions
                 *  SIN, COS, TAN, LN, LOG, PI, SQRT, RAND, ABS, ROUND, MOD, ARCSIN, ARCCOS, ARCTAN, EXP, FLOOR, CEIL, MAX, MIN, TRUE, FALSE, LENGTH, LETTER, JOIN;
                 */
                 switch (jsonFormula.value) {
                     case 'SIN':
-                        if (asUiObject) {
-                            //this._parseFunctionAndAddKey(jsonFormula, i18nKey als object, false)
-                            return 'sin(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_sin'); //add brackets in UI
+                            return jsonFormula;
                         }
                         return 'Math.sin(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'COS':
-                        if (asUiObject)
-                            return 'cos(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_cos');
+                            return jsonFormula;
+                        }
                         return 'Math.cos(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'TAN':
-                        if (asUiObject)
-                            return 'tan(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_tan');
+                            return jsonFormula;
+                        }
                         return 'Math.tan(this._degree2radian(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'LN':
-                        if (asUiObject)
-                            return 'ln(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_ln');
+                            return jsonFormula;
+                        }
                         return 'Math.log(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'LOG':
-                        if (asUiObject)
-                            return 'log(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_log');
+                            return jsonFormula;
+                        }
                         return 'this._log10(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'PI':
-                        if (asUiObject)
-                            return 'pi';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_pi');
+                            return jsonFormula;
+                        }
                         return 'Math.PI';
 
                     case 'SQRT':
-                        if (asUiObject)
-                            return 'sqrt(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_sqrt');
+                            return jsonFormula;
+                        }
                         return 'Math.sqrt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'RAND':
-                        if (asUiObject)
-                            return 'random(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
-
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_rand');
+                            return jsonFormula;
+                        }
                         this._isStatic = false;
                         //please notice: this function is quite tricky, as the 2 parametes can be switched (min, max) and we need to calculate this two values
                         //at runtime to determine which one to use
@@ -682,152 +701,202 @@ PocketCode.merge({
                         ////return 'Math.random() * ' + this._parseJsonType(jsonFormula.right) + ') + ' + this._parseJsonType(jsonFormula.left) + ')';  //TODO:
 
                     case 'ABS':
-                        if (asUiObject)
-                            return 'abs(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_abs');
+                            return jsonFormula;
+                        }
                         return 'Math.abs(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'ROUND':
-                        if (asUiObject)
-                            return 'round(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_round');
+                            return jsonFormula;
+                        }
                         return 'Math.round(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MOD': //http://stackoverflow.com/questions/4467539/javascript-modulo-not-behaving
-                        if (asUiObject)
-                            return 'mod(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_mod');
+                            return jsonFormula;
+                        }
                         return '(((' + this._parseJsonType(jsonFormula.left) + ') % (' + this._parseJsonType(jsonFormula.right) + ')) + (' + this._parseJsonType(jsonFormula.right) + ')) % (' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'ARCSIN':
-                        if (asUiObject)
-                            return 'arcsin(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_arcsin');
+                            return jsonFormula;
+                        }
                         return 'this._radian2degree(Math.asin(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'ARCCOS':
-                        if (asUiObject)
-                            return 'arccos(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_arccos');
+                            return jsonFormula;
+                        }
                         return 'this._radian2degree(Math.acos(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'ARCTAN':
-                        if (asUiObject)
-                            return 'arctan(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_arctan');
+                            return jsonFormula;
+                        }
                         return 'this._radian2degree(Math.atan(' + this._parseJsonType(jsonFormula.left) + '))';
 
                     case 'EXP':
-                        if (asUiObject)
-                            return 'exp(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_exp');
+                            return jsonFormula;
+                        }
                         return 'Math.exp(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'POWER':
-                        if (asUiObject)
-                            return 'power(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_power');
+                            return jsonFormula;
+                        }
                         return 'Math.pow(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'FLOOR':
-                        if (asUiObject)
-                            return 'floor(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_floor');
+                            return jsonFormula;
+                        }
                         return 'Math.floor(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'CEIL':
-                        if (asUiObject)
-                            return 'ceil(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_ceil');
+                            return jsonFormula;
+                        }
                         return 'Math.ceil(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MAX':
-                        if (asUiObject)
-                            return 'max(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_max');
+                            return jsonFormula;
+                        }
                         return 'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'MIN':
-                        if (asUiObject)
-                            return 'min(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_min');
+                            return jsonFormula;
+                        }
                         return 'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'TRUE':
-                        if (asUiObject)
-                            return 'TRUE';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_true');
+                            return jsonFormula;
+                        }
                         return 'true';
 
                     case 'FALSE':
-                        if (asUiObject)
-                            return 'FALSE';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_false');
+                            return jsonFormula;
+                        }
                         return 'false';
 
                         //string
                     case 'LENGTH':
-                        if (asUiObject)
-                            return 'length(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_length');
+                            return jsonFormula;
+                        }
 
                         if (jsonFormula.left)
                             return '(' + this._parseJsonType(jsonFormula.left) + ' + \'\').length';
                         return 0;
 
                     case 'LETTER':
-                        if (asUiObject)
-                            return 'letter(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_letter');
+                            return jsonFormula;
+                        }
 
                         var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
                         return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
 
                     case 'JOIN':
-                        if (asUiObject)
-                            return 'join(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_join');
+                            return jsonFormula;
+                        }
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
                         //list
                     case 'NUMBER_OF_ITEMS':
-                        if (asUiObject)
-                            return 'number_of_items(' + this._parseJsonType(jsonFormula.left, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_number_of_items');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.length';
 
                     case 'LIST_ITEM':
-                        if (asUiObject)
-                            return 'element(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_list_item');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.right) + '.valueAt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'CONTAINS':
-                        if (asUiObject)
-                            return 'contains(' + this._parseJsonType(jsonFormula.left, asUiObject) + ', ' + this._parseJsonType(jsonFormula.right, asUiObject) + ')';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_contains');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
                         //touch
                     case 'MULTI_FINGER_X':
-                        if (asUiObject)
-                            return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, asUiObject) + ' )';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_multi_finger_x');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return 'this._device.getTouchX(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MULTI_FINGER_Y':
-                        if (asUiObject)
-                            return 'screen_touch_y( ' + this._parseJsonType(jsonFormula.left, asUiObject) + ' )';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_multi_finger_y');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return 'this._device.getTouchY(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'MULTI_FINGER_TOUCHED':
-                        if (asUiObject)
-                            return 'screen_is_touched( ' + this._parseJsonType(jsonFormula.left, asUiObject) + ' )';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_is_multi_finger_touching');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return 'this._device.isTouched(' + this._parseJsonType(jsonFormula.left) + ')';
 
                         //arduino
                     case 'ARDUINOANALOG':
-                        if (asUiObject)
-                            return 'arduino_analog_pin( ' + this._parseJsonType(jsonFormula.left, asUiObject) + ' )';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_arduino_read_pin_value_analog');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return 'this._device.getArduinoAnalogPin(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'ARDUINODIGITAL':
-                        if (asUiObject)
-                            return 'arduino_digital_pin( ' + this._parseJsonType(jsonFormula.left, asUiObject) + ' )';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_function_arduino_read_pin_value_digital');
+                            return jsonFormula;
+                        }
 
                         this._isStatic = false;
                         return 'this._device.getArduinoDigitalPin(' + this._parseJsonType(jsonFormula.left) + ')';
@@ -847,7 +916,7 @@ PocketCode.merge({
                     case 'LOUDNESS':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_loudness');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.loudness';
@@ -855,7 +924,7 @@ PocketCode.merge({
                     case 'X_ACCELERATION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_x_acceleration');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.accelerationX';
@@ -863,7 +932,7 @@ PocketCode.merge({
                     case 'Y_ACCELERATION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_y_acceleration');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.accelerationY';
@@ -871,7 +940,7 @@ PocketCode.merge({
                     case 'Z_ACCELERATION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_z_acceleration');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.accelerationZ';
@@ -879,7 +948,7 @@ PocketCode.merge({
                     case 'X_INCLINATION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_x_inclination');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.inclinationX';
@@ -887,7 +956,7 @@ PocketCode.merge({
                     case 'Y_INCLINATION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_y_inclination');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.inclinationY';
@@ -895,7 +964,7 @@ PocketCode.merge({
                     case 'COMPASS_DIRECTION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_compass_direction');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.compassDirection';
@@ -904,7 +973,7 @@ PocketCode.merge({
                     case 'LATITUDE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_latitude');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.geoLatitude';
@@ -912,7 +981,7 @@ PocketCode.merge({
                     case 'LONGITUDE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_longitude');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.geoLongitude';
@@ -920,7 +989,7 @@ PocketCode.merge({
                     case 'ALTITUDE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_altitude');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.geoAltitude';
@@ -929,7 +998,7 @@ PocketCode.merge({
                     case 'LOCATION_ACCURACY':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_location_accuracy');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.geoAccuracy';
@@ -938,7 +1007,7 @@ PocketCode.merge({
                     case 'FINGER_X':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_finger_x');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.getTouchX(this._device.lastTouchIndex)';
@@ -946,7 +1015,7 @@ PocketCode.merge({
                     case 'FINGER_Y':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_finger_y');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.getTouchY(this._device.lastTouchIndex)';
@@ -954,7 +1023,7 @@ PocketCode.merge({
                     case 'FINGER_TOUCHED':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_is_finger_touching');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.isTouched(this._device.lastTouchIndex)';
@@ -962,7 +1031,7 @@ PocketCode.merge({
                     case 'LAST_FINGER_INDEX':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_index_of_last_finger');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.lastTouchIndex';
@@ -971,7 +1040,7 @@ PocketCode.merge({
                     case 'FACE_DETECTED':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_face_detected');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.faceDetected';
@@ -979,7 +1048,7 @@ PocketCode.merge({
                     case 'FACE_SIZE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_face_size');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.faceSize';
@@ -987,7 +1056,7 @@ PocketCode.merge({
                     case 'FACE_X_POSITION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_face_x_position');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.facePositionX';
@@ -995,51 +1064,65 @@ PocketCode.merge({
                     case 'FACE_Y_POSITION':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_face_y_position');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.facePositionY';
 
                         //date and time
                     case 'CURRENT_YEAR':
-                        if (uiString)
-                            return 'year';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_year');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getFullYear()';
 
                     case 'CURRENT_MONTH':
-                        if (uiString)
-                            return 'month';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_month');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getMonth()';
 
                     case 'CURRENT_DATE':
-                        if (uiString)
-                            return 'day';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_day');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getDate()';
 
                     case 'CURRENT_DAY_OF_WEEK':
-                        if (uiString)
-                            return 'weekday';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_date_weekday');
+                            return jsonFormula;
+                        }
 
                         return '((new Date()).getDay() > 0 ? (new Date()).getDay() : 7)';
 
                     case 'CURRENT_HOUR':
-                        if (uiString)
-                            return 'hour';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_hour');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getHours()';
 
                     case 'CURRENT_MINUTE':
-                        if (uiString)
-                            return 'minute';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_minute');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getMinutes()';
 
                     case 'CURRENT_SECOND':
-                        if (uiString)
-                            return 'second';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_time_second');
+                            return jsonFormula;
+                        }
 
                         return '(new Date()).getSeconds()';
 
@@ -1059,7 +1142,7 @@ PocketCode.merge({
                     case 'OBJECT_BRIGHTNESS':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_brightness');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.brightness';
@@ -1068,7 +1151,7 @@ PocketCode.merge({
                     case 'OBJECT_GHOSTEFFECT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_transparency');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.transparency';
@@ -1076,35 +1159,39 @@ PocketCode.merge({
                     case 'OBJECT_COLOR':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_color');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.colorEffect';
 
                     case 'OBJECT_BACKGROUND_NUMBER':
-                        if (uiString)
-                            return 'background_number';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_object_background_number');
+                            return jsonFormula;
+                        }
                     case 'OBJECT_LOOK_NUMBER':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_look_number');
-                            break;
+                            return jsonFormula;
                         }
                         return 'this._sprite.currentLookNumber';
 
                     case 'OBJECT_BACKGROUND_NAME':
-                        if (uiString)
-                            return 'background_name';
+                        if (asUiObject){
+                            this._addKeyRecursive(jsonFormula, 'formula_editor_object_background_name');
+                            return jsonFormula;
+                        }
                     case 'OBJECT_LOOK_NAME':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_look_name');
-                            break;
+                            return jsonFormula;
                         }
                         return 'this._sprite.currentLookName';
 
                     case 'OBJECT_LAYER':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_layer');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.layer';
@@ -1112,7 +1199,7 @@ PocketCode.merge({
                     case 'OBJECT_ROTATION': //=direction
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_rotation');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.direction';
@@ -1120,7 +1207,7 @@ PocketCode.merge({
                     case 'OBJECT_SIZE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_size');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.size';
@@ -1128,7 +1215,7 @@ PocketCode.merge({
                     case 'OBJECT_X':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_x');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.positionX';
@@ -1136,7 +1223,7 @@ PocketCode.merge({
                     case 'OBJECT_Y':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_y');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.positionY';
@@ -1151,7 +1238,7 @@ PocketCode.merge({
                     case 'COLLIDES_WITH_EDGE':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_collides_with_edge');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.collidesWithEdge';
@@ -1159,7 +1246,7 @@ PocketCode.merge({
                     case 'COLLIDES_WITH_FINGER':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_touched');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.collidesWithPointer';
@@ -1168,7 +1255,7 @@ PocketCode.merge({
                     case 'OBJECT_X_VELOCITY':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_x_velocity');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.velocityX';    //TODO: physics
@@ -1176,7 +1263,7 @@ PocketCode.merge({
                     case 'OBJECT_Y_VELOCITY':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_y_velocity');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.velocityY';    //TODO: physics
@@ -1184,7 +1271,7 @@ PocketCode.merge({
                     case 'OBJECT_ANGULAR_VELOCITY':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_object_angular_velocity');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
@@ -1193,7 +1280,7 @@ PocketCode.merge({
                     case 'NXT_SENSOR_1':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_lego_nxt_1');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.nxt1';
@@ -1201,7 +1288,7 @@ PocketCode.merge({
                     case 'NXT_SENSOR_2':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_lego_nxt_2');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.nxt2';
@@ -1209,7 +1296,7 @@ PocketCode.merge({
                     case 'NXT_SENSOR_3':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_lego_nxt_3');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.nxt3';
@@ -1217,7 +1304,7 @@ PocketCode.merge({
                     case 'NXT_SENSOR_4':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_sensor_lego_nxt_4');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.nxt4';
@@ -1226,7 +1313,7 @@ PocketCode.merge({
                     case 'PHIRO_FRONT_LEFT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_front_left');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroFrontLeft';
@@ -1234,7 +1321,7 @@ PocketCode.merge({
                     case 'PHIRO_FRONT_RIGHT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_front_right');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroFrontRight';
@@ -1242,7 +1329,7 @@ PocketCode.merge({
                     case 'PHIRO_SIDE_LEFT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_side_left');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroSideLeft';
@@ -1250,7 +1337,7 @@ PocketCode.merge({
                     case 'PHIRO_SIDE_RIGHT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_side_right');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroSideRight';
@@ -1258,7 +1345,7 @@ PocketCode.merge({
                     case 'PHIRO_BOTTOM_LEFT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_bottom_left');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroBottomLeft';
@@ -1266,7 +1353,7 @@ PocketCode.merge({
                     case 'PHIRO_BOTTOM_RIGHT':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_phiro_sensor_bottom_right');
-                            break;
+                            return jsonFormula;
                         }
 
                         return 'this._device.phiroBottomRight';

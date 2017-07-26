@@ -1,23 +1,23 @@
 'use strict';
 
-PocketCode.brickSelect = (function () {
-    brickSelect.extends(PocketCode.Ui.Button, false);
+PocketCode.BrickSelect = (function () {
+    BrickSelect.extends(PocketCode.Ui.Button, false);
 
     //cntr
-    function brickSelect(i18nKey) {
+    function BrickSelect(i18nKey) {
         PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickSelect' });
 
     }
 
     //properties
-    Object.defineProperties(brickSelect.prototype, {
+    Object.defineProperties(BrickSelect.prototype, {
 
     });
 
     //methods
-    brickSelect.prototype.merge({
+    BrickSelect.prototype.merge({
 
     });
 
-    return brickSelect;
+    return BrickSelect;
 })();

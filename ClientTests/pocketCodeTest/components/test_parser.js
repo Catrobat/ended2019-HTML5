@@ -25,11 +25,13 @@ QUnit.module("components/parser.js");
 
 QUnit.test("FormulaParser: operators", function (assert) {
 
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus); }, Error, "ERROR: accessing uiString without providing variable names");
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
 
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}); }, Error, "ERROR: accessing uiString without providing list names");
-    assert.throws(function () { PocketCode.FormulaParser.getUiString(plus, {}, ""); }, Error, "ERROR: accessing uiString without providing list names as object");
+    //todo hilfsmethode: recursive parse formel -> existiert i18n key ?
+    assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus); }, Error, "ERROR: accessing uiString without providing variable names");
+    assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus, ""); }, Error, "ERROR: accessing uiString without providing variable names as object");
+
+    assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus, {}); }, Error, "ERROR: accessing uiString without providing list names");
+    assert.throws(function () { PocketCode.FormulaParser.parsei18nJson(plus, {}, ""); }, Error, "ERROR: accessing uiString without providing list names as object");
 
     assert.throws(function () { var parser = new PocketCode.FormulaParser(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { PocketCode.FormulaParser instanceof PocketCode.FormulaParser }, Error, "ERROR: static class: no instanceof allowed");

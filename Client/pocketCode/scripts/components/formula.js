@@ -105,7 +105,7 @@ PocketCode.Formula = (function () {
         },
         toString: function (uvh) {
             this._userVariableHost = (uvh instanceof PocketCode.Model.UserVariableHost) ? uvh : this._sprite;
-            return PocketCode.FormulaParser.getUiString(this._json, this._userVariableHost.getAllVariables(), this._userVariableHost.getAllLists());
+            return PocketCode.FormulaParser.parsei18nJson(this._json, this._userVariableHost.getAllVariables(), this._userVariableHost.getAllLists());
         },
         dispose: function () {
             this._device = undefined;
