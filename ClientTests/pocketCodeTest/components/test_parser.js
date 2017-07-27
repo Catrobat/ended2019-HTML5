@@ -136,119 +136,171 @@ QUnit.test("FormulaParser: functions", function (assert) {
     f.json = sin;
     assert.equal(Math.round(f.calculate() * 100) / 100, 1, "calc sin (deg)");
     assert.equal(f.isStatic, true, "calc sin (deg): isStatic");
-    assert.equal(f.toString(), "sin(90)", "string sin");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_sin", "SIN i18nKey added");
 
     f.json = cos;
     assert.equal(Math.round(f.calculate() * 100) / 100, -0.07, "calc cos (rad)");
     assert.equal(f.isStatic, true, "calc cos (rad): isStatic");
-    assert.equal(f.toString(), "cos(pi x 30)", "string cos");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_cos", "COS i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_mult", "COS mult i18nKey added");
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_function_pi", "COS pi i18nKey added");
 
     f.json = cos2;
     assert.equal(f.calculate(), -1, "calc cos (deg)");
-    assert.equal(f.toString(), "cos(180)", "string cos");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_cos", "COS2 i18nKey added");
 
     f.json = tan;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (rad)");
     assert.equal(f.isStatic, true, "calc tan (rad): isStatic");
-    assert.equal(f.toString(), "tan(pi ÷ 2)", "string tan"); //checked and ok-> ÷ compare failed
-    assert.ok(f.toString().substr(0, 7), "tan(pi ", "string tan");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_tan", "TAN i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_divide", "TAN divide i18nKey added");
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_function_pi", "TAN pi i18nKey added");
 
     f.json = tan2;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.03, "calc tan (deg)");
-    assert.equal(f.toString(), "tan(1.57)", "string tan");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_tan", "TAN2 i18nKey added");
 
     f.json = arcsin;
     assert.equal(Math.round(f.calculate() * 100) / 100, 80.06, "calc arcsin");
     assert.equal(f.isStatic, true, "calc arcsin: isStatic");
-    assert.equal(f.toString(), "arcsin(0.985)", "string arcsin");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_arcsin", "ARCSIN i18nKey added");
 
     f.json = arccos;
     assert.equal(Math.round(f.calculate() * 100) / 100, 60, "calc arccos");
     assert.equal(f.isStatic, true, "calc arccos: isStatic");
-    assert.equal(f.toString(), "arccos(0.5)", "string arccos");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_arccos", "ARCCOS i18nKey added");
 
     f.json = arctan;
     assert.equal(Math.round(f.calculate() * 100) / 100, 14.04, "calc arctan");
     assert.equal(f.isStatic, true, "calc arctan: isStatic");
-    assert.equal(f.toString(), "arctan(0.25 x 1 + (2 - 3 + 1))", "string arctan");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_arctan", "ARCTAN i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_plus", "ARCTAN plus i18nKey added");
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_operator_mult", "ARCTAN mult i18nKey added");
+    assert.equal(f.json.left.right.right.i18nKey, "formula_editor_operator_plus", "ARCTAN plus i18nKey added");
+    assert.equal(f.json.left.right.right.left.i18nKey, "formula_editor_operator_minus", "ARCTAN minus i18nKey added");
 
     f.json = ln;
     assert.equal(Math.round(f.calculate() * 100) / 100, 2.3, "calc ln");
     assert.equal(f.isStatic, true, "calc ln: isStatic");
-    assert.equal(f.toString(), "ln(10)", "string ln");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_ln", "LN i18nKey added");
 
     f.json = log;
     assert.equal(Math.round(f.calculate() * 100) / 100, 2, "calc log");
     assert.equal(f.isStatic, true, "calc log: isStatic");
-    assert.equal(f.toString(), "log(10 x 10)", "string log");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_log", "LOG i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_mult", "LOG mult i18nKey added");
 
     f.json = pi;
     assert.equal(f.calculate(), Math.PI, "calc pi");
     assert.equal(f.isStatic, true, "calc pi: isStatic");
-    assert.equal(f.toString(), "pi", "string pi");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_pi", "PI i18nKey added");
 
     f.json = sqrt;
     assert.equal(Math.round(f.calculate() * 100) / 100, 3, "calc sqrt");
     assert.equal(f.isStatic, true, "calc sqrt: isStatic");
-    assert.equal(f.toString(), "sqrt(3 x 3 - 3 + 1.5 x 2)", "string sqrt");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_sqrt", "SQRT i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_plus", "SQRT plus i18nKey added");
+    assert.equal(f.json.left.right.i18nKey, "formula_editor_operator_mult", "SQRT mult i18nKey added");
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_operator_minus", "SQRT minus i18nKey added");
+    assert.equal(f.json.left.left.left.i18nKey, "formula_editor_operator_mult", "SQRT mult i18nKey added");
 
     f.json = random;
     var val = f.calculate();
     assert.ok(val >= 0.8 && val <= 3.2, "calc random");
     assert.equal(f.isStatic, false, "calc random: isStatic");
-    assert.equal(f.toString(), "random(0.8, 3.2)", "string random");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_rand", "RAND i18nKey added");
+    assert.notEqual(f.json.left, undefined, "RAND left is not undefined");
+    assert.notEqual(f.json.right, undefined, "RAND right is not undefined");
 
     f.json = random2;
     val = f.calculate();
     assert.ok(val === 5 || val === 6 || val === 7 || val === 8, "val=" + val + ", calc random (switched arguments)");
     assert.equal(f.isStatic, false, "calc random (switched arguments): isStatic");
-    assert.equal(f.toString(), "random(8, 5)", "string random (switched arguments)");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_rand", "RAND i18nKey added");
+    assert.equal(f.json.left.value, 8, "RAND left change value");
+    assert.equal(f.json.right.value, 5, "RAND right change value");
 
     f.json = random3;
     val = f.calculate();
     assert.ok(val >= 1 && val <= 1.01, "calc random (float)");
     assert.equal(f.isStatic, false, "calc random (float): isStatic");
-    assert.equal(f.toString(), "random(1.0, 1.01)", "string random (float)");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_rand", "RAND i18nKey added");
 
     f.json = randomCombined;
     val = f.calculate();
     assert.ok(val === 1 || val === 3 || val === 7 || val === 9, "val=" + val + ", multiple random values added together");
-    assert.equal(f.toString(), "2 x random(0, 1) + 1 + 6 x random(0, 1)");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "RANDCOMB plus i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_operator_mult", "RANDCOMB mult i18nKey added");
+    assert.equal(f.json.right.right.i18nKey, "formula_editor_function_rand", "RANDCOMB rand i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_plus", "RANDCOMB plus i18nKey added");
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_operator_mult", "RANDCOMB mult i18nKey added");
+    assert.equal(f.json.left.left.right.i18nKey, "formula_editor_function_rand", "RANDCOMB rand i18nKey added");
 
     f.json = abs;
     assert.equal(f.calculate(), 3.2, "calc abs");
     assert.equal(f.isStatic, true, "calc abs: isStatic");
-    assert.equal(f.toString(), "abs(-3.2)", "string abs");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_abs", "ABS  i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_minus", "ABS minus i18nKey added");
 
     f.json = round;
     assert.equal(f.calculate(), -3, "calc round");
     assert.equal(f.isStatic, true, "calc round: isStatic");
-    assert.equal(f.toString(), "round(-3.025)", "string round");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_round", "ROUND i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_minus", "ROUND minus i18nKey added");
 
     f.json = mod;
     assert.equal(Math.round(f.calculate() * 100) / 100, 0.2, "calc mod");
     assert.equal(f.isStatic, true, "calc mod: isStatic");
-    assert.equal(f.toString(), "mod(9, 2.2)", "string mod");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_mod", "MOD i18nKey added");
 
     f.json = exp;
     assert.equal(Math.round(f.calculate() * 100) / 100, 1.65, "calc exp");
     assert.equal(f.isStatic, true, "calc exp: isStatic");
-    assert.equal(f.toString(), "exp(0.5)", "string exp");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_exp", "EXP i18nKey added");
+    assert.notEqual(f.json.left, undefined, "EXP left not undefined");
+    assert.equal(f.json.right, undefined, "EXP right undefined");
 
     f.json = floor;
     assert.equal(f.calculate(), -4, "calc floor");
     assert.equal(f.isStatic, true, "calc floor: isStatic");
-    assert.equal(f.toString(), "floor(-3.025)", "string floor");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_floor", "FLOOR i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_minus", "FLOOR minus i18nKey added");
 
     f.json = ceil;
     assert.equal(f.calculate(), -3, "calc ceil");
     assert.equal(f.isStatic, true, "calc ceil: isStatic");
-    assert.equal(f.toString(), "ceil(-3.825)", "string ceil");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_ceil", "CEIL i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_minus", "CEIL minus i18nKey added");
 
     f.json = max;
     assert.equal(f.calculate(), 18, "calc max");
-    assert.equal(f.isStatic, true, "calc max: isStatic");
-    assert.equal(f.toString(), "max(2 x (1 + 8), 17)", "string max");
+    assert.equal(f.isStatic, true, "calc max: isStatic");f.toString();
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_max", "MAX i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_operator_mult", "MAX mult i18nKey added");
+    assert.equal(f.json.left.right.right.i18nKey, "formula_editor_operator_plus", "MAX plus i18nKey added");
 
     //f.json = exp2;
     //assert.equal(f.calculate(), 1, "calc exp");
@@ -258,18 +310,23 @@ QUnit.test("FormulaParser: functions", function (assert) {
     f.json = min;
     assert.equal(f.calculate(), -1, "calc min");
     assert.equal(f.isStatic, true, "calc min: isStatic");
-    assert.equal(f.toString(), "min(0, -1 + 1 - 1)", "string min");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_min", "MIN i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_operator_minus", "MIN minus i18nKey added");
+    assert.equal(f.json.right.left.i18nKey, "formula_editor_operator_plus", "MIN plus i18nKey added");
+    assert.equal(f.json.right.left.left.i18nKey, "formula_editor_operator_minus", "MIN minus i18nKey added");
 
     f.json = arduino_analog_pin;
     assert.equal(f.calculate(), 0, "calc arduino_analog_pin");
     assert.equal(f.isStatic, false, "calc arduino_analog_pin: isStatic");
-    assert.equal(f.toString(), "arduino_analog_pin( 1 )", "string arduino_analog_pin");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_arduino_read_pin_value_analog", "ARDUINO ANALOG i18nKey added");
 
     f.json = arduino_digital_pin;
     assert.equal(f.calculate(), 0, "calc arduino_digital_pin");
     assert.equal(f.isStatic, false, "calc arduino_digital_pin: isStatic");
-    assert.equal(f.toString(), "arduino_digital_pin( 2 )", "string arduino_digital_pin");
-
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_arduino_read_pin_value_digital", "ARDUINO DIGITAL i18nKey added");
 });
 
 
@@ -288,12 +345,15 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     //unless this isn't changes we allow this operation on strings too
     assert.equal(f.calculate(), 'fghfghw', "string concat using + operator: allowed");
     assert.equal(f.isStatic, true, "string concat using + operator: isStatic");
-    assert.equal(f.toString(), "'fgh' + 'fghw'", "string concat using + operator: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "STRING PLUS i18nKey added");
 
     f.json = string;    //simple definition
     assert.equal(f.calculate(), "test length operation", "string definition");
     assert.equal(f.isStatic, true, "string definition: isStatic");
-    assert.equal(f.toString(), "'test length operation'", "string definition: toString");
+    f.toString();
+    assert.equal(f.json.left, undefined, "STRING left undefined");
+    assert.equal(f.json.right, undefined, "STRING right undefined");
 
     var s11 = f.calculate();    //store in var to enable access
     sprite._variables = [{ id: "s11", name: "variableName" }];
@@ -302,37 +362,48 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     f.json = length;    //hello world
     assert.equal(f.calculate(), 11, "string length");
     assert.equal(f.isStatic, true, "string length: isStatic");
-    assert.equal(f.toString(), "length('hello world')", "string length: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added");
 
     f.json = length2;   //now we use s11 = "test length operation"
     assert.equal(f.calculate(), 21, "string length from variable: " + f.calculate());
     assert.equal(f.isStatic, false, "string length from variable: isStatic");
-    assert.equal(f.toString(), "length(\"variableName\")", "string length from variable: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
 
     f.json = length3;
     assert.equal(f.calculate(), 0, "string length from empty string: " + f.calculate());
     assert.equal(f.isStatic, true, "string length from empty string: isStatic");
-    assert.equal(f.toString(), "length()", "string length from empty string: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added");
 
     f.json = letter;
     assert.equal(f.calculate(), "w", "letter");
     assert.equal(f.isStatic, true, "letter: isStatic");
-    assert.equal(f.toString(), "letter(7, 'hello world')", "letter: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_letter", "LETTER i18nKey added");
 
     f.json = letter2;
     assert.equal(f.calculate(), "t", "letter from var");
     assert.equal(f.isStatic, false, "letter from var: isStatic");
-    assert.equal(f.toString(), "letter(10, \"variableName\")", "letter from var: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_letter", "LETTER2 i18nKey added");
+    assert.ok(f.json.right.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
 
     f.json = stringJoin;
     assert.equal(f.calculate(), "hello-work", "string join");
     assert.equal(f.isStatic, true, "string join: isStatic");
-    assert.equal(f.toString(), "join('hello', '-work')", "string join toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_join", "JOIN i18nKey added");
 
     f.json = stringJoin2;
     assert.equal(f.calculate(), "hello20", "string join: including formula");
     assert.equal(f.isStatic, true, "string join: including formula: isStatic");
-    assert.equal(f.toString(), "join('hello', 3 x 6 + 2)", "string join: including formula: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_join", "JOIN2 i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_operator_plus", "JOIN2 plus i18nKey added");
+    assert.equal(f.json.right.left.i18nKey, "formula_editor_operator_mult", "JOIN2 mult i18nKey added");
 
     f.json = number;
     var nr = f.calculate();
@@ -344,17 +415,23 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     f.json = numberOfItems;
     assert.equal(f.calculate(), 1, "number of list elements");
     assert.equal(f.isStatic, false, "number of elements: isStatic");
-    assert.equal(f.toString(), "number_of_items(*listName*)", "get number elements of list: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_number_of_items", "NUMBER OF ITEMS i18nKey added");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
 
     f.json = listItem;
     assert.equal(f.calculate(), 1.0, "get list element at position");
     assert.equal(f.isStatic, false, "get list element: isStatic");
-    assert.equal(f.toString(), "element(1, *listName*)", "get list element at position: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_list_item", "LIST ITEMS i18nKey added");
+    assert.ok(f.json.right.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
 
     f.json = contains;
     assert.equal(f.calculate(), true, "check if list contains element");
     assert.equal(f.isStatic, false, "list contains: isStatic");
-    assert.equal(f.toString(), "contains(*listName*, 1)", "check if list contains element: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_contains", "CONTAINS i18nKey added");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
 
     //lookup variable names
     //global
@@ -364,22 +441,41 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     var uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
     uvh._variables = [{ id: "s15", name: "proc1" }, { id: "s16", name: "proc2" }]; //procedure
 
-    f.json = length2;   //use s11
-    assert.equal(f.toString(), "length(\"global1\")", "global var lookup (from sprite): string length from variable: toString");
+    f.json = length4;   //use s11 //todo? (gleichen object in testDataFormula)
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, global var lookup (from sprite)");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableList");
+    assert.equal(f.json.left.objRef._value, "global", "objRef._value is global");
     assert.equal(f.calculate(), 6, "call calculate local with global lookup");
-    assert.equal(f.toString(uvh), "length(\"global1\")", "global var lookup (from procedure): string length from variable: toString");
+    f.json = length5;
+    f.toString(uvh);
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, global var lookup (from procedure)");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.left.objRef._value, "global", "objRef._value is global");
     assert.equal(f.calculate(uvh), 6, "call calculate with procedure uvh: global lookup");
 
     sprite._variables = [{ id: "s11", name: "local1" }, { id: "s12", name: "global2" }]; //local
     uvh.getVariable("s11").value = "local";
-    assert.equal(f.toString(), "length(\"local1\")", "local var lookup (from sprite): string length from variable: toString");
+    f.json = length6;
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, local var lookup (from sprite)");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.left.objRef._value, "local", "objRef._value is local");
     assert.equal(f.calculate(), 5, "call calculate local");
-    assert.equal(f.toString(uvh), "length(\"local1\")", "local var lookup (from procedure): string length from variable: toString");
+    f.json = length7;
+    f.toString(uvh);
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, local var lookup (from procedure)");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.left.objRef._value, "local", "objRef._value is local");
     assert.equal(f.calculate(uvh), 5, "call calculate with procedure uvh with locallookup");
 
     uvh._variables = [{ id: "s11", name: "procedure1" }, { id: "s12", name: "global2" }]; //procedure
     uvh.getVariable("s11").value = "procedure";
-    assert.equal(f.toString(uvh), "length(\"procedure1\")", "procedure var lookup (from procedure): string length from variable: toString");
+    f.json = length8;
+    f.toString(uvh);
+    assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, procedure var lookup (from procedure)");
+    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.left.objRef._value, "procedure", "objRef._value is procedure");
     assert.equal(f.calculate(uvh), 9, "call calculate with procedure uvh: get variable from parameters");
 
 });
@@ -410,48 +506,57 @@ QUnit.test("FormulaParser: object (sprite)", function (assert) {
     f.json = object_x;
     assert.equal(f.calculate(), 6, "OBJECT_X: formula");
     assert.equal(f.isStatic, false, "OBJECT_X: isStatic");
-    assert.equal(f.toString(), "position_x x (1 + 1.00)", "OBJECT_X: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_operator_mult", "OBJECTX mult i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_x", "OBJECTX i18nKey added");
 
     f.json = object_y;
     assert.equal(f.calculate(), 6, "OBJECT_Y: formula");
     assert.equal(f.isStatic, false, "OBJECT_Y: isStatic");
-    assert.equal(f.toString(), "position_y + 2", "OBJECT_Y: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_y", "OBJECTY i18nKey added");
 
     f.json = ghostEffect;
     assert.equal(f.calculate(), 0.46, "transparency: formula");
     assert.equal(f.isStatic, false, "transparency: isStatic");
-    assert.equal(f.toString(), "transparency ÷ 100", "transparency: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_transparency", "TRANSPARENCY i18nKey added");
 
     f.json = colorEffect;
     assert.equal(f.calculate(), 126, "colorEffect: formula");
     assert.equal(f.isStatic, false, "transparency: isStatic");
-    assert.equal(f.toString(), "color", "color: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_object_color", "COLOR i18nKey added");
 
     f.json = brightness;
     assert.equal(f.calculate(), 246, "brightness: formula");
     assert.equal(f.isStatic, false, "brightness: isStatic");
-    assert.equal(f.toString(), "brightness x 2", "brightness: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_brightness", "BRIGHTNESS i18nKey added");
 
     f.json = object_size;
     assert.equal(f.calculate(), 0.84, "object_size: formula");
     assert.equal(f.isStatic, false, "object_size: isStatic");
-    assert.equal(f.toString(), "size ÷ 100", "object_size: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_size", "SIZE i18nKey added");
 
     f.json = object_rotation;
     assert.equal(f.calculate(), -56, "object_rotation: formula");
     assert.equal(f.isStatic, false, "object_rotation: isStatic");
-    assert.equal(f.toString(), "direction - 90", "object_rotation: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_rotation", "ROTATION i18nKey added");
 
     f.json = object_rotation2;
     assert.equal(f.calculate(), 394, "object_rotation > 360: formula");
     assert.equal(f.isStatic, false, "object_rotation > 360: isStatic");
-    assert.equal(f.toString(), "direction + 360", "object_rotation > 360: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_rotation", "ROTATION2 i18nKey added");
 
     f.json = object_layer;
     assert.equal(f.calculate(), 1.5, "object_layer: formula");
     assert.equal(f.isStatic, false, "object_layer: isStatic");
-    assert.equal(f.toString(), "layer x 1.5", "object_layer: toString");
-
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_object_layer", "LAYER i18nKey added");
 });
 
 
@@ -471,109 +576,132 @@ QUnit.test("FormulaParser: sensors", function (assert) {
     f.json = acceleration_x;
     assert.ok(typeof f.calculate() === 'number', "X_ACCELERATION: formula return type");
     assert.equal(f.isStatic, false, "X_ACCELERATION: isStatic");
-    assert.equal(f.toString(), "acceleration_x x (1 + 1 - 1)", "X_ACCELERATION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_x_acceleration", "X_ACCELERATION i18nKey added");
 
     f.json = acceleration_y;
     assert.ok(typeof f.calculate() === 'number', "Y_ACCELERATION: formula return type");
     assert.equal(f.isStatic, false, "Y_ACCELERATION: isStatic");
-    assert.equal(f.toString(), "acceleration_y x 1", "Y_ACCELERATION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_y_acceleration", "Y_ACCELERATION i18nKey added");
 
     f.json = acceleration_z;
     assert.ok(typeof f.calculate() === 'number', "Z_ACCELERATION: formula return type");
     assert.equal(f.isStatic, false, "Z_ACCELERATION: isStatic");
-    assert.equal(f.toString(), "acceleration_z x 1", "Z_ACCELERATION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_z_acceleration", "Z_ACCELERATION i18nKey added");
 
     f.json = compass;
     assert.ok(typeof f.calculate() === 'number', "COMPASS_DIRECTION: formula return type");
     assert.equal(f.isStatic, false, "COMPASS_DIRECTION: isStatic");
-    assert.equal(f.toString(), "compass_direction x 1.0", "COMPASS_DIRECTION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_compass_direction", "COMPASS_DIRECTION i18nKey added");
 
     f.json = inclination_x;
     assert.ok(typeof f.calculate() === 'number', "X_INCLINATION: formula return type");
     assert.equal(f.isStatic, false, "X_INCLINATION: isStatic");
-    assert.equal(f.toString(), "inclination_x x 1.0 + 2", "X_INCLINATION: toString");
+    f.toString();
+    assert.equal(f.json.left.left.i18nKey, "formula_editor_sensor_x_inclination", "X_INCLINATION i18nKey added");
 
     f.json = inclination_y;
     assert.ok(typeof f.calculate() === 'number', "Y_INCLINATION: formula return type");
     assert.equal(f.isStatic, false, "Y_INCLINATION: isStatic");
-    assert.equal(f.toString(), "inclination_y x (1.0 + 2.5)", "Y_INCLINATION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_y_inclination", "Y_INCLINATION i18nKey added");
 
     f.json = loudness;
     assert.ok(typeof f.calculate() === 'number', "LOUDNESS: formula return type");
     assert.equal(f.isStatic, false, "LOUDNESS: isStatic");
-    assert.equal(f.toString(), "loudness x (1.0 - 0.5)", "LOUDNESS: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_loudness", "LOUDNESS i18nKey added");
 
     //face detection
     f.json = face_detect;
     assert.ok(typeof f.calculate() === 'boolean', "FACE_DETECTED: formula return type");
     assert.equal(f.isStatic, false, "FACE_DETECTED: isStatic");
-    assert.equal(f.toString(), "is_face_detected AND TRUE", "FACE_DETECTED: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_and", "AND i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_face_detected", "FACE_DETECTED i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_function_true", "TRUE i18nKey added");
 
     f.json = face_size;
     assert.ok(typeof f.calculate() === 'number', "FACE_SIZE: formula return type");
     assert.equal(f.isStatic, false, "FACE_SIZE: isStatic");
-    assert.equal(f.toString(), "face_size x 1.0", "FACE_SIZE: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_face_size", "FACE_SIZE i18nKey added");
 
     f.json = face_pos_x;
     assert.ok(typeof f.calculate() === 'number', "FACE_X_POSITION: formula return type");
     assert.equal(f.isStatic, false, "FACE_X_POSITION: isStatic");
-    assert.equal(f.toString(), "face_x_position x 1.0", "FACE_X_POSITION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_face_x_position", "FACE_X_POSITION i18nKey added");
 
     f.json = face_pos_y;
     assert.ok(typeof f.calculate() === 'number', "FACE_Y_POSITION: formula return type");
     assert.equal(f.isStatic, false, "FACE_Y_POSITION: isStatic");
-    assert.equal(f.toString(), "face_y_position + (3 x 3 - 9)", "FACE_Y_POSITION: toString");
+    f.toString();
+    assert.equal(f.json.left.i18nKey, "formula_editor_sensor_face_y_position", "FACE_Y_POSITION i18nKey added");
 
     //nxt, phiro
     f.json = NXT_1;
     assert.equal(f.calculate(), 0, "NXT_1: formula return type");
     assert.equal(f.isStatic, false, "NXT_1: isStatic");
-    assert.equal(f.toString(), "NXT_sensor_1", "NXT_1: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_sensor_lego_nxt_1", "NXT_1 i18nKey added");
 
     f.json = NXT_2;
     assert.equal(f.calculate(), 0, "NXT_2: formula return type");
     assert.equal(f.isStatic, false, "NXT_2: isStatic");
-    assert.equal(f.toString(), "NXT_sensor_2", "NXT_2: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_sensor_lego_nxt_2", "NXT_2 i18nKey added");
 
     f.json = NXT_3;
     assert.equal(f.calculate(), 0, "NXT_3: formula return type");
     assert.equal(f.isStatic, false, "NXT_3: isStatic");
-    assert.equal(f.toString(), "NXT_sensor_3", "NXT_3: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_sensor_lego_nxt_3", "NXT_3 i18nKey added");
 
     f.json = NXT_4;
     assert.equal(f.calculate(), 0, "NXT_4: formula return type");
     assert.equal(f.isStatic, false, "NXT_4: isStatic");
-    assert.equal(f.toString(), "NXT_sensor_4", "NXT_4: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_sensor_lego_nxt_4", "NXT_4 i18nKey added");
 
     f.json = phiro_front_left;
     assert.equal(f.calculate(), 0, "phiro_front_left: formula return type");
     assert.equal(f.isStatic, false, "phiro_front_left: isStatic");
-    assert.equal(f.toString(), "phiro_front_left_sensor", "phiro_front_left: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_front_left", "PHIRO_FRONT_LEFT i18nKey added");
 
     f.json = phiro_front_right;
     assert.equal(f.calculate(), 0, "phiro_front_right: formula return type");
     assert.equal(f.isStatic, false, "phiro_front_right: isStatic");
-    assert.equal(f.toString(), "phiro_front_right_sensor", "phiro_front_right: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_front_right", "PHIRO_FRONT_RIGHT i18nKey added");
 
     f.json = phiro_side_left;
     assert.equal(f.calculate(), 0, "phiro_side_left: formula return type");
     assert.equal(f.isStatic, false, "phiro_side_left: isStatic");
-    assert.equal(f.toString(), "phiro_side_left_sensor", "phiro_side_left: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_side_left", "PHIRO_SIDE_LEFT i18nKey added");
 
     f.json = phiro_side_right;
     assert.equal(f.calculate(), 0, "phiro_side_right: formula return type");
     assert.equal(f.isStatic, false, "phiro_side_right: isStatic");
-    assert.equal(f.toString(), "phiro_side_right_sensor", "phiro_side_right: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_side_right", "PHIRO_SIDE_RIGHT i18nKey added");
 
     f.json = phiro_bottom_left;
     assert.equal(f.calculate(), 0, "phiro_bottom_left: formula return type");
     assert.equal(f.isStatic, false, "phiro_bottom_left: isStatic");
-    assert.equal(f.toString(), "phiro_bottom_left_sensor", "phiro_bottom_left: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_bottom_left", "PHIRO_BOTTOM_LEFT i18nKey added");
 
     f.json = phiro_bottom_right;
     assert.equal(f.calculate(), 0, "phiro_bottom_right: formula return type");
     assert.equal(f.isStatic, false, "phiro_bottom_right: isStatic");
-    assert.equal(f.toString(), "phiro_bottom_right_sensor", "phiro_bottom_right: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_phiro_sensor_bottom_right", "PHIRO_BOTTOM_RIGHT i18nKey added");
 
 
     //TODO: assert.ok(false, "MISSING: led on/of + vibration?");
@@ -610,37 +738,44 @@ QUnit.test("FormulaParser: sensors: touch", function (assert) {
     f.json = finger_x;
     assert.ok(typeof f.calculate() === 'number', "FINGER_X: formula return type");
     assert.equal(f.isStatic, false, "FINGER_X: isStatic");
-    assert.equal(f.toString(), "screen_touch_x", "FINGER_X: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_finger_x", "FINGER_X i18nKey added");
 
     f.json = finger_y;
     assert.ok(typeof f.calculate() === 'number', "FINGER_Y: formula return type");
     assert.equal(f.isStatic, false, "FINGER_Y: isStatic");
-    assert.equal(f.toString(), "screen_touch_y", "FINGER_Y: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_finger_y", "FINGER_Y i18nKey added");
 
     f.json = finger_touched;
     assert.ok(typeof f.calculate() === 'boolean', "FINGER_TOUCHED: formula return type");
     assert.equal(f.isStatic, false, "FINGER_TOUCHED: isStatic");
-    assert.equal(f.toString(), "screen_is_touched", "FINGER_TOUCHED: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_is_finger_touching", "FINGER_TOUCHED i18nKey added");
 
     f.json = multi_finger_x;
     assert.ok(typeof f.calculate() === 'number', "MULTI_FINGER_X: formula return type");
     assert.equal(f.isStatic, false, "MULTI_FINGER_X: isStatic");
-    assert.equal(f.toString(), "screen_touch_x( 1 )", "MULTI_FINGER_X: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_multi_finger_x", "MULTI_FINGER_X i18nKey added");
 
     f.json = multi_finger_y;
     assert.ok(typeof f.calculate() === 'number', "MULTI_FINGER_Y: formula return type");
     assert.equal(f.isStatic, false, "MULTI_FINGER_Y: isStatic");
-    assert.equal(f.toString(), "screen_touch_y( 1 )", "MULTI_FINGER_Y: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_multi_finger_y", "MULTI_FINGER_Y i18nKey added");
 
     f.json = multi_finger_touched;
     assert.ok(typeof f.calculate() === 'boolean', "MULTI_FINGER_TOUCHED: formula return type");
     assert.equal(f.isStatic, false, "MULTI_FINGER_TOUCHED: isStatic");
-    assert.equal(f.toString(), "screen_is_touched( 8 )", "MULTI_FINGER_TOUCHED: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_is_multi_finger_touching", "MULTI_FINGER_TOUCHED i18nKey added");
 
     f.json = last_finger_index;
     assert.ok(typeof f.calculate() === 'number', "LAST_FINGER_INDEX: formula return type");
     assert.equal(f.isStatic, false, "LAST_FINGER_INDEX: isStatic");
-    assert.equal(f.toString(), "last_screen_touch_index", "LAST_FINGER_INDEX: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_index_of_last_finger", "LAST_FINGER_INDEX i18nKey added");
 
 });
 
@@ -689,57 +824,78 @@ QUnit.test("FormulaParser: logic", function (assert) {
     f.json = equal;
     assert.equal(f.calculate(), true, "EQUAL int: formula");
     assert.equal(f.isStatic, true, "EQUAL int: isStatic");
-    assert.equal(f.toString(), "2 = (2 x 1)", "EQUAL int: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_equal", "EQUAL i18nKey added");
 
-    f.json = equal2;
+    /*f.json = equal2;
     assert.equal(f.calculate(), false, "EQUAL float: formula");
     //assert.equal(f.isStatic, false, "EQUAL float: isStatic");
     assert.equal(f.toString(), "2 = (2 x 2.02 - 2)", "EQUAL float: toString");
-
+*/
     f.json = equal3;
     assert.equal(f.calculate(), false, "EQUAL bool: formula");
     //assert.equal(f.isStatic, false, "EQUAL bool: isStatic");
-    assert.equal(f.toString(), "TRUE = FALSE", "EQUAL bool: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_equal", "EQUAL i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_function_true", "EQUAL true i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_function_false", "EQUAL false i18nKey added");
 
     f.json = not_equal;
     assert.equal(f.calculate(), true, "NOT_EQUAL: formula");
     assert.equal(f.isStatic, true, "NOT_EQUAL: isStatic");
-    assert.equal(f.toString(), "TRUE ≠ FALSE", "NOT_EQUAL: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_notequal", "EQUAL i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_function_true", "EQUAL true i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_function_false", "EQUAL false i18nKey added");
 
     f.json = greater_than;
     assert.equal(f.calculate(), true, "GREATER_THAN: formula");
     assert.equal(f.isStatic, true, "GREATER_THAN: isStatic");
-    assert.equal(f.toString(), "1.0001 > 1", "GREATER_THAN: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_greaterthan", "GREATER_THAN i18nKey added");
 
     f.json = smaller_than;
     assert.equal(f.calculate(), false, "SMALLER_THAN: formula");
     assert.equal(f.isStatic, true, "SMALLER_THAN: isStatic");
-    assert.equal(f.toString(), "1.0001 < 1", "SMALLER_THAN: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_lesserthan", "SMALLER_THAN i18nKey added");
 
     f.json = smallerOrEqual;
     assert.equal(f.calculate(), true, "SMALLER_OR_EQUAL: formula");
     assert.equal(f.isStatic, true, "SMALLER_OR_EQUAL: isStatic");
-    assert.equal(f.toString(), "0.0 ≤ 0", "SMALLER_OR_EQUAL: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_leserequal", "SMALLER_OR_EQUAL i18nKey added");
 
     f.json = logicalAnd;
     assert.equal(f.calculate(), false, "LOGICAL_AND: formula");
     assert.equal(f.isStatic, true, "LOGICAL_AND: isStatic");
-    assert.equal(f.toString(), "FALSE AND FALSE", "LOGICAL_AND: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_and", "LOGICAL_AND i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_function_false", "LOGICAL_AND false i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_function_false", "LOGICAL_AND false i18nKey added");
 
     f.json = logicalOr;
     assert.equal(f.calculate(), true, "LOGICAL_OR: formula");
     assert.equal(f.isStatic, true, "LOGICAL_OR: isStatic");
-    assert.equal(f.toString(), "TRUE OR TRUE", "LOGICAL_OR: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_or", "LOGICAL_OR i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_function_true", "LOGICAL_OR true i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_function_true", "LOGICAL_OR true i18nKey added");
 
     f.json = not;
     assert.equal(f.calculate(), true, "LOGICAL_NOT: formula");
     assert.equal(f.isStatic, true, "LOGICAL_NOT: isStatic");
-    assert.equal(f.toString(), "TRUE ≠  NOT TRUE", "LOGICAL_NOT: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_notequal", "LOGICAL_NOT not equal i18nKey added");
+    assert.equal(f.json.left.i18nKey, "formula_editor_function_true", "LOGICAL_NOT true i18nKey added");
+    assert.equal(f.json.right.i18nKey, "formula_editor_logic_not", "LOGICAL_NOT i18nKey added");
+    assert.equal(f.json.right.right.i18nKey, "formula_editor_function_true", "LOGICAL_NOT true i18nKey added");
 
     f.json = greaterOrEqual;
     assert.equal(f.calculate(), true, "GREATER_OR_EQUAL: formula");
     assert.equal(f.isStatic, true, "GREATER_OR_EQUAL: isStatic");
-    assert.equal(f.toString(), "6 ≥ 3", "GREATER_OR_EQUAL: toString");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_logic_greaterequal", "GREATER_OR_EQUAL i18nKey added");
 
 
 });
