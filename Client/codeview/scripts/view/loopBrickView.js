@@ -6,7 +6,7 @@
 /**
  * Created by alexandra on 25.06.17.
  */
-PocketCode.View.LoopBrickView = (function(){
+PocketCode.View.LoopBrickView = (function () {
     LoopBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function LoopBrickView(commentedOut, content) {
@@ -17,22 +17,22 @@ PocketCode.View.LoopBrickView = (function(){
         this._redraw(); //commentedOut or Indent
     }
 
-//properties
+    //properties
     Object.defineProperties(LoopBrickView.prototype, {
     });
 
-//methods
+    //methods
     LoopBrickView.prototype.merge({
         /* override */
-        _drawBackground: function() {
+        _drawBackground: function () {
             //use: brickTpe, commentedOut, ...
         },
-        _redraw: function() {
+        _redraw: function () {
             //
         },
         _addContent: function (content) {
 
-            this._bricks = new SmartJs.Ui.Control('ul', {className: ''});
+            this._bricks = new SmartJs.Ui.Control('ul', { className: '' });
             this._appendChild(this._bricks);
             this._createAndAppend(content.endContent);
         }

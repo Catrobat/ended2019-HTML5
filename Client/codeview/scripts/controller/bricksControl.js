@@ -6,7 +6,7 @@ PocketCode.merge({
         WaitBrick.extends(PocketCode.BaseBrick, false);
 
         function WaitBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WaitBrick)){
+            if (!(model instanceof PocketCode.Model.WaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
 

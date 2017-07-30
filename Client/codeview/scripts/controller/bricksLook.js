@@ -91,7 +91,7 @@ PocketCode.merge({
                     },
                     {
                         type: 'text',
-                        i18n:'ev3_tone_percent' //Prozentzeichen
+                        i18n: 'ev3_tone_percent' //Prozentzeichen
                     }
                 ]
             };
@@ -498,7 +498,7 @@ PocketCode.merge({
         ChangeColorEffectBrick.extends(PocketCode.BaseBrick, false);
 
         function ChangeColorEffectBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.ChangeColorEffectBrick)) {
+            if (!(model instanceof PocketCode.Model.ChangeColorEffectBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -524,7 +524,7 @@ PocketCode.merge({
     ClearGraphicEffectBrick: (function () {
         ClearGraphicEffectBrick.extends(PocketCode.BaseBrick, false);
         function ClearGraphicEffectBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.ClearGraphicEffectBrick)) {
+            if (!(model instanceof PocketCode.Model.ClearGraphicEffectBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -546,7 +546,7 @@ PocketCode.merge({
         SetBackgroundBrick.extends(PocketCode.BaseBrick, false);
 
         function SetBackgroundBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.SetBackgroundBrick)) {
+            if (!(model instanceof PocketCode.Model.SetBackgroundBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -577,7 +577,7 @@ PocketCode.merge({
         SetBackgroundAndWaitBrick.extends(PocketCode.BaseBrick, false);
 
         function SetBackgroundAndWaitBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.SetBackgroundAndWaitBrick)) {
+            if (!(model instanceof PocketCode.Model.SetBackgroundAndWaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {

@@ -21,15 +21,15 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
     //methods
     BrickFormula.prototype.merge({
         _goThroughObject: function (i18nKey) {
-            switch(i18nKey.type){
+            switch (i18nKey.type) {
                 case 'OPERATOR':
-                    if(i18nKey.left != undefined){
+                    if (i18nKey.left != undefined) {
                         this._goThroughObject(i18nKey.left);
                     }
 
                     PocketCode.BrickTextItem(i18nKey.i18nKey, true);
 
-                    if(i18nKey.right != undefined){
+                    if (i18nKey.right != undefined) {
                         this._goThroughObject(i18nKey.right);
                     }
                     break;
@@ -57,10 +57,10 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                 case 'COLLISION_FORMULA':
                     //todo
                     break;
-                }
+            }
         },
         _addTypeFunction: function (i18nKey) {
-            if(i18nKey.left != undefined && i18nKey.right == undefined){
+            if (i18nKey.left != undefined && i18nKey.right == undefined) {
 
                 PocketCode.BrickTextItem(i18nKey.i18nKey, true);
                 PocketCode.BrickTextItem("(", false);
@@ -69,7 +69,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
                 PocketCode.BrickTextItem(")", false);
             }
-            else if(i18nKey.left != undefined && i18nKey.right != undefined){
+            else if (i18nKey.left != undefined && i18nKey.right != undefined) {
 
                 PocketCode.BrickTextItem(i18nKey.i18nKey, true);
                 PocketCode.BrickTextItem("(", false);
@@ -82,7 +82,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
                 PocketCode.BrickTextItem(")", false);
             }
-            else if(i18nKey.left == undefined && i18nKey.right == undefined){
+            else if (i18nKey.left == undefined && i18nKey.right == undefined) {
                 PocketCode.BrickTextItem(i18nKey.i18nKey, true);
             }
         }

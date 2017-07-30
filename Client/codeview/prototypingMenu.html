@@ -13,16 +13,17 @@
             padding: 0;
             border: 0;
         }
-        html body {
-            background-color: #04222C;
-            color: #D3D3D3;
-            font-family: sans-serif;
-            line-height: 1;
-            font-size: 15px;
-            font-weight: 500;
-            height: 100%;
-            overflow: hidden;
-        }
+
+            html body {
+                background-color: #04222C;
+                color: #D3D3D3;
+                font-family: sans-serif;
+                line-height: 1;
+                font-size: 15px;
+                font-weight: 500;
+                height: 100%;
+                overflow: hidden;
+            }
         /*
                     body * {
                         box-sizing: border-box;
@@ -62,153 +63,153 @@
                 }, 300);   //wait until animation has finished
             };
             window.onresize = function (e) {
-                sc.style.maxHeight = (document.documentElement.clientHeight -40) + 'px';
+                sc.style.maxHeight = (document.documentElement.clientHeight - 40) + 'px';
             };
         };
     </script>
 </head>
 <body>
-<div dir="ltr">
-    <div class="pc-expander">
-        <input id="headerId1" name="accordion-1" type="checkbox" />
-        <div class="pc-expanderHeader">
-            <label for="headerId1"></label>
-            <button id="sj22">Navigation</button>
-        </div>
-
-        <div class="pc-expanderBody">
-            <div class="pc-expanderTree">
-                <input id="acId1" name="accordion-1" type="checkbox" />
-                <div class="pc-expanderHeader">
-                    <label for="acId1"></label>
-                    <button id="sj1">scene 1</button>
-                </div>
-                <div class="pc-expanderBody">
-                    <button id="sj2">sprite 1</button>
-                    <button id="sj3">sprite 2</button>
-                    <button id="sj43">sprite 3</button>
-                </div>
+    <div dir="ltr">
+        <div class="pc-expander">
+            <input id="headerId1" name="accordion-1" type="checkbox" />
+            <div class="pc-expanderHeader">
+                <label for="headerId1"></label>
+                <button id="sj22">Navigation</button>
             </div>
 
-            <div class="pc-expanderTree">
-                <input id="acId2" name="accordion-1" type="checkbox" />
-                <div class="pc-expanderHeader">
-                    <label for="acId2"></label>
-                    <button id="sj4">scene 2</button>
-                </div>
-                <div class="pc-expanderBody">
-                    <button id="sj5">sprite 4</button>
-                    <button id="sj42">sprite 5</button>
-                </div>
-            </div>
-
-            <div class="pc-expanderTree">
-                <input id="acId3" name="accordion-1" type="checkbox" />
-                <div class="pc-expanderHeader">
-                    <label for="acId3"></label>
-                    <button id="sj24">scene 3</button>
-                </div>
-                <div class="pc-expanderBody">
-                    <button id="sj40">sprite 6</button>
-                </div>
-            </div>
-
-            <button id="sj41">sprite 7</button>
-            <button id="sj46">sprite 8</button>
-            <button id="sj47">sprite 9</button>
-            <!--<div class="pc-expanderTree">
-                <input id="acId4" name="accordion-1" type="checkbox" />
-                <div class="pc-expanderHeader">
-                    <label for="acId4"></label>
-                    <button id="sj21">scene 4</button>
-                </div>
-                <div class="pc-expanderBody">-
-                    <button id="sj41">sprite 7</button>
-                </div>
-            </div>-->
-        </div>
-    </div>
-</div>
-<br />
-<br />
-<br />
-<br />
-<!--
-<div style="width: 400px; margin: 10px auto 30px auto; text-align: left; background: blue;">
-    <div class="pc-menuAlign">
-        <ul class="pc-mainMenu">
-            <li class="pc-menuContainer">
-                <div class="pc-menu">
-                    <div class="pc-menuTitle">Menu</div>
-                    <div class="pc-submenu" >
-                        <div>
-                            <ul>
-                                <li><div class="pc-menuItem">Menu Item</div></li>
-                                <li>
-                                    <div class="pc-expander">
-                                        <input id="acId14" name="accordion-14" type="checkbox" />
-                                        <label for="acId14"><span>test text</span></label>
-                                        <section>
-                                            <div class="pc-checkbox">
-                                                <input id="cbId21" type="checkbox" name="21" value="21"><label for="cbId21">CheckBox 21</label>
-                                            </div>
-                                            <div class="pc-checkbox">
-                                                <input id="cbId22" type="checkbox" name="22" value="22"><label for="cbId22">CheckBox 22</label>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </li>
-                                <li><div class="pc-menuItem">Menu Item</div></li>
-                                <li>
-                                    <div class="pc-expander">
-                                        <input id="acId15" name="accordion-15" type="checkbox" />
-                                        <label for="acId15"><span>test radio</span></label>
-                                        <section>
-                                            <div class="pc-radio">
-                                                <input id="rdId21" type="radio" name="radioGroup21" value="21"><label for="rdId21">Radio 11</label>
-                                            </div>
-                                            <div class="pc-radio">
-                                                <input id="rdId22" type="radio" name="radioGroup21" value="22"><label for="rdId22">Radio 11</label>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pc-radio">
-                                        <input id="rdId11" type="radio" name="radioGroup11" value="11"><label for="rdId11">Radio 11</label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pc-radio">
-                                        <input id="rdId12" type="radio" name="radioGroup11" value="12"><label for="rdId12">Radio 12</label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pc-radio">
-                                        <input id="rdId13" type="radio" name="radioGroup11" value="13" checked="checked"><label for="rdId13">Radio 13</label>
-                                    </div>
-                                </li>
-                                <li class="pc-menuItemSep"><hr /></li>
-                                <li>
-                                    <div class="pc-checkbox">
-                                        <input id="cbId11" type="checkbox" name="11" value="11"><label for="cbId11">CheckBox 11</label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="pc-checkbox">
-                                        <input id="cbId12" type="checkbox" name="12" value="12" checked="checked"><label for="cbId12">CheckBox 12</label>
-                                    </div>
-                                </li>
-                                <li class="pc-menuItemSep"><hr /></li>
-                                <li><div class="pc-menuItem">Menu Item</div></li>
-                            </ul>
-                        </div>
+            <div class="pc-expanderBody">
+                <div class="pc-expanderTree">
+                    <input id="acId1" name="accordion-1" type="checkbox" />
+                    <div class="pc-expanderHeader">
+                        <label for="acId1"></label>
+                        <button id="sj1">scene 1</button>
+                    </div>
+                    <div class="pc-expanderBody">
+                        <button id="sj2">sprite 1</button>
+                        <button id="sj3">sprite 2</button>
+                        <button id="sj43">sprite 3</button>
                     </div>
                 </div>
-            </li>
-        </ul>
+
+                <div class="pc-expanderTree">
+                    <input id="acId2" name="accordion-1" type="checkbox" />
+                    <div class="pc-expanderHeader">
+                        <label for="acId2"></label>
+                        <button id="sj4">scene 2</button>
+                    </div>
+                    <div class="pc-expanderBody">
+                        <button id="sj5">sprite 4</button>
+                        <button id="sj42">sprite 5</button>
+                    </div>
+                </div>
+
+                <div class="pc-expanderTree">
+                    <input id="acId3" name="accordion-1" type="checkbox" />
+                    <div class="pc-expanderHeader">
+                        <label for="acId3"></label>
+                        <button id="sj24">scene 3</button>
+                    </div>
+                    <div class="pc-expanderBody">
+                        <button id="sj40">sprite 6</button>
+                    </div>
+                </div>
+
+                <button id="sj41">sprite 7</button>
+                <button id="sj46">sprite 8</button>
+                <button id="sj47">sprite 9</button>
+                <!--<div class="pc-expanderTree">
+                    <input id="acId4" name="accordion-1" type="checkbox" />
+                    <div class="pc-expanderHeader">
+                        <label for="acId4"></label>
+                        <button id="sj21">scene 4</button>
+                    </div>
+                    <div class="pc-expanderBody">-
+                        <button id="sj41">sprite 7</button>
+                    </div>
+                </div>-->
+            </div>
+        </div>
     </div>
-</div>
--->
+    <br />
+    <br />
+    <br />
+    <br />
+    <!--
+    <div style="width: 400px; margin: 10px auto 30px auto; text-align: left; background: blue;">
+        <div class="pc-menuAlign">
+            <ul class="pc-mainMenu">
+                <li class="pc-menuContainer">
+                    <div class="pc-menu">
+                        <div class="pc-menuTitle">Menu</div>
+                        <div class="pc-submenu" >
+                            <div>
+                                <ul>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                    <li>
+                                        <div class="pc-expander">
+                                            <input id="acId14" name="accordion-14" type="checkbox" />
+                                            <label for="acId14"><span>test text</span></label>
+                                            <section>
+                                                <div class="pc-checkbox">
+                                                    <input id="cbId21" type="checkbox" name="21" value="21"><label for="cbId21">CheckBox 21</label>
+                                                </div>
+                                                <div class="pc-checkbox">
+                                                    <input id="cbId22" type="checkbox" name="22" value="22"><label for="cbId22">CheckBox 22</label>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </li>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                    <li>
+                                        <div class="pc-expander">
+                                            <input id="acId15" name="accordion-15" type="checkbox" />
+                                            <label for="acId15"><span>test radio</span></label>
+                                            <section>
+                                                <div class="pc-radio">
+                                                    <input id="rdId21" type="radio" name="radioGroup21" value="21"><label for="rdId21">Radio 11</label>
+                                                </div>
+                                                <div class="pc-radio">
+                                                    <input id="rdId22" type="radio" name="radioGroup21" value="22"><label for="rdId22">Radio 11</label>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId11" type="radio" name="radioGroup11" value="11"><label for="rdId11">Radio 11</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId12" type="radio" name="radioGroup11" value="12"><label for="rdId12">Radio 12</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-radio">
+                                            <input id="rdId13" type="radio" name="radioGroup11" value="13" checked="checked"><label for="rdId13">Radio 13</label>
+                                        </div>
+                                    </li>
+                                    <li class="pc-menuItemSep"><hr /></li>
+                                    <li>
+                                        <div class="pc-checkbox">
+                                            <input id="cbId11" type="checkbox" name="11" value="11"><label for="cbId11">CheckBox 11</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="pc-checkbox">
+                                            <input id="cbId12" type="checkbox" name="12" value="12" checked="checked"><label for="cbId12">CheckBox 12</label>
+                                        </div>
+                                    </li>
+                                    <li class="pc-menuItemSep"><hr /></li>
+                                    <li><div class="pc-menuItem">Menu Item</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    -->
 </body>
 </html>

@@ -6,7 +6,7 @@
 /**
  * Created by alexandra on 25.06.17.
  */
-PocketCode.View.IfThenElseBrickView = (function(){
+PocketCode.View.IfThenElseBrickView = (function () {
     IfThenElseBrickView.extends(PocketCode.View.BaseBrick, false);
 
     function IfThenElseBrickView(commentedOut, elseVisible, content) {
@@ -35,21 +35,21 @@ PocketCode.View.IfThenElseBrickView = (function(){
     //methods
     IfThenElseBrickView.prototype.merge({
         /* override */
-        _drawBackground: function() {
+        _drawBackground: function () {
             //use: brickTpe, commentedOut, ...
         },
-        _redraw: function() {
+        _redraw: function () {
             //commentedOut or Indent, show elseBricks
         },
         _addContent: function (content) {
 
-            this._ifBricks = new SmartJs.Ui.Control('ul', {className: ''});
+            this._ifBricks = new SmartJs.Ui.Control('ul', { className: '' });
             this._appendChild(this._ifBricks);
 
             //this._createAndAppend(content.elseContent, this);
             this._createAndAppend(content.elseContent, this);
 
-            this._elseBricks = new SmartJs.Ui.Control('ul', {className: ''});
+            this._elseBricks = new SmartJs.Ui.Control('ul', { className: '' });
             this._appendChild(this._elseBricks);
 
             this._createAndAppend(content.endContent);

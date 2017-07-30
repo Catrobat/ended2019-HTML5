@@ -36,7 +36,7 @@ PocketCode.merge({
         UnsupportedBrick.extends(PocketCode.BaseBrick, false);
 
         function UnsupportedBrick(model) {
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.CONTROL, true);
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.UNSUPPORTED, true);
             PocketCode.BaseBrick.call(this, view, model, true);
         }
         return UnsupportedBrick;

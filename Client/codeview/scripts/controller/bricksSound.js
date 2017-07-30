@@ -6,7 +6,7 @@ PocketCode.merge({
         PlaySoundBrick.extends(PocketCode.BaseBrick, false);
 
         function PlaySoundBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.PlaySoundBrick)) {
+            if (!(model instanceof PocketCode.Model.PlaySoundBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -37,7 +37,7 @@ PocketCode.merge({
         PlaySoundAndWaitBrick.extends(PocketCode.BaseBrick, false);
 
         function PlaySoundAndWaitBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.PlaySoundAndWaitBrick)) {
+            if (!(model instanceof PocketCode.Model.PlaySoundAndWaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -67,7 +67,7 @@ PocketCode.merge({
     StopAllSoundsBrick: (function () {
         StopAllSoundsBrick.extends(PocketCode.BaseBrick, false);
         function StopAllSoundsBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.StopAllSoundsBrick)) {
+            if (!(model instanceof PocketCode.Model.StopAllSoundsBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -88,7 +88,7 @@ PocketCode.merge({
     SetVolumeBrick: (function () {
         SetVolumeBrick.extends(PocketCode.BaseBrick, false);
         function SetVolumeBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.SetVolumeBrick)) {
+            if (!(model instanceof PocketCode.Model.SetVolumeBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -115,7 +115,7 @@ PocketCode.merge({
     ChangeVolumeBrick: (function () {
         ChangeVolumeBrick.extends(PocketCode.BaseBrick, false);
         function ChangeVolumeBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.ChangeVolumeBrick)) {
+            if (!(model instanceof PocketCode.Model.ChangeVolumeBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {
@@ -142,7 +142,7 @@ PocketCode.merge({
     SpeakBrick: (function () {
         SpeakBrick.extends(PocketCode.BaseBrick, false);
         function SpeakBrick(model, commentedOut) {
-            if(!(model instanceof PocketCode.Model.SpeakBrick)) {
+            if (!(model instanceof PocketCode.Model.SpeakBrick)) {
                 throw new Error("Invalid argument Model");
             }
             var content = {

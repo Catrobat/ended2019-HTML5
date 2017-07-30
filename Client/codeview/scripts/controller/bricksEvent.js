@@ -14,7 +14,7 @@ PocketCode.merge({
         WhenProgramStartBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenProgramStartBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenProgramStartBrick)){
+            if (!(model instanceof PocketCode.Model.WhenProgramStartBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -44,7 +44,7 @@ PocketCode.merge({
         WhenActionBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenActionBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenActionBrick)){
+            if (!(model instanceof PocketCode.Model.WhenActionBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -74,7 +74,7 @@ PocketCode.merge({
         WhenTouchBrick.extends(PocketCode.BaseBrick, false); //todo extends WhenAction brick?
 
         function WhenTouchBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenTouchBrick)){
+            if (!(model instanceof PocketCode.Model.WhenTouchBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -104,7 +104,7 @@ PocketCode.merge({
         WhenBroadcastReceiveBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenBroadcastReceiveBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenBroadcastReceiveBrick)){
+            if (!(model instanceof PocketCode.Model.WhenBroadcastReceiveBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -143,7 +143,7 @@ PocketCode.merge({
         BroadcastBrick.extends(PocketCode.BaseBrick, false);
 
         function BroadcastBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.BroadcastBrick)){
+            if (!(model instanceof PocketCode.Model.BroadcastBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -182,7 +182,7 @@ PocketCode.merge({
         BroadcastAndWaitBrick.extends(PocketCode.BaseBrick, false);
 
         function BroadcastAndWaitBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.BroadcastAndWaitBrick)){
+            if (!(model instanceof PocketCode.Model.BroadcastAndWaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -221,7 +221,7 @@ PocketCode.merge({
         WhenConditionMetBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenConditionMetBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenConditionMetBrick)){
+            if (!(model instanceof PocketCode.Model.WhenConditionMetBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -261,7 +261,7 @@ PocketCode.merge({
         WhenCollisionBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenCollisionBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenCollisionBrick)){
+            if (!(model instanceof PocketCode.Model.WhenCollisionBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -300,7 +300,7 @@ PocketCode.merge({
         WhenBackgroundChangesToBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenBackgroundChangesToBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenBackgroundChangesToBrick)){
+            if (!(model instanceof PocketCode.Model.WhenBackgroundChangesToBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -341,7 +341,7 @@ PocketCode.Model.merge({
         WhenStartAsCloneBrick.extends(PocketCode.BaseBrick, false);
 
         function WhenStartAsCloneBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenStartAsCloneBrick)){
+            if (!(model instanceof PocketCode.Model.WhenStartAsCloneBrick)) {
                 throw new Error("Invalid argument Model");
             }
 

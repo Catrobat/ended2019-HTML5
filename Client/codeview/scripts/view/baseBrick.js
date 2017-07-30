@@ -34,11 +34,11 @@ PocketCode.View.BrickType = {
     },
 };
 
-PocketCode.View.BaseBrick = (function(){
+PocketCode.View.BaseBrick = (function () {
     BaseBrick.extends(SmartJs.Ui.Control, false);
 
     function BaseBrick(type, commentedOut, content) {
-        SmartJs.Ui.Control.call(this, 'li', {className: 'pc-brick pc-brickType' + type.name});
+        SmartJs.Ui.Control.call(this, 'li', { className: 'pc-brick pc-brickType' + type.name });
 
         this._brickType = type;
         this._commentedOut = commentedOut;
@@ -53,10 +53,10 @@ PocketCode.View.BaseBrick = (function(){
     //properties
     Object.defineProperties(BaseBrick.prototype, {
         commentedOut: {
-            get: function() {
+            get: function () {
                 return this._commentedOut;
             },
-            set: function(value) {
+            set: function (value) {
                 this._commentedOut = value;
             },
         },
@@ -73,21 +73,21 @@ PocketCode.View.BaseBrick = (function(){
             //todo
         },
 
-        showIndents: function(bool) {
+        showIndents: function (bool) {
 
         },
 
         //to override in derived classes
-        _drawBackground: function() {
+        _drawBackground: function () {
             //use: brickTpe, commentedOut, ...
         },
 
-        _createAndAppend: function(content) {
+        _createAndAppend: function (content) {
 
             var container = new SmartJs.Ui.ContainerControl({ className: 'pc-brickHeader' });
 
             var item;
-            for (var i = 0, l= content.length; i < l; i++) {
+            for (var i = 0, l = content.length; i < l; i++) {
                 var obj = content[i];
 
                 switch (obj.type) {

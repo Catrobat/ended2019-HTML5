@@ -84,7 +84,7 @@ PocketCode.CodeView.merge({
                 throw new Error('i18nControllerError: ' + e.responseText);
             },
             _projectLoadHandler: function (e) {
-                if (!this._loadingError ) {
+                if (!this._loadingError) {
                     this._currentPage.project = this._project;
                     return;
                 }

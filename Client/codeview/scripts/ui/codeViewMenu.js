@@ -30,25 +30,25 @@ PocketCode.CodeView.Ui.merge({
             this._exp = new PocketCode.Ui.Expander('menuNavigation');
             this.appendChild(this._exp);
 
-           /* item = new PocketCode.Ui.I18nCheckbox('testing purpose');
-            this.appendChild(item);
-            item = new PocketCode.Ui.I18nCheckbox('menuTermsOfUse');
-            this.appendChild(item);
-            //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.TERMS_OF_USE }); }, this));
-
-            this._sep = new PocketCode.Ui.MenuSeparator();
-            this.appendChild(this._sep);
-
-            item = new PocketCode.Ui.MenuItem('menuHelp');
-            this.appendChild(item);
-            //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
-            item = new PocketCode.Ui.MenuItem('menuReportIssue');
-            this.appendChild(item);
-            item = new PocketCode.Ui.MenuItem('menuHelp');
-            this.appendChild(item);
-            //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
-            item = new PocketCode.Ui.MenuItem('menuReportIssue');
-            this.appendChild(item);*/
+            /* item = new PocketCode.Ui.I18nCheckbox('testing purpose');
+             this.appendChild(item);
+             item = new PocketCode.Ui.I18nCheckbox('menuTermsOfUse');
+             this.appendChild(item);
+             //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.TERMS_OF_USE }); }, this));
+ 
+             this._sep = new PocketCode.Ui.MenuSeparator();
+             this.appendChild(this._sep);
+ 
+             item = new PocketCode.Ui.MenuItem('menuHelp');
+             this.appendChild(item);
+             //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
+             item = new PocketCode.Ui.MenuItem('menuReportIssue');
+             this.appendChild(item);
+             item = new PocketCode.Ui.MenuItem('menuHelp');
+             this.appendChild(item);
+             //item.onClick.addEventListener(new SmartJs.Event.EventListener(function () { this.close(); this._onMenuAction.dispatchEvent({ command: PocketCode.Player.MenuCommand.HELP }); }, this));
+             item = new PocketCode.Ui.MenuItem('menuReportIssue');
+             this.appendChild(item);*/
 
             //    //item.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(function (e) {
             //    //    this.close();
@@ -109,12 +109,12 @@ PocketCode.CodeView.Ui.merge({
                     scenes = [{
                         id: "sceneid1",
                         name: "scene1",
-                        sprites: [{id: "spriteid1", name: "sprite1"}, {id: "spriteid2", name: "sprite2"}]
+                        sprites: [{ id: "spriteid1", name: "sprite1" }, { id: "spriteid2", name: "sprite2" }]
                     },
                     {
                         id: "sceneid2",
                         name: "scene2",
-                        sprites: [{id: "spriteid3", name: "sprite3"}, {id: "spriteid4", name: "sprite4"}]
+                        sprites: [{ id: "spriteid3", name: "sprite3" }, { id: "spriteid4", name: "sprite4" }]
                     }];
                     var scene;
                     if (scenes.length > 1) {
@@ -123,9 +123,9 @@ PocketCode.CodeView.Ui.merge({
                             var expander = new PocketCode.Ui.ExpanderTree();
                             expander.caption.text = scene.name;
                             expander.onCaptionClick.addEventListener(new SmartJs.Event.EventListener(
-                                function(e) {
+                                function (e) {
                                     this._onNavigation.dispatchEvent(e);
-                                }.bind(this, {sceneId: scene.id})
+                                }.bind(this, { sceneId: scene.id })
                             ));
 
                             var sprite;
@@ -134,9 +134,9 @@ PocketCode.CodeView.Ui.merge({
                                 var item = new PocketCode.Ui.MenuItem();
                                 item.text = sprite.name;
                                 item.onClick.addEventListener(new SmartJs.Event.EventListener(
-                                    function(e) {
+                                    function (e) {
                                         this._onNavigation.dispatchEvent(e);
-                                    }.bind(this, {sceneId: scene.id, spriteId: sprite.id})
+                                    }.bind(this, { sceneId: scene.id, spriteId: sprite.id })
                                 ));
                                 expander.appendChild(item);
                             }
@@ -152,9 +152,9 @@ PocketCode.CodeView.Ui.merge({
                             var item = new PocketCode.Ui.MenuItem();
                             item.text = sprite.name;
                             item.onClick.addEventListener(new SmartJs.Event.EventListener(
-                                function(e) {
+                                function (e) {
                                     this._onNavigation.dispatchEvent(e);
-                                }.bind(this, {sceneId: scene.id, spriteId: sprite.id})
+                                }.bind(this, { sceneId: scene.id, spriteId: sprite.id })
                             ));
                             this._exp.appendChild(item);
                         }
