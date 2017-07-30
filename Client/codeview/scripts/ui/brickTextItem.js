@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-PocketCode.BrickTextItem = (function () {
+PocketCode.CodeView.Ui.BrickTextItem = (function () {
     BrickTextItem.extends(SmartJs.Ui.Control, false);
 
     function BrickTextItem(value, isI18n, propObject) {

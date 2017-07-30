@@ -7,10 +7,6 @@
 /// <reference path='../../../pocketCode/scripts/ui/menu.js' />
 'use strict';
 
-if (!PocketCode.CodeView)
-    PocketCode.CodeView = {};
-if (!PocketCode.CodeView.Ui)
-    PocketCode.CodeView.Ui = {};
 
 PocketCode.CodeView.Ui.merge({
 

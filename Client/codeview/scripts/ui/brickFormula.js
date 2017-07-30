@@ -1,6 +1,6 @@
 'use strict';
 
-PocketCode.BrickFormula = (function () {
+PocketCode.CodeView.Ui.BrickFormula = (function () {
     BrickFormula.extends(PocketCode.Ui.Button, false);
 
     //cntr

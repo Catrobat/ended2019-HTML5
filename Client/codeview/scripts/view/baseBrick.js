@@ -5,27 +5,48 @@
 PocketCode.View = PocketCode.View || {};
 
 PocketCode.View.BrickType = {
-    EVENT: 0,
-    CONTROL: 1,
-    MOTION: 2,
-    SOUND: 3,
-    LOOK: 4,
-    PEN: 5,
-    DATA: 6,
-    USER: 7,
-}
+    EVENT: {
+        name: 'Event',  //TODO: add some colors, effects (gradients), .. we need for drawing bricks
+    },
+    CONTROL: {
+        name: 'Control',
+    },
+    MOTION: {
+        name: 'Motion',
+    },
+    SOUND: {
+        name: 'Sound',
+    },
+    LOOK: {
+        name: 'Look',
+    },
+    PEN: {
+        name: 'Pen',
+    },
+    DATA: {
+        name: 'Data',
+    },
+    USERSCRIPT: {
+        name: 'UserScript',
+    },
+    UNSUPPORTED: {
+        name: 'Control', //'Unsupported',
+    },
+};
 
 PocketCode.View.BaseBrick = (function(){
     BaseBrick.extends(SmartJs.Ui.Control, false);
 
     function BaseBrick(type, commentedOut, content) {
-        SmartJs.Ui.Control.call(this, 'li', {className: 'pc-brick pc-brickType' + type});
+        SmartJs.Ui.Control.call(this, 'li', {className: 'pc-brick pc-brickType' + type.name});
 
         this._brickType = type;
         this._commentedOut = commentedOut;
 
         this._createAndAppend(content.content);
 
+        this._background = new SmartJs.Ui.ContainerControl({ className: 'pc-brickBgContainer' }); //position: absolute
+        this._appendChild(this._background);
         this._drawBackground();
     }
 
@@ -63,8 +84,7 @@ PocketCode.View.BaseBrick = (function(){
 
         _createAndAppend: function(content) {
 
-            this._background = new SmartJs.Ui.ContainerControl({className : 'pc-brickBgContainer'}); //position: absolute
-            this._appendChild(this._background);
+            var container = new SmartJs.Ui.ContainerControl({ className: 'pc-brickHeader' });
 
             var item;
             for (var i = 0, l= content.length; i < l; i++) {
@@ -72,25 +92,26 @@ PocketCode.View.BaseBrick = (function(){
 
                 switch (obj.type) {
                     case 'text':
-                        item = new PocketCode.Ui.I18nTextNode(obj.i18n);
-                        this._background._appendChild(item);
+                        item = new PocketCode.CodeView.Ui.BrickTextItem(obj.i18n, true);
+                        container.appendChild(item);
                         break;
                     case 'lf':
                         item = new SmartJs.Ui.Control('br');
-                        this._background._appendChild(item);
+                        container.appendChild(item);
                         break;
                     case 'formula':
-                        item = new PocketCode.brickFormula(obj.value);
+                        item = new PocketCode.CodeView.Ui.BrickFormula(obj.value);
                         item.onClick.addEventListener(new SmartJs.Event.EventListener(this._formulaOnClickHandler, this));
-                        this._background._appendChild(item);
+                        container.appendChild(item);
                         break;
                     case 'select':
-                        item = new PocketCode.brickSelect(obj.value);
+                        item = new PocketCode.CodeView.Ui.BrickSelect(obj.value);
                         item.onClick.addEventListener(new SmartJs.Event.EventListener(this._selectOnClickHandler, this));
-                        this._background._appendChild(item);
+                        container.appendChild(item);
                         break;
                 }
             }
+            this._appendChild(container);
         }
     });
 

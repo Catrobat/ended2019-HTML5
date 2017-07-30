@@ -1,6 +1,6 @@
 'use strict';
 
-PocketCode.BrickSelect = (function () {
+PocketCode.CodeView.Ui.BrickSelect = (function () {
     BrickSelect.extends(PocketCode.Ui.Button, false);
 
     //cntr
