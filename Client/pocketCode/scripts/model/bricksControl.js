@@ -164,9 +164,9 @@ PocketCode.Model.merge({
             },
             _execute: function (id, scope) {
                 if (this._condition.calculate(scope))
-                    this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
+                    this._ifBricks.execute(this._returnHandler.bind(this), id, scope);
                 else //if (this._showElse)
-                    this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
+                    this._elseBricks.execute(this._returnHandler.bind(this), id, scope);
             },
             pause: function () {
                 this._ifBricks.pause();

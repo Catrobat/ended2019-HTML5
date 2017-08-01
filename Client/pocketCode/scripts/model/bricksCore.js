@@ -16,13 +16,13 @@ PocketCode.Model.merge({
         }
 
         BrickContainer.prototype.merge({
-            execute: function (onExecutedListener, threadId, scope) {
-                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+            execute: function (onExecutedCallback, threadId, scope) {
+                if (typeof onExecutedCallback != 'function' || !threadId || typeof threadId !== 'string')
                     throw new Error('BrickContainer: missing or invalid arguments on execute()');
 
                 var id = SmartJs.getNewId();
                 this._pendingOps[id] = {
-                    listener: onExecutedListener,
+                    callback: onExecutedCallback,
                     threadId: threadId,
                     scope: scope,
                     loopDelay: false,
@@ -45,19 +45,19 @@ PocketCode.Model.merge({
                     bricks = this._bricks;
                 if (idx < bricks.length) {
                     po.childIdx++;
-                    bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
+                    bricks[idx].execute(this._executeContainerItem.bind(this), args.id, po.scope);
                 }
                 else {
                     if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
                         po.scope = undefined;   //make sure to not dispose objects currently in use
-                    var listener = po.listener,
+                    var callback = po.callback,
                         threadId = po.threadId,
                         loopDelay = po.loopDelay;
                     for (var prop in po)
                         if (po[prop] && po[prop].dispose)
                             po[prop].dispose();
                     delete this._pendingOps[args.id];
-                    listener.handler.call(listener.scope, { id: threadId, loopDelay: loopDelay });
+                    callback({ id: threadId, loopDelay: loopDelay });
                 }
             },
             pause: function () {
@@ -135,13 +135,13 @@ PocketCode.Model.merge({
         }
 
         BaseBrick.prototype.merge({
-            execute: function (onExecutedListener, threadId, scope) {
+            execute: function (onExecutedCallback, threadId, scope) {
                 if (this._disposed)
                     return;
-                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+                if (typeof onExecutedCallback != 'function' || !threadId || typeof threadId !== 'string')
                     throw new Error('BaseBrick: missing or invalid arguments on execute()');
 
-                this._onExecutedListener = onExecutedListener;
+                this._onExecutedCallback = onExecutedCallback;
                 this._threadId = threadId;
                 if (this._commentedOut === true)
                     this._return();
@@ -154,7 +154,7 @@ PocketCode.Model.merge({
             _return: function (loopDelay) {
                 if (this._disposed)
                     return;
-                this._onExecutedListener.handler.call(this._onExecutedListener.scope, {
+                this._onExecutedCallback.handler.call(this._onExecutedCallback.scope, {
                     id: this._threadId,
                     loopDelay: loopDelay
                 });
@@ -187,15 +187,15 @@ PocketCode.Model.ThreadedBrick = (function () {
     }
 
     ThreadedBrick.prototype.merge({
-        execute: function (onExecutedListener, threadId, scope) {
+        execute: function (onExecutedCallback, threadId, scope) {
             if (this._disposed)
                 return;
-            if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+            if (typeof onExecutedCallback != 'function' || !threadId || typeof threadId !== 'string')
                 throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
 
             var id = SmartJs.getNewId();
             this._pendingOps[id] = {
-                listener: onExecutedListener,
+                callback: onExecutedCallback,
                 threadId: threadId,
                 scope: scope,
             };
@@ -214,15 +214,15 @@ PocketCode.Model.ThreadedBrick = (function () {
                 return;
 
             var loopD = loopDelay ? loopDelay : false;
-            var listener = po.listener;
+            var callback = po.callback;
             var threadId = po.threadId;
 
             for (var prop in po) //may include objects like animation, ...
                 if (po[prop] && po[prop].dispose)
                     po[prop].dispose();
             delete this._pendingOps[id];
-            if (listener)
-                listener.handler.call(listener.scope, { id: threadId, loopDelay: loopD });
+            if (callback)
+                callback({ id: threadId, loopDelay: loopD });
         },
         pause: function () {
             this._paused = true;
@@ -280,7 +280,7 @@ PocketCode.Model.SingleContainerBrick = (function () {
             this._return(e.id, e.loopDelay)
         },
         _execute: function (id, scope) {
-            this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
+            this._bricks.execute(this._returnHandler.bind(this), id, scope);
         },
         pause: function () {
             this._bricks.pause();
@@ -347,16 +347,16 @@ PocketCode.Model.merge({
         //methods
         ScriptBlock.prototype.merge({
             //supporting subscription to publish-subscribe broker (broadcast and wait, background-change and wait, ..)
-            _subscribeCallback: function (dispatchedAt, onExecutedListener, threadId) {
+            _callbackFunction: function (dispatchedAt, onExecutedCallback, threadId) {
                 //if (dispatchedAt && dispatchedAt >/*=*/ this._stoppedAt) {  //TODO
-                if (onExecutedListener && threadId) {
+                if (onExecutedCallback && threadId) {
                     if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
                         //stopped before executed
-                        onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
+                        onExecutedCallback({ id: threadId, loopDelay: false });
                         return;
                     }
-                    this._pendingExecutedCallback = onExecutedListener.handler.bind(onExecutedListener.scope, { id: threadId, loopDelay: false });;
-                    this.execute(onExecutedListener, threadId);
+                    this._pendingExecutedCallback = onExecutedCallback({ id: threadId, loopDelay: false });
+                    this.execute(onExecutedCallback, threadId);
                 }
                 else {
                     this.executeEvent({ dispatchedAt: dispatchedAt });
@@ -367,7 +367,7 @@ PocketCode.Model.merge({
                     return;
 
                 //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
-                this.execute.call(this, new SmartJs.Event.EventListener(function () { }, this), SmartJs.getNewId());
+                this.execute.call(this, function () { /* dummy */}, SmartJs.getNewId());
             },
             /*override*/
             _returnHandler: function (e) {
@@ -418,13 +418,15 @@ PocketCode.Model.merge({
         }
 
         LoopBrick.prototype.merge({
-            execute: function (onExecutedListener, threadId, scope) {
+            execute: function (onExecutedCallback, threadId, scope) {
                 if (this._disposed)
                     return;
+                if (typeof onExecutedCallback != 'function' || !threadId || typeof threadId !== 'string')
+                    throw new Error('LoopBrick: missing or invalid arguments on execute()');
 
                 var id = SmartJs.getNewId();
                 this._pendingOps[id] = {
-                    listener: onExecutedListener,
+                    callback: onExecutedCallback,
                     threadId: threadId,
                     scope: scope,
                     startTime: new Date(),
@@ -439,7 +441,7 @@ PocketCode.Model.merge({
             _execute: function (id, scope) {
                 if (this._disposed || !this._pendingOps[id])
                     return;
-                this._bricks.execute(new SmartJs.Event.EventListener(this._endOfLoopHandler, this), id, scope);
+                this._bricks.execute(this._endOfLoopHandler.bind(this), id, scope);
             },
             _loopConditionMet: function (po) {
                 return false;

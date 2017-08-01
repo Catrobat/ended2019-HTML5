@@ -401,17 +401,17 @@ PocketCode.Model.Scene = (function () {
             }
             return this._background.setLookByIndex(lookId);
         },
-        subscribeToBackgroundChange: function (lookId, changeHandler) {
+        subscribeToBackgroundChange: function (lookId, changeCallback) {
             if (!this._background)
                 return;
 
-            this._background.subscribeOnLookChange(lookId, changeHandler);
+            this._background.subscribeOnLookChange(lookId, changeCallback);
         },
-        unsubscribeFromBackgroundChange: function (lookId, changeHandler) {
+        unsubscribeFromBackgroundChange: function (lookId, changeCallback) {
             if (!this._background)
                 return;
 
-            this._background.unsubscribeFromLookChange(lookId, changeHandler);
+            this._background.unsubscribeFromLookChange(lookId, changeCallback);
         },
         getSpriteLayer: function (sprite) { //including background (used in formulas)
             if (sprite === this._background)

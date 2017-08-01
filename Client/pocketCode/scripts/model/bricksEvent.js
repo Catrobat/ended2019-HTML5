@@ -82,7 +82,7 @@ PocketCode.Model.merge({
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
             this._msgId = propObject.receiveMsgId;
-            this._callback = this._subscribeCallback.bind(this);
+            this._callback = this._callbackFunction.bind(this);
             this._broadcastMgr = broadcastMgr;
             broadcastMgr.subscribe(this._msgId, this._callback);
         }
@@ -245,7 +245,7 @@ PocketCode.Model.merge({
 
             this._scene = scene;
             this._lookId = propObject.lookId
-            this._callback = this._subscribeCallback.bind(this);
+            this._callback = this._callbackFunction.bind(this);
             if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
                 sprite.subscribeOnLookChange(this._lookId, this._callback);
             else

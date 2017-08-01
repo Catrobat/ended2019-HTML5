@@ -25,10 +25,10 @@ PocketCode.Model.merge({
         }
 
         UserScriptBrick.prototype.merge({
-            execute: function (onExecutedListener, threadId, sprite) {
+            execute: function (onExecutedCallback, threadId, sprite) {
                 if (this._disposed)
                     return;
-                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+                if (typeof onExecutedCallback != 'function' || !threadId || typeof threadId !== 'string')
                     throw new Error('UserScriptBrick (ThreadedBrick): missing or invalid arguments on execute()');
 
                 sprite = sprite || this._sprite;
@@ -36,20 +36,20 @@ PocketCode.Model.merge({
                     uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);  // new this.uvh();
                 //TODO: init variables
 
-                this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
+                this._pendingOps[id] = { threadId: threadId, callback: onExecutedCallback };
                 //if (this._commentedOut === true)  //user scripts cannot be commented out
                 //    return this._return(id, false);
 
                 //this._execute(id);
 
                 this._executionState = PocketCode.ExecutionState.RUNNING;   //TODO make sure all instances are STOPPED
-                PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
+                PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, function (e) {
                     if (Object.keys(this._pendingOps).length > 0) {
                         this._executionState = PocketCode.ExecutionState.STOPPED;
                         this._onExecuted.dispatchEvent();
                     }
                     this._return(e.id, e.loopDelay);    //TODO: ??
-                }, this), id, uvh);
+                }.bind(this), id, uvh);
             },
             stopThread: function(threadId) {
                 //TODO

@@ -13,24 +13,24 @@ PocketCode.PublishSubscribeBroker = (function () {
 
     //methods
     PublishSubscribeBroker.prototype.merge({
-        subscribe: function (id, handler) {
+        subscribe: function (id, callback) {
             if (typeof id !== 'string')
                 throw new Error('invalid argument: message id, expected type: string');
-            if (typeof handler !== 'function')
-                throw new Error('invalid argument: subscription handler, expected type: function');
+            if (typeof callback !== 'function')
+                throw new Error('invalid argument: subscription callback, expected type: function');
 
             this._subscriptions[id] || (this._subscriptions[id] = []);
-            this._subscriptions[id].push(handler);
+            this._subscriptions[id].push(callback);
         },
-        unsubscribe: function (id, handler) {
+        unsubscribe: function (id, callback) {
             if (typeof id !== 'string')
                 throw new Error('invalid argument: message id, expected type: string');
-            if (typeof handler !== 'function')
-                throw new Error('invalid argument: subscription handler, expected type: function');
+            if (typeof callback !== 'function')
+                throw new Error('invalid argument: subscription callback, expected type: function');
 
             var subs = this._subscriptions[id];
             if (subs && subs instanceof Array)
-                subs.remove(handler);
+                subs.remove(callback);
         },
         publish: function (id, waitCallback) {//, threadId) {
             if (typeof id !== 'string')
@@ -56,23 +56,23 @@ PocketCode.PublishSubscribeBroker = (function () {
                 }
             }
 
-            var handler,
+            var callback,
                 execTime = new Date();
             if (waitCallback) {
                 var pid = SmartJs.getNewId(),
                     po = this._pendingOps[pid] = { msgId: id, count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
-                    handler = subs[i];
-                    window.setTimeout(handler.bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid), 0);
-                    //handler(execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid);
+                    callback = subs[i];
+                    window.setTimeout(callback.bind(this, execTime, this._scriptExecutedCallback.bind(this), pid), 0);
+                    //callback(execTime, this._scriptExecutedCallback.bind(this), pid);
                 }
             }
             else {
                 for (var i = 0, l = subs.length; i < l; i++) {
-                    handler = subs[i];
-                    window.setTimeout(handler.bind(this, execTime), 0);
-                    //handler(execTime);
+                    callback = subs[i];
+                    window.setTimeout(callback.bind(this, execTime), 0);
+                    //callback(execTime);
                 }
             }
         },
@@ -117,11 +117,11 @@ PocketCode.BroadcastManager = (function () {
                 this._subscriptions[broadcasts[i].id] = [];
             }
         },
-        subscribe: function (bcId, handler) {
+        subscribe: function (bcId, callback) {
             if (!this._subscriptions[bcId])
                 throw new Error('invalid argument: invalid (unknown) broadcast id');
 
-            PocketCode.PublishSubscribeBroker.prototype.subscribe.call(this, bcId, handler);
+            PocketCode.PublishSubscribeBroker.prototype.subscribe.call(this, bcId, callback);
         },
         publish: function (bcId, waitCallback) {
             if (!this._subscriptions[bcId])
