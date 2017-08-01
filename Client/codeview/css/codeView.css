@@ -5,18 +5,22 @@
     background-color: lightgray;
     font-size: 10px;
 }
-    .pc-codeContainer * {
+
+    .pc-codeContainer *, .pc-codeContainer *:before, .pc-codeContainer *:after {
         user-select: none;
         box-sizing: border-box;
     }
+
     .pc-codeContainer ul {
         padding: 0;
     }
+
 .pc-debugContainer {
     width: 100%;
     height: 100%;
     background-color: #04222C;
 }
+
 .pc-debugEnabled .pc-debugContainer {
     margin-left: 1.8em;
 }
@@ -131,7 +135,7 @@
     width: 1.6em;
     height: 1.6em;
     padding: 0;
-    left: -.2em;
+    left: 0;
     margin-top: .9em;
     display: none; /* TODO */
 }
@@ -145,12 +149,16 @@
             width: 1.6em;
             height: 1.6em;
             border: 0.2em solid #4C6168;
+            top: 0;
         }
 
         .pc-brickSelect label:after {
-            top: -.1em;
-            left: 0.45em;
-            font-size: 2.4em;
+            top: -0.06em;
+            left: 0.5em;
+            font-size: 2em;
+            width: 0.8em;
+            height: 0.8em;
+            vertical-align: middle;
             font-family: Arial, Helvetica, sans-serif;
             font-weight: bold;
             color: #33B5E5;
