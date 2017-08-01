@@ -33,7 +33,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -63,7 +63,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -93,7 +93,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -132,7 +132,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -171,7 +171,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -210,7 +210,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -250,7 +250,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -289,7 +289,7 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -328,14 +328,11 @@ PocketCode.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
         return WhenBackgroundChangesToBrick;
     })(),
-});
-
-PocketCode.Model.merge({
 
     WhenStartAsCloneBrick: (function () {
         WhenStartAsCloneBrick.extends(PocketCode.BaseBrick, false);
@@ -360,10 +357,11 @@ PocketCode.Model.merge({
                 ]
             };
 
-            var view = new PocketCode.View.EventBrickView(commentedOut, content);
+            var view = new PocketCode.View.EventBrickView(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
         return WhenStartAsCloneBrick;
     })(),
+
 });

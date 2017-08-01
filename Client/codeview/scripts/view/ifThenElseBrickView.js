@@ -14,9 +14,15 @@ PocketCode.View.IfThenElseBrickView = (function () {
 
         this._elseVisible = elseVisible || true;
 
-        this._addContent(content);
+        this._ifBricks = new SmartJs.Ui.Control('ul');//, { className: '' });
+        this._appendChild(this._ifBricks);
 
-        this._redraw();
+        this._elsePath = new SmartJs.Ui.ContainerControl();//{ className: 'pc-elsePath' });
+        this._createAndAppend(content.elseContent, this._elsePath);
+        this._elseBricks = new SmartJs.Ui.Control('ul');//, { className: 'pc-elsePath' });
+        this._elsePath.appendChild(this._elseBricks);
+        this._appendChild(this._elsePath);
+        this._createAndAppend(content.endContent);
     }
 
     //properties
@@ -27,7 +33,12 @@ PocketCode.View.IfThenElseBrickView = (function () {
             },
             set: function (bool) {
                 this._elseVisible = bool;
-                //TODO  redraw
+                if (bool)
+                    this._elsePath.show();
+                else
+                    this._elsePath.hide();
+                
+                this._redraw();
             }
         }
     });
@@ -36,24 +47,22 @@ PocketCode.View.IfThenElseBrickView = (function () {
     IfThenElseBrickView.prototype.merge({
         /* override */
         _drawBackground: function () {
+            PocketCode.View.BaseBrick.prototype._drawBackground.call(this); //TODO
             //use: brickTpe, commentedOut, ...
         },
-        _redraw: function () {
-            //commentedOut or Indent, show elseBricks
-        },
-        _addContent: function (content) {
+        //_addContent: function (content) {
 
-            this._ifBricks = new SmartJs.Ui.Control('ul', { className: '' });
-            this._appendChild(this._ifBricks);
+        //    this._ifBricks = new SmartJs.Ui.Control('ul', { className: '' });
+        //    this._appendChild(this._ifBricks);
 
-            //this._createAndAppend(content.elseContent, this);
-            this._createAndAppend(content.elseContent, this);
+        //    //this._createAndAppend(content.elseContent, this);
+        //    this._createAndAppend(content.elseContent, this);
 
-            this._elseBricks = new SmartJs.Ui.Control('ul', { className: '' });
-            this._appendChild(this._elseBricks);
+        //    this._elseBricks = new SmartJs.Ui.Control('ul', { className: '' });
+        //    this._appendChild(this._elseBricks);
 
-            this._createAndAppend(content.endContent);
-        }
+        //    this._createAndAppend(content.endContent);
+        //},
     });
 
     return IfThenElseBrickView;

@@ -2,8 +2,16 @@
 
 window.onload = function () {
 
-    var container = new SmartJs.Ui.HtmlTag('ul');
+    var container = new PocketCode.CodeView.Ui.CodeContainer();
     document.body.appendChild(container._dom);
+
+    container.debugEnabled = true;
+    //container.selectEnabled = true;
+    container.showAsCode = true;
+    container.indentsEnabled = true;
+
+    container.scaleBricksToWidth = true;
+    container.scaleBricksToWidth = false;
 
 
     var device = "device";
@@ -11,16 +19,16 @@ window.onload = function () {
     var b = new PocketCode.Model.WaitBrick("device", "sprite", { duration: duration });
 
     var brick = new PocketCode.WaitBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
     b = new PocketCode.Model.ForeverBrick("device", "sprite", 50, { id: "id" });
     brick = new PocketCode.ForeverBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     b = new PocketCode.Model.IfThenElseBrick("device", "sprite", { condition: cond });
     brick = new PocketCode.IfThenElseBrick(b, false, true);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
 
     var gameEngine = new PocketCode.GameEngine();
@@ -34,30 +42,30 @@ window.onload = function () {
 
     b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
     brick = new PocketCode.WhenProgramStartBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
 
     b = new PocketCode.Model.CloneBrick("device", "sprite", scene, { spriteId: "23" });
     brick = new PocketCode.CloneBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
-    b = new PocketCode.Model.SetVariableBrick("device", "sprite", { resourceId: "var1"});
+    b = new PocketCode.Model.SetVariableBrick("device", "sprite", { resourceId: "var1" });
     brick = new PocketCode.SetVariableBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
-    b = new PocketCode.Model.PenDownBrick("device", "sprite", {id: "id"});
+    b = new PocketCode.Model.PenDownBrick("device", "sprite", { id: "id" });
     brick = new PocketCode.PenDownBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
-    b = new PocketCode.Model.SetLookBrick("device", "sprite", {LookId: "LookId"});
+    b = new PocketCode.Model.SetLookBrick("device", "sprite", { LookId: "LookId" });
     brick = new PocketCode.SetLookBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
-    b = new PocketCode.Model.StopAllSoundsBrick("device", "sprite", "sceneId", "manager", {SoundId: "SoundId"});
+    b = new PocketCode.Model.StopAllSoundsBrick("device", "sprite", "sceneId", "manager", { SoundId: "SoundId" });
     brick = new PocketCode.StopAllSoundsBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 
-    b = new PocketCode.Model.GoToBrick("device", "sprite", "scene", {destination: "destination"});
+    b = new PocketCode.Model.GoToBrick("device", "sprite", "scene", { destination: "destination" });
     brick = new PocketCode.GoToBrick(b, false);
-    container._appendChild(brick._view);
+    container.appendChild(brick._view);
 }

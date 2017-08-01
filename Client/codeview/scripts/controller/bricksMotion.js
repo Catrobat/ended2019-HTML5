@@ -181,7 +181,6 @@ PocketCode.merge({
         return SetRotionStyleBrick;
     })(),
 
-
     GoToBrick: (function () {
         GoToBrick.extends(PocketCode.BaseBrick, false);
         function GoToBrick(model, commentedOut) {

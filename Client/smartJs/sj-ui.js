@@ -817,7 +817,7 @@ SmartJs.Ui.merge({
         Object.defineProperties(ContainerControl.prototype, {
             _container: {
                 set: function (control) {
-                    if (!(control instanceof SmartJs.Ui.ContainerControl))
+                    if (!(control instanceof SmartJs.Ui.ContainerControl) && !(control instanceof SmartJs.Ui.HtmlTag))
                         throw new Error('invalid argument: inner container has to be of instance SmartJs.Ui.ContainerControl');
 
                     this.__container = control;

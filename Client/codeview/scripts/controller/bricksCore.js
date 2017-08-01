@@ -5,11 +5,6 @@
 /// <reference path="../components/formula.js" />
 'use strict';
 
-/**
- * Created by alexandra on 25.06.17.
- */
-
-
 PocketCode.BaseBrick = (function () {
     BaseBrick.extends(PocketCode.BaseController, false);
 
@@ -31,17 +26,12 @@ PocketCode.BaseBrick = (function () {
     return BaseBrick;
 })();
 
-PocketCode.merge({
-    UnsupportedBrick: (function () {
-        UnsupportedBrick.extends(PocketCode.BaseBrick, false);
+PocketCode.UnsupportedBrick = (function () {
+    UnsupportedBrick.extends(PocketCode.BaseBrick, false);
 
-        function UnsupportedBrick(model) {
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.UNSUPPORTED, true);
-            PocketCode.BaseBrick.call(this, view, model, true);
-        }
-        return UnsupportedBrick;
-    })(),
-
-});
-
-
+    function UnsupportedBrick(model) {
+        var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.UNSUPPORTED, true);
+        PocketCode.BaseBrick.call(this, view, model, true);
+    }
+    return UnsupportedBrick;
+})();

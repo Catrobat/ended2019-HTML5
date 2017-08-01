@@ -9,12 +9,12 @@
 PocketCode.View.LoopBrickView = (function () {
     LoopBrickView.extends(PocketCode.View.BaseBrick, false);
 
-    function LoopBrickView(commentedOut, content) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);
+    function LoopBrickView(commentedOut, content, isEndBrick) {
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content, isEndBrick);
 
-        this._addContent(content);
-
-        this._redraw(); //commentedOut or Indent
+        this._bricks = new SmartJs.Ui.Control('ul');//, { className: '' });
+        this._appendChild(this._bricks);
+        this._createAndAppend(content.endContent);
     }
 
     //properties
@@ -25,17 +25,14 @@ PocketCode.View.LoopBrickView = (function () {
     LoopBrickView.prototype.merge({
         /* override */
         _drawBackground: function () {
+            PocketCode.View.BaseBrick.prototype._drawBackground.call(this); //TODO
             //use: brickTpe, commentedOut, ...
         },
-        _redraw: function () {
-            //
-        },
-        _addContent: function (content) {
-
-            this._bricks = new SmartJs.Ui.Control('ul', { className: '' });
-            this._appendChild(this._bricks);
-            this._createAndAppend(content.endContent);
-        }
+        //_addContent: function (content) {
+        //    this._bricks = new SmartJs.Ui.Control('ul', { className: '' });
+        //    this._appendChild(this._bricks);
+        //    this._createAndAppend(content.endContent);
+        //},
     });
 
     return LoopBrickView;

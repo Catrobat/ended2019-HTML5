@@ -5,7 +5,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
     //cntr
     function BrickFormula(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickFormula' });
+        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickFormulaItem' });
 
         this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
         this._removeChild(this._textNode);

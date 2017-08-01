@@ -1,9 +1,195 @@
-﻿li {
-    list-style-type: none;
+﻿
+.pc-codeContainer {
+    width: 100%;
+    height: 100%;
+    background-color: lightgray;
+    font-size: 10px;
+}
+    .pc-codeContainer * {
+        user-select: none;
+        box-sizing: border-box;
+    }
+
+.pc-debugContainer {
+    width: 100%;
+    height: 100%;
+    background-color: #04222C;
+}
+.pc-debugEnabled .pc-debugContainer {
+    margin-left: 1.8em;
 }
 
+.pc-codeListing { /* code container may have other class names like pc-code or pc-indents pc-debugEnabled pc-selectable */
+    position: relative;
+    margin: 0;
+    padding: 0;
+    /*list-style-type: none;
+    list-style-position: outside;*/
+    display: table-cell; /* TODO: check if this is the best option*/
+    min-width: 25em;
+    min-height: 100%;
+}
 
-.pc-brickFormula {
+.pc-selectable .pc-codeListing {
+    padding-left: 3.2em;
+}
+/*.pc-codeListing li {*/
+.pc-brick {
+    list-style-type: none;
+    /*overflow: hidden;*/
+    display: block;
+    /*border: dotted 1px orange;*/
+    background-repeat: no-repeat;
+    background-color: orange;
+    opacity: 0.6;
+}
+
+    .pc-brick * {
+        color: #FFF;
+        font-family: Arial, serif;
+        font-weight: bold;
+    }
+
+    .pc-brick ul {
+        min-height: 1.5em;
+        background-color: darkgray; /* TODO: remove this as soon the background image is available */
+    }
+
+.pc-indents .pc-brick ul {
+    margin-left: 1.5em; /* adds indents to ul tags */
+}
+
+.pc-endBrick { /* bricks like scripts, endless-loop, break (stop scripts) */
+    margin-bottom: 1em;
+}
+
+.pc-brickHeader {
+    display: block;
+    border: dotted 1px red; /* tst only */
+}
+
+    .pc-brickHeader span {
+        display: inline-block;
+        white-space: nowrap;
+        line-height: 2.2em;
+        font-size: 1.5em;
+    }
+
+.pc-code .pc-brick {
+    background-size: 0 0;
+}
+
+    .pc-code .pc-brick ul { /* always show indets in source code */
+        margin-left: 1.5em;
+    }
+
+.pc-brickEvent {
+    padding-top: 2em;
+}
+
+.pc-code .pc-brickEvent span {
+    color: #B94F16;
+}
+
+.pc-code .pc-brickControl span {
+    color: #F8885C;
+}
+
+.pc-code .pc-brickMotion span {
+    color: #397EBA;
+}
+
+.pc-code .pc-brickSound span {
+    color: #8A43BF;
+}
+
+.pc-code .pc-brickLook span {
+    color: #5F913F;
+}
+
+.pc-code .pc-brickPen span {
+    color: #2B4E14;
+}
+
+.pc-code .pc-brickData span {
+    color: #EB4A4C;
+}
+
+.pc-code .pc-brickUserScript span {
+    color: #86AA02;
+}
+
+.pc-code .pc-brickUnsupported span {
+    color: #9C9C9C; /* TODO: commented out? */
+}
+
+.pc-brickSelect { /* TODO add styles as soon as necessary */
+    position: absolute;
+    font-size: inherit;
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0;
+    left: -.2em;
+    margin-top: .9em;
+    display: none; /* TODO */
+}
+
+    .pc-brickSelect label {
+        padding: 0;
+    }
+
+        .pc-brickSelect label:before {
+            left: 0.8em;
+            width: 1.6em;
+            height: 1.6em;
+            border: 0.2em solid #4C6168;
+        }
+
+        .pc-brickSelect label:after {
+            top: -.1em;
+            left: 0.45em;
+            font-size: 2.4em;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            color: #33B5E5;
+            -webkit-transition: all .1s;
+            -moz-transition: all .1s;
+            -ms-transition: all .1s;
+            transition: all .1s;
+        }
+
+    .pc-brickSelect:disabled {
+        /* TODO */
+    }
+
+.pc-selectable .pc-brickSelect {
+    display: block;
+}
+
+.pc-brickDebugButton {
+    position: absolute;
+    font-size: inherit;
+    border: none;
+    outline: none;
+    text-shadow: none;
+    text-transform: none;
+    width: 1.8em;
+    left: -1.8em;
+    /* height: 100%;  TODO 
+    background-color: aqua;*/
+    display: none; /* TODO */
+    cursor: pointer;
+}
+
+.pc-debugEnabled .pc-brickDebugButton {
+    display: inline-block;
+}
+
+.pc-brickEvent .pc-brickDebugButton {
+    margin-top: -2em; /* move up: pc-brickEvent: padding-top */
+}
+
+.pc-brickFormulaItem {
     background-color: transparent;
     border-right: transparent;
     border-left: transparent;
@@ -13,7 +199,7 @@
     margin-right: 2px;
 }
 
-.pc-brickSelect {
+.pc-brickDropdownItem {
     background-color: transparent;
     border-right: transparent;
     border-left: transparent;
