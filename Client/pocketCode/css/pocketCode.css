@@ -849,6 +849,8 @@
 }
 
 .pc-pageHeader .pc-menu {
+    float: left;
+    width: 46px;
     /*    position: absolute;
     width: 48px;
     height: 48px;
@@ -920,11 +922,6 @@
     /*margin-right: 4px;
     */ right: auto;
     left: 15px;
-}
-
-.pc-pageHeader .pc-menu {
-    float: left;
-    width: 46px;
 }
 
 [dir='rtl'] .pc-pageHeader .pc-menu {
@@ -1292,10 +1289,6 @@
     padding-left: 30px;
 }
 
-[dir='rtl'] .pc-expanderTree .pc-expanderBody {
-    padding-right: 40px;
-}
-
 .pc-expanderTree .pc-expanderHeader div{
     display: inline-block;
 }
@@ -1306,14 +1299,11 @@
 
 [dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
     padding-right: 30px;
+    padding-left: 40px;
 }
 
 .pc-expanderTree .pc-expanderHeader{
     border-top: solid 1px #5B676E;
-}
-
-[dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
-    padding-left: 40px;
 }
 
 .pc-expander .pc-expanderHeader{
