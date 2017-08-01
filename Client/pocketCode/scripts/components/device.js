@@ -901,6 +901,12 @@ PocketCode.DeviceEmulator = (function () {
 
     //properties
     Object.defineProperties(DeviceEmulator.prototype, {
+        defaultInclinationMax: {
+            value: 46,
+        },
+        defaultInclinationAcceleration: {
+            value: 8,
+        },
         inclinationX: {
             get: function () {
                 this._features.INCLINATION.inUse = true;

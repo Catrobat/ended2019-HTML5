@@ -271,4 +271,34 @@ PocketCode.Ui.merge({
         return I18nRadio;
     })(),
 
+    Slider: (function () {
+        Slider.extends(SmartJs.Ui.Control, false);
+
+        //cntr
+        function Slider() {
+            SmartJs.Ui.Control.call(this, 'input', { className: 'pc-slider' });
+            this._dom.type='range';
+            //TODO
+
+            //events
+            this._onChange = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(Slider.prototype, {
+            onChange: {
+                get: function() {
+                    return this._onChange;
+                },
+            },
+        });
+
+        //properties
+        Object.defineProperties(Slider.prototype, {
+            //TODO: min, max, value, hor/vertical, ...
+        });
+
+        return Slider;
+    })(),
+
 });

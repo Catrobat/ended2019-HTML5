@@ -1017,3 +1017,67 @@
     -ms-transform: scale(1);
     transform: scale(1);
 }
+
+/*Slider Control*/
+
+/*Device Emulator*/
+.pc-deviceEmulator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 360px;
+    border: solid 1px red; /*TODO*/
+    background-color: black; /*TODO*/
+}
+.pc-deviceEmulatorButton {
+    background-color: transparent;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: #a9dcf1;
+    cursor: pointer;
+    padding: 0 20px;
+    width: 360px;
+    height: 4%;
+    outline: none;
+    transition: 0.4s;
+    border: 3px solid #17a5b8;
+    font-weight: bold;
+    font-size: larger;
+}
+
+    .pc-deviceEmulatorButton.active {
+        background-color: transparent;
+        bottom: 498px;
+    }
+
+    .pc-deviceEmulatorButton:hover {
+        background-color: transparent;
+        color: #3C510C;
+    }
+
+    .pc-deviceEmulatorButton:after {
+        float: right;
+        content: '<';
+        transform: rotate(90deg);
+        width: 20px;
+        font: 22px "Consolas", monospace;
+        font-weight: bold;
+        bottom: 1px;
+        right: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .pc-deviceEmulatorButton.active:after {
+        float: right;
+        content: '<';
+        transform: rotate(270deg);
+        width: 20px;
+        font: 22px "Consolas", monospace;
+        font-weight: bold;
+        bottom: 1px;
+        right: 0;
+        position: absolute;
+        pointer-events: none;
+    }

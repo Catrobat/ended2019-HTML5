@@ -1,4 +1,4 @@
-﻿/// <reference path="../../smartJs/sj.js" />
+﻿﻿/// <reference path="../../smartJs/sj.js" />
 /// <reference path="../../smartJs/sj-core.js" />
 /// <reference path="../../smartJs/sj-event.js" />
 'use strict';
@@ -1141,10 +1141,12 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/scripts/ui/canvas.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/dialog.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/input.js', type: 'js' },
+        { url: 'pocketCode/scripts/ui/expander.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/menu.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerStartScreen.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/playerToolbar.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui/scrollContainer.js', type: 'js' },
+        { url: 'pocketCode/scripts/ui/deviceEmulator.js', type: 'js' },
 
 		{ url: 'pocketCode/scripts/view/pageView.js', type: 'js' },
 		{ url: 'pocketCode/scripts/view/playerPageView.js', type: 'js' },
