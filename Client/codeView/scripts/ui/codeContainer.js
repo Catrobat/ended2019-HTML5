@@ -15,6 +15,11 @@ PocketCode.CodeView.Ui.merge({
 
         //properties
         Object.defineProperties(CodeListing.prototype, {
+            scollingEnabled: {
+                set: function (value) {
+                    //TODO: we need to disable scrolling if sprites are shown as expander controls: scrolling is handled in the parent container
+                },
+            },
             scaleBricksToWidth: {
                 set: function (value) {
                     if (!!value)
@@ -44,6 +49,11 @@ PocketCode.CodeView.Ui.merge({
 
         //properties
         Object.defineProperties(CodeContainer.prototype, {
+            scollingEnabled: {
+                set: function (value) {
+                    this._container.scollingEnabled = value;
+                },
+            },
             zoom: {
                 set: function (value) {
                     if (isNaN(value))
