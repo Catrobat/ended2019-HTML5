@@ -437,26 +437,32 @@ PocketCode.merge({
                         //    return '\'' + tmp + '\'';
                         //return '\'' + tmp.replace(/\\/g, '\\\\') + '\'';
 
-                    case 'COLLISION_FORMULA':   //sprite (name) can only be added using a dialog
+                    case 'COLLISION_FORMULA':
+                        //    if (uiString) //TODO
+                        //        return 'touches_object(' + jsonFormula.value + ')';
+
                         this._isStatic = false;
-                        var params = jsonFormula.value.split(' touches ');  //e.g. 'sp1 touches sp2'
-                        if (params.length == 1) { //v0.993
-                            if (uiString)
-                                return 'touches_object(' + jsonFormula.value + ')';
+                        //changed backend to deliver ids instead of names
+                        return 'this._sprite.collidesWithSprite(\'' + jsonFormula.value + '\')';
 
-                            return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
-                        }
-                        else if (params.length == 2) { //v0.992
-                            if (uiString)
-                                return '\'' + jsonFormula.value + '\'';
+                        //var params = jsonFormula.value.split(' touches ');  //either 'sp1 touches sp2' (v0.992= or 'sp1' (v0.993 - ?)
+                        //if (params.length == 1) { //v0.993
+                        //    if (uiString)
+                        //        return 'touches_object(' + jsonFormula.value + ')';
 
-                            return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
-                        }
-                        else { //not supported
-                            if (uiString)
-                                return '\'' + jsonFormula.value + '\'';
-                            return 'false';
-                        }
+                        //    return 'this._sprite.collidesWithSprite(\'' + params[0] + '\')';
+                        //}
+                        //else if (params.length == 2) { //v0.992
+                        //    if (uiString)
+                        //        return '\'' + jsonFormula.value + '\'';
+
+                        //    return 'this._sprite.collidesWithSprite(\'' + params[1] + '\')';
+                        //}
+                        //else { //not supported
+                        //    if (uiString)
+                        //        return '\'' + jsonFormula.value + '\'';
+                        //    return 'false';
+                        //}
 
                     default:
                         throw new Error('formula parser: unknown type: ' + jsonFormula.type);     //TODO: do we need an onError event? -> new and unsupported operators?

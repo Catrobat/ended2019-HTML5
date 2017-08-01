@@ -2227,6 +2227,33 @@ class ProjectFileParser_v0_992
         {
             $value = $this->getListId((string)$formula->value);
         }
+        else if($type === "COLLISION_FORMULA")
+        {
+            $name = (string)$formula->value;   //either 'sp1 touches sp2' (v0.992) or 'sp1' (v0.993 - ?)
+            $spriteNames = explode(" touches ", $value);
+            if(count($spriteNames) == 2)    //v0.992
+            {
+                $name = $spriteNames[1];
+            }
+            else if(count($spriteNames) == 1)   //v0.993
+            {
+                $name = $spriteNames[0];
+            }
+            else
+            {
+                throw new InvalidProjectFileException("Formula type error: COLLISION_FORMULA: value = $name");
+            }
+
+            //detect id by object name (unique): all sprites are already pre-parsed with id and name
+            foreach($this->currentScene->sprites as $s)
+            {
+                if($s->name === $name)
+                {
+                    $value = $s->id;
+                    break;
+                }
+            }
+        }
         else
         {
             $value = (string)$this->getProperty($formula, "value");

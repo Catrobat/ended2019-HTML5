@@ -1228,13 +1228,13 @@ PocketCode.Model.Sprite = (function () {
             return clone;
         },
         //collision: in formula
-        collidesWithSprite: function (spriteName) {
-            var sprite = this._scene.getSpriteByName(spriteName);
-            if (!sprite)
-                return false;
+        collidesWithSprite: function (spritId) {
+            //var sprite = this._scene.getSpriteByName(spriteName);
+            //if (!sprite)
+            //    return false;
 
             var collisionMgr = this._scene.collisionManager;
-            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
+            return collisionMgr.checkSpriteCollision(this.id, spriteId);
         },
         /* override */
         dispose: function () {
