@@ -14,12 +14,12 @@ PocketCode.View.IfThenElseBrickView = (function () {
 
         this._elseVisible = elseVisible || true;
 
-        this._ifBricks = new SmartJs.Ui.Control('ul');//, { className: '' });
+        this._ifBricks = new SmartJs.Ui.HtmlTag('ul');//, { className: '' });
         this._appendChild(this._ifBricks);
 
         this._elsePath = new SmartJs.Ui.ContainerControl();//{ className: 'pc-elsePath' });
         this._createAndAppend(content.elseContent, this._elsePath);
-        this._elseBricks = new SmartJs.Ui.Control('ul');//, { className: 'pc-elsePath' });
+        this._elseBricks = new SmartJs.Ui.HtmlTag('ul');//, { className: 'pc-elsePath' });
         this._elsePath.appendChild(this._elseBricks);
         this._appendChild(this._elsePath);
         this._createAndAppend(content.endContent);

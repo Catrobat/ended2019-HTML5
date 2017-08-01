@@ -9,7 +9,9 @@
         user-select: none;
         box-sizing: border-box;
     }
-
+    .pc-codeContainer ul {
+        padding: 0;
+    }
 .pc-debugContainer {
     width: 100%;
     height: 100%;
@@ -22,8 +24,8 @@
 .pc-codeListing { /* code container may have other class names like pc-code or pc-indents pc-debugEnabled pc-selectable */
     position: relative;
     margin: 0;
-    padding: 0;
-    /*list-style-type: none;
+    /*padding: 0;
+    list-style-type: none;
     list-style-position: outside;*/
     display: table-cell; /* TODO: check if this is the best option*/
     min-width: 25em;
@@ -41,7 +43,7 @@
     /*border: dotted 1px orange;*/
     background-repeat: no-repeat;
     background-color: orange;
-    opacity: 0.6;
+    /*opacity: 0.6;*/
 }
 
     .pc-brick * {

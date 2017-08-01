@@ -6,12 +6,12 @@ window.onload = function () {
     document.body.appendChild(container._dom);
 
     container.debugEnabled = true;
-    //container.selectEnabled = true;
-    container.showAsCode = true;
+    container.selectEnabled = true;
+    //container.showAsCode = true;
     container.indentsEnabled = true;
 
-    container.scaleBricksToWidth = true;
-    container.scaleBricksToWidth = false;
+    //container.scaleBricksToWidth = true;
+    //container.scaleBricksToWidth = false;
 
 
     var device = "device";
@@ -26,6 +26,10 @@ window.onload = function () {
     container.appendChild(brick._view);
 
     var cond = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
+    b = new PocketCode.Model.IfThenElseBrick("device", "sprite", { condition: cond });
+    var innerBrick = new PocketCode.IfThenElseBrick(b, false, true);
+    brick._view._bricks.appendChild(innerBrick._view);
+
     b = new PocketCode.Model.IfThenElseBrick("device", "sprite", { condition: cond });
     brick = new PocketCode.IfThenElseBrick(b, false, true);
     container.appendChild(brick._view);

@@ -12,7 +12,7 @@ PocketCode.View.LoopBrickView = (function () {
     function LoopBrickView(commentedOut, content, isEndBrick) {
         PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content, isEndBrick);
 
-        this._bricks = new SmartJs.Ui.Control('ul');//, { className: '' });
+        this._bricks = new SmartJs.Ui.HtmlTag('ul');//, { className: '' });
         this._appendChild(this._bricks);
         this._createAndAppend(content.endContent);
     }
