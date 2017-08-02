@@ -17,36 +17,38 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
         this._appendChild(this._container);
+        var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorScroll' });
+        this._container.appendChild(scroll);
 
         var tn = new PocketCode.Ui.I18nTextNode('lbDeviceMaxDegree');
         var span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceMaxDegreeDescr');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         this._maxSlider = new PocketCode.Ui.Slider();
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._maxSlider);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAccDescr');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         this._accSlider = new PocketCode.Ui.Slider();
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._accSlider);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         this.hide();
         this._img = new SmartJs.Ui.Image();
@@ -54,17 +56,17 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._img.src = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._img);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationX');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationY');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        this._container.appendChild(span);
+        scroll.appendChild(span);
 
         //events
         //this._onMaxInclinationChange=new SmartJs.Event.Event(this);

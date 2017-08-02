@@ -1346,6 +1346,7 @@
     position: absolute;
     bottom: 0;
     right: 18px;
+    margin: 15px 0px;
     width: 360px;
     overflow: hidden;
     border: solid 1px #17a5b8;
@@ -1353,13 +1354,20 @@
     -moz-opacity: 0.92;
     opacity: 0.92;
     filter: alpha(opacity = 92);
+    font-size: 15px;
+    color: #D3D3D3;
 }
 
     .pc-deviceEmulator .pc-expander {
     }
 
     .pc-deviceEmulator .pc-expanderHeader {
+        background-color: #00475E;
+        background-color: rgba(0,71,94,.8);
+        color: #A9DCF1;
+        font-size: 19px;
     }
+
         .pc-deviceEmulator .pc-expanderHeader label::after {
             content: '<';
         }
@@ -1369,8 +1377,15 @@
 
         .pc-deviceEmulator .pc-expanderBody span {
             display: block;
-            padding: 5px 10px;
+            padding: 3px;
         }
+
+.pc-deviceEmulatorScroll {
+    display: block;
+    overflow: hidden;
+    border-top: solid 1px #17a5b8;
+    padding: 10px;
+}
 
 /*.pc-deviceEmulatorButton {
     background-color: transparent;
