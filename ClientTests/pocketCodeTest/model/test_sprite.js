@@ -828,12 +828,12 @@ QUnit.test("Sprite", function (assert) {
     isResumed();
     assert.ok(sprite.scriptsRunning, "scrips running: running");
 
-    sprite.stopScript(true, "1");
-    assert.ok(sprite.scriptsRunning, "scrips running: running (stopScript with non existing id)");
+    //sprite.stopScript(true, "1");
+    //assert.ok(sprite.scriptsRunning, "scrips running: running (stopScript with non existing id)");
 
-    sprite.stopScript(true, "first");
-    assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
-    assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
+    //sprite.stopScript(true, "first");
+    //assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
+    //assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
 
     sprite.stopAllScripts(true);
     assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
