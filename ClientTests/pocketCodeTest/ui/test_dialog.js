@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -53,6 +53,39 @@ QUnit.test("Dialog (Base Class)", function (assert) {
     d.dispose();    //removed on dispose
 
 });
+
+
+QUnit.test("Dialog: Ask", function (assert) {
+
+    var dom = document.getElementById("qunit-fixture");
+    var container = new SmartJs.Ui.ContainerControl({ style: { minHeight: "500px", minWidth: "500px" } });
+    dom.appendChild(container._dom);    //this should trigger a resize- code coverage
+
+    var d = new PocketCode.Ui.AskDialog();
+    assert.ok(d instanceof PocketCode.Ui.AskDialog && d instanceof PocketCode.Ui.Dialog, "AskDialog: instance check");
+    assert.ok(d.onSubmit instanceof SmartJs.Event.Event, "AskDialog: events");
+
+    container.appendChild(d);   //for access tests only
+
+    d._answerInput.dom.value = "test";
+    assert.equal(d.answer, "test", "answer getter");
+
+    var submitted = 0;
+    var submitHandler = function (e) {
+        submitted++;
+        assert.equal(e.answer, "test", "event argument check: answer");
+    };
+    d.onSubmit.addEventListener(new SmartJs.Event.EventListener(submitHandler));
+    d._btnSubmit._dom.click();   //simulate button click
+    assert.equal(submitted, 1, "dialog submitted once");
+
+    var input = d._answerInput;
+    assert.notEqual(document.activeElement.id, input.id, "not focused on create");
+    d.focusInputField();
+    assert.equal(document.activeElement.id, input.id, "set focused");
+
+});
+
 
 QUnit.test("Dialog: error", function (assert) {
 

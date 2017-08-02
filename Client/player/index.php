@@ -16,8 +16,7 @@ if( !empty( $_GET["lang"]) )
   <meta name="apple-touch-fullscreen" content="yes" />
   <link href="/html5/pocketCode/img/favicon.png" rel="shortcut icon" />
 
-  <link href="/html5/player/pocketCodePlayer.css" rel="stylesheet" />
-  <script src="/html5/player/pocketCodePlayer.js"></script>
+  <script src="/html5/player/pocketCodePlayer.min.js"></script>
   <script type="text/javascript">
     launchProject(<?php if (isset($projectId)) 
                             echo $projectId; 

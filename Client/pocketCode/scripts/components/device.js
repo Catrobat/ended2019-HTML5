@@ -1,31 +1,27 @@
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
+/// <reference path="soundManager.js" />
 'use strict';
-
-PocketCode.CameraType = {
-    BACK: 0,
-    FRONT: 1,
-};
 
 PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
     function Device(soundManager) {
+        if (!(soundManager instanceof PocketCode.SoundManager))
+            throw new Error('invalid cntr call: sound manager');
         this._soundMgr = soundManager;
 
         this._flashOn = false;      //TODO: temp solution until flash supported
-        this._cameraType = PocketCode.CameraType.BACK;
-        this._cameraOn = false;     //TODO: temp solution until camera supported
 
-        this._compass = null;
-        this._alpha = null;
-        this._beta = null;
-        this._gamma = null;
+        this._compass = 0;
+        this._alpha = 0;
+        this._beta = 0;
+        this._gamma = 0;
 
-        this._x = null;
-        this._y = null;
-        this._z = null;
+        this._x = 0;
+        this._y = 0;
+        this._z = 0;
 
         this._windowOrientation = 0;
 
@@ -46,11 +42,6 @@ PocketCode.Device = (function () {
                 inUse: false,
                 supported: false,
             },
-            CAMERA: {
-                i18nKey: 'lblDeviceCamera',
-                inUse: false,
-                supported: false,
-            },
             FLASH: {
                 i18nKey: 'lblDeviceFlash',
                 inUse: false,
@@ -59,7 +50,7 @@ PocketCode.Device = (function () {
             VIBRATE: {
                 i18nKey: 'lblDeviceVibrate',
                 inUse: false,
-                supported: false,
+                supported: false,   //temporarely disabled- missing functionality on pause/resume //!!(navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate),
             },
             LEGO_NXT: {
                 i18nKey: 'lblDeviceLegoNXT',
@@ -79,7 +70,7 @@ PocketCode.Device = (function () {
             GEO_LOCATION: {
                 i18nKey: 'lblDeviceGeoLocation',
                 inUse: false,
-                supported: navigator.geolocation ? true : false,
+                supported: false,   //temporarely disabled navigator.geolocation ? true : false,
             },
         };
 
@@ -96,11 +87,11 @@ PocketCode.Device = (function () {
         };
 
         this._geoLocationData = {
-            INITIALIZED: false,
-            LATITUDE: 0,
-            LONGITUDE: 0,
-            ALTITUDE: 0,
-            ACCURACY: 0,
+            initialized: false,
+            latitude: 0,
+            longitude: 0,
+            altitude: 0,
+            accuracy: 0,
         };
 
         this._touchEvents = {
@@ -121,12 +112,18 @@ PocketCode.Device = (function () {
         }
 
         //events
+        this._onInit = new SmartJs.Event.Event(this);
         this._onSpaceKeyDown = new SmartJs.Event.Event(this);
         //this._onSupportChange = new SmartJs.Event.Event(this);  //this event is triggered if a sensor is used that is not supported
     }
 
     //events
     Object.defineProperties(Device.prototype, {
+        onInit: {   //used for onLoad event
+            get: function () {
+                return this._onInit;
+            },
+        },
         onSpaceKeyDown: {
             get: function () {
                 return this._onSpaceKeyDown;
@@ -136,6 +133,12 @@ PocketCode.Device = (function () {
 
     //properties
     Object.defineProperties(Device.prototype, {
+        initialized: {
+            get: function () {
+                var geo = this._features.GEO_LOCATION;
+                return (geo.supported && geo.inUse) ? this._geoLocationData.initialized : true;
+            },
+        },
         isMobile: {
             value: SmartJs.Device.isMobile,
         },
@@ -144,8 +147,6 @@ PocketCode.Device = (function () {
         },
         emulationInUse: {
             get: function () {
-                if (this instanceof PocketCode.DeviceEmulator && this._features.INCLINATION.inUse)
-                    return true;
                 return false;
             },
         },
@@ -170,6 +171,11 @@ PocketCode.Device = (function () {
                 return false;
             },
         },
+        //features: {
+        //    get: function () {
+
+        //    },
+        //},
         unsupportedFeatures: {
             get: function () {
                 var unsupported = [], tmp;
@@ -317,64 +323,7 @@ PocketCode.Device = (function () {
             },
         },
 
-        //camera
-        selectedCamera: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return this._cameraType;
-            },
-            set: function (cameraType) {
-                var found = false;
-                for (var type in PocketCode.CameraType) {
-                    if (PocketCode.CameraType[type] == cameraType) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                    throw new Error('invalid parameter: expected type \'cameraType\'');
-                this._features.CAMERA.inUse = true;
-                this._cameraType = cameraType;
-            },
-        },
-        cameraOn: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return this._cameraOn;
-            },
-            set: function (bool) {
-                if (typeof bool !== 'boolean')
-                    throw new Error('invalid parameter: expected type \'boolean\'');
-                this._features.CAMERA.inUse = true;
-                this._cameraOn = bool;
-            },
-        },
-
-        faceDetected: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return false; //not supported
-            },
-        },
-        faceSize: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return 0.0; //not supported
-            },
-        },
-        facePositionX: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return 0.0; //not supported
-            },
-        },
-        facePositionY: {
-            get: function () {
-                this._features.CAMERA.inUse = true;
-                return 0.0; //not supported
-            },
-        },
-        //flash: stae not shown but stored
+        //flash: state not shown but stored
         flashOn: {
             get: function () {
                 this._features.FLASH.inUse = true;
@@ -455,25 +404,25 @@ PocketCode.Device = (function () {
         geoLatitude: {
             get: function () {
                 this._getGeoLocationData();
-                return this._geoLocationData.LATITUDE;
+                return this._geoLocationData.latitude;
             },
         },
         geoLongitude: {
             get: function () {
                 this._getGeoLocationData();
-                return this._geoLocationData.LONGITUDE;
+                return this._geoLocationData.longitude;
             },
         },
         geoAltitude: {
             get: function () {
                 this._getGeoLocationData();
-                return this._geoLocationData.ALTITUDE;
+                return this._geoLocationData.altitude;
             },
         },
         geoAccuracy: {
             get: function () {
                 this._getGeoLocationData();
-                return this._geoLocationData.ACCURACY;
+                return this._geoLocationData.accuracy;
             },
         },
     });
@@ -508,14 +457,13 @@ PocketCode.Device = (function () {
         _initDeviceOrientationHandler: function (e) {
             if (this._initDeviceOrientationListener) {
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
-                //console.log("remove device orientation Handler");
                 delete this._initDeviceOrientationListener;
 
                 this._alpha = e.alpha;
                 this._beta = e.beta;
                 this._gamma = e.gamma;
 
-                if (this._gamma != null || this._alpha != null || this._beta != null) { //checks if there is sensor data if not sensors are not supported
+                if (this._gamma != 0 || this._alpha != 0 || this._beta != 0) { //checks if there is sensor data- if not sensors are not supported
                     this._features.COMPASS.supported = true;
                     this._features.INCLINATION.supported = true;
                 }
@@ -568,28 +516,33 @@ PocketCode.Device = (function () {
                     function (position) {   //success handler
                         var coords = position.coords;
                         this._geoLocationData = {
-                            INITIALIZED: true,
-                            LATITUDE: coords.latitude,
-                            LONGITUDE: coords.longitude,
-                            ALTITUDE: coords.altitude,  //already in meters
-                            ACCURACY: coords.accuracy,  //already in meters
+                            initialized: true,
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                            altitude: coords.altitude,  //already in meters
+                            accuracy: coords.accuracy,  //already in meters
                         };
-                    },
+                    }.bind(this),
                     function () {   //error handler
                         if (/*window.location.host != 'localhost' && */window.location.protocol != "https:")
                             this._features.GEO_LOCATION.supported = false;  //chrome only allows access over http
-                    }
+                    }.bind(this)
                 );
         },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
-            if (typeof duration != 'number') //isNaN('') = false
+            if (!this._features.VIBRATE.supported || typeof duration != 'number' || duration == 0) //isNaN('') = false
                 return false;
 
             //TODO: as soon as html supports this feature
             //var time = duration * 1000;
+            if (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate) {
+                var vibrate = (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate).bind(navigator);
+                vibrate(duration * 1000);   //TODO: pause/resume
 
-            return true;
+                return true;
+            }
+            return false;
         },
         //touch
         updateTouchEvent: function (type, id, x, y) {
@@ -611,12 +564,6 @@ PocketCode.Device = (function () {
                     break;
             }
         },
-        clearTouchHistory: function() {
-            this._touchEvents = {
-                active: {},
-                history: [],
-            };
-        },
         getTouchX: function (idx) {
             idx--;  //mapping ind = 1..n to 0..(n-1)
             if (idx < 0 || idx >= this._touchEvents.history.length)
@@ -629,7 +576,23 @@ PocketCode.Device = (function () {
                 return 0.0;
             return this._touchEvents.history[idx].y;
         },
+        getLatestActiveTouchPosition: function () {
+            var e,
+                history = this._touchEvents.history,
+                pos = {};
+            if (Object.keys(this._touchEvents.active).length == 0)   //quick check
+                return pos;
+
+            for (var i = history.length - 1; i >= 0; i--) {
+                if (history[i].active)
+                    return history[i];
+            }
+
+            return pos;
+        },
         isTouched: function (idx) {
+            if (isNaN(idx))
+                return false;
             idx--;
             if (idx < 0 || idx >= this._touchEvents.history.length)
                 return false;
@@ -646,6 +609,20 @@ PocketCode.Device = (function () {
             return 0.0; //not supported
         },
 
+        pause: function () {
+            //TODO: vibration
+        },
+        resume: function () {
+            //TODO: vibration
+        },
+        reset: function () {
+            //clear touch history
+            this._touchEvents = {
+                active: {},
+                history: [],
+            };
+            //TODO: vibration
+        },
         /* override */
         dispose: function () {
             this._soundMgr = undefined; //make sure it does not get disposed as well
@@ -676,11 +653,189 @@ PocketCode.Device = (function () {
     return Device;
 })();
 
+PocketCode.MediaDevice = (function () {
+    MediaDevice.extends(PocketCode.Device, false);
+
+    function MediaDevice(soundManager) {
+        PocketCode.Device.call(this, soundManager);
+
+        this._cameraTransparency = 50.0;    //default
+
+        //camera
+        this._features.CAMERA = new PocketCode.Camera();
+        this._cam = this._features.CAMERA;  //shortcut
+        this._cam.onInit.addEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
+        this._cam.onChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
+        this._camStatus = { on: false };
+
+        this._orientationListener = this._addDomListener(window, 'orientationchange', this._orientationHandler);
+
+        //face detection
+        this._features.FACE_DETECTION = new PocketCode.FaceDetection(this, this._cam.video);
+        this._fd = this._features.FACE_DETECTION;   //shortcut
+
+        //this._initialized = this._cam.initialized && this._fd.initialized;  //this is true before features are set inUse!
+
+        //events
+        this._onCameraChange = new SmartJs.Event.Event(this);
+    }
+
+    //events
+    Object.defineProperties(MediaDevice.prototype, {
+        onCameraChange: {
+            get: function () {
+                return this._onCameraChange;
+            },
+        },
+    });
+
+    //properties
+    Object.defineProperties(MediaDevice.prototype, {
+        faceDetected: {
+            get: function () {
+                return this._fd.faceDetected;
+            },
+        },
+        faceSize: {
+            get: function () {
+                return this._fd.faceSize;
+            },
+        },
+        facePositionX: {
+            get: function () {
+                return this._fd.facePositionX;
+            },
+        },
+        facePositionY: {
+            get: function () {
+                return this._fd.facePositionY;
+            },
+        },
+        /* override */
+        initialized: {
+            get: function () {
+                var features = this._features;
+                return ((!features.GEO_LOCATION.supported || !features.GEO_LOCATION.inUse || this._geoLocationData.initialized) &&
+                    (!features.CAMERA.supported || !features.CAMERA.inUse || this._cam.initialized) &&
+                    (!features.FACE_DETECTION.supported || !features.FACE_DETECTION.inUse || this._fd.initialized));
+            },
+        },
+    });
+
+    //methods
+    MediaDevice.prototype.merge({
+        _featureInitializedHandler: function (e) {
+            //if (this._initialized)
+            //    return;
+            //this._initialized = this._cam.initialized && this._fd.initialized;
+            if (this.initialized)
+                this._onInit.dispatchEvent();
+        },
+        _orientationHandler: function (e) {
+            if (this.isMobile)
+                this._cameraChangeHandler();
+        },
+        _cameraChangeHandler: function (e) {
+            e = e || this._camStatus;
+            e.merge({ orientation: window.orientation || 0, transparency: this._cameraTransparency });
+            this._camStatus = e;
+            /**  if (e.on && e.width && e.height && e.src)
+                  this._fd.start(e.src, e.width, e.height, e.orientation);
+              else
+                  this._fd.stop(); **/
+            this._onCameraChange.dispatchEvent(e);
+        },
+        /* override */
+        pause: function () {
+            this._fd.stop();
+            this._cam.pause();
+
+            PocketCode.Device.prototype.pause.call(this);   //call super()
+        },
+        resume: function () {
+            this._cam.resume();
+            var e = this._camStatus;
+            this._fd.start(e.src, e.width, e.height, e.orientation);
+
+            PocketCode.Device.prototype.resume.call(this);   //call super()
+        },
+        reset: function () {   //called at program-restart
+            //this._initialized = false;
+            this._cameraTransparency = 50.0;    //default
+
+            this._fd.stop();
+            this._cam.reset();   //default
+
+            PocketCode.Device.prototype.reset.call(this);   //call super()
+        },
+
+        //camera
+        setSceneSize: function (width, height) { //TODO: set wehen scene gets loaded: try to set the camera contraints and reload the stream (reinit)
+            //TODO: needed for position/size calculations for face detection too
+            //needed to calculate camera rotation (portrait or landscape project)
+
+            //    var video = this._cameraVideo;
+            //    video.width = width;
+            //    video.height = height;
+            //    if (this._cam.on)
+            //        this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: this._cameraTransparency });
+        },
+        setCameraTransparency: function (value) {
+            if (value < 0.0)
+                value = 0.0;
+            if (value > 100.0)
+                value = 100.0;
+
+            if (this._cameraTransparency === value)
+                return false;
+
+            this._cameraTransparency = value;
+            if (this._cam.on) {
+                this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: value });
+                return true;
+            }
+            return false;
+        },
+        setCameraInUse: function (cameraType) {
+            //used for notification during loading without changing the selected cam
+            this._cam.setInUse(cameraType);
+        },
+        setCameraType: function (cameraType) {
+            return this._cam.setType(cameraType);
+        },
+        startCamera: function () {   //or resume
+            var started = this._cam.start();
+            //this._fd.start(); - will be started on update event
+            return started;
+        },
+        stopCamera: function () {   //also called during parsing to set camera inUse
+            //this._fd.stop(); - will be stopped on update event
+            return this._cam.stop();
+        },
+        disableCamera: function () {    //set by user (dialog) if he/she doesn't want to use the camera
+            this._cam.supported = false;    //override
+            this._fd.supported = false;     //override
+        },
+
+        dispose: function () {
+            this._removeDomListener(window, 'orientationchange', this._orientationListener);
+            this._fd.dispose();
+            this._cam.onInit.removeEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
+            this._cam.onChange.removeEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
+            this._cam.dispose();
+
+            PocketCode.Device.prototype.dispose.call(this);
+        },
+    });
+
+    return MediaDevice;
+})();
+
 PocketCode.DeviceEmulator = (function () {
-    DeviceEmulator.extends(PocketCode.Device, false);
+    DeviceEmulator.extends(PocketCode.MediaDevice, false);
 
     function DeviceEmulator(soundManager) {
-        PocketCode.Device.call(this, soundManager);
+        PocketCode.MediaDevice.call(this, soundManager);
 
         this._features.INCLINATION.supported = true;
         this._defaultInclination = {
@@ -688,14 +843,14 @@ PocketCode.DeviceEmulator = (function () {
             Y: 0.0,
         };
         this._inclinationLimits = {
-            X_MIN: -36.0, //-90,
-            X_MAX: 36.0, //90,
-            Y_MIN: -36.0, //-90,
-            Y_MAX: 36.0, //90,
+            X_MIN: -46.0, //-90,
+            X_MAX: 46.0, //90,
+            Y_MIN: -46.0, //-90,
+            Y_MAX: 46.0, //90,
         };
         this._inclinationIncr = {
-            X: 6.0, //10,
-            Y: 6.0, //10
+            X: 8.0, //10,
+            Y: 8.0, //10
         };
         this._inclinationTimerDuration = 200;
 
@@ -766,6 +921,14 @@ PocketCode.DeviceEmulator = (function () {
                     this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), this._inclinationTimerDuration);
                 }
                 return this._sensorData.Y_INCLINATION;
+            },
+        },
+        /* override */
+        emulationInUse: {
+            get: function () {
+                if (this._features.INCLINATION.inUse)
+                    return true;
+                return false;
             },
         },
     });
@@ -882,20 +1045,26 @@ PocketCode.DeviceEmulator = (function () {
                     function (position) {   //success handler
                         var coords = position.coords;
                         this._geoLocationData = {
-                            INITIALIZED: true,
-                            LATITUDE: coords.latitude,
-                            LONGITUDE: coords.longitude,
-                            ALTITUDE: coords.altitude,  //already in meters
-                            ACCURACY: coords.accuracy,  //already in meters
+                            initialized: true,
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                            altitude: coords.altitude,  //already in meters
+                            accuracy: coords.accuracy,  //already in meters
                         };
-                    },
+                    }.bind(this),
                     function () {   //error handler
                         if (/*window.location.host != 'localhost' && */window.location.protocol != "https:")
                             this._features.GEO_LOCATION.supported = false;  //chrome only allows access over http
-                    }
+                    }.bind(this)
                 );
         },
         /* override */
+        reset: function () {   //called at program-restart
+            this._resetInclinationX();
+            this._resetInclinationY();
+
+            PocketCode.MediaDevice.prototype.reset.call(this);   //call super()
+        },
         dispose: function () {
             window.clearInterval(this._inclinationTimer);
             if (this._keyDownListener)
@@ -903,7 +1072,7 @@ PocketCode.DeviceEmulator = (function () {
             if (this._keyUpListener)
                 this._removeDomListener(document, 'keyup', this._keyUpListener);
 
-            PocketCode.Device.prototype.dispose.call(this);    //call super()
+            PocketCode.MediaDevice.prototype.dispose.call(this);    //call super()
         },
     });
 

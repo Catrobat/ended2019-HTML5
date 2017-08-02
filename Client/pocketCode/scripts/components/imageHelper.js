@@ -490,7 +490,7 @@ PocketCode.ImageHelper = (function () {
             if (!(filters instanceof Array))
                 throw new Error('invalid argument: filters[]');
 
-            if (filters.length == 0)
+            if (filters.length == 0|| canvas.width == 0 || canvas.height == 0)
                 return;
             var _effects = {},
                 filter;

@@ -31,8 +31,12 @@ PocketCode.Ui.PageView = (function () {
         this._onResize.addEventListener(new SmartJs.Event.EventListener(this._handleResize, this));
     }
 
+    //events
+    //Object.defineProperties(PageView.prototype, {
+    //});
+
     //properties
-    Object.defineProperties(PageView.prototype, {
+    //Object.defineProperties(PageView.prototype, {
         //caption: {  //TODO: not needed right now
         //    get: function () {
         //        return this._caption.text;
@@ -41,16 +45,11 @@ PocketCode.Ui.PageView = (function () {
         //        this._caption.text = value;
         //    },
         //}
-    });
-
-    //events
-    Object.defineProperties(PageView.prototype, {
-    });
+    //});
 
     //methods
     PageView.prototype.merge({
-        _handleResize: function(e) {
-
+        _handleResize: function (e) {
             // TODO: make sure to edit the caption area as well to enable text-overflow: ellipsis (max-width)
             // console.log(e);
             //this.height = this.height;   //width/height is defined as 100% -> has to be set as px valiu to enablel page transitions

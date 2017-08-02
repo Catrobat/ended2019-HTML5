@@ -103,7 +103,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         array_push($this->cpp, $fl);
         $degrees = $this->parseFormula($fl->formula);
         array_pop($this->cpp);
-        $brick = new PointInDirectionBrickDto($degrees);
+        $brick = new SetDirectionBrickDto($degrees);
         break;
 
       case "VibrationBrick":    /*name changed?*/
@@ -137,7 +137,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
         }
 
         /** @noinspection PhpUndefinedVariableInspection */
-        $brick = new PointToBrickDto($spriteId);
+        $brick = new SetDirectionToBrickDto($spriteId);
         break;
 
       case "GlideToBrick":

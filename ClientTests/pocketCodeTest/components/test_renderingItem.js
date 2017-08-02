@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-1.23.0.js" />
+﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
@@ -77,9 +77,6 @@ QUnit.test("RenderingText", function (assert) {
     assert.equal(renderingText._text, text.toString(), "Text set correctly");
     assert.ok(typeof renderingText._text == "string", "numbers are converted: typecheck");
 
-    renderingText.text = 4;
-    assert.equal(renderingText._text, "4.0", "include 1 decimal as default for integers");
-
     //rendering
     var canvas = document.createElement("canvas");
     canvas.width = 200;
@@ -141,7 +138,7 @@ QUnit.test("RenderingText", function (assert) {
 
     ctx.clearRect(0, 0, 200, 100);
     renderingText.x = 10;
-    renderingText.y = 10;
+    renderingText.y = -10;  //+=up on out coord system
     renderingText.draw(ctx);
 
     img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
@@ -163,12 +160,12 @@ QUnit.test("RenderingText", function (assert) {
     img = PocketCode.ImageHelper.adjustCenterAndTrim(canvas, true);
     var top = Math.round(Math.sin(img.tl.angle) * img.tl.length),
         bottom = Math.round(Math.sin(img.bl.angle) * img.bl.length);
-    assert.ok(Math.abs(top + bottom -220) < 2, "rendering Text line height: based on screenshot (2016-07-11)");
+    assert.ok(Math.abs(top - bottom) <= 32, "rendering Text line height: based on screenshot (2016-07-11)");
 
 });
 
 
-QUnit.test("RenderingImage", function (assert) {
+QUnit.test("RenderingSprite", function (assert) {
 
     var done = assert.async();
 
@@ -297,6 +294,7 @@ QUnit.test("RenderingImage", function (assert) {
             { id: "s4", url: "imgHelper15.png", size: 1 }];
 
     var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var canvas = document.createElement("canvas");
 
     var is = new PocketCode.ImageStore();
@@ -311,198 +309,210 @@ QUnit.test("RenderingImage", function (assert) {
         canvasElement.height = 20;
         canvasElement.width = 10;
 
-        var renderingImage = new PocketCode.RenderingImage({ id: "id", look: canvasElement });
+        var renderingSprite = new PocketCode.RenderingSprite({ id: "id", look: canvasElement });
 
-        assert.ok(renderingImage instanceof PocketCode.RenderingImage && renderingImage instanceof PocketCode.RenderingItem, "instance check");
-        //assert.equal(renderingImage.look, canvasElement, "RenderingImage.look returns canvas element");
+        assert.ok(renderingSprite instanceof PocketCode.RenderingSprite && renderingSprite instanceof PocketCode.RenderingItem, "instance check");
+        //assert.equal(renderingSprite.look, canvasElement, "RenderingSprite.look returns canvas element");
 
-        assert.throws(function () { new PocketCode.RenderingImage(); }, Error, "ERROR: missing arguments");
-        assert.throws(function () { new PocketCode.RenderingImage("string"); }, Error, "ERROR: argument not an object");
+        assert.throws(function () { new PocketCode.RenderingSprite(); }, Error, "ERROR: missing arguments");
+        assert.throws(function () { new PocketCode.RenderingSprite("string"); }, Error, "ERROR: argument not an object");
 
         //getter, setter
-        assert.throws(function () { renderingImage.look = "look"; }, Error, "ERROR: look setter: wrong type");
-        renderingImage.scaling = 2;
-        assert.equal(renderingImage._scaling, 2, "scaling: setter");
-        renderingImage.rotation = 3;
-        assert.equal(renderingImage._rotation, 3, "rotation: setter");
-        renderingImage.flipX = false;
-        assert.equal(renderingImage._flipX, false, "flipX: setter");
-        renderingImage.shadow = true;
-        assert.equal(renderingImage._shadow, true, "shadow: setter");
+        assert.throws(function () { renderingSprite.look = "look"; }, Error, "ERROR: look setter: wrong type");
+        renderingSprite.scaling = 2;
+        assert.equal(renderingSprite._scaling, 2, "scaling: setter");
+        renderingSprite.rotation = 3;
+        assert.equal(renderingSprite._rotation, 3, "rotation: setter");
+        renderingSprite.flipX = false;
+        assert.equal(renderingSprite._flipX, false, "flipX: setter");
+        renderingSprite.shadow = true;
+        assert.equal(renderingSprite._shadow, true, "shadow: setter");
+        //renderingSprite.penDown = false;
+        assert.equal(renderingSprite.penDown, false, "penDown: default");
 
-        assert.throws(function () { renderingImage.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
-        renderingImage.graphicEffects = [];
-        assert.deepEqual(renderingImage._graphicEffects, [], "graphicEffects setter");
+        //initial
+        assert.equal(renderingSprite.penSize, undefined, "penSize: default");
+        assert.equal(renderingSprite.penColor, undefined, "penColor: default");
+
+        renderingSprite.penSize = 5;
+        assert.equal(renderingSprite.penSize, 5, "penSize: getter/setter");
+        renderingSprite.penColor = { r: 0, g: 0, b: 255.0, };
+        assert.equal(renderingSprite.penColor.r, 0.0, "penColorRed: getter/setter");
+        assert.equal(renderingSprite.penColor.g, 0.0, "penColorGreen: getter/setter");
+        assert.equal(renderingSprite.penColor.b, 255.0, "penColorBlue: getter/setter");
+
+        assert.throws(function () { renderingSprite.graphicEffects = "effect"; }, Error, "ERROR: graphicEffects setter: wrong type");
+        renderingSprite.graphicEffects = [];
+        assert.deepEqual(renderingSprite._graphicEffects, [], "graphicEffects setter");
 
         //reinit
-        renderingImage = new PocketCode.RenderingImage({ id: "id", look: canvasElement });
+        renderingSprite = new PocketCode.RenderingSprite({ id: "id", look: canvasElement });
 
-        renderingImage.x = 10;
-        renderingImage.y = 15;
+        renderingSprite.x = 10;
+        renderingSprite.y = 15;
 
-        assert.ok(renderingImage.containsPoint({ x: 5, y: 5 }), "Contains Point on left top corner");
-        assert.ok(renderingImage.containsPoint({ x: 15, y: 5 }), "Contains Point on right top corner");
-        assert.ok(renderingImage.containsPoint({ x: 15, y: 25 }), "Contains Point on right bottom corner");
-        assert.ok(renderingImage.containsPoint({ x: 5, y: 25 }), "Contains Point on left bottom corner");
-        assert.ok(!renderingImage.containsPoint({ x: 4, y: 5 }), "Does not contain Point outside left border");
-        assert.ok(!renderingImage.containsPoint({ x: 5, y: 4 }), "Does not contain Point outside top border");
-        assert.ok(!renderingImage.containsPoint({ x: 5, y: 26 }), "Does not contain Point outside bottom border");
-        assert.ok(!renderingImage.containsPoint({ x: 16, y: 6 }), "Does not contain Point outside top border");
+        assert.ok(renderingSprite.containsPoint({ x: 5, y: 5 }), "Contains Point on left top corner");
+        assert.ok(renderingSprite.containsPoint({ x: 15, y: 5 }), "Contains Point on right top corner");
+        assert.ok(renderingSprite.containsPoint({ x: 15, y: 25 }), "Contains Point on right bottom corner");
+        assert.ok(renderingSprite.containsPoint({ x: 5, y: 25 }), "Contains Point on left bottom corner");
+        assert.ok(!renderingSprite.containsPoint({ x: 4, y: 5 }), "Does not contain Point outside left border");
+        assert.ok(!renderingSprite.containsPoint({ x: 5, y: 4 }), "Does not contain Point outside top border");
+        assert.ok(!renderingSprite.containsPoint({ x: 5, y: 26 }), "Does not contain Point outside bottom border");
+        assert.ok(!renderingSprite.containsPoint({ x: 16, y: 6 }), "Does not contain Point outside top border");
 
         for (var rotationAngle = 0; rotationAngle <= 360; rotationAngle += 30) {
-            renderingImage.rotation = rotationAngle;
+            renderingSprite.rotation = rotationAngle;
             var rad = (-rotationAngle + 90) * (Math.PI / 180.0);
 
-            var xOffset = renderingImage._height * 0.5 * Math.cos(rad);
-            var yOffset = renderingImage._height * 0.5 * Math.sin(rad);
-            var centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
-            var centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
+            var xOffset = renderingSprite._height * 0.5 * Math.cos(rad);
+            var yOffset = renderingSprite._height * 0.5 * Math.sin(rad);
+            var centerTop = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
+            var centerBottom = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = renderingImage._width * 0.5 * Math.cos(rad);
-            yOffset = renderingImage._width * 0.5 * Math.sin(rad);
-            var centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
-            var centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
+            xOffset = renderingSprite._width * 0.5 * Math.cos(rad);
+            yOffset = renderingSprite._width * 0.5 * Math.sin(rad);
+            var centerRight = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
+            var centerLeft = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
 
-            assert.ok(renderingImage.containsPoint(centerTop) && renderingImage.containsPoint(centerBottom)
-                && renderingImage.containsPoint(centerLeft) && renderingImage.containsPoint(centerRight), "Contains Points on boundaries with rotation: " + rotationAngle);
+            assert.ok(renderingSprite.containsPoint(centerTop) && renderingSprite.containsPoint(centerBottom)
+                && renderingSprite.containsPoint(centerLeft) && renderingSprite.containsPoint(centerRight), "Contains Points on boundaries with rotation: " + rotationAngle);
 
             rad = (-rotationAngle + 90) * (Math.PI / 180.0);
-            xOffset = ((renderingImage._height * 0.5) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage._height * 0.5) + 1) * Math.sin(rad);
-            centerTop = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
-            centerBottom = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
+            xOffset = ((renderingSprite._height * 0.5) + 1) * Math.cos(rad);
+            yOffset = ((renderingSprite._height * 0.5) + 1) * Math.sin(rad);
+            centerTop = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
+            centerBottom = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
 
             rad = (-rotationAngle + 180) * (Math.PI / 180.0);
-            xOffset = ((renderingImage._width * 0.5) + 1) * Math.cos(rad);
-            yOffset = ((renderingImage._width * 0.5) + 1) * Math.sin(rad);
-            centerRight = { x: renderingImage.x + xOffset, y: renderingImage.y - yOffset };
-            centerLeft = { x: renderingImage.x - xOffset, y: renderingImage.y + yOffset };
+            xOffset = ((renderingSprite._width * 0.5) + 1) * Math.cos(rad);
+            yOffset = ((renderingSprite._width * 0.5) + 1) * Math.sin(rad);
+            centerRight = { x: renderingSprite.x + xOffset, y: renderingSprite.y - yOffset };
+            centerLeft = { x: renderingSprite.x - xOffset, y: renderingSprite.y + yOffset };
 
-            assert.ok(!renderingImage.containsPoint(centerTop) && !renderingImage.containsPoint(centerBottom)
-                && !renderingImage.containsPoint(centerLeft) && !renderingImage.containsPoint(centerRight), "Does not contain Points outside boundaries with rotation: " + rotationAngle);
+            assert.ok(!renderingSprite.containsPoint(centerTop) && !renderingSprite.containsPoint(centerBottom)
+                && !renderingSprite.containsPoint(centerLeft) && !renderingSprite.containsPoint(centerRight), "Does not contain Points outside boundaries with rotation: " + rotationAngle);
         }
 
         //draw tests
         //var look1 = new PocketCode.Model.Look({ name: "look1", id: "sid1", resourceId: "s1" });
         //var look2 = new PocketCode.Model.Look({ name: "look2", id: "sid2", resourceId: "s2" });
-
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "id0", name: "sprite0", looks: [{ name: "look1", id: "sid1", resourceId: "s1" }] });   //look1] });
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id0", name: "sprite0", looks: [{ name: "look1", id: "sid1", resourceId: "s1" }] });   //look1] });
         sprite1.initLooks();
         sprite1.init();
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "id1", name: "sprite1", looks: [{ name: "look2", id: "sid2", resourceId: "s2" }] });   //look2] });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id1", name: "sprite1", looks: [{ name: "look2", id: "sid2", resourceId: "s2" }] });   //look2] });
         sprite2.initLooks();
         sprite2.init();
 
-        var renderingImageOpaque = sprite1.renderingImage; //new PocketCode.RenderingImage(sprite1.renderingProperties);
-        var renderingImageTransparent = sprite2.renderingImage; //new PocketCode.RenderingImage(sprite2.renderingProperties);
+        var renderingSpriteOpaque = sprite1.renderingSprite; //new PocketCode.RenderingSprite(sprite1.renderingProperties);
+        var renderingSpriteTransparent = sprite2.renderingSprite; //new PocketCode.RenderingSprite(sprite2.renderingProperties);
 
         //draw tests
         canvas.height = 20;
         canvas.width = 10;
         var ctx = canvas.getContext("2d");
 
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(ctx.getImageData(0, 0, 1, 1).data[3], "visible image drawn");
-        renderingImageOpaque.visible = false;
+        renderingSpriteOpaque.visible = false;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(!ctx.getImageData(0, 0, 1, 1).data[3], "invisible image not drawn");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        renderingImageOpaque.visible = true;
+        renderingSpriteOpaque.visible = true;
 
         //  ************** TESTS WITH 100% opaque SPRITE ******************************************************************
         //  test simple rendering on origin
         var estimatedCenterX, estimatedCenterY, rotationAngle;
-        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
-        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
+        var opaqueImageWidth = renderingSpriteOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingSpriteOpaque._cacheCanvas.height;
         var canvasWidth = canvas.width;
         var canvasHeight = canvas.height;
 
-        renderingImageOpaque.draw(ctx);
-        estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0;
+        renderingSpriteOpaque.draw(ctx);
+        estimatedCenterX = estimatedCenterY = renderingSpriteOpaque.x = renderingSpriteOpaque.y = 0;
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (topleft)");
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test centered rendering
-        estimatedCenterX = renderingImageOpaque.x = canvasWidth * 0.5;
-        estimatedCenterY = renderingImageOpaque.y = canvasHeight * 0.5;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = renderingSpriteOpaque.x = canvasWidth * 0.5;
+        estimatedCenterY = renderingSpriteOpaque.y = canvasHeight * 0.5;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (center)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test rendering corners
-        estimatedCenterX = renderingImageOpaque.x = canvasWidth;
-        estimatedCenterY = renderingImageOpaque.y = 0.;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = renderingSpriteOpaque.x = canvasWidth;
+        estimatedCenterY = renderingSpriteOpaque.y = 0.;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (top right)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test rendering bottom left
-        estimatedCenterX = renderingImageOpaque.x = 0.;
-        estimatedCenterY = renderingImageOpaque.y = canvasHeight;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = renderingSpriteOpaque.x = 0.;
+        estimatedCenterY = renderingSpriteOpaque.y = canvasHeight;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (bottom left)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test rendering bottom right
-        estimatedCenterX = renderingImageOpaque.x = canvasWidth;
-        estimatedCenterY = renderingImageOpaque.y = canvasHeight;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = renderingSpriteOpaque.x = canvasWidth;
+        estimatedCenterY = renderingSpriteOpaque.y = canvasHeight;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (bottom right)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         //  test rendering somewhere
-        estimatedCenterX = renderingImageOpaque.x = Math.random() * canvasWidth;
-        estimatedCenterY = renderingImageOpaque.y = Math.random() * canvasHeight;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = renderingSpriteOpaque.x = Math.random() * canvasWidth;
+        estimatedCenterY = renderingSpriteOpaque.y = Math.random() * canvasHeight;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (random position)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // test subpixel rendering x ceil
         estimatedCenterX = 26;
         estimatedCenterY = 30;
-        renderingImageOpaque.x = 25.55;
-        renderingImageOpaque.y = 30;
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.x = 25.55;
+        renderingSpriteOpaque.y = 30;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, false, true), "opaque sprite (subpixel x ceil)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // test subpixel rendering y ceil
         estimatedCenterX = 25;
         estimatedCenterY = 31;
-        renderingImageOpaque.x = 25;
-        renderingImageOpaque.y = 30.55;
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.x = 25;
+        renderingSpriteOpaque.y = 30.55;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (subpixel y ceil)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // test subpixel rendering x floor
         estimatedCenterX = 25;
         estimatedCenterY = 30;
-        renderingImageOpaque.x = 25.45;
-        renderingImageOpaque.y = 30;
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.x = 25.45;
+        renderingSpriteOpaque.y = 30;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (subpixel x floor)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // test subpixel rendering y floor
         estimatedCenterX = 25;
         estimatedCenterY = 30;
-        renderingImageOpaque.x = 25;
-        renderingImageOpaque.y = 30.45;
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.x = 25;
+        renderingSpriteOpaque.y = 30.45;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (subpixel y floor)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 30) {
             // test rotated rendering
-            estimatedCenterX = renderingImageOpaque.x = 10;
-            estimatedCenterY = renderingImageOpaque.y = 10;
-            renderingImageOpaque.rotation = rotationAngle;
-            renderingImageOpaque.draw(ctx);
+            estimatedCenterX = renderingSpriteOpaque.x = 10;
+            estimatedCenterY = renderingSpriteOpaque.y = 10;
+            renderingSpriteOpaque.rotation = rotationAngle;
+            renderingSpriteOpaque.draw(ctx);
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, rotationAngle), "opaque sprite (rotated " + rotationAngle + ")");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
@@ -511,46 +521,46 @@ QUnit.test("RenderingImage", function (assert) {
         // 5x5 area of 10x10 image
 
         // simple rendering in origin
-        var transparentImageWidth = renderingImageTransparent._cacheCanvas.width;
-        var transparentImageHeight = renderingImageTransparent._cacheCanvas.height;
+        var transparentImageWidth = renderingSpriteTransparent._cacheCanvas.width;
+        var transparentImageHeight = renderingSpriteTransparent._cacheCanvas.height;
 
-        estimatedCenterX = estimatedCenterY = renderingImageTransparent.x = renderingImageTransparent.y = 5;
-        renderingImageTransparent.draw(ctx);
+        estimatedCenterX = estimatedCenterY = renderingSpriteTransparent.x = renderingSpriteTransparent.y = 5;
+        renderingSpriteTransparent.draw(ctx);
 
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight), "transparent sprite (origin)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // render in center
-        estimatedCenterX = renderingImageTransparent.x = canvasWidth * 0.5;
-        estimatedCenterY = renderingImageTransparent.y = canvasHeight * 0.5;
+        estimatedCenterX = renderingSpriteTransparent.x = canvasWidth * 0.5;
+        estimatedCenterY = renderingSpriteTransparent.y = canvasHeight * 0.5;
 
-        renderingImageTransparent.draw(ctx);
+        renderingSpriteTransparent.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight), "transparent sprite (center)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // rendering rotated 45
-        estimatedCenterX = estimatedCenterY = renderingImageTransparent.x = renderingImageTransparent.y = 5;
+        estimatedCenterX = estimatedCenterY = renderingSpriteTransparent.x = renderingSpriteTransparent.y = 5;
         rotationAngle = 45;
-        renderingImageTransparent.rotation = rotationAngle;
+        renderingSpriteTransparent.rotation = rotationAngle;
 
-        renderingImageTransparent.draw(ctx);
+        renderingSpriteTransparent.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight, rotationAngle), "transparent sprite (rotated 45)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // rendering rotated 60
-        estimatedCenterX = estimatedCenterY = renderingImageTransparent.x = renderingImageTransparent.y = 5;
+        estimatedCenterX = estimatedCenterY = renderingSpriteTransparent.x = renderingSpriteTransparent.y = 5;
         rotationAngle = 60;
-        renderingImageTransparent.rotation = rotationAngle;
+        renderingSpriteTransparent.rotation = rotationAngle;
 
-        renderingImageTransparent.draw(ctx);
+        renderingSpriteTransparent.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, transparentImageWidth, transparentImageHeight, rotationAngle), "transparent sprite (rotated 60)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // ********************* TEST WITH CONTEXT SCALING ******************************************************************
         var viewportScaling = 1.5;
 
-        renderingImageOpaque.rotation = 0;
-        //renderingImageOpaque.scaling = 1.5;
+        renderingSpriteOpaque.rotation = 0;
+        //renderingSpriteOpaque.scaling = 1.5;
 
         canvas.width = 80;
         canvas.height = 40;
@@ -562,33 +572,33 @@ QUnit.test("RenderingImage", function (assert) {
         ctx.scale(viewportScaling, viewportScaling);
 
         // rendering origin 1.5x
-        estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0; // 0 * 1.5
+        estimatedCenterX = estimatedCenterY = renderingSpriteOpaque.x = renderingSpriteOpaque.y = 0; // 0 * 1.5
 
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling), "opaque sprite (canvas 1.5x, origin)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        renderingImageOpaque.x = canvasWidth * 0.5;
-        renderingImageOpaque.y = canvasHeight * 0.5;
-        estimatedCenterX = renderingImageOpaque.x * viewportScaling;
-        estimatedCenterY = renderingImageOpaque.y * viewportScaling;
+        renderingSpriteOpaque.x = canvasWidth * 0.5;
+        renderingSpriteOpaque.y = canvasHeight * 0.5;
+        estimatedCenterX = renderingSpriteOpaque.x * viewportScaling;
+        estimatedCenterY = renderingSpriteOpaque.y * viewportScaling;
 
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling), "opaque sprite (canvas 1.5x)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
-            renderingImageOpaque.rotation = rotationAngle;
+            renderingSpriteOpaque.rotation = rotationAngle;
 
-            renderingImageOpaque.draw(ctx);
+            renderingSpriteOpaque.draw(ctx);
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling, rotationAngle), "opaque sprite (canvas 1.5x, rotated " + rotationAngle + ")");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         var look = undefined;
-        renderingImage.look = look;
-        assert.ok(renderingImage._canvasElement instanceof HTMLCanvasElement, "Created new canvas element as look if none was passed");
-        assert.ok(renderingImage._originalElement instanceof HTMLCanvasElement, "Created new canvas original element as look if none was passed");
+        renderingSprite.look = look;
+        assert.ok(renderingSprite._canvasElement instanceof HTMLCanvasElement, "Created new canvas element as look if none was passed");
+        assert.ok(renderingSprite._originalElement instanceof HTMLCanvasElement, "Created new canvas original element as look if none was passed");
 
         //filters
 
@@ -597,13 +607,13 @@ QUnit.test("RenderingImage", function (assert) {
         PocketCode.ImageHelper.setFilters = function () {
             setFiltersCalled++;
         };
-        assert.throws(function () { renderingImage.graphicEffects = '' }, Error, "Set graphic effects to non-array type");
+        assert.throws(function () { renderingSprite.graphicEffects = '' }, Error, "Set graphic effects to non-array type");
         assert.ok(!setFiltersCalled, "no filters set when non array argument is given");
 
-        renderingImage.graphicEffects = [];
+        renderingSprite.graphicEffects = [];
         assert.ok(!setFiltersCalled, "setFilters not called when empty array given");
 
-        renderingImage.graphicEffects = ['item'];
+        renderingSprite.graphicEffects = ['item'];
         assert.equal(setFiltersCalled, 1, "setFilters not called when empty array given");
 
         PocketCode.ImageHelper.setFilters = backup;
@@ -615,68 +625,68 @@ QUnit.test("RenderingImage", function (assert) {
         //var lookOpaque = new PocketCode.Model.Look({ name: "look3", id: "sid3", resourceId: "s3" });
         //var lookTransparent = new PocketCode.Model.Look({ name: "look4", id: "sid4", resourceId: "s4" });
 
-        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, { id: "id2", name: "sprite2", looks: [{ name: "look3", id: "sid3", resourceId: "s3" }] });  //lookOpaque] });
+        var spriteOpaque = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id2", name: "sprite2", looks: [{ name: "look3", id: "sid3", resourceId: "s3" }] });  //lookOpaque] });
         spriteOpaque.initLooks();
         spriteOpaque.init();
-        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
+        var spriteTransparent = new PocketCode.Model.Sprite(gameEngine, scene, { id: "id3", name: "sprite3", looks: [{ name: "look4", id: "sid4", resourceId: "s4" }] });  //lookTransparent] });
         spriteTransparent.initLooks();
         spriteTransparent.init();
-        var renderingImageOpaque = spriteOpaque.renderingImage; //new PocketCode.RenderingImage(spriteOpaque.renderingProperties);
-        //var renderingImageTransparent = spriteTransparent.renderingImage; //new PocketCode.RenderingImage(spriteTransparent.renderingProperties);
+        var renderingSpriteOpaque = spriteOpaque.renderingSprite; //new PocketCode.RenderingSprite(spriteOpaque.renderingProperties);
+        //var renderingSpriteTransparent = spriteTransparent.renderingSprite; //new PocketCode.RenderingSprite(spriteTransparent.renderingProperties);
 
         var estimatedCenterX, estimatedCenterY, rotationAngle, canvasWidth, canvasHeight;
         canvasWidth = canvas.width;
         canvasHeight = canvas.height;
 
-        var opaqueImageWidth = renderingImageOpaque._cacheCanvas.width;
-        var opaqueImageHeight = renderingImageOpaque._cacheCanvas.height;
+        var opaqueImageWidth = renderingSpriteOpaque._cacheCanvas.width;
+        var opaqueImageHeight = renderingSpriteOpaque._cacheCanvas.height;
 
         // ****************** TEST OPAQUE SPRITE SCALED RENDERING ******************************************************
 
-        estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0;
+        estimatedCenterX = estimatedCenterY = renderingSpriteOpaque.x = renderingSpriteOpaque.y = 0;
 
         var ctx = canvas.getContext("2d");
-        renderingImageOpaque.draw(ctx);
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (2.5x, origin)");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 20;
-        renderingImageOpaque.draw(ctx);
+        estimatedCenterX = estimatedCenterY = renderingSpriteOpaque.x = renderingSpriteOpaque.y = 20;
+        renderingSpriteOpaque.draw(ctx);
         assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight), "opaque sprite (2.5x, (20,20))");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (rotationAngle = 0; rotationAngle <= 360; rotationAngle += 36) {
-            renderingImageOpaque.rotation = rotationAngle;
-            estimatedCenterX = renderingImageOpaque.x = Math.random() * canvasWidth;
-            estimatedCenterY = renderingImageOpaque.y = Math.random() * canvasHeight;
-            renderingImageOpaque.draw(ctx);
+            renderingSpriteOpaque.rotation = rotationAngle;
+            estimatedCenterX = renderingSpriteOpaque.x = Math.random() * canvasWidth;
+            estimatedCenterY = renderingSpriteOpaque.y = Math.random() * canvasHeight;
+            renderingSpriteOpaque.draw(ctx);
             assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth, opaqueImageHeight, rotationAngle), "opaque sprite (2.5x, rotated " + rotationAngle + ")");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         // ****************** TEST OPAQUE SPRITE SCALED RENDERING ****************************************************
 
         // canvas.setDimensions(80, 40, viewportScaling);
-        // estimatedCenterX = estimatedCenterY = renderingImageOpaque.x = renderingImageOpaque.y = 0; // 0 * viewportScaling
-        // renderingImageOpaque.draw(ctx);
+        // estimatedCenterX = estimatedCenterY = renderingSpriteOpaque.x = renderingSpriteOpaque.y = 0; // 0 * viewportScaling
+        // renderingSpriteOpaque.draw(ctx);
         // assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling), "opaque sprite (2.5x, canvas 1.5x, origin)");
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
         //
-        // renderingImageOpaque.x = renderingImageOpaque.y = 20;
-        // estimatedCenterX = renderingImageOpaque.x * viewportScaling;
-        // estimatedCenterY = renderingImageOpaque.y * viewportScaling;
-        // renderingImageOpaque.draw(ctx);
+        // renderingSpriteOpaque.x = renderingSpriteOpaque.y = 20;
+        // estimatedCenterX = renderingSpriteOpaque.x * viewportScaling;
+        // estimatedCenterY = renderingSpriteOpaque.y * viewportScaling;
+        // renderingSpriteOpaque.draw(ctx);
         // assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling), "opaque sprite (2.5x, canvas 1.5x)");
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
         //
         // for (rotationAngle = 0;rotationAngle <= 360; rotationAngle+=36) {
-        //     renderingImageOpaque.rotation = rotationAngle;
-        //     renderingImageOpaque.x = Math.random() * canvasWidth / viewportScaling;
-        //     renderingImageOpaque.y = Math.random() * canvasHeight / viewportScaling;
+        //     renderingSpriteOpaque.rotation = rotationAngle;
+        //     renderingSpriteOpaque.x = Math.random() * canvasWidth / viewportScaling;
+        //     renderingSpriteOpaque.y = Math.random() * canvasHeight / viewportScaling;
         //
-        //     estimatedCenterX = renderingImageOpaque.x * viewportScaling;
-        //     estimatedCenterY = renderingImageOpaque.y * viewportScaling;
+        //     estimatedCenterX = renderingSpriteOpaque.x * viewportScaling;
+        //     estimatedCenterY = renderingSpriteOpaque.y * viewportScaling;
         //
-        //     renderingImageOpaque.draw(ctx);
+        //     renderingSpriteOpaque.draw(ctx);
         //     assert.ok(checkPixels(estimatedCenterX, estimatedCenterY, opaqueImageWidth * viewportScaling, opaqueImageHeight * viewportScaling, rotationAngle), "opaque sprite (2.5x, canvas 1.5x, rotated " + rotationAngle + ")");
         //     ctx.clearRect(0, 0, canvas.width, canvas.height);
         // }

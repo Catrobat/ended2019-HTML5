@@ -97,16 +97,17 @@ SmartJs.Core = {
                         throw new Error('_mergeProperties(): property "' + p + '" not found in ' + object.objClassName);
                     if (typeof object[p] === 'function')
                         throw new Error('_mergeProperties(): setting a method not allowed: property ' + p + ' in ' + object.objClassName);
-                    //try {
-                    if (typeof propertyObject[p] === 'object' && typeof propertyObject[p] !== 'array')
+
+                    if (typeof propertyObject[p] === 'object' && !(propertyObject[p] instanceof Array)) {
                         this._mergeProperties(propertyObject[p], object[p]);
+                    }
                     else {
                         //var ignore = (/color/i).test(p);  //we need this to make sure the setter has changed ignoring color conversion
                         var saved = object[p];  //as soon the value has changed it has been set: fix to avoid errors on color conversion
                         try {
                             object[p] = propertyObject[p];
                         }
-                        catch (e) {}   //silent catch due to write protected properties
+                        catch (e) { }   //silent catch due to write protected properties
                         if (object instanceof CSSStyleDeclaration && object[p] !== propertyObject[p] && saved == object[p])// && !ignore)
                             throw new Error('invalid parameter: constructor parameter object "' + p + '" was not set correctly');
                     }
@@ -127,7 +128,6 @@ SmartJs.Core.EventTarget = (function () {
 
     EventTarget.prototype.merge({
         _addDomListener: function (target, eventName, eventHandler, args) {
-            var _self = this;
             var handler = function (e) {
                 e = e || {};
                 if (args) {
@@ -135,8 +135,8 @@ SmartJs.Core.EventTarget = (function () {
                         e.stopPropagation();
                     e.merge(args);
                 }
-                return eventHandler.call(_self, e);
-            };
+                return eventHandler.call(this, e);
+            }.bind(this);
             if (target.addEventListener)
                 target.addEventListener(eventName, handler, false);
             else

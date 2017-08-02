@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <title>testpage: camera</title>
+    <script src="../../../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
+    <script src="../../../../Client/player/pocketCodePlayer.js"></script>
+    <script src="../../../../Client/smartJs/sj.js"></script>
+    <script src="../../../../Client/smartJs/sj-core.js"></script>
+    <script src="../../../../Client/smartJs/sj-components.js"></script>
+    <script src="../../../../Client/smartJs/sj-communication.js"></script>
+    <script src="../../../../Client/smartJs/sj-event.js"></script>
+    <script src="../../../../Client/smartJs/sj-ui.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/core.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/soundManager.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/deviceFeature.js"></script>
+    <script src="../../../../Client/pocketCode/scripts/components/device.js"></script>
+
+    <script src="cameraTest.js"></script>
+    <style type="text/css">
+        /* defining some style for the test page layout onnly */
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #CCC;
+            padding: 0;
+            margin: 0;
+            overflow: auto;
+        }
+
+        div {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 5px;
+            border-bottom: solid 1px black;
+        }
+
+        canvas {
+            background-color: #FFF;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="settings">
+        video width: <input type="range" id="videoWidth" min="100" max="1000" value="500">&nbsp;<span id="videoWidthLabel"></span><br />
+        video height: <input type="range" id="videoHeight" min="100" max="800" value="250">&nbsp;<span id="videoHeightLabel"></span><br />
+        background width: <input type="range" id="backgroundWidth" min="100" max="1000" value="500">&nbsp;<span id="backgroundWidthLabel"></span><br />
+        background height: <input type="range" id="backgroundHeight" min="100" max="800" value="250">&nbsp;<span id="backgroundHeightLabel"></span><br />
+        camera: <select id="cameraSelect">
+            <option value="1" selected>front</option>
+            <option value="0">back</option>
+        </select>
+        <button id="on">on</button>
+        <button id="off">off</button><br />
+        device: <button id="devicePause">pause</button>
+        <button id="deviceResume">resume</button>
+        <button id="deviceDispose">dispose</button><br />
+    </div>
+    <div>
+        <canvas id="backgroundCanvas"></canvas>
+    </div>
+    <div id="fdCanvasContainer"></div>
+    <span id="cycleTime"></span>ms
+</body>
+</html>

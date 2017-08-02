@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>PocketCode Framework Unit Tests</title>
-    <link href="../qunit/qunit-1.23.0.css" rel="stylesheet" />
-    <script src="../qunit/qunit-1.23.0.js"></script>
+    <link href="../qunit/qunit-2.1.1.css" rel="stylesheet" />
+    <script src="../qunit/qunit-2.1.1.js"></script>
     <script src="../qunit/blanket-1.2.2.min.js"></script>
     <!-- libs -->
     <script src="../../Client/pocketCode/libs/soundjs/soundjs-0.6.1.custom.js"></script>
@@ -31,16 +31,15 @@
     <!-- components -->
     <script src="../../Client/pocketCode/scripts/components/proxy.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/soundManager.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/broadcastManager.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/publishSubscribe.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/device.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/formula.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/parser.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/userVariableHost.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/gameEngine.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/i18nProvider.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/imageHelper.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/imageStore.js" data-cover></script>
-    <script src="../../Client/pocketCode/scripts/components/renderingImage.js" data-cover></script>
+    <script src="../../Client/pocketCode/scripts/components/renderingSprite.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/components/renderingText.js" data-cover></script>
     
     <!-- model -->
@@ -53,6 +52,7 @@
     <script src="../../Client/pocketCode/scripts/model/bricksData.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/sprite.js" data-cover></script>
     <script src="../../Client/pocketCode/scripts/model/userVariable.js" data-cover></script-->
+    <script src="../../Client/pocketCode/scripts/model/userVariableHost.js" data-cover></script>
 
     <!-- controller -->
     <script src="../../Client/pocketCode/scripts/controller/controllerCore.js" data-cover></script>
@@ -79,18 +79,16 @@
     <!-- components -->
     <script src="components/test_proxy.js"></script>
     <script src="components/test_soundManager.js"></script>
-    <script src="components/test_broadcastManager.js"></script>
+    <script src="components/test_publishSubscribe.js"></script>
     <script src="components/test_device.js"></script>
     <script src="components/test_formula.js"></script>
     <script src="components/test_parser.js"></script>
-    <script src="components/test_userVariableHost.js"></script>
     <!--script src="components/test_canvas.js"></script-->
     <script src="components/test_gameEngine.js"></script>
     <script src="components/test_i18nProvider.js"></script>
     <script src="components/test_imageHelper.js"></script>
     <script src="components/test_imageStore.js"></script>
-    <script src="components/test_renderingImage.js"></script>
-    <script src="components/test_renderingText.js"></script>
+    <script src="components/test_renderingItem.js"></script>
 
     <!-- model -->
     <script src="model/test_bricksCore.js"></script>
@@ -101,6 +99,7 @@
     <script src="model/test_bricksData.js"></script>
     <script src="model/test_sprite.js"></script>
     <script src="model/test_userVariable.js"></script>
+    <script src="model/test_userVariableHost.js"></script>
 
     <!-- controller -->
     <script src="controller/test_controllerCore.js"></script>

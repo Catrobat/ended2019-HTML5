@@ -55,7 +55,7 @@ PocketCode.Model.merge({
                     switch (this._type) {
                         case PocketCode.UserVariableType.SIMPLE:
                             tmp = new PocketCode.Model.UserVariableSimple(variable.id, variable.name, variable.value ? variable.value : undefined);
-                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({id: e.id}, e.target); }, this)); //target override
+                            tmp.onChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onVariableChange.dispatchEvent({ id: e.id }, e.target); }, this)); //target override
                             this._variables[variable.id] = tmp;
                             break;
 
@@ -94,11 +94,17 @@ PocketCode.Model.merge({
         function UserVariableSimple(id, name, value) {
             this._id = id;
             this.name = name;
+            this._uiCache = {
+                visible: false,
+                x: 0,
+                y: 0,
+            };
             //this._defaultValue = 0.000001;
             //else
             //    this._value = 0.000001;   //prevent division by zero
             this._onChange = new SmartJs.Event.Event(this);
             //init
+            this._value = 0;//undefined;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
@@ -114,7 +120,8 @@ PocketCode.Model.merge({
                     if (this._value == value)
                         return;
                     this._value = value;
-                    this._onChange.dispatchEvent({ id: this._id });
+                    if (this._uiCache.visible)
+                        this._onChange.dispatchEvent({ id: this._id });
                 },
             },
             valueAsNumber: {
@@ -151,16 +158,39 @@ PocketCode.Model.merge({
                 var val = this._value;
                 if (val == undefined)
                     return '';
-                if (typeof val != 'number')
-                    return val.toString();
-                if (parseInt(val) === val)
-                    return val.toFixed(1);
-                return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
+                return val.toString();  //we do not format variable values in any way
+                //if (typeof val != 'number')
+                //    return val.toString();
+                //if (parseInt(val) === val)
+                //    return val.toFixed(1);
+                //return Math.round(val * Math.pow(10, 8)) / Math.pow(10, 8);
             },
             reset: function () {
+                this._uiCache = {
+                    visible: false,
+                    x: 0,
+                    y: 0,
+                };
+
                 if (this.value === undefined)
-                    return;
-                this.value = undefined;
+                    return; //no event is triggered
+                this.value = 0;
+            },
+            showAt: function (x, y) {
+                this._uiCache = {
+                    visible: true,
+                    x: x,
+                    y: y,
+                };
+                //TODO event?
+            },
+            hide: function () {
+                this._uiCache.visible = false;
+                //TODO event?
+            },
+            asRenderingText: function (objectId) {
+                var uiCache = this._uiCache;
+                return new PocketCode.RenderingText({ objectId: objectId, id: this._id, text: this.toString(), x: uiCache.x, y: uiCache.y, visible: uiCache.visible });
             },
         });
 
@@ -220,7 +250,8 @@ PocketCode.Model.merge({
             },
             append: function (value) {
                 this._value.push(this._toTypedValue(value));
-                this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
             },
             _validIndex: function (idx) {
                 if (parseInt(idx) !== idx || idx < 1 || idx > this._value.length)
@@ -239,24 +270,27 @@ PocketCode.Model.merge({
                 return 0;
             },
             insertAt: function (idx, value) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value.insert(idx - 1, this._toTypedValue(value));
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
                 else if (idx == this._value.length + 1)
                     this.append(this._toTypedValue(value));
             },
             replaceAt: function (idx, value) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value[idx - 1] = this._toTypedValue(value);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
             },
             deleteAt: function (idx) {
-                if (this._validIndex(idx)) {
+                if (this._validIndex(idx)) //{
                     this._value.splice(idx - 1, 1);
-                    this._onChange.dispatchEvent({ id: this._id });
-                }
+                    //if (this._uiCache.visible)
+                    //    this._onChange.dispatchEvent({ id: this._id });
+                //}
             },
             contains: function (value) {
                 if (this._value.indexOf(this._toTypedValue(value)) !== -1)
@@ -264,10 +298,11 @@ PocketCode.Model.merge({
                 return false;
             },
             reset: function () {
-                if (this._value.length === 0)
-                    return;
+                //if (this._value.length === 0)
+                //    return;
                 this._value = [];
-                this._onChange.dispatchEvent({ id: this._id });
+                //if (this._uiCache.visible)
+                //    this._onChange.dispatchEvent({ id: this._id });
             },
         });
 
