@@ -160,7 +160,7 @@ PocketCode.Model.merge({
         IfThenElseBrick.prototype.merge({
             _returnHandler: function (e) {
                 //helper method to make event binding easier
-                this._return(e.id, e.loopDelay)
+                this._return(e.id, e.loopDelay, e.stopped);
             },
             _execute: function (id, scope) {
                 if (this._condition.calculate(scope))
@@ -416,13 +416,12 @@ PocketCode.Model.merge({
             _execute: function () {
                 switch (this._type) {
                     case PocketCode.Model.StopScriptType.THIS:
-                        this._sprite.stopScript(true, this._scriptId);
-                        break; //no handler called: script was stopped
-                        //break;
+                        //this._sprite.stopScript(true, this._scriptId);
+                        this._return(false, true); //handler notification: script stopped
+                        break;
                     case PocketCode.Model.StopScriptType.ALL:
                         this._scene.stopAllScripts(true);
                         break; //no handler called: script was stopped
-                        //break;
                     case PocketCode.Model.StopScriptType.OTHER:
                         this._return(this._sprite.stopAllScripts(true, this._scriptId));
                         break;

@@ -484,6 +484,8 @@ PocketCode.Web = {
                 document.body.className = document.body.className.replace(' pc-webBody ', '').trim();
             },
             setHWRatio: function (ratio) {
+                if (this.hwRatio == ratio)
+                    return;
                 this.hwRatio = ratio;
                 //set the css min-height/min-width property according to the ratio & min-height: 450px
                 //var style = this.viewportContainer.style;
