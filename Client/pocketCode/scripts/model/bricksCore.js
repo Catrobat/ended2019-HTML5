@@ -154,7 +154,7 @@ PocketCode.Model.merge({
             _return: function (loopDelay, stopped) {
                 if (this._disposed)
                     return;
-                this._onExecutedCallback.handler.call(this._onExecutedCallback.scope, {
+                this._onExecutedCallback({
                     id: this._threadId,
                     loopDelay: loopDelay,
                     stopped: stopped,
