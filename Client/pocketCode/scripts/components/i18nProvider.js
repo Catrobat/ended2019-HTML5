@@ -38,6 +38,7 @@ PocketCode.I18nProvider = (function (propObject) {
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new: add new loc strings here until they are included in crowdin
+            "lbDeviceEmulator": "Device Emulator",
             "lbDeviceMaxDegree": "Max Degree",
             "lbDeviceMaxDegreeDescr": "Max Degree Description",
             "lbDeviceAcc": "Device Acceleration",

@@ -9,10 +9,13 @@
 PocketCode.Ui.DeviceEmulator = (function () {
     DeviceEmulator.extends(SmartJs.Ui.Control, false);
 
-    function DeviceEmulator(i18nCaption) {
+    function DeviceEmulator(device) {
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-deviceEmulator' });
 
-        this._container = new PocketCode.Ui.Expander(i18nCaption);
+        this.device = device;
+        this._pollingInterval = 100;
+
+        this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
         this._appendChild(this._container);
 
         var tn = new PocketCode.Ui.I18nTextNode('lbDeviceMaxDegree');
@@ -45,7 +48,10 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(this._accSlider);
         this._container.appendChild(span);
 
+        this.hide();
         this._img = new SmartJs.Ui.Image();
+        this._img.onLoad.addEventListener(new SmartJs.Event.EventListener(this.show, this));
+        this._img.src = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._img);
         this._container.appendChild(span);
@@ -66,15 +72,31 @@ PocketCode.Ui.DeviceEmulator = (function () {
     }
 
     //events
-    Object.defineProperties(Slider.prototype, {
-        onMaxInclinationChange: {
-            get: function() {
-                return this._maxSlider.onChange;
+    //Object.defineProperties(Slider.prototype, {       //not needed: direct access to device provided
+    //    onMaxInclinationChange: {
+    //        get: function () {
+    //            return this._maxSlider.onChange;
+    //        },
+    //    },
+    //    onInclinationAccelerationChange: {
+    //        get: function () {
+    //            return this._accSlider.onChange;
+    //        },
+    //    },
+    //});
+
+    //properties
+    Object.defineProperties(DeviceEmulator.prototype, {
+        dom: {  //public accessor needed to access DOM (added to player's webOverlay)
+            get: function () {
+                return this._dom;
             },
         },
-        onInclinationAccelerationChange: {
-            get: function() {
-                return this._accSlider.onChange;
+        device: {
+            set: function (device) {
+                if (!(device instanceof PocketCode.DeviceEmulator))
+                    throw new Error('Emulator UI con only be used with a PocketCode.DeviceEmulator');
+                this._device = device;
             },
         },
     });

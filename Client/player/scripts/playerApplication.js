@@ -75,6 +75,7 @@ PocketCode.merge({
                 //this._onError = new SmartJs.Event.Event(this);		    //defined in base class
                 this._onHWRatioChange = new SmartJs.Event.Event(this);      //triggered to notify weboverlay on device resolution change
                 this._onExit = new SmartJs.Event.Event(this);               //triggered to notify weboverlay to be closed & disposed
+                this._onEmulatorLoaded = new SmartJs.Event.Event(this);     //triggered to notify weboverlay to embed emulator configuration
 
                 this._onError.addEventListener(new SmartJs.Event.EventListener(this._globalErrorHandler, this));
 
@@ -130,15 +131,6 @@ PocketCode.merge({
                 }
             }
 
-            //accessors
-            Object.defineProperties(Application.prototype, {
-                hasOpenDialogs: {
-                    get: function () {
-                        return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
-                    }
-                },
-            });
-
             //events: the application doesn't need any public properties or events: anyway.. this events are required to communicate with the web overlay
             Object.defineProperties(Application.prototype, {
                 onInit: {
@@ -164,6 +156,20 @@ PocketCode.merge({
                 onUiDirectionChange: {
                     get: function () {
                         return PocketCode.I18nProvider.onDirectionChange;
+                    }
+                },
+                onEmulatorLoaded: {
+                    get: function(){
+                        return this._onEmulatorLoaded;
+                    }
+                }
+            });
+
+            //accessors
+            Object.defineProperties(Application.prototype, {
+                hasOpenDialogs: {
+                    get: function () {
+                        return this._dialogs.length > 0 || this._currentPage.hasOpenDialogs;
                     }
                 },
             });
@@ -227,8 +233,17 @@ PocketCode.merge({
                     var alerts = [],
                         warnings = [];
 
-                    if (loadingAlerts.deviceEmulation)
+                    if (loadingAlerts.deviceEmulation) {
                         alerts.push('msgDeviceEmulation');
+
+                        //init deviceEmulator
+                        if (e.device) {
+                            if (!this._deviceEmulator)
+                                this._deviceEmulator = new PocketCode.Ui.DeviceEmulator(e.device);
+                            else
+                                this._deviceEmulator.device = e.device;
+                        }
+                    }
                     if (loadingAlerts.deviceLockRequired)
                         alerts.push('msgDeviceLockScreen');
 
@@ -242,6 +257,8 @@ PocketCode.merge({
                     d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
                     d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
                         e.target.dispose();
+                        if (this._deviceEmulator)
+                            this._onEmulatorLoaded.dispatchEvent({ emulator: this._deviceEmulator });
                         this._pages.PlayerPageController.enableView();
                     }, this));
                     this._showDialog(d, false);

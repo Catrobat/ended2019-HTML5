@@ -1170,8 +1170,8 @@
 }
 
 .pc-expander {
-    width: 400px;
-    background: #303030;
+    width: 100%;
+    /*background: #303030;*/
 }
 
 .pc-expanderHeader {
@@ -1197,7 +1197,6 @@
 }
 */
 .pc-expander .pc-expanderHeader label::after {
-
     content: '>';
     font: 22px "Consolas", monospace;
     font-weight: bold;
@@ -1343,10 +1342,14 @@
 .pc-deviceEmulator {
     position: absolute;
     bottom: 0;
-    right: 0;
+    right: 18px;
     width: 360px;
-    border: solid 1px red; /*TODO*/
-    background-color: black; /*TODO*/
+    overflow: hidden;
+    border: solid 1px #17a5b8;
+    background-color: #003041;
+    -moz-opacity: 0.92;
+    opacity: 0.92;
+    filter: alpha(opacity = 92);
 }
 .pc-deviceEmulatorButton {
     background-color: transparent;

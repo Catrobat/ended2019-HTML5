@@ -494,6 +494,15 @@ PocketCode.Web = {
             setUiDirection: function (dir) {
                 this._dom.dir = dir;
             },
+            appendEmulator: function (emulatorControl) {
+                if (this._deviceEmulator)   //this will occur when a new (another) project is loaded (gameEngine)
+                    this._dom.removeChild(emulatorControl.dom);
+
+                if (!emulatorControl)
+                    return;
+                this._deviceEmulator = emulatorControl;
+                this._dom.appendChild(emulatorControl.dom);
+            }
         };
 
         return WebOverlay;
@@ -947,6 +956,7 @@ PocketCode.Web = {
                 this._player.onInit.addEventListener(new SmartJs.Event.EventListener(this._applicationInitHandler, this));
                 this._player.onUiDirectionChange.addEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
                 this._player.onExit.addEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+                this._player.onEmulatorLoaded.addEventListener(new SmartJs.Event.EventListener(this._deviceEmulatorLoadHandler, this));
 
                 if (this._isMobile) {
                     //this._player = new PocketCode.Player.Application();//this._splashScreen, this._webOverlay);
@@ -1055,6 +1065,7 @@ PocketCode.Web = {
                         this._player.onUiDirectionChange.removeEventListener(new SmartJs.Event.EventListener(this._uiDirectionChangeHandler, this));
                         this._player.onHWRatioChange.removeEventListener(new SmartJs.Event.EventListener(this._applicationRatioChangetHandler, this));
                         this._player.onExit.removeEventListener(new SmartJs.Event.EventListener(this._closeHandler, this));
+                        this._player.onEmulatorLoaded.removeEventListener(new SmartJs.Event.EventListener(this._deviceEmulatorLoadHandler, this));
                         this._player.dispose();
                         //this._player = undefined;
                     }
@@ -1068,6 +1079,9 @@ PocketCode.Web = {
                         window.close();
                     //return;
                 }
+            },
+            _deviceEmulatorLoadHandler: function (e) {
+                this._webOverlay.appendEmulator(e.emulator);
             },
         };
 
