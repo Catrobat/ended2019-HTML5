@@ -296,7 +296,7 @@
 }
 
 
-/* onscreen keyboard */
+/* onscreen keyboard
 .pc-cursorButton, .pc-cursorButton:active {
     margin: 0;
     width: 60px;
@@ -327,7 +327,7 @@
 
 .pc-cursorTableCell {
     display: table-cell;
-}
+} */
 
 
 /* overlay */
@@ -946,21 +946,21 @@
     background-color: transparent;
 }*/
 
-    .pc-pageHeader .pc-menuButton button {
-        padding: 0;
-        margin: 6px;
-        /* margin-bottom: 10px; */
-        border-radius: 0;
-        cursor: pointer;
-        position: relative;
-        width: 38px;
-        height: 38px;
-        border: none;
-        fill: #A9DCF1;
-        color: #A9DCF1;
-        outline: none;
-        background: none;
-    }
+.pc-pageHeader .pc-menuButton button {
+    padding: 0;
+    margin: 6px;
+    /* margin-bottom: 10px; */
+    border-radius: 0;
+    cursor: pointer;
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border: none;
+    fill: #A9DCF1;
+    color: #A9DCF1;
+    outline: none;
+    background: none;
+}
 
 /*    .pc-pageHeader .pc-menuButton svg {
         fill:;
@@ -1046,7 +1046,7 @@
 }
 
 /* checkbox, radio button */
-.pc-checkbox input, .pc-radio input, .pc-expander input {
+.pc-checkbox input, .pc-radio input, .pc-expanderHeader input {
     display: none;
 }
 
@@ -1055,7 +1055,7 @@
     position: relative;
     white-space: nowrap;
     cursor: pointer;
-    width: 34%;
+    display: block;
 }
 
 [dir='rtl'] .pc-expander .pc-expanderHeader label {
@@ -1180,9 +1180,9 @@
     padding: 3px 0px 3px;
 }
 
-.pc-expanderHeader input:checked + label {
-    color: #17a5b8;
-}
+    .pc-expanderHeader input:checked + label {
+        color: #17a5b8;
+    }
 /*
 [dir='rtl'] .pc-expander .pc-expanderHeader label:after {
     content: '>';
@@ -1204,17 +1204,17 @@
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
-    /*left: 13px;*/
+    right: 13px;
+    line-height: 29px;
     border: 0px;
     position: absolute;
     pointer-events: none;
-    margin-left: 7px;
-    margin-top: -4px;
-    margin-right: 7px;
+    /* margin-left: 7px; */
+    /* margin-top: -4px; */
+    /* margin-right: 7px; */
 }
 
 .pc-expander .pc-expanderHeader input:checked + label::after {
-
     -webkit-transform: rotate(270deg);
     -moz-transform: rotate(270deg);
     -ms-transform: rotate(270deg);
@@ -1223,7 +1223,6 @@
 
 .pc-expanderTree .pc-expanderHeader label::after {
     margin-left: 0px;
-
 }
 
 .pc-expander .pc-expanderBody {
@@ -1288,51 +1287,55 @@
     padding-left: 30px;
 }
 
-.pc-expanderTree .pc-expanderHeader div{
+.pc-expanderTree .pc-expanderHeader div {
     display: inline-block;
 }
 
-.pc-expanderTree .pc-expanderHeader label{
+.pc-expanderTree .pc-expanderHeader label {
     padding-left: 30px;
 }
 
-[dir='rtl'] .pc-expanderTree .pc-expanderHeader label{
+[dir='rtl'] .pc-expanderTree .pc-expanderHeader label {
     padding-right: 30px;
     padding-left: 40px;
 }
 
-.pc-expanderTree .pc-expanderHeader{
+.pc-expanderTree .pc-expanderHeader {
     border-top: solid 1px #5B676E;
 }
 
-.pc-expander .pc-expanderHeader{
+.pc-expander .pc-expanderHeader {
     height: 32px;
     width: 100%;
 }
-/*
+    /*
 .pc-expander .pc-expanderTree .pc-expanderHeader{
     float: none;
     padding-right: 0px;
 }*/
 
-.pc-expander .pc-expanderHeader label{
-    float: right;
-    margin-top: 5px;
-}
+    .pc-expander .pc-expanderHeader label {
+        display: block;
+        /* float: right; */
+        /* margin-top: 5px; */
+        line-height: 30px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
 
-.pc-expander .pc-expanderTree .pc-expanderHeader label{
+.pc-expander .pc-expanderTree .pc-expanderHeader label {
     float: none;
 }
 
-[dir='rtl'] .pc-expander .pc-expanderHeader{
+[dir='rtl'] .pc-expander .pc-expanderHeader {
     padding-right: 0px;
 }
 
-.pc-expander .pc-expanderBody button:hover{
+.pc-expander .pc-expanderBody button:hover {
     color: #17a5b8;
 }
 
-.pc-expander .pc-expanderHeader label:hover{
+.pc-expander .pc-expanderHeader label:hover {
     color: #17a5b8;
 }
 
@@ -1351,7 +1354,25 @@
     opacity: 0.92;
     filter: alpha(opacity = 92);
 }
-.pc-deviceEmulatorButton {
+
+    .pc-deviceEmulator .pc-expander {
+    }
+
+    .pc-deviceEmulator .pc-expanderHeader {
+    }
+        .pc-deviceEmulator .pc-expanderHeader label::after {
+            content: '<';
+        }
+
+    .pc-deviceEmulator .pc-expanderBody {
+    }
+
+        .pc-deviceEmulator .pc-expanderBody span {
+            display: block;
+            padding: 5px 10px;
+        }
+
+/*.pc-deviceEmulatorButton {
     background-color: transparent;
     position: absolute;
     bottom: 0;
@@ -1403,3 +1424,4 @@
         position: absolute;
         pointer-events: none;
     }
+*/
