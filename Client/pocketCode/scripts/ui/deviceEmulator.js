@@ -56,6 +56,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._img.src = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._img);
+        span.addClassName('pc-dEImg');
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationX');
