@@ -331,7 +331,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "tapped"
+                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
