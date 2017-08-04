@@ -1057,10 +1057,10 @@
     cursor: pointer;
     display: block;
 }
-
+/*
 [dir='rtl'] .pc-expander .pc-expanderHeader label {
     float: left;
-}
+}*/
 
 [dir='rtl'] .pc-expander .pc-expanderTree .pc-expanderHeader label {
     padding-right: 0px;
@@ -1345,6 +1345,7 @@
     border-radius: 3px;
     width: 310px;
 }
+
     .pc-slider input[type=range]::-webkit-slider-runnable-track {
         width: 310px;
         height: 5px;
@@ -1453,8 +1454,8 @@
 }
 
     .pc-deviceEmulator .pc-expander {
-
     }
+
 
     .pc-deviceEmulator .pc-expanderHeader {
         background-color: #00475E;
@@ -1462,13 +1463,12 @@
         color: #A9DCF1;
         font-size: 19px;
     }
-     [dir='rtl'] .pc-deviceEmulator .pc-expanderHeader {
-         right: auto;
-
-     }
-
         .pc-deviceEmulator .pc-expanderHeader label::after {
             content: '<';
+        }
+        [dir='rtl'] .pc-deviceEmulator .pc-expanderHeader label::after {
+            right: auto;
+            left: 18px;
         }
 
     .pc-deviceEmulator .pc-expanderBody {
@@ -1485,12 +1485,105 @@
             text-align: center;
         }
 
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]{
+            -webkit-appearance: none;
+            border-radius: 3px;
+            width: 310px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-webkit-slider-runnable-track {
+            width: 310px;
+            height: 5px;
+            background: #17A5B8;
+            border-radius: 3px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            border: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #A9DCF1;
+            margin-top: -4px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:focus {
+            outline: none;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #17A5B8;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-moz-range-track {
+            width: 310px;
+            height: 5px;
+            background: #17A5B8;
+            border: none;
+            border-radius: 3px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-moz-range-thumb {
+            border: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #A9DCF1;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:-moz-focusring{
+            outline: 1px solid white;
+            outline-offset: -1px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:focus::-moz-range-track {
+            background: #ccc;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-ms-track {
+            width: 310px;
+            height: 5px;
+            background: transparent;
+            border-color: transparent;
+            border-width: 6px 0;
+            color: transparent;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-ms-fill-lower {
+            background: #17A5B8;
+            border-radius: 5px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-ms-fill-upper {
+            background: #17A5B8;
+            border-radius: 5px;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]::-ms-thumb {
+            border: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #A9DCF1;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:focus::-ms-fill-lower {
+            background: #17A5B8;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-dESlider input[type=range]:focus::-ms-fill-upper {
+            background: #17A5B8;
+        }
+
 .pc-deviceEmulatorScroll {
     display: block;
     overflow: hidden;
     border-top: solid 1px #17a5b8;
     padding: 10px;
 }
+
+
 
 /*.pc-deviceEmulatorButton {
     background-color: transparent;

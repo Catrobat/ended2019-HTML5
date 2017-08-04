@@ -33,6 +33,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._maxSlider = new PocketCode.Ui.Slider();
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._maxSlider);
+        span.addClassName('pc-dESlider');
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
@@ -48,6 +49,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._accSlider = new PocketCode.Ui.Slider();
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._accSlider);
+        span.addClassName('pc-dESlider');
         scroll.appendChild(span);
 
         this.hide();
