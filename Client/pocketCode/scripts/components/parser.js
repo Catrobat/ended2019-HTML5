@@ -199,19 +199,8 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onStart);
                         break;
 
-                    case 'WhenActionBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
-                        break;
-                    case 'WhenTouchBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
-                        //switch (jsonBrick.action) {
-                        //    case 'Tapped':
-                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onSpriteTappedAction);
-                        //        break;
-                        //    case 'TouchStart':
-                        //        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, this._scene.onTouchStartAction);
-                        //        break;
-                        //}
+                    case 'WhenActionBrick': //handling several actions: ("video motion", "timer", "loudness",) "spriteTouched", "screenTouched"
+                        brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, { 'spriteTouched': this._scene.onSpriteTappedAction, 'screenTouched': this._scene.onTouchStartAction });
                         break;
 
                     case 'CloneBrick':

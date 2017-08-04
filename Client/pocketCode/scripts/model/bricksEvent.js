@@ -37,14 +37,33 @@ PocketCode.Model.merge({
     WhenActionBrick: (function () {
         WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenActionBrick(device, sprite, propObject, actionEvent) {
+        function WhenActionBrick(device, sprite, propObject, actionEvents) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            //this._action = propObject.action;   //'Tapped', 'TouchStart'
+            this.action = propObject.action;   //handling several actions: "spriteTouched", "screenTouched" (currently not supported: "video motion", "timer", "loudness", ...) 
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
-            this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+            this._onActionEvents = actionEvents;
+            //actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
         }
+
+        Object.defineProperties(SpriteFactory.prototype, {
+            action: {
+                get: function() {
+                    return this._action;
+                },
+                set: function (name) {
+                    event = this._onActionEvents[name];
+                    if (!(event instanceof SmartJs.Event.Event))
+                        throw new Error('unrecognized event: check if all events were registered in out parser');
+                    if(this._actionEvent)
+                        this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+
+                    this._action = name;
+                    this._actionEvent = event;
+                    event.actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+                },
+            },
+        });
 
         WhenActionBrick.prototype.merge({
             _onActionHandler: function (e) {
@@ -64,16 +83,6 @@ PocketCode.Model.merge({
 });
 
 PocketCode.Model.merge({
-
-    WhenTouchBrick: (function () {
-        WhenTouchBrick.extends(PocketCode.Model.WhenActionBrick, false);
-
-        function WhenTouchBrick(device, sprite, propObject, actionEvent) {
-            PocketCode.Model.WhenActionBrick.call(this, device, sprite, propObject, actionEvent);
-        }
-
-        return WhenTouchBrick;
-    })(),
 
     WhenBroadcastReceiveBrick: (function () {
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);
