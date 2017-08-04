@@ -2,7 +2,7 @@
 
 class WhenActionBrickDto extends ScriptBlockDto {
 
-    public $action;	//("videoMotion", "timer", "loudness",) "spriteTouched", "screenTouched"
+    public $action;	//"spriteTouched", "screenTouched", ("videoMotion", "timer", "loudness", ...) 
 
     public function __construct($id, $action, $commentedOut = false) {
         parent::__construct("WhenAction", $id, $commentedOut);
