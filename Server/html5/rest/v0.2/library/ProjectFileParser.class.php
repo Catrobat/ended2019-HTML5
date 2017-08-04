@@ -663,8 +663,8 @@ class ProjectFileParser
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    $brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -757,7 +757,7 @@ class ProjectFileParser
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::SPRITE_TOUCHED);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1097,7 +1097,7 @@ class ProjectFileParser
             array_push($this->cpp, $script);
             $brickType = $this->getBrickType($script);
             if(isset($script["reference"]))
-                throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
+                throw new InvalidProjectFileException("referenced brick: $brickType");
 
             $brick = $this->parseFirstLevelBricks($brickType, $script);
 
@@ -1116,8 +1116,14 @@ class ProjectFileParser
             if(!$brick)
                 $brick = $this->parseDataBricks($brickType, $script);
 
-            if(!$brick)
-                $brick = new UnsupportedBrickDto($script->asXML(), $brickType);
+			//default: not found
+            if(!$brick) {
+				$endBricks = array("LoopEndlessBrick", "LoopEndBrick", "IfThenLogicEndBrick", "IfLogicEndBrick");
+				if (in_array($brickType, $endBricks))
+					throw new InvalidProjectFileException("$brickType : end brick detected- not handled correctly");
+
+				$brick = new UnsupportedBrickDto($script->asXML(), $brickType);
+			}
 
             array_pop($this->cpp);
 

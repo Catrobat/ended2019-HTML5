@@ -231,8 +231,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    $brickType = $this->getBrickType($script);
+					throw new InvalidProjectFileException("referenced brick: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -331,7 +331,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "Tapped"
+                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::SPRITE_TOUCHED);//lcfirst((string)$script->action));    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -342,7 +342,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "screenTouched");
+                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::TOUCH_START);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 

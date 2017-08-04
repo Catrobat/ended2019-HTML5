@@ -233,8 +233,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    $brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick: $brickType");
                 }
 
                 switch($this->getBrickType($script))

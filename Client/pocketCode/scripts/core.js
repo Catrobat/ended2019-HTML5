@@ -80,7 +80,7 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 PocketCode.merge({
 
     UserActionType: {
-        SPRITE_CLICKED: 0,
+        SPRITE_TOUCHED: 0,
         TOUCH_START: 1,
         TOUCH_MOVE: 2,
         TOUCH_END: 3,

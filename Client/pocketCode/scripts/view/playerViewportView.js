@@ -33,7 +33,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //canvas events
         this._onUserAction = new SmartJs.Event.Event(this);
         this._canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
-            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_CLICKED }));
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_TOUCHED }));
         }, this));
         this._canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(function (e) {
             this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_START }));
@@ -277,5 +277,3 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     return PlayerViewportView;
 })();
-
-

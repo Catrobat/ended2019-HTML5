@@ -330,7 +330,7 @@ QUnit.test("Scene", function (assert) {
         }
         scene2._onSpriteTappedAction.addEventListener(new SmartJs.Event.EventListener(spriteTapped));
         scene2._onTouchStartAction.addEventListener(new SmartJs.Event.EventListener(spriteTouchStarted));
-        scene2.handleUserAction({ action: PocketCode.UserActionType.SPRITE_CLICKED, targetId: scene2._sprites[0].id });
+        scene2.handleUserAction({ action: PocketCode.UserActionType.SPRITE_TOUCHED, targetId: scene2._sprites[0].id });
         scene2.handleUserAction({ action: PocketCode.UserActionType.TOUCH_START, targetId: scene2._sprites[0].id });
 
         // getSpriteById

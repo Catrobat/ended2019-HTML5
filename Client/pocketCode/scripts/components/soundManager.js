@@ -481,7 +481,6 @@ PocketCode.SoundManager = (function () {
                 }
             }
 
-
             for (var i = 0, l = active.length; i < l; i++)
                 active[i].stop();
             this._activeSounds = {};

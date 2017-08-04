@@ -346,7 +346,7 @@ PocketCode.Model.Scene = (function () {
         },
         handleUserAction: function (e) {
             switch (e.action) {
-                case PocketCode.UserActionType.SPRITE_CLICKED:
+                case PocketCode.UserActionType.SPRITE_TOUCHED:
                     var sprite = this.getSpriteById(e.targetId);
                     if (sprite)
                         this._onSpriteTappedAction.dispatchEvent({ sprite: sprite });
