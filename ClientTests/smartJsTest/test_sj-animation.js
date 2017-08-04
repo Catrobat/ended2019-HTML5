@@ -96,7 +96,7 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
         assert.ok(events.length > 0, "update event handler dispatched correctly");
         assert.ok(true, "executed event handler dispatched correctly");
         assert.equal(e.callId, "validArgs", "callback arguments passed correctly");
-        //assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
+        assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
         //ok: events.length >= 10 && events.length <= 20.. x & y value can change on different times (in theory: for other animation type)
 
         var errorX = false;
