@@ -167,13 +167,10 @@ PocketCode.merge({
                     //case 'StopScriptBrick':
                     //case 'SetBackgroundBrick':
                     case 'WhenCollisionBrick':
-                    //case 'WhenStartAsCloneBrick':
-                    //case 'CloneBrick':
-                    //case 'DeleteCloneBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
-                    case 'RotationSpeedLeftBrick':
-                    case 'RotationSpeedRightBrick':
+                    case 'SetRotationSpeedBrick': //including CCW 
+                    
                     case 'SetGravityBrick':
                     case 'SetMassBrick':
                     case 'SetBounceFactorBrick':

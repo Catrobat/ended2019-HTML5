@@ -40,6 +40,7 @@ PocketCode.Model.Sprite = (function () {
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+        this._rotationSpeed = 0;
         this._direction = 90.0; //pointing to right: 0 means up
 
         ////looks
@@ -158,6 +159,11 @@ PocketCode.Model.Sprite = (function () {
             get: function () {
                 return this._rotationStyle;
             },
+        },
+        rotationSpeed: {
+            set: function (value) {
+                this._rotationSpeed = value;
+            }
         },
 
         //looks
@@ -1205,6 +1211,7 @@ PocketCode.Model.Sprite = (function () {
                 _positionX: this._positionX,
                 _positionY: this._positionY,
                 _rotationStyle: this._rotationStyle,
+                _rotationSpeed: this._rotationSpeed,
                 _direction: this._direction,
 
                 //looks
@@ -1398,7 +1405,6 @@ PocketCode.Model.merge({
             this._velocityY = 0;
             this._friction = 0.2;
             this._bounceFactor = 0.8;
-            this._turnNDegreePerSecond = 0;
         }
 
         //properties
@@ -1406,11 +1412,6 @@ PocketCode.Model.merge({
             mass: {
                 set: function (value) {
                     this._mass = value
-                }
-            },
-            turnNDegreePerSecond: {
-                set: function (value) {
-                    this._turnNDegreePerSecond = value;
                 }
             },
             friction: {
