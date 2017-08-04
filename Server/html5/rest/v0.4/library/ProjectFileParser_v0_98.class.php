@@ -670,7 +670,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new RotationSpeedLeftBrickDto($value);
+                $brick = new SetRotationSpeedCcwBrickDto($value);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -678,7 +678,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new RotationSpeedRightBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y

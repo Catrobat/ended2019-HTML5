@@ -757,7 +757,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);    //action = "Tapped"
+                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -769,7 +769,7 @@ class ProjectFileParser_v0_992
 
             //WhenTouchDown
             case "WhenTouchDownScript":
-                $brick = new WhenTouchBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenActionBrickDto($this->getNewId(), "screenTouched");
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1583,7 +1583,7 @@ class ProjectFileParser_v0_992
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new RotationSpeedLeftBrickDto($value);
+                $brick = new SetRotationSpeedCcwBrickDto($value);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -1591,7 +1591,7 @@ class ProjectFileParser_v0_992
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new RotationSpeedRightBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y
