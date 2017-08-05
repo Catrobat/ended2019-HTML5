@@ -50,7 +50,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     PocketCode.BrickTextItem("\"", false);
                     break;
                 case 'USER_LIST':
-                    //todo variable id
+                    //todo list  id
                     PocketCode.BrickTextItem("*", false);
                     PocketCode.BrickTextItem(i18nKey.objRef.name, false);
                     PocketCode.BrickTextItem("*", false);
