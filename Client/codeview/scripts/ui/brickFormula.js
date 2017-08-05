@@ -43,16 +43,25 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     PocketCode.BrickTextItem(i18nKey.i18nKey, true);
                     break;
                 case 'USER_VARIABLE':
-                    //todo
+                    //todo variable id
+                    PocketCode.BrickFormulaItem("\"", false);
+                    PocketCode.BrickFormulaItem(i18nKey.objRef.name, false);
+                    this._goThroughObject(i18nKey.right);
+                    PocketCode.BrickFormulaItem("\"", false);
                     break;
                 case 'USER_LIST':
-                    //todo
+                    //todo variable id
+                    PocketCode.BrickFormulaItem("*", false);
+                    PocketCode.BrickFormulaItem(i18nKey.objRef.name, false);
+                    PocketCode.BrickFormulaItem("*", false);
                     break;
                 case 'BRACKET':
-                    //todo
+                    PocketCode.BrickFormulaItem("(", false);
+                    this._goThroughObject(i18nKey.right);
+                    PocketCode.BrickFormulaItem(")", false);
                     break;
                 case 'STRING':
-                    //todo
+                    PocketCode.BrickFormulaItem(i18nKey.value, false);
                     break;
                 case 'COLLISION_FORMULA':
                     //todo

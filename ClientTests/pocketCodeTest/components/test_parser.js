@@ -370,7 +370,10 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.isStatic, false, "string length from variable: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
+    assert.equal(f.json.left.objRef.name, "variableName", "objRef.name = variableName");
+    assert.equal(f.json.left.objRef.id, "s11", "objRef.id = s11");
+
 
     f.json = length3;
     assert.equal(f.calculate(), 0, "string length from empty string: " + f.calculate());
@@ -389,7 +392,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.isStatic, false, "letter from var: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_letter", "LETTER2 i18nKey added");
-    assert.ok(f.json.right.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
+    assert.equal(f.json.right.objRef.type, "1", "objRef.type = local (1)");
 
     f.json = stringJoin;
     assert.equal(f.calculate(), "hello-work", "string join");
@@ -417,21 +420,21 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     assert.equal(f.isStatic, false, "number of elements: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_number_of_items", "NUMBER OF ITEMS i18nKey added");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
+    assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
 
     f.json = listItem;
     assert.equal(f.calculate(), 1.0, "get list element at position");
     assert.equal(f.isStatic, false, "get list element: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_list_item", "LIST ITEMS i18nKey added");
-    assert.ok(f.json.right.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
+    assert.equal(f.json.right.objRef.type, "1", "objRef.type = local (1)");
 
     f.json = contains;
     assert.equal(f.calculate(), true, "check if list contains element");
     assert.equal(f.isStatic, false, "list contains: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_contains", "CONTAINS i18nKey added");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableList, "objRef type UserVariableList");
+    assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
 
     //lookup variable names
     //global
@@ -444,14 +447,12 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     f.json = length4;   //use s11 //todo? (gleichen object in testDataFormula)
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, global var lookup (from sprite)");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableList");
-    assert.equal(f.json.left.objRef._value, "global", "objRef._value is global");
+    assert.equal(f.json.left.objRef.type, "2", "objRef.type = global (2)");
     assert.equal(f.calculate(), 6, "call calculate local with global lookup");
     f.json = length5;
     f.toString(uvh);
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, global var lookup (from procedure)");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
-    assert.equal(f.json.left.objRef._value, "global", "objRef._value is global");
+    assert.equal(f.json.left.objRef.type, "2", "objRef.type = global (2)");
     assert.equal(f.calculate(uvh), 6, "call calculate with procedure uvh: global lookup");
 
     sprite._variables = [{ id: "s11", name: "local1" }, { id: "s12", name: "global2" }]; //local
@@ -459,14 +460,12 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     f.json = length6;
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, local var lookup (from sprite)");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
-    assert.equal(f.json.left.objRef._value, "local", "objRef._value is local");
+    assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
     assert.equal(f.calculate(), 5, "call calculate local");
     f.json = length7;
     f.toString(uvh);
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, local var lookup (from procedure)");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
-    assert.equal(f.json.left.objRef._value, "local", "objRef._value is local");
+    assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
     assert.equal(f.calculate(uvh), 5, "call calculate with procedure uvh with locallookup");
 
     uvh._variables = [{ id: "s11", name: "procedure1" }, { id: "s12", name: "global2" }]; //procedure
@@ -474,8 +473,7 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     f.json = length8;
     f.toString(uvh);
     assert.equal(f.json.i18nKey, "formula_editor_function_length", "LENGTH i18nKey added, procedure var lookup (from procedure)");
-    assert.ok(f.json.left.objRef instanceof PocketCode.Model.UserVariableSimple, "objRef type UserVariableSimple");
-    assert.equal(f.json.left.objRef._value, "procedure", "objRef._value is procedure");
+    assert.equal(f.json.left.objRef.type, "3", "objRef.type = prodedure (3)");
     assert.equal(f.calculate(uvh), 9, "call calculate with procedure uvh: get variable from parameters");
 
 });
