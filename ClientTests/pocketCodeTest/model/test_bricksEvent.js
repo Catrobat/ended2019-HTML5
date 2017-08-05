@@ -106,37 +106,46 @@ QUnit.module("model/bricksEvent.js");
 QUnit.test("WhenActionBrick", function (assert) {
 
     var done1 = assert.async();
-    //var done2 = assert.async();
+    var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);    //add to receive events
-    var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "action" }, { action: scene.onSpriteTappedAction });
+    assert.throws(function () { var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "action" }, { spriteTouched: scene.onSpriteTappedAction }); }, Error, "ERROR: invalid action");
+    assert.throws(function () { var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "spriteTouched" }, { action: scene.onSpriteTappedAction }); }, Error, "ERROR: invalid action event");
+
+    var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: PocketCode.UserActionType.SPRITE_TOUCHED }, { spriteTouched: scene.onSpriteTappedAction });
 
     b.dispose();
     assert.equal(b._disposed, true, "dispose called");
 
-    b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "action2" }, { action2: scene.onSpriteTappedAction });
-    assert.ok(b._device === "device" && b._sprite === sprite && b._onAction instanceof SmartJs.Event.Event, "brick created and properties set correctly");
+    var actions = {
+        spriteTouched: scene.onSpriteTappedAction,
+        touchStart: scene.onSpriteTappedAction, //we use the same event to make sure the listerners get removed when changing the action
+    };
+    b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "spriteTouched" }, actions);
+    assert.ok(b._device === "device" && b._sprite === sprite && b._actionEvent instanceof SmartJs.Event.Event, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.WhenActionBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
     assert.ok(b.objClassName === "WhenActionBrick", "objClassName check");
 
+    assert.equal(b.action, PocketCode.UserActionType.SPRITE_TOUCHED, "action getter (setter tested within cntr)");
+    b.action = PocketCode.UserActionType.SPRITE_TOUCHED; //to make sure
+    assert.equal(b.action, PocketCode.UserActionType.SPRITE_TOUCHED, "action getter (same action)");
+    b.action = PocketCode.UserActionType.TOUCH_START; //to make sure
+    assert.equal(b.action, PocketCode.UserActionType.TOUCH_START, "action getter (other action)");
+
     //test empty container
     var executed = 0;
-    var actionHandler = function () {
+    var executionStateHandler = function () {
         executed++;
     };
 
-    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(actionHandler, this));
+    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
     scene.onSpriteTappedAction.dispatchEvent({ sprite: sprite });
-    assert.equal(executed, 2, "executed handler called (once)");
+    assert.equal(executed, 2, "executionState handler called (twice: begin + end)");
 
-    b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(actionHandler, this));
-    //done1();
-    //runTest2();
-
-    //function runTest2() {
+    b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
 
     //add a brick container
     var bricks = [];
@@ -167,9 +176,23 @@ QUnit.test("WhenActionBrick", function (assert) {
 
     b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
 
-    var asyncHandler = function () {
-        assert.ok(true, "onExecutionStateChange called: including threaded bricks");
-        done1();
+    var asyncHandler = function (e) {
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
+            done1();
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            assert.ok(true, "onExecutionStateChange called: including threaded bricks (stopped)");
+            var check = true;
+            for (var i = 0, l = bricks.length; i < l; i++)
+                if (bricks[i].executed == 0)
+                    check = false;
+
+            assert.ok(check, "all inner bricks executed");
+            done2();    //to make sure both events are dispatched
+        }
+        else
+            assert.ok(false, "wrong executionState");
     };
     b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
     scene.onSpriteTappedAction.dispatchEvent({ sprite: sprite });

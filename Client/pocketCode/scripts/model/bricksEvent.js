@@ -51,6 +51,9 @@ PocketCode.Model.merge({
                     return this._action;
                 },
                 set: function (action) {
+                    if (this._action == action)
+                        return;
+
                     //validate action
                     var found = false;
                     for (var type in PocketCode.UserActionType) {
@@ -70,7 +73,7 @@ PocketCode.Model.merge({
 
                     this._action = action;
                     this._actionEvent = event;
-                    event.actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+                    event.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
                 },
             },
         });
