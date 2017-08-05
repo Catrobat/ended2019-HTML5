@@ -3,7 +3,7 @@
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
 /// <reference path="../../client/smartJs/sj-ui.js" />
-/// <reference path="../qunit/qunit-2.1.1.js" />
+/// <reference path="../qunit/qunit-2.4.0.js" />
 'use strict';
 
 QUnit.module("sj-ui.js");
