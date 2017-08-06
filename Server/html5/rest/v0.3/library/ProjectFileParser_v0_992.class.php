@@ -1326,22 +1326,16 @@ class ProjectFileParser_v0_992
 
             // stop script/s
             case "StopScriptBrick":
-                $scriptType = null; //"mouseTouchPointer", "random", "sprite"
+                $scriptType = (string)$script->spinnerSelection;
 
-                switch((string)$script->spinnerSelection) {
-                    case "0":
-                        $scriptType = "this";
-                        break;
-                    case "1":
-                        $scriptType = "all";
-                        break;
-                    case "2":
-                        $scriptType = "other";
-                        break;
+                switch($scriptType) {
+                    case "0":   //this
+                    case "1":   //all
+                    case "2":   //other
+                        break;  //valid
+                    default:    //invalid if not one of the above
+                        throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
                 }
-
-                if(!$scriptType)
-                    throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
 
                 $brick = new StopScriptBrickDto($scriptType);
                 break;
