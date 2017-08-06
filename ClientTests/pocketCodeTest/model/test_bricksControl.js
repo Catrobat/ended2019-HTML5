@@ -854,16 +854,24 @@ QUnit.test("StopScriptBrick", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: "this" });
+    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.THIS });
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StopScriptBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "StopScriptBrick", "objClassName check");
-    assert.equal(b._type, PocketCode.Model.StopScriptType.THIS, "type set: THIS");
+    assert.equal(b._type, PocketCode.StopScriptType.THIS, "type set: THIS");
+
+    //type accessor
+    b.type = PocketCode.StopScriptType.THIS;
+    assert.equal(b.type, PocketCode.StopScriptType.THIS, "getter type (after resetting existing stop script type)");
+
+    b.type = PocketCode.StopScriptType.OTHER;
+    assert.equal(b.type, PocketCode.StopScriptType.OTHER, "setter/getter type (change type)");
+    assert.throws(function () { b.type = 24; }, Error, "ERROR: invalid type (at setter)");
 
     b.dispose();
     assert.ok(b._disposed, "disposed");
     //recreate
-    b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", "s01", { scriptType: "this" });
+    b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", "s01", { scriptType: PocketCode.StopScriptType.THIS });
 
     assert.ok(typeof sprite.stopAllScripts == "function", "stopScripts: sprite interface check");
     var stopScriptsCalled = 0,
@@ -873,11 +881,11 @@ QUnit.test("StopScriptBrick", function (assert) {
         stoppedScriptsExceptId = id;
     }
 
-    var c = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: "all" });
-    assert.equal(c._type, PocketCode.Model.StopScriptType.ALL, "type set: ALL");
+    var c = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.ALL });
+    assert.equal(c._type, PocketCode.StopScriptType.ALL, "type set: ALL");
 
-    var d = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: "other" });
-    assert.equal(d._type, PocketCode.Model.StopScriptType.OTHER, "type set: OTHER");
+    var d = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.OTHER });
+    assert.equal(d._type, PocketCode.StopScriptType.OTHER, "type set: OTHER");
 
     //execute
     var valid = 0;
@@ -909,6 +917,8 @@ QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the 
     //coming afterward in the same script block from getting executed. The script itself have to trigger a return 
     //to notify waiting bricks like BroadcastAndWait, ChangeBackgroundAndWait, .. to continue executing
 
+    var done1 = assert.async();
+
     //to verify if this brick gets executed
     var TestBrick = (function () {
         TestBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -937,7 +947,7 @@ QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the 
     var script = new PocketCode.Model.ScriptBlock(device, sprite, { commentedOut: false });
     var bricks = script._bricks._bricks;
     bricks.push(new TestBrick(device, sprite));
-    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: "this" });
+    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.THIS });
     bricks.push(b);
     bricks.push(new TestBrick(device, sprite));
 
@@ -946,7 +956,93 @@ QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the 
         assert.equal(e.loopDelay, true, "loopDelay");   //defined as true in our test brick
         assert.equal(bricks[0].executed, true, "brevious (bricks before) are executed");
         assert.equal(bricks[2].executed, false, "next (bricks after) are NOT executed");
+
+        done1();
     }
     script.execute(new SmartJs.Event.EventListener(onExecHandler, this), "_id");
+
+});
+
+
+QUnit.test("StopScriptBrick: scriptType OTHER: simultaneous startet scripts", function (assert) {
+    //behavior: two scripts are started at the same time by dispatching an event or callback from publish-subsribe-broker
+    //one of the scripts include a stop OTHER brick.. test makes sure all scripts (even if not started executing) are notified 
+    //about the stop
+
+    var done1 = assert.async();
+
+    //to verify if this brick gets executed
+    var TestBrick = (function () {
+        TestBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function TestBrick(device, sprite) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, { commentedOut: false });
+            this.executed = 0;
+        }
+
+        TestBrick.prototype.merge({
+            _execute: function () {
+                this.executed++;
+                this._return(true);
+            },
+        });
+
+        return TestBrick;
+    })();
+
+
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    gameEngine._scenes["id"] = scene;   //necessary to stop scene
+    gameEngine._currentScene = scene; //set internal: tests only
+    gameEngine._startScene = scene;
+
+    scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
+    //simulate project loaded for tests
+    gameEngine._resourcesLoaded = true;
+    gameEngine._scenesLoaded = true;
+    gameEngine.projectReady = true;
+
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var script1 = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", {}, scene.onStart);
+    var bricks1 = script1._bricks._bricks;
+    var b = new PocketCode.Model.StopScriptBrick("device", sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.OTHER });
+    bricks1.push(b);
+    bricks1.push(new TestBrick("device", "sprite"));
+
+    var script2 = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", {}, scene.onStart);
+    var bricks2 = script2._bricks._bricks;
+    bricks2.push(new TestBrick("device", "sprite"));
+
+    //add scripts to sprite to make sure stop() is called
+    sprite._scripts.push(script1);
+    sprite._scripts.push(script2);
+
+    var onExecHandler1 = function (e) {
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "script1 stated executing");
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            assert.ok(true, "script1 stopped executing");
+        }
+    }
+    script1.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(onExecHandler1, this), "_id1");
+
+    var onExecHandler2 = function (e) {
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "script2 stated executing");
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            assert.ok(true, "script2 stopped executing");
+            assert.equal(bricks2[0].executed, 0, "bricks in 2nd scripts are stopped before execution");
+
+            done1();
+        }
+    }
+    script2.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(onExecHandler2, this), "_id1");
+
+    gameEngine.runProject();
 
 });

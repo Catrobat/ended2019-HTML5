@@ -8,99 +8,115 @@
 QUnit.module("model/bricksEvent.js");
 
 
-//QUnit.test("WhenProgramStartBrick", function (assert) {
+QUnit.test("WhenProgramStartBrick", function (assert) {
 
-//    //assert.expect(11);   //init async asserts (to wait for)
-//    var done1 = assert.async();
-//    //var done2 = assert.async();
+    var done1 = assert.async();
 
-//    var gameEngine = new PocketCode.GameEngine();
-//    gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-//    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-//    gameEngine._scenes["id"] = scene;   //necessary to stop scene
-//    gameEngine._currentScene = scene; //set internal: tests only
-//    gameEngine._startScene = scene;
+    var gameEngine = new PocketCode.GameEngine();
+    gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    gameEngine._scenes["id"] = scene;   //necessary to stop scene
+    gameEngine._currentScene = scene; //set internal: tests only
+    gameEngine._startScene = scene;
 
-//    scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
-//    gameEngine.projectReady = true;
+    scene._background = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });  //to avoid error on start
+    gameEngine.projectReady = true;
 
-//    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
-//    b.dispose();
-//    assert.equal(b._disposed, true, "disposed");
+    var b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { x: 1, y: 2 }, scene.onStart);
+    b.dispose();
+    assert.equal(b._disposed, true, "disposed");
 
-//    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { id: "testId", x: 1, y: 2 }, scene.onStart);
-//    scene._background._scripts.push(b);
-//    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
-//    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
-//    assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
+    b = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", { id: "testId", x: 1, y: 2 }, scene.onStart);
+    scene._background._scripts.push(b);
+    assert.ok(b._device === "device" && b._sprite === "sprite", "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.WhenProgramStartBrick && b instanceof PocketCode.Model.ScriptBlock, "instance check");
+    assert.ok(b.objClassName === "WhenProgramStartBrick", "objClassName check");
 
-//    //test empty container
-//    var listener;
-//    var handlerCalled = 0;
-//    var handler = function () {
-//        handlerCalled++;
-//    };
+    //test empty container
+    var listener;
+    var handlerCalled = 0;
+    var handler = function (e) {
+        handlerCalled++;
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "onExecutionStateChange called: running");
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            assert.ok(true, "onExecutionStateChange called: stopped");
+            assert.equal(handlerCalled, 2, "both onExecutionStateChange events called");
+            runAsyncTests();
+        }
+        else
+            assert.ok(false, "wrong executionState");
+    };
 
-//    listener = new SmartJs.Event.EventListener(handler, this);
-//    b.onExecutionStateChange.addEventListener(listener);
-//    //simulate project loaded for tests
-//    gameEngine._resourcesLoaded = true;
-//    gameEngine._scenesLoaded = true;
+    listener = new SmartJs.Event.EventListener(handler, this);
+    b.onExecutionStateChange.addEventListener(listener);
 
-//    gameEngine.runProject();
-//    assert.equal(handlerCalled, 2, "onExecutionStateChange handler called (twice: start and stop)");
-//    //done1();
-
-//    b.onExecutionStateChange.removeEventListener(listener);
-//    //runAsyncTests();
+    //simulate project loaded for tests
+    gameEngine._resourcesLoaded = true;
+    gameEngine._scenesLoaded = true;
+    gameEngine.runProject();
 
 
-//    //function runAsyncTests() {
-//    //add a brick container
-//    var bricks = [];
-//    var TestBrick2 = (function () {
-//        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
+    //runAsyncTests();
+    function runAsyncTests() {
+        //reinit 
+        b.onExecutionStateChange.removeEventListener(listener);
+        gameEngine.stopProject();
 
-//        function TestBrick2(device, sprite) {
-//            PocketCode.Model.ThreadedBrick.call(this, device, sprite, { commentedOut: false });
-//            this.executed = 0;
-//        }
+        //add a brick container
+        var bricks = [];
+        var TestBrick2 = (function () {
+            TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
-//        TestBrick2.prototype.merge({
-//            _execute: function (id) {
-//                this.executed++;
-//                window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
-//                //this._return(id, false);    //LOOP DELAY = FALSE
-//            },
-//        });
+            function TestBrick2(device, sprite) {
+                PocketCode.Model.ThreadedBrick.call(this, device, sprite, { commentedOut: false });
+                this.executed = 0;
+            }
 
-//        return TestBrick2;
-//    })();
+            TestBrick2.prototype.merge({
+                _execute: function (id) {
+                    this.executed++;
+                    window.setTimeout(function () { this._return(id, false) }.bind(this), 100);
+                    //this._return(id, false);    //LOOP DELAY = FALSE
+                },
+            });
 
-//    bricks.push(new TestBrick2("", ""));
-//    bricks.push(new TestBrick2("", ""));
-//    bricks.push(new TestBrick2("", ""));
-//    bricks.push(new TestBrick2("", ""));
+            return TestBrick2;
+        })();
 
-//    b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
 
-//    var asyncHandlerCalled = 0,
-//        asyncHandler = function (e) {
-//            asyncHandlerCalled++;
-//            if (asyncHandlerCalled == 4) {
-//                assert.equal(asyncHandlerCalled, 4, "onExecutionStateChange called: including threaded bricks (start/stop + start/stop)");
-//                done1();
-//            }
-//        };
-//    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
+        b.bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
 
-//    gameEngine.runProject();
+        var asyncHandlerCalled = 0,
+            asyncHandler = function (e) {
+                asyncHandlerCalled++;
+                if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+                    assert.ok(true, "onExecutionStateChange called: running");
+                }
+                else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+                    assert.ok(true, "onExecutionStateChange called: stopped");
+                    assert.equal(asyncHandlerCalled, 2, "both onExecutionStateChange events called");
+                    done1();
+                }
+                else
+                    assert.ok(false, "wrong executionState");
+            };
 
-//    gameEngine.stopProject();
+        b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
 
-//    gameEngine.runProject();
+        gameEngine.runProject();
 
-//});
+        //gameEngine.stopProject();
+
+        //gameEngine.runProject();
+    }
+
+});
 
 
 QUnit.test("WhenActionBrick", function (assert) {
@@ -204,6 +220,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
     var done1 = assert.async();
     var done2 = assert.async();
+    var done3 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
     var b = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
@@ -222,12 +239,20 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
     //test empty container
     var listener;
     var handlerCalled = 0;
-    var broadcastHandler = function () {
-        handlerCalled++;
-        assert.ok(handlerCalled === 1, "executed handler called (once)");
+    var broadcastHandler = function (e) {
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
+            done1();
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            handlerCalled++;
+            assert.ok(handlerCalled === 1, "executed handler called (once)");
 
-        b.onExecutionStateChange.removeEventListener(listener);
-        runTests2();
+            b.onExecutionStateChange.removeEventListener(listener);
+            runTests2();
+        }
+        else
+            assert.ok(false, "invalid executionstate detected");
     };
     listener = new SmartJs.Event.EventListener(broadcastHandler, this);
     b.onExecutionStateChange.addEventListener(listener);
@@ -264,10 +289,12 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
         var listener;
         var asyncHandler = function (e) {
-            assert.ok(true, "onExecutionStateChange called: including threaded bricks");
+            if (e.executionState == PocketCode.ExecutionState.RUNNING)
+                return;
+            assert.equal(e.executionState, PocketCode.ExecutionState.STOPPED, "onExecutionStateChange called: including threaded bricks");
 
             b.onExecutionStateChange.removeEventListener(listener);
-            done1();
+            done2();
             runTests3();
         };
         listener = new SmartJs.Event.EventListener(asyncHandler, this);
@@ -280,7 +307,9 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
         var asyncHandler2Called = 0;
         var listener;
         var asyncHandler2 = function (e) {
-            asyncHandler2Called++;
+            if (e.executionState == PocketCode.ExecutionState.RUNNING)
+                return;
+            asyncHandler2Called++;  //only called on stopp
             assert.ok(true, "onExecutionStateChange called: including threaded bricks");
 
             b.onExecutionStateChange.removeEventListener(listener);
@@ -298,7 +327,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
                     valid = false;
             assert.equal(valid, true, "all bricks executed before calling broadcast-wait callback");
             assert.ok(true, "wait callback executed");
-            done2();
+            done3();
         };
         broadcastMgr.publish("s12", waitCallback);
     }
@@ -636,7 +665,7 @@ QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
 
 QUnit.test("WhenStartAsCloneBrick", function (assert) {
 
-    //var done1 = assert.async();
+    var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, "device", "soundManager", [], 20);
@@ -662,61 +691,75 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
     assert.ok(b.objClassName === "WhenStartAsCloneBrick", "objClassName check");
 
     //test empty container
-    //var listener;
-    var handlerCalled = 0;
+    var listener,
+        handlerCalled = 0;
     var handler = function (e) {
         handlerCalled++;
-        //assert.equal(handlerCalled, 1, "execute empty container");
+        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+            assert.ok(true, "onExecutionStateChange called: running");
+        }
+        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+            assert.ok(handlerCalled === 2, "onExecutionStateChange called: stopped");
 
-        //b.onExecutionStateChange.removeEventListener(listener);
-        //runTest2();
+            b.onExecutionStateChange.removeEventListener(listener);
+            runTest2();
+        }
+        else
+            assert.ok(false, "invalid executionstate detected");
     }
 
-    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(handler, this));
+    listener = new SmartJs.Event.EventListener(handler, this);
+    b.onExecutionStateChange.addEventListener(listener);
     clone.onCloneStart.dispatchEvent();
-    assert.equal(handlerCalled, 2, "execute empty container");
-    b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(handler, this));
-    //runTest2();
 
+    function runTest2() {
+        //add a brick container
+        var bricks = [];
+        var TestBrick2 = (function () {
+            TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
 
-    //function runTest2() {
-    //add a brick container
-    var bricks = [];
-    var TestBrick2 = (function () {
-        TestBrick2.extends(PocketCode.Model.ThreadedBrick, false);
+            function TestBrick2(device, clone) {
+                PocketCode.Model.ThreadedBrick.call(this, device, clone, { commentedOut: false });
+                this.executed = 0;
+            }
 
-        function TestBrick2(device, clone) {
-            PocketCode.Model.ThreadedBrick.call(this, device, clone, { commentedOut: false });
-            this.executed = 0;
-        }
+            TestBrick2.prototype.merge({
+                _execute: function (id) {
+                    this.executed++;
+                    window.setTimeout(function () {
+                        this._return(id, false)
+                    }.bind(this), 100);
+                    //this._return(id, false);    //LOOP DELAY = FALSE
+                },
+            });
 
-        TestBrick2.prototype.merge({
-            _execute: function (id) {
-                this.executed++;
-                window.setTimeout(function () {
-                    this._return(id, false)
-                }.bind(this), 100);
-                //this._return(id, false);    //LOOP DELAY = FALSE
-            },
-        });
+            return TestBrick2;
+        })();
 
-        return TestBrick2;
-    })();
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
+        bricks.push(new TestBrick2("", ""));
 
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
-    bricks.push(new TestBrick2("", ""));
+        b._bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
 
-    b._bricks = new PocketCode.Model.BrickContainer(bricks);    //container including bricks
+        var asyncHandlerCalled = 0,
+            asyncHandler = function (e) {
+                asyncHandlerCalled++;
+                if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+                    assert.ok(true, "onExecutionStateChange called (including threaded bricks): running");
+                }
+                else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+                    assert.ok(handlerCalled === 2, "onExecutionStateChange called (including threaded bricks): stopped");
 
-    var asyncHandlerCalled = 0,
-        asyncHandler = function () {
-            asyncHandlerCalled++;
-        };
+                    done1();
+                }
+                else
+                    assert.ok(false, "invalid executionstate detected");
+            };
 
-    b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
-    clone.onCloneStart.dispatchEvent();
-    assert.equal(asyncHandlerCalled, 2, "onExecutionStateChange called: including threaded bricks");
+        b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(asyncHandler, this));
+        clone.onCloneStart.dispatchEvent();
+    }
 
 });

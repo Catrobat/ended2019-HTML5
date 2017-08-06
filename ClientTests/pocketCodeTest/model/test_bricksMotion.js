@@ -674,7 +674,7 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };

@@ -26,7 +26,7 @@ QUnit.test("PenDownBrick", function (assert) {
     ///execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -53,7 +53,7 @@ QUnit.test("PenUpBrick", function (assert) {
     ///execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -81,7 +81,7 @@ QUnit.test("SetPenSizeBrick", function (assert) {
     ///execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -98,6 +98,7 @@ QUnit.test("SetPenColorBrick", function (assert) {
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
     var blue = JSON.parse('{"type":"NUMBER","value":"200.0","right":null,"left":null}');
     var red = JSON.parse('{"type":"NUMBER","value":"145.0","right":null,"left":null}');
     var green = JSON.parse('{"type":"NUMBER","value":"33.0","right":null,"left":null}');
@@ -112,7 +113,7 @@ QUnit.test("SetPenColorBrick", function (assert) {
     ///execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -179,4 +180,3 @@ QUnit.test("ClearBackgroundBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
-
