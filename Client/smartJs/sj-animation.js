@@ -30,7 +30,6 @@ SmartJs.Animation = {
         //QUAD: function (progress) {
         //    return Math.pow(progress, 2);
         //},
-
         LINEAR2D: function (progress) {
             return { x: progress, y: progress };
         },
@@ -55,7 +54,7 @@ SmartJs.Animation = {
             this._current = start;
 
             this._animationTime = time;
-            this._render = render;
+            this._render = render;  //the rendering function - SmartJs.Animation.TYPE
 
             this._timer = new SmartJs.Components.Timer(this._animationTime);
             this._frameId = undefined;
@@ -96,12 +95,6 @@ SmartJs.Animation = {
             },
             _executeAnimation: function () {
                 var remaining = this._timer.remainingTime;
-                //if (remaining === 0) {
-                //    this._updateValue(this._render(1.0), true);
-                //    this._onExecuted.dispatchEvent(this._callBackArgs);
-                //    return;
-                //}
-                //else {
                 var progress = Math.min(1.0, (this._animationTime - remaining) / this._animationTime);  //timers are not exact
                 this._updateValue(this._render(progress));
 
@@ -175,7 +168,7 @@ SmartJs.Animation.Animation2D = (function () {
                 y: this._start.y + factor.y * this._diff.y,
             };
 
-            if (factor == 1.0) {
+            if (factor.x == 1.0 && factor.y == 1.0) {
                 this._current = this._end;
                 this._onUpdate.dispatchEvent({ value: this._end });
                 return;
