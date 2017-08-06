@@ -8,7 +8,9 @@ QUnit.module("components/collisionManager.js");
 
 QUnit.test("checkSpriteEdgeCollision", function (assert) {
 
+    var gameEngine = new PocketCode.GameEngine();
     var cm = new PocketCode.CollisionManager(10, 20);
+
     assert.ok(cm._projectScreenWidth == 10 && cm._projectScreenHeight == 20, "ctr parameters set");
     assert.ok(cm instanceof PocketCode.CollisionManager && cm instanceof SmartJs.Core.Component, "instance check");
     assert.ok(cm.objClassName === "CollisionManager", "objClassName check");
@@ -86,10 +88,13 @@ QUnit.test("checkSpriteEdgeCollision", function (assert) {
     }, "check with collision incl. pixelAccuracy: all sides");
 });
 
-//------------------------------------------------------------------------------------------------------------------
+
 QUnit.test("checkSpriteCollision", function (assert) {
 
     var done = assert.async();
+
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
 
     var cm = new PocketCode.CollisionManager(10, 20);
     //test only
@@ -108,7 +113,6 @@ QUnit.test("checkSpriteCollision", function (assert) {
         { id: "s4", url: "imgHelper15.png", size: 1 }];
     */
 
-    var gameEngine = new PocketCode.GameEngine();
     //var canvas = document.createElement("canvas");
 
     var is = new PocketCode.ImageStore();
@@ -118,7 +122,6 @@ QUnit.test("checkSpriteCollision", function (assert) {
     is.loadImages(baseUrl, images);
 
     function runTests() {
-        assert.ok(true, "TEST");
 
         //initializing looks
         var jsonLook1 = { id: "id1", resourceId: "s1", name: "lookName" };    //without rotationCenter
@@ -134,7 +137,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         img = is.getImage("s2");
         l2.init(img); //loading from image store directly instead of handling through GameEngine
 
-        var sprite1 = new PocketCode.Model.Sprite(gameEngine, { id: "sp1", name: "myName" });
+        var sprite1 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "sp1", name: "myName" });
         sprite1._looks = [l1, l2];
         sprite1._currentLook = l1;
         //sprite1.setDirection(45);
@@ -143,7 +146,7 @@ QUnit.test("checkSpriteCollision", function (assert) {
         //sprite1._visible = true;
         //sprite1._transparency = 100.0;
         //gameEngine._sprites.push(sprite1);
-        var sprite2 = new PocketCode.Model.Sprite(gameEngine, { id: "sp2", name: "myName" });
+        var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene, { id: "sp2", name: "myName" });
         sprite2._looks = [l1, l2];
         sprite2._currentLook = l1;
         //sprite2.setDirection(45);
