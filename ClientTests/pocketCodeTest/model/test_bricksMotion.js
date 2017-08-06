@@ -704,7 +704,7 @@ QUnit.test("SetVelocityBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -733,7 +733,7 @@ QUnit.test("RotationSpeedLeftBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -762,7 +762,7 @@ QUnit.test("RotationSpeedRightBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -792,7 +792,7 @@ QUnit.test("SetGravityBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -820,7 +820,7 @@ QUnit.test("SetMassBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -849,7 +849,7 @@ QUnit.test("SetBounceFactorBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -878,7 +878,7 @@ QUnit.test("SetFrictionBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
