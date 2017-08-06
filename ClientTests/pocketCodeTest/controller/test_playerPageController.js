@@ -102,7 +102,7 @@ QUnit.test("PlayerPageController", function (assert) {
     assert.ok(controller._view._startScreen._dom.style.display == 'none', "_beforeProjectStartHandler: display: none");
 
     //sceneChangedHandler
-    controller.sceneChangedHandler(param);
+    controller._sceneChangedHandler(param);
     assert.ok(controller._playerViewportController._renderingSprite.length == 1 &&
         controller._playerViewportController._renderingTexts.length == 1 &&
         controller._playerViewportController._projectScreenWidth == 40 &&

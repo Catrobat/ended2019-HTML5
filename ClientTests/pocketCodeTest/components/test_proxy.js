@@ -36,79 +36,86 @@ QUnit.test("ServiceRequest", function (assert) {
 
 });
 
-QUnit.test("TestRequestSingleProjectWithCertainID", function(assert) {
+QUnit.test("ServiceRequest (integration test): TestRequestSingleProjectWithCertainID", function (assert) {
 
-  var url = PocketCode.Services.PROJECT;
-  var id = "825";
-  var requestSingleProject = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {id: id});
-  assert.ok(requestSingleProject instanceof PocketCode.ServiceRequest && requestSingleProject instanceof SmartJs.Communication.ServiceRequest, "created: successful");
+    var done1 = assert.async();
 
-  var onLoadProjectHandler = function(e)
-  {
-    var project825received = e.responseJson;
-    assert.ok(project825received instanceof Object, "project received object is valid");
-    assert.equal(project825received.id, id, "correct project id");
-  };
+    var url = PocketCode.Services.PROJECT;
+    var id = "825";
+    var requestSingleProject = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { id: id });
+    assert.ok(requestSingleProject instanceof PocketCode.ServiceRequest && requestSingleProject instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
-  requestSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadProjectHandler, this));
-  PocketCode.Proxy.send(requestSingleProject);
+    var onLoadProjectHandler = function (e) {
+        var project825received = e.responseJson;
+        assert.ok(project825received instanceof Object, "project received object is valid");
+        assert.equal(project825received.id, id, "correct project id");
+        done1();
+    };
+
+    requestSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadProjectHandler, this));
+    PocketCode.Proxy.send(requestSingleProject);
 });
 
-QUnit.test("TestRequestLimitedNrOfProjects", function(assert) {
-  var url = PocketCode.Services.PROJECT_SEARCH;
-  var limit = 15;
-  var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit});
-  assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
+QUnit.test("ServiceRequest (integration test): TestRequestLimitedNrOfProjects", function (assert) {
 
-  var ids = [];
+    var done1 = assert.async();
 
-  var onLoadSingleProjectHandler = function(e, id)
-  {
-    var receivedProject = e.responseJson;
-    assert.ok(receivedProject instanceof Object, 'project [' + receivedProject.id + ']: received object is valid');
-    assert.ok(ids.indexOf(receivedProject.id) != -1, 'received project (' + receivedProject.id + ') was requested');
-    ids.splice(receivedProject.id);
-    assert.notOk(ids.indexOf(receivedProject.id) == -1, 'received project (' + receivedProject.id + ') handeled... finish!')
-  };
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    var limit = 15;
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { limit: limit });
+    assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
-  //var onLoadAllProjectsHandler = function(e)
-  //{
-  //  var receivedAllProjects = e.responseJson;
-  //  assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
-  //  //console.log(receivedAllProjects);
+    var ids = [];
 
-  //  var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
-  //  //console.log(projectCount);
-  //  assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
+    var onProjectLoadHandler = function (e) {
+        var receivedProjects = e.responseJson;
+        assert.equal(receivedProjects.limit, 15, "received correct limit");
+        assert.equal(receivedProjects.mask, "recent", "received correct maks");
+        assert.equal(receivedProjects.offset, 0, "received correct offset");
+        assert.equal(receivedProjects.items.length, 15, "received correct amount");
 
-  //  var mask = receivedAllProjects.mask;
-  //  //console.log(mask);
-  //  assert.equal(mask, 'recent', 'correct mask: recent');
+        done1();
+    };
 
-  //  var projects = receivedAllProjects.items;
-  //  //console.log(projects);
-  //  assert.ok(projects instanceof Array, 'array of projects');
+    //var onLoadAllProjectsHandler = function(e)
+    //{
+    //  var receivedAllProjects = e.responseJson;
+    //  assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
+    //  //console.log(receivedAllProjects);
 
-  //  for(var i = 0; i < projectCount; i++)
-  //  {
-  //    var project = projects[i];
-  //    var urlSingleProject = PocketCode.Services.PROJECT;
-  //    var params = { id : project['id'] };
-  //    ids.push(parseInt(project['id']));
-  //    var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
-  //    srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
-  //    //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
-  //    PocketCode.Proxy.send(srSingleProject);
-  //  }
-  //};
+    //  var projectCount = receivedAllProjects.items.length;    //make sure only delivered projects are counted
+    //  //console.log(projectCount);
+    //  assert.equal(projectCount, limit, 'correct nr (' + limit + ') of projects');
 
-  //srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
-  //PocketCode.Proxy.send(srAllProjects);
+    //  var mask = receivedAllProjects.mask;
+    //  //console.log(mask);
+    //  assert.equal(mask, 'recent', 'correct mask: recent');
+
+    //  var projects = receivedAllProjects.items;
+    //  //console.log(projects);
+    //  assert.ok(projects instanceof Array, 'array of projects');
+
+    //  for(var i = 0; i < projectCount; i++)
+    //  {
+    //    var project = projects[i];
+    //    var urlSingleProject = PocketCode.Services.PROJECT;
+    //    var params = { id : project['id'] };
+    //    ids.push(parseInt(project['id']));
+    //    var srSingleProject = new PocketCode.ServiceRequest(urlSingleProject, SmartJs.RequestMethod.GET, params);
+    //    srSingleProject.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadSingleProjectHandler, this));
+    //    //console.log('requesting project [' + project['id'] + ']: ' + project['title']);
+    //    PocketCode.Proxy.send(srSingleProject);
+    //  }
+    //};
+
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onProjectLoadHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
 });
 
+QUnit.test("ServiceRequest (integration test): TestDefaultServiceSettings", function (assert) {
 
+    var done1 = assert.async();
 
-QUnit.test("TestDefaultServiceSettings", function(assert) {
     var defaultLimit = 20;
     var defaultOffset = 0;
     var defaultMaxFeaturedProjects = 3;
@@ -120,8 +127,7 @@ QUnit.test("TestDefaultServiceSettings", function(assert) {
     assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
 
-    var onLoadAllProjectsHandler = function(e)
-    {
+    var onLoadAllProjectsHandler = function (e) {
         var receivedAllProjects = e.responseJson;
         assert.ok(receivedAllProjects instanceof Object, 'all projects received object is valid');
         //console.log(receivedAllProjects);
@@ -141,32 +147,36 @@ QUnit.test("TestDefaultServiceSettings", function(assert) {
 
         var featured = receivedAllProjects.featured;
         assert.ok(featured instanceof Array, 'featured is an array of projects');
+        done1();
     };
 
     srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
     PocketCode.Proxy.send(srAllProjects);
 });
 
+QUnit.test("ServiceRequest (integration test):TestRequestInvalidProjectLimit", function (assert) {
 
+    var done1 = assert.async();
 
-QUnit.test("TestRequestInvalidProjectLimit", function(assert) {
+    var url = PocketCode.Services.PROJECT_SEARCH;
+    var limit = 'a';
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { limit: limit });
+    assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
-  var url = PocketCode.Services.PROJECT_SEARCH;
-  var limit = 'a';
-  var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {limit: limit});
-  assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
+    var onLoadAllProjectsHandler = function (e) {
 
-  var onLoadAllProjectsHandler = function(e) {
+        var projectCount = e.responseJson.items.length;
+        assert.ok(projectCount == projectCount, 'correct nr (' + projectCount + ') of projects');
+        done1();
+    };
 
-      var projectCount = e.responseJson.items.length;
-      assert.ok(projectCount == projectCount, 'correct nr (' + projectCount + ') of projects');
-  };
-
-  srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
-  PocketCode.Proxy.send(srAllProjects);
+    srAllProjects.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadAllProjectsHandler, this));
+    PocketCode.Proxy.send(srAllProjects);
 });
 
-QUnit.test("TestRequestInvalidMask", function(assert) {
+QUnit.test("ServiceRequest (integration test):TestRequestInvalidMask", function (assert) {
+
+    var done1 = assert.async();
     var mask = 'invalid_value';
 
     var defaultType = "ServiceNotImplementedException";
@@ -174,12 +184,11 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
     var defaultCode = 0;
 
     var url = PocketCode.Services.PROJECT_SEARCH;
-    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, {mask: mask});
+    var srAllProjects = new PocketCode.ServiceRequest(url, SmartJs.RequestMethod.GET, { mask: mask });
     assert.ok(srAllProjects instanceof PocketCode.ServiceRequest && srAllProjects instanceof SmartJs.Communication.ServiceRequest, "created: successful");
 
 
-    var onErrorAllProjectsHandler = function(e)
-    {
+    var onErrorAllProjectsHandler = function (e) {
         if (e.responseJson == undefined) {
             assert.ok(false, "Did not receive exception an client- CORS problem?");
             return;
@@ -196,6 +205,7 @@ QUnit.test("TestRequestInvalidMask", function(assert) {
         assert.ok(defaultType == requestType, 'correct type (' + defaultType + ')');
         assert.ok(defaultMessage == requestMessage, 'correct message (' + defaultMessage + ')');
         assert.ok(defaultCode == requestCode, 'correct code (' + defaultCode + ')');
+        done1();
     };
 
 
@@ -518,7 +528,7 @@ QUnit.test("Proxy", function (assert) {
 
     var runTest2 = function () {
 
-        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "0"});
+        req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: "0" });
         req.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler2, this));
         PocketCode.Proxy.send(req);
 
