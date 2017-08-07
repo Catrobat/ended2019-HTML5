@@ -664,8 +664,8 @@ class ProjectFileParser
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brickType = $this->getBrickType($script);
-                    throw new InvalidProjectFileException("referenced brick: $brickType");
+                    //$brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick found");//: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -758,7 +758,7 @@ class ProjectFileParser
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::SPRITE_TOUCHED);
+                $brick = new WhenActionBrickDto($this->getNewId(), EUserActionType::SPRITE_TOUCHED);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1098,7 +1098,7 @@ class ProjectFileParser
             array_push($this->cpp, $script);
             $brickType = $this->getBrickType($script);
             if(isset($script["reference"]))
-                throw new InvalidProjectFileException("referenced brick: $brickType");
+                throw new InvalidProjectFileException("referenced brick found");//: $brickType");
 
             $brick = $this->parseFirstLevelBricks($brickType, $script);
 
@@ -1121,7 +1121,7 @@ class ProjectFileParser
             if(!$brick) {
 				$endBricks = array("LoopEndlessBrick", "LoopEndBrick", "IfThenLogicEndBrick", "IfLogicEndBrick");
 				if (in_array($brickType, $endBricks))
-					throw new InvalidProjectFileException("$brickType : end brick detected- not handled correctly");
+					throw new InvalidProjectFileException("end brick: $brickType detected at wrong code position- broken code encapsulation");
 
 				$brick = new UnsupportedBrickDto($script->asXML(), $brickType);
 			}

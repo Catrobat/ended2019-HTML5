@@ -613,7 +613,7 @@ class ProjectFileParser_v0_992
             array_push($this->cpp, $script);
             $brickType = $this->getBrickType($script);
             if(isset($script["reference"]))
-                throw new InvalidProjectFileException("referenced brick: $brickType");
+                throw new InvalidProjectFileException("referenced brick found");//: $brickType");
 
             $brick = $this->parseEventBricks($brickType, $script);
 
@@ -642,7 +642,7 @@ class ProjectFileParser_v0_992
             if(!$brick) {
 				$endBricks = array("LoopEndlessBrick", "LoopEndBrick", "IfThenLogicEndBrick", "IfLogicEndBrick");
 				if (in_array($brickType, $endBricks))
-					throw new InvalidProjectFileException("$brickType : end brick detected- not handled correctly");
+					throw new InvalidProjectFileException("end brick: $brickType detected at wrong code position- broken code encapsulation");
 
 				$brick = new UnsupportedBrickDto($script->asXML(), $brickType);
 			}
@@ -683,8 +683,8 @@ class ProjectFileParser_v0_992
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brickType = $this->getBrickType($script);
-                    throw new InvalidProjectFileException("referenced brick: $brickType");
+                    //$brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick found");//: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -761,7 +761,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::SPRITE_TOUCHED);//lcfirst((string)$script->action));    //action = "tapped"
+                $brick = new WhenActionBrickDto($this->getNewId(), EUserActionType::SPRITE_TOUCHED);//lcfirst((string)$script->action));    //action = "tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -773,7 +773,7 @@ class ProjectFileParser_v0_992
 
             //WhenTouchDown
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), $EUserActionType::TOUCH_START);
+                $brick = new WhenActionBrickDto($this->getNewId(), EUserActionType::TOUCH_START);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
