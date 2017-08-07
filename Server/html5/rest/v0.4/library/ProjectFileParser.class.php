@@ -812,7 +812,7 @@ class ProjectFileParser
                     $id = $res->id;
                 }
 
-                $brick = new BroadcastAndWaitBrickDto($id);
+                $brick = new BroadcastBrickDto($id; true);
                 break;
 
             case "NoteBrick":
@@ -1031,22 +1031,22 @@ class ProjectFileParser
 
             case "SetGhostEffectBrick":
                 $transparency = $script->transparency;
-                $brick = new SetTransparencyBrickDto($this->parseFormula($transparency->formulaTree));
-                break;
-
-            case "ChangeGhostEffectByNBrick":
-                $transparency = $script->changeGhostEffect;
-                $brick = new ChangeTransparencyBrickDto($this->parseFormula($transparency->formulaTree));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency->formulaTree));
                 break;
 
             case "SetBrightnessBrick":
                 $brightness = $script->brightness;
-                $brick = new SetBrightnessBrickDto($this->parseFormula($brightness->formulaTree));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness->formulaTree));
+                break;
+
+            case "ChangeGhostEffectByNBrick":
+                $transparency = $script->changeGhostEffect;
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency->formulaTree));
                 break;
 
             case "ChangeBrightnessByNBrick":
                 $brightness = $script->changeBrightness;
-                $brick = new ChangeBrightnessBrickDto($this->parseFormula($brightness->formulaTree));
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness->formulaTree));
                 break;
 
             case "ClearGraphicEffectBrick":

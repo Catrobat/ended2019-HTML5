@@ -91,7 +91,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                     $id = $res->id;
                 }
 
-                $brick = new BroadcastAndWaitBrickDto($id);
+                $brick = new BroadcastBrickDto($id, true);
                 break;
 
             case "NoteBrick":
@@ -406,7 +406,15 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $transparency = $fl->formula;
-                $brick = new SetTransparencyBrickDto($this->parseFormula($transparency));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
+                array_pop($this->cpp);
+                break;
+
+            case "SetBrightnessBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brightness = $fl->formula;
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
                 array_pop($this->cpp);
                 break;
 
@@ -415,15 +423,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $transparency = $fl->formula;
-                $brick = new ChangeTransparencyBrickDto($this->parseFormula($transparency));
-                array_pop($this->cpp);
-                break;
-
-            case "SetBrightnessBrick":
-                $fl = $script->formulaList;
-                array_push($this->cpp, $fl);
-                $brightness = $fl->formula;
-                $brick = new SetBrightnessBrickDto($this->parseFormula($brightness));
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
                 array_pop($this->cpp);
                 break;
 
@@ -431,7 +431,7 @@ class ProjectFileParser_v0_93 extends ProjectFileParser
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $brightness = $fl->formula;
-                $brick = new ChangeBrightnessBrickDto($this->parseFormula($brightness));
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
                 array_pop($this->cpp);
                 break;
 

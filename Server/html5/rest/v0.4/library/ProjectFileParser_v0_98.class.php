@@ -432,7 +432,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                     $id = $res->id;
                 }
 
-                $brick = new BroadcastAndWaitBrickDto($id);
+                $brick = new BroadcastBrickDto($id, true);
                 break;
 
             case "NoteBrick":
@@ -798,15 +798,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $transparency = $fl->formula;
-                $brick = new SetTransparencyBrickDto($this->parseFormula($transparency));
-                array_pop($this->cpp);
-                break;
-
-            case "ChangeTransparencyByNBrick":    /*name changed*/
-                $fl = $script->formulaList;
-                array_push($this->cpp, $fl);
-                $transparency = $fl->formula;
-                $brick = new ChangeTransparencyBrickDto($this->parseFormula($transparency));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
                 array_pop($this->cpp);
                 break;
 
@@ -814,15 +806,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $brightness = $fl->formula;
-                $brick = new SetBrightnessBrickDto($this->parseFormula($brightness));
-                array_pop($this->cpp);
-                break;
-
-            case "ChangeBrightnessByNBrick":
-                $fl = $script->formulaList;
-                array_push($this->cpp, $fl);
-                $brightness = $fl->formula;
-                $brick = new ChangeBrightnessBrickDto($this->parseFormula($brightness));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
                 array_pop($this->cpp);
                 break;
 
@@ -830,7 +814,23 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $color = $fl->formula;
-                $brick = new SetColorEffectBrickDto($this->parseFormula($color));
+                $brick = new SetGraphicEffectBrickDto(EGraphicEffect::COLOR, $this->parseFormula($color));
+                array_pop($this->cpp);
+                break;
+
+            case "ChangeTransparencyByNBrick":    /*name changed*/
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $transparency = $fl->formula;
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::GHOST, $this->parseFormula($transparency));
+                array_pop($this->cpp);
+                break;
+
+            case "ChangeBrightnessByNBrick":
+                $fl = $script->formulaList;
+                array_push($this->cpp, $fl);
+                $brightness = $fl->formula;
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::BRIGHTNESS, $this->parseFormula($brightness));
                 array_pop($this->cpp);
                 break;
 
@@ -838,7 +838,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $fl = $script->formulaList;
                 array_push($this->cpp, $fl);
                 $color = $fl->formula;
-                $brick = new ChangeColorEffectBrickDto($this->parseFormula($color));
+                $brick = new ChangeGraphicEffectBrickDto(EGraphicEffect::COLOR, $this->parseFormula($color));
                 array_pop($this->cpp);
                 break;
 

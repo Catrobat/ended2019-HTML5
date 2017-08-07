@@ -2,11 +2,13 @@
 
 class BroadcastBrickDto extends BaseBrickDto {
 
-    public $broadcastMsgId;
+    public $broadcastId;
+    public $andWait = false;
 
-    public function __construct($broadcastMsgId, $commentedOut = false) {
+    public function __construct($broadcastId, $andWait = false, $commentedOut = false) {
         parent::__construct("Broadcast", $commentedOut);
 
-        $this->broadcastMsgId = $broadcastMsgId;
+        $this->broadcastId = $broadcastId;
+        $this->andWait = $andWait;
     }
 }

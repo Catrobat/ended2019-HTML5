@@ -6,11 +6,11 @@ class IfThenElseBrickDto extends BaseBrickDto {
 
     public $ifBricks = array();	//inner scripts: if block
     public $elseBricks = array();	//inner scripts: else block
-    public $showElse;
+    public $hasElse;
 
-    public function __construct($condition, $showElse = true, $commentedOut = false) {
+    public function __construct($condition, $hasElse = true, $commentedOut = false) {
         parent::__construct("IfThenElse", $commentedOut);
         $this->condition = $condition;
-        $this->showElse = $showElse;
+        $this->hasElse = $hasElse;
     }
 }

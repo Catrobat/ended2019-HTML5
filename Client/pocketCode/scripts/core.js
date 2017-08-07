@@ -98,6 +98,28 @@ PocketCode.merge({
         ALL: 1,
         OTHER: 2,
     },
+    /**
+     * GraphicEffects
+     * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
+     */
+    GraphicEffect: {
+        WHIRL: 'whirl',
+        FISHEYE: 'fisheye',
+        PIXELATE: 'pixelate',
+        MOSAIC: 'mosaic',
+        COLOR: 'color',
+        BRIGHTNESS: 'brightness',
+        GHOST: 'ghost',     //opacity, transparency
+        /*
+        GRAYSCALE: 'grayscale',
+        THRESHOLD: 'threshold',
+        
+        NEGATIVE: 'negative',
+        COMIC: 'comic',
+        DUPLICATE: 'duplicate',
+        CONFETTI: 'confetti',
+        */
+    },
 
     isPlayerCompatible: function () {
         var _result = true;
