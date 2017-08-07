@@ -812,7 +812,7 @@ class ProjectFileParser
                     $id = $res->id;
                 }
 
-                $brick = new BroadcastBrickDto($id; true);
+                $brick = new BroadcastBrickDto($id, true);
                 break;
 
             case "NoteBrick":
