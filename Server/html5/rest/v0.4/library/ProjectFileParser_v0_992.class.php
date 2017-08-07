@@ -1583,7 +1583,7 @@ class ProjectFileParser_v0_992
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new SetRotationSpeedCcwBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value, true);
                 break;
 
             case "TurnRightSpeedBrick":

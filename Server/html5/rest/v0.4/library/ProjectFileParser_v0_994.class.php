@@ -1,6 +1,6 @@
 <?php
 
-class ProjectFileParser_v0_994 extends ProjectFileParser_v0_993
+class ProjectFileParser_v0_994 extends ProjectFileParser_v0_992
 {
 
     public function __construct($projectId, $resourceBaseUrl, $cacheDir, $simpleXml)
