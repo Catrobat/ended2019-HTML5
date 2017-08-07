@@ -40,6 +40,7 @@ PocketCode.Model.Sprite = (function () {
         this._positionX = 0.0;
         this._positionY = 0.0;
         this._rotationStyle = PocketCode.RotationStyle.ALL_AROUND;
+        this._rotationSpeed = 0;
         this._direction = 90.0; //pointing to right: 0 means up
 
         ////looks
@@ -57,7 +58,7 @@ PocketCode.Model.Sprite = (function () {
 
         //pen
         this._penDown = false;
-        this._penSize = 3;
+        this._penSize = 4;
         this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
@@ -158,6 +159,11 @@ PocketCode.Model.Sprite = (function () {
             get: function () {
                 return this._rotationStyle;
             },
+        },
+        rotationSpeed: {
+            set: function (value) {
+                this._rotationSpeed = value;
+            }
         },
 
         //looks
@@ -412,16 +418,16 @@ PocketCode.Model.Sprite = (function () {
                     scripts[i].resume();
             }
         },
-        stopScript: function (calledFromStopBrick, scriptId) {
-            var scripts = this._scripts;
-            for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].id === scriptId) {
-                    scripts[i].stop(calledFromStopBrick);
-                    return false;
-                }
-            }
-            return false;
-        },
+        //stopScript: function (calledFromStopBrick, scriptId) {
+        //    var scripts = this._scripts;
+        //    for (var i = 0, l = scripts.length; i < l; i++) {
+        //        if (scripts[i].id === scriptId) {
+        //            scripts[i].stop(calledFromStopBrick);
+        //            return false;
+        //        }
+        //    }
+        //    return false;
+        //},
         stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
@@ -1204,6 +1210,7 @@ PocketCode.Model.Sprite = (function () {
                 _positionX: this._positionX,
                 _positionY: this._positionY,
                 _rotationStyle: this._rotationStyle,
+                _rotationSpeed: this._rotationSpeed,
                 _direction: this._direction,
 
                 //looks
@@ -1227,13 +1234,13 @@ PocketCode.Model.Sprite = (function () {
             return clone;
         },
         //collision: in formula
-        collidesWithSprite: function (spriteName) {
-            var sprite = this._scene.getSpriteByName(spriteName);
-            if (!sprite)
-                return false;
+        collidesWithSprite: function (spritId) {
+            //var sprite = this._scene.getSpriteByName(spriteName);
+            //if (!sprite)
+            //    return false;
 
             var collisionMgr = this._scene.collisionManager;
-            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
+            return collisionMgr.checkSpriteCollision(this.id, spriteId);
         },
         /* override */
         dispose: function () {
@@ -1397,7 +1404,6 @@ PocketCode.Model.merge({
             this._velocityY = 0;
             this._friction = 0.2;
             this._bounceFactor = 0.8;
-            this._turnNDegreePerSecond = 0;
         }
 
         //properties
@@ -1405,11 +1411,6 @@ PocketCode.Model.merge({
             mass: {
                 set: function (value) {
                     this._mass = value
-                }
-            },
-            turnNDegreePerSecond: {
-                set: function (value) {
-                    this._turnNDegreePerSecond = value;
                 }
             },
             friction: {

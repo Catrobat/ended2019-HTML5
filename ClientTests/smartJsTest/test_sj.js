@@ -1,5 +1,5 @@
 ﻿/// <reference path="../../client/smartJs/sj.js" />
-/// <reference path="../qunit/qunit-2.1.1.js" />
+/// <reference path="../qunit/qunit-2.4.0.js" />
 'use strict';
 
 QUnit.module("sj.js");

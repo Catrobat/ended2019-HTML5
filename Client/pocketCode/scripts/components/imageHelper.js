@@ -4,29 +4,6 @@
 /// <reference path="../../../smartJs/sj-ui.js" />
 'use strict';
 
-/**
- * GraphicEffects
- * @type {{COLOR: string, FISHEYE: string, WHIRL: string, PIXELATE: string, MOSAIC: string, BRIGHTNESS: string, GHOST: string}}
- */
-PocketCode.GraphicEffect = {
-    WHIRL: 'whirl',
-    FISHEYE: 'fisheye',
-    PIXELATE: 'pixelate',
-    MOSAIC: 'mosaic',
-    COLOR: 'color',
-    BRIGHTNESS: 'brightness',
-    GHOST: 'ghost',     //opacity, transparency
-    /*
-    GRAYSCALE: 'grayscale',
-    THRESHOLD: 'threshold',
-    
-    NEGATIVE: 'negative',
-    COMIC: 'comic',
-    DUPLICATE: 'duplicate',
-    CONFETTI: 'confetti',
-    */
-};
-
 PocketCode.ImageFilter = {
 
     /*

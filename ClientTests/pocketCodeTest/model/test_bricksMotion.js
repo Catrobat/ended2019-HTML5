@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksCore.js" />
 /// <reference path="../../../Client/pocketCode/scripts/model/bricksMotion.js" />
@@ -136,41 +136,6 @@ QUnit.test("ChangeYBrick", function (assert) {
     assert.ok(b._device === device && b._sprite === sprite && b._y instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ChangeYBrick, "instance check");
     assert.ok(b.objClassName === "ChangeYBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
-
-QUnit.test("SetRotionStyleBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = "device";
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-
-    var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
-
-    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetRotionStyleBrick, "instance check");
-    assert.ok(b.objClassName === "SetRotionStyleBrick", "objClassName check");
-
-    assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not defined");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 0 });
-    assert.ok(b._style == PocketCode.RotationStyle.LEFT_TO_RIGHT, "style: left to right");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 2 });
-    assert.ok(b._style == PocketCode.RotationStyle.DO_NOT_ROTATE, "style: don't rotate");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 10 });
-    assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not listet in enum");
 
     //execute
     var handler = function (e) {
@@ -413,6 +378,75 @@ QUnit.test("SetDirectionToBrick", function (assert) {
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+
+QUnit.test("SetRotionStyleBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
+
+    assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SetRotionStyleBrick, "instance check");
+    assert.ok(b.objClassName === "SetRotionStyleBrick", "objClassName check");
+
+    assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not defined");
+    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 0 });
+    assert.ok(b._style == PocketCode.RotationStyle.LEFT_TO_RIGHT, "style: left to right");
+    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 2 });
+    assert.ok(b._style == PocketCode.RotationStyle.DO_NOT_ROTATE, "style: don't rotate");
+    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 10 });
+    assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not listet in enum");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+
+QUnit.test("SetRotationSpeedBrick", function (assert) {
+
+    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
+
+    //clockwise
+    var b = new PocketCode.Model.SetRotationSpeedBrick(device, sprite, { degreesPerSec: deg, ccw: false });
+
+    assert.ok(b._device === device && b._sprite === sprite && b._degreesPerSecond instanceof PocketCode.Formula && typeof b._ccw == "boolean", "brick created and properties set correctly");
+    assert.ok(b instanceof PocketCode.Model.SetRotationSpeedBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    assert.ok(b.objClassName === "SetRotationSpeedBrick", "objClassName check");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.ok(e.loopDelay == false || e.loopDelay == undefined, "boolean", "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    assert.ok(sprite._rotationSpeed, 35, "rotation speed set correctly");
+
+    //counterclockwise
+    deg = JSON.parse('{"type":"NUMBER","value":"24","right":null,"left":null}');
+    b = new PocketCode.Model.SetRotationSpeedBrick(device, sprite, { degreesPerSec: deg, ccw: true });
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    assert.ok(sprite._rotationSpeed, -24, "rotation speed set correctly: ccw");
 
 });
 
@@ -674,7 +708,7 @@ QUnit.test("SetPhysicsObjectTypeBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -704,65 +738,7 @@ QUnit.test("SetVelocityBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
-
-QUnit.test("RotationSpeedLeftBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-
-    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
-
-    var b = new PocketCode.Model.RotationSpeedLeftBrick(device, sprite, { degreesPerSec: deg });
-
-    assert.ok(b._device === device && b._sprite === sprite && b._degreesPerSecond instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.RotationSpeedLeftBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    assert.ok(b.objClassName === "RotationSpeedLeftBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-        assert.equal(e.id, "thread_id", "threadId handled correctly");
-        done1();
-    };
-    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
-
-});
-
-
-QUnit.test("RotationSpeedRightBrick", function (assert) {
-
-    var done1 = assert.async();
-
-    var device = new PocketCode.MediaDevice(new PocketCode.SoundManager());
-    var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-
-    var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    var deg = JSON.parse('{"type":"NUMBER","value":"35","right":null,"left":null}');
-
-    var b = new PocketCode.Model.RotationSpeedRightBrick(device, sprite, { degreesPerSec: deg });
-
-    assert.ok(b._device === device && b._sprite === sprite && b._degreesPerSecond instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.RotationSpeedRightBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    assert.ok(b.objClassName === "RotationSpeedRightBrick", "objClassName check");
-
-    //execute
-    var handler = function (e) {
-        assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -792,7 +768,7 @@ QUnit.test("SetGravityBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -820,7 +796,7 @@ QUnit.test("SetMassBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -849,7 +825,7 @@ QUnit.test("SetBounceFactorBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };
@@ -878,7 +854,7 @@ QUnit.test("SetFrictionBrick", function (assert) {
     //execute
     var handler = function (e) {
         assert.ok(true, "executed");
-        assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+        assert.ok(!e.loopDelay, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
         done1();
     };

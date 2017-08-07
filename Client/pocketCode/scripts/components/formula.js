@@ -33,15 +33,15 @@ PocketCode.Formula = (function () {
                 var parsed = PocketCode.FormulaParser.parseJson(value); //return {calculate: [Function], isStatic: [boolean]}
                 if (parsed.isStatic) {
                     this.isStatic = true;
-                    this.calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
-                    var val = this.calculate();
+                    this._calculate = parsed.calculate;  //to map scope to formula (currently scope = parsed)
+                    var val = this._calculate();
                     val = (typeof val === 'string') ? '\'' + val.replace(/('|\n|\\)/g, '\\\$1') + '\'' : val;
                     val = 'return ' + val + ';';
-                    this.calculate = new Function(val);
+                    this._calculate = new Function(val);
                 }
                 else {
                     this.isStatic = false;
-                    this.calculate = parsed.calculate;
+                    this._calculate = parsed.calculate;
                 }
                 this._validateFormula();
             },
@@ -50,6 +50,11 @@ PocketCode.Formula = (function () {
 
     //methods
     Formula.prototype.merge({
+        calculate: function() {
+            if (this._json)
+                return this._calculate();
+            throw new Error('No Formula objct loaded');
+        },
         _degree2radian: function (val) {
             return val * (Math.PI / 180.0);
         },
@@ -97,7 +102,7 @@ PocketCode.Formula = (function () {
                     getList: function (id) { return new PocketCode.Model.UserVariableList(id, 'undefined'); },
                     collidesWithSprite: function (name) { return true; },
                 };
-                var test = this.calculate.call(formula);    //execute generated calculate method in testFormula
+                var test = this._calculate.call(formula);    //execute generated calculate method in testFormula
             }
             catch (e) {
                 throw new Error('Error parsing formula: ' + e.message);

@@ -233,8 +233,8 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    //$brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick found");//: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -333,7 +333,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);
+                $brick = new WhenActionBrickDto($this->getNewId(), "spriteTouched");//lcfirst((string)$script->action));    //action = "Tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -344,7 +344,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 break;
 
             case "WhenTouchDownScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenActionBrickDto($this->getNewId(), "screenTouched");
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -672,7 +672,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new RotationSpeedLeftBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value, true);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -680,7 +680,7 @@ class ProjectFileParser_v0_98 extends ProjectFileParser_v0_94
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new RotationSpeedRightBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y

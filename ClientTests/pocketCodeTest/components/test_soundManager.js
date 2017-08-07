@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 "use strict";
 
@@ -124,7 +124,7 @@ QUnit.test("SoundManager", function (assert) {
     //    var sm2LoadHandler = function (e) {
     //        sm2Load = e;
     //        //console.log('load2');
-    //        //sm2.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.3/file/tts?text=sound has successfully finished: two');//, 'newId', 'mp3');
+    //        //sm2.startSoundFromUrl('https://web-test.catrob.at/html5/rest/v0.4/file/tts?text=sound has successfully finished: two');//, 'newId', 'mp3');
     //        assert.equal(sm2Progress.length, 4, "count progress");
     //        assert.equal(sm2Progress[sm2Progress.length - 1].progress, 100, "last progress = 100%");
     //        assert.equal(sm2Error, 3, "all files failed loading due to unsupprted mp3 format");

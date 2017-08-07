@@ -613,8 +613,7 @@ class ProjectFileParser_v0_992
             array_push($this->cpp, $script);
             $brickType = $this->getBrickType($script);
             if(isset($script["reference"]))
-                return new UnsupportedBrickDto((string)$script, "referenceError: TODO");
-            //TODO //throw new InvalidProjectFileException($brickType . ": referenced brick (brickType)");
+                throw new InvalidProjectFileException("referenced brick found");//: $brickType");
 
             $brick = $this->parseEventBricks($brickType, $script);
 
@@ -640,8 +639,13 @@ class ProjectFileParser_v0_992
                 $brick = $this->parseUserBricks($brickType, $script);
 
 			//default: not found
-            if(!$brick)
-                $brick = new UnsupportedBrickDto($script->asXML(), $brickType);
+            if(!$brick) {
+				$endBricks = array("LoopEndlessBrick", "LoopEndBrick", "IfThenLogicEndBrick", "IfLogicEndBrick");
+				if (in_array($brickType, $endBricks))
+					throw new InvalidProjectFileException("end brick: $brickType detected at wrong code position- broken code encapsulation");
+
+				$brick = new UnsupportedBrickDto($script->asXML(), $brickType);
+			}
 
             array_pop($this->cpp);
 
@@ -679,8 +683,8 @@ class ProjectFileParser_v0_992
                 $script = $brickList[$idx];
                 if(isset($script["reference"]))
                 {
-                    $brick = $this->getBrickType($script);
-                    throw new InvalidProjectFileException($brick . ": referenced brick");
+                    //$brickType = $this->getBrickType($script);
+                    throw new InvalidProjectFileException("referenced brick found");//: $brickType");
                 }
 
                 switch($this->getBrickType($script))
@@ -757,7 +761,7 @@ class ProjectFileParser_v0_992
                 break;
 
             case "WhenScript":
-                $brick = new WhenActionBrickDto($this->getNewId(), (string)$script->action);    //action = "Tapped"
+                $brick = new WhenActionBrickDto($this->getNewId(), EUserActionType::SPRITE_TOUCHED);//lcfirst((string)$script->action));    //action = "tapped"
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -769,7 +773,7 @@ class ProjectFileParser_v0_992
 
             //WhenTouchDown
             case "WhenTouchDownScript":
-                $brick = new WhenTouchBrickDto($this->getNewId(), "TouchStart");
+                $brick = new WhenActionBrickDto($this->getNewId(), EUserActionType::TOUCH_START);
                 $brickList = $script->brickList;
                 array_push($this->cpp, $brickList);
 
@@ -1322,22 +1326,16 @@ class ProjectFileParser_v0_992
 
             // stop script/s
             case "StopScriptBrick":
-                $scriptType = null; //"mouseTouchPointer", "random", "sprite"
+                $scriptType = (string)$script->spinnerSelection;
 
-                switch((string)$script->spinnerSelection) {
-                    case "0":
-                        $scriptType = "this";
-                        break;
-                    case "1":
-                        $scriptType = "all";
-                        break;
-                    case "2":
-                        $scriptType = "other";
-                        break;
+                switch($scriptType) {
+                    case "0":   //this
+                    case "1":   //all
+                    case "2":   //other
+                        break;  //valid
+                    default:    //invalid if not one of the above
+                        throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
                 }
-
-                if(!$scriptType)
-                    throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
 
                 $brick = new StopScriptBrickDto($scriptType);
                 break;
@@ -1583,7 +1581,7 @@ class ProjectFileParser_v0_992
                 $value = $this->parseFormula($fl->formula);
 
                 array_pop($this->cpp);
-                $brick = new RotationSpeedLeftBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value, true);
                 break;
 
             case "TurnRightSpeedBrick":
@@ -1591,7 +1589,7 @@ class ProjectFileParser_v0_992
                 array_push($this->cpp, $fl);
                 $value = $this->parseFormula($fl->formula);
 
-                $brick = new RotationSpeedRightBrickDto($value);
+                $brick = new SetRotationSpeedBrickDto($value);
                 break;
 
             case "SetGravityBrick": //PHYSICS_GRAVITY_X, PHYSICS_GRAVITY_Y
@@ -2226,6 +2224,33 @@ class ProjectFileParser_v0_992
         else if($type === "USER_LIST")
         {
             $value = $this->getListId((string)$formula->value);
+        }
+        else if($type === "COLLISION_FORMULA")
+        {
+            $name = (string)$formula->value;   //either 'sp1 touches sp2' (v0.992) or 'sp1' (v0.993 - ?)
+            $spriteNames = explode(" touches ", $value);
+            if(count($spriteNames) == 2)    //v0.992
+            {
+                $name = $spriteNames[1];
+            }
+            else if(count($spriteNames) == 1)   //v0.993
+            {
+                $name = $spriteNames[0];
+            }
+            else
+            {
+                throw new InvalidProjectFileException("Formula type error: COLLISION_FORMULA: value = $name");
+            }
+
+            //detect id by object name (unique): all sprites are already pre-parsed with id and name
+            foreach($this->currentScene->sprites as $s)
+            {
+                if($s->name === $name)
+                {
+                    $value = $s->id;
+                    break;
+                }
+            }
         }
         else
         {
