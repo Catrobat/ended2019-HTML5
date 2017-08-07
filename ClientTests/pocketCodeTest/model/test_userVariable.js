@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -31,14 +31,15 @@ QUnit.test("UserVariableCollection", function (assert) {
 
     //reset: simple
     uvc.reset();
-    assert.equal(uvc.getVariableById("1").value, undefined, "var 1 undefined after reset");
-    assert.equal(uvc.getVariableById("4").value, undefined, "var 4 undefined after reset");
-    assert.equal(uvc.getVariableById("7").value, undefined, "var 7 undefined after reset");
+    assert.equal(uvc.getVariableById("1").value, 0, "var 1 = 0 (init state) after reset");
+    assert.equal(uvc.getVariableById("4").value, 0, "var 4 = 0 (init state) after reset");
+    assert.equal(uvc.getVariableById("7").value, 0, "var 7 = 0 (init state) after reset");
 
     uvc.initVariableList(testVars);
     assert.ok(uvc.getVariableById("1") instanceof PocketCode.Model.UserVariableSimple && uvc.getVariableById("4") instanceof PocketCode.Model.UserVariableSimple && uvc.getVariableById("7") instanceof PocketCode.Model.UserVariableSimple, "sdimple: variable getter: instance check");
     assert.ok(uvc.getVariableById("4")._id === "4" && uvc.getVariableById("4").name === "5" && uvc.getVariableById("4")._value === 6, "simple: variable created correctly");
-    assert.ok(uvc.getVariables()["7"]._id === "7" && uvc.getVariables()["7"].name === "8" && uvc.getVariables()["7"]._value === undefined, "simple: variable created correctly (init value)");
+    assert.ok(uvc.getVariables()["7"]._id === "7" && uvc.getVariables()["7"].name === "8" && uvc.getVariables()["7"]._value === 0, "simple: variable created correctly (init value)");
+    assert.equal(uvc.getVariableById("7").value, 0, "var initialized with = 0");
 
     var first = uvc.getVariableById("1");
     assert.ok(first._id === "1" && first.name === "2" && first._value === 3 && first.value === 3, "getById check + value accessor");
@@ -51,6 +52,9 @@ QUnit.test("UserVariableCollection", function (assert) {
         //done();
     };
     uvc.onVariableChange.addEventListener(new SmartJs.Event.EventListener(varChangeHandler, this));
+    first.value = 22;
+    assert.equal(varChangeCalled, 0, "var change: event handler NOT called (not visible)"); //can be shown in differen scenes at different positions
+    first._uiCache.visible = true;  //set to visible
     first.value = 23;
     assert.equal(varChangeCalled, 1, "var change: event handler called");
 
@@ -89,12 +93,13 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.ok(uv instanceof PocketCode.Model.UserVariableSimple, "instance check");
     assert.ok(uv.onChange instanceof SmartJs.Event.Event, "onChange event accessor");
 
-    assert.ok(uv._id == 1 && uv.name === "2" && uv._value === undefined, "properties set correctly: value initialized");
+    assert.ok(uv._id == 1 && uv.name === "2" && uv._value === 0, "properties set correctly: value initialized");
     var changeCount = 0;
     var changeHandler = function () {
         changeCount++;
     };
     uv.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));
+    uv._uiCache.visible = true;  //set to visible
     uv.value = "new val";
     assert.ok(uv._value === "new val" && uv.value === "new val", "value accessor: string");
     assert.equal(uv.valueAsNumber, 0, "string as number = 0");
@@ -107,7 +112,7 @@ QUnit.test("UserVariableSimple", function (assert) {
     assert.equal(uv.valueAsNumber, 0, "0 as number = 0");
 
     uv = new PocketCode.Model.UserVariableSimple(1, "2");
-    assert.equal(uv.toString(), "", "toString: empty value");
+    assert.equal(uv.toString(), "0", "toString: empty value (initialized with 0)");
     assert.equal(uv.valueAsNumber, 0, "undefined as number = 0");
     uv.value = "2";
     assert.equal(uv.valueAsNumber, 2, "2 (string) as number = 2");
@@ -138,11 +143,12 @@ QUnit.test("UserVariableSimple", function (assert) {
 
     changeCount = 0;
     uv2.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));
+    uv2._uiCache.visible = true;  //set to visible
     uv2.reset();
-    assert.equal(uv2.value, undefined, "rest: to undefined");
-    assert.equal(changeCount, 1, "rest: onChange dispatched");
-    uv2.reset();    //resetting an undefined var will not trigger an event
-    assert.equal(changeCount, 1, "rest: onChange not dispatched if already undefined");
+    assert.equal(uv2.value, 0, "reset: to 0 (reinitialized)");
+    assert.equal(changeCount, 0, "reset: onChange not dispatched (reset also changes to variable visibility state to default)");
+
+    assert.equal(uv2._uiCache.visible, false, "reset: visibility state resetted");
 
 });
 
@@ -157,15 +163,15 @@ QUnit.test("UserVariableList", function (assert) {
 
     assert.throws(function () { var test = new PocketCode.Model.UserVariableList(1, "2", 0); }, Error, "ERROR: invalid argument: value");
 
-    var changeCount = 0;
-    var latestChange;
-    var changeHandler = function (e) {
-        latestChange = e;
-        changeCount++;
-    };
+    //var changeCount = 0;         //currently disabled for lists: we cannot show them
+    //var latestChange;
+    //var changeHandler = function (e) {
+    //    latestChange = e;
+    //    changeCount++;
+    //};
 
     uv = new PocketCode.Model.UserVariableList(1, "2", [3.4, 3.5, "3.6", "string"]);
-    uv.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));
+    //uv.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));         //currently disabled for lists: we cannot show them
 
     assert.ok(uv._id == 1 && uv.name === "2" && uv.length === 4, "properties set: check for list length");
     assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string"], "properties set: check on equal");
@@ -193,9 +199,9 @@ QUnit.test("UserVariableList", function (assert) {
     //append
     uv.append("12");
     assert.deepEqual(uv._value, [3.4, 3.5, 3.6, "string", 12], "append()");
-    assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on append");
-    latestChange = undefined;
-    changeCount = 0;
+    //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on append");         //currently disabled for lists: we cannot show them
+    //latestChange = undefined;
+    //changeCount = 0;
 
     //insertAt
     uv.insertAt(2, true);
@@ -204,19 +210,19 @@ QUnit.test("UserVariableList", function (assert) {
     assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): position 0 - not allowed");
     uv.insertAt(-1, "invalidindex");
     assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12], "insertAt(): negative position - not allowed");
-    assert.equal(changeCount, 1, "change event only dispatched if list has changed");
-    changeCount = 0;
+    //assert.equal(changeCount, 1, "change event only dispatched if list has changed");
+    //changeCount = 0;
 
     uv.insertAt(7, "invalidindex?");
     assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): length + 1 - allowed (appended)");
-    assert.equal(changeCount, 1, "change event on insert at [length+1] = append");
-    changeCount = 0;
+    //assert.equal(changeCount, 1, "change event on insert at [length+1] = append");
+    //changeCount = 0;
 
     uv.insertAt(9, "validIndex");
     assert.deepEqual(uv._value, [3.4, true, 3.5, 3.6, "string", 12, "invalidindex?"], "insertAt(): > length + 1 - not allowed");
-    assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 0, "update event: no insert");
-    latestChange = undefined;
-    changeCount = 0;
+    //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 0, "update event: no insert");         //currently disabled for lists: we cannot show them
+    //latestChange = undefined;
+    //changeCount = 0;
 
     //replaceAt
     uv.replaceAt(2, false);
@@ -225,9 +231,9 @@ QUnit.test("UserVariableList", function (assert) {
     assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: 0");
     uv.replaceAt(8, false);
     assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12, "invalidindex?"], "replaceAt(): invalid index: > length");
-    assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on replace");
-    latestChange = undefined;
-    changeCount = 0;
+    //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on replace");         //currently disabled for lists: we cannot show them
+    //latestChange = undefined;
+    //changeCount = 0;
 
     //deleteAt
     uv.deleteAt(7);
@@ -236,9 +242,9 @@ QUnit.test("UserVariableList", function (assert) {
     assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: 0");
     uv.deleteAt(7);
     assert.deepEqual(uv._value, [3.4, false, 3.5, 3.6, "string", 12], "deleteAt(): invalid index: > length");
-    assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on delete");
-    latestChange = undefined;
-    changeCount = 0;
+    //assert.ok(latestChange.id === uv._id && latestChange.target === uv && changeCount == 1, "update event on delete");         //currently disabled for lists: we cannot show them
+    //latestChange = undefined;
+    //changeCount = 0;
 
     //contains
     uv.append("string");
@@ -271,11 +277,11 @@ QUnit.test("UserVariableList", function (assert) {
     assert.equal(uv.valueAsNumberAt(uv.length), 3.4, "append: user list: added and casted: type check internal");
 
     //reset
-    changeCount = 0;
-    uv2.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));
+    //changeCount = 0;         //currently disabled for lists: we cannot show them
+    //uv2.onChange.addEventListener(new SmartJs.Event.EventListener(changeHandler, this));
     uv2.reset();
     assert.equal(uv2.length, 0, "reset: empty list[]");
-    assert.equal(changeCount, 1, "change event on reset");
+    //assert.equal(changeCount, 1, "change event on reset");
     uv2.reset();
-    assert.equal(changeCount, 1, "change not dispatch if list = empty already");
+    //assert.equal(changeCount, 1, "change not dispatch if list = empty already");
 });

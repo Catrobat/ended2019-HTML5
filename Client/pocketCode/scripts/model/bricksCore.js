@@ -43,7 +43,7 @@ PocketCode.Model.merge({
 
                 var idx = po.childIdx,
                     bricks = this._bricks;
-                if (idx < bricks.length) {
+                if (idx < bricks.length && !args.stopped) {
                     po.childIdx++;
                     bricks[idx].execute(new SmartJs.Event.EventListener(this._executeContainerItem, this), args.id, po.scope);
                 }
@@ -57,7 +57,7 @@ PocketCode.Model.merge({
                         if (po[prop] && po[prop].dispose)
                             po[prop].dispose();
                     delete this._pendingOps[args.id];
-                    listener.handler.call(listener.scope, { id: threadId, loopDelay: loopDelay });
+                    listener.handler.call(listener.scope, { id: threadId, loopDelay: loopDelay, stopped: args.stopped });
                 }
             },
             pause: function () {
@@ -151,12 +151,13 @@ PocketCode.Model.merge({
             _execute: function (scope) {
                 this._return();
             },
-            _return: function (loopDelay) {
+            _return: function (loopDelay, stopped) {
                 if (this._disposed)
                     return;
                 this._onExecutedListener.handler.call(this._onExecutedListener.scope, {
                     id: this._threadId,
-                    loopDelay: loopDelay
+                    loopDelay: loopDelay,
+                    stopped: stopped,
                 });
             },
             /* override */
@@ -277,7 +278,7 @@ PocketCode.Model.SingleContainerBrick = (function () {
     //methods
     SingleContainerBrick.prototype.merge({
         _returnHandler: function (e) {
-            this._return(e.id, e.loopDelay)
+            this._return(e.id, e.loopDelay, e.stopped)
         },
         _execute: function (id, scope) {
             this._bricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
@@ -450,7 +451,7 @@ PocketCode.Model.merge({
                 if (!po)
                     return;
 
-                if (/*this._bricks &&*/ this._loopConditionMet(po)) {   //bricks checked already in execute()
+                if (/*this._bricks &&*/ this._loopConditionMet(po) && !e.stopped) {   //bricks checked already in execute()
                     var executionDelay = 0;
                     if (e.loopDelay) {
                         executionDelay = this._minLoopCycleTime - (new Date() - po.startTime);  //20ms min loop cycle time
@@ -465,7 +466,7 @@ PocketCode.Model.merge({
                     }
                 }
                 else
-                    this._return(id);
+                    this._return(id, false, e.stopped);
             },
         });
 

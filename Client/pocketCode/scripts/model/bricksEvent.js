@@ -37,14 +37,46 @@ PocketCode.Model.merge({
     WhenActionBrick: (function () {
         WhenActionBrick.extends(PocketCode.Model.ScriptBlock, false);
 
-        function WhenActionBrick(device, sprite, propObject, actionEvent) {
+        function WhenActionBrick(device, sprite, propObject, actionEvents) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            //this._action = propObject.action;   //'Tapped', 'TouchStart'
+            this._onActionEvents = actionEvents;
+            this.action = propObject.action;   //handling several actions: "spriteTouched", "screenTouched" (currently not supported: "video motion", "timer", "loudness", ...) 
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
-            this._onAction = actionEvent;
-            actionEvent.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
         }
+
+        Object.defineProperties(WhenActionBrick.prototype, {
+            action: {
+                get: function() {
+                    return this._action;
+                },
+                set: function (action) {
+                    if (this._action == action)
+                        return;
+
+                    //validate action
+                    var found = false;
+                    for (var type in PocketCode.UserActionType) {
+                        if (PocketCode.UserActionType[type] == action) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                        throw new Error('unrecognized event: check if action is part of PocketCode.UserActionType');
+
+                    event = this._onActionEvents[action];
+                    if (!(event instanceof SmartJs.Event.Event))
+                        throw new Error('unrecognized event: check if all events were registered in out parser');
+                    if(this._actionEvent)
+                        this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+
+                    this._action = action;
+                    this._actionEvent = event;
+                    event.addEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+                },
+            },
+        });
 
         WhenActionBrick.prototype.merge({
             _onActionHandler: function (e) {
@@ -52,8 +84,10 @@ PocketCode.Model.merge({
                     this.executeEvent(e);
             },
             dispose: function () {
-                this._onAction.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
-                this._onAction = undefined;  //make sure to disconnect from gameEngine
+                if (this._actionEvent)
+                    this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
+
+                this._action = this._actionEvent = undefined;
                 PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
             },
         });
@@ -64,16 +98,6 @@ PocketCode.Model.merge({
 });
 
 PocketCode.Model.merge({
-
-    WhenTouchBrick: (function () {
-        WhenTouchBrick.extends(PocketCode.Model.WhenActionBrick, false);
-
-        function WhenTouchBrick(device, sprite, propObject, actionEvent) {
-            PocketCode.Model.WhenActionBrick.call(this, device, sprite, propObject, actionEvent);
-        }
-
-        return WhenTouchBrick;
-    })(),
 
     WhenBroadcastReceiveBrick: (function () {
         WhenBroadcastReceiveBrick.extends(PocketCode.Model.ScriptBlock, false);

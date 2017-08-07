@@ -1,9 +1,3 @@
-/**
- * Created by Michael Pittner on 27.02.2016.
- */
-
-
-
 'use strict';
 
 QUnit.module("projectTester.js");
@@ -18,7 +12,7 @@ QUnit.test("*", function (assert) {
     /*                          1. Limit of tests                                */
     /* if 0, fetch all */
     var limit = 0,
-      offset = 0; //TODO: retest this
+        offset = 0; //TODO: retest this
     //
 
     /*              2. just test JSON or also test uf object works               */
@@ -604,7 +598,6 @@ QUnit.test("*", function (assert) {
             mask: "downloads"
         });
 
-
         var onSuccessProjectsHandler = function (e) {
             receivedObject = e.responseJson;
             //var allProjectsCount = receivedObject.items.length;
@@ -834,8 +827,5 @@ QUnit.test("*", function (assert) {
         sr.onError.addEventListener(new SmartJs.Event.EventListener(onErrorProjectHandler, this));
         PocketCode.Proxy.send(sr);
     }
-
-    // ---
-
 
 });

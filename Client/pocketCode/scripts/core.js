@@ -80,10 +80,10 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 PocketCode.merge({
 
     UserActionType: {
-        SPRITE_CLICKED: 0,
-        TOUCH_START: 1,
-        TOUCH_MOVE: 2,
-        TOUCH_END: 3,
+        SPRITE_TOUCHED: 'spriteTouched',
+        TOUCH_START: 'touchStart',
+        TOUCH_MOVE: 'touchMove',
+        TOUCH_END: 'touchEnd',
     },
     ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
         INITIALIZED: -1,
@@ -92,6 +92,11 @@ PocketCode.merge({
         PAUSED: 3,  //and running
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
+    },
+    StopScriptType: {
+        THIS: 0,
+        ALL: 1,
+        OTHER: 2,
     },
 
     isPlayerCompatible: function () {
