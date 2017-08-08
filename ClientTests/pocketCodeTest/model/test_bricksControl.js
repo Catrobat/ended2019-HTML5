@@ -362,7 +362,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     ifBricks.push(new TestBrick2("", "", {}));
     ifBricks.push(new TestBrick2("", "", {}));
 
-    var b2 = new PocketCode.Model.IfThenElseBrick("device", sprite, { showElse: true, condition: condFalse });
+    var b2 = new PocketCode.Model.IfThenElseBrick("device", sprite, { hasElse: true, condition: condFalse });
     var bc = new PocketCode.Model.BrickContainer(ifBricks);    //container including bricks
     b2.ifBricks = bc;
 
@@ -394,7 +394,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     assert.equal(!b2._ifBricks._bricks[1].paused, true, "resumed");
 
     //test without else path
-    var b3 = new PocketCode.Model.IfThenElseBrick("device", sprite, { showElse: false, condition: condFalse });
+    var b3 = new PocketCode.Model.IfThenElseBrick("device", sprite, { hasElse: false, condition: condFalse });
     var elseBricks2 = [];
     elseBricks2.push(new TestBrick2("", "", {}));
     elseBricks2.push(new TestBrick2("", "", {}));

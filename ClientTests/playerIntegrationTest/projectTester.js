@@ -22,7 +22,7 @@ PocketCode.Test = {
 };
 
 //define endpoint (override)
-PocketCode._serviceEndpoint = 'https://web-test.catrob.at/html5/rest/v0.3/';   //TODO:
+PocketCode._serviceEndpoint = 'https://web-test.catrob.at/html5/rest/v0.4/';   //TODO:
 
 PocketCode.Test.ProjectTester = (function () {
 

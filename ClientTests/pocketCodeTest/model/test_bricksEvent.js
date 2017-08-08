@@ -340,15 +340,15 @@ QUnit.test("BroadcastBrick", function (assert) {
     var done1 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastMsgId: "s12" });
+    var b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._broadcastMsgId === "s12", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._broadcastId === "s12", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.BroadcastBrick, "instance check");
     assert.ok(b.objClassName === "BroadcastBrick", "objClassName check");
 
     b.dispose();
     assert.ok(b._disposed && !broadcastMgr._disposed, "disposed without disposing the broadcast manager");
-    b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastMsgId: "s12" });
+    b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
 
     var id;
     var loopDelay;
@@ -378,15 +378,15 @@ QUnit.test("BroadcastAndWaitBrick", function (assert) {
     var done1 = assert.async();
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastAndWaitBrick("device", "sprite", broadcastMgr, { broadcastMsgId: "s12" });
+    var b = new PocketCode.Model.BroadcastAndWaitBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
 
-    assert.ok(b._device === "device" && b._sprite === "sprite" && b._broadcastMsgId === "s12", "brick created and properties set correctly");
+    assert.ok(b._device === "device" && b._sprite === "sprite" && b._broadcastId === "s12", "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.BroadcastAndWaitBrick, "instance check");
     assert.ok(b.objClassName === "BroadcastAndWaitBrick", "objClassName check");
 
     b.dispose();
     assert.ok(b._disposed && !broadcastMgr._disposed, "disposed without disposing the broadcast manager");
-    b = new PocketCode.Model.BroadcastAndWaitBrick("device", "sprite", broadcastMgr, { broadcastMsgId: "s12" });
+    b = new PocketCode.Model.BroadcastAndWaitBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
 
     var tb1 = new PocketCode.Model.WhenBroadcastReceiveBrick("device", "sprite", broadcastMgr, { receiveMsgId: "s12" });
     var TestBrick2 = (function () {

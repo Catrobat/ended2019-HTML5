@@ -993,13 +993,13 @@ QUnit.test("BrickFactory", function (assert) {
     var allBricksProject = project1;    //using tests_testData.js
     //^^ includes all types of bricks 
     //adding unsupported brick
-    //{"broadcastMsgId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
-    //{"broadcastMsgId":"s50","type":"Unsupported"}             //server detect
+    //{"broadcastId":"s50","type":"BroadcastAndWaitUnknown"} //client detect
+    //{"broadcastId":"s50","type":"Unsupported"}             //server detect
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    allBricksProject.background.scripts.push({ "broadcastMsgId": "s50", "type": "BroadcastAndWaitUnknown" });
-    allBricksProject.background.scripts.push({ "broadcastMsgId": "s51", "type": "Unsupported" });
+    allBricksProject.background.scripts.push({ "broadcastId": "s50", "type": "BroadcastAndWaitUnknown" });
+    allBricksProject.background.scripts.push({ "broadcastId": "s51", "type": "Unsupported" });
     allBricksProject.header.bricksCount += 2;
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);

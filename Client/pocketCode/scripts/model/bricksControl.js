@@ -140,7 +140,7 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._condition = new PocketCode.Formula(device, sprite, propObject.condition);
-            this._showElse = propObject.showElse;
+            this._hasElse = propObject.hasElse;
             this._ifBricks = new PocketCode.Model.BrickContainer([]);
             this._elseBricks = new PocketCode.Model.BrickContainer([]);
         }
@@ -183,7 +183,7 @@ PocketCode.Model.merge({
             _execute: function (id, scope) {
                 if (this._condition.calculate(scope))
                     this._ifBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
-                else if (this._showElse)
+                else if (this._hasElse)
                     this._elseBricks.execute(new SmartJs.Event.EventListener(this._returnHandler, this), id, scope);
                 else
                     this._return(id);

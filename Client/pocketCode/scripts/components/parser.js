@@ -159,18 +159,15 @@ PocketCode.merge({
                     //case 'SetCameraTransparencyBrick':  //add scene to cntr - access background
 
                     //not part of current Android release:
-                    case 'UserScriptBrick':
-                    case 'CallUserScriptBrick':
+                    //case 'UserScriptBrick':
+                    //case 'CallUserScriptBrick':
 
                     //in development:
-                    //case 'WhenConditionMetBrick':
-                    //case 'StopScriptBrick':
-                    //case 'SetBackgroundBrick':
+                    case 'SetRotationSpeedBrick': //including CCW 
+
                     case 'WhenCollisionBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
-                    case 'SetRotationSpeedBrick': //including CCW 
-                    
                     case 'SetGravityBrick':
                     case 'SetMassBrick':
                     case 'SetBounceFactorBrick':
@@ -179,8 +176,12 @@ PocketCode.merge({
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
 
-                    //case 'PlaySoundAndWaitBrick':
-                    //case 'SpeakAndWaitBrick':
+                    //bubbles   -> currently not supported
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
+
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
@@ -204,43 +205,30 @@ PocketCode.merge({
 
                     case 'CloneBrick':
                     case 'DeleteCloneBrick':
-                    case 'SetGravityBrick':
-                    case 'SetBackgroundBrick':
-                    case 'SetBackgroundAndWaitBrick':
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
-                    case 'AskSpeechBrick':
+
                     case 'AskBrick':
-                    //bubbles
-                    case 'SayBrick':
-                    case 'SayForBrick':
-                    case 'ThinkBrick':
-                    case 'ThinkForBrick':
-                    //background
-                    case 'SetBackgroundByIndexBrick':
-                    case 'WhenBackgroundChangesToBrick':
+                    case 'AskSpeechBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
+                        //background
+                    case 'SetBackgroundBrick':
+                    case 'SetBackgroundByIndexBrick':
+                    case 'WhenBackgroundChangesToBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
                     case 'BroadcastBrick':
-                        //type = 'BroadcastAndWaitBrick'; //fix to make sure we are catroid compatible?
-                    case 'BroadcastAndWaitBrick':
                     case 'WhenBroadcastReceiveBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
-                    case 'PlaySoundAndWaitBrick':   //disabled
-                    case 'SpeakAndWaitBrick':
-                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                        break;
-
                     case 'PlaySoundBrick':
-                    case 'PlaySoundAndWaitBrick':
                     case 'StopAllSoundsBrick':
                     case 'SpeakBrick':
-                    case 'SpeakAndWaitBrick':
+                        if (jsonBrick.andWait)  //handles (currently) both: playSoundAndWait + SpeakAndWait
+                            break;
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
                         break;
 

@@ -127,12 +127,12 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
-            this._broadcastMsgId = propObject.broadcastMsgId;
+            this._broadcastId = propObject.broadcastId;
         }
 
         BroadcastBrick.prototype.merge({
             _execute: function () {
-                this._broadcastMgr.publish(this._broadcastMsgId);
+                this._broadcastMgr.publish(this._broadcastId);
                 this._return();
             },
             dispose: function () {
@@ -151,12 +151,12 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
-            this._broadcastMsgId = propObject.broadcastMsgId;
+            this._broadcastId = propObject.broadcastId;
         }
 
         BroadcastAndWaitBrick.prototype.merge({
             _execute: function (id) {
-                this._broadcastMgr.publish(this._broadcastMsgId, this._return.bind(this, id));
+                this._broadcastMgr.publish(this._broadcastId, this._return.bind(this, id));
             },
             dispose: function () {
                 this._broadcastMgr = undefined;
