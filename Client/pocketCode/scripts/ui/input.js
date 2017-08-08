@@ -275,15 +275,24 @@ PocketCode.Ui.merge({
         Slider.extends(SmartJs.Ui.Control, false);
 
         //cntr
-        function Slider(minVal, maxVal, startVal, orientation) {
-            SmartJs.Ui.Control.call(this, 'input', { className: 'pc-slider' });
-            this._dom.type = 'range';
-            //TODO
+        function Slider(propObj) {//min, max, value, orientation) {
+            SmartJs.Ui.Control.call(this, 'div', { className: 'pc-slider' });
+            var input = new SmartJs.Ui.HtmlTag('input');
+            var dom = input.dom;
+            this._sliderDom = dom;
+            dom.type = 'range';
+            //dom.min = minVal || 0;
+            //dom.max = maxVal || 100;
+            //dom.value = startVal || 50;
+            //dom.orientation = orientation || 'horizontal';
+            this.merge(propObj);
+            this._addDomListener(dom, 'change', this._onChangeHandler.bind(this));
+            this._appendChild(input);
 
-            this._dom.min = minVal || 0;
-            this._dom.max = maxVal || 100;
-            this._dom.value = startVal || 50;
-            this._dom.orientation = orientation || 'horizontal';
+            //TODO:
+            //add spans for minLabel, maxLabel
+            //zB: '0', '+-90'
+
             //events
             this._onChange = new SmartJs.Event.Event(this);
         }
@@ -301,42 +310,46 @@ PocketCode.Ui.merge({
         Object.defineProperties(Slider.prototype, {
             //TODO: min, max, value, hor/vertical, ...
             //min: minimal value of slider
-            minVal: {
+            min: {
                 get: function () {
-                    return this._minVal;
+                    return this._sliderDom.min;
                 },
                 set: function (minVal) {
-                    this._minVal = minVal;
+                    this._sliderDom.min = minVal;
                 },
             },
             //max: maximal value of slider
-            maxVal: {
+            max: {
                 get: function () {
-                    return this._maxVal;
+                    return this._sliderDom.max;
                 },
                 set: function (maxVal) {
-                    this._maxVal = maxVal;
+                    this._sliderDom.max = maxVal;
                 },
             },
             //value: start position of slider
-            startVal: {
+            value: {
                 get: function () {
-                    return this._startVal;
+                    return this._sliderDom.value;
                 },
-                set: function (startVal) {
-                    this._startVal = startVal;
+                set: function (value) {
+                    this._sliderDom.value = value;
                 },
             },
             //orient: orientation of slider
             orientation: {
                 get: function () {
-                    return this._orientation;
+                    return this._sliderDom.orient;
                 },
                 set: function (orientation) {
-                    this._orientation = orientation;
+                    this._sliderDom.orient = orientation;
                 },
             },
         });
+
+        Slider.prototype._onChangeHandler = function(e) {
+            this._onChange.dispatchEvent({value: e.target.value});
+        };
 
         return Slider;
     })(),

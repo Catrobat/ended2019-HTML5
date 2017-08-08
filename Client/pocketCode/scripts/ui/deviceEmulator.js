@@ -30,12 +30,9 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider(0, 100, 50);
-        span = new SmartJs.Ui.HtmlTag('span');
-        span.appendChild(this._maxSlider);
-        span.addClassName('pc-dESlider');
-        //span.id = "maxDegree";
-        scroll.appendChild(span);
+        this._maxSlider = new PocketCode.Ui.Slider({min:0, max:90, value:90});  //TODO: get default values from device
+        this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
+        scroll.appendChild(this._maxSlider);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
         span = new SmartJs.Ui.HtmlTag('span');
@@ -47,12 +44,9 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider(1, 90, 90);
-        span = new SmartJs.Ui.HtmlTag('span');
-        span.appendChild(this._accSlider);
-        span.addClassName('pc-dESlider');
-        //span.id = "maxAccel";
-        scroll.appendChild(span);
+        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:90}); //TODO: get default values from device
+        this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
+        scroll.appendChild(this._accSlider);
 
         this.hide();
         this._img = new SmartJs.Ui.Image();
@@ -98,18 +92,24 @@ PocketCode.Ui.DeviceEmulator = (function () {
             get: function () {
                 return this._dom;
             },
-        },
+        },/*
         device: {
             set: function (device) {
                 if (!(device instanceof PocketCode.DeviceEmulator))
                     throw new Error('Emulator UI con only be used with a PocketCode.DeviceEmulator');
                 this._device = device;
             },
-        },
+        },*/
     });
 
     //methods
     DeviceEmulator.prototype.merge({
+        _maxDegreeChangeHandler: function(e) {
+            ;   //TODO: set e.value to device
+        },
+        _maxAccChangeHandler: function(e) {
+            ;   //TODO: set e.value to device
+        },
         _openCloseHandler: function (e) {
             if (this._subMenu.hidden) {
                 this._subMenu.show();
