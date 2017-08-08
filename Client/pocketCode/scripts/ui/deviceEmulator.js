@@ -30,10 +30,11 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider();
+        this._maxSlider = new PocketCode.Ui.Slider(0, 100, 50);
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._maxSlider);
         span.addClassName('pc-dESlider');
+        //span.id = "maxDegree";
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
@@ -46,10 +47,11 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider();
+        this._accSlider = new PocketCode.Ui.Slider(1, 90, 90);
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._accSlider);
         span.addClassName('pc-dESlider');
+        //span.id = "maxAccel";
         scroll.appendChild(span);
 
         this.hide();

@@ -275,11 +275,15 @@ PocketCode.Ui.merge({
         Slider.extends(SmartJs.Ui.Control, false);
 
         //cntr
-        function Slider() {
+        function Slider(minVal, maxVal, startVal, orientation) {
             SmartJs.Ui.Control.call(this, 'input', { className: 'pc-slider' });
-            this._dom.type='range';
+            this._dom.type = 'range';
             //TODO
 
+            this._dom.min = minVal || 0;
+            this._dom.max = maxVal || 100;
+            this._dom.value = startVal || 50;
+            this._dom.orientation = orientation || 'horizontal';
             //events
             this._onChange = new SmartJs.Event.Event(this);
         }
@@ -296,6 +300,42 @@ PocketCode.Ui.merge({
         //properties
         Object.defineProperties(Slider.prototype, {
             //TODO: min, max, value, hor/vertical, ...
+            //min: minimal value of slider
+            minVal: {
+                get: function () {
+                    return this._minVal;
+                },
+                set: function (minVal) {
+                    this._minVal = minVal;
+                },
+            },
+            //max: maximal value of slider
+            maxVal: {
+                get: function () {
+                    return this._maxVal;
+                },
+                set: function (maxVal) {
+                    this._maxVal = maxVal;
+                },
+            },
+            //value: start position of slider
+            startVal: {
+                get: function () {
+                    return this._startVal;
+                },
+                set: function (startVal) {
+                    this._startVal = startVal;
+                },
+            },
+            //orient: orientation of slider
+            orientation: {
+                get: function () {
+                    return this._orientation;
+                },
+                set: function (orientation) {
+                    this._orientation = orientation;
+                },
+            },
         });
 
         return Slider;
