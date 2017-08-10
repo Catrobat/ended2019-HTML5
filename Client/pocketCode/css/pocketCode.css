@@ -1343,11 +1343,11 @@
 .pc-slider input[type=range]{
     -webkit-appearance: none;
     border-radius: 3px;
-    width: 310px;
+    width: 270px;
 }
 
     .pc-slider input[type=range]::-webkit-slider-runnable-track {
-        width: 310px;
+        width: 270px;
         height: 5px;
         background: #17A5B8;
         border-radius: 3px;
@@ -1372,7 +1372,7 @@
     }
 
     .pc-slider input[type=range]::-moz-range-track {
-        width: 310px;
+        width: 270px;
         height: 5px;
         background: #17A5B8;
         border: none;
@@ -1397,7 +1397,7 @@
     }
 
     .pc-slider input[type=range]::-ms-track {
-        width: 310px;
+        width: 270px;
         height: 5px;
         background: transparent;
         border-color: transparent;
@@ -1430,6 +1430,21 @@
     .pc-slider input[type=range]:focus::-ms-fill-upper {
         background: #17A5B8;
     }
+
+.pc-slider span {
+    position: relative;
+    width: 45px;
+}
+
+.pc-slider span:first-child {
+    position: relative;
+    width: 15px;
+}
+
+.pc-slider {
+    display: -webkit-box;
+    display: -ms-flexbox;
+}
 
 /*Device Emulator*/
 .pc-deviceEmulator {
@@ -1478,7 +1493,6 @@
         .pc-deviceEmulator .pc-expanderBody span {
             display: block;
             padding: 3px;
-            width: 360px;
         }
 
         .pc-deviceEmulator .pc-expanderBody .pc-dEImg {
@@ -1491,59 +1505,3 @@
     border-top: solid 1px #17a5b8;
     padding: 10px;
 }
-
-
-
-/*.pc-deviceEmulatorButton {
-    background-color: transparent;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    color: #a9dcf1;
-    cursor: pointer;
-    padding: 0 20px;
-    width: 360px;
-    height: 4%;
-    outline: none;
-    transition: 0.4s;
-    border: 3px solid #17a5b8;
-    font-weight: bold;
-    font-size: larger;
-}
-
-    .pc-deviceEmulatorButton.active {
-        background-color: transparent;
-        bottom: 498px;
-    }
-
-    .pc-deviceEmulatorButton:hover {
-        background-color: transparent;
-        color: #3C510C;
-    }
-
-    .pc-deviceEmulatorButton:after {
-        float: right;
-        content: '<';
-        transform: rotate(90deg);
-        width: 20px;
-        font: 22px "Consolas", monospace;
-        font-weight: bold;
-        bottom: 1px;
-        right: 0;
-        position: absolute;
-        pointer-events: none;
-    }
-
-    .pc-deviceEmulatorButton.active:after {
-        float: right;
-        content: '<';
-        transform: rotate(270deg);
-        width: 20px;
-        font: 22px "Consolas", monospace;
-        font-weight: bold;
-        bottom: 1px;
-        right: 0;
-        position: absolute;
-        pointer-events: none;
-    }
-*/

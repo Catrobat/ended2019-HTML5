@@ -44,7 +44,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:90}); //TODO: get default values from device
+        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:50}); //TODO: get default values from device
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 

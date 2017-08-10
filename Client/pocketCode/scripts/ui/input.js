@@ -287,11 +287,20 @@ PocketCode.Ui.merge({
             //dom.orientation = orientation || 'horizontal';
             this.merge(propObj);
             this._addDomListener(dom, 'change', this._onChangeHandler.bind(this));
+
+            //span for minLabel
+            var minLabel = dom.min;
+            var span = new SmartJs.Ui.HtmlTag('span');
+            span.dom.innerHTML = minLabel;
+            this._appendChild(span);
+
             this._appendChild(input);
 
-            //TODO:
-            //add spans for minLabel, maxLabel
-            //zB: '0', '+-90'
+            //Span for maxLabel +-
+            var maxLabel = dom.max;
+            span = new SmartJs.Ui.HtmlTag('span');
+            span.dom.innerHTML = '&plusmn;' + maxLabel;
+            this._appendChild(span);
 
             //events
             this._onChange = new SmartJs.Event.Event(this);
