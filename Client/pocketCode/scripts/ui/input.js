@@ -275,16 +275,12 @@ PocketCode.Ui.merge({
         Slider.extends(SmartJs.Ui.Control, false);
 
         //cntr
-        function Slider(propObj) {//min, max, value, orientation) {
+        function Slider(propObj) {
             SmartJs.Ui.Control.call(this, 'div', { className: 'pc-slider' });
             var input = new SmartJs.Ui.HtmlTag('input');
             var dom = input.dom;
             this._sliderDom = dom;
             dom.type = 'range';
-            //dom.min = minVal || 0;
-            //dom.max = maxVal || 100;
-            //dom.value = startVal || 50;
-            //dom.orientation = orientation || 'horizontal';
             this.merge(propObj);
             this._addDomListener(dom, 'change', this._onChangeHandler.bind(this));
 

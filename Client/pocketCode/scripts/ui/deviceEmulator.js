@@ -30,7 +30,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({min:0, max:90, value:90});  //TODO: get default values from device
+        var defaultVal = device.defaultInclinationMax * (90/46);
+        this._maxSlider = new PocketCode.Ui.Slider({min:0, max:90, value:defaultVal});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -44,7 +45,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:50}); //TODO: get default values from device
+        defaultVal = device.defaultInclinationAcceleration * (50/8);
+        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:defaultVal});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -105,10 +107,12 @@ PocketCode.Ui.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            ;   //TODO: set e.value to device
+            //TODO: set e.value to device
+            this.device.setNewDegree(e.value * 46/90);
         },
         _maxAccChangeHandler: function(e) {
-            ;   //TODO: set e.value to device
+            //TODO: set e.value to device
+            this.device.setNewAcceleration(e.value * 0.02);
         },
         _openCloseHandler: function (e) {
             if (this._subMenu.hidden) {

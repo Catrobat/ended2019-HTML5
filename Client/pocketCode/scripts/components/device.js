@@ -1080,6 +1080,21 @@ PocketCode.DeviceEmulator = (function () {
 
             PocketCode.MediaDevice.prototype.dispose.call(this);    //call super()
         },
+        //DeviceEmulator: new Value for MaxDegree and Acceleration
+        setNewAcceleration: function (newAccel) {
+            this._inclinationIncr = {
+                X: newAccel,
+                Y: newAccel,
+            };
+        },
+        setNewDegree: function (newDegree) {
+            this._inclinationLimits = {
+                X_MIN: -newDegree,
+                X_MAX: newDegree,
+                Y_MIN: -newDegree,
+                Y_MAX: newDegree,
+            };
+        },
     });
 
     return DeviceEmulator;
