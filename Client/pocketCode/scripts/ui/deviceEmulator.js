@@ -114,6 +114,12 @@ PocketCode.Ui.DeviceEmulator = (function () {
             //TODO: set e.value to device
             this.device.setNewAcceleration(e.value * 0.02);
         },
+        imgTransformation: function (e) {
+            var image = document.getElementsByClassName("pc-dEImg")[0];
+            image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
+            image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
+
+        },
         _openCloseHandler: function (e) {
             if (this._subMenu.hidden) {
                 this._subMenu.show();

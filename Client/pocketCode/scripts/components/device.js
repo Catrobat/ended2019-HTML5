@@ -14,6 +14,8 @@ PocketCode.Device = (function () {
 
         this._flashOn = false;      //TODO: temp solution until flash supported
 
+        this._deviceEmulator = new PocketCode.Ui.DeviceEmulator(this);
+
         this._compass = 0;
         this._alpha = 0;
         this._beta = 0;
@@ -947,21 +949,25 @@ PocketCode.DeviceEmulator = (function () {
                 case this._keyCode.LEFT:
                     this._keyDownTime.LEFT = this._keyDownTimeDefault;
                     this._keyPress.LEFT = true;
+                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
                     this._keyDownTime.RIGHT = this._keyDownTimeDefault;
                     this._keyPress.RIGHT = true;
+                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
                     this._keyDownTime.UP = this._keyDownTimeDefault;
                     this._keyPress.UP = true;
+                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
                     this._keyDownTime.DOWN = this._keyDownTimeDefault;
                     this._keyPress.DOWN = true;
+                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.SPACE:
                 case this._keyCode.SPACE:
