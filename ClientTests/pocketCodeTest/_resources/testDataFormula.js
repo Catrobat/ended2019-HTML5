@@ -8,6 +8,7 @@ var unknown_sensor = { "type": "OPERATOR", "value": "MULT", "right": { "type": "
 
 var plus = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
 var plus2 = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2.6", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
+var plus3 = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "a", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "b", "right": null, "left": null } };
 var signed = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "2.6", "right": null, "left": null }, "left": null }, "left": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": null } };
 var minus = { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "2", "right": null, "left": null } };
 var minus2 = { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "2.2", "right": null, "left": null } };
@@ -60,6 +61,8 @@ var stringJoin2 = { "type": "FUNCTION", "value": "JOIN", "right": { "type": "OPE
 var number = { "type": "NUMBER", "value": "1.0", "right": null, "left": null };
 var number2 = { type: "NUMBER", value: "05.0", left: null, right: null };
 var numberOfItems = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": null };
+var numberOfItems2 = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "s23", "left": null, "right": null }, "right": null };
+var numberOfItems3 = { "type": "FUNCTION", "value": "NUMBER_OF_ITEMS", "left": { "type": "USER_LIST", "value": "s24", "left": null, "right": null }, "right": null };
 var listItem = { "type": "FUNCTION", "value": "LIST_ITEM", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": {"type": "USER_LIST", "value": "s22", "left": null, "right": null } };
 var contains = { "type": "FUNCTION", "value": "CONTAINS", "left": { "type": "USER_LIST", "value": "s22", "left": null, "right": null }, "right": { "type": "NUMBER", "value": "1", "left": null, "right": null } };
 
@@ -123,6 +126,8 @@ var multi_finger_x = { "type": "FUNCTION", "value": "MULTI_FINGER_X", "left": { 
 var multi_finger_y = { "type": "FUNCTION", "value": "MULTI_FINGER_Y", "left": { "type": "NUMBER", "value": "1", "left": null, "right": null }, "right": null };
 var multi_finger_touched = { "type": "FUNCTION", "value": "MULTI_FINGER_TOUCHED", "left": { "type": "NUMBER", "value": "8", "left": null, "right": null }, "right": null };
 var last_finger_index = { "type": "SENSOR", "value": "LAST_FINGER_INDEX", "left": null, "right": null };
+
+var power = { "type": "FUNCTION", "value": "POWER", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "3", "right": null, "left": null } };
 
 //bool to number conversion
 bool2NumberConversion = {"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"OPERATOR","value":"PLUS","left":{"type":"NUMBER","value":"1","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"2","left":null,"right":null}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"2","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"3","left":null,"right":null}}}}},"right":{"type":"OPERATOR","value":"MULT","left":{"type":"NUMBER","value":"4","left":null,"right":null},"right":{"type":"BRACKET","value":"","left":null,"right":{"type":"OPERATOR","value":"GREATER_OR_EQUAL","left":{"type":"USER_VARIABLE","value":"s2","left":null,"right":null},"right":{"type":"NUMBER","value":"4","left":null,"right":null}}}}};

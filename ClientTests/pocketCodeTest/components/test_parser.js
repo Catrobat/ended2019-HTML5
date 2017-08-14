@@ -82,6 +82,9 @@ QUnit.test("FormulaParser: operators", function (assert) {
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_operator_plus", "PLUS2 i18nKey added");
 
+    //todo, not working
+    //assert.throws(f.json = plus3, Error, "ERROR: string to number conversion failed");
+
     f.json = signed;
     assert.equal(Math.round(f.calculate() * 100) / 100, -3.6, "signed (negative)");
     f.toString();
@@ -280,6 +283,12 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.notEqual(f.json.left, undefined, "EXP left not undefined");
     assert.equal(f.json.right, undefined, "EXP right undefined");
 
+    f.json = power;
+    assert.equal(f.calculate(), 9, "calc powere");
+    assert.equal(f.isStatic, true, "calc power: isStatic");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_power", "POWER i18nKey added");
+
     f.json = floor;
     assert.equal(f.calculate(), -4, "calc floor");
     assert.equal(f.isStatic, true, "calc floor: isStatic");
@@ -296,7 +305,7 @@ QUnit.test("FormulaParser: functions", function (assert) {
 
     f.json = max;
     assert.equal(f.calculate(), 18, "calc max");
-    assert.equal(f.isStatic, true, "calc max: isStatic");f.toString();
+    assert.equal(f.isStatic, true, "calc max: isStatic");//f.toString();
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_max", "MAX i18nKey added");
     assert.equal(f.json.left.i18nKey, "formula_editor_operator_mult", "MAX mult i18nKey added");
@@ -415,12 +424,35 @@ QUnit.test("FormulaParser: functions (strings)", function (assert) {
     sprite._lists = [{ id: "s22", name: "listName" }];
     sprite.getList("s22")._value = lst;
 
+    gameEngine._lists = [{ id: "s23", name: "global23" }]; //global
+    gameEngine.getList("s23").value = "global";
+    gameEngine.getList("s23")._value = lst;
+
+    var uvh2 = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);
+    uvh2._lists = [{ id: "s24", name: "procedure24" }]; //procedure
+    uvh2.getList("s24").value = "procedure";
+    uvh2.getList("s24")._value = lst;
+
     f.json = numberOfItems;
     assert.equal(f.calculate(), 1, "number of list elements");
     assert.equal(f.isStatic, false, "number of elements: isStatic");
     f.toString();
     assert.equal(f.json.i18nKey, "formula_editor_function_number_of_items", "NUMBER OF ITEMS i18nKey added");
     assert.equal(f.json.left.objRef.type, "1", "objRef.type = local (1)");
+
+    f.json = numberOfItems2;
+    assert.equal(f.calculate(), 1, "number of list elements");
+    assert.equal(f.isStatic, false, "number of elements: isStatic");
+    f.toString();
+    assert.equal(f.json.i18nKey, "formula_editor_function_number_of_items", "NUMBER OF ITEMS i18nKey added");
+    assert.equal(f.json.left.objRef.type, "2", "objRef.type = global (2)");
+
+    //todo not working. procedure/lists
+    //f.json = numberOfItems3;
+    //assert.equal(f.calculate(), 1, "number of list elements");
+    //f.toString();
+    //assert.equal(f.json.i18nKey, "formula_editor_function_number_of_items", "NUMBER OF ITEMS i18nKey added");
+    //assert.equal(f.json.left.objRef.type, "3", "objRef.type = procedure (3)");
 
     f.json = listItem;
     assert.equal(f.calculate(), 1.0, "get list element at position");
@@ -896,6 +928,20 @@ QUnit.test("FormulaParser: logic", function (assert) {
     assert.equal(f.json.i18nKey, "formula_editor_logic_greaterequal", "GREATER_OR_EQUAL i18nKey added");
 
 
+});
+
+QUnit.test("FormulaParser: collision formula", function (assert) {
+
+    var soundManager = new PocketCode.SoundManager([]);
+    var device = new PocketCode.MediaDevice(soundManager);
+
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+
+    var f = new PocketCode.Formula(device, sprite);//, { "type": "NUMBER", "value": "20", "right": null, "left": null });
+
+    assert.ok(false, "TODO: collision formula");
 });
 
 
