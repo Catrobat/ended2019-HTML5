@@ -485,8 +485,11 @@ PocketCode.merge({
                         return '\'' + jsonFormula.value.replace(/'/g, '\\\'').replace(/\n/g, '\\n') + '\'';
 
                     case 'COLLISION_FORMULA':
-                        //    if (uiString) //TODO
-                        //        return 'touches_object(' + jsonFormula.value + ')';
+                            if (uiString) {
+                                jsonFormula.objRef = {};
+                                jsonFormula.objRef.id = jsonFormula.value;
+                                return jsonFormula;
+                            }
 
                         this._isStatic = false;
                         //changed backend to deliver ids instead of names

@@ -64,7 +64,13 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     PocketCode.BrickTextItem(i18nKey.value, false);
                     break;
                 case 'COLLISION_FORMULA':
-                    //todo
+                    PocketCode.BrickTextItem("formula_editor_function_collision", true);
+                    PocketCode.BrickTextItem("(", false);
+                    var sprite_id = i18nKey.objRef.id;
+                    var scene = null; //todo: get scene
+                    var sprite_name = scene.getSpriteById(sprite_id);
+                    PocketCode.BrickTextItem(sprite_name.name, false);
+                    PocketCode.BrickTextItem(")", false);
                     break;
             }
         },
