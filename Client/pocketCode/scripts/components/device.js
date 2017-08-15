@@ -893,6 +893,8 @@ PocketCode.DeviceEmulator = (function () {
 
         this._keyDownTimeDefault = 3;
 
+        this._elapsedTime = 0;
+
         this._resetInclinationX();
         this._resetInclinationY();
 
@@ -947,27 +949,25 @@ PocketCode.DeviceEmulator = (function () {
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
+                    //this._keyDownTimeDefault = Date.now();
+                    //this.dateInterval();
                     this._keyDownTime.LEFT = this._keyDownTimeDefault;
                     this._keyPress.LEFT = true;
-                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
                     this._keyDownTime.RIGHT = this._keyDownTimeDefault;
                     this._keyPress.RIGHT = true;
-                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
                     this._keyDownTime.UP = this._keyDownTimeDefault;
                     this._keyPress.UP = true;
-                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
                     this._keyDownTime.DOWN = this._keyDownTimeDefault;
                     this._keyPress.DOWN = true;
-                    this._deviceEmulator.imgTransformation();
                     break;
                 case this._alternativeKeyCode.SPACE:
                 case this._keyCode.SPACE:
@@ -977,6 +977,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._onSpaceKeyDown.dispatchEvent();
                     break;
             }
+            this._deviceEmulator.imgTransformation();
         },
         _keyUp: function (e) {
             switch (e.keyCode) {
@@ -1009,6 +1010,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyPress.SPACE = false;
                     break;
             }
+            this._deviceEmulator.imgTransformation();
         },
         _resetInclinationX: function () {
             this._sensorData.X_INCLINATION = this._defaultInclination.X;
@@ -1089,8 +1091,8 @@ PocketCode.DeviceEmulator = (function () {
         //DeviceEmulator: new Value for MaxDegree and Acceleration
         setNewAcceleration: function (newAccel) {
             this._inclinationIncr = {
-                X: newAccel,
-                Y: newAccel,
+                X: newAccel * this._inclinationIncr.X,
+                Y: newAccel * this._inclinationIncr.Y,
             };
         },
         setNewDegree: function (newDegree) {
@@ -1100,6 +1102,13 @@ PocketCode.DeviceEmulator = (function () {
                 Y_MIN: -newDegree,
                 Y_MAX: newDegree,
             };
+        },
+        dateInterval: function () {
+
+            var elapsedTime = Date.now() - this._keyDownTimeDefault;
+            this._elapsedTime = elapsedTime / 1000;
+
+            console.log(this._elapsedTime);
         },
     });
 

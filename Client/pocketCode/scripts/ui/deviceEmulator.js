@@ -60,14 +60,22 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationX');
+        var div = new SmartJs.Ui.HtmlTag('div');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        scroll.appendChild(span);
+        div.appendChild(span);
+        span = new SmartJs.Ui.HtmlTag('span');
+        div.appendChild(span);
+        scroll.appendChild(div);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationY');
+        div = new SmartJs.Ui.HtmlTag('div');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
-        scroll.appendChild(span);
+        div.appendChild(span);
+        span = new SmartJs.Ui.HtmlTag('span');
+        div.appendChild(span);
+        scroll.appendChild(div);
 
         //events
         //this._onMaxInclinationChange=new SmartJs.Event.Event(this);
@@ -108,16 +116,19 @@ PocketCode.Ui.DeviceEmulator = (function () {
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
             //TODO: set e.value to device
-            this.device.setNewDegree(e.value * 46/90);
+            this.device.setNewDegree(e.value * 46 / 90);
         },
         _maxAccChangeHandler: function(e) {
             //TODO: set e.value to device
-            this.device.setNewAcceleration(e.value * 0.02);
+            this.device.setNewAcceleration(e.value / 50);
         },
         imgTransformation: function (e) {
-            var image = document.getElementsByClassName("pc-dEImg")[0];
+            var image = document.getElementById("sj98");
             image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
             image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
+
+            document.getElementById("sj102").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
+            document.getElementById("sj105").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
 
         },
         _openCloseHandler: function (e) {
