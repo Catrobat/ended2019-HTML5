@@ -967,26 +967,25 @@ PocketCode.DeviceEmulator = (function () {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
                     this._keyDownTimeDate.LEFT = Date.now();
-                    //this.dateInterval();
-                    this._keyDownTime.LEFT = this._keyDownTimeDefault;
+                    //this._keyDownTime.LEFT = this._keyDownTimeDefault;
                     this._keyPress.LEFT = true;
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
                     this._keyDownTimeDate.RIGHT = Date.now();
-                    this._keyDownTime.RIGHT = this._keyDownTimeDefault;
+                    //this._keyDownTime.RIGHT = this._keyDownTimeDefault;
                     this._keyPress.RIGHT = true;
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
                     this._keyDownTimeDate.UP = Date.now();
-                    this._keyDownTime.UP = this._keyDownTimeDefault;
+                    //this._keyDownTime.UP = this._keyDownTimeDefault;
                     this._keyPress.UP = true;
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
                     this._keyDownTimeDate.DOWN = Date.now();
-                    this._keyDownTime.DOWN = this._keyDownTimeDefault;
+                    //this._keyDownTime.DOWN = this._keyDownTimeDefault;
                     this._keyPress.DOWN = true;
                     break;
                 case this._alternativeKeyCode.SPACE:
@@ -1049,28 +1048,28 @@ PocketCode.DeviceEmulator = (function () {
                 return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                this._keyDownTime.LEFT += 1.0;
+                //this._keyDownTime.LEFT += 1.0;
                 this._sensorData.X_INCLINATION += this._inclinationIncr.X;
                 if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
             }
             else if (this._keyPress.RIGHT && !this._keyPress.LEFT) {
                 // right
-                this._keyDownTime.RIGHT += 1.0;
+                //this._keyDownTime.RIGHT += 1.0;
                 this._sensorData.X_INCLINATION -= this._inclinationIncr.X;
                 if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                this._keyDownTime.UP += 1.0;
+                //this._keyDownTime.UP += 1.0;
                 this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y;
                 if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                this._keyDownTime.DOWN += 1.0;
+                //this._keyDownTime.DOWN += 1.0;
                 this._sensorData.Y_INCLINATION += this._inclinationIncr.Y;
                 if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
@@ -1133,15 +1132,19 @@ PocketCode.DeviceEmulator = (function () {
 
             var elapsedTimeLeft = this._keyUpTimeDate.LEFT - this._keyDownTimeDate.LEFT;
             this._elapsedTime.LEFT = elapsedTimeLeft / 1000;
+            this._keyDownTime.LEFT = this._elapsedTime.LEFT;
 
             var elapsedTimeRight = this._keyUpTimeDate.RIGHT - this._keyDownTimeDate.RIGHT;
             this._elapsedTime.RIGHT = elapsedTimeRight / 1000;
+            this._keyDownTime.RIGHT = this._elapsedTime.RIGHT;
 
             var elapsedTimeUp = this._keyUpTimeDate.UP - this._keyDownTimeDate.UP;
             this._elapsedTime.UP = elapsedTimeUp / 1000;
+            this._keyDownTime.UP = this._elapsedTime.UP;
 
             var elapsedTimeDown = this._keyUpTimeDate.DOWN - this._keyDownTimeDate.DOWN;
             this._elapsedTime.DOWN = elapsedTimeDown / 1000;
+            this._keyDownTime.DOWN = this._elapsedTime.DOWN;
 
             console.log(this._elapsedTime);
 
