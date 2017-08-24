@@ -14,8 +14,6 @@ PocketCode.Device = (function () {
 
         this._flashOn = false;      //TODO: temp solution until flash supported
 
-        this._deviceEmulator = new PocketCode.Ui.DeviceEmulator(this);
-
         this._compass = 0;
         this._alpha = 0;
         this._beta = 0;
@@ -996,8 +994,6 @@ PocketCode.DeviceEmulator = (function () {
                     this._onSpaceKeyDown.dispatchEvent();
                     break;
             }
-            this._deviceEmulator.imgTransformation();
-
         },
         _keyUp: function (e) {
             switch (e.keyCode) {
@@ -1034,7 +1030,6 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyPress.SPACE = false;
                     break;
             }
-            this._deviceEmulator.imgTransformation();
             this.dateInterval();
         },
         _resetInclinationX: function () {
@@ -1113,21 +1108,7 @@ PocketCode.DeviceEmulator = (function () {
 
             PocketCode.MediaDevice.prototype.dispose.call(this);    //call super()
         },
-        //DeviceEmulator: new Value for MaxDegree and Acceleration
-        setNewAcceleration: function (newAccel) {
-            this._inclinationIncr = {
-                X: newAccel * this._inclinationIncr.X,
-                Y: newAccel * this._inclinationIncr.Y,
-            };
-        },
-        setNewDegree: function (newDegree) {
-            this._inclinationLimits = {
-                X_MIN: -newDegree,
-                X_MAX: newDegree,
-                Y_MIN: -newDegree,
-                Y_MAX: newDegree,
-            };
-        },
+
         dateInterval: function () {
 
             var elapsedTimeLeft = this._keyUpTimeDate.LEFT - this._keyDownTimeDate.LEFT;
@@ -1147,14 +1128,6 @@ PocketCode.DeviceEmulator = (function () {
             this._keyDownTime.DOWN = this._elapsedTime.DOWN;
 
             console.log(this._elapsedTime);
-
-            //this._keyDownTime.LEFT = this._keyDownTimeDefault;
-
-            //this._keyDownTime.RIGHT = this._keyDownTimeDefault;
-
-            //this._keyDownTime.UP = this._keyDownTimeDefault;
-
-            //this._keyDownTime.DOWN = this._keyDownTimeDefault;
 
         },
     });

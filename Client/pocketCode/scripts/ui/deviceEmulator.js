@@ -13,7 +13,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-deviceEmulator' });
 
         this.device = device;
-        this._pollingInterval = 100;
+        //this._pollingInterval = 100;
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
         this._appendChild(this._container);
@@ -77,6 +77,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         div.appendChild(span);
         scroll.appendChild(div);
 
+        this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
         //events
         //this._onMaxInclinationChange=new SmartJs.Event.Event(this);
         //this._onInclinationAccelerationChange=new SmartJs.Event.Event(this);
@@ -116,19 +117,35 @@ PocketCode.Ui.DeviceEmulator = (function () {
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
             //TODO: set e.value to device
-            this.device.setNewDegree(e.value * 46 / 90);
+            this.device._inclinationLimits = {
+                X_MIN: -e.value *(46 / 90),
+                X_MAX: e.value *(46 / 90),
+                Y_MIN: -e.value *(46 / 90),
+                Y_MAX: e.value *(46 / 90),
+            };
         },
         _maxAccChangeHandler: function(e) {
             //TODO: set e.value to device
-            this.device.setNewAcceleration(e.value / 50);
+            this.device._inclinationIncr = {
+                X: e.value * 0.02,
+                Y: e.value * 0.02,
+            };
         },
-        imgTransformation: function (e) {
-            var image = document.getElementById("sj98");
-            image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
-            image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
+        _imgTransformation: function (e) {
+            if (this.device._keyDown)
+            {
+                var image = document.getElementById("sj69");
+                image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
+                image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
 
-            document.getElementById("sj102").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-            document.getElementById("sj105").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+                document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
+                document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+            }
+            else if (this.device._keyUp)
+            {
+                this.device._resetInclinationX();
+                this.device._resetInclinationY();
+            }
 
         },
         _openCloseHandler: function (e) {

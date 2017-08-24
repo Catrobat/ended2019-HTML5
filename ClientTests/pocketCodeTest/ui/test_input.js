@@ -217,3 +217,47 @@ QUnit.test("I18nRadio", function (assert) {
     assert.ok(ctrl.objClassName === "I18nRadio", "objClassName check");
 
 });
+
+QUnit.test("Slider", function (assert) {
+
+    var dom = document.getElementById("qunit-fixture");
+    var slider = new PocketCode.Ui.Slider({min:1, max:100, value:50});
+    dom.appendChild(slider._dom);
+
+    //instance, objClass name and Class name check
+    assert.ok(slider instanceof PocketCode.Ui.Slider, "instance check");
+    assert.ok(slider.objClassName === "Slider", "ObjClassName check");
+    assert.ok(slider.className === "pc-slider", "className check");
+
+    //min, max Value and starting Value getter/setter check
+    assert.ok(!isNaN(slider.min), "min Value getter");
+    assert.ok(!isNaN(slider.max), "max Value getter");
+    assert.ok(!isNaN(slider.value), "Value getter");
+
+    slider.min = 0;
+    assert.equal(slider.min, 0, "min Value setter");
+    slider.max = 90;
+    assert.equal(slider.max, 90, "max Value setter");
+    slider.value = 45;
+    assert.equal(slider.value, 45, "Value setter");
+
+    //event check
+    assert.ok(slider.onChange instanceof SmartJs.Event.Event, "event accessor");
+
+    var changeCount = 0;
+    var changeEventArgs;
+    var changeEvents = function (e) {
+        changeCount++;
+        changeEventArgs = e;
+    };
+    slider.onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
+
+    assert.equal(changeCount, 0, "onChange Event not triggered: no change");
+    slider.onChange.value = 34;
+    assert.equal(changeCount, 1, "onChange Event not triggered: change");
+
+    //dispose check
+    slider.dispose();
+    assert.ok(slider._disposed, "slider disposed");
+    assert.ok(false, "test");
+});
