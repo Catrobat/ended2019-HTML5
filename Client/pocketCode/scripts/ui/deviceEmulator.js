@@ -79,7 +79,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
         this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
         this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
-        
+
         //events
         //this._onMaxInclinationChange=new SmartJs.Event.Event(this);
         //this._onInclinationAccelerationChange=new SmartJs.Event.Event(this);

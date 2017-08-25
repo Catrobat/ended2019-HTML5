@@ -13,7 +13,8 @@ QUnit.test("DeviceEmulator UI", function (assert) {
     var sm = new PocketCode.SoundManager();
     assert.throws(function () { var dev = new PocketCode.Device("sm"); }, Error, "ERROR: invalid cntr argument");
     var dev = new PocketCode.Device(sm);
-    var dE = new PocketCode.DeviceEmulator(dev);
+    var dE = new PocketCode.Ui.DeviceEmulator(dev);
+
 
     assert.ok(false, "test");
 

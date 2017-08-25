@@ -245,19 +245,18 @@ QUnit.test("Slider", function (assert) {
     assert.ok(slider.onChange instanceof SmartJs.Event.Event, "event accessor");
 
     var changeCount = 0;
-    var changeEventArgs;
     var changeEvents = function (e) {
         changeCount++;
-        changeEventArgs = e;
     };
-    slider.onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
+    slider._onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
 
     assert.equal(changeCount, 0, "onChange Event not triggered: no change");
-    slider.onChange.value = 34;
-    assert.equal(changeCount, 1, "onChange Event not triggered: change");
+    var e = { target: {value: 34}};
+    slider._onChangeHandler(e);
+    assert.equal(changeCount, 1, "onChange Event triggered: change");
 
     //dispose check
     slider.dispose();
     assert.ok(slider._disposed, "slider disposed");
-    assert.ok(false, "test");
+
 });
