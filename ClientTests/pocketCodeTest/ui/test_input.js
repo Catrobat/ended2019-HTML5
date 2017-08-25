@@ -251,7 +251,7 @@ QUnit.test("Slider", function (assert) {
     slider._onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
 
     assert.equal(changeCount, 0, "onChange Event not triggered: no change");
-    var e = { target: {value: 34}};
+    var e = { target: { value: 34 }};
     slider._onChangeHandler(e);
     assert.equal(changeCount, 1, "onChange Event triggered: change");
 
