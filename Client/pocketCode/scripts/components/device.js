@@ -1109,6 +1109,7 @@ PocketCode.DeviceEmulator = (function () {
             PocketCode.MediaDevice.prototype.dispose.call(this);    //call super()
         },
 
+        //Todo dateTime renaming
         dateInterval: function () {
 
             var elapsedTimeLeft = this._keyUpTimeDate.LEFT - this._keyDownTimeDate.LEFT;
@@ -1127,7 +1128,6 @@ PocketCode.DeviceEmulator = (function () {
             this._elapsedTime.DOWN = elapsedTimeDown / 1000;
             this._keyDownTime.DOWN = this._elapsedTime.DOWN;
 
-            console.log(this._elapsedTime);
 
         },
     });
