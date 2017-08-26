@@ -21,6 +21,7 @@ QUnit.test("DeviceEmulator UI", function (assert) {
     //closed menu check
     assert.ok(deviceEmulator.hidden, "DeviceEmulator is closed");
 
+    //console.log(deviceEmulator);
     //open menu check
     //deviceEmulator._openCloseHandler();
     //assert.ok(!deviceEmulator.hidden, "DeviceEmulator is open");
@@ -48,6 +49,7 @@ QUnit.test("DeviceEmulator UI", function (assert) {
     assert.equal(changeCount, 1, "onChange Event triggered: Degree Slider change");
 
     //imgTransformation test
+
 
     assert.ok(false, "test");
 
