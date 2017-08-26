@@ -306,7 +306,7 @@ QUnit.test("DeviceEmulator Key Events", function (assert) {
 
     //Down key alternative
     var validateSingleKeyDownAlternative = function () {
-        assert.ok(device.inclinationY < 0, "Alternative Down Key pressed: inclination to the left");
+        assert.ok(device.inclinationY > 0, "Alternative Down Key pressed: inclination to the left");
         device._keyUp({keyCode: device._alternativeKeyCode.DOWN});
         assert.equal(device.inclinationY, 0, "Alternative Down Key released: no inclination");
         doneDownAlt();
