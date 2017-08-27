@@ -31,7 +31,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         var defaultVal = device.defaultInclinationMax * (90/46);
-        this._maxSlider = new PocketCode.Ui.Slider({min:0, max:90, value:defaultVal});
+        this._maxSlider = new PocketCode.Ui.Slider({min: 1, max: 90, value: defaultVal});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,7 +46,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         defaultVal = device.defaultInclinationAcceleration * (50/8);
-        this._accSlider = new PocketCode.Ui.Slider({min:1, max:100, value:defaultVal});
+        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -141,6 +141,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
             image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
 
             document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
+            console.log(this.device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
 
         },
