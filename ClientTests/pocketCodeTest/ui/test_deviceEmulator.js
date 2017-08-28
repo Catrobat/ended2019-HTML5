@@ -22,7 +22,7 @@ QUnit.test("DeviceEmulator UI", function (assert) {
     //closed deviceEmulator menu check
     assert.ok(deviceEmulator.hidden, "DeviceEmulator is closed by default");
 
-    //console.log(deviceEmulator);
+    console.log(deviceEmulator);
     //opened deviceEmulator menu check
     //deviceEmulator._openCloseHandler();
     //assert.notOk(deviceEmulator.hidden, "DeviceEmulator opened by click");
@@ -35,36 +35,37 @@ QUnit.test("DeviceEmulator UI", function (assert) {
     //slider change events
     //accSlider event check
     assert.ok(accSlider.onChange instanceof SmartJs.Event.Event, "accSlider: event accessor");
-    assert.ok(deviceEmulator._maxAccChangeHandler({value: 34}) instanceof SmartJs.Event.Event, "asd");
     //maxSlider event check
     assert.ok(maxSlider.onChange instanceof SmartJs.Event.Event, "maxSlider: event accessor");
 
-    //check of change event for Acceleration slider
-    var changeCount = 0;
-    var changeEventArgs = undefined;
-    var changeEvents = function (e) {
-        changeCount++;
-        changeEventArgs = e;
-    };
-    accSlider._onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
-
-    assert.equal(changeCount, 0, "onChange Event not triggered: no Acceleration change");
-    assert.equal(accSlider.value, 50, "onChange Event not triggered: no Acceleration change");
-
-    deviceEmulator._maxAccChangeHandler({target: {value: 34}});
-
-    //assert.notEqual(changeEventArgs.value, 50, "onChange Event triggered: Acceleration Slider change");
-    assert.notEqual(accSlider.value, 50, "onChange Event triggered: Acceleration Slider change");
 
     //check for change event for Degree slider
     assert.equal(maxSlider.value, 90, "onChange Event not triggered: no Degree change");
 
-    deviceEmulator._maxDegreeChangeHandler({value: 20});
+    deviceEmulator._maxDegreeChangeHandler({target: {value: 20}});
 
     assert.notEqual(maxSlider.value, 90, "onChange Event triggered: Degree Slider change");
 
-    //imgTransformation test
+    //check of change event for Acceleration slider
+    assert.equal(accSlider.value, 5, "onChange Event not triggered: no Acceleration change");
 
+    deviceEmulator._maxAccChangeHandler({target: {value: 34}});
+
+    assert.notEqual(accSlider.value, 5, "onChange Event triggered: Acceleration Slider change");
+
+
+
+    //imgTransformation test
+    var done = assert.async();
+
+    var validateSingleKeyLeft = function () {
+        assert.ok(device.inclinationX < 0, "image Transformation: key pressed");
+        device._keyUp({keyCode: device._keyCode.LEFT});
+        assert.equal(device.inclinationX, 0, "No image Transformation: key released");
+        done();
+    }
+    //deviceEmulator._imgTransformation();
+    setTimeout(validateSingleKeyLeft, 20);
 
     assert.ok(false, "TODO");
 

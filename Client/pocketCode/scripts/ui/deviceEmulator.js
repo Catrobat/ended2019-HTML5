@@ -30,7 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        var defaultVal = device.defaultInclinationMax * (90/46);
+        var defaultVal = device.defaultInclinationMax * (90 / 46);
         this._maxSlider = new PocketCode.Ui.Slider({min: 1, max: 90, value: defaultVal});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
@@ -45,8 +45,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        defaultVal = device.defaultInclinationAcceleration * (50/8);
-        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal});
+        defaultVal = device.defaultInclinationAcceleration * (5 / 8);
+        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 100, value: defaultVal});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -120,17 +120,17 @@ PocketCode.Ui.DeviceEmulator = (function () {
         _maxDegreeChangeHandler: function(e) {
             //TODO: set e.value to device
             this.device._inclinationLimits = {
-                X_MIN: -e.value *(46 / 90),
-                X_MAX: e.value *(46 / 90),
-                Y_MIN: -e.value *(46 / 90),
-                Y_MAX: e.value *(46 / 90),
+                X_MIN: -e.value * (46 / 90),
+                X_MAX: e.value * (46 / 90),
+                Y_MIN: -e.value * (46 / 90),
+                Y_MAX: e.value * (46 / 90),
             };
         },
         _maxAccChangeHandler: function(e) {
             //TODO: set e.value to device
             this.device._inclinationIncr = {
-                X: e.value * 0.02,
-                Y: e.value * 0.02,
+                X: 46 / e.value,
+                Y: 46 / e.value,
             };
         },
         _imgTransformation: function (e) {
@@ -141,20 +141,21 @@ PocketCode.Ui.DeviceEmulator = (function () {
             image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
 
             document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-            console.log(this.device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
 
         },
         _resetImgTransformation: function (e) {
 
-            var image = document.getElementById("sj69");
+            if (!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT && !this.device._keyPress.UP && !this.device._keyPress.DOWN)
+            {
+                var image = document.getElementById("sj69");
 
-            image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
-            image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
+                image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
+                image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
 
-            document.getElementById("sj73").innerHTML = Math.round(this.device._defaultInclination.X * (90 / 46));
-            document.getElementById("sj76").innerHTML = Math.round(this.device._defaultInclination.Y * (90 / 46));
-
+                document.getElementById("sj73").innerHTML = Math.round(this.device._defaultInclination.X * (90 / 46));
+                document.getElementById("sj76").innerHTML = Math.round(this.device._defaultInclination.Y * (90 / 46));
+            }
         },
         _openCloseHandler: function (e) {
             if (this._subMenu.hidden) {
