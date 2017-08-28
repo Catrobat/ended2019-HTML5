@@ -35,6 +35,46 @@ QUnit.test("SetLookBrick", function (assert) {
 });
 
 
+QUnit.test("SetLookByIndexBrick", function (assert) {
+
+    var done1 = assert.async();
+
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var looks = [
+        new PocketCode.Model.Look({ id: "s01" }),
+        new PocketCode.Model.Look({ id: "s02" }),
+    ];
+    sprite._looks = looks;
+
+    var idxFormulaJson = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');;
+    var b = new PocketCode.Model.SetLookByIndexBrick(device, sprite, { idx: idxFormulaJson });
+
+    assert.ok(b._device === device && b._sprite === sprite && b.indexFormula instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.equal(b.indexFormula.calculate(), 1, "internal formula loaded correctly");
+    assert.ok(b instanceof PocketCode.Model.SetLookByIndexBrick, "instance check");
+    assert.ok(b.objClassName === "SetLookByIndexBrick", "objClassName check");
+
+    //no look set yet
+    assert.equal(sprite.currentLookNumber, 1, "returns 1 for look_number if not set");
+    sprite._currentLook = looks[1];
+    assert.equal(sprite.currentLookNumber, 2, "returns 2 for look_number - set");
+
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.equal(sprite.currentLookNumber, 1, "returns 2 for look_number - set");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+
 QUnit.test("NextLookBrick", function (assert) {
 
     var done1 = assert.async();
@@ -145,7 +185,7 @@ QUnit.test("AskBrick", function (assert) {
         assert.ok(true, "executed");
         assert.equal(e.loopDelay, true, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        assert.ok(pauseCalled ==1 && resumeCalled == 1 && showAskDialogCalled == 1, "sprite method called");
+        assert.ok(pauseCalled == 1 && resumeCalled == 1 && showAskDialogCalled == 1, "sprite method called");
         done1();
     };
     var answerVariable = { name: "mock", id: "mock", value: 3 },
@@ -332,16 +372,16 @@ QUnit.test("SayForBrick", function (assert) {
 
     var lastType, lastText;
     var spriteMock = {
-        showBubble: function(type, text) {
+        showBubble: function (type, text) {
             lastType = type;
             lastText = text;
         },
-        hideBubble: function(type) {
+        hideBubble: function (type) {
             lastType = type;
         },
     };
     b = new PocketCode.Model.SayForBrick(device, spriteMock, { text: text, duration: duration });
-    var mockHandler = function(e) {
+    var mockHandler = function (e) {
         assert.equal(lastType, PocketCode.Ui.BubbleType.SPEECH, "show bubble ok: type");
         done2();
     }
@@ -410,16 +450,16 @@ QUnit.test("ThinkForBrick", function (assert) {
 
     var lastType, lastText;
     var spriteMock = {
-        showBubble: function(type, text) {
+        showBubble: function (type, text) {
             lastType = type;
             lastText = text;
         },
-        hideBubble: function(type) {
+        hideBubble: function (type) {
             lastType = type;
         },
     };
     b = new PocketCode.Model.ThinkForBrick(device, spriteMock, { text: text, duration: duration });
-    var mockHandler = function(e) {
+    var mockHandler = function (e) {
         assert.equal(lastType, PocketCode.Ui.BubbleType.THINK, "show bubble ok: type");
         done2();
     }
@@ -708,6 +748,40 @@ QUnit.test("SetBackgroundAndWaitBrick", function (assert) {
 });
 
 
+QUnit.test("SetBackgroundByIndexBrick", function (assert) {
+
+    assert.ok(false, "TODO");
+    //var done1 = assert.async();
+
+    //var device = "device";
+    //var gameEngine = new PocketCode.GameEngine();
+    //var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    //scene._background = sprite;
+    //var b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { lookId: "lookId" });
+
+    //assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
+    //assert.ok(b instanceof PocketCode.Model.SetBackgroundByIndexBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    //assert.ok(b.objClassName === "SetBackgroundByIndexBrick", "objClassName check");
+
+    //b.dispose();
+    //assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
+
+    ////recreate
+    //b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { lookId: "lookId" });
+
+    ////execute
+    //var handler = function (e) {
+    //    assert.ok(true, "executed");
+    //    assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
+    //    assert.equal(e.id, "thread_id", "threadId handled correctly");
+    //    done1();
+    //};
+    //b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+
+});
+
+
 QUnit.test("SelectCameraBrick", function (assert) {
 
     var done1 = assert.async();
@@ -874,5 +948,4 @@ QUnit.test("FlashBrick", function (assert) {
 
     done2();
 });
-
 

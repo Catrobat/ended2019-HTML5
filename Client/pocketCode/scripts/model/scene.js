@@ -395,11 +395,11 @@ PocketCode.Model.Scene = (function () {
             }
             return this._background.setLook(lookId, waitCallback);
         },
-        setLookByIndex: function (lookIdx) {
+        setBackgroundByIndex: function (lookIdx) {
             if (!this._background) {
                 return false;
             }
-            return this._background.setLookByIndex(lookId);
+            return this._background.setLookByIndex(lookIdx);
         },
         subscribeToBackgroundChange: function (lookId, changeHandler) {
             if (!this._background)
