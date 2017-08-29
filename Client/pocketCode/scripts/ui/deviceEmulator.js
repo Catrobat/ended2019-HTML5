@@ -79,6 +79,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
         this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
         this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
+        this._onOpen = new SmartJs.Event.Event(this);
 
         //events
         //this._onMaxInclinationChange=new SmartJs.Event.Event(this);
@@ -105,7 +106,13 @@ PocketCode.Ui.DeviceEmulator = (function () {
             get: function () {
                 return this._dom;
             },
-        },/*
+        },
+        onOpen: {
+            get: function () {
+                return this._onOpen;
+            }
+        },
+        /*
         device: {
             set: function (device) {
                 if (!(device instanceof PocketCode.DeviceEmulator))
@@ -158,8 +165,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
             }
         },
         _openCloseHandler: function (e) {
-            if (this._subMenu.hidden) {
-                this._subMenu.show();
+            if (this._container.hidden) {
+                this._container.show();
                 this.verifyResize();
                 this._onOpen.dispatchEvent();
             } else {
@@ -167,13 +174,13 @@ PocketCode.Ui.DeviceEmulator = (function () {
             }
         },
         close: function (e) {
-            this._subMenu.hide();
+            this._container.hide();
         },
         /* override */
         verifyResize: function () {
-            if (!this._subMenu) //called during constructor call
+            if (!this._container) //called during constructor call
                 return;
-            var clientRect = this._subMenu.clientRect,
+            var clientRect = this._container.clientRect,
                 parentHeight = this._parent ? this._parent.height : document.body.clientHeight;
             this._container.style.maxHeight = (parentHeight - clientRect.top - 10) + 'px';
 
