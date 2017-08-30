@@ -32,6 +32,8 @@ QUnit.test("DeviceEmulator UI: Expander tests", function (assert) {
     dom.appendChild(deviceEmulator._dom);
     //assert.ok(false, "TODO");
 
+    deviceEmulator.dispose();
+    assert.ok(deviceEmulator._disposed, "deviceEmulator disposed");
 });
 
 QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
@@ -42,35 +44,45 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     var accSlider = deviceEmulator._accSlider;
     var maxDegreeSlider = deviceEmulator._maxSlider;
 
-    console.log(deviceEmulator);
+    /*console.log(deviceEmulator);
+    console.log(deviceEmulator.device._inclinationLimits);
+    console.log(deviceEmulator.device._inclinationIncr);
     console.log(accSlider);
-    console.log(maxDegreeSlider);
+    console.log(maxDegreeSlider);*/
+    //instance Checks for sliders
+    assert.ok(accSlider instanceof PocketCode.Ui.Slider, "Acceleration slider instance check");
+    assert.ok(maxDegreeSlider instanceof PocketCode.Ui.Slider, "Degree slider instance check");
     //slider change events
-    //accSlider event check
-    assert.ok(accSlider.onChange instanceof SmartJs.Event.Event, "accSlider: event accessor");
-    //maxSlider event check
-    assert.ok(maxDegreeSlider.onChange instanceof SmartJs.Event.Event, "maxSlider: event accessor");
 
+    //accSlider event check
+    assert.ok(accSlider.onChange instanceof SmartJs.Event.Event, "Acceleration slider: event accessor check");
+    //maxSlider event check
+    assert.ok(maxDegreeSlider.onChange instanceof SmartJs.Event.Event, "Degree slider: event accessor check");
 
     //check for change event for Degree slider
     assert.equal(maxDegreeSlider.value, 90, "onChange Event not triggered: no Degree change");
+    //console.log(deviceEmulator.device._inclinationLimits);
+    deviceEmulator._maxDegreeChangeHandler({target: {value: 45}});
+    //console.log(deviceEmulator.device._inclinationLimits * (90 / 46));
 
-    maxDegreeSlider._onChange.addEventListener(new SmartJs.Event.EventListener(deviceEmulator._maxAccChangeHandler, this));
-    deviceEmulator._maxDegreeChangeHandler({target: {value: 20}});
 
-    console.log(maxDegreeSlider);
-    console.log(device._inclinationIncr);
-    assert.notEqual(maxDegreeSlider.value, 90, "onChange Event triggered: Degree Slider change");
+    assert.notEqual(deviceEmulator.device._inclinationLimits * (90 / 46), 90, "onChange Event triggered: Degree Slider change");
 
     //check of change event for Acceleration slider
     assert.equal(accSlider.value, 5, "onChange Event not triggered: no Acceleration change");
-
+    //console.log(deviceEmulator.device._inclinationIncr);
     deviceEmulator._maxAccChangeHandler({target: {value: 34}});
+    //console.log(deviceEmulator.device._inclinationIncr * (5 / 8));
 
-    assert.notEqual(accSlider.value, 5, "onChange Event triggered: Acceleration Slider change");
+    assert.notEqual(deviceEmulator.device._inclinationIncr * (5 / 8), 5, "onChange Event triggered: Acceleration Slider change");
 
     assert.ok(false, "TODO slider");
 
+    /*console.log(deviceEmulator);
+    console.log(deviceEmulator.device._inclinationLimits);
+    console.log(deviceEmulator.device._inclinationIncr);
+    console.log(accSlider);
+    console.log(maxDegreeSlider);*/
 });
 
 QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
@@ -80,7 +92,6 @@ QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
 
     //imgTransformation test
-    deviceEmulator._img.image = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
     /*console.log(deviceEmulator._img);
     deviceEmulator._img._id = "sj69";
     console.log(deviceEmulator._img.id);
@@ -94,12 +105,14 @@ QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
     var done = assert.async();
 
     var validateSingleKeyLeft = function () {
-        assert.ok(device.inclinationX < 0, "image Transformation: key pressed");
-        device._keyUp({keyCode: device._keyCode.LEFT});
-        assert.equal(device.inclinationX, 0, "No image Transformation: key released");
+        //deviceEmulator._imgTransformation();
+        assert.ok(deviceEmulator.device._keyPress, "image Transformation: key pressed");
+        deviceEmulator.device._keyUp({keyCode: device._keyCode.LEFT});
+        //deviceEmulator._resetImgTransformation();
+        assert.equal(deviceEmulator.device.inclinationX, 0, "Reset image Transformation: key released");
         done();
     }
-    //deviceEmulator._imgTransformation();
+    deviceEmulator.device._keyDown({keyCode: device._keyCode.LEFT});
     setTimeout(validateSingleKeyLeft, 20);
 
     assert.ok(false, "TODO image transformation");
