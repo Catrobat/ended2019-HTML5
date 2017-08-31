@@ -934,9 +934,9 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 100);
+                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 200);
                 }
-                //this._inclinationTimerTick();
+                this._inclinationTimerTick();
                 return this._sensorData.X_INCLINATION;
             },
         },
@@ -947,7 +947,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 100);
+                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 200);
                 }
 
                 return this._sensorData.Y_INCLINATION;
@@ -1003,7 +1003,7 @@ PocketCode.DeviceEmulator = (function () {
         },
         _keyUp: function (e) {
 
-            var elapsedTime;
+            //var elapsedTime;
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
