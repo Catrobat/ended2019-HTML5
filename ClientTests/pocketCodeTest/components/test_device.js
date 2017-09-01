@@ -236,12 +236,13 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     var validateSingleKeyLeft = function () {
         assert.ok(deviceEmulator.inclinationX > 0, "Left Key pressed: inclination to the left");
         deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.LEFT});
+        //console.log(deviceEmulator.inclinationX);
         assert.equal(deviceEmulator.inclinationX, 0, "Left Key released: no inclination");
         doneLeft();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
     //correct tests if console.log is there
-    console.log(deviceEmulator.inclinationX);
+    //console.log(deviceEmulator.inclinationX);
     setTimeout(validateSingleKeyLeft, 20);
 
     //Left key alternative
@@ -252,7 +253,8 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         doneLeftAlt();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
-    setTimeout(validateSingleKeyLeftAlternative, 20);
+    //console.log(deviceEmulator.inclinationX);
+    setTimeout(validateSingleKeyLeftAlternative, 30);
 
     //Right key
     var validateSingleKeyRight = function () {
@@ -262,18 +264,19 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         doneRight();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
-    setTimeout(validateSingleKeyRight, 20);
+    setTimeout(validateSingleKeyRight, 40);
 
     //Right key alternative
     var validateSingleKeyRightAlternative = function () {
-        console.log(deviceEmulator.inclinationX);
+        //console.log(deviceEmulator.inclinationX);
         assert.ok(deviceEmulator.inclinationX < 0, "Alternative Right Key pressed: inclination to the right");
         deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
         assert.equal(deviceEmulator.inclinationX, 0, "Alternative Right Key released: no inclination");
         doneRightAlt();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
-    setTimeout(validateSingleKeyRightAlternative, 20);
+    //console.log(deviceEmulator.inclinationX);
+    setTimeout(validateSingleKeyRightAlternative, 50);
 
     //Left and Right pressed
     var validateTwoKeysLeftRight = function () {
@@ -285,7 +288,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
-    setTimeout(validateTwoKeysLeftRight, 20);
+    setTimeout(validateTwoKeysLeftRight, 60);
 
     //Alternative Left and Right pressed
     var validateTwoKeysLeftRightAlternative = function () {
@@ -297,7 +300,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
     deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
-    setTimeout(validateTwoKeysLeftRightAlternative, 20);
+    setTimeout(validateTwoKeysLeftRightAlternative, 70);
 
     var validateKeySpace = function () {
         assert.ok(deviceEmulator._keyPress.SPACE, "Space key pressed");
@@ -306,7 +309,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         doneSpace();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.SPACE});
-    setTimeout(validateKeySpace, 20);
+    setTimeout(validateKeySpace, 80);
 
     //dispose
     var testDispose = function () {
@@ -315,7 +318,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         assert.notEqual(soundmanager._disposed, true, "sound manager not disposed during dispose");
         doneDispose();
     }
-    setTimeout(testDispose, 20);
+    setTimeout(testDispose, 90);
 
 });
 
