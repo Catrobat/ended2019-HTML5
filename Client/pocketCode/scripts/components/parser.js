@@ -412,28 +412,28 @@ PocketCode.merge({
                         if (asUiObject) {
                             var variable;
 
-                             if(this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] != undefined){
+                            if(this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] != undefined){
                                 variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value]
-                                 jsonFormula.objRef = {};
-                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.PROCEDURE;
-                                 jsonFormula.objRef.name = variable.name;
-                                 jsonFormula.objRef.id = variable._id;
-                             }
-                             else if(this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] != undefined){
-                                 jsonFormula.objRef = {};
-                                 variable =  this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value];
-                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.LOCAL;
-                                 jsonFormula.objRef.name = variable.name;
-                                 jsonFormula.objRef.id = variable._id;
-                             }
-                             else if(this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value] != undefined){
-                                 jsonFormula.objRef = {};
-                                 variable = this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
-                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.GLOBAL;
-                                 jsonFormula.objRef.name = variable.name;
-                                 jsonFormula.objRef.id = variable._id;
-                             }
-                             return jsonFormula;
+                                jsonFormula.objRef = {};
+                                jsonFormula.objRef.type = PocketCode.UserVariableScopeType.PROCEDURE;
+                                //jsonFormula.objRef.name = variable.name;
+                                jsonFormula.objRef.id = variable._id;
+                            }
+                            else if(this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] != undefined){
+                                jsonFormula.objRef = {};
+                                variable =  this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value];
+                                jsonFormula.objRef.type = PocketCode.UserVariableScopeType.LOCAL;
+                                //jsonFormula.objRef.name = variable.name;
+                                jsonFormula.objRef.id = variable._id;
+                            }
+                            else if(this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value] != undefined){
+                                jsonFormula.objRef = {};
+                                variable = this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
+                                jsonFormula.objRef.type = PocketCode.UserVariableScopeType.GLOBAL;
+                                //jsonFormula.objRef.name = variable.name;
+                                jsonFormula.objRef.id = variable._id;
+                            }
+                            return jsonFormula;
                         }
                         this._isStatic = false;
                         return 'uvh.getVariable("' + jsonFormula.value + '").value';
@@ -446,21 +446,21 @@ PocketCode.merge({
                                 list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value]
                                 jsonFormula.objRef = {};
                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.PROCEDURE;
-                                jsonFormula.objRef.name = list.name;
+                                //jsonFormula.objRef.name = list.name;
                                 jsonFormula.objRef.id = list._id;
                             }
                             else if(this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] != undefined){
                                 list =  this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value];
                                 jsonFormula.objRef = {};
                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.LOCAL;
-                                jsonFormula.objRef.name = list.name;
+                                //jsonFormula.objRef.name = list.name;
                                 jsonFormula.objRef.id = list._id;
                             }
                             else if(this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value] != undefined){
                                 list = this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                                 jsonFormula.objRef = {};
                                 jsonFormula.objRef.type = PocketCode.UserVariableScopeType.GLOBAL;
-                                jsonFormula.objRef.name = list.name;
+                                //jsonFormula.objRef.name = list.name;
                                 jsonFormula.objRef.id = list._id;
                             }
                             return jsonFormula;

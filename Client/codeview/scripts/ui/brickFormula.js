@@ -45,14 +45,16 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                 case 'USER_VARIABLE':
                     //todo variable id
                     PocketCode.BrickTextItem("\"", false);
-                    PocketCode.BrickTextItem(i18nKey.objRef.name, false);
+                    var id = i18nKey.objRef.id;
+                    PocketCode.BrickTextItem(id, false); //todo VariableName instead of id
                     this._goThroughObject(i18nKey.right);
                     PocketCode.BrickTextItem("\"", false);
                     break;
                 case 'USER_LIST':
                     //todo list  id
                     PocketCode.BrickTextItem("*", false);
-                    PocketCode.BrickTextItem(i18nKey.objRef.name, false);
+                    var id = i18nKey.objRef.id;
+                    PocketCode.BrickTextItem(id, false); //todo ListName instead of id
                     PocketCode.BrickTextItem("*", false);
                     break;
                 case 'BRACKET':
