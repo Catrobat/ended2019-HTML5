@@ -909,7 +909,10 @@ PocketCode.DeviceEmulator = (function () {
             UP: 0,
             DOWN: 0,
         };
-        this._durationDateTime = 100;
+        this._inclinationIncrTmp = {
+            X: 0.0,
+            Y: 0.0,
+        };
 
         this._resetInclinationX();
         this._resetInclinationY();
@@ -934,9 +937,9 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 200);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
                 }
-                this._inclinationTimerTick();
+                //this._inclinationTimerTick();
                 return this._sensorData.X_INCLINATION;
             },
         },
@@ -970,8 +973,11 @@ PocketCode.DeviceEmulator = (function () {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
                     //if (!this._keyDownDateTime.LEFT)
-                    var tmpDate = new Date();
-                    this._keyDownDateTime.LEFT = tmpDate.getMilliseconds();
+                    //{
+                        var tmpDate = new Date();
+                        this._keyDownDateTime.LEFT = tmpDate.getMilliseconds();
+                        //console.log(this._keyDownDateTime.LEFT);
+                    //}
                     //this._keyDownTime.LEFT = this._keyDownTimeDefault;
                     this._keyPress.LEFT = true;
                     break;
@@ -1001,7 +1007,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._onSpaceKeyDown.dispatchEvent();
                     break;
             }
-
+            this._newTickTest();
         },
         _keyUp: function (e) {
 
@@ -1104,7 +1110,7 @@ PocketCode.DeviceEmulator = (function () {
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
                 //this._keyDownTime.LEFT += 1.0;
-                this._sensorData.X_INCLINATION += this._inclinationIncr.X;
+                this._sensorData.X_INCLINATION += this._inclinationIncrTmp.X;
                 if (this._sensorData.X_INCLINATION > this._inclinationLimits.X_MAX)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MAX;
 
@@ -1112,21 +1118,21 @@ PocketCode.DeviceEmulator = (function () {
             else if (this._keyPress.RIGHT && !this._keyPress.LEFT) {
                 // right
                 //this._keyDownTime.RIGHT += 1.0;
-                this._sensorData.X_INCLINATION -= this._inclinationIncr.X;
+                this._sensorData.X_INCLINATION -= this._inclinationIncrTmp.X;
                 if (this._sensorData.X_INCLINATION < this._inclinationLimits.X_MIN)
                     this._sensorData.X_INCLINATION = this._inclinationLimits.X_MIN;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
                 //this._keyDownTime.UP += 1.0;
-                this._sensorData.Y_INCLINATION -= this._inclinationIncr.Y;
+                this._sensorData.Y_INCLINATION -= this._inclinationIncrTmp.Y;
                 if (this._sensorData.Y_INCLINATION < this._inclinationLimits.Y_MIN)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MIN;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
                 //this._keyDownTime.DOWN += 1.0;
-                this._sensorData.Y_INCLINATION += this._inclinationIncr.Y;
+                this._sensorData.Y_INCLINATION += this._inclinationIncrTmp.Y;
                 if (this._sensorData.Y_INCLINATION > this._inclinationLimits.Y_MAX)
                     this._sensorData.Y_INCLINATION = this._inclinationLimits.Y_MAX;
             }
@@ -1176,8 +1182,10 @@ PocketCode.DeviceEmulator = (function () {
             var elapsedTimeLeft = this._keyUpDateTime.LEFT - this._keyDownDateTime.LEFT;
             if (elapsedTimeLeft < 0)
                 elapsedTimeLeft = elapsedTimeLeft * -1;
-            this._elapsedTime.LEFT = elapsedTimeLeft / 1000;
+            this._elapsedTime.LEFT = elapsedTimeLeft;
             this._keyDownTime.LEFT = this._elapsedTime.LEFT;
+            this._keyDownDateTime.LEFT = 0;
+
 
             var elapsedTimeRight = this._keyUpDateTime.RIGHT - this._keyDownDateTime.RIGHT;
             this._elapsedTime.RIGHT = elapsedTimeRight / 1000;
@@ -1191,7 +1199,83 @@ PocketCode.DeviceEmulator = (function () {
             this._elapsedTime.DOWN = elapsedTimeDown / 1000;
             this._keyDownTime.DOWN = this._elapsedTime.DOWN;
 
-            console.log(this._elapsedTime);
+            //console.log(this._elapsedTime);
+        },
+
+        _newTickTest: function () {
+            var incllinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
+            console.log(incllinationDuration);
+            var milisecPerStep = incllinationDuration / this._inclinationIncr.X;
+            console.log(milisecPerStep);
+            //inclination from 1 to 9
+            if (incllinationDuration < 10)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 2 / 100;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 2 / 100;
+            }
+            //inclination from 10 to 19
+            else if (9 < incllinationDuration < 20)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 20 to 29
+            else if (19 < incllinationDuration < 30)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep ;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 30 to 39
+            else if (29 < incllinationDuration < 40)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 40 to 49
+            else if (39 < incllinationDuration < 50)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 50 to 59
+            else if (49 < incllinationDuration < 60)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 60 to 69
+            else if (59 < incllinationDuration < 70)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 70 to 79
+            else if (69 < incllinationDuration < 80)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 80 to 89
+            else if (79 < incllinationDuration < 90)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination from 90 to 99
+            else if (89 < incllinationDuration < 100)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
+            }
+            //inclination by 100
+            else if (incllinationDuration >= 100)
+            {
+                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep;
+                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep;
+            }
+
+            console.log(this._inclinationIncrTmp);
+            console.log(this._sensorData);
         },
     });
 
