@@ -6,13 +6,14 @@
 if (!PocketCode)
     var PocketCode = {};
 
-PocketCode.Local = 0;
+PocketCode.server = 0;
 
-
-if (PocketCode.Local === 1)
+if (PocketCode.server === 0)
+    PocketCode.domain = 'https://share.catrob.at/';
+else if (PocketCode.server === 1)
     PocketCode.domain = 'https://web-test.catrob.at/';
 else
-    PocketCode.domain = 'https://share.catrob.at/';
+    PocketCode.domain = 'http://localhost/';
 
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
@@ -1166,7 +1167,5 @@ PocketCode.Web.resources = {
 if (!launchProject) {
     var launchProject = function (projectId, rfc3066, containerElement) {
         PocketCode.Web.PlayerInterface.launchProject(projectId, rfc3066, containerElement);
-    }
+    };
 }
-
-

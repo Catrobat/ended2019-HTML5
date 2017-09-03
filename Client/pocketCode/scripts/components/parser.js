@@ -666,12 +666,14 @@ PocketCode.merge({
                     case 'MAX':
                         if (uiString)
                             return 'max(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' + this._parseJsonType(jsonFormula.right) + ' : isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? ' +
+                                this._parseJsonType(jsonFormula.left) + ' : Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'MIN':
                         if (uiString)
                             return 'min(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' + this._parseJsonType(jsonFormula.right) + ' : isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? ' +
+                                this._parseJsonType(jsonFormula.left) + ' : Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
 
                     case 'TRUE':
                         if (uiString)
