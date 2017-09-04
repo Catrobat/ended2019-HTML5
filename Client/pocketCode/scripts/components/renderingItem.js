@@ -862,8 +862,12 @@ PocketCode.merge({
                         cache = this._cacheCanvas,
                         ctx = this._cacheCtx;
 
+                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                        return;
+
                     cache.width = width;
                     cache.height = height;
+                    //reseet image cache to original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
