@@ -46,7 +46,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         defaultVal = device.defaultInclinationAcceleration * (5 / 8);
-        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 100, value: defaultVal});
+        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 

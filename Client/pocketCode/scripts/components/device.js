@@ -950,7 +950,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 200);
+                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
                 }
 
                 return this._sensorData.Y_INCLINATION;
@@ -1203,79 +1203,13 @@ PocketCode.DeviceEmulator = (function () {
         },
 
         _newTickTest: function () {
-            var incllinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
-            console.log(incllinationDuration);
-            var milisecPerStep = incllinationDuration / this._inclinationIncr.X;
-            console.log(milisecPerStep);
-            //inclination from 1 to 9
-            if (incllinationDuration < 10)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 2 / 100;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 2 / 100;
-            }
-            //inclination from 10 to 19
-            else if (9 < incllinationDuration < 20)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 20 to 29
-            else if (19 < incllinationDuration < 30)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep ;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 30 to 39
-            else if (29 < incllinationDuration < 40)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 40 to 49
-            else if (39 < incllinationDuration < 50)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 50 to 59
-            else if (49 < incllinationDuration < 60)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 60 to 69
-            else if (59 < incllinationDuration < 70)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 70 to 79
-            else if (69 < incllinationDuration < 80)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 80 to 89
-            else if (79 < incllinationDuration < 90)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination from 90 to 99
-            else if (89 < incllinationDuration < 100)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep / 4 / 10;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep / 10;
-            }
-            //inclination by 100
-            else if (incllinationDuration >= 100)
-            {
-                this._inclinationIncrTmp.X = this._inclinationIncr.X / milisecPerStep;
-                this._inclinationIncrTmp.Y = this._inclinationIncr.Y / milisecPerStep;
-            }
 
-            console.log(this._inclinationIncrTmp);
-            console.log(this._sensorData);
+            var incllinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
+            var inclinationPerStep = incllinationDuration / this._inclinationIncr.X;
+
+            this._inclinationIncrTmp.X = inclinationPerStep / incllinationDuration * 2;
+            this._inclinationIncrTmp.Y = inclinationPerStep / incllinationDuration * 2;
+
         },
     });
 
