@@ -239,6 +239,13 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.isStatic, true, "calc max: isStatic");
     assert.equal(f.toString(), "max(2 x (1 + 8), 17)", "string max");
 
+    f.json = max_NaN_left;
+    assert.equal(f.calculate(), 1, "calc max: left = NaN");
+    f.json = max_NaN_right;
+    assert.equal(f.calculate(), 1, "calc max: right = NaN");
+    f.json = max_NaN;
+    assert.equal(f.calculate(), undefined, "calc max: both arguments are NaN");
+
     //f.json = exp2;
     //assert.equal(f.calculate(), 1, "calc exp");
     //assert.equal(f.isStatic, true, "calc exp: isStatic");
@@ -248,6 +255,13 @@ QUnit.test("FormulaParser: functions", function (assert) {
     assert.equal(f.calculate(), -1, "calc min");
     assert.equal(f.isStatic, true, "calc min: isStatic");
     assert.equal(f.toString(), "min(0, -1 + 1 - 1)", "string min");
+
+    f.json = min_NaN_left;
+    assert.equal(f.calculate(), 2, "calc min: left = NaN");
+    f.json = min_NaN_right;
+    assert.equal(f.calculate(), 2, "calc min: right = NaN");
+    f.json = min_NaN;
+    assert.equal(f.calculate(), undefined, "calc min: both arguments are NaN");
 
     f.json = arduino_analog_pin;
     assert.equal(f.calculate(), 0, "calc arduino_analog_pin");
