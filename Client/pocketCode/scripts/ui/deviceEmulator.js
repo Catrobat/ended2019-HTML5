@@ -16,6 +16,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         //this._pollingInterval = 100;
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
+        this._container.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
         this._appendChild(this._container);
         var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorScroll' });
         this._container.appendChild(scroll);
@@ -79,26 +80,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
         this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
         this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
-        //this._onOpen = new SmartJs.Event.Event(this);
-
-        //events
-        //this._onMaxInclinationChange=new SmartJs.Event.Event(this);
-        //this._onInclinationAccelerationChange=new SmartJs.Event.Event(this);
     }
-
-    //events
-    //Object.defineProperties(Slider.prototype, {       //not needed: direct access to device provided
-    //    onMaxInclinationChange: {
-    //        get: function () {
-    //            return this._maxSlider.onChange;
-    //        },
-    //    },
-    //    onInclinationAccelerationChange: {
-    //        get: function () {
-    //            return this._accSlider.onChange;
-    //        },
-    //    },
-    //});
 
     //properties
     Object.defineProperties(DeviceEmulator.prototype, {
@@ -106,11 +88,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
             get: function () {
                 return this._dom;
             },
-        },
-        onOpen: {
-            get: function () {
-                return this._onOpen;
-            }
         },
         /*
         device: {
@@ -165,17 +142,21 @@ PocketCode.Ui.DeviceEmulator = (function () {
             }
         },
         _openCloseHandler: function (e) {
-            if (this._container.hidden) {
-                this._container.show();
-                this.verifyResize();
-                this._onOpen.dispatchEvent();
-            } else {
-                this.close();
-            }
+            if (e.opened)
+                ;//TODO: start polling (this._pollingTimer = setInterval(...)
+            else
+                ;//TODO: stop polling (stopInterval(this._pollingTimer)
+            //this._container.hidden) {
+            //     this._container.show();
+            //     this.verifyResize();
+            //     //this._onOpen.dispatchEvent();
+            // } else {
+            //     this.close();
+            // }
         },
-        close: function (e) {
-            this._container.hide();
-        },
+        // close: function (e) {
+        //     this._container.hide();
+        // },
         /* override */
         verifyResize: function () {
             if (!this._container) //called during constructor call

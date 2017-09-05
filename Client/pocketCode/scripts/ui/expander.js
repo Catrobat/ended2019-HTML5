@@ -16,6 +16,7 @@ PocketCode.Ui.Expander = (function () {
         this._header = new SmartJs.Ui.ContainerControl({className: 'pc-expanderHeader'});
         this._appendChild(this._header);
         var checkbox = new PocketCode.Ui.I18nCheckbox(i18nKey, undefined, { className: '' });
+        checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
         this._header.appendChild(checkbox);
 
         //body
@@ -23,17 +24,28 @@ PocketCode.Ui.Expander = (function () {
         this._appendChild(this._container);
 
         //events
-        checkbox.onCheckedChange.addEventListener(new SmartJs.Event.EventListener(this._onChangeHandler, this));
+        this._onVisibilityChange = new SmartJs.Event.Event(this);
     }
+
+    //events
+    Object.defineProperties(Expander.prototype, {
+        onVisibilityChange: {
+             get: function () {
+                 return this._onVisibilityChange;
+             }
+         },
+    });
 
     //methods
     Expander.prototype.merge({
         _onChangeHandler: function(e) {
             if(e.checked){
                 this._container.addClassName("pc-bodyVisible");
+                this._onVisibilityChange.dispatchEvent({opened: true});
             }
             else{
                 this._container.removeClassName("pc-bodyVisible");
+                this._onVisibilityChange.dispatchEvent({opened: false});
             }
 
             window.setTimeout(function(){

@@ -280,6 +280,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
 
     //Left and Right pressed
     var validateTwoKeysLeftRight = function () {
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
         assert.equal(deviceEmulator._keyPress.LEFT, deviceEmulator._keyPress.RIGHT, "Left and Right Key pressed: inclination hold");
         deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.LEFT});
         deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.RIGHT});
@@ -287,11 +288,12 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         doneLeftRight();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
-    deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
+
     setTimeout(validateTwoKeysLeftRight, 60);
 
     //Alternative Left and Right pressed
     var validateTwoKeysLeftRightAlternative = function () {
+        deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
         assert.equal(deviceEmulator._keyPress.LEFT, deviceEmulator._keyPress.RIGHT, "Alternative Left and Right Key pressed: inclination hold");
         deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
         deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
@@ -299,7 +301,6 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         doneLeftRightAlt();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
-    deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
     setTimeout(validateTwoKeysLeftRightAlternative, 70);
 
     var validateKeySpace = function () {
@@ -382,6 +383,7 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
 
     //Up and Down pressed
     var validateTwoKeysUpDown = function () {
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
         assert.equal(deviceEmulator._keyPress.UP, deviceEmulator._keyPress.DOWN, "Up and Down Key pressed: inclination hold");
         deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.UP});
         deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.DOWN});
@@ -389,11 +391,11 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
         doneUpDown();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
-    deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
     setTimeout(validateTwoKeysUpDown, 20);
 
     //Alternative Up and Down pressed
     var validateTwoKeysUpDownAlternative = function () {
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
         assert.equal(deviceEmulator._keyPress.UP, deviceEmulator._keyPress.DOWN, "Alternative Up and Down Key pressed: inclination hold");
         deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.UP});
         deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
@@ -401,7 +403,6 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
         doneUpDownAlt();
     }
     deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
-    deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
     setTimeout(validateTwoKeysUpDownAlternative, 20);
 
     var validateKeySpace = function () {

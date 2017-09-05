@@ -20,7 +20,7 @@ QUnit.test("DeviceEmulator UI: Expander tests", function (assert) {
     assert.ok(deviceEmulator instanceof PocketCode.Ui.DeviceEmulator && deviceEmulator instanceof SmartJs.Ui.Control, "instance check");
 
     assert.notOk(deviceEmulator._container.hidden, "DeviceEmulator is opened by default");
-    deviceEmulator.close();
+    //deviceEmulator.close();
     assert.ok(deviceEmulator._container.hidden, "DeviceEmulator closed by method call");
     deviceEmulator._openCloseHandler();
     assert.notOk(deviceEmulator._container.hidden, "DeviceEmulator opened by click");

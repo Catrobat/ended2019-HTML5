@@ -937,9 +937,9 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
+                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
                 }
-                //this._inclinationTimerTick();
+                this._inclinationTimerTick();
                 return this._sensorData.X_INCLINATION;
             },
         },
@@ -950,7 +950,7 @@ PocketCode.DeviceEmulator = (function () {
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
 
-                    this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
+                    //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
                 }
 
                 return this._sensorData.Y_INCLINATION;
@@ -1207,8 +1207,8 @@ PocketCode.DeviceEmulator = (function () {
             var incllinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
             var inclinationPerStep = incllinationDuration / this._inclinationIncr.X;
 
-            this._inclinationIncrTmp.X = inclinationPerStep / incllinationDuration * 1.5;
-            this._inclinationIncrTmp.Y = inclinationPerStep / incllinationDuration * 1.5;
+            this._inclinationIncrTmp.X = inclinationPerStep / incllinationDuration ;
+            this._inclinationIncrTmp.Y = inclinationPerStep / incllinationDuration ;
 
         },
     });
