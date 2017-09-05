@@ -476,7 +476,7 @@ PocketCode.Model.merge({
         SetBackgroundAndWaitBrick.prototype.merge({
             _execute: function (id) {
                 if (!this._lookId)  //can be null
-                    this._return();
+                    this._return(id);
                 else
                     this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
             },
