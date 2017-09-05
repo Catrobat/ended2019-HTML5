@@ -12,8 +12,6 @@ QUnit.module("model/sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var done = assert.async();
-
     // var programExecAsync = assert.async();
     var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
@@ -2030,6 +2028,7 @@ QUnit.test("PhysicsSprite", function (assert) {
 
 QUnit.test("SpriteClone", function (assert) {
 
+    var done = assert.async();
     var soundManager = new PocketCode.SoundManager();
     var device = new PocketCode.MediaDevice(soundManager);
     var gameEngine = new PocketCode.GameEngine();
@@ -2169,6 +2168,7 @@ QUnit.test("SpriteClone", function (assert) {
         list1.replaceAt(2, 40);
 
         assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
+        done();
     }
 });
 
