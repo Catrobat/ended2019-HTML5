@@ -31,37 +31,6 @@ PocketCode.merge({
         return SetLookBrick;
     })(),
 
-    SetLookByIndexBrick: (function () {
-        SetLookByIndexBrick.extends(PocketCode.BaseBrick, false);
-
-        function SetLookByIndexBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.SetLookByIndexBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_set_look'
-                    },
-                    {
-                        type: 'lf', //line feed
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        //name: 'SetLookByIndexBrick' + PocketCode.SetLookByIndexBrick.content[2].id,
-                        value: ''
-                    }
-                ]
-            };
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-
-        return SetLookByIndexBrick;
-    })(),
-
     NextLookBrick: (function () {
         NextLookBrick.extends(PocketCode.BaseBrick, false);
         function NextLookBrick(model, commentedOut) {
@@ -671,38 +640,6 @@ PocketCode.merge({
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
         return CameraBrick;
-    })(),
-
-    SetBackgroundByIndexBrick: (function () {
-        SetBackgroundByIndexBrick.extends(PocketCode.BaseBrick, false);
-
-        function SetBackgroundByIndexBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.SetBackgroundByIndexBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_set_background_by_index'
-                    },
-                    {
-                        type: 'lf' //line feed
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        //name: 'SetBackgroundByIndexBrick' + PocketCode.SetBackgroundByIndexBrick.content[2].id,
-                        value: ''
-                    }
-                ]
-            };
-
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-
-        return SetBackgroundByIndexBrick;
     })(),
 
     SelectCameraBrick: (function () {

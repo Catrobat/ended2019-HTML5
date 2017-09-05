@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 .pc-codeContainer {
     width: 100%;
     height: 100%;
@@ -96,16 +96,10 @@
 .pc-code .pc-brickEvent span {
     color: #B94F16;
 }
-/*
+
 .pc-code .pc-brickControl span {
     color: #F8885C;
-}*/
-
-
-.pc-brick .pc-brickControl {
-    background-color: #5cf80c;
 }
-
 
 .pc-code .pc-brickMotion span {
     color: #397EBA;
@@ -191,7 +185,7 @@
     text-transform: none;
     width: 1.8em;
     left: -1.8em;
-    /* height: 100%;  TODO
+    /* height: 100%;  TODO 
     background-color: aqua;*/
     display: none; /* TODO */
     cursor: pointer;
@@ -223,27 +217,4 @@
     border-bottom-color: black;
     margin-left: 2px;
     margin-right: 2px;
-    position: relative;
-    height: 40px;
-    width: 200px;
-    font-size: 1.5em;
-}
-
-.pc-brickDropdownItem:before {
-    content: "test";
-    height: 1em;
-    width: .1em;
-    position: absolute;
-    text-align: center;
-    bottom: 0px; /* take care of RTL */
-}
-.pc-brickDropdownItem:after {
-    content: "";
-    height: 0;
-    width: 0;
-    border-bottom: solid 1em #030000;
-    border-left: solid 1em transparent;
-    position: absolute;
-    bottom: 0px;
-    right: 0px; /* take care of RTL */
 }
