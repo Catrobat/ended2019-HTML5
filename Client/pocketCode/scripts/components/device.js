@@ -1207,8 +1207,8 @@ PocketCode.DeviceEmulator = (function () {
             var incllinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
             var inclinationPerStep = incllinationDuration / this._inclinationIncr.X;
 
-            this._inclinationIncrTmp.X = inclinationPerStep / incllinationDuration * 2;
-            this._inclinationIncrTmp.Y = inclinationPerStep / incllinationDuration * 2;
+            this._inclinationIncrTmp.X = inclinationPerStep / incllinationDuration * 1.5;
+            this._inclinationIncrTmp.Y = inclinationPerStep / incllinationDuration * 1.5;
 
         },
     });
