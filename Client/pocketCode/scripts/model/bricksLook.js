@@ -96,20 +96,20 @@ PocketCode.Model.merge({
         function SetLookByIndexBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-            this._lookIdx = new PocketCode.Formula(device, sprite, propObject.idx);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.idx);
         }
 
         //formula accessors
         Object.defineProperties(SetLookByIndexBrick.prototype, {
             indexFormula: {
                 get: function () {
-                    return this._lookIdx;
+                    return this._idx;
                 },
             },
         });
 
         SetLookByIndexBrick.prototype._execute = function (scope) {
-            var idx = this._lookIdx.calculate(scope);
+            var idx = this._idx.calculate(scope);
             if (isNaN(idx))
                 this._return();
             else
@@ -557,7 +557,7 @@ PocketCode.Model.merge({
         SetBackgroundAndWaitBrick.prototype.merge({
             _execute: function (id) {
                 if (!this._lookId)  //can be null
-                    this._return();
+                    this._return(id);
                 else
                     this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
             },
@@ -577,24 +577,24 @@ PocketCode.Model.merge({
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             this._scene = scene;
-            this._lookIdx = new PocketCode.Formula(device, sprite, propObject.idx);
+            this._idx = new PocketCode.Formula(device, sprite, propObject.idx);
         }
 
         //formula accessors
         Object.defineProperties(SetBackgroundByIndexBrick.prototype, {
             indexFormula: {
                 get: function () {
-                    return this._lookIdx;
+                    return this._idx;
                 },
             },
         });
 
         SetBackgroundByIndexBrick.prototype.merge({
             _execute: function (scope) {
-                var idx = this._lookIdx.calculate(scope);
+                var idx = this._idx.calculate(scope);
                 if (isNaN(idx))
                     this._return();
-                this._return(this._sprite.setLookByIndex(idx));
+                this._return(this._scene.setBackgroundByIndex(idx));
             },
             dispose: function () {
                 this._scene = undefined;
@@ -604,7 +604,6 @@ PocketCode.Model.merge({
 
         return SetBackgroundByIndexBrick;
     })(),
-
 
     CameraBrick: (function () {
         CameraBrick.extends(PocketCode.Model.BaseBrick, false);

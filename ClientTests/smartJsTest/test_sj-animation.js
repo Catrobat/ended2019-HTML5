@@ -26,7 +26,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
         assert.ok(events.length > 0, "update event handler dispatched correctly");
@@ -52,7 +52,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     a.onUpdate.addEventListener(new SmartJs.Event.EventListener(updateEventHandler, this));
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     var b = new SmartJs.Animation.Animation(10, 20, 320, SmartJs.Animation.Type.LINEAR);
@@ -89,10 +89,10 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
-        var stopTime = new Date();
+        var stopTime = Date.now();
 
         assert.ok(events.length > 0, "update event handler dispatched correctly");
         assert.ok(true, "executed event handler dispatched correctly");
@@ -126,7 +126,7 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
     assert.throws(function () { a.start("errorArgs"); }, Error, "ERROR: validation callback args");
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     window.setTimeout(function () { a.pause(); }, 120);

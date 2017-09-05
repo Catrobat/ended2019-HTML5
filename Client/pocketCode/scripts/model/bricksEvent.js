@@ -65,7 +65,7 @@ PocketCode.Model.merge({
                     if (!found)
                         throw new Error('unrecognized event: check if action is part of PocketCode.UserActionType');
 
-                    event = this._onActionEvents[action];
+                    var event = this._onActionEvents[action];
                     if (!(event instanceof SmartJs.Event.Event))
                         throw new Error('unrecognized event: check if all events were registered in out parser');
                     if(this._actionEvent)

@@ -330,9 +330,9 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.id, testSprite.id, "renderingSprite: id set correctly");
     assert.strictEqual(renderingSprite.x, testSprite._positionY + lookOffsetX, "renderingSprite: x set correctly");
     assert.strictEqual(renderingSprite.y, testSprite._positionY + lookOffsetY, "renderingSprite: y set correctly");
-    assert.strictEqual(renderingSprite._rotation, testSprite._direction - 90, "renderingSprite: rotation set correctly");
-    assert.strictEqual(renderingSprite._flipX, testSprite._flipX, "renderingSprite: flipX set correctly");
-    assert.strictEqual(renderingSprite._scaling, testSprite.size / 100.0, "renderingSprite: scaling set correctly");
+    assert.strictEqual(renderingSprite.rotation, testSprite._direction - 90, "renderingSprite: rotation set correctly");
+    assert.strictEqual(renderingSprite.flipX, testSprite._flipX, "renderingSprite: flipX set correctly");
+    assert.strictEqual(renderingSprite.scaling, testSprite.size / 100.0, "renderingSprite: scaling set correctly");
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters

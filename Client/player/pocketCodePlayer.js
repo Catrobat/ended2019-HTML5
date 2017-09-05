@@ -6,13 +6,14 @@
 if (!PocketCode)
     var PocketCode = {};
 
-PocketCode.Local = 0;
+PocketCode.server = 1;
 
-
-if (PocketCode.Local === 1)
+if (PocketCode.server === 0)
+    PocketCode.domain = 'https://share.catrob.at/';
+else if (PocketCode.server === 1)
     PocketCode.domain = 'https://web-test.catrob.at/';
 else
-    PocketCode.domain = 'https://share.catrob.at/';
+    PocketCode.domain = 'http://localhost/';
 
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
@@ -130,7 +131,7 @@ PocketCode.Web = {
                     this._addDomListener(document, 'mozfullscreenchange', this._fullscreenchangeHandler);
                     this._addDomListener(document, 'MSFullscreenChange', this._fullscreenchangeHandler);
                 }
-                this.lastExitDate = new Date(); //to prevent re-entering fullscreen in chrome: written when event occurs
+                this.lastExitDate = Date.now(); //to prevent re-entering fullscreen in chrome: written when event occurs
 
                 this.onFullscreenChange = function (state) {
                     //default event handler to be overwritten
@@ -218,7 +219,7 @@ PocketCode.Web = {
                 window.setTimeout(function () {  //needed to detect fullscreen correctly in IE
                     var fs = this.isJsFullscreen;
                     if (!fs())
-                        this.lastExitDate = new Date();
+                        this.lastExitDate = Date.now();
 
                     this.onFullscreenChange(fs());
                 }.bind(this), 10);
@@ -232,7 +233,7 @@ PocketCode.Web = {
                     e.stopPropagation();
 
                     if (e.type === 'keydown' && !this.lastKeyDown) {
-                        this.lastKeyDown = new Date();
+                        this.lastKeyDown = Date.now();
                     }
                     else if (e.type === 'keyup') {
                         var delay = this.lastKeyDown - this.lastExitDate;
@@ -1166,7 +1167,5 @@ PocketCode.Web.resources = {
 if (!launchProject) {
     var launchProject = function (projectId, rfc3066, containerElement) {
         PocketCode.Web.PlayerInterface.launchProject(projectId, rfc3066, containerElement);
-    }
+    };
 }
-
-

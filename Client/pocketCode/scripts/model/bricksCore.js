@@ -317,8 +317,8 @@ PocketCode.Model.merge({
                 //this._y = propObject.y;
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
-            this._stoppedAt = new Date();
-            this._pendingExecutedCallback = undefined;  //make sure a wait callback is handled even the object get's disposed (clone)
+            this._stoppedAt = Date.now();
+            //this._pendingExecutedCallback = undefined;  //make sure a wait callback is handled even the object get's disposed (clone)
             this._onExecutionStateChange = new SmartJs.Event.Event(this);
         }
 
@@ -348,9 +348,13 @@ PocketCode.Model.merge({
         //methods
         ScriptBlock.prototype.merge({
             //supporting subscription to publish-subscribe broker (broadcast and wait, background-change and wait, ..)
-            _subscribeCallback: function (dispatchedAt, onExecutedListener, threadId) {
-                //if (dispatchedAt && dispatchedAt >/*=*/ this._stoppedAt) {  //TODO
-                if (onExecutedListener && threadId) {
+            _subscribeCallback: function (dispatchedAt, onExecutedListener, threadId, stop) {
+                if (stop && this._pendingExecutedCallback) {    //to make sure all scripts terminate (call the callback function) if executed again while running
+                    this.stop();
+                    this._pendingExecutedCallback();
+                    return;
+                }
+                else if (onExecutedListener && threadId) {
                     if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
                         //stopped before executed
                         onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
@@ -381,7 +385,7 @@ PocketCode.Model.merge({
                 //    return;
                 if (this._executionState == PocketCode.ExecutionState.RUNNING) {
                     //this.stop();    //execution state is set and _onExecutionStateChange dispatched
-                    this._stoppedAt = new Date();
+                    this._stoppedAt = Date.now();
                     PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
                 }
                 else {
@@ -390,14 +394,21 @@ PocketCode.Model.merge({
                 }
                 PocketCode.Model.SingleContainerBrick.prototype._execute.call(this, threadId);
             },
-            stop: function () {
-                this._stoppedAt = new Date();
+            stop: function (calledFromStopBrick) {
+                this._stoppedAt = Date.now();
                 PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+
+                //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped by a StopBrick
+                if (calledFromStopBrick && this._pendingExecutedCallback)
+                    setTimeout(function () {
+                        this._pendingExecutedCallback();
+                        this._pendingExecutedCallback = undefined;
+                    }.bind(this), 0);   //delay to make sure the recursive stop has reached all bricks before executing callback
             },
             dispose: function () {
-                //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose
+                //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose of clones
                 if (this._sprite instanceof PocketCode.Model.SpriteClone && this._pendingExecutedCallback) {
                     this._pendingExecutedCallback();
                     this._pendingExecutedCallback = undefined;
@@ -428,7 +439,7 @@ PocketCode.Model.merge({
                     listener: onExecutedListener,
                     threadId: threadId,
                     scope: scope,
-                    startTime: new Date(),
+                    startTime: Date.now(),
                 };
                 if (this._commentedOut === true)
                     this._return(id, false);
@@ -454,9 +465,9 @@ PocketCode.Model.merge({
                 if (/*this._bricks &&*/ this._loopConditionMet(po) && !e.stopped) {   //bricks checked already in execute()
                     var executionDelay = 0;
                     if (e.loopDelay) {
-                        executionDelay = this._minLoopCycleTime - (new Date() - po.startTime);  //20ms min loop cycle time
+                        executionDelay = this._minLoopCycleTime - (Date.now() - po.startTime);  //20ms min loop cycle time
                     }
-                    po.startTime = new Date();  //re-init for each loop
+                    po.startTime = Date.now();  //re-init for each loop
                     if (executionDelay > 0) {
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }

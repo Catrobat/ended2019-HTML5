@@ -152,13 +152,13 @@ class I18nController extends BaseController
                 }
             }
             if (!isset($language))  //even "en" not found: obviously crowdin-server issue
-                return new ServiceNotImplementedException($this->request->serviceName . ": language resource file not found");
+                return new BadMethodCallException($this->request->serviceName . ": language resource file not found");
         }
 
         $file = getcwd() . str_replace("/", DIRECTORY_SEPARATOR, "/i18nResources/" . $langCode . ".json");
         if(! file_exists($file))
         {
-            return new ServiceNotImplementedException($this->request->serviceName . ": language resource file not found: $langCode");
+            return new BadMethodCallException($this->request->serviceName . ": language resource file not found: $langCode");
         }
 
         $string = file_get_contents($file);

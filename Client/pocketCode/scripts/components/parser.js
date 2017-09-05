@@ -207,7 +207,7 @@ PocketCode.merge({
                     case 'DeleteCloneBrick':
                     case 'ClearBackgroundBrick':
                     case 'GoToBrick':
-
+                    case 'AskSpeechBrick':
                     case 'AskBrick':
                     case 'AskSpeechBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
@@ -254,7 +254,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
-                    case 'StopScriptBrick':
+                    case 'StopBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 
@@ -327,11 +327,6 @@ PocketCode.merge({
         return BrickFactory;
     })(),
 
-    UserVariableScopeType: {
-        LOCAL: 1,
-        GLOBAL: 2,
-        PROCEDURE: 3
-    },
 
     FormulaParser: (function () {
         function FormulaParser() {
@@ -795,14 +790,21 @@ PocketCode.merge({
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_max');
                             return jsonFormula;
                         }
-                        return 'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' +
+                            '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' +
+                            '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
+                            'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
+
 
                     case 'MIN':
                         if (asUiObject){
                             this._addKeyRecursive(jsonFormula, 'formula_editor_function_min');
                             return jsonFormula;
                         }
-                        return 'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' +
+                            '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' +
+                            '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
+                            'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
 
                     case 'TRUE':
                         if (asUiObject){
