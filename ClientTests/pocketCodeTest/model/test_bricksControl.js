@@ -47,24 +47,24 @@ QUnit.test("WaitBrick", function (assert) {
 
         switch (e.id) {
             case "s1":
-                s1 = new Date();
+                s1 = Date.now();
                 break;
             case "s2":
-                s2 = new Date();
+                s2 = Date.now();
                 break;
             case "s3":
-                s3 = new Date();
+                s3 = Date.now();
                 break;
             case "s4":
-                s4 = new Date();
+                s4 = Date.now();
                 break;
         }
 
         if (s1 != undefined && s2 != undefined && s3 != undefined && s4 != undefined) {
-            s1 = new Date() - s1;
-            s2 = new Date() - s2;
-            s3 = new Date() - s3;
-            s4 = new Date() - s4;
+            s1 = Date.now() - s1;
+            s2 = Date.now() - s2;
+            s3 = Date.now() - s3;
+            s4 = Date.now() - s4;
 
             assert.ok(s1 < s2 && s2 < s3 && s3 < s4, "testing threaded calls");
             done2();
@@ -224,7 +224,7 @@ QUnit.test("ForeverBrick", function (assert) {
         b.stop();   //stop forever loop
 
         //async
-        var finishTime = new Date();
+        var finishTime = Date.now();
         assert.equal(tb.executed, 5, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 5 times without loop delay = " + delay + "ms");
@@ -234,7 +234,7 @@ QUnit.test("ForeverBrick", function (assert) {
 
     b.bricks = new PocketCode.Model.BrickContainer(bca);
     tb.onTestFinished.addEventListener(new SmartJs.Event.EventListener(testFinishedHandler1, this));
-    var startTime = new Date();
+    var startTime = Date.now();
     b.execute(new SmartJs.Event.EventListener(neverCalled, this), "forever");
 
     //with delay
@@ -242,7 +242,7 @@ QUnit.test("ForeverBrick", function (assert) {
         b2.stop();  //stop forever loop
 
         //async
-        var finishTime = new Date();
+        var finishTime = Date.now();
         assert.equal(tb.executed, 5, "loop delay: loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 5 times without loop delay = " + delay + "ms");
@@ -260,7 +260,7 @@ QUnit.test("ForeverBrick", function (assert) {
     //console.log("removed handler: " + removed);
     tb2.onTestFinished.addEventListener(new SmartJs.Event.EventListener(testFinishedHandler2, this));
 
-    startTime = new Date();
+    startTime = Date.now();
     b2.execute(new SmartJs.Event.EventListener(neverCalled, this), "forever");
 
 });
@@ -449,7 +449,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var testFinishedHandler3 = function (e) {   //simulating 2nd thread
         assert.equal(e.id, "id_2", "thread 2: event argument: id");
         assert.equal(e.loopDelay, false, "thread 2: event argument: loopDelay");
-        assert.ok((new Date() - dateTime) > 50, "paused and resumed");
+        assert.ok((Date.now() - dateTime) > 50, "paused and resumed");
 
         b._condition = new PocketCode.Formula("device", sprite, conditionFalse);    //make sure both threads get executed even the condition is not met any more
         done3();
@@ -463,7 +463,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
         b._condition = new PocketCode.Formula("device", sprite, conditionTrue);
     }, 10);
 
-    dateTime = new Date();
+    dateTime = Date.now();
     //window.setTimeout(function () {
     //    //set Condition to true: internally
     //    //var formulaTrue = new PocketCode.Formula("device", sprite, conditionTrue);
@@ -537,7 +537,7 @@ QUnit.test("RepeatBrick", function (assert) {
     //without delay
     var testFinishedHandler1 = function (e) {
         //async
-        var finishTime = new Date();
+        var finishTime = Date.now();
         //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
@@ -549,13 +549,13 @@ QUnit.test("RepeatBrick", function (assert) {
     };
 
     b.bricks = new PocketCode.Model.BrickContainer(bca);
-    var startTime = new Date();
+    var startTime = Date.now();
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "n_times");
 
     //with delay
     var testFinishedHandler2 = function (e) {
         //async
-        var finishTime = new Date();
+        var finishTime = Date.now();
         //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
@@ -854,7 +854,7 @@ QUnit.test("StopBrick", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.THIS_SCRIPT });
+    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.THIS_SCRIPT });
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StopBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
     assert.ok(b.objClassName === "StopBrick", "objClassName check");
@@ -871,7 +871,7 @@ QUnit.test("StopBrick", function (assert) {
     b.dispose();
     assert.ok(b._disposed, "disposed");
     //recreate
-    b = new PocketCode.Model.StopBrick(device, sprite, "first", "s01", { type: PocketCode.StopType.THIS_SCRIPT });
+    b = new PocketCode.Model.StopBrick(device, sprite, "first", "s01", { stopType: PocketCode.StopType.THIS_SCRIPT });
 
     assert.ok(typeof sprite.stopAllScripts == "function", "stopScripts: sprite interface check");
     var stopScriptsCalled = 0,
@@ -881,10 +881,10 @@ QUnit.test("StopBrick", function (assert) {
         stoppedScriptsExceptId = id;
     }
 
-    var c = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.ALL });
+    var c = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.ALL });
     assert.equal(c._type, PocketCode.StopType.ALL, "type set: ALL");
 
-    var d = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.OTHER_SCRIPTS });
+    var d = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.OTHER_SCRIPTS });
     assert.equal(d._type, PocketCode.StopType.OTHER_SCRIPTS, "type set: OTHER");
 
     //execute
@@ -947,7 +947,7 @@ QUnit.test("StopBrick: type THIS_SCRIPT: interaction with bricks after the stop 
     var script = new PocketCode.Model.ScriptBlock(device, sprite, { commentedOut: false });
     var bricks = script._bricks._bricks;
     bricks.push(new TestBrick(device, sprite));
-    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.THIS_SCRIPT });
+    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.THIS_SCRIPT });
     bricks.push(b);
     bricks.push(new TestBrick(device, sprite));
 
@@ -1008,7 +1008,7 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
 
     var script1 = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", {}, scene.onStart);
     var bricks1 = script1._bricks._bricks;
-    var b = new PocketCode.Model.StopBrick("device", sprite, scene, "s01", { type: PocketCode.StopType.OTHER_SCRIPTS });
+    var b = new PocketCode.Model.StopBrick("device", sprite, scene, "s01", { stopType: PocketCode.StopType.OTHER_SCRIPTS });
     bricks1.push(b);
     bricks1.push(new TestBrick("device", "sprite"));
 

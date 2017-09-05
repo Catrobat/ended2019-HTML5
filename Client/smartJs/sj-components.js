@@ -93,7 +93,7 @@ SmartJs.Components = {
                     if (this._paused || this._remainingTime === 0)
                         return this._remainingTime;
                     else
-                        return this._remainingTime - (new Date() - this._startTime);
+                        return this._remainingTime - (Date.now() - this._startTime);
                 },
                 //enumerable: false,
                 //configurable: true,
@@ -105,7 +105,7 @@ SmartJs.Components = {
             start: function () {
                 this._clearTimeout();
 
-                this._startTime = new Date();
+                this._startTime = Date.now();
                 this._remainingTime = this._delay;
                 if (this._remainingTime === 0) {
                     this._onExpire.dispatchEvent(this._callBackArgs);
@@ -119,7 +119,7 @@ SmartJs.Components = {
                     return;
 
                 this._clearTimeout();
-                this._remainingTime -= (new Date() - this._startTime);
+                this._remainingTime -= (Date.now() - this._startTime);
                 if (this._remainingTime < 0)    //
                     this._remainingTime = 0;
                 this._paused = true;
@@ -128,7 +128,7 @@ SmartJs.Components = {
                 if (!this._paused)
                     return;
 
-                this._startTime = new Date();
+                this._startTime = Date.now();
                 this._setTimeout(this._remainingTime);
                 this._paused = false;
             },
@@ -179,7 +179,7 @@ SmartJs.Components = {
                     if (this._pausedDateTime)   //currently paused
                         ms = (this._pausedDateTime - this._startDateTime) - this._pausedTimespan;
                     else
-                        ms = (new Date() - this._startDateTime) - this._pausedTimespan;
+                        ms = (Date.now() - this._startDateTime) - this._pausedTimespan;
                     return ms / 1000.0;
                 },
             },
@@ -194,16 +194,16 @@ SmartJs.Components = {
             },
             start: function () {
                 this._init();
-                this._startDateTime = new Date();
+                this._startDateTime = Date.now();
             },
             reset: function () {
                 this._init();
             },
             pause: function () {
-                this._pausedDateTime = new Date();
+                this._pausedDateTime = Date.now();
             },
             resume: function () {
-                this._pausedTimespan += new Date() - this._pausedDateTime;
+                this._pausedTimespan += Date.now() - this._pausedDateTime;
                 this._pausedDateTime = undefined;
             },
             stop: function () {

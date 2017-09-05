@@ -390,10 +390,10 @@ QUnit.test("ScriptBlock", function (assert) {
     assert.equal(b.id, "newId", "id accessor");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "exec state initial");
 
-    var beforeStop = new Date();
+    var beforeStop = Date.now();
     b._executionState = undefined;  //to test setter
     b.stop();
-    assert.ok(Math.abs(new Date() - b._stoppedAt) < 10, "stop called and stop time set");
+    assert.ok(Math.abs(Date.now() - b._stoppedAt) < 10, "stop called and stop time set");
     assert.equal(b.executionState, PocketCode.ExecutionState.STOPPED, "execution state = stopped");
     b.executeEvent({ dispatchedAt: beforeStop });
 
@@ -497,11 +497,11 @@ QUnit.test("LoopBrick", function (assert) {
     assert.ok(b.objClassName === "LoopBrick", "objClassName check");
 
     //empty loop
-    var startTime = new Date();
+    var startTime = Date.now();
     var handler1 = function (e) {
         assert.equal(e.id, "loopId", "loop id returned correctly");
 
-        //var execTime = new Date() - startTime;
+        //var execTime = Date.now() - startTime;
         //assert.ok(execTime >= 3 && execTime <= 50, "execution minimum delay (3ms) on loops for threading simulation: loopDelay is not set");
         //^^ test case removed: only a recalled loop has a delay, a single cycle is not delayed
         done1();
