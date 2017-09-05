@@ -46,18 +46,23 @@ PocketCode.PublishSubscribeBroker = (function () {
                 return;
             }
 
-            var po, //stop running tasks with same message id
-                pid;
+            var po, 
+                pid,
+                handler,
+                execTime = Date.now();
+
+            //stop running tasks with same message id - notify them to stop to receive all callbacks
             for (pid in this._pendingOps) {
                 po = this._pendingOps[pid];
                 if (po.msgId == id) {
-                    delete this._pendingOps[pid];
+                    for (var i = 0, l = subs.length; i < l; i++) {
+                        handler = subs[i];
+                        handler(execTime, undefined, undefined, true);
+                    }
                     break;
                 }
             }
 
-            var handler,
-                execTime = new Date();
             if (waitCallback) {
                 var pid = SmartJs.getNewId(),
                     po = this._pendingOps[pid] = { msgId: id, count: 0, waitCallback: waitCallback, loopDelay: false };

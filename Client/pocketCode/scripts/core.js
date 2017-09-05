@@ -93,10 +93,11 @@ PocketCode.merge({
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
     },
-    StopScriptType: {
-        THIS: 0,
-        ALL: 1,
-        OTHER: 2,
+    StopType: {
+        THIS_SCRIPT: 0,
+        OTHER_SCRIPTS: 1,
+        ALL_SOUNDS: 2,
+        ALL: 3,
     },
 
     isPlayerCompatible: function () {

@@ -163,13 +163,7 @@ PocketCode.merge({
                     case 'CallUserScriptBrick':
 
                     //in development:
-                    //case 'WhenConditionMetBrick':
-                    //case 'StopScriptBrick':
-                    //case 'SetBackgroundBrick':
                     case 'WhenCollisionBrick':
-                    //case 'WhenStartAsCloneBrick':
-                    //case 'CloneBrick':
-                    //case 'DeleteCloneBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
 
@@ -270,7 +264,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
-                    case 'StopScriptBrick':
+                    case 'StopBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 

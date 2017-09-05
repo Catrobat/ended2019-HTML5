@@ -847,31 +847,31 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 });
 
 
-QUnit.test("StopScriptBrick", function (assert) {
+QUnit.test("StopBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.THIS });
+    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.THIS_SCRIPT });
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.StopScriptBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    assert.ok(b.objClassName === "StopScriptBrick", "objClassName check");
-    assert.equal(b._type, PocketCode.StopScriptType.THIS, "type set: THIS");
+    assert.ok(b instanceof PocketCode.Model.StopBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
+    assert.ok(b.objClassName === "StopBrick", "objClassName check");
+    assert.equal(b._type, PocketCode.StopType.THIS_SCRIPT, "type set: THIS");
 
     //type accessor
-    b.type = PocketCode.StopScriptType.THIS;
-    assert.equal(b.type, PocketCode.StopScriptType.THIS, "getter type (after resetting existing stop script type)");
+    b.type = PocketCode.StopType.THIS_SCRIPT;
+    assert.equal(b.type, PocketCode.StopType.THIS_SCRIPT, "getter type (after resetting existing stop script type)");
 
-    b.type = PocketCode.StopScriptType.OTHER;
-    assert.equal(b.type, PocketCode.StopScriptType.OTHER, "setter/getter type (change type)");
+    b.type = PocketCode.StopType.OTHER_SCRIPTS;
+    assert.equal(b.type, PocketCode.StopType.OTHER_SCRIPTS, "setter/getter type (change type)");
     assert.throws(function () { b.type = 24; }, Error, "ERROR: invalid type (at setter)");
 
     b.dispose();
     assert.ok(b._disposed, "disposed");
     //recreate
-    b = new PocketCode.Model.StopScriptBrick(device, sprite, "first", "s01", { scriptType: PocketCode.StopScriptType.THIS });
+    b = new PocketCode.Model.StopBrick(device, sprite, "first", "s01", { type: PocketCode.StopType.THIS_SCRIPT });
 
     assert.ok(typeof sprite.stopAllScripts == "function", "stopScripts: sprite interface check");
     var stopScriptsCalled = 0,
@@ -881,11 +881,11 @@ QUnit.test("StopScriptBrick", function (assert) {
         stoppedScriptsExceptId = id;
     }
 
-    var c = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.ALL });
-    assert.equal(c._type, PocketCode.StopScriptType.ALL, "type set: ALL");
+    var c = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.ALL });
+    assert.equal(c._type, PocketCode.StopType.ALL, "type set: ALL");
 
-    var d = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.OTHER });
-    assert.equal(d._type, PocketCode.StopScriptType.OTHER, "type set: OTHER");
+    var d = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.OTHER_SCRIPTS });
+    assert.equal(d._type, PocketCode.StopType.OTHER_SCRIPTS, "type set: OTHER");
 
     //execute
     var valid = 0;
@@ -912,7 +912,7 @@ QUnit.test("StopScriptBrick", function (assert) {
 });
 
 
-QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the stop & the current script block", function (assert) {
+QUnit.test("StopBrick: type THIS_SCRIPT: interaction with bricks after the stop & the current script block", function (assert) {
     //stopscript THIS works like a retur statement in common programming languages: the brick stops all bricks 
     //coming afterward in the same script block from getting executed. The script itself have to trigger a return 
     //to notify waiting bricks like BroadcastAndWait, ChangeBackgroundAndWait, .. to continue executing
@@ -947,7 +947,7 @@ QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the 
     var script = new PocketCode.Model.ScriptBlock(device, sprite, { commentedOut: false });
     var bricks = script._bricks._bricks;
     bricks.push(new TestBrick(device, sprite));
-    var b = new PocketCode.Model.StopScriptBrick(device, sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.THIS });
+    var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { type: PocketCode.StopType.THIS_SCRIPT });
     bricks.push(b);
     bricks.push(new TestBrick(device, sprite));
 
@@ -964,7 +964,7 @@ QUnit.test("StopScriptBrick: scriptType THIS: interaction with bricks after the 
 });
 
 
-QUnit.test("StopScriptBrick: scriptType OTHER: simultaneous startet scripts", function (assert) {
+QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", function (assert) {
     //behavior: two scripts are started at the same time by dispatching an event or callback from publish-subsribe-broker
     //one of the scripts include a stop OTHER brick.. test makes sure all scripts (even if not started executing) are notified 
     //about the stop
@@ -1008,7 +1008,7 @@ QUnit.test("StopScriptBrick: scriptType OTHER: simultaneous startet scripts", fu
 
     var script1 = new PocketCode.Model.WhenProgramStartBrick("device", "sprite", {}, scene.onStart);
     var bricks1 = script1._bricks._bricks;
-    var b = new PocketCode.Model.StopScriptBrick("device", sprite, scene, "s01", { scriptType: PocketCode.StopScriptType.OTHER });
+    var b = new PocketCode.Model.StopBrick("device", sprite, scene, "s01", { type: PocketCode.StopType.OTHER_SCRIPTS });
     bricks1.push(b);
     bricks1.push(new TestBrick("device", "sprite"));
 
