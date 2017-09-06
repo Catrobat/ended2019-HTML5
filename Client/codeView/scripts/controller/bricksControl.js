@@ -89,7 +89,7 @@ PocketCode.merge({
 
             };
 
-            var view = new PocketCode.View.LoopBrickView(commentedOut, content, true);
+            var view = new PocketCode.View.LoopBrick(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
@@ -136,7 +136,7 @@ PocketCode.merge({
 
             };
 
-            var view = new PocketCode.View.IfThenElseBrickView(commentedOut, elseVisible, content);
+            var view = new PocketCode.View.IfThenElseBrick(commentedOut, elseVisible, content);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 

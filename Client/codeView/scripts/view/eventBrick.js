@@ -1,16 +1,10 @@
 'use strict';
 
-/**
- * Created by alexandra on 25.06.17.
- */
-/**
- * Created by alexandra on 25.06.17.
- */
-PocketCode.View.LoopBrickView = (function () {
-    LoopBrickView.extends(PocketCode.View.BaseBrick, false);
+PocketCode.View.EventBrick = (function () {
+    EventBrick.extends(PocketCode.View.BaseBrick, false);
 
-    function LoopBrickView(commentedOut, content, isEndBrick) {
-        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content, isEndBrick);
+    function EventBrick(commentedOut, content) {
+        PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.EVENT, commentedOut, content, true);
 
         this._bricks = new SmartJs.Ui.HtmlTag('ul');//, { className: '' });
         this._appendChild(this._bricks);
@@ -18,22 +12,30 @@ PocketCode.View.LoopBrickView = (function () {
     }
 
     //properties
-    Object.defineProperties(LoopBrickView.prototype, {
+    Object.defineProperties(EventBrick.prototype, {
+        isExecuting: {
+            set: function (value) {
+                //TODO: add highlighting to script block
+            },
+        },
     });
 
     //methods
-    LoopBrickView.prototype.merge({
+    EventBrick.prototype.merge({
         /* override */
         _drawBackground: function () {
             PocketCode.View.BaseBrick.prototype._drawBackground.call(this); //TODO
             //use: brickTpe, commentedOut, ...
         },
         //_addContent: function (content) {
+
         //    this._bricks = new SmartJs.Ui.Control('ul', { className: '' });
         //    this._appendChild(this._bricks);
+
         //    this._createAndAppend(content.endContent);
+
         //},
     });
 
-    return LoopBrickView;
+    return EventBrick;
 })();

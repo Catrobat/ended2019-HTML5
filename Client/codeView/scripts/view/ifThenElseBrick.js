@@ -6,10 +6,10 @@
 /**
  * Created by alexandra on 25.06.17.
  */
-PocketCode.View.IfThenElseBrickView = (function () {
-    IfThenElseBrickView.extends(PocketCode.View.BaseBrick, false);
+PocketCode.View.IfThenElseBrick = (function () {
+    IfThenElseBrick.extends(PocketCode.View.BaseBrick, false);
 
-    function IfThenElseBrickView(commentedOut, elseVisible, content) {
+    function IfThenElseBrick(commentedOut, elseVisible, content) {
         PocketCode.View.BaseBrick.call(this, PocketCode.View.BrickType.CONTROL, commentedOut, content);
 
         this._elseVisible = elseVisible || true;
@@ -26,7 +26,7 @@ PocketCode.View.IfThenElseBrickView = (function () {
     }
 
     //properties
-    Object.defineProperties(IfThenElseBrickView.prototype, {
+    Object.defineProperties(IfThenElseBrick.prototype, {
         elseVisible: {
             get: function () {
                 return this._elseVisible;
@@ -44,7 +44,7 @@ PocketCode.View.IfThenElseBrickView = (function () {
     });
 
     //methods
-    IfThenElseBrickView.prototype.merge({
+    IfThenElseBrick.prototype.merge({
         /* override */
         _drawBackground: function () {
             PocketCode.View.BaseBrick.prototype._drawBackground.call(this); //TODO
@@ -65,5 +65,5 @@ PocketCode.View.IfThenElseBrickView = (function () {
         //},
     });
 
-    return IfThenElseBrickView;
+    return IfThenElseBrick;
 })();
