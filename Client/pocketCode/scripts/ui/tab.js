@@ -6,7 +6,7 @@
 /// <reference path="../ui.js" />
 'use strict';
 
-PocketCode.Ui = {
+PocketCode.Ui.merge({
     TabControl: (function () {  //caption, showCaption, addTabs[], removeTab, activeTab: get/set id
         TabControl.extends(SmartJs.Ui.ContainerControl, false);
 
@@ -161,4 +161,4 @@ PocketCode.Ui = {
 
         return TabPage;
     })(),
-};
+});
