@@ -20,13 +20,11 @@ QUnit.test("Expander", function (assert) {
     assert.ok(expander instanceof PocketCode.Ui.Expander && expander instanceof SmartJs.Ui.ContainerControl, "instance check");
 
     //open & close check
-    //closed by default check
-    //assert.ok(expander.hidden, "Expander closed by default");
-    //expander._onChangeHandler();
-    //assert.notOk(expander.hidden, "DeviceEmulator opened by click");
-    //expander._onChangeHandler();
-    //assert.ok(expander.hidden, "DeviceEmulator closed by click");
-
-    assert.ok(false, "TODO");
+    assert.equal(expander.__container.className, "pc-expanderBody", "Expander closed by default");
+    expander._onChangeHandler({checked: true});
+    assert.equal(expander.__container.className, "pc-expanderBody pc-bodyVisible", "Expander opened by click");
+    expander._onChangeHandler({checked: false});
+    assert.equal(expander.__container.className, "pc-expanderBody", "Expander closed by click");
+    //assert.ok(false, "TODO");
 
 });

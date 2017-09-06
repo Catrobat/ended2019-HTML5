@@ -952,7 +952,7 @@ PocketCode.DeviceEmulator = (function () {
 
                     //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
                 }
-
+                this._inclinationTimerTick();
                 return this._sensorData.Y_INCLINATION;
             },
         },
