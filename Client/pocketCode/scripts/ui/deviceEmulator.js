@@ -126,19 +126,32 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
             document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
-
         },
         _resetImgTransformation: function (e) {
 
+            var image = document.getElementById("sj69");
+
             if (!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT && !this.device._keyPress.UP && !this.device._keyPress.DOWN)
             {
-                var image = document.getElementById("sj69");
-
                 image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
                 image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
 
-                document.getElementById("sj73").innerHTML = Math.round(this.device._defaultInclination.X * (90 / 46));
-                document.getElementById("sj76").innerHTML = Math.round(this.device._defaultInclination.Y * (90 / 46));
+                document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
+                document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+            }
+            else if (this.device._keyPress.LEFT && this.device._keyPress.RIGHT && !this.device._keyPress.UP && !this.device._keyPress.DOWN)
+            {
+                image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device.inclinationX + "deg)";
+                image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device.inclinationX + "deg)";
+
+                document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+            }
+            else if (!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT && this.device._keyPress.UP && this.device._keyPress.DOWN)
+            {
+                image.style.webkitTransform = "rotateX(" + this.device.inclinationY + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
+                image.style.transform = "rotateX(" + -this.device.inclinationY + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
+
+                document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
             }
         },
         _openCloseHandler: function (e) {
