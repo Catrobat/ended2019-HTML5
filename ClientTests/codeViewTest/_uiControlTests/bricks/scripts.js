@@ -72,4 +72,34 @@ window.onload = function () {
     b = new PocketCode.Model.GoToBrick("device", "sprite", "scene", { destination: "destination" });
     brick = new PocketCode.GoToBrick(b, false);
     container.appendChild(brick._view);
+
+    var b = new PocketCode.Model.SetGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "brightness", type: "SetGraphicEffect",
+    value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.SetGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
+
+    /*var b = new PocketCode.Model.SetGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "color", type: "SetGraphicEffect",
+        value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.SetGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
+
+    var b = new PocketCode.Model.SetGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "transparency", type: "SetGraphicEffect",
+        value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.SetGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
+
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "brightness", type: "SetGraphicEffect",
+        value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.ChangeGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
+
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "color", type: "SetGraphicEffect",
+        value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.ChangeGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);*/
+
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "transparency", type: "SetGraphicEffect",
+        value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
+    var brick = new PocketCode.ChangeGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
 }

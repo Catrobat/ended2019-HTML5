@@ -413,7 +413,7 @@ PocketCode.Model.merge({
         return ThinkForBrick;
     })(),
 
-    SetTransparencyBrick: (function () {
+    /*SetTransparencyBrick: (function () {
         SetTransparencyBrick.extends(PocketCode.Model.SetGraphicEffectBrick, false);
 
         function SetTransparencyBrick(device, sprite, propObject) {
@@ -501,7 +501,7 @@ PocketCode.Model.merge({
         //};
 
         return ChangeColorEffectBrick;
-    })(),
+    })(),*/
 
     ClearGraphicEffectBrick: (function () {
         ClearGraphicEffectBrick.extends(PocketCode.Model.BaseBrick, false);

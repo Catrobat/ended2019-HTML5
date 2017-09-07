@@ -86,7 +86,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetSizeBrick' + PocketCode.SetSizeBrick.content[1].id,
+                        //name: 'SetSizeBrick' + PocketCode.SetSizeBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -116,7 +116,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ChangeSizeBrick' + PocketCode.ChangeSizeBrick.content[1].id,
+                        //name: 'ChangeSizeBrick' + PocketCode.ChangeSizeBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -183,7 +183,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'AskBrick' + PocketCode.AskBrick.content[1].id,
+                        //name: 'AskBrick' + PocketCode.AskBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -199,7 +199,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'AskBrick' + PocketCode.AskBrick.content[5].id,
+                        //name: 'AskBrick' + PocketCode.AskBrick.content[5].id,
                         value: ''
                     }
                 ]
@@ -225,7 +225,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SayBrick' + PocketCode.SayBrick.content[1].id,
+                        //name: 'SayBrick' + PocketCode.SayBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -251,7 +251,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SayForBrick' + PocketCode.SayForBrick.content[1].id,
+                        //name: 'SayForBrick' + PocketCode.SayForBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -264,7 +264,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SayForBrick' + PocketCode.SayForBrick.content[4].id,
+                        //name: 'SayForBrick' + PocketCode.SayForBrick.content[4].id,
                         value: ''
                     },
                     {
@@ -294,7 +294,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ThinkBrick' + PocketCode.ThinkBrick.content[1].id,
+                        //name: 'ThinkBrick' + PocketCode.ThinkBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -320,7 +320,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[1].id,
+                        //name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -333,7 +333,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[4].id,
+                        //name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[4].id,
                         value: ''
                     },
                     {
@@ -348,177 +348,154 @@ PocketCode.merge({
         return ThinkForBrick;
     })(),
 
-    SetTransparencyBrick: (function () {
-        SetTransparencyBrick.extends(PocketCode.BaseBrick, false);
-        function SetTransparencyBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.SetTransparencyBrick)) {
+    SetGraphicEffectBrick: (function () {
+        SetGraphicEffectBrick.extends(PocketCode.BaseBrick, false);
+
+        function SetGraphicEffectBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetGraphicEffectBrick)) {
                 throw new Error("Invalid argument Model");
             }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_set_transparency'
-                    },
-                    {
-                        type: 'lf' //line feed
-                    },
-                    {
-                        type: 'text',
-                        i18n: 'to_label'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'SetTransparencyBrick' + PocketCode.SetTransparencyBrick.content[3].id,
-                        value: '' //range 0 - 100
-                    },
-                    {
-                        type: 'text',
-                        i18n: 'ev3_tone_percent' // Prozentzeichen
-                    }
-                ]
-            };
+
+            var content = {};
+
+            if(model._effect === "brightness"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_set_brightness_to'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'SetBrightnessBrick' + PocketCode.SetBrightnessBrick.content[1].id,
+                            value: '' //range 0 - 100
+                        },
+                        {
+                            type: 'text',
+                            i18n: 'ev3_tone_percent' // Prozentzeichen
+                        }
+                    ]
+                }
+
+            }
+            if(model._effect === "transparency"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_set_transparency'
+                        },
+                        {
+                            type: 'lf' //line feed
+                        },
+                        {
+                            type: 'text',
+                            i18n: 'to_label'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'SetTransparencyBrick' + PocketCode.SetTransparencyBrick.content[3].id,
+                            value: '' //range 0 - 100
+                        },
+                        {
+                            type: 'text',
+                            i18n: 'ev3_tone_percent' // Prozentzeichen
+                        }
+                    ]
+                }
+
+            }
+            if(model._effect === "color"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_set_color_to'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'SetColorEffectBrick' + PocketCode.SetColorEffectBrick.content[1].id,
+                            value: ''
+                        }
+                    ]
+                }
+            }
+
             var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-        return SetTransparencyBrick;
+
+        return SetGraphicEffectBrick;
     })(),
 
-    ChangeTransparencyBrick: (function () {
-        ChangeTransparencyBrick.extends(PocketCode.BaseBrick, false);
-        function ChangeTransparencyBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.ChangeTransparencyBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_change_ghost_effect_by'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'ChangeTransparencyBrick' + PocketCode.ChangeTransparencyBrick.content[1].id,
-                        value: '' //range 0 - 100 ??
-                    }
-                ]
-            };
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-        return ChangeTransparencyBrick;
-    })(),
+    ChangeGraphicEffectBrick: (function () {
+        ChangeGraphicEffectBrick.extends(PocketCode.BaseBrick, false);
 
-    SetBrightnessBrick: (function () {
-        SetBrightnessBrick.extends(PocketCode.BaseBrick, false);
-        function SetBrightnessBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.SetBrightnessBrick)) {
+        function ChangeGraphicEffectBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.ChangeGraphicEffectBrick)) {
                 throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_set_brightness_to'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'SetBrightnessBrick' + PocketCode.SetBrightnessBrick.content[1].id,
-                        value: '' //range 0 - 100
-                    },
-                    {
-                        type: 'text',
-                        i18n: 'ev3_tone_percent' // Prozentzeichen
-                    }
-                ]
             };
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-        return SetBrightnessBrick;
-    })(),
 
-    ChangeBrightnessBrick: (function () {
-        ChangeBrightnessBrick.extends(PocketCode.BaseBrick, false);
-        function ChangeBrightnessBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.ChangeBrightnessBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_change_brightness_by'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'ChangeBrightnessBrick' + PocketCode.ChangeBrightnessBrick.content[1].id,
-                        value: ''
-                    }
-                ]
-            };
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-        return ChangeBrightnessBrick;
-    })(),
+            var content = {};
 
-    SetColorEffectBrick: (function () {
-        SetColorEffectBrick.extends(PocketCode.BaseBrick, false);
-        function SetColorEffectBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.SetColorEffectBrick)) {
-                throw new Error("Invalid argument Model");
+            if(model._effect === "brightness"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_change_brightness_by'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'ChangeBrightnessBrick' + PocketCode.ChangeBrightnessBrick.content[1].id,
+                            value: ''
+                        }
+                    ]
+                };
             }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_set_color_to'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'SetColorEffectBrick' + PocketCode.SetColorEffectBrick.content[1].id,
-                        value: ''
-                    }
-                ]
-            };
+            if(model._effect === "transparency"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_change_ghost_effect_by'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'ChangeTransparencyBrick' + PocketCode.ChangeTransparencyBrick.content[1].id,
+                            value: '' //range 0 - 100 ??
+                        }
+                    ]
+                }
+
+            }
+            if(model._effect === "color"){
+                content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_change_color_by'
+                        },
+                        {
+                            type: 'formula',
+                            id: SmartJs.getNewId(),
+                            //name: 'ChangeColorEffectBrick' + PocketCode.ChangeColorEffectBrick.content[1].id,
+                            value: '' //range 0-255?
+                        }
+                    ]
+                }
+            }
 
             var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
-        return SetColorEffectBrick;
-    })(),
 
-    ChangeColorEffectBrick: (function () {
-        ChangeColorEffectBrick.extends(PocketCode.BaseBrick, false);
-
-        function ChangeColorEffectBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.ChangeColorEffectBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_change_color_by'
-                    },
-                    {
-                        type: 'formula',
-                        id: SmartJs.getNewId(),
-                        name: 'ChangeColorEffectBrick' + PocketCode.ChangeColorEffectBrick.content[1].id,
-                        value: '' //range 0-255?
-                    }
-                ]
-            };
-            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-        return ChangeColorEffectBrick;
+        return ChangeGraphicEffectBrick;
     })(),
 
     ClearGraphicEffectBrick: (function () {

@@ -470,7 +470,7 @@ QUnit.test("ThinkForBrick", function (assert) {
 });
 
 
-QUnit.test("SetTransparencyBrick", function (assert) {
+QUnit.test("SetGraphicEffectBrick transparency", function (assert) {
 
     var done1 = assert.async();
 
@@ -480,12 +480,12 @@ QUnit.test("SetTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
+    var b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
     //^^ effect is set server side
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetTransparencyBrick, "instance check");
-    assert.ok(b.objClassName === "SetTransparencyBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "SetGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -499,7 +499,7 @@ QUnit.test("SetTransparencyBrick", function (assert) {
 });
 
 
-QUnit.test("ChangeTransparencyBrick", function (assert) {
+QUnit.test("ChangeGraphicEffectBrick transparency", function (assert) {
 
     var done1 = assert.async();
 
@@ -509,11 +509,11 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeTransparencyBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.GHOST });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeTransparencyBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeTransparencyBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.ChangeGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "ChangeGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -527,7 +527,7 @@ QUnit.test("ChangeTransparencyBrick", function (assert) {
 });
 
 
-QUnit.test("SetBrightnessBrick", function (assert) {
+QUnit.test("SetGraphicEffectBrick brightness", function (assert) {
 
     var done1 = assert.async();
 
@@ -537,11 +537,11 @@ QUnit.test("SetBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
+    var b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetBrightnessBrick, "instance check");
-    assert.ok(b.objClassName === "SetBrightnessBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "SetGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -555,7 +555,7 @@ QUnit.test("SetBrightnessBrick", function (assert) {
 });
 
 
-QUnit.test("ChangeBrightnessBrick", function (assert) {
+QUnit.test("ChangeGraphicEffectBrick brightness", function (assert) {
 
     var done1 = assert.async();
 
@@ -565,11 +565,11 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeBrightnessBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.BRIGHTNESS });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeBrightnessBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeBrightnessBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.ChangeGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "ChangeGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -583,7 +583,7 @@ QUnit.test("ChangeBrightnessBrick", function (assert) {
 });
 
 
-QUnit.test("SetColorEffectBrick", function (assert) {
+QUnit.test("SetGraphicEffectBrick color", function (assert) {
 
     var done1 = assert.async();
 
@@ -593,11 +593,11 @@ QUnit.test("SetColorEffectBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetColorEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
+    var b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetColorEffectBrick, "instance check");
-    assert.ok(b.objClassName === "SetColorEffectBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "SetGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -611,7 +611,7 @@ QUnit.test("SetColorEffectBrick", function (assert) {
 });
 
 
-QUnit.test("ChangeColorEffectBrick", function (assert) {
+QUnit.test("ChangeGraphicEffectBrick color", function (assert) {
 
     var done1 = assert.async();
 
@@ -621,11 +621,11 @@ QUnit.test("ChangeColorEffectBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeColorEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
+    var b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
 
     assert.ok(b._device === device && b._sprite === sprite && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.ChangeColorEffectBrick, "instance check");
-    assert.ok(b.objClassName === "ChangeColorEffectBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.ChangeGraphicEffectBrick, "instance check");
+    assert.ok(b.objClassName === "ChangeGraphicEffectBrick", "objClassName check");
 
     //execute
     var handler = function (e) {
@@ -637,7 +637,6 @@ QUnit.test("ChangeColorEffectBrick", function (assert) {
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
 });
-
 
 QUnit.test("ClearGraphicEffectBrick", function (assert) {
 
