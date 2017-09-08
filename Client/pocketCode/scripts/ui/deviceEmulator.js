@@ -32,7 +32,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         var defaultVal = device.defaultInclinationMax * (90 / 46);
-        this._maxSlider = new PocketCode.Ui.Slider({min: 1, max: 90, value: defaultVal});
+        this._maxSlider = new PocketCode.Ui.Slider({min: 1, max: 90, value: defaultVal, minLabel: "1", maxLabel: '&plusmn;' + "90"});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -47,7 +47,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         defaultVal = device.defaultInclinationAcceleration * (5 / 8);
-        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal});
+        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal, minLabel: "1", maxLabel: '&plusmn;' + "10"});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 

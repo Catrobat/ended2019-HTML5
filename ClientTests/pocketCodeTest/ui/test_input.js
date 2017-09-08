@@ -221,7 +221,7 @@ QUnit.test("I18nRadio", function (assert) {
 QUnit.test("Slider", function (assert) {
 
     var dom = document.getElementById("qunit-fixture");
-    var slider = new PocketCode.Ui.Slider({min: 1, max: 100, value: 50, orientation: "horizontal"});
+    var slider = new PocketCode.Ui.Slider({min: 1, max: 100, value: 50, orientation: "horizontal", minLabel: "1", maxLabel: "100"});
     dom.appendChild(slider._dom);
 
     //instance, objClass name and Class name check
@@ -234,6 +234,8 @@ QUnit.test("Slider", function (assert) {
     assert.ok(!isNaN(slider.max), "max Value getter");
     assert.ok(!isNaN(slider.value), "Value getter");
     assert.ok(slider.orientation, "Orientation getter");
+    assert.ok(slider.minLabel, "minLabel getter");
+    assert.ok(slider.maxLabel, "maxLabel getter");
 
     slider.min = 0;
     assert.equal(slider.min, 0, "min Value setter");
@@ -243,6 +245,10 @@ QUnit.test("Slider", function (assert) {
     assert.equal(slider.value, 45, "Value setter");
     slider.orientation = "vertical";
     assert.equal(slider.orientation, "vertical", "Orientation setter");
+    slider.minLabel = "10";
+    assert.equal(slider.minLabel, "10", "minLabel setter");
+    slider.maxLabel = "90";
+    assert.equal(slider.maxLabel, "90", "maxLabel setter");
 
     //event check
     assert.ok(slider.onChange instanceof SmartJs.Event.Event, "event accessor");

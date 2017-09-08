@@ -281,25 +281,24 @@ PocketCode.Ui.merge({
             var dom = input.dom;
             this._sliderDom = dom;
             dom.type = 'range';
-            this.merge(propObj);
             this._addDomListener(dom, 'change', this._onChangeHandler.bind(this));
 
             //span for minLabel
-            var minLabel = dom.min;
-            var span = new SmartJs.Ui.HtmlTag('span');
-            span.dom.innerHTML = minLabel;
-            this._appendChild(span);
+            var spanMin = new SmartJs.Ui.HtmlTag('span');
+            this._spanDomMin = spanMin.dom;
+            this._appendChild(spanMin);
 
             this._appendChild(input);
 
             //Span for maxLabel +-
-            var maxLabel = dom.max;
-            span = new SmartJs.Ui.HtmlTag('span');
-            span.dom.innerHTML = '&plusmn;' + maxLabel;
-            this._appendChild(span);
+            var spanMax = new SmartJs.Ui.HtmlTag('span');
+            this._spanDomMax = spanMax.dom;
+            this.merge(propObj);
+            this._appendChild(spanMax);
 
             //events
             this._onChange = new SmartJs.Event.Event(this);
+
         }
 
         //events
@@ -348,6 +347,24 @@ PocketCode.Ui.merge({
                 },
                 set: function (orientation) {
                     this._sliderDom.orient = orientation;
+                },
+            },
+            //Label name for minimum
+            minLabel: {
+                get: function () {
+                    return this._spanDomMin.innerHTML;
+                },
+                set: function (minLabel) {
+                    this._spanDomMin.innerHTML = minLabel;
+                },
+            },
+            //Label name for maximum
+            maxLabel: {
+                get: function () {
+                    return this._spanDomMax.innerHTML;
+                },
+                set: function (maxLabel) {
+                    this._spanDomMax.innerHTML = maxLabel;
                 },
             },
         });
