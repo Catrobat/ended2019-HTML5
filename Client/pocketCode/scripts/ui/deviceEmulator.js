@@ -89,20 +89,11 @@ PocketCode.Ui.DeviceEmulator = (function () {
                 return this._dom;
             },
         },
-        /*
-        device: {
-            set: function (device) {
-                if (!(device instanceof PocketCode.DeviceEmulator))
-                    throw new Error('Emulator UI con only be used with a PocketCode.DeviceEmulator');
-                this._device = device;
-            },
-        },*/
     });
 
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            //TODO: set e.value to device
             this.device._inclinationLimits = {
                 X_MIN: -e.value * (46 / 90),
                 X_MAX: e.value * (46 / 90),
@@ -111,7 +102,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
             };
         },
         _maxAccChangeHandler: function(e) {
-            //TODO: set e.value to device
             this.device._inclinationIncr = {
                 X: 46 / e.value,
                 Y: 46 / e.value,
@@ -156,9 +146,17 @@ PocketCode.Ui.DeviceEmulator = (function () {
         },
         _openCloseHandler: function (e) {
             if (e.opened)
+            {
+                console.log(e);
+                //this._pollingTimer = setInterval(this._openCloseHandler,1000);
                 ;//TODO: start polling (this._pollingTimer = setInterval(...)
+            }
             else
+            {
+                console.log(e);
+                //clearInterval(this._pollingTimer);
                 ;//TODO: stop polling (stopInterval(this._pollingTimer)
+            }
             //this._container.hidden) {
             //     this._container.show();
             //     this.verifyResize();
@@ -167,9 +165,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
             //     this.close();
             // }
         },
-        // close: function (e) {
-        //     this._container.hide();
-        // },
         /* override */
         verifyResize: function () {
             if (!this._container) //called during constructor call
