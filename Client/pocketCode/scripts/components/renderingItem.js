@@ -784,13 +784,8 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            //this._scaling = 1.0;
-            this._flipX = false;
-            //this._rotation = 0.0;
-            this._shadow = false;
-
-            this.penDown = false;
             this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
+            this._shadow = false;
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -951,7 +946,7 @@ PocketCode.merge({
 
                 ctx.rotate(this.rotation * Math.PI / 180.0);
                 ctx.scale(
-                    this.scaling * (this._flipX ? -1.0 : 1.0),
+                    this.scaling * (this.flipX ? -1.0 : 1.0),
                     this.scaling
                 );
 
