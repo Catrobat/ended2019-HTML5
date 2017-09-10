@@ -326,5 +326,8 @@ QUnit.test("SoundManager: supported", function (assert) {
     }
 
     assert.ok(false, "TODO");
+    done1();
+    done2();
+    done3();
 });
 
