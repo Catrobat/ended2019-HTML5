@@ -322,7 +322,7 @@ PocketCode.Model.merge({
                 //this._y = propObject.y;
             }
             this._executionState = PocketCode.ExecutionState.STOPPED;
-            this._stoppedAt = Date.now();
+            this._stoppedAt = Date.now() - 1;
             //this._pendingCall = undefined;  //make sure a wait callback is handled even the object get's disposed (clone)
             this._onExecutionStateChange = new SmartJs.Event.Event(this);
         }
@@ -375,6 +375,8 @@ PocketCode.Model.merge({
             },
             /*override*/
             execute: function (onExecutedListener, threadId, scope) {
+                if (this._disposed)
+                    return;
                 if (this._executionState == PocketCode.ExecutionState.RUNNING) {
                     //stop without changing execution state
                     this._stoppedAt = Date.now();
@@ -387,9 +389,9 @@ PocketCode.Model.merge({
                 PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
             },
             _return: function (id, loopDelay, stopped) {
-                PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+                PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
             },
             stop: function (calledFromStopBrick) {
                 var callback;

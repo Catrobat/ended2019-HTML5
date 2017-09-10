@@ -152,14 +152,14 @@ QUnit.test("WhenActionBrick", function (assert) {
     assert.equal(b.action, PocketCode.UserActionType.TOUCH_START, "action getter (other action)");
 
     //test empty container
-    var executed = 0;
+    var executed2 = 0;
     var executionStateHandler = function () {
-        executed++;
+        executed2++;
     };
 
     b.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
     scene.onSpriteTappedAction.dispatchEvent({ sprite: sprite });
-    assert.equal(executed, 2, "executionState handler called (twice: begin + end)");
+    assert.equal(executed2, 2, "executionState handler called (twice: begin + end)");
 
     b.onExecutionStateChange.removeEventListener(new SmartJs.Event.EventListener(executionStateHandler, this));
 
@@ -241,20 +241,21 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
     var handlerCalled = 0;
     var broadcastHandler = function (e) {
         if (e.executionState == PocketCode.ExecutionState.RUNNING) {
-            assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
-            done1();
+            assert.ok(true, "onExecutionStateChange called: empty container (running)");
+            return;
         }
         else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
             handlerCalled++;
             assert.ok(handlerCalled === 1, "executed handler called (once)");
 
             b.onExecutionStateChange.removeEventListener(listener);
+            done1();
             runTests2();
         }
         else
             assert.ok(false, "invalid executionstate detected");
     };
-    listener = new SmartJs.Event.EventListener(broadcastHandler, this);
+    listener = new SmartJs.Event.EventListener(broadcastHandler);
     b.onExecutionStateChange.addEventListener(listener);
 
     broadcastMgr.publish("s12");
@@ -289,13 +290,19 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 
         var listener;
         var asyncHandler = function (e) {
-            if (e.executionState == PocketCode.ExecutionState.RUNNING)
+            if (e.executionState == PocketCode.ExecutionState.RUNNING) {
+                assert.ok(true, "onExecutionStateChange called: including threaded bricks (running)");
                 return;
-            assert.equal(e.executionState, PocketCode.ExecutionState.STOPPED, "onExecutionStateChange called: including threaded bricks");
+            }
+            else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
+                assert.equal(e.executionState, PocketCode.ExecutionState.STOPPED, "onExecutionStateChange called: including threaded bricks");
 
-            b.onExecutionStateChange.removeEventListener(listener);
-            done2();
-            runTests3();
+                b.onExecutionStateChange.removeEventListener(listener);
+                done2();
+                runTests3();
+            }
+            else
+                assert.ok(false, "invalid executionstate detected");
         };
         listener = new SmartJs.Event.EventListener(asyncHandler, this);
         b.onExecutionStateChange.addEventListener(listener);
@@ -318,7 +325,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
         b.onExecutionStateChange.addEventListener(listener);
 
         var waitCallback = function (e) {
-            assert.equal(asyncHandler2Called, 1, "wait callback called before executed handler");
+            assert.equal(asyncHandler2Called, 1, "wait callback called after executed handler");
 
             var valid = true,
                 bricks = b._bricks._bricks; //in brick container

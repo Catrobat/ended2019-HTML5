@@ -48,7 +48,6 @@ PocketCode.PublishSubscribeBroker = (function () {
             }
 
             var po,
-                handler,
                 execTime = Date.now();
 
             //stop running tasks with same message id - notify them to stop
@@ -60,14 +59,12 @@ PocketCode.PublishSubscribeBroker = (function () {
                 var po = this._pendingOps[id] = { count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
-                    handler = subs[i];
-                    window.setTimeout(handler.bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
+                    window.setTimeout(subs[i](execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
                 }
             }
             else {
                 for (var i = 0, l = subs.length; i < l; i++) {
-                    handler = subs[i];
-                    window.setTimeout(handler.bind(this, execTime), 0);
+                    window.setTimeout(subs[i](execTime), 0);
                 }
             }
         },
