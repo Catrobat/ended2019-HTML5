@@ -255,7 +255,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
         else
             assert.ok(false, "invalid executionstate detected");
     };
-    listener = new SmartJs.Event.EventListener(broadcastHandler);
+    listener = new SmartJs.Event.EventListener(broadcastHandler, this);
     b.onExecutionStateChange.addEventListener(listener);
 
     broadcastMgr.publish("s12");
