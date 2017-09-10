@@ -29,7 +29,7 @@ QUnit.test("PlayerPageController", function (assert) {
     controller._view._startScreen = new PocketCode.Ui.PlayerStartScreen();
     var json = { title: "json1", thumbnailUrl: "null", baseUrl: "" };
     controller.projectDetails = json;
-    assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage.src == "https://share.catrob.at//images/default/screenshot.png", "projectDetails")
+    assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png", "projectDetails")
 
     assert.throws(function () { controller.project = 0; }, Error, "Set gameEngine not instanceof PocketCode.GameEngine");
     controller.project = gameEngine;

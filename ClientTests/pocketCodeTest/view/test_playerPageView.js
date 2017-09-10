@@ -92,7 +92,7 @@ QUnit.test("PlayerPageView", function (assert) {
     //showStartScreen
     PlayerPageView.showStartScreen("title1", "null");
     assert.ok(PlayerPageView._startScreen.title == "title1" &&
-        PlayerPageView._startScreen._previewImage.src == "https://share.catrob.at//images/default/screenshot.png", "title and previewImage set");
+        PlayerPageView._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png", "title and previewImage set");
     assert.ok(PlayerPageView._startScreen._dom.style.display == "", "display == ' '");
 
     //hideStartScreen
