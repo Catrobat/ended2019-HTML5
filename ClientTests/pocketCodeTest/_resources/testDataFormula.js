@@ -3,7 +3,7 @@ var formulas = { "id": 2687, "header": { "languageVersion": 0.93, "description":
 
 var unknown_type = { "type": "FUNCTION", "value": "SIN", "right": null, "left": { "type": "U_NUMBER", "value": "90", "right": null, "left": null } };
 var unknown_operator = { "type": "OPERATOR", "value": "U_MULT", "right": { "type": "BRACKET", "value": "", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "1.00", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } }, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_X", "right": null, "left": null } };
-var unknown_function = { "type": "FUNCTION", "value": "U_SIN", "right": null, "left": { "type": "NUMBER", "value": "90", "right": null, "left": null } };;
+var unknown_function = { "type": "FUNCTION", "value": "U_SIN", "right": null, "left": { "type": "NUMBER", "value": "90", "right": null, "left": null } };
 var unknown_sensor = { "type": "OPERATOR", "value": "MULT", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "U_Y_ACCELERATION", "right": null, "left": null } };
 
 var plus = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };

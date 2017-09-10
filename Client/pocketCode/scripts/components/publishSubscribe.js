@@ -5,6 +5,7 @@
 
 
 PocketCode.PublishSubscribeBroker = (function () {
+    //a pocketCode specigic bublish-subscribe implementation where only 1 running broadcast is allowed
 
     function PublishSubscribeBroker() {
         this._subscriptions = {};
@@ -46,38 +47,27 @@ PocketCode.PublishSubscribeBroker = (function () {
                 return;
             }
 
-            var po, 
-                pid,
+            var po,
                 handler,
                 execTime = Date.now();
 
-            //stop running tasks with same message id - notify them to stop to receive all callbacks
-            for (pid in this._pendingOps) {
-                po = this._pendingOps[pid];
-                if (po.msgId == id) {
-                    for (var i = 0, l = subs.length; i < l; i++) {
-                        handler = subs[i];
-                        handler(execTime, undefined, undefined, true);
-                    }
-                    break;
-                }
-            }
+            //stop running tasks with same message id - notify them to stop
+            po = this._pendingOps[id];
+            if (po)
+                po.waitCallback(po.loopDelay);
 
             if (waitCallback) {
-                var pid = SmartJs.getNewId(),
-                    po = this._pendingOps[pid] = { msgId: id, count: 0, waitCallback: waitCallback, loopDelay: false };
+                var po = this._pendingOps[id] = { count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
                     handler = subs[i];
-                    window.setTimeout(handler.bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid), 0);
-                    //handler(execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), pid);
+                    window.setTimeout(handler.bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
                 }
             }
             else {
                 for (var i = 0, l = subs.length; i < l; i++) {
                     handler = subs[i];
                     window.setTimeout(handler.bind(this, execTime), 0);
-                    //handler(execTime);
                 }
             }
         },

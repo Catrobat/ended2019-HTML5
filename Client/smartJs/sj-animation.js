@@ -99,7 +99,7 @@ SmartJs.Animation = {
                 this._updateValue(this._render(progress));
 
                 if (progress == 1.0)
-                    this._onExecuted.dispatchEvent(this._callBackArgs);
+                    this._onExecuted.dispatchEvent(this._callbackArgs);
                 else if (!this._paused)
                     this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
             },
@@ -107,7 +107,7 @@ SmartJs.Animation = {
                 if (callbackArgs) {
                     if (typeof callbackArgs !== 'object' || (callbackArgs instanceof Array))
                         throw new Error('invalid argument: callbackArgs: expected type: object');
-                    this._callBackArgs = callbackArgs;  //introduced to enable threaded animation identification
+                    this._callbackArgs = callbackArgs;  //introduced to enable threaded animation identification
                 }
                 this._timer.start();
                 this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));

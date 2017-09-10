@@ -49,7 +49,7 @@ QUnit.test("SetLookByIndexBrick", function (assert) {
     ];
     sprite._looks = looks;
 
-    var idxFormulaJson = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');;
+    var idxFormulaJson = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
     var b = new PocketCode.Model.SetLookByIndexBrick(device, sprite, { idx: idxFormulaJson });
 
     assert.ok(b._device === device && b._sprite === sprite && b.indexFormula instanceof PocketCode.Formula, "brick created and properties set correctly");
