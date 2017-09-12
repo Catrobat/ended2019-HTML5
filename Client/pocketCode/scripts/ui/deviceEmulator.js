@@ -116,6 +116,21 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
             document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+
+            // if (this.device._keyPress.LEFT && this.device._keyPress.RIGHT)
+            // {
+            //     console.log("halt");
+            //     console.log(this.device._keyPress);
+            //
+            //     image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
+            //     image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
+            //
+            //     document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
+            // }
+
+
+
+
         },
         _resetImgTransformation: function (e) {
 
@@ -129,14 +144,14 @@ PocketCode.Ui.DeviceEmulator = (function () {
                 document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
                 document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
             }
-            else if (this.device._keyPress.LEFT && this.device._keyPress.RIGHT && !this.device._keyPress.UP && !this.device._keyPress.DOWN)
+            else if ((this.device._keyPress.LEFT || this.device._keyPress.RIGHT) && (!this.device._keyPress.UP && !this.device._keyPress.DOWN))
             {
-                image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device.inclinationX + "deg)";
-                image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device.inclinationX + "deg)";
+                image.style.webkitTransform = "rotateX(" + this.device.inclinationY + "deg) rotateY(" + this.device.inclinationX + "deg)";
+                image.style.transform = "rotateX(" + -this.device.inclinationY + "deg) rotateY(" + -this.device.inclinationX + "deg)";
 
                 document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
             }
-            else if (!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT && this.device._keyPress.UP && this.device._keyPress.DOWN)
+            else if ((!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT) && (this.device._keyPress.UP || this.device._keyPress.DOWN))
             {
                 image.style.webkitTransform = "rotateX(" + this.device.inclinationY + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
                 image.style.transform = "rotateX(" + -this.device.inclinationY + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
@@ -147,13 +162,11 @@ PocketCode.Ui.DeviceEmulator = (function () {
         _openCloseHandler: function (e) {
             if (e.opened)
             {
-                console.log(e);
-                //this._pollingTimer = setInterval(this._openCloseHandler,1000);
+                //this._pollingTimer = setInterval(,);
                 ;//TODO: start polling (this._pollingTimer = setInterval(...)
             }
             else
             {
-                console.log(e);
                 //clearInterval(this._pollingTimer);
                 ;//TODO: stop polling (stopInterval(this._pollingTimer)
             }
