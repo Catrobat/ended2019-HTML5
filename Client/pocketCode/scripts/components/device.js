@@ -843,16 +843,23 @@ PocketCode.DeviceEmulator = (function () {
             Y: 0.0,
         };
         this._inclinationLimits = {
-            X_MIN: -46.0, //-90,
-            X_MAX: 46.0, //90,
-            Y_MIN: -46.0, //-90,
-            Y_MAX: 46.0, //90,
+            MIN: -46.0, //-90,
+            MAX: 46.0, //90,
+            DEFAULT: 46.0,
         };
-        this._inclinationIncr = {
-            X: 8.0, //10,
-            Y: 8.0, //10
+        this.degreeChangeValue = this._inclinationLimits.DEFAULT;
+
+        this._accelerationLimits = {
+            MIN: -8.0,
+            MAX: 8.0,
+            DEFAULT: 8.0,
         };
-        this._inclinationTimerDuration = 200;
+        this.accelerationChangeValue = this._accelerationLimits.DEFAULT;
+        //this._inclinationIncr = {
+        //    X: 8.0, //10,
+        //    Y: 8.0, //10
+        //};
+        //this._inclinationTimerDuration = 200;
 
         // Arrow Keys 
         this._keyCode = {
@@ -889,7 +896,7 @@ PocketCode.DeviceEmulator = (function () {
             DOWN: 0.0,
         };
 
-        this._keyDownTimeDefault = 3;
+        //this._keyDownTimeDefault = 3;
 
         this._keyDownDateTime = {
             LEFT: 0,
@@ -924,11 +931,34 @@ PocketCode.DeviceEmulator = (function () {
 
     //properties
     Object.defineProperties(DeviceEmulator.prototype, {
-        defaultInclinationMax: {
-            value: 46,
+        //TOdo: acceleration + inclination minValue, maxValue getter + value getter + setter
+        degreeChangeMin: {
+            get: function () {
+                this._inclinationLimits.MIN;
+            }
         },
-        defaultInclinationAcceleration: {
-            value: 8,
+        degreeChangeMax: {
+            get: function () {
+                this._inclinationLimits.MAX;
+            }
+        },
+        degreeChangeValue: {
+            value: 0,
+            writable: true,
+        },
+        accelerationChangeMin: {
+            get: function () {
+                this._accelerationLimits.MIN;
+            }
+        },
+        accelerationChangeMax: {
+            get: function () {
+                this._accelerationLimits.MAX;
+            }
+        },
+        accelerationChangeValue: {
+            value: 0,
+            writable: true,
         },
         inclinationX: {
             get: function () {
@@ -1260,8 +1290,8 @@ PocketCode.DeviceEmulator = (function () {
 
         _newTickTest: function () {
 
-            var inclinationDuration = this._inclinationLimits.X_MAX / this._inclinationIncr.X;
-            var inclinationPerStep = inclinationDuration / this._inclinationIncr.X;
+            var inclinationDuration = this._inclinationLimits.MAX / this._accelerationLimits.MAX;
+            var inclinationPerStep = inclinationDuration / this._accelerationLimits.MAX;
 
             this._inclinationIncrTmp.X = inclinationPerStep / inclinationDuration ;
             this._inclinationIncrTmp.Y = inclinationPerStep / inclinationDuration ;

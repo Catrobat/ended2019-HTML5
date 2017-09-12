@@ -12,7 +12,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
     function DeviceEmulator(device) {
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-deviceEmulator' });
 
-        this.device = device;
+        this._device = device;
         //this._pollingInterval = 100;
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
@@ -31,8 +31,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        var defaultVal = device.defaultInclinationMax * (90 / 46);
-        this._maxSlider = new PocketCode.Ui.Slider({min: 1, max: 90, value: defaultVal, minLabel: "1", maxLabel: '&plusmn;' + "90"});
+        //var defaultVal = device.degreeInclinationMax.defaultValue * (90 / 46);
+        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin, max: device.degreeChangeMax, value: device.degreeChangeValue, minLabel: "1", maxLabel: '&plusmn;' + "90"});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,8 +46,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        defaultVal = device.defaultInclinationAcceleration * (5 / 8);
-        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: defaultVal, minLabel: "1", maxLabel: '&plusmn;' + "10"});
+        //defaultVal = device.inclinationAcceleration * (5 / 8);
+        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: 5, minLabel: "1", maxLabel: '&plusmn;' + "10"});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -78,8 +78,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         div.appendChild(span);
         scroll.appendChild(div);
 
-        this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
-        this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
+        //this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
+        //this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
     }
 
     //properties
@@ -94,28 +94,20 @@ PocketCode.Ui.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            this.device._inclinationLimits = {
-                X_MIN: -e.value * (46 / 90),
-                X_MAX: e.value * (46 / 90),
-                Y_MIN: -e.value * (46 / 90),
-                Y_MAX: e.value * (46 / 90),
-            };
+            this._device.degreeChangeValue = e.value;
         },
         _maxAccChangeHandler: function(e) {
-            this.device._inclinationIncr = {
-                X: 46 / e.value,
-                Y: 46 / e.value,
-            };
+            this._device.accelerationChangeValue = e.value;
         },
-        _imgTransformation: function (e) {
+        _updateImageTransformation: function (e) {
 
             var image = document.getElementById("sj69");
 
-            image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
-            image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
+            image.style.webkitTransform = "rotateX(" + this._device.inclinationY  + "deg) rotateY(" + this._device.inclinationX + "deg)";
+            image.style.transform = "rotateX(" + -this._device.inclinationY  + "deg) rotateY(" + -this._device.inclinationX  + "deg)";
 
-            document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-            document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
+            document.getElementById("sj73").innerHTML = Math.round(this._device.inclinationX * (90 / 46));
+            document.getElementById("sj76").innerHTML = Math.round(this._device.inclinationY * (90 / 46));
 
             // if (this.device._keyPress.LEFT && this.device._keyPress.RIGHT)
             // {
@@ -132,7 +124,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
 
         },
-        _resetImgTransformation: function (e) {
+        /*_resetImgTransformation: function (e) {
 
             var image = document.getElementById("sj69");
 
@@ -158,16 +150,16 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
                 document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
             }
-        },
+        },*/
         _openCloseHandler: function (e) {
             if (e.opened)
             {
-                //this._pollingTimer = setInterval(,);
+                this._pollingTimer = setInterval(this._updateImageTransformation.bind(this), 100);
                 ;//TODO: start polling (this._pollingTimer = setInterval(...)
             }
             else
             {
-                //clearInterval(this._pollingTimer);
+                clearInterval(this._pollingTimer);
                 ;//TODO: stop polling (stopInterval(this._pollingTimer)
             }
             //this._container.hidden) {
