@@ -269,6 +269,8 @@ PocketCode.Model.merge({
 
             this._scene = scene;
             this._lookId = propObject.lookId
+            if (!this._lookId)  //can be null
+                return;
             this._callback = this._subscriberCallback.bind(this);
             if (sprite instanceof PocketCode.Model.BackgroundSprite)    //because scene background will not be defined during loading it
                 sprite.subscribeOnLookChange(this._lookId, this._callback);
@@ -278,7 +280,8 @@ PocketCode.Model.merge({
 
         //methods
         WhenBackgroundChangesToBrick.prototype.dispose = function () {
-            this._scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
+            if (this._lookId)  //can be null
+                this._scene.unsubscribeFromBackgroundChange(this._lookId, this._callback);
             this._scene = undefined;
             PocketCode.Model.EventBrick.prototype.dispose.call(this);
         };
