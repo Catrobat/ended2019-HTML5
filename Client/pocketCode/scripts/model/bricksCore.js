@@ -153,12 +153,13 @@ PocketCode.Model.merge({
             _execute: function (scope) {    //override this method in derived classes
                 this._return();
             },
-            _return: function (loopDelay) {
+            _return: function (loopDelay, stopped) {
                 if (this._disposed)
                     return;
                 this._onExecutedListener.handler.call(this._onExecutedListener.scope, {
                     id: this._threadId,
                     loopDelay: loopDelay,
+                    stopped: stopped,
                 });
             },
             /* override */

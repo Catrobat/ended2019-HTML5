@@ -967,8 +967,6 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
     //one of the scripts include a stop OTHER brick.. test makes sure all scripts (even if not started executing) are notified 
     //about the stop
 
-    var done1 = assert.async();
-
     //to verify if this brick gets executed
     var TestBrick = (function () {
         TestBrick.extends(PocketCode.Model.BaseBrick, false);
@@ -987,7 +985,6 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
 
         return TestBrick;
     })();
-
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
@@ -1028,19 +1025,20 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
     }
     script1.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(onExecHandler1, this), "_id1");
 
+    var execCounter = 0;
     var onExecHandler2 = function (e) {
-        if (e.executionState == PocketCode.ExecutionState.RUNNING) {
-            assert.ok(true, "script2 stated executing");
-        }
-        else if (e.executionState == PocketCode.ExecutionState.STOPPED) {
-            assert.ok(true, "script2 stopped executing");
-            assert.equal(bricks2[0].executed, 0, "bricks in 2nd scripts are stopped before execution");
-
-            done1();
-        }
+        execCounter++;
     }
-    script2.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(onExecHandler2, this), "_id1");
+    script2.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(onExecHandler2, this), "_id2");
 
     gameEngine.runProject();
+
+    assert.equal(execCounter, 0, "2nd script not executed");
+    var valid = true;
+    for (var i = 0, l = bricks2.length; i < l; i++)
+        if (bricks2[i].executed > 0)
+            valid = false;
+
+    assert.ok(valid, "2nd scripts: inner bricks not executed");
 
 });
