@@ -5,9 +5,9 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
     //cntr
     function BrickFormula(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickFormulaItem' });
+        PocketCode.Ui.Button.call(this, '', { className: 'pc-brickFormulaItem' });
 
-        this._textNode = new PocketCode.Ui.I18nTextNode(i18nKey);
+        //this._textNode = new PocketCode.Ui.I18nTextNode('');
         this._removeChild(this._textNode);
 
         this._goThroughObject(i18nKey);
@@ -27,7 +27,8 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                         this._goThroughObject(i18nKey.left);
                     }
 
-                    PocketCode.BrickTextItem(i18nKey.i18nKey, true);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
+                    this._appendChild(item);
 
                     if (i18nKey.right != undefined) {
                         this._goThroughObject(i18nKey.right);
@@ -37,70 +38,93 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     this._addTypeFunction(i18nKey);
                     break;
                 case 'NUMBER':
-                    PocketCode.BrickTextItem(i18nKey.value, false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.value, false);
+                    this._appendChild(item);
                     break;
                 case 'SENSOR':
-                    PocketCode.BrickTextItem(i18nKey.i18nKey, true);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
+                    this._appendChild(item);
                     break;
                 case 'USER_VARIABLE':
                     //todo variable id
-                    PocketCode.BrickTextItem("\"", false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem("\"", false);
+                    this._appendChild(item);
                     var id = i18nKey.objRef.id;
-                    PocketCode.BrickTextItem(id, false); //todo VariableName instead of id
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(id, false); //todo VariableName instead of id
+                    this._appendChild(item);
                     this._goThroughObject(i18nKey.right);
-                    PocketCode.BrickTextItem("\"", false);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem("\"", false);
+                    this._appendChild(item);
                     break;
                 case 'USER_LIST':
                     //todo list  id
-                    PocketCode.BrickTextItem("*", false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem("*", false);
+                    this._appendChild(item);
                     var id = i18nKey.objRef.id;
-                    PocketCode.BrickTextItem(id, false); //todo ListName instead of id
-                    PocketCode.BrickTextItem("*", false);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(id, false); //todo ListName instead of id
+                    this._appendChild(item);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem("*", false);
+                    this._appendChild(item);
                     break;
                 case 'BRACKET':
-                    PocketCode.BrickTextItem("(", false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
+                    this._appendChild(item);
                     this._goThroughObject(i18nKey.right);
-                    PocketCode.BrickTextItem(")", false);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
+                    this._appendChild(item);
                     break;
                 case 'STRING':
-                    PocketCode.BrickTextItem(i18nKey.value, false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.value, false);
+                    this._appendChild(item);
                     break;
                 case 'COLLISION_FORMULA':
-                    PocketCode.BrickTextItem("formula_editor_function_collision", true);
-                    PocketCode.BrickTextItem("(", false);
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem("formula_editor_function_collision", true);
+                    this._appendChild(item);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
+                    this._appendChild(item);
                     var sprite_id = i18nKey.objRef.id;
                     var scene = null; //todo: get scene
                     var sprite_name = scene.getSpriteById(sprite_id);
-                    PocketCode.BrickTextItem(sprite_name.name, false);
-                    PocketCode.BrickTextItem(")", false);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(sprite_name.name, false);
+                    this._appendChild(item);
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
+                    this._appendChild(item);
                     break;
             }
         },
         _addTypeFunction: function (i18nKey) {
             if (i18nKey.left != undefined && i18nKey.right == undefined) {
 
-                PocketCode.BrickTextItem(i18nKey.i18nKey, true);
-                PocketCode.BrickTextItem("(", false);
+                var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
+                this._appendChild(item);
+                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
+                this._appendChild(item);
 
                 this._goThroughObject(i18nKey.left);
 
-                PocketCode.BrickTextItem(")", false);
+                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
+                this._appendChild(item);
             }
             else if (i18nKey.left != undefined && i18nKey.right != undefined) {
 
-                PocketCode.BrickTextItem(i18nKey.i18nKey, true);
-                PocketCode.BrickTextItem("(", false);
+                var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
+                this._appendChild(item);
+                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
+                this._appendChild(item);
 
                 this._goThroughObject(i18nKey.left);
 
-                PocketCode.BrickTextItem(",", false);
+                item = new PocketCode.CodeView.Ui.BrickTextItem(",", false);
+                this._appendChild(item);
 
                 this._goThroughObject(i18nKey.right);
 
-                PocketCode.BrickTextItem(")", false);
+                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
+                this._appendChild(item);
             }
             else if (i18nKey.left == undefined && i18nKey.right == undefined) {
-                PocketCode.BrickTextItem(i18nKey.i18nKey, true);
+                var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
+                this._appendChild(item);
             }
         }
 

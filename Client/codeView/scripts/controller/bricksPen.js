@@ -57,7 +57,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetPenSizeBrick' + PocketCode.SetPenSizeBrick.content[1].id,
+                        //name: 'SetPenSizeBrick' + PocketCode.SetPenSizeBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -90,7 +90,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[3].id,
+                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[3].id,
                         value: ''
                     },
                     {
@@ -100,7 +100,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[5].id,
+                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[5].id,
                         value: ''
                     },
                     {
@@ -110,7 +110,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[7].id,
+                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[7].id,
                         value: ''
                     },
                 ]

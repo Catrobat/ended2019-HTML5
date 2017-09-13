@@ -100,7 +100,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetVolumeBrick' + PocketCode.SetVolumeBrick.content[1].id,
+                        //name: 'SetVolumeBrick' + PocketCode.SetVolumeBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -127,7 +127,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ChangeVolumeBrick' + PocketCode.ChangeVolumeBrick.content[1].id,
+                        //name: 'ChangeVolumeBrick' + PocketCode.ChangeVolumeBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -154,7 +154,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SpeakBrick' + PocketCode.SpeakBrick.content[1].id,
+                       // name: 'SpeakBrick' + PocketCode.SpeakBrick.content[1].id,
                         value: ''
                     }
                 ]

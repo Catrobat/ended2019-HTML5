@@ -50,9 +50,9 @@ PocketCode.Formula = (function () {
 
     //methods
     Formula.prototype.merge({
-        calculate: function() {
+        calculate: function(uvh) {
             if (this._json)
-                return this._calculate();
+                return this._calculate(uvh);
             throw new Error('No Formula objct loaded');
         },
         _degree2radian: function (val) {

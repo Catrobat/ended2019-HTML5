@@ -25,7 +25,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[3].id,
+                        //name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[3].id,
                         value: ''
                     },
                     {
@@ -35,7 +35,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[5].id,
+                       // name: 'GoToPositionBrick' + PocketCode.GoToPositionBrick.content[5].id,
                         value: ''
                     }
                 ]
@@ -62,7 +62,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetXBrick' + PocketCode.SetXBrick.content[1].id,
+                        //name: 'SetXBrick' + PocketCode.SetXBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -89,7 +89,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetYBrick' + PocketCode.SetYBrick.content[1].id,
+                        //name: 'SetYBrick' + PocketCode.SetYBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -115,7 +115,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ChangeXBrick' + PocketCode.ChangeXBrick.content[1].id,
+                        //name: 'ChangeXBrick' + PocketCode.ChangeXBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -141,7 +141,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'ChangeYBrick' + PocketCode.ChangeYBrick.content[1].id,
+                        //name: 'ChangeYBrick' + PocketCode.ChangeYBrick.content[1].id,
                         value: ''
                     }
                 ]
@@ -245,7 +245,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'MoveNStepsBrick' + PocketCode.MoveNStepsBrick.content[1].id,
+                        //name: 'MoveNStepsBrick' + PocketCode.MoveNStepsBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -275,7 +275,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'TurnLeftBrick' + PocketCode.TurnLeftBrick.content[1].id,
+                        //name: 'TurnLeftBrick' + PocketCode.TurnLeftBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -305,7 +305,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'TurnRightBrick' + PocketCode.TurnRightBrick.content[1].id,
+                        //name: 'TurnRightBrick' + PocketCode.TurnRightBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -335,7 +335,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetDirectionBrick' + PocketCode.SetDirectionBrick.content[1].id,
+                        //name: 'SetDirectionBrick' + PocketCode.SetDirectionBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -368,7 +368,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetDirectionToBrick' + PocketCode.SetDirectionToBrick.content[2].id,
+                       // name: 'SetDirectionToBrick' + PocketCode.SetDirectionToBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -394,7 +394,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[1].id,
+                        //name: 'GlideToBrick' + PocketCode.GlideToBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -411,7 +411,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[5].id,
+                        //name: 'GlideToBrick' + PocketCode.GlideToBrick.content[5].id,
                         value: ''
                     },
                     {
@@ -421,7 +421,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GlideToBrick' + PocketCode.GlideToBrick.content[7].id,
+                        //name: 'GlideToBrick' + PocketCode.GlideToBrick.content[7].id,
                         value: ''
                     }
                 ]
@@ -447,7 +447,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'GoBackBrick' + PocketCode.GoBackBrick.content[1].id,
+                        //name: 'GoBackBrick' + PocketCode.GoBackBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -497,7 +497,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'VibrationBrick' + PocketCode.VibrationBrick.content[1].id,
+                        //name: 'VibrationBrick' + PocketCode.VibrationBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -576,7 +576,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[5].id,
+                        //name: 'SetVelocityBrick' + PocketCode.SetVelocityBrick.content[5].id,
                         value: ''
                     },
                     {
@@ -606,7 +606,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'RotationSpeedLeftBrick' + PocketCode.RotationSpeedLeftBrick.content[1].id,
+                        //name: 'RotationSpeedLeftBrick' + PocketCode.RotationSpeedLeftBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -636,7 +636,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'RotationSpeedRightBrick' + PocketCode.RotationSpeedRightBrick.content[1].id,
+                        //name: 'RotationSpeedRightBrick' + PocketCode.RotationSpeedRightBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -674,7 +674,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[3].id,
+                        //name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[3].id,
                         value: ''
                     },
                     {
@@ -684,7 +684,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[5].id,
+                        //name: 'SetGravityBrick' + PocketCode.SetGravityBrick.content[5].id,
                         value: ''
                     },
                     {
@@ -714,7 +714,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetMassBrick' + PocketCode.SetMassBrick.content[1].id,
+                        //name: 'SetMassBrick' + PocketCode.SetMassBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -744,7 +744,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetBounceFactorBrick' + PocketCode.SetBounceFactorBrick.content[1].id,
+                       // name: 'SetBounceFactorBrick' + PocketCode.SetBounceFactorBrick.content[1].id,
                         value: ''
                     },
                     {
@@ -774,7 +774,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        name: 'SetFrictionBrick' + PocketCode.SetFrictionBrick.content[1].id,
+                        //name: 'SetFrictionBrick' + PocketCode.SetFrictionBrick.content[1].id,
                         value: ''
                     },
                     {
