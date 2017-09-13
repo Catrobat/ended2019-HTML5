@@ -79,6 +79,8 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
+    threadCounter: 50,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
         TOUCH_START: 'touchStart',

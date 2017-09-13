@@ -10,6 +10,7 @@ PocketCode.PublishSubscribeBroker = (function () {
     function PublishSubscribeBroker() {
         this._subscriptions = {};
         this._pendingOps = {};
+        this._calls = 0;
     }
 
     //methods
@@ -55,18 +56,26 @@ PocketCode.PublishSubscribeBroker = (function () {
             if (po)
                 po.waitCallback(po.loopDelay);
 
+            this._calls++;
             if (waitCallback) {
                 var po = this._pendingOps[id] = { count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
-                    window.setTimeout(subs[i](execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
+                    if (this._calls < PocketCode.treadCounter)
+                        subs[i].call(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id);
+                    else
+                        window.setTimeout(subs[i].bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);
                 }
             }
             else {
                 for (var i = 0, l = subs.length; i < l; i++) {
-                    window.setTimeout(subs[i](execTime), 0);
+                    if (this._calls < 50)
+                        subs[i].call(this, execTime);
+                    else
+                        window.setTimeout(subs[i].bind(this, execTime), 0);
                 }
             }
+            this._calls = 0;
         },
         _scriptExecutedCallback: function (e) { //{ id: threadId, loopDelay: loopD }
             var po = this._pendingOps[e.id];

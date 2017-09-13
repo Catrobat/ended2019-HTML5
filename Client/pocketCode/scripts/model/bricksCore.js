@@ -132,6 +132,8 @@ PocketCode.Model.merge({
             this._device = device;
             this._sprite = sprite;
             this._commentedOut = propObject.commentedOut;
+
+            //this._threadId = undefined;
         }
 
         BaseBrick.prototype.merge({
@@ -148,27 +150,24 @@ PocketCode.Model.merge({
                 else
                     this._execute(scope);
             },
-            _execute: function (scope) {
+            _execute: function (scope) {    //override this method in derived classes
                 this._return();
             },
-            _return: function (loopDelay, stopped) {
+            _return: function (loopDelay) {
                 if (this._disposed)
                     return;
                 this._onExecutedListener.handler.call(this._onExecutedListener.scope, {
                     id: this._threadId,
                     loopDelay: loopDelay,
-                    stopped: stopped,
                 });
             },
             /* override */
             dispose: function () {
-                if (this.stop)
-                    this.stop();
                 //make sure not all referenced objects get disposed
                 this._device = undefined;
                 this._sprite = undefined;
-                //call super
-                SmartJs.Core.Component.prototype.dispose.call(this);
+
+                SmartJs.Core.Component.prototype.dispose.call(this);    //call super
             },
         });
 
@@ -177,87 +176,111 @@ PocketCode.Model.merge({
 
 });
 
-PocketCode.Model.ThreadedBrick = (function () {
-    ThreadedBrick.extends(PocketCode.Model.BaseBrick, false);
+PocketCode.Model.merge({
 
-    function ThreadedBrick(device, sprite, propObject) {
-        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+    ThreadedBrick: (function () {
+        ThreadedBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        this._pendingOps = {};
-        this._paused = false;
-    }
+        function ThreadedBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
-    ThreadedBrick.prototype.merge({
-        execute: function (onExecutedListener, threadId, scope) {
-            if (this._disposed)
-                return;
-            if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
-                throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
-
-            var id = SmartJs.getNewId();
-            this._pendingOps[id] = {
-                listener: onExecutedListener,
-                threadId: threadId,
-                scope: scope,
-            };
-            if (this._commentedOut === true)
-                this._return(id, false);
-            else
-                this._execute(id, scope);
-        },
-        /* method to override in derived classes */
-        _execute: function (id, scope) {
-            this._return(id, false);
-        },
-        _return: function (id, loopDelay, stopped) {
-            var po = this._pendingOps[id];
-            if (!po)  //stopped
-                return;
-
-            var loopD = loopDelay ? loopDelay : false;
-            var listener = po.listener;
-            var threadId = po.threadId;
-
-            for (var prop in po) //may include objects like timers, animations, ...
-                if (po[prop] && po[prop].dispose)
-                    po[prop].dispose();
-            delete this._pendingOps[id];
-            if (listener)
-                listener.handler.call(listener.scope, {
-                    id: threadId,
-                    loopDelay: loopD,
-                    stopped: stopped,
-                });
-        },
-        pause: function () {
-            this._paused = true;
-        },
-        resume: function () {
+            this._pendingOps = {};
             this._paused = false;
-        },
-        _stopPendingOperations: function () {
-            var po,
-                pos = this._pendingOps;
-            for (var id in pos) {
-                po = this._pendingOps[id];
-                if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
-                    po.scope = undefined;   //make sure to not dispose objects currently in use
+        }
 
-                for (var prop in po) //may include objects like animation, ...
+        ThreadedBrick.prototype.merge({
+            execute: function (onExecutedListener, threadId, scope) {
+                if (this._disposed)
+                    return;
+                if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
+                    throw new Error('ThreadedBrick: missing or invalid arguments on execute()');
+
+                var id = SmartJs.getNewId();
+                this._pendingOps[id] = {
+                    listener: onExecutedListener,
+                    threadId: threadId,
+                    scope: scope,
+                };
+                if (this._commentedOut === true)
+                    this._return(id, false);
+                else
+                    this._execute(id, scope);
+            },
+            /* method to override in derived classes */
+            _execute: function (id, scope) {
+                this._return(id, false);
+            },
+            _return: function (id, loopDelay, stopped) {
+                var po = this._pendingOps[id];
+                if (!po)  //stopped
+                    return;
+
+                var loopD = loopDelay ? loopDelay : false;
+                var listener = po.listener;
+                var threadId = po.threadId;
+
+                for (var prop in po) //may include objects like timers, animations, ...
                     if (po[prop] && po[prop].dispose)
                         po[prop].dispose();
-                //delete this._pendingOps[id];
-            }
-            this._pendingOps = {};
-        },
-        stop: function () {
-            this._stopPendingOperations();
-            this._paused = false;
-        },
-    });
+                delete this._pendingOps[id];
+                if (listener)
+                    listener.handler.call(listener.scope, {
+                        id: threadId,
+                        loopDelay: loopD,
+                        stopped: stopped,
+                    });
+            },
+            pause: function () {
+                this._paused = true;
+            },
+            resume: function () {
+                this._paused = false;
+            },
+            _stopPendingOperations: function () {
+                var po,
+                    pos = this._pendingOps;
+                for (var id in pos) {
+                    po = this._pendingOps[id];
+                    if (typeof po.scope == 'object' && (po.scope instanceof PocketCode.GameEngine || po.scope instanceof PocketCode.Model.Sprite))
+                        po.scope = undefined;   //make sure to not dispose objects currently in use
 
-    return ThreadedBrick;
-})();
+                    for (var prop in po) //may include objects like animation, ...
+                        if (po[prop] && po[prop].dispose)
+                            po[prop].dispose();
+                    //delete this._pendingOps[id];
+                }
+                this._pendingOps = {};
+            },
+            stop: function () {
+                this._stopPendingOperations();
+                this._paused = false;
+            },
+            /* override */
+            dispose: function () {
+                this.stop();
+
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);    //call super
+            },
+        });
+
+        return ThreadedBrick;
+    })(),
+
+    UnsupportedBrick: (function () {
+        UnsupportedBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function UnsupportedBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._xml = propObject.xml;
+            this._brickType = propObject.brickType;
+            this._json = propObject;
+        }
+
+        return UnsupportedBrick;
+    })(),
+
+});
 
 PocketCode.Model.SingleContainerBrick = (function () {
     SingleContainerBrick.extends(PocketCode.Model.ThreadedBrick, false);
@@ -310,6 +333,7 @@ PocketCode.Model.SingleContainerBrick = (function () {
 })();
 
 PocketCode.Model.merge({
+
     ScriptBlock: (function () {
         ScriptBlock.extends(PocketCode.Model.SingleContainerBrick, false);
 
@@ -321,9 +345,7 @@ PocketCode.Model.merge({
                 //this._x = propObject.x;   //removed because currently not in use (commented out in in project JSON as well)
                 //this._y = propObject.y;
             }
-            this._executionState = PocketCode.ExecutionState.STOPPED;
-            this._stoppedAt = Date.now() - 1;
-            //this._pendingCall = undefined;  //make sure a wait callback is handled even the object get's disposed (clone)
+            this.__executionState = PocketCode.ExecutionState.STOPPED;
             this._onExecutionStateChange = new SmartJs.Event.Event(this);
         }
 
@@ -345,89 +367,100 @@ PocketCode.Model.merge({
             },
             executionState: {
                 get: function () {
-                    return this._executionState;
+                    return this.__executionState;
                 },
+            },
+            _executionState: {
+                set: function (value) {
+                    if (this.__executionState == value)
+                        return;
+                    this.__executionState = value;
+                    this._onExecutionStateChange.dispatchEvent({ executionState: value });
+                },
+                //get: function () {
+                //    return this.__executionState;
+                //},
             },
         });
 
         //methods
         ScriptBlock.prototype.merge({
-            //supporting subscription to publish-subscribe broker (broadcast and wait, background-change and wait, ..)
-            _subscriberCallback: function (dispatchedAt, onExecutedListener, threadId) {
-                if (onExecutedListener && threadId) {   //..AndWait
-                    if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
-                        //stopped before executed
-                        onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
-                        return;
-                    }
-                    this.execute(onExecutedListener, threadId);
-                }
-                else {  //without ..AndWait
-                    this.executeEvent({ dispatchedAt: dispatchedAt });
-                }
-            },
-            executeEvent: function (e) {
-                if (e && e.dispatchedAt && e.dispatchedAt <= this._stoppedAt)
-                    return;
-
-                //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
-                this.execute(new SmartJs.Event.EventListener(function () { }, this), SmartJs.getNewId());
-            },
-            /*override*/
-            execute: function (onExecutedListener, threadId, scope) {
-                if (this._disposed)
-                    return;
-                if (this._executionState == PocketCode.ExecutionState.RUNNING) {
-                    //stop without changing execution state
-                    this._stoppedAt = Date.now();
-                    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
-                }
-                else {
-                    this._executionState = PocketCode.ExecutionState.RUNNING;
-                    this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
-                }
-                PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
-            },
-            _return: function (id, loopDelay, stopped) {
-                this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
-                PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
-            },
-            stop: function (calledFromStopBrick) {
-                var callback;
-                if (calledFromStopBrick) {
-                    //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped - pending ops cleared in publishSubscribeHost
-                    var pos = this._pendingOps;
-                    for (var id in pos) {
-                        var po = pos[id];
-                        callback = po.listener.handler.bind(po.listener.scope, {
-                            id: po.threadId,
-                            //loopDelay: false,
-                            //stopped: false,
-                        });
-                        //break;  //there can only be one
-                    }
-                }
-
-                this._stoppedAt = Date.now();
+            //    //supporting subscription to publish-subscribe broker (broadcast and wait, background-change and wait, ..)
+            //    _subscriberCallback: function (dispatchedAt, onExecutedListener, threadId) {
+            //        if (onExecutedListener && threadId) {   //..AndWait
+            //            if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
+            //                //stopped before executed
+            //                onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
+            //                return;
+            //            }
+            //            this.execute(onExecutedListener, threadId);
+            //        }
+            //        else {  //without ..AndWait
+            //            this.executeEvent({ dispatchedAt: dispatchedAt });
+            //        }
+            //    },
+            //    executeEvent: function (e) {
+            //        if (e && e.dispatchedAt && e.dispatchedAt <= this._stoppedAt)
+            //            return;
+            //
+            //        //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
+            //        this.execute(new SmartJs.Event.EventListener(function () { }, this), SmartJs.getNewId());
+            //    },
+            //    /*override*/
+            //    execute: function (onExecutedListener, threadId, scope) {
+            //        if (this._disposed)
+            //            return;
+            //        if (this._executionState == PocketCode.ExecutionState.RUNNING) {
+            //            //stop without changing execution state
+            //            this._stoppedAt = Date.now();
+            //            PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+            //        }
+            //        else {
+            //            this._executionState = PocketCode.ExecutionState.RUNNING;
+            //            this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+            //        }
+            //        PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, onExecutedListener, threadId);
+            //    },
+            //    _return: function (id, loopDelay, stopped) {
+            //        this._executionState = PocketCode.ExecutionState.STOPPED;
+            //        this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+            //        PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
+            //    },
+            stop: function () {
+                //        var callback;
+                //        if (calledFromStopBrick) {
+                //            //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped - pending ops cleared in publishSubscribeHost
+                //            var pos = this._pendingOps;
+                //            for (var id in pos) {
+                //                var po = pos[id];
+                //                callback = po.listener.handler.bind(po.listener.scope, {
+                //                    id: po.threadId,
+                //                    //loopDelay: false,
+                //                    //stopped: false,
+                //                });
+                //                //break;  //there can only be one
+                //            }
+                //        }
+                //
+                //        this._stoppedAt = Date.now();
                 PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
-
-                //make sure we call our callback handler
-                if (callback)
-                    setTimeout(callback, 1);   //delay to make sure the recursived stop has reached all bricks before executing callback
-
+                //
+                //        //make sure we call our callback handler
+                //        if (callback)
+                //            setTimeout(callback, 1);   //delay to make sure the recursived stop has reached all bricks before executing callback
+                //
                 this._executionState = PocketCode.ExecutionState.STOPPED;
-                this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+                //        this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
             },
-            dispose: function () {
-                //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose of clones
-                if (this._sprite instanceof PocketCode.Model.SpriteClone) {
-                    var pos = this._pendingOps;
-                    for (var id in pos)
-                        this._return(id);
-                }
-                PocketCode.Model.SingleContainerBrick.prototype.dispose.call(this);
-            },
+            //    dispose: function () {
+            //        //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose of clones
+            //        if (this._sprite instanceof PocketCode.Model.SpriteClone) {
+            //            var pos = this._pendingOps;
+            //            for (var id in pos)
+            //                this._return(id);
+            //        }
+            //        PocketCode.Model.SingleContainerBrick.prototype.dispose.call(this);
+            //    },
         });
 
         return ScriptBlock;
@@ -440,6 +473,7 @@ PocketCode.Model.merge({
             PocketCode.Model.SingleContainerBrick.call(this, device, sprite, propObject);
 
             this._minLoopCycleTime = minLoopCycleTime || 20;
+            this._calls = 0;
         }
 
         LoopBrick.prototype.merge({
@@ -475,6 +509,7 @@ PocketCode.Model.merge({
                 if (!po)
                     return;
 
+                this._calls++;
                 if (/*this._bricks &&*/ this._loopConditionMet(po) && !e.stopped) {   //bricks checked already in execute()
                     var executionDelay = 0;
                     if (e.loopDelay) {
@@ -485,32 +520,169 @@ PocketCode.Model.merge({
                         window.setTimeout(this._execute.bind(this, id, po.scope), executionDelay);
                     }
                     else {
-                        window.setTimeout(this._execute.bind(this, id, po.scope), 0);
-                        //this._execute(id, po.scope);    //caution: callstack error on some projects, e.g. 27686
+                        this._calls++;
+                        if (this._calls < PocketCode.treadCounter)
+                            this._execute.call(this, id, po.scope);
+                        else
+                            window.setTimeout(this._execute.bind(this, id, po.scope), 0);
                     }
                 }
                 else
                     this._return(id, false, e.stopped);
+                this._calls = 0;
             },
         });
 
         return LoopBrick;
     })(),
 
-    UnsupportedBrick: (function () {
-        UnsupportedBrick.extends(PocketCode.Model.BaseBrick, false);
-
-        function UnsupportedBrick(device, sprite, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._xml = propObject.xml;
-            this._brickType = propObject.brickType;
-            this._json = propObject;
-        }
-
-        return UnsupportedBrick;
-    })(),
-
 });
 
+PocketCode.Model.EventBrick = (function () {
+    EventBrick.extends(PocketCode.Model.ScriptBlock, false);
 
+    function EventBrick(device, sprite, propObject) {
+        PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
+
+        this._stoppedAt = Date.now() - 1;
+        //this._pendingOp = undefined;    //used for current thread
+    }
+
+    //methods
+    EventBrick.prototype.merge({
+        //supporting subscription to publish-subscribe broker (broadcast and wait, background-change and wait, ..)
+        _subscriberCallback: function (dispatchedAt, onExecutedListener, threadId) {
+            if (onExecutedListener && threadId) {   //..AndWait
+                if ((dispatchedAt && dispatchedAt < this._stoppedAt) || this._disposed) {
+                    //stopped before executed
+                    onExecutedListener.handler.call(onExecutedListener.scope, { id: threadId, loopDelay: false });
+                    return;
+                }
+                this.execute(onExecutedListener, threadId);
+            }
+            else {  //without ..AndWait
+                this.executeEvent({ dispatchedAt: dispatchedAt });
+            }
+        },
+        executeEvent: function (e) {
+            if (e && e.dispatchedAt && e.dispatchedAt <= this._stoppedAt)
+                return;
+
+            //if no arguments provided (typical case for script blocks), we create some dummy args to call our super method
+            this.execute();//new SmartJs.Event.EventListener(function () { }, this), SmartJs.getNewId());
+        },
+        /*override*/
+        execute: function (onExecutedListener, threadId) {
+            if (this._disposed)
+                return;
+            if (onExecutedListener && (!(onExecutedListener instanceof SmartJs.Event.EventListener) || !threadId))
+                throw new Error('EventBrick: missing or invalid arguments on execute()');
+
+            threadId = threadId || SmartJs.getNewId()
+            if (this._commentedOut === true) {
+                this._return(threadId);
+                return;
+            }
+
+            if (this.executionState == PocketCode.ExecutionState.RUNNING)
+                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //call stop without changing executionState
+            else
+                this._executionState = PocketCode.ExecutionState.RUNNING;
+
+            this._threadId = threadId;
+            this._onExecutedListener = onExecutedListener;
+            this._execute(threadId);
+        },
+        _return: function (id, loopDelay) {
+            if (this._disposed)
+                return;
+
+            var listener = this._onExecutedListener;
+            this._onExecutedListener = this._threadId = undefined;
+            this._executionState = PocketCode.ExecutionState.STOPPED;
+            //this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+
+            if (listener) {
+                listener.handler.call(listener.scope, {
+                    id: id,
+                    loopDelay: loopDelay,
+                });
+            }
+        },
+
+        /*execute: function (onExecutedListener, threadId, scope) {
+            if (this._disposed)
+                return;
+            if (this._commentedOut) {
+
+            }
+            TODO: this._threadId, prevent calling super on stop()
+
+            if (this._executionState == PocketCode.ExecutionState.RUNNING) {
+                //stop without changing execution state
+                this._stoppedAt = Date.now();
+                PocketCode.Model.ScriptBlock.prototype.stop.call(this);
+            }
+            else {
+                this._executionState = PocketCode.ExecutionState.RUNNING;
+                this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+            }
+            PocketCode.Model.ScriptBlock.prototype.execute.call(this, onExecutedListener, threadId);
+        },
+        _return: function (id, loopDelay, stopped) {
+            this._executionState = PocketCode.ExecutionState.STOPPED;
+            this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+
+            TODO: ?? PocketCode.Model.ScriptBlock.prototype._return.call(this, id, loopDelay, stopped);
+        },*/
+        //stop: function (calledFromStopBrick) {
+        //    var callback;
+        //    if (calledFromStopBrick) {
+        //        //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped - pending ops cleared in publishSubscribeHost
+        //        var pos = this._pendingOps;
+        //        for (var id in pos) {
+        //            var po = pos[id];
+        //            callback = po.listener.handler.bind(po.listener.scope, {
+        //                id: po.threadId,
+        //                //loopDelay: false,
+        //                //stopped: false,
+        //            });
+        //            //break;  //there can only be one
+        //        }
+        //    }
+
+        //    this._stoppedAt = Date.now();
+        //    PocketCode.Model.ScriptBlock.prototype.stop.call(this);
+
+        //    //make sure we call our callback handler
+        //    if (callback)
+        //        setTimeout(callback, 1);   //delay to make sure the recursived stop has reached all bricks before executing callback
+
+        //    this._executionState = PocketCode.ExecutionState.STOPPED;
+        //    this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+        //},
+        stop: function (calledFromStopBrick) {
+            //this._paused = false;
+
+            PocketCode.Model.ScriptBlock.prototype.stop.call(this);
+            if (calledFromStopBrick) {
+                this._stoppedAt = Date.now();
+                //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped - pending ops cleared in publishSubscribeHost
+                setTimeout(this._return.bind(this, this._threadId), 1);   //delay to make sure the recursived stop has reached all bricks before executing callback
+                //return; //execution state handled by _return()
+            }
+
+            //this._executionState = PocketCode.ExecutionState.STOPPED;
+            //this._onExecutionStateChange.dispatchEvent({ executionState: this._executionState });
+        },
+        dispose: function () {
+            //to make sure a pending callback (broadcastWait, changeBackgroundAndWait, ..) will be called on dispose of clones
+            if (this._sprite instanceof PocketCode.Model.SpriteClone) {
+                this._return(this._threadId);
+            }
+            PocketCode.Model.ScriptBlock.prototype.dispose.call(this);
+        },
+    });
+
+    return EventBrick;
+})();

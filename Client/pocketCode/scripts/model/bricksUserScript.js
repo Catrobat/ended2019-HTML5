@@ -18,22 +18,22 @@ PocketCode.Model.merge({
 
             //we need a prototype object storing all procedure arguments to call fomula.toString(this._uvhPrototype)
             //otherwide we are not able to show a formula including (variable) argument names
-            //this._uvh = { prototype: new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite) }; //TODO: make sure sprite keeps the same and doesn't vary per call
+            this._uvh = { prototype: new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite) }; //TODO: make sure sprite keeps the same and doesn't vary per call
 
             //this._onStart = startEvent;
             //startEvent.addEventListener(new SmartJs.Event.EventListener(this.execute, this));
         }
 
         UserScriptBrick.prototype.merge({
-            execute: function (onExecutedListener, threadId, sprite) {
+            execute: function (onExecutedListener, threadId/*, sprite*/) {
                 if (this._disposed)
                     return;
                 if (!onExecutedListener || !threadId || !(onExecutedListener instanceof SmartJs.Event.EventListener) || typeof threadId !== 'string')
                     throw new Error('UserScriptBrick (ThreadedBrick): missing or invalid arguments on execute()');
 
-                sprite = sprite || this._sprite;
+                //sprite = sprite || this._sprite;
                 var id = SmartJs.getNewId(),
-                    uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, sprite);  // new this.uvh();
+                    uvh = new PocketCode.Model.UserVariableHost(PocketCode.UserVariableScope.PROCEDURE, this._uvh);
                 //TODO: init variables
 
                 this._pendingOps[id] = { threadId: threadId, listener: onExecutedListener };
@@ -43,8 +43,8 @@ PocketCode.Model.merge({
                 //this._execute(id);
 
                 this._executionState = PocketCode.ExecutionState.RUNNING;   //TODO make sure all instances are STOPPED
-                PocketCode.Model.SingleContainerBrick.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
-                    if (Object.keys(this._pendingOps).length > 0) {
+                PocketCode.Model.ScriptBlock.prototype.execute.call(this, new SmartJs.Event.EventListener(function (e) {
+                    if (Object.keys(this._pendingOps).length == 1) {
                         this._executionState = PocketCode.ExecutionState.STOPPED;
                         this._onExecuted.dispatchEvent();
                     }
@@ -55,7 +55,7 @@ PocketCode.Model.merge({
                 //TODO
             },
             //stop: function () {
-            //    PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+            //    PocketCode.Model.ScriptBlock.prototype.stop.call(this);
             //    this._executionState = PocketCode.ExecutionState.STOPPED;
             //},
             //dispose: function () {
@@ -75,7 +75,7 @@ PocketCode.Model.merge({
         function CallUserScriptBrick(device, sprite, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
-            //get user script by id
+            //get user script by id- at runtime: sprite getUserScritp(this._id).execute(..)
             //this._userScript = 
         }
 
