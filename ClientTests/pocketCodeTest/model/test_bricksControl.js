@@ -35,7 +35,6 @@ QUnit.test("WaitBrick", function (assert) {
         assert.equal(e.loopDelay, false, "loop delay event arg");
         assert.equal(e.id, "waitPlease", "loop delay id");
         done1();
-
         test2();
     };
     var l1 = new SmartJs.Event.EventListener(asyncHandler1, this);
@@ -68,7 +67,6 @@ QUnit.test("WaitBrick", function (assert) {
 
             assert.ok(s1 < s2 && s2 < s3 && s3 < s4, "testing threaded calls");
             done2();
-
         }
     };
 
