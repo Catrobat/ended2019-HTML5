@@ -13,7 +13,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
         SmartJs.Ui.Control.call(this, 'div', { className: 'pc-deviceEmulator' });
 
         this._device = device;
-        //this._pollingInterval = 100;
 
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
         this._container.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
@@ -31,8 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        //var defaultVal = device.degreeInclinationMax.defaultValue * (90 / 46);
-        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin, max: device.degreeChangeMax, value: device.degreeChangeValue, minLabel: "1", maxLabel: '&plusmn;' + "90"});
+        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin / (46 * -1), max: device.degreeChangeMax * (90 / 46), value: device.degreeChangeValue * (90 / 46), minLabel: device.degreeChangeMin / (46 * -1), maxLabel: '&plusmn;' + device.degreeChangeMax * (90 / 46)});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,8 +44,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        //defaultVal = device.inclinationAcceleration * (5 / 8);
-        this._accSlider = new PocketCode.Ui.Slider({min: 1, max: 10, value: 5, minLabel: "1", maxLabel: '&plusmn;' + "10"});
+        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin / (8 * -1), max: device.accelerationChangeMax * (10 / 8), value: device.accelerationChangeValue * (5 / 8), minLabel: device.accelerationChangeMin / (8 * -1), maxLabel: '&plusmn;' + device.accelerationChangeMax * (10 / 8)});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -78,8 +75,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
         div.appendChild(span);
         scroll.appendChild(div);
 
-        //this._keyDownListener = this._addDomListener(document, 'keydown', this._imgTransformation);
-        //this._keyUpListener = this._addDomListener(document, 'keyup', this._resetImgTransformation);
     }
 
     //properties
@@ -94,7 +89,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            this._device.degreeChangeValue = e.value;
+            this._device.degreeChangeValue = e.value / 90 * 46;
         },
         _maxAccChangeHandler: function(e) {
             this._device.accelerationChangeValue = e.value;
@@ -109,66 +104,18 @@ PocketCode.Ui.DeviceEmulator = (function () {
             document.getElementById("sj73").innerHTML = Math.round(this._device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this._device.inclinationY * (90 / 46));
 
-            // if (this.device._keyPress.LEFT && this.device._keyPress.RIGHT)
-            // {
-            //     console.log("halt");
-            //     console.log(this.device._keyPress);
-            //
-            //     image.style.webkitTransform = "rotateX(" + this.device.inclinationY  + "deg) rotateY(" + this.device.inclinationX + "deg)";
-            //     image.style.transform = "rotateX(" + -this.device.inclinationY  + "deg) rotateY(" + -this.device.inclinationX  + "deg)";
-            //
-            //     document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-            // }
-
-
-
-
         },
-        /*_resetImgTransformation: function (e) {
 
-            var image = document.getElementById("sj69");
-
-            if (!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT && !this.device._keyPress.UP && !this.device._keyPress.DOWN)
-            {
-                image.style.webkitTransform = "rotateX(" + this.device._defaultInclination.Y + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
-                image.style.transform = "rotateX(" + -this.device._defaultInclination.Y + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
-
-                document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-                document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
-            }
-            else if ((this.device._keyPress.LEFT || this.device._keyPress.RIGHT) && (!this.device._keyPress.UP && !this.device._keyPress.DOWN))
-            {
-                image.style.webkitTransform = "rotateX(" + this.device.inclinationY + "deg) rotateY(" + this.device.inclinationX + "deg)";
-                image.style.transform = "rotateX(" + -this.device.inclinationY + "deg) rotateY(" + -this.device.inclinationX + "deg)";
-
-                document.getElementById("sj76").innerHTML = Math.round(this.device.inclinationY * (90 / 46));
-            }
-            else if ((!this.device._keyPress.LEFT && !this.device._keyPress.RIGHT) && (this.device._keyPress.UP || this.device._keyPress.DOWN))
-            {
-                image.style.webkitTransform = "rotateX(" + this.device.inclinationY + "deg) rotateY(" + this.device._defaultInclination.X + "deg)";
-                image.style.transform = "rotateX(" + -this.device.inclinationY + "deg) rotateY(" + -this.device._defaultInclination.X + "deg)";
-
-                document.getElementById("sj73").innerHTML = Math.round(this.device.inclinationX * (90 / 46));
-            }
-        },*/
         _openCloseHandler: function (e) {
             if (e.opened)
             {
                 this._pollingTimer = setInterval(this._updateImageTransformation.bind(this), 100);
-                ;//TODO: start polling (this._pollingTimer = setInterval(...)
             }
             else
             {
                 clearInterval(this._pollingTimer);
-                ;//TODO: stop polling (stopInterval(this._pollingTimer)
             }
-            //this._container.hidden) {
-            //     this._container.show();
-            //     this.verifyResize();
-            //     //this._onOpen.dispatchEvent();
-            // } else {
-            //     this.close();
-            // }
+
         },
         /* override */
         verifyResize: function () {
