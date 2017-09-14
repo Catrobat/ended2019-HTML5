@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
         href = 'pocketCodePlayer.css';
     else
-        href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
+        href = PocketCode.domain + 'html5/player/pocketCodePlayer.css';
 
     var link = document.createElement('link');
     link.href = href;
@@ -1088,7 +1088,7 @@ PocketCode.Web.resources = {
         if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
             return '../';
 
-        return PocketCode.domain + '/html5/';
+        return PocketCode.domain + 'html5/';
     }(),
     files: [
 		{ url: 'smartJs/sj.css', type: 'css' },
