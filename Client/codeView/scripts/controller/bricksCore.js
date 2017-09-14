@@ -30,7 +30,8 @@ PocketCode.UnsupportedBrick = (function () {
     UnsupportedBrick.extends(PocketCode.BaseBrick, false);
 
     function UnsupportedBrick(model) {
-        var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.UNSUPPORTED, true);
+        var content = {content: ""}; //todo: content ?
+        var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.UNSUPPORTED, true, content);
         PocketCode.BaseBrick.call(this, view, model, true);
     }
     return UnsupportedBrick;

@@ -166,4 +166,34 @@ PocketCode.merge({
         return SpeakBrick;
     })(),
 
+    SpeakAndWaitBrick: (function () {
+        SpeakAndWaitBrick.extends(PocketCode.BaseBrick, false);
+        function SpeakAndWaitBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SpeakAndWaitBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_speak'
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        value: ''
+                    },
+                    {
+                        type: 'text',
+                        i18n: 'brick_speak_and_wait'
+                    },
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.SOUND, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
+        return SpeakAndWaitBrick;
+    })(),
+
 });

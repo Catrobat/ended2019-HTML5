@@ -164,6 +164,7 @@ PocketCode.I18nProvider = (function (propObject) {
             "brick_set_volume_to":"Set volume to",
             "brick_change_volume_by":"Change volume by",
             "brick_speak":"Speak",
+            "brick_speak_and_wait":"and wait",
 
 
             //formula

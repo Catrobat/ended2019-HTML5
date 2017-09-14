@@ -372,17 +372,17 @@ PocketCode.merge({
         return DeleteCloneBrick;
     })(),
 
-    StopScriptType: {
+    StopType: {
         THIS: 1,
         ALL: 2,
         OTHER: 3
     },
 
-    StopScriptBrick: (function () {
-        StopScriptBrick.extends(PocketCode.BaseBrick, false);
+    StopBrick: (function () {
+        StopBrick.extends(PocketCode.BaseBrick, false);
 
-        function StopScriptBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.StopScriptBrick)) {
+        function StopBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.StopBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
@@ -398,7 +398,7 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from scripts??
-                        //name: 'StopScriptBrick'+ PocketCode.StopScriptBrick.content[2].id,
+                        //name: 'StopBrick'+ PocketCode.StopBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -408,7 +408,7 @@ PocketCode.merge({
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
-        return StopScriptBrick;
+        return StopBrick;
     })(),
 
 });

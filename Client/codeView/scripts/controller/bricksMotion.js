@@ -181,6 +181,27 @@ PocketCode.merge({
         return SetRotionStyleBrick;
     })(),
 
+    SetRotationSpeedBrick: (function () {
+        SetRotationSpeedBrick.extends(PocketCode.BaseBrick, false);
+        function SetRotationSpeedBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetRotationSpeedBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                //TODO
+                content: [
+                    {
+                        type: 'text',
+                        i18n: 'brick_set_rotation_style'
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.MOTION, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
+        return SetRotationSpeedBrick;
+    })(),
+
     GoToBrick: (function () {
         GoToBrick.extends(PocketCode.BaseBrick, false);
         function GoToBrick(model, commentedOut) {

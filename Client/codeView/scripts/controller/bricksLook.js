@@ -31,6 +31,31 @@ PocketCode.merge({
         return SetLookBrick;
     })(),
 
+    SetLookByIndexBrick: (function () {
+        SetLookByIndexBrick.extends(PocketCode.BaseBrick, false);
+        function SetLookByIndexBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetLookByIndexBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: '' //todo i18nKey
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        value: ''
+                    }
+                ]
+            };
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
+        return SetLookByIndexBrick;
+    })(),
+
     NextLookBrick: (function () {
         NextLookBrick.extends(PocketCode.BaseBrick, false);
         function NextLookBrick(model, commentedOut) {
@@ -586,6 +611,33 @@ PocketCode.merge({
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
         return SetBackgroundAndWaitBrick;
+    })(),
+
+    SetBackgroundByIndexBrick: (function () {
+        SetBackgroundByIndexBrick.extends(PocketCode.BaseBrick, false);
+
+        function SetBackgroundByIndexBrick(model, commentedOut) {
+            if (!(model instanceof PocketCode.Model.SetBackgroundByIndexBrick)) {
+                throw new Error("Invalid argument Model");
+            }
+            var content = {
+                content: [
+                    {
+                        type: 'text',
+                        i18n: '' //todo i18nKey
+                    },
+                    {
+                        type: 'formula',
+                        id: SmartJs.getNewId(),
+                        value: ''
+                    }
+                ]
+            };
+
+            var view = new PocketCode.View.BaseBrick(PocketCode.View.BrickType.LOOK, commentedOut, content);
+            PocketCode.BaseBrick.call(this, view, model, commentedOut);
+        }
+        return SetBackgroundByIndexBrick;
     })(),
 
     CameraBrick: (function () {
