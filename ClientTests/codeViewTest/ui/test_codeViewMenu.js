@@ -5,3 +5,11 @@
 QUnit.module("/ui/codeViewMenu.js");
 
 
+QUnit.test("CodeViewMenu", function (assert) {
+
+    var ctrl = new PocketCode.CodeView.Ui.Menu();
+    assert.ok(ctrl instanceof PocketCode.CodeView.Ui.Menu && ctrl instanceof PocketCode.Ui.Menu, "instance check + inheritance");
+    assert.ok(ctrl.objClassName === "Menu", "objClassName check");
+
+    assert.ok(false, "TODO");
+});

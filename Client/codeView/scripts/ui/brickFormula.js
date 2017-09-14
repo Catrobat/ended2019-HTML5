@@ -52,7 +52,9 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     var id = i18nKey.objRef.id;
                     item = new PocketCode.CodeView.Ui.BrickTextItem(id, false); //todo VariableName instead of id
                     this._appendChild(item);
-                    this._goThroughObject(i18nKey.right);
+                    if(i18nKey.right != undefined){
+                        this._goThroughObject(i18nKey.right);
+                    }
                     item = new PocketCode.CodeView.Ui.BrickTextItem("\"", false);
                     this._appendChild(item);
                     break;

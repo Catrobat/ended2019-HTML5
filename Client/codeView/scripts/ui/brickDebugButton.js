@@ -5,7 +5,7 @@ PocketCode.CodeView.Ui.BrickDebugButton = (function () {
 
     //cntr
     function BrickDebugButton(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickDebugButton' });
+        PocketCode.Ui.Button.call(this, '', { className: 'pc-brickDebugButton' });
 
     }
 

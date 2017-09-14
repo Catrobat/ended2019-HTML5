@@ -5,7 +5,7 @@ PocketCode.CodeView.Ui.BrickDropdown = (function () {
 
     //cntr
     function BrickDropdown(i18nKey) {
-        PocketCode.Ui.Button.call(this, i18nKey, { className: 'pc-brickDropdownItem' });
+        PocketCode.Ui.Button.call(this, '', { className: 'pc-brickDropdownItem' });
 
     }
 

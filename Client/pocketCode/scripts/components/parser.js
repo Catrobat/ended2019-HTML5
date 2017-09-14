@@ -428,6 +428,8 @@ PocketCode.merge({
                                 //jsonFormula.objRef.name = variable.name;
                                 jsonFormula.objRef.id = variable._id;
                             }
+                            jsonFormula.left = undefined;
+                            jsonFormula.right = undefined;
                             return jsonFormula;
                         }
                         this._isStatic = false;
@@ -458,6 +460,8 @@ PocketCode.merge({
                                 //jsonFormula.objRef.name = list.name;
                                 jsonFormula.objRef.id = list._id;
                             }
+                            jsonFormula.left = undefined;
+                            jsonFormula.right = undefined;
                             return jsonFormula;
                         }
 
