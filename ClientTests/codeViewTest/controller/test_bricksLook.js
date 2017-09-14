@@ -14,6 +14,8 @@ QUnit.test("SetLookBrick", function (assert) {
 
     var b = new PocketCode.Model.SetLookBrick(device, sprite, { lookId: "lookId" });
 
+    assert.throws(function () {new PocketCode.SetLookBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetLookBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetLookBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -35,6 +37,8 @@ QUnit.test("SetLookByIndexBrick", function (assert) {
     var idxFormulaJson = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');;
     var b = new PocketCode.Model.SetLookByIndexBrick(device, sprite, { idx: idxFormulaJson });
 
+    assert.throws(function () {new PocketCode.SetLookByIndexBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetLookByIndexBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetLookByIndexBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -50,6 +54,8 @@ QUnit.test("NextLookBrick", function (assert) {
 
     var b = new PocketCode.Model.NextLookBrick(device, sprite, { Id: "Id" });
 
+    assert.throws(function () {new PocketCode.NextLookBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.NextLookBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.NextLookBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -63,6 +69,8 @@ QUnit.test("PreviousLookBrick", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.PreviousLookBrick(device, sprite, { Id: "Id" });
+
+    assert.throws(function () {new PocketCode.PreviousLookBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.PreviousLookBrick(b, false);
 
@@ -80,6 +88,8 @@ QUnit.test("SetSizeBrick", function (assert) {
 
     var b = new PocketCode.Model.SetSizeBrick(device, sprite, { percentage: percentage });
 
+    assert.throws(function () {new PocketCode.SetSizeBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetSizeBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetSizeBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -95,6 +105,8 @@ QUnit.test("ChangeSizeBrick", function (assert) {
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.ChangeSizeBrick(device, sprite, { value: value });
+
+    assert.throws(function () {new PocketCode.ChangeSizeBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.ChangeSizeBrick(b, false);
 
@@ -112,6 +124,8 @@ QUnit.test("HideBrick", function (assert) {
 
     var b = new PocketCode.Model.HideBrick(device, sprite, { Id: "Id" });
 
+    assert.throws(function () {new PocketCode.HideBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.HideBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.HideBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -127,6 +141,8 @@ QUnit.test("ShowBrick", function (assert) {
 
     var b = new PocketCode.Model.ShowBrick(device, sprite, { Id: "Id" });
 
+    assert.throws(function () {new PocketCode.ShowBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.ShowBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.ShowBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -141,6 +157,8 @@ QUnit.test("AskBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.AskBrick(device, sprite, scene, { question: { type: "STRING", value: "test", right: null, left: null }, resourceId: "s11" });
+
+    assert.throws(function () {new PocketCode.AskBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.AskBrick(b, false);
 
@@ -159,6 +177,8 @@ QUnit.test("SayBrick", function (assert) {
 
     var b = new PocketCode.Model.SayBrick(device, sprite, { text: text });
 
+    assert.throws(function () {new PocketCode.SayBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SayBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SayBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -174,6 +194,8 @@ QUnit.test("SayForBrick", function (assert) {
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
     var b = new PocketCode.Model.SayForBrick(device, sprite, { text: text, duration: duration });
+
+    assert.throws(function () {new PocketCode.SayForBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.SayForBrick(b, false);
 
@@ -191,6 +213,7 @@ QUnit.test("ThinkBrick", function (assert) {
 
     var b = new PocketCode.Model.ThinkBrick(device, sprite, { text: text });
 
+    assert.throws(function () {new PocketCode.ThinkBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
     var brick = new PocketCode.ThinkBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.ThinkBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -208,6 +231,8 @@ QUnit.test("ThinkForBrick", function (assert) {
 
     var b = new PocketCode.Model.ThinkForBrick(device, sprite, { text: text, duration: duration });
 
+    assert.throws(function () {new PocketCode.ThinkForBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.ThinkForBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.ThinkForBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -223,6 +248,8 @@ QUnit.test("SetGraphicEffectBrick", function (assert) {
     var value = JSON.parse('{"type":"NUMBER","value":"5","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
+
+    assert.throws(function () {new PocketCode.SetGraphicEffectBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.SetGraphicEffectBrick(b, false);
 
@@ -240,6 +267,8 @@ QUnit.test("ChangeGraphicEffectBrick", function (assert) {
 
     var b = new PocketCode.Model.ChangeGraphicEffectBrick(device, sprite, { value: value, effect: PocketCode.GraphicEffect.COLOR });
 
+    assert.throws(function () {new PocketCode.ChangeGraphicEffectBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.ChangeGraphicEffectBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.ChangeGraphicEffectBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -254,6 +283,8 @@ QUnit.test("ClearGraphicEffectBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.ClearGraphicEffectBrick(device, sprite, { Id: "Id" });
+
+    assert.throws(function () {new PocketCode.ClearGraphicEffectBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.ClearGraphicEffectBrick(b, false);
 
@@ -270,6 +301,8 @@ QUnit.test("SetBackgroundBrick", function (assert) {
     scene._background = sprite;
     var b = new PocketCode.Model.SetBackgroundBrick(device, sprite, scene, { lookId: "lookId" });
 
+    assert.throws(function () {new PocketCode.SetBackgroundBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetBackgroundBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetBackgroundBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -284,6 +317,8 @@ QUnit.test("SetBackgroundAndWaitBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.SetBackgroundAndWaitBrick(device, sprite, scene, { lookId: "lookId" });
+
+    assert.throws(function () {new PocketCode.SetBackgroundAndWaitBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.SetBackgroundAndWaitBrick(b, false);
 
@@ -305,6 +340,8 @@ QUnit.test("CameraBrick", function (assert) {
 
     var b = new PocketCode.Model.CameraBrick(device, sprite, { Id: "Id" });
 
+    assert.throws(function () {new PocketCode.CameraBrick(new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.CameraBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.CameraBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -323,6 +360,8 @@ QUnit.test("SelectCameraBrick", function (assert) {
 
     var b = new PocketCode.Model.SelectCameraBrick(device, sprite, { Id: "Id" });
 
+    assert.throws(function () {new PocketCode.SelectCameraBrick(new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SelectCameraBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SelectCameraBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -340,6 +379,8 @@ QUnit.test("FlashBrick", function (assert) {
         "selected": "1",
         "type": "Flash"
     });
+
+    assert.throws(function () {new PocketCode.FlashBrick(new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.FlashBrick(b, false);
 

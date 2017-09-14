@@ -14,6 +14,8 @@ QUnit.test("PenDownBrick", function (assert) {
 
     var b = new PocketCode.Model.PenDownBrick(device, sprite, {});
 
+    assert.throws(function () {new PocketCode.PenDownBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.PenDownBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.PenDownBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -28,6 +30,8 @@ QUnit.test("PenUpBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.PenUpBrick(device, sprite, {});
+
+    assert.throws(function () {new PocketCode.PenUpBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.PenUpBrick(b, false);
 
@@ -44,6 +48,8 @@ QUnit.test("SetPenSizeBrick", function (assert) {
     var x = JSON.parse('{"type":"NUMBER","value":"3","right":null,"left":null}');
 
     var b = new PocketCode.Model.SetPenSizeBrick(device, sprite, { size: x });
+
+    assert.throws(function () {new PocketCode.SetPenSizeBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.SetPenSizeBrick(b, false);
 
@@ -64,6 +70,8 @@ QUnit.test("SetPenColorBrick", function (assert) {
 
     var b = new PocketCode.Model.SetPenColorBrick(device, sprite, { b: blue, r: red, g: green });
 
+    assert.throws(function () {new PocketCode.SetPenColorBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetPenColorBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetPenColorBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -79,6 +87,8 @@ QUnit.test("StampBrick", function (assert) {
 
     var b = new PocketCode.Model.StampBrick(device, sprite, {});
 
+    assert.throws(function () {new PocketCode.StampBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.StampBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.StampBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -93,6 +103,8 @@ QUnit.test("ClearBackgroundBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.ClearBackgroundBrick(device, sprite, scene, {});
+
+    assert.throws(function () {new PocketCode.ClearBackgroundBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.ClearBackgroundBrick(b, false);
 

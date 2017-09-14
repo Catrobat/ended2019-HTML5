@@ -17,6 +17,8 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
     var b = new PocketCode.Model.PlaySoundBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
 
+    assert.throws(function () {new PocketCode.PlaySoundBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.PlaySoundBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.PlaySoundBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -35,6 +37,8 @@ QUnit.test("PlaySoundAndWaitBrick", function (assert) {
 
     var b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
 
+    assert.throws(function () {new PocketCode.PlaySoundAndWaitBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.PlaySoundAndWaitBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.PlaySoundAndWaitBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -51,6 +55,8 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, scene.id, soundManager, { id: "id" });
+
+    assert.throws(function () {new PocketCode.StopAllSoundsBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.StopAllSoundsBrick(b, false);
 
@@ -69,6 +75,8 @@ QUnit.test("SetVolumeBrick", function (assert) {
 
     var b = new PocketCode.Model.SetVolumeBrick(device, sprite, soundManager, { percentage: percentage });
 
+    assert.throws(function () {new PocketCode.SetVolumeBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SetVolumeBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SetVolumeBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -85,6 +93,8 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
     var b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, soundManager, { value: value });
+
+    assert.throws(function () {new PocketCode.ChangeVolumeBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.ChangeVolumeBrick(b, false);
 
@@ -105,6 +115,8 @@ QUnit.test("SpeakBrick", function (assert) {
 
     var b = new PocketCode.Model.SpeakBrick(device, sprite, scene.id, soundManager, { text: text });
 
+    assert.throws(function () {new PocketCode.SpeakBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
+
     var brick = new PocketCode.SpeakBrick(b, false);
 
     assert.ok(brick instanceof PocketCode.SpeakBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
@@ -122,6 +134,8 @@ QUnit.test("SpeakAndWaitBrick", function (assert) {
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');
 
     var b = new PocketCode.Model.SpeakAndWaitBrick(device, sprite, scene.id, soundManager, { text: text });
+
+    assert.throws(function () {new PocketCode.SpeakAndWaitBrick(new PocketCode.Model.NoteBrick(device, "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
     var brick = new PocketCode.SpeakAndWaitBrick(b, false);
 
