@@ -106,7 +106,7 @@ PocketCode.CodeView.Ui.merge({
         Object.defineProperties(Menu.prototype, {
             navigationJson: {
                 set: function (scenes) {
-                    scenes = [{
+                    /*scenes = [{
                         id: "sceneid1",
                         name: "scene1",
                         sprites: [{ id: "spriteid1", name: "sprite1" }, { id: "spriteid2", name: "sprite2" }]
@@ -115,7 +115,7 @@ PocketCode.CodeView.Ui.merge({
                         id: "sceneid2",
                         name: "scene2",
                         sprites: [{ id: "spriteid3", name: "sprite3" }, { id: "spriteid4", name: "sprite4" }]
-                    }];
+                    }];*/
                     var scene;
                     if (scenes.length > 1) {
                         for (var i = 0, l = scenes.length; i < l; i++) {
@@ -148,6 +148,7 @@ PocketCode.CodeView.Ui.merge({
                             return;
                         }
                         for (var j = 0, k = scenes[0].sprites.length; j < k; j++) {
+                            scene = scenes[0];
                             sprite = scenes[0].sprites[j];
                             var item = new PocketCode.Ui.MenuItem();
                             item.text = sprite.name;

@@ -103,7 +103,7 @@ QUnit.test("BrickFormula _goThroughObject", function (assert) {
     ctrl = new PocketCode.CodeView.Ui.BrickFormula(i18nKey);
     assert.equal(ctrl._childs[0]._textNode._text, "string_test", "type STRING");
 
-    assert.ok(false, "TODO type COLLISION_FORMULA"); //todo: scene in COLLISION_FORMULA
+    //todo: test type: COLLISION_FORMULA (scene in COLLISION_FORMULA missing)
 
 });
 

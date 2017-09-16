@@ -52,4 +52,12 @@ QUnit.test("View IfThenElseBrick", function (assert) {
     assert.ok(brick._childs[3]._childs[1] instanceof SmartJs.Ui.HtmlTag, "ul tag added (else)");
 
     assert.equal(brick._childs[4]._childs[0]._textNode._text, "End If", "brick_if_end added");
+
+    var visible = brick.elseVisible;
+    assert.equal(visible, true, "else visible");
+
+    /*brick.elseVisible = false;
+    visible = brick.elseVisible;
+    assert.equal(visible, false, "else hidden");*/
+
 });
