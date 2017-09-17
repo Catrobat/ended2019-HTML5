@@ -23,7 +23,7 @@ QUnit.test("Sprite", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
-    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
     //triggerOnChange
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
@@ -749,7 +749,7 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.scripts, tmpBricks, "bricks getter");
     assert.ok(sprite._scripts.length == 3, "bricks length");
 
-    assert.ok(sprite.scriptsRunning == false, "scrips not running");
+    assert.notOk(sprite.scriptsRunning, "scrips not running");
 
     //start, pause, resume, stop + executed
     //binding program events
@@ -778,28 +778,23 @@ QUnit.test("Sprite", function (assert) {
 
     //making sure the script was really paused is quite a hack here
     var isPaused = function () {
-        for (var i = 0; i < sprite._scripts.length; i++) {
-            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == true, "scrips running: paused");
-            for (var j = 0; j < sprite._scripts[i]._bricks._bricks.length; j++) {
-                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == true, "bricks running: paused");
+        var paused = true,
+            scripts = sprite._scripts;
+        for (var i = 0; i < scripts.length; i++) {
+            if (!scripts[i]._paused) {
+                paused = false;
+                break;
             }
-        }
-    };
-
-    var isResumed = function () {
-        for (var i = 0; i < sprite._scripts.length; i++) {
-            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == false, "scrips running: running");
-            for (var j = 0; j < sprite._scripts[i]._bricks._bricks.length; j++) {
-                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == false, "bricks running: running");
-            }
+            return paused;
         }
     };
 
     sprite.pauseScripts();
-    isPaused();
+    assert.ok(isPaused(), "all scripts paused");
+    
 
     sprite.resumeScripts();
-    isResumed();
+    assert.notOk(isPaused(), "all scripts resumed (not paused)");
     assert.ok(sprite.scriptsRunning, "scrips running: running");
 
     //sprite.stopScript(true, "1");

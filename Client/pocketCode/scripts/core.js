@@ -79,7 +79,7 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
-    threadCounter: SmartJs.Device.isMobile ? 70 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+    threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
 
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
