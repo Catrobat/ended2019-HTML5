@@ -909,7 +909,7 @@ PocketCode.DeviceEmulator = (function () {
             UP: 0,
             DOWN: 0,
         };
-        this._firstDownKey = {
+        this._firstKeyDown = {
             LEFT: false,
             RIGHT: false,
             UP: false,
@@ -1009,10 +1009,12 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyDownDateTime.LEFT = new Date();
                         this._keyUpDateTime.LEFT = 0;
+                        this._firstKeyDown.LEFT = false;
+                        console.log("Left");
                     }
-                    if (!this._firstDownKey.LEFT && !this._firstDownKey.RIGHT)
+                    if (!this._firstKeyDown.LEFT && !this._firstKeyDown.RIGHT)
                     {
-                        this._firstDownKey.LEFT = true;
+                        this._firstKeyDown.LEFT = true;
                     }
                     this._keyPress.LEFT = true;
                     break;
@@ -1022,10 +1024,11 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyDownDateTime.RIGHT = new Date();
                         this._keyUpDateTime.RIGHT = 0;
+                        this._firstKeyDown.RIGHT = false;
                     }
-                    if (!this._firstDownKey.LEFT && !this._firstDownKey.RIGHT)
+                    if (!this._firstKeyDown.LEFT && !this._firstKeyDown.RIGHT)
                     {
-                        this._firstDownKey.RIGHT = true;
+                        this._firstKeyDown.RIGHT = true;
                     }
                     this._keyPress.RIGHT = true;
                     break;
@@ -1036,9 +1039,9 @@ PocketCode.DeviceEmulator = (function () {
                         this._keyDownDateTime.UP = new Date();
                         this._keyUpDateTime.UP = 0;
                     }
-                    if (!this._firstDownKey.UP && !this._firstDownKey.DOWN)
+                    if (!this._firstKeyDown.UP && !this._firstKeyDown.DOWN)
                     {
-                        this._firstDownKey.UP = true;
+                        this._firstKeyDown.UP = true;
                     }
                     this._keyPress.UP = true;
                     break;
@@ -1049,9 +1052,9 @@ PocketCode.DeviceEmulator = (function () {
                         this._keyDownDateTime.DOWN = new Date();
                         this._keyUpDateTime.DOWN = 0;
                     }
-                    if (!this._firstDownKey.UP && !this._firstDownKey.DOWN)
+                    if (!this._firstKeyDown.UP && !this._firstKeyDown.DOWN)
                     {
-                        this._firstDownKey.DOWN = true;
+                        this._firstKeyDown.DOWN = true;
                     }
                     this._keyPress.DOWN = true;
                     break;
@@ -1063,11 +1066,9 @@ PocketCode.DeviceEmulator = (function () {
                     this._onSpaceKeyDown.dispatchEvent();
                     break;
             }
-            this._newTickTest();
+            this._calculateTickInclination();
         },
         _keyUp: function (e) {
-
-            //var elapsedTime;
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
@@ -1076,18 +1077,8 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyUpDateTime.LEFT = new Date();
                         this.dateTimeElapsedTimeLeft();
-                        this.checkFirstDownKey();
+                        this.checkFirstKeyDown();
                     }
-                    /*
-                    if (this._keyDownDateTime.LEFT)
-                        this._keyUpDateTime.LEFT = new Date() - Math.min(0, this._keyDownDateTime.RIGHT - this._keyDownDateTime.LEFT);
-                    this._keyUpDateTime.RIGHT = 0;
-
-                    elapsedTime = this._keyUpDateTime.LEFT - this._keyDownDateTime.LEFT;
-                    this._elapsedTime.LEFT = elapsedTime / 1000;
-                    this._keyDownTime.LEFT = this._elapsedTime.LEFT;
-                    this._durationDateTime = this._elapsedTime.LEFT;*/
-
                     if (!this._keyPress.RIGHT)
                         this._resetInclinationX();
                     break;
@@ -1098,18 +1089,8 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyUpDateTime.RIGHT = new Date();
                         this.dateTimeElapsedTimeRight();
-                        this.checkFirstDownKey();
+                        this.checkFirstKeyDown();
                     }
-                    /*
-                    if (this._keyDownDateTime.RIGHT)
-                        this._keyUpDateTime.RIGHT = new Date() - Math.min(0, this._keyDownDateTime.LEFT - this._keyDownDateTime.RIGHT);
-                    this._keyUpDateTime.LEFT = 0;
-
-                    elapsedTime = this._keyUpDateTime.RIGHT - this._keyDownDateTime.RIGHT;
-                    this._elapsedTime.RIGHT = elapsedTime / 1000;
-                    this._keyDownTime.RIGHT = this._elapsedTime.RIGHT;
-                    this._durationDateTime = this._elapsedTime.RIGHT;*/
-
                     if (!this._keyPress.LEFT)
                         this._resetInclinationX();
                     break;
@@ -1120,18 +1101,8 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyUpDateTime.UP = new Date();
                         this.dateTimeElapsedTimeUp();
-                        this.checkFirstDownKey();
+                        this.checkFirstKeyDown();
                     }
-                    /*
-                    if (this._keyDownDateTime.UP)
-                        this._keyUpDateTime.UP = new Date() - Math.min(0, this._keyDownDateTime.DOWN - this._keyDownDateTime.UP);
-                    this._keyUpDateTime.DOWN = 0;
-
-                    elapsedTime = this._keyUpDateTime.UP - this._keyDownDateTime.UP;
-                    this._elapsedTime.UP = elapsedTime / 1000;
-                    this._keyDownTime.UP = this._elapsedTime.UP;
-                    this._durationDateTime = this._elapsedTime.UP;*/
-
                     if (!this._keyPress.DOWN)
                         this._resetInclinationY();
                     break;
@@ -1142,9 +1113,8 @@ PocketCode.DeviceEmulator = (function () {
                     {
                         this._keyUpDateTime.DOWN = new Date();
                         this.dateTimeElapsedTimeDown();
-                        this.checkFirstDownKey();
+                        this.checkFirstKeyDown();
                     }
-
                     if (!this._keyPress.UP)
                         this._resetInclinationY();
                     break;
@@ -1165,29 +1135,33 @@ PocketCode.DeviceEmulator = (function () {
                 return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                //this._keyDownTime.LEFT += 1.0;
-                this._sensorData.X_INCLINATION += this._inclinationIncrTmp.X;
+                this._keyDownTime.LEFT = (new Date() - this._keyDownDateTime.LEFT) / 1000;
+                var inclDateTimeLeft = this._inclinationIncrTmp.X * this._keyDownTime.LEFT;
+                this._sensorData.X_INCLINATION += inclDateTimeLeft;
                 if (this._sensorData.X_INCLINATION > this.degreeChangeValue)
                     this._sensorData.X_INCLINATION = this.degreeChangeValue;
             }
             else if (!this._keyPress.LEFT && this._keyPress.RIGHT) {
                 // right
-                //this._keyDownTime.RIGHT += 1.0;
-                this._sensorData.X_INCLINATION -= this._inclinationIncrTmp.X;
+                this._keyDownTime.RIGHT = (new Date() - this._keyDownDateTime.RIGHT) / 1000;
+                var inclDateTimeRight = this._inclinationIncrTmp.X * this._keyDownTime.RIGHT;
+                this._sensorData.X_INCLINATION -= inclDateTimeRight;
                 if (this._sensorData.X_INCLINATION < this.degreeChangeValue * -1)
                     this._sensorData.X_INCLINATION = this.degreeChangeValue * -1;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                //this._keyDownTime.UP += 1.0;
-                this._sensorData.Y_INCLINATION -= this._inclinationIncrTmp.Y;
+                this._keyDownTime.UP = (new Date() - this._keyDownDateTime.UP) / 1000;
+                var inclDateTimeUp = this._inclinationIncrTmp.Y * this._keyDownTime.UP;
+                this._sensorData.Y_INCLINATION -= inclDateTimeUp;
                 if (this._sensorData.Y_INCLINATION < this.degreeChangeValue * -1)
                     this._sensorData.Y_INCLINATION = this.degreeChangeValue * -1;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                //this._keyDownTime.DOWN += 1.0;
-                this._sensorData.Y_INCLINATION += this._inclinationIncrTmp.Y;
+                this._keyDownTime.DOWN = (new Date() - this._keyDownDateTime.DOWN) / 1000;
+                var inclDateTimeDown = this._inclinationIncrTmp.Y * this._keyDownTime.DOWN;
+                this._sensorData.Y_INCLINATION += inclDateTimeDown;
                 if (this._sensorData.Y_INCLINATION > this.degreeChangeValue)
                     this._sensorData.Y_INCLINATION = this.degreeChangeValue;
             }
@@ -1231,67 +1205,62 @@ PocketCode.DeviceEmulator = (function () {
             PocketCode.MediaDevice.prototype.dispose.call(this);    //call super()
         },
 
-        //Todo dateTime renaming
         dateTimeElapsedTimeLeft: function () {
             this._elapsedTime.LEFT = (this._keyUpDateTime.LEFT - this._keyDownDateTime.LEFT) / 1000;
             if (this._elapsedTime.LEFT < 0)
                 this._elapsedTime.LEFT = this._elapsedTime.LEFT * -1;
-            this._keyDownTime.LEFT = this._elapsedTime.LEFT;
             this._keyDownDateTime.LEFT = 0;
         },
         dateTimeElapsedTimeRight: function () {
             this._elapsedTime.RIGHT = (this._keyUpDateTime.RIGHT - this._keyDownDateTime.RIGHT) / 1000;
             if (this._elapsedTime.RIGHT < 0)
                 this._elapsedTime.RIGHT = this._elapsedTime.RIGHT * -1;
-            this._keyDownTime.RIGHT = this._elapsedTime.RIGHT;
             this._keyDownDateTime.RIGHT = 0;
         },
         dateTimeElapsedTimeUp: function () {
             this._elapsedTime.UP = (this._keyUpDateTime.UP - this._keyDownDateTime.UP) / 1000;
             if (this._elapsedTime.UP < 0)
                 this._elapsedTime.UP = this._elapsedTime.UP * -1;
-            this._keyDownTime.UP = this._elapsedTime.UP;
             this._keyDownDateTime.UP = 0;
         },
         dateTimeElapsedTimeDown: function () {
             this._elapsedTime.DOWN = (this._keyUpDateTime.DOWN - this._keyDownDateTime.DOWN) / 1000;
             if (this._elapsedTime.DOWN < 0)
                 this._elapsedTime.DOWN = this._elapsedTime.DOWN * -1;
-            this._keyDownTime.DOWN = this._elapsedTime.DOWN;
             this._keyDownDateTime.DOWN = 0;
         },
-        checkFirstDownKey: function () {
+        checkFirstKeyDown: function () {
             console.log(this._elapsedTime);
-            if (this._firstDownKey.LEFT && this._elapsedTime.LEFT)
+            if (this._firstKeyDown.LEFT && this._elapsedTime.LEFT)
             {
-                this._firstDownKey.LEFT = false;
+                console.log(this._firstKeyDown);
+                this._firstKeyDown.LEFT = false;
+                this._elapsedTime.LEFT = 0;
                 this._resetInclinationX();
             }
-            else if (this._firstDownKey.RIGHT && this._elapsedTime.RIGHT)
+            else if (this._firstKeyDown.RIGHT && this._elapsedTime.RIGHT)
             {
-                this._firstDownKey.RIGHT = false;
+                console.log(this._firstKeyDown);
+                this._firstKeyDown.RIGHT = false;
+                this._elapsedTime.RIGHT = 0;
                 this._resetInclinationX();
             }
-            else if (this._firstDownKey.UP && this._elapsedTime.UP)
+            else if ((this._firstKeyDown.UP && this._elapsedTime.UP) || (this._firstKeyDown.DOWN && this._elapsedTime.DOWN))
             {
-                this._firstDownKey.UP = false;
-                this._resetInclinationY();
-            }
-            else if (this._firstDownKey.DOWN && this._elapsedTime.DOWN)
-            {
-                this._firstDownKey.DOWN = false;
+                this._firstKeyDown.UP = false;
+                this._firstKeyDown.DOWN = false;
+                this._elapsedTime.UP = 0;
+                this._elapsedTime.DOWN = 0;
                 this._resetInclinationY();
             }
         },
 
-        _newTickTest: function () {
+        _calculateTickInclination: function () {
+            var inclinationDuration = this.degreeChangeValue / this.accelerationChangeValue;
+            var inclinationPerStep = inclinationDuration / this.accelerationChangeValue;
 
-            var inclinationDuration = this._inclinationLimits.MAX / this._accelerationLimits.MAX;
-            var inclinationPerStep = inclinationDuration / this._accelerationLimits.MAX;
-
-            this._inclinationIncrTmp.X = inclinationPerStep / inclinationDuration ;
-            this._inclinationIncrTmp.Y = inclinationPerStep / inclinationDuration ;
-
+            this._inclinationIncrTmp.X = inclinationPerStep / inclinationDuration;
+            this._inclinationIncrTmp.Y = inclinationPerStep / inclinationDuration;
         },
     });
 
