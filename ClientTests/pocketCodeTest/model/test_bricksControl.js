@@ -19,7 +19,7 @@ QUnit.test("WaitBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var duration = JSON.parse('{"type":"NUMBER","value":"0.5","right":null,"left":null}');
     var b = new PocketCode.Model.WaitBrick(device, sprite, { duration: duration });
@@ -271,7 +271,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var condTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
@@ -311,7 +311,7 @@ QUnit.test("IfThenElseBrick", function (assert) {
     handler1CallId = undefined;
     var condFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     //check the condition is valid: only for this test case
@@ -419,7 +419,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
     var conditionTrue = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"1","right":null,"left":null}}');
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WaitUntilBrick("device", sprite, 24, { condition: conditionTrue });
 
@@ -484,7 +484,7 @@ QUnit.test("RepeatBrick", function (assert) {
 
     var nTimes = JSON.parse('{"type":"NUMBER","value":"6","right":null,"left":null}');
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.RepeatBrick("device", sprite, 24, { x: 1, y: 2, timesToRepeat: nTimes });
 
@@ -585,7 +585,7 @@ QUnit.test("RepeatUntilBrick", function (assert) {
 
     var conditionFalse = JSON.parse('{"type":"OPERATOR","value":"EQUAL","right":{"type":"NUMBER","value":"1","right":null,"left":null},"left":{"type":"NUMBER","value":"2","right":null,"left":null}}');
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.RepeatUntilBrick("device", sprite, 24, { condition: conditionFalse });
 
@@ -656,11 +656,11 @@ QUnit.test("SceneTransitionBrick (continue scene)", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s1"; // current scene
     scene._soundManager = new PocketCode.SoundManager();    //needed for scene transition: calld in scene->soundManager.isPlaying
 
-    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene2._id = "s2"; //scene to start
     scene2._soundManager = new PocketCode.SoundManager();    //needed for scene transition: calld in scene->soundManager.isPlaying
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
@@ -698,11 +698,11 @@ QUnit.test("StartSceneBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s1"; // current scene
     scene._soundManager = new PocketCode.SoundManager();    //needed for scene transition: calld in scene->soundManager.isPlaying
 
-    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene2._id = "s2"; //scene to start
     scene2._soundManager = new PocketCode.SoundManager();    //needed for scene transition: calld in scene->soundManager.isPlaying
 
@@ -778,7 +778,7 @@ QUnit.test("DeleteCloneBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var cloneBrick = new PocketCode.Model.DeleteCloneBrick(device, sprite, scene, { id: "2" });
 
@@ -849,7 +849,7 @@ QUnit.test("StopBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var b = new PocketCode.Model.StopBrick(device, sprite, scene, "s01", { stopType: PocketCode.StopType.THIS_SCRIPT });
@@ -939,7 +939,7 @@ QUnit.test("StopBrick: type THIS_SCRIPT: interaction with bricks after the stop 
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, gameEngine._soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var script = new PocketCode.Model.ScriptBlock(device, sprite, { commentedOut: false });
@@ -988,7 +988,7 @@ QUnit.test("StopBrick: type OTHER_SCRIPTS: simultaneous startet scripts", functi
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine._scenes["id"] = scene;   //necessary to stop scene
     gameEngine._currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;

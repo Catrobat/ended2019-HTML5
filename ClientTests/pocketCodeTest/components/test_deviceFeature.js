@@ -25,8 +25,7 @@ QUnit.test("DeviceFeature: Camera", function (assert) {
 
 QUnit.test("DeviceFeature: Face Detection", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager();
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
     var df = new PocketCode.FaceDetection(device);
 
     assert.ok(false, "TODO");

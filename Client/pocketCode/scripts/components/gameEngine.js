@@ -225,7 +225,7 @@ PocketCode.GameEngine = (function () {
 
             if (this._device)
                 this._device.dispose();
-            this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
+            this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice() : new PocketCode.DeviceEmulator();
             //console.log("STARTING GAME ENGINE");
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));

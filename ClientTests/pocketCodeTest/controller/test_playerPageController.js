@@ -29,7 +29,9 @@ QUnit.test("PlayerPageController", function (assert) {
     controller._view._startScreen = new PocketCode.Ui.PlayerStartScreen();
     var json = { title: "json1", thumbnailUrl: "null", baseUrl: "" };
     controller.projectDetails = json;
-    assert.ok(controller._view._startScreen.title == "json1" && controller._view._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png", "projectDetails")
+    assert.ok(controller._view._startScreen.title == "json1" &&
+        controller._view._startScreen._previewImage.src == "https://share.catrob.at/images/default/screenshot.png" || 
+        controller._view._startScreen._previewImage.src == "https://web-test.catrob.at/images/default/screenshot.png", "projectDetails")
 
     assert.throws(function () { controller.project = 0; }, Error, "Set gameEngine not instanceof PocketCode.GameEngine");
     controller.project = gameEngine;
@@ -43,8 +45,7 @@ QUnit.test("PlayerPageController", function (assert) {
 
     // ********************* methods *********************
 
-    var soundManager = new PocketCode.SoundManager();
-    var scene = new PocketCode.Model.Scene(gameEngine2, undefined, soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine2, undefined, []);
     scene._id = "1";
     gameEngine2._scenes = ({ "1": scene });
     gameEngine2._currentScene = scene;
@@ -164,7 +165,7 @@ QUnit.test("PlayerPageController", function (assert) {
     PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(languageChangeHandler, this));
 
     //_onUserActionHandler
-    var scene2 = new PocketCode.Model.Scene(gameEngine2, undefined, undefined, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine2, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine2, scene2, { id: "spriteId", name: "spriteName" });
     gameEngine2._currentScene = scene2;
     scene2._sprites.push(sprite);

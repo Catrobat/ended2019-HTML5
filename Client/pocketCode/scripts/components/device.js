@@ -804,7 +804,6 @@ PocketCode.MediaDevice = (function () {
             this._cam.supported = false;    //override
             this._fd.supported = false;     //override
         },
-
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
             this._fd.dispose();

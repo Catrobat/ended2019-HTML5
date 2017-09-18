@@ -18,7 +18,7 @@ QUnit.test("Sprite", function (assert) {
     var asyncCalls = 0; //check all async calls where executed before running dispose
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
 
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
@@ -205,8 +205,7 @@ QUnit.test("Sprite", function (assert) {
 
     // ********************* Constructor *********************
 
-    var soundManager = new PocketCode.SoundManager();
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
     gameEngine._brickFactory = new PocketCode.BrickFactory(device, gameEngine, gameEngine._broadcastMgr, gameEngine._soundManager, 20);
 
     var jsonProject = JSON.parse(JSON.stringify(projectSounds));
@@ -724,7 +723,7 @@ QUnit.test("Sprite", function (assert) {
     // ********************* start/pause/resume/stop *********************
     //var device = new PocketCode.MediaDevice();
     var programAsync = new PocketCode.GameEngine();
-    scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     programAsync._executionState = PocketCode.ExecutionState.RUNNING;
     programAsync.getLookImage = function (id) { //override to test look center 
         return { canvas: undefined, center: { length: 0, angle: 0 }, initialScaling: 1 };
@@ -897,7 +896,7 @@ QUnit.test("Sprite", function (assert) {
 
     //test methode clone
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, []);
     var sprite2 = new PocketCode.Model.Sprite(gameEngine, scene2, { id: "2", name: "newName", scripts: tmpBricks });
 
     var brick4 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
@@ -914,7 +913,7 @@ QUnit.test("Sprite", function (assert) {
     sprite2.setSize(40);
     sprite2.hide();
 
-    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    var clone_sprite2 = sprite2.clone(device, broadcastMgr);
     assert.ok(clone_sprite2._penDown == sprite2._penDown &&
         clone_sprite2._penSize == sprite2._penSize &&
         clone_sprite2.size == sprite2.size &&
@@ -976,7 +975,7 @@ QUnit.test("Sprite offsets", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._imageStore = is;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
 
     is.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler));
     is.loadImages(baseUrl, images, 1);
@@ -995,7 +994,7 @@ QUnit.test("Sprite: rotation style", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine(),
         is = new PocketCode.ImageStore(),
-        scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []),
+        scene = new PocketCode.Model.Scene(gameEngine, undefined, []),
         baseUrl = "_resources/images/",
         images = [
             { id: "s1", url: "imgHelper17.png", size: 1 },
@@ -1127,7 +1126,7 @@ QUnit.test("Sprite: ifOnEdgeBounce", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine(),
         is = new PocketCode.ImageStore(),
-        scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []),
+        scene = new PocketCode.Model.Scene(gameEngine, undefined, []),
         baseUrl = "_resources/images/",
         images = [
             { id: "i1", url: "imgHelper1.png", size: 1 },
@@ -1977,7 +1976,7 @@ QUnit.test("PhysicsSprite", function (assert) {
 
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
 
     var sprite = new PocketCode.Model.PhysicsSprite(gameEngine, scene, { id: "id", name: "name" });
 
@@ -2024,11 +2023,10 @@ QUnit.test("PhysicsSprite", function (assert) {
 QUnit.test("SpriteClone", function (assert) {
 
     var done = assert.async();
-    var soundManager = new PocketCode.SoundManager();
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine();
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, device, []);
 
     assert.throws(function () { new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "newId" }, undefined) }, Error, "ERROR: missing parameter for SpriteClone: definition");
 
@@ -2047,7 +2045,7 @@ QUnit.test("SpriteClone", function (assert) {
     assert.ok(sprite3._sounds.length === 2, "Sounds in SpriteClone copied correct");
 
     //test methode clone
-    var scene2 = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, device, []);
     var sprite2 = new PocketCode.Model.SpriteClone(gameEngine, scene, { id: "2", name: "newName", scripts: tmpBricks }, {});
 
     var brick1 = new PocketCode.Model.WhenProgramStartBrick(device, sprite2, { x: 1, y: 2 }, scene2.onStart);
@@ -2063,7 +2061,7 @@ QUnit.test("SpriteClone", function (assert) {
     sprite2.setSize(40);
     sprite2.hide();
 
-    var clone_sprite2 = sprite2.clone(device, soundManager, broadcastMgr);
+    var clone_sprite2 = sprite2.clone(device, broadcastMgr);
     assert.ok(clone_sprite2._penDown == sprite2._penDown &&
         clone_sprite2._penSize == sprite2._penSize &&
         clone_sprite2.size == sprite2.size &&
@@ -2173,10 +2171,9 @@ QUnit.test("Background", function (assert) {
     var done1 = assert.async();
     var done2 = assert.async();
 
-    var soundManager = new PocketCode.SoundManager();
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, device, soundManager, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, device, []);
 
     var testBackgroundSprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, { id: "newId", name: "myName" });
 

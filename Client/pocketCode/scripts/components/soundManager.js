@@ -13,7 +13,7 @@ PocketCode.SoundManager = (function () {
         this._loading = false;  //loading in progress
         this._totalSize = 0;
         this._loadedSize = 0;
-        //this._registeredFiles = []; //files to load
+        this._registeredFiles = []; //files to load
 
         //this._id = SmartJs.getNewId();// + '_';
         this._maxInstancesOfSameSound = 20;

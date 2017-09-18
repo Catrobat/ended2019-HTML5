@@ -14,7 +14,7 @@ QUnit.test("WhenProgramStartBrick", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine._scenes["id"] = scene;   //necessary to stop scene
     gameEngine._currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;
@@ -125,7 +125,7 @@ QUnit.test("WhenActionBrick", function (assert) {
     var done2 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._sprites.push(sprite);    //add to receive events
     assert.throws(function () { var b = new PocketCode.Model.WhenActionBrick("device", sprite, { action: "action" }, { spriteTouched: scene.onSpriteTappedAction }); }, Error, "ERROR: invalid action");
@@ -439,7 +439,7 @@ QUnit.test("WhenConditionMetBrick", function (assert) {
     var cond = JSON.parse('{"type":"NUMBER","value":"0","right":null,"left":null}');
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var b = new PocketCode.Model.WhenConditionMetBrick("device", sprite, 24, { condition: cond }, scene.onStart);
 
@@ -525,7 +525,7 @@ QUnit.test("WhenCollisionBrick", function (assert) {
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var physicsWorld = new PocketCode.PhysicsWorld(scene);
     var sprite = { id: "id1" };
     var spriteId2 = "id2";
@@ -601,7 +601,7 @@ QUnit.test("WhenBackgroundChangesToBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     scene._background = sprite;
     //gleiche lookid wie probOpject??????
@@ -675,7 +675,7 @@ QUnit.test("WhenStartAsCloneBrick", function (assert) {
     var done1 = assert.async();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, "device", "soundManager", [], 20);
+    var scene = new PocketCode.Model.Scene(gameEngine, "device", [], 20);
     assert.ok(scene.onSpriteUiChange instanceof SmartJs.Event.Event, "mock scene interface check");
     var mockScene = {
         onSpriteUiChange: new SmartJs.Event.Event(this)

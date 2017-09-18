@@ -14,19 +14,18 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var soundId = "soundId";
 
-    var b = new PocketCode.Model.PlaySoundBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
+    var b = new PocketCode.Model.PlaySoundBrick(device, sprite, { resourceId: soundId });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.PlaySoundBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
+    b = new PocketCode.Model.PlaySoundBrick(device, sprite, { resourceId: soundId });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === soundManager && b._soundId === soundId, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._soundId === soundId, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.PlaySoundBrick, "instance check");
     assert.ok(b.objClassName === "PlaySoundBrick", "objClassName check");
 
@@ -44,23 +43,25 @@ QUnit.test("PlaySoundBrick", function (assert) {
 
 QUnit.test("PlaySoundAndWaitBrick", function (assert) {
 
+    assert.ok(false, "ToDo: include these tests into the playSound brick tests");
+    return;
+
     var done1 = assert.async();
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var soundId = "soundId";
 
-    var b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
+    var b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, { resourceId: soundId });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, scene.id, soundManager, { resourceId: soundId });
+    b = new PocketCode.Model.PlaySoundAndWaitBrick(device, sprite, { resourceId: soundId });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === soundManager && b._soundId === soundId, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._soundId === soundId, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.PlaySoundAndWaitBrick, "instance check");
     assert.ok(b.objClassName === "PlaySoundAndWaitBrick", "objClassName check");
 
@@ -90,16 +91,15 @@ QUnit.test("StopAllSoundsBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, scene.id, soundManager, { id: "id" });
+    var b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, { id: "id" });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, scene.id, soundManager, { id: "id" });
+    b = new PocketCode.Model.StopAllSoundsBrick(device, sprite, { id: "id" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.StopAllSoundsBrick, "instance check");
@@ -123,18 +123,17 @@ QUnit.test("SetVolumeBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var percentage = JSON.parse('{"type":"NUMBER","value":"80","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SetVolumeBrick(device, sprite, soundManager, { percentage: percentage });
+    var b = new PocketCode.Model.SetVolumeBrick(device, sprite, { percentage: percentage });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.SetVolumeBrick(device, sprite, soundManager, { percentage: percentage });
+    b = new PocketCode.Model.SetVolumeBrick(device, sprite, { percentage: percentage });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === soundManager && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._percentage instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.SetVolumeBrick, "instance check");
     assert.ok(b.objClassName === "SetVolumeBrick", "objClassName check");
 
@@ -156,18 +155,17 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var value = JSON.parse('{"type":"NUMBER","value":"15","right":null,"left":null}');
 
-    var b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, soundManager, { value: value });
+    var b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, { value: value });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, soundManager, { value: value });
+    b = new PocketCode.Model.ChangeVolumeBrick(device, sprite, { value: value });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === soundManager && b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite &&  b._value instanceof PocketCode.Formula, "brick created and properties set correctly");
     assert.ok(b instanceof PocketCode.Model.ChangeVolumeBrick, "instance check");
     assert.ok(b.objClassName === "ChangeVolumeBrick", "objClassName check");
 
@@ -185,23 +183,25 @@ QUnit.test("ChangeVolumeBrick", function (assert) {
 
 QUnit.test("SpeakBrick", function (assert) {
 
+    assert.ok(false, "TODO");
+    return;
+
     var done1 = assert.async();
 
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
-    var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"hello world","right":null,"left":null}');
 
-    var b = new PocketCode.Model.SpeakBrick(device, sprite, scene.id, soundManager, { text: text });
+    var b = new PocketCode.Model.SpeakBrick(device, sprite, { text: text });
     b.dispose();
-    assert.ok(b._disposed && !soundManager._disposed, "disposed without disposing sound manager");
+    assert.ok(b._disposed && !sprite._disposed, "disposed without disposing sound manager");
     //recreate
-    b = new PocketCode.Model.SpeakBrick(device, sprite, scene.id, soundManager, { text: text });
+    b = new PocketCode.Model.SpeakBrick(device, sprite, { text: text, wait: true });
 
-    assert.ok(b._device === device && b._sprite === sprite && b._soundManager === soundManager, "brick created and properties set correctly");
+    assert.ok(b._device === device && b._sprite === sprite && b._text instanceof PocketCode.Formula && b._wait == true, "brick created and properties set correctly");
     assert.ok(b._text instanceof PocketCode.Formula, "sound file: formula parameter set");
     assert.ok(b instanceof PocketCode.Model.SpeakBrick, "instance check");
     assert.ok(b.objClassName === "SpeakBrick", "objClassName check");
@@ -238,6 +238,9 @@ QUnit.test("SpeakBrick", function (assert) {
 
 QUnit.test("SpeakAndWaitBrick", function (assert) {
 
+    assert.ok(false, "ToDo: include these tests into the speak brick tests");
+    return;
+
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
@@ -245,7 +248,7 @@ QUnit.test("SpeakAndWaitBrick", function (assert) {
     var device = "device";
     var gameEngine = new PocketCode.GameEngine();
     var soundManager = gameEngine._soundManager;
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "s01";
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
     var text = JSON.parse('{"type":"STRING","value":"good morning","right":null,"left":null}');

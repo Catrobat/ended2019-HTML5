@@ -436,7 +436,7 @@ PocketCode.Model.merge({
                         //TODO
                         break;
                     case PocketCode.StopType.ALL:
-                        this._scene.stopAllScripts(true);
+                        this._scene.stopAllScriptsAndSounds(true);
                         break; //no handler called: script was stopped
                 }
             },

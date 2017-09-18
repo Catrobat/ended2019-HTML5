@@ -208,7 +208,7 @@ PocketCode.Model.SpeakBrick = (function () {
         this._text = new PocketCode.Formula(device, sprite, propObject.text);
         this._wait = propObject.wait;
 
-        if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
+        if (this._text.isStatic) {  //sound will not change at runtime and can be cached using the soundManager
             this._soundId = SmartJs.getNewId();
             var text = this._text.calculate().toString().replace(/\n,\r/g, '');
             if (text == '') {
@@ -258,31 +258,31 @@ PocketCode.Model.SpeakBrick = (function () {
                     po.soundInstanceId = instanceId;    //TODO: check for timing error on small sound files (timeout needed for ^^this._return.bind(thi.. ?)
             }
         },
-        _execute: function (id, scope) {
-            var po = this._pendingOps[id];
-            if (!po)  //stopped
-                return;
+        //_execute: function (id, scope) {
+        //    var po = this._pendingOps[id];
+        //    if (!po)  //stopped
+        //        return;
 
-            var instanceId = false;
-            if (this._soundId) {
-                instanceId = this._sprite.startSound(this._soundId, this._return.bind(this, id, false));
-                if (instanceId === false)
-                    this._return(id);
-                else
-                    po.soundInstanceId = instanceId;    //TODO: timing error on small sounds? (like PlaySoundAndWait)
-            }
-            else {
-                var text = this._text.calculate(scope).toString().replace(/\n,\r/g, '');
-                if (text == '') {
-                    this._return(id);
-                }
-                else {
-                    //we use a request object here to generate an url
-                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-                    this._sprite.startSoundFromUrl(request.url, this._onLoadHandler.bind(this, id), this._return.bind(this, id, false));
-                }
-            }
-        },
+        //    var instanceId = false;
+        //    if (this._soundId) {
+        //        instanceId = this._sprite.startSound(this._soundId, this._return.bind(this, id, false));
+        //        if (instanceId === false)
+        //            this._return(id);
+        //        else
+        //            po.soundInstanceId = instanceId;    //TODO: timing error on small sounds? (like PlaySoundAndWait)
+        //    }
+        //    else {
+        //        var text = this._text.calculate(scope).toString().replace(/\n,\r/g, '');
+        //        if (text == '') {
+        //            this._return(id);
+        //        }
+        //        else {
+        //            //we use a request object here to generate an url
+        //            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
+        //            this._sprite.startSoundFromUrl(request.url, this._onLoadHandler.bind(this, id), this._return.bind(this, id, false));
+        //        }
+        //    }
+        //},
     });
 
     return SpeakBrick;

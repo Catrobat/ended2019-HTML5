@@ -40,7 +40,7 @@ PocketCode.merge({
 
         //methods
         SpriteFactory.prototype.merge({
-            create: function (currentScene, broadcastMgr, /*bricksLoaded,*/ jsonSprite, asBackground) {
+            create: function (currentScene, broadcastMgr, jsonSprite, asBackground) {
                 if (!(currentScene instanceof PocketCode.Model.Scene))
                     throw new Error('invalid argument: current scene');
                 if (!(broadcastMgr instanceof PocketCode.BroadcastManager))
@@ -93,7 +93,6 @@ PocketCode.merge({
 
         return SpriteFactory;
     })(),
-
 
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
@@ -328,7 +327,6 @@ PocketCode.merge({
 
         return BrickFactory;
     })(),
-
 
     FormulaParser: (function () {
         function FormulaParser() {

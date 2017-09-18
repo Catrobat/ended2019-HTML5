@@ -149,7 +149,7 @@ QUnit.test("Scene", function (assert) {
 
     var done = assert.async();
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     assert.ok(scene instanceof PocketCode.Model.Scene && scene instanceof SmartJs.Core.Component, "instance check");
     assert.ok(scene.objClassName === "Scene", "objClassName check");
 
@@ -175,7 +175,7 @@ QUnit.test("Scene", function (assert) {
 
 
     //test cloneSprite
-    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var device = "device";
 
     var is = new PocketCode.ImageStore();   //recreate
@@ -499,27 +499,27 @@ QUnit.test("Scene", function (assert) {
         assert.equal(scene2._background.initCalled, 2, "background reinitialized");
 
         //stopAllScripts
+        assert.ok(false, "TODO");
+        //scene2.stopAllScripts();
+        //var stopScriptsCounter = 0;
+        //for (var i = 0; i < scene2._sprites.length; i++) {
+        //    stopScriptsCounter += scene2._sprites[i].stopAllScriptsCalled;
+        //}
 
-        scene2.stopAllScripts();
-        var stopScriptsCounter = 0;
-        for (var i = 0; i < scene2._sprites.length; i++) {
-            stopScriptsCounter += scene2._sprites[i].stopAllScriptsCalled;
-        }
 
+        //assert.equal(stopScriptsCounter, scene2._sprites.length, "all scripts stopped");
+        //assert.equal(scene2.background.stopAllScriptsCalled, true, "background scripts stopped");
 
-        assert.equal(stopScriptsCounter, scene2._sprites.length, "all scripts stopped");
-        assert.equal(scene2.background.stopAllScriptsCalled, true, "background scripts stopped");
+        //scene2._soundManager = {
+        //    stopAllSounds: function () {
 
-        scene2._soundManager = {
-            stopAllSounds: function () {
+        //    }
+        //}
+        //scene2.dispose();
 
-            }
-        }
-        scene2.dispose();
-
-        assert.equal(scene2._device, undefined, "device disposed");
-        assert.equal(scene2._soundManager, undefined, "soundManager disposed");
-        assert.equal(scene2._originalSpriteOrder, undefined, "originalSpriteOrder disposed");
+        //assert.equal(scene2._device, undefined, "device disposed");
+        //assert.equal(scene2._soundManager, undefined, "soundManager disposed");
+        //assert.equal(scene2._originalSpriteOrder, undefined, "originalSpriteOrder disposed");
 
 
         done();

@@ -11,7 +11,7 @@ QUnit.test("PhysicsWorld", function (assert) {
     return;
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene.load({ sprites: [] });    //load empty scene to init collision manager
     var physicsWorld = new PocketCode.PhysicsWorld(scene);
 

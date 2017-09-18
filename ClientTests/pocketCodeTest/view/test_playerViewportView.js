@@ -93,7 +93,7 @@ QUnit.test("PlayerViewportView", function (assert) {
 
     //initScene
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     scene._id = "scene1";
 
     var args = {};

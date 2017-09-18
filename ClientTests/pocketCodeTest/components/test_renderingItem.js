@@ -294,7 +294,7 @@ QUnit.test("RenderingSprite", function (assert) {
             { id: "s4", url: "imgHelper15.png", size: 1 }];
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var canvas = document.createElement("canvas");
 
     var is = new PocketCode.ImageStore();

@@ -1246,10 +1246,11 @@ PocketCode.Model.Sprite = (function () {
                 _penSize: this._penSize,
                 _penColor: this._penColor,
 
-                currentLookId: this._currentLook.id,
                 variables: this.getAllVariables().local,
                 lists: this.getAllLists().local,
             };
+            if (this._currentLook)  //may be undefined
+                definition.currentLookId = this._currentLook.id;
 
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
             return clone;

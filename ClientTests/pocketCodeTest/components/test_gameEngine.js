@@ -10,7 +10,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
 
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
@@ -30,7 +30,7 @@ QUnit.test("GameEngine", function (assert) {
     };
 
     gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.Model.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
@@ -107,7 +107,7 @@ QUnit.test("GameEngine", function (assert) {
 QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 

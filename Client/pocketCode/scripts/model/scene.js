@@ -6,7 +6,6 @@
 /// <reference path="../components/imageStore.js" />
 /// <reference path="../components/publishSubscribe.js" />
 /// <reference path="../components/collisionManager.js" />
-/// <reference path="../components/soundManager.js" />
 /// <reference path="sprite.js" />
 /// <reference path="userVariable.js" />
 'use strict';
@@ -30,7 +29,7 @@ PocketCode.Model.Scene = (function () {
         this._device = device;
 
         //this._soundManager = new PocketCode.SoundManager();
-        this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
+        //this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
 
         this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
         this._collisionManager = undefined; //set during loading
@@ -38,7 +37,7 @@ PocketCode.Model.Scene = (function () {
         this._bricksLoaded = 0;
         this._unsupportedBricks = [];
 
-        this._spriteFactory = new PocketCode.SpriteFactory(device, gameEngine, soundManager, this._bricksTotal, this._minLoopCycleTime);
+        this._spriteFactory = new PocketCode.SpriteFactory(device, gameEngine, this._minLoopCycleTime);
         this._spriteFactory.onSpriteLoaded.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnSpriteLoadedHandler, this));
         this._spriteFactory.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._spriteFactoryOnUnsupportedBricksFoundHandler, this));
 
@@ -266,7 +265,7 @@ PocketCode.Model.Scene = (function () {
             }
 
             //this._projectTimer.pause();
-            this._soundManager.pauseSounds();
+            //this._soundManager.pauseSounds();
 
             if (this._background)
                 this._background.pauseScripts();
@@ -295,7 +294,7 @@ PocketCode.Model.Scene = (function () {
 
             this._executionState = PocketCode.ExecutionState.RUNNING;   //important: because pause can be set again during resume
             //this._projectTimer.resume();
-            this._soundManager.resumeSounds();
+            //this._soundManager.resumeSounds();
 
             if (this._background)
                 this._background.resumeScripts();
@@ -323,8 +322,8 @@ PocketCode.Model.Scene = (function () {
                 sprites[i].stopAllScripts(calledFromStopBrick);
             }
 
-            if (this._soundManager) //stop() may be called during dispose before loading the scene
-                this._soundManager.stopAllSounds();
+            //if (this._soundManager) //stop() may be called during dispose before loading the scene
+            //    this._soundManager.stopAllSounds();
         },
         _checkForOnExecuted: function (e) {
             window.setTimeout(function () {
@@ -333,8 +332,8 @@ PocketCode.Model.Scene = (function () {
                 if (this.onSpriteTappedAction.listenersAttached || this.onTouchStartAction.listenersAttached)
                     return; //still waiting for user interaction
 
-                if (this._soundManager.isPlaying())
-                    return;
+                //if (this._soundManager.isPlaying())
+                //    return;
                 if (this._background && this._background.scriptsRunning)
                     return;
                 var sprites = this._sprites;
@@ -531,7 +530,7 @@ PocketCode.Model.Scene = (function () {
             this.stop();
             //do not dispose device & sound-manager: handled by game engine
             this._device = undefined;
-            this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
+            //this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
 
             if (this._background)
                 this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
