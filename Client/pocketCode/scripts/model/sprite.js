@@ -33,6 +33,8 @@ PocketCode.Model.Sprite = (function () {
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
+        this._audioPlayer = new PocketCode.AudioPlayer();
+        this._audioPlayer.volume = 0.5; //set default
         this._scripts = [];
 
         //property initialization
@@ -239,14 +241,22 @@ PocketCode.Model.Sprite = (function () {
 
         //sound
         sounds: {
+            get: function () {
+                return this._sounds;
+            },
             set: function (sounds) {
                 if (!(sounds instanceof Array))
                     throw new Error('sounds setter expects type Array');
 
                 this._sounds = sounds;
             },
+        },
+        volume: {
             get: function () {
-                return this._sounds;
+                return this._audioPlayer.volume;
+            },
+            set: function (value) {
+                this._audioPlayer.volume = value;
             },
         },
         //pen & stamp
@@ -816,7 +826,7 @@ PocketCode.Model.Sprite = (function () {
         hide: function () {
             if (!this._visible && !this._bubbleVisible)
                 return false;
-            
+
             this._visible = false;
             this._bubbleVisible = false;
             return this._triggerOnChange({ visible: false, bubble: { visible: false } });
@@ -930,6 +940,23 @@ PocketCode.Model.Sprite = (function () {
                 return false;
             return this._triggerOnChange({ graphicEffects: graphicEffects });
         },
+        //sound
+        loadSound: function (requestUrl, soundId, fileExtension) {
+
+        },
+        startSound: function (soundId, onExecutedCallback) {
+            return 'soundInstanceId';
+        },
+        startSoundFromUrl: function (requestUrl, onLoadCallback, onExecutedCallback) {
+
+        },
+        stopSound: function (soundInstanceId) {
+
+        },
+        stopAllSounds: function (calledFromBrick) {
+
+        },
+        //IOEB
         ifOnEdgeBounce: function (vpEdges, changes) {
 
             if (!this._currentLook)   //no look defined (cannot be changed either): no need to handle this
@@ -1197,9 +1224,9 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ bubble: { visible: false } });
         },
 
-        clone: function (device, soundManager, broadcastMgr) {
+        clone: function (device, broadcastMgr) {
             if (!this._spriteFactory)
-                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine);
 
             var definition = {
                 _positionX: this._positionX,

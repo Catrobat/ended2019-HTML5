@@ -44,7 +44,7 @@ PocketCode.GameEngine = (function () {
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         this._soundManager.onLoad.addEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
-        this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));    //check if project has finished executing
+        //this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));    //check if project has finished executing
         this._loadingAlerts = {
             invalidSoundFiles: [],
             unsupportedBricks: [],
@@ -249,7 +249,7 @@ PocketCode.GameEngine = (function () {
                 scene;
 
             for (var i = 0, l = jsonScenes.length; i < l; i++) {
-                scene = new PocketCode.Model.Scene(this, this._device, this._soundManager, broadcasts, this._minLoopCycleTime);
+                scene = new PocketCode.Model.Scene(this, this._device, broadcasts, this._minLoopCycleTime);
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
@@ -448,16 +448,12 @@ PocketCode.GameEngine = (function () {
             return false;
         },
         stopProject: function () {
-            this._soundManager.stopAllSounds();
             //TODO? this._device.stop();
             for (var id in this._scenes)
                 this._scenes[id].stop();
             //if (this._currentScene)
             //    return this._currentScene.stop();
             return false;
-        },
-        _soundManagerFinishedPlayingHandler: function () {
-            //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
         },
         getLookImage: function (id) {
             //used by the sprite to access an image during look init
@@ -570,7 +566,7 @@ PocketCode.GameEngine = (function () {
 
             this._soundManager.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._soundManager.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
-            this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));
+            //this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));
             //this._soundManager.stopAllSounds();   //already stopped in stopProject()
             //this._soundManager.dispose();
 

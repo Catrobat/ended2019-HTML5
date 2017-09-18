@@ -16,10 +16,9 @@ PocketCode.merge({
     SpriteFactory: (function () {
         SpriteFactory.extends(SmartJs.Core.Component);
 
-        function SpriteFactory(device, gameEngine, soundMgr, minLoopCycleTime) {
+        function SpriteFactory(device, gameEngine, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
-            this._soundMgr = soundMgr;
             this._minLoopCycleTime = minLoopCycleTime || 20;
 
             this._unsupportedBricks = [];
@@ -49,11 +48,8 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                //this._bricksLoaded = 0;
                 this._unsupportedBricks = [];
-                //bricksLoaded = bricksLoaded || 0;
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, bricksLoaded,*/ this._minLoopCycleTime);
-                //brickFactory.onProgressChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._onProgressChange.dispatchEvent(e); }, this));
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
                 brickFactory.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(function (e) { this._unsupportedBricks.push(e.unsupportedBrick); }, this));
 
                 var sprite = asBackground ?
@@ -62,8 +58,6 @@ PocketCode.merge({
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
                     scripts.push(brickFactory.create(sprite, jsonSprite.scripts[i]));
-
-                //this._bricksLoaded += brickFactory.bricksParsed;
                 sprite.scripts = scripts;
 
                 this._onSpriteLoaded.dispatchEvent({ bricksLoaded: brickFactory.bricksParsed });
@@ -80,7 +74,7 @@ PocketCode.merge({
                 if (typeof jsonSprite !== 'object' || jsonSprite instanceof Array)
                     throw new Error('invalid argument: expected type: object');
 
-                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._soundMgr, /*this._bricksTotal, 0,*/ this._minLoopCycleTime);
+                var brickFactory = new PocketCode.BrickFactory(this._device, this._gameEngine, currentScene, broadcastMgr, this._minLoopCycleTime);
                 var clone = new PocketCode.Model.SpriteClone(this._gameEngine, currentScene, jsonSprite, definition);
                 var scripts = [];
                 for (var i = 0, l = jsonSprite.scripts.length; i < l; i++)
@@ -93,7 +87,6 @@ PocketCode.merge({
             dispose: function () {
                 this._device = undefined;
                 this._gameEngine = undefined;
-                this._soundMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             },
         });
@@ -105,12 +98,11 @@ PocketCode.merge({
     BrickFactory: (function () {
         BrickFactory.extends(SmartJs.Core.Component);
 
-        function BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, minLoopCycleTime) {
+        function BrickFactory(device, gameEngine, scene, broadcastMgr, minLoopCycleTime) {
             this._device = device;
             this._gameEngine = gameEngine;
             this._scene = scene;
             this._broadcastMgr = broadcastMgr;
-            this._soundMgr = soundMgr;
             this._minLoopCycleTime = minLoopCycleTime;
 
             //this._total = totalCount;
@@ -162,18 +154,18 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                    //in development:
-                    //case 'WhenConditionMetBrick':
-                    //case 'StopScriptBrick':
-                    //case 'SetBackgroundBrick':
+                        //in development:
+                        //case 'WhenConditionMetBrick':
+                        //case 'StopScriptBrick':
+                        //case 'SetBackgroundBrick':
                     case 'WhenCollisionBrick':
-                    //case 'WhenStartAsCloneBrick':
-                    //case 'CloneBrick':
-                    //case 'DeleteCloneBrick':
+                        //case 'WhenStartAsCloneBrick':
+                        //case 'CloneBrick':
+                        //case 'DeleteCloneBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
 
-                    //case 'SetRotationSpeedBrick':
+                        //case 'SetRotationSpeedBrick':
                     case 'RotationSpeedLeftBrick':  //is removed
                     case 'RotationSpeedRightBrick': //is removed
                     case 'SetGravityBrick':
@@ -184,9 +176,6 @@ PocketCode.merge({
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
 
-
-                    //case 'PlaySoundAndWaitBrick':
-                    //case 'SpeakAndWaitBrick':
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
@@ -217,12 +206,12 @@ PocketCode.merge({
                     case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
-                    //bubbles
+                        //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
                     case 'ThinkBrick':
                     case 'ThinkForBrick':
-                    //background
+                        //background
                     case 'SetBackgroundByIndexBrick':
                     case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
@@ -237,22 +226,6 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._broadcastMgr, jsonBrick);
                         break;
 
-                    case 'PlaySoundAndWaitBrick':   //disabled
-                    case 'SpeakAndWaitBrick':
-                        brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
-                        break;
-
-                    case 'PlaySoundBrick':
-                    case 'StopAllSoundsBrick':
-                    case 'SpeakBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.id, this._soundMgr, jsonBrick);
-                        break;
-
-                    case 'SetVolumeBrick':
-                    case 'ChangeVolumeBrick':
-                        brick = new PocketCode.Model[type](this._device, currentSprite, this._soundMgr, jsonBrick);
-                        break;
-
                     case 'MoveNStepsBrick':
                     case 'WaitUntilBrick':
                     case 'ForeverBrick':
@@ -264,7 +237,7 @@ PocketCode.merge({
                     case 'WhenConditionMetBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._minLoopCycleTime, jsonBrick, this._scene.onStart);
                         break;
-                        
+
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
@@ -274,15 +247,35 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 
+                    default:
                         //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotionStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
                         //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
                         //      .. all filters, .. ClearGraphicEffect
+                        //sound
+                        //case 'PlaySoundBrick':
+                        //case 'PlaySoundAndWaitBrick':   //disabled
+                        //case 'SpeakBrick':
+                        //case 'SpeakAndWaitBrick':   //disabled
+                        if (type == 'PlaySoundAndWaitBrick') {
+                            jsonBrick.wait = true;  //currently as a workaround to implement ..AndWaitBricks for sounds like in v0.4
+                            type = 'PlaySoundBrick';
+                        }
+                        else if (type == 'SpeakAndWaitBrick') {
+                            jsonBrick.wait = true;  //currently as a workaround to implement ..AndWaitBricks for sounds like in v0.4
+                            type = 'SpeakBrick';
+                        }
+
+                        //case 'StopAllSoundsBrick':
+                        //case 'SetVolumeBrick':
+                        //case 'ChangeVolumeBrick':
+                        //    brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
+                        //    break;
+
                         //pen: PenDown, PenUp, SetPenSize, SetPenColor, Stamp
                         //data: SetVariable, ChangeVariable, ShowVariable, HideVariable, AppendToList, DeleteAtList, InsertAtList, ReplaceAtList
-                    default:
                         if (PocketCode.Model[type])
                             brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);
                         else
@@ -335,7 +328,6 @@ PocketCode.merge({
                 this._gameEngine = undefined;
                 this._scene = undefined;
                 this._broadcastMgr = undefined;
-                this._soundMgr = undefined;
                 SmartJs.Core.Component.prototype.dispose.call(this);
             }
         });
@@ -401,8 +393,8 @@ PocketCode.merge({
 
                     case 'USER_VARIABLE':
                         if (uiString) {
-                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
-                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                            var variable = this._variableNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                this._variableNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
                                 this._variableNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '"' + variable.name + '"';
                         }
@@ -412,8 +404,8 @@ PocketCode.merge({
 
                     case 'USER_LIST':
                         if (uiString) {
-                            var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] || 
-                                this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] || 
+                            var list = this._listNames[PocketCode.UserVariableScope.PROCEDURE][jsonFormula.value] ||
+                                this._listNames[PocketCode.UserVariableScope.LOCAL][jsonFormula.value] ||
                                 this._listNames[PocketCode.UserVariableScope.GLOBAL][jsonFormula.value];
                             return '*' + list.name + '*';
                         }
@@ -780,7 +772,7 @@ PocketCode.merge({
                         if (uiString)
                             return 'loudness';
 
-                        return 'this._device.loudness';
+                        return 'this._sprite.volume';
 
                     case 'X_ACCELERATION':
                         if (uiString)
@@ -869,7 +861,7 @@ PocketCode.merge({
 
                         return 'this._device.lastTouchIndex';
 
-                    //face detection
+                        //face detection
                     case 'FACE_DETECTED':
                         if (uiString)
                             return 'is_face_detected';
@@ -955,8 +947,8 @@ PocketCode.merge({
                         //        return 'timer';
 
                         //    return 'this._sprite.projectTimerValue';
-                        
-                    //sprite
+
+                        //sprite
                     case 'OBJECT_BRIGHTNESS':
                         if (uiString)
                             return 'brightness';
@@ -1026,13 +1018,13 @@ PocketCode.merge({
 
                         return 'this._sprite.positionY';
 
-                    //case 'OBJECT_DISTANCE_TO':    //TODO
-                    //    if (uiString)
-                    //        return 'position_y';
+                        //case 'OBJECT_DISTANCE_TO':    //TODO
+                        //    if (uiString)
+                        //        return 'position_y';
 
-                    //    return 'this._sprite.positionY';
+                        //    return 'this._sprite.positionY';
 
-                    //collision
+                        //collision
                     case 'COLLIDES_WITH_EDGE':
                         if (uiString)
                             return 'touches_edge';
@@ -1045,7 +1037,7 @@ PocketCode.merge({
 
                         return 'this._sprite.collidesWithPointer';
 
-                    //physics
+                        //physics
                     case 'OBJECT_X_VELOCITY':
                         if (uiString)
                             return 'x_velocity';
@@ -1064,7 +1056,7 @@ PocketCode.merge({
 
                         return 'this._sprite.velocityAngular';  //TODO: physics
 
-                    //nxt
+                        //nxt
                     case 'NXT_SENSOR_1':
                         if (uiString)
                             return 'NXT_sensor_1';

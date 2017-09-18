@@ -1,19 +1,12 @@
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="soundManager.js" />
 'use strict';
 
 PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
-    function Device(soundManager) {
-        if (!(soundManager instanceof PocketCode.SoundManager))
-            throw new Error('invalid cntr call: sound manager');
-        this._soundMgr = soundManager;
-
-        this._flashOn = false;      //TODO: temp solution until flash supported
-
+    function Device() {
         this._compass = 0;
         this._alpha = 0;
         this._beta = 0;
@@ -98,6 +91,8 @@ PocketCode.Device = (function () {
             active: {},
             history: [],
         };
+
+        this._flashOn = false;      //TODO: temp solution until flash supported
 
         //bind events
         if (!isNaN(window.orientation)) {
@@ -311,11 +306,6 @@ PocketCode.Device = (function () {
         //		return this._sensorData.Y_ROTATION_RATE;
         //	},
         //},
-        loudness: {
-            get: function () {
-                return this._soundMgr.volume;
-            },
-        },
         //touch
         lastTouchIndex: {
             get: function () {
@@ -625,8 +615,6 @@ PocketCode.Device = (function () {
         },
         /* override */
         dispose: function () {
-            this._soundMgr = undefined; //make sure it does not get disposed as well
-
             if (this._initDeviceOrientationListener) {
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
                 //delete this._initDeviceOrientationListener;
@@ -656,8 +644,8 @@ PocketCode.Device = (function () {
 PocketCode.MediaDevice = (function () {
     MediaDevice.extends(PocketCode.Device, false);
 
-    function MediaDevice(soundManager) {
-        PocketCode.Device.call(this, soundManager);
+    function MediaDevice() {
+        PocketCode.Device.call(this);
 
         this._cameraTransparency = 50.0;    //default
 
@@ -834,8 +822,8 @@ PocketCode.MediaDevice = (function () {
 PocketCode.DeviceEmulator = (function () {
     DeviceEmulator.extends(PocketCode.MediaDevice, false);
 
-    function DeviceEmulator(soundManager) {
-        PocketCode.MediaDevice.call(this, soundManager);
+    function DeviceEmulator() {
+        PocketCode.MediaDevice.call(this);
 
         this._features.INCLINATION.supported = true;
         this._defaultInclination = {
