@@ -44,6 +44,7 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     var deviceEmulator = new PocketCode.Ui.DeviceEmulator(device);
     var accSlider = deviceEmulator._accSlider;
     var maxDegreeSlider = deviceEmulator._maxSlider;
+    //var flashSlider = deviceEmulator._flashSlider;
 
     //instance Checks for sliders
     assert.ok(accSlider instanceof PocketCode.Ui.Slider, "Acceleration slider instance check");
@@ -72,6 +73,11 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     deviceEmulator._maxAccChangeHandler({target: {value: 10}});
 
     assert.equal(deviceEmulator._device.accelerationChangeValue, 5, "onChange Event triggered: Acceleration Slider change");
+
+    /*assert.equal(flashSlider.value, 0, "onChange Event not triggered: no Flash change");
+    deviceEmulator._flashChangeHandler({target: {value: 1}});
+    assert.equal(flashSlider.value, 1, "onChange Event triggered: Flash change");*/
+
 
     assert.ok(false, "TODO slider");
 

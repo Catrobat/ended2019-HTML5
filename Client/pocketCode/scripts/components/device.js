@@ -883,21 +883,7 @@ PocketCode.DeviceEmulator = (function () {
             SPACE: false,
         };
 
-        //key down time
-        this._keyDownTime = {
-            LEFT: 0.0,
-            RIGHT: 0.0,
-            UP: 0.0,
-            DOWN: 0.0,
-        };
-
         this._keyDownDateTime = {
-            LEFT: 0,
-            RIGHT: 0,
-            UP: 0,
-            DOWN: 0,
-        };
-        this._keyUpDateTime = {
             LEFT: 0,
             RIGHT: 0,
             UP: 0,
@@ -1017,7 +1003,6 @@ PocketCode.DeviceEmulator = (function () {
                     if (!this._keyDownDateTime.LEFT)
                     {
                         this._keyDownDateTime.LEFT = new Date();
-                        this._keyUpDateTime.LEFT = 0;
                     }
 
                     this._keyPress.LEFT = true;
@@ -1036,7 +1021,6 @@ PocketCode.DeviceEmulator = (function () {
                     if (!this._keyDownDateTime.RIGHT)
                     {
                         this._keyDownDateTime.RIGHT = new Date();
-                        this._keyUpDateTime.RIGHT = 0;
                     }
                     this._keyPress.RIGHT = true;
                     break;
@@ -1054,7 +1038,6 @@ PocketCode.DeviceEmulator = (function () {
                     if (!this._keyDownDateTime.UP)
                     {
                         this._keyDownDateTime.UP = new Date();
-                        this._keyUpDateTime.UP = 0;
                     }
                     this._keyPress.UP = true;
                     break;
@@ -1072,7 +1055,6 @@ PocketCode.DeviceEmulator = (function () {
                     if (!this._keyDownDateTime.DOWN)
                     {
                         this._keyDownDateTime.DOWN = new Date();
-                        this._keyUpDateTime.DOWN = 0;
                     }
                     this._keyPress.DOWN = true;
                     break;
@@ -1153,32 +1135,32 @@ PocketCode.DeviceEmulator = (function () {
                 return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                this._keyDownTime.LEFT = (new Date() - this._keyDownDateTime.LEFT) / 1000;
-                var inclDateTimeLeft = this._inclinationIncrTmp.X * this._keyDownTime.LEFT;
+                this._elapsedTime.LEFT = (new Date() - this._keyDownDateTime.LEFT) / 1000;
+                var inclDateTimeLeft = this._inclinationIncrTmp.X * this._elapsedTime.LEFT;
                 this._sensorData.X_INCLINATION += inclDateTimeLeft;
                 if (this._sensorData.X_INCLINATION > this.degreeChangeValue)
                     this._sensorData.X_INCLINATION = this.degreeChangeValue;
             }
             else if (!this._keyPress.LEFT && this._keyPress.RIGHT) {
                 // right
-                this._keyDownTime.RIGHT = (new Date() - this._keyDownDateTime.RIGHT) / 1000;
-                var inclDateTimeRight = this._inclinationIncrTmp.X * this._keyDownTime.RIGHT;
+                this._elapsedTime.RIGHT = (new Date() - this._keyDownDateTime.RIGHT) / 1000;
+                var inclDateTimeRight = this._inclinationIncrTmp.X * this._elapsedTime.RIGHT;
                 this._sensorData.X_INCLINATION -= inclDateTimeRight;
                 if (this._sensorData.X_INCLINATION < this.degreeChangeValue * -1)
                     this._sensorData.X_INCLINATION = this.degreeChangeValue * -1;
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                this._keyDownTime.UP = (new Date() - this._keyDownDateTime.UP) / 1000;
-                var inclDateTimeUp = this._inclinationIncrTmp.Y * this._keyDownTime.UP;
+                this._elapsedTime.UP = (new Date() - this._keyDownDateTime.UP) / 1000;
+                var inclDateTimeUp = this._inclinationIncrTmp.Y * this._elapsedTime.UP;
                 this._sensorData.Y_INCLINATION -= inclDateTimeUp;
                 if (this._sensorData.Y_INCLINATION < this.degreeChangeValue * -1)
                     this._sensorData.Y_INCLINATION = this.degreeChangeValue * -1;
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                this._keyDownTime.DOWN = (new Date() - this._keyDownDateTime.DOWN) / 1000;
-                var inclDateTimeDown = this._inclinationIncrTmp.Y * this._keyDownTime.DOWN;
+                this._elapsedTime.DOWN = (new Date() - this._keyDownDateTime.DOWN) / 1000;
+                var inclDateTimeDown = this._inclinationIncrTmp.Y * this._elapsedTime.DOWN;
                 this._sensorData.Y_INCLINATION += inclDateTimeDown;
                 if (this._sensorData.Y_INCLINATION > this.degreeChangeValue)
                     this._sensorData.Y_INCLINATION = this.degreeChangeValue;

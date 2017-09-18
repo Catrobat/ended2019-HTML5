@@ -44,7 +44,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin / (8 * -1), max: device.accelerationChangeMax * (10 / 8), value: device.accelerationChangeValue * (5 / 8), minLabel: device.accelerationChangeMin / (8 * -1), maxLabel: '&plusmn;' + device.accelerationChangeMax * (10 / 8)});
+        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin / (8 * -1), max: device.accelerationChangeMax * (10 / 8), value: device.accelerationChangeValue * (5 / 8), minLabel: device.accelerationChangeMin / (8 * -1), maxLabel: device.accelerationChangeMax * (10 / 8)});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -75,6 +75,14 @@ PocketCode.Ui.DeviceEmulator = (function () {
         div.appendChild(span);
         scroll.appendChild(div);
 
+        /*var tn = new PocketCode.Ui.I18nTextNode('lbFlashlight');
+        var span = new SmartJs.Ui.HtmlTag('span');
+        span.appendChild(tn);
+        scroll.appendChild(span);
+
+        this._flashSlider = new PocketCode.Ui.Slider({min: 0, max: 1, value: 0, minLabel: 'Off', maxLabel: 'On'});
+        this._flashSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._flashChangeHandler, this));
+        scroll.appendChild(this._flashSlider);*/
     }
 
     //properties
@@ -94,8 +102,13 @@ PocketCode.Ui.DeviceEmulator = (function () {
         _maxAccChangeHandler: function(e) {
             this._device.accelerationChangeValue = e.value;
         },
+        /*_flashChangeHandler: function (e) {
+            if (e.value == 1)
+                this._device.flashOn = true;
+            if (e.value == 0)
+                this._device.flashOn = false;
+        },*/
         _updateImageTransformation: function (e) {
-
             var image = document.getElementById("sj69");
 
             image.style.webkitTransform = "rotateX(" + this._device.inclinationY  + "deg) rotateY(" + this._device.inclinationX + "deg)";
@@ -103,9 +116,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
             document.getElementById("sj73").innerHTML = Math.round(this._device.inclinationX * (90 / 46));
             document.getElementById("sj76").innerHTML = Math.round(this._device.inclinationY * (90 / 46));
-
         },
-
         _openCloseHandler: function (e) {
             if (e.opened)
             {

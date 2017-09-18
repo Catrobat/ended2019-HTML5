@@ -45,6 +45,7 @@ PocketCode.I18nProvider = (function (propObject) {
             "lbDeviceAccDescr": "Device Acceleration Description",
             "lbDInclinationX": "InclinationX",
             "lbDInclinationY": "InclinationY",
+            "lbFlashlight": "Flashlight",
         };  
 
         this._supportedLanguages = [];
