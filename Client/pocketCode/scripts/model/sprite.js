@@ -1241,6 +1241,9 @@ PocketCode.Model.Sprite = (function () {
                 _brightness: this._brightness,
                 _colorEffect: this._colorEffect,
 
+                //sounds
+                volume: this.volume,
+
                 //pen
                 _penDown: this._penDown,
                 _penSize: this._penSize,
