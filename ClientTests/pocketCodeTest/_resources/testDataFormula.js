@@ -3,7 +3,7 @@ var formulas = { "id": 2687, "header": { "languageVersion": 0.93, "description":
 
 var unknown_type = { "type": "FUNCTION", "value": "SIN", "right": null, "left": { "type": "U_NUMBER", "value": "90", "right": null, "left": null } };
 var unknown_operator = { "type": "OPERATOR", "value": "U_MULT", "right": { "type": "BRACKET", "value": "", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "1.00", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } }, "left": null }, "left": { "type": "SENSOR", "value": "OBJECT_X", "right": null, "left": null } };
-var unknown_function = { "type": "FUNCTION", "value": "U_SIN", "right": null, "left": { "type": "NUMBER", "value": "90", "right": null, "left": null } };;
+var unknown_function = { "type": "FUNCTION", "value": "U_SIN", "right": null, "left": { "type": "NUMBER", "value": "90", "right": null, "left": null } };
 var unknown_sensor = { "type": "OPERATOR", "value": "MULT", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "SENSOR", "value": "U_Y_ACCELERATION", "right": null, "left": null } };
 
 var plus = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
@@ -37,9 +37,15 @@ var ceil = { "type": "FUNCTION", "value": "CEIL", "right": null, "left": { "type
 var mod = { "type": "FUNCTION", "value": "MOD", "right": { "type": "NUMBER", "value": "2.2", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "9", "right": null, "left": null } };
 var stringPlus = { "type": "OPERATOR", "value": "PLUS", "right": { "type": "STRING", "value": "fghw", "right": null, "left": null }, "left": { "type": "STRING", "value": "fgh", "right": null, "left": null } };
 var max = { "type": "FUNCTION", "value": "MAX", "right": { "type": "NUMBER", "value": "17", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "MULT", "right": { "type": "BRACKET", "value": "", "right": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "8", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } }, "left": null }, "left": { "type": "NUMBER", "value": "2", "right": null, "left": null } } };
+var max_NaN_left = { "type": "FUNCTION", "value": "MAX", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "STRING", "value": "hello", "right": null, "left": null } };
+var max_NaN_right = { "type": "FUNCTION", "value": "MAX", "right": { "type": "STRING", "value": "hello", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
+var max_NaN = { "type": "FUNCTION", "value": "MAX", "right": { "type": "STRING", "value": "hello", "right": null, "left": null }, "left": { "type": "STRING", "value": "hello2", "right": null, "left": null } };
 var exp = { "type": "FUNCTION", "value": "EXP", "right": null, "left": { "type": "NUMBER", "value": "0.5", "right": null, "left": null } };
 var exp2 = { "type": "FUNCTION", "value": "EXP", "right": null, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
 var min = { "type": "FUNCTION", "value": "MIN", "right": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "PLUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": { "type": "OPERATOR", "value": "MINUS", "right": { "type": "NUMBER", "value": "1", "right": null, "left": null }, "left": null } } }, "left": { "type": "NUMBER", "value": "0", "right": null, "left": null } };
+var min_NaN_left = { "type": "FUNCTION", "value": "MIN", "right": { "type": "NUMBER", "value": "2", "right": null, "left": null }, "left": { "type": "STRING", "value": "hello", "right": null, "left": null } };
+var min_NaN_right = { "type": "FUNCTION", "value": "MIN", "right": { "type": "STRING", "value": "hello", "right": null, "left": null }, "left": { "type": "NUMBER", "value": "2", "right": null, "left": null } };
+var min_NaN = { "type": "FUNCTION", "value": "MIN", "right": { "type": "STRING", "value": "hello", "right": null, "left": null }, "left": { "type": "STRING", "value": "hello2", "right": null, "left": null } };
 var arduino_analog_pin = { "type": "FUNCTION", "value": "ARDUINOANALOG", "right": null, "left": { "type": "NUMBER", "value": "1", "right": null, "left": null } };
 var arduino_digital_pin = { "type": "FUNCTION", "value": "ARDUINODIGITAL", "right": null, "left": { "type": "NUMBER", "value": "2", "right": null, "left": null } };
 

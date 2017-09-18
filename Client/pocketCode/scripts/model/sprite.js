@@ -724,7 +724,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._currentLook = this._looks[lookIdx - 1];
-            update = { look: this._currentLook.canvas };
+            var update = { look: this._currentLook.canvas };
 
             this._recalculateLookOffsets();
             update.x = this._positionX + this._lookOffsetX;

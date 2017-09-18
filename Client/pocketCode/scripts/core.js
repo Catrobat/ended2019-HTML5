@@ -79,6 +79,8 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
+    threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
         TOUCH_START: 'touchStart',
@@ -93,10 +95,11 @@ PocketCode.merge({
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
     },
-    StopScriptType: {
-        THIS: 0,
-        ALL: 1,
-        OTHER: 2,
+    StopType: {
+        THIS_SCRIPT: 0,
+        OTHER_SCRIPTS: 1,
+        ALL_SOUNDS: 2,
+        ALL: 3,
     },
 
     isPlayerCompatible: function () {

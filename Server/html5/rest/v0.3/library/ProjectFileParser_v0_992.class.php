@@ -1327,17 +1327,23 @@ class ProjectFileParser_v0_992
             // stop script/s
             case "StopScriptBrick":
                 $scriptType = (string)$script->spinnerSelection;
+                $type = -1;
 
                 switch($scriptType) {
                     case "0":   //this
+                        $type = EStopType::THIS_SCRIPT;
+                        break;
                     case "1":   //all
+                        $type = EStopType::ALL;
+                        break;
                     case "2":   //other
-                        break;  //valid
+                        $type = EStopType::OTHER_SCRIPTS;
+                        break;
                     default:    //invalid if not one of the above
-                        throw new InvalidProjectFileException("StopScriptBrick: invalid properties");
+                        throw new InvalidProjectFileException("StopBrick: invalid properties");
                 }
 
-                $brick = new StopScriptBrickDto($scriptType);
+                $brick = new StopBrickDto($type);
                 break;
 
             default:

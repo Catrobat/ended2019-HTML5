@@ -154,14 +154,8 @@ PocketCode.merge({
                     case 'UserScriptBrick':
                     case 'CallUserScriptBrick':
 
-                        //in development:
-                        //case 'WhenConditionMetBrick':
-                        //case 'StopScriptBrick':
-                        //case 'SetBackgroundBrick':
+                    //in development:
                     case 'WhenCollisionBrick':
-                        //case 'WhenStartAsCloneBrick':
-                        //case 'CloneBrick':
-                        //case 'DeleteCloneBrick':
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
 
@@ -243,7 +237,7 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
-                    case 'StopScriptBrick':
+                    case 'StopBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, this._currentScriptId, jsonBrick);
                         break;
 
@@ -658,12 +652,18 @@ PocketCode.merge({
                     case 'MAX':
                         if (uiString)
                             return 'max(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' + 
+                                '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' + 
+                               '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
+                               'Math.max(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
 
                     case 'MIN':
                         if (uiString)
                             return 'min(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
-                        return 'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + ')';
+                        return 'isNaN(' + this._parseJsonType(jsonFormula.left) + ') ? ' +
+                                '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? undefined : ' + this._parseJsonType(jsonFormula.right) + ') : ' +
+                               '(isNaN(' + this._parseJsonType(jsonFormula.right) + ') ? (' + this._parseJsonType(jsonFormula.left) + ') : ' +
+                               'Math.min(' + this._parseJsonType(jsonFormula.left) + ', ' + this._parseJsonType(jsonFormula.right) + '))';
 
                     case 'TRUE':
                         if (uiString)

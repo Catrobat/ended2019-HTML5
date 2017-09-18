@@ -86,7 +86,7 @@ SmartJs.Event = {
 
                 var li = this._listeners || []; //necessary due to the fact that bound events may call a disposed event
                 var item,
-                    dispatchedAt = new Date();
+                    dispatchedAt = Date.now();
                 for (var i = 0, l = li.length; i < l; i++) {
                     item = li[i];
                     if (!item || !item.handler || (item.scope && item.scope._disposed)) {

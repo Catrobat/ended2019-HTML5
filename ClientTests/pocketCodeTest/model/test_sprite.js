@@ -12,8 +12,6 @@ QUnit.module("model/sprite.js");
 
 QUnit.test("Sprite", function (assert) {
 
-    var done = assert.async();
-
     // var programExecAsync = assert.async();
     var testsExecAsync = assert.async();
     var finalAsyncCall = assert.async();
@@ -25,7 +23,7 @@ QUnit.test("Sprite", function (assert) {
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "newId", name: "myName" });
     assert.ok(sprite instanceof PocketCode.Model.Sprite && sprite instanceof PocketCode.Model.UserVariableHost && sprite instanceof SmartJs.Core.Component, "instance check");
 
-    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "evetn instances + getter");
+    assert.ok(sprite.onExecuted instanceof SmartJs.Event.Event, "event instances + getter");
     //triggerOnChange
     assert.notOk(sprite._triggerOnChange({}), "call private _triggerOnChange: make sure an empty property does not trigger update");
 
@@ -330,9 +328,9 @@ QUnit.test("Sprite", function (assert) {
     assert.strictEqual(renderingSprite.id, testSprite.id, "renderingSprite: id set correctly");
     assert.strictEqual(renderingSprite.x, testSprite._positionY + lookOffsetX, "renderingSprite: x set correctly");
     assert.strictEqual(renderingSprite.y, testSprite._positionY + lookOffsetY, "renderingSprite: y set correctly");
-    assert.strictEqual(renderingSprite._rotation, testSprite._direction - 90, "renderingSprite: rotation set correctly");
-    assert.strictEqual(renderingSprite._flipX, testSprite._flipX, "renderingSprite: flipX set correctly");
-    assert.strictEqual(renderingSprite._scaling, testSprite.size / 100.0, "renderingSprite: scaling set correctly");
+    assert.strictEqual(renderingSprite.rotation, testSprite._direction - 90, "renderingSprite: rotation set correctly");
+    assert.strictEqual(renderingSprite.flipX, testSprite._flipX, "renderingSprite: flipX set correctly");
+    assert.strictEqual(renderingSprite.scaling, testSprite.size / 100.0, "renderingSprite: scaling set correctly");
     assert.strictEqual(renderingSprite.visible, testSprite._visible, "renderingSprite: visible set correctly");
     assert.equal(renderingSprite._originalCanvas, look.canvas, "renderingSprite: look set correctly");
     //^^ the look setter sets the original look, the getter returns the cached look including filters
@@ -751,7 +749,7 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.scripts, tmpBricks, "bricks getter");
     assert.ok(sprite._scripts.length == 3, "bricks length");
 
-    assert.ok(sprite.scriptsRunning == false, "scrips not running");
+    assert.notOk(sprite.scriptsRunning, "scrips not running");
 
     //start, pause, resume, stop + executed
     //binding program events
@@ -780,28 +778,23 @@ QUnit.test("Sprite", function (assert) {
 
     //making sure the script was really paused is quite a hack here
     var isPaused = function () {
-        for (var i = 0; i < sprite._scripts.length; i++) {
-            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == true, "scrips running: paused");
-            for (var j = 0; j < sprite._scripts[i]._bricks._bricks.length; j++) {
-                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == true, "bricks running: paused");
+        var paused = true,
+            scripts = sprite._scripts;
+        for (var i = 0; i < scripts.length; i++) {
+            if (!scripts[i]._paused) {
+                paused = false;
+                break;
             }
-        }
-    };
-
-    var isResumed = function () {
-        for (var i = 0; i < sprite._scripts.length; i++) {
-            assert.ok(sprite._scripts[i]._executionState == 1 && sprite._scripts[i]._paused == false, "scrips running: running");
-            for (var j = 0; j < sprite._scripts[i]._bricks._bricks.length; j++) {
-                assert.ok(sprite._scripts[i]._bricks._bricks[j]._paused == false, "bricks running: running");
-            }
+            return paused;
         }
     };
 
     sprite.pauseScripts();
-    isPaused();
+    assert.ok(isPaused(), "all scripts paused");
+    
 
     sprite.resumeScripts();
-    isResumed();
+    assert.notOk(isPaused(), "all scripts resumed (not paused)");
     assert.ok(sprite.scriptsRunning, "scrips running: running");
 
     //sprite.stopScript(true, "1");
@@ -2030,6 +2023,7 @@ QUnit.test("PhysicsSprite", function (assert) {
 
 QUnit.test("SpriteClone", function (assert) {
 
+    var done = assert.async();
     var soundManager = new PocketCode.SoundManager();
     var device = new PocketCode.MediaDevice(soundManager);
     var gameEngine = new PocketCode.GameEngine();
@@ -2169,6 +2163,7 @@ QUnit.test("SpriteClone", function (assert) {
         list1.replaceAt(2, 40);
 
         assert.notEqual(clone.getList("s22")._value[1], sprite.getList("s22")._value[1], "Independent list items");
+        done();
     }
 });
 

@@ -352,7 +352,7 @@ PocketCode.Model.merge({
 
                 var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true)));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true, false)));
                 po.animation = animation;
                 animation.start();//{ callId: id });
                 if (this._paused)

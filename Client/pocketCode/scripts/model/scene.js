@@ -246,8 +246,9 @@ PocketCode.Model.Scene = (function () {
                 this._checkForOnExecuted();    //make sure an empty program terminates
             return true;
         },
-        pause: function (forUserInteraction) {
-            if (forUserInteraction) {   //e.g. ask dialog (menu and overlay are not changed during pause)
+        pause: function (internal) {    //internal: for ask, .. 
+                                        //to make sure the execution state does not change to paused which will cause the UI to change as well
+            if (internal) {
                 if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
                     return false;
                 else if (this._executionState == PocketCode.ExecutionState.PAUSED) {
@@ -274,14 +275,14 @@ PocketCode.Model.Scene = (function () {
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].pauseScripts();
             }
-            if (forUserInteraction)
+            if (internal)
                 this._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;
             else
                 this._executionState = PocketCode.ExecutionState.PAUSED;
             return true;
         },
-        resume: function (forUserInteraction) {
-            if (forUserInteraction) {
+        resume: function (internal) {
+            if (internal) {
                 if (this._executionState !== PocketCode.ExecutionState.PAUSED_USERINTERACTION)
                     return false;
             }
@@ -384,11 +385,6 @@ PocketCode.Model.Scene = (function () {
             //throw new Error('unknown sprite with name: ' + spriteName);
         },
 
-        //TODO scene doesn't have _imageStore property. Should this function be removed ?
-        getLookImage: function (id) {
-            //used by the sprite to access an image during look init
-            return this._imageStore.getImage(id);
-        },
         setBackground: function (lookId, waitCallback) {
             if (!this._background) {
                 if (waitCallback)
@@ -397,11 +393,11 @@ PocketCode.Model.Scene = (function () {
             }
             return this._background.setLook(lookId, waitCallback);
         },
-        setLookByIndex: function (lookIdx) {
+        setBackgroundByIndex: function (lookIdx) {
             if (!this._background) {
                 return false;
             }
-            return this._background.setLookByIndex(lookId);
+            return this._background.setLookByIndex(lookIdx);
         },
         subscribeToBackgroundChange: function (lookId, changeHandler) {
             if (!this._background)

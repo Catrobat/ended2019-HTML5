@@ -448,7 +448,7 @@ QUnit.test("GlideToBrick", function (assert) {
     assert.equal(b._duration.calculate(), 1, "formula duration created correctly");
 
     var asyncHandler1 = function (e) {
-        var end = new Date();
+        var end = Date.now();
         assert.equal(e.loopDelay, true, "loop delay event arg");
         assert.equal(e.id, "gliding", "loop delay id");
 
@@ -462,7 +462,7 @@ QUnit.test("GlideToBrick", function (assert) {
         startTest2();
     };
 
-    var start = new Date();
+    var start = Date.now();
     b.execute(new SmartJs.Event.EventListener(asyncHandler1, this), "gliding");
 
     function startTest2() {
@@ -483,7 +483,7 @@ QUnit.test("GlideToBrick", function (assert) {
         var b2 = new PocketCode.Model.GlideToBrick(device, spriteMock, { x: x, y: y, duration: duration });
 
         var asyncHandler2 = function (e) {
-            var end = new Date();
+            var end = Date.now();
             assert.equal(e.loopDelay, true, "check positions: loop delay event arg");
             assert.equal(e.id, "gliding2", "check positions: loop delay id");
 
@@ -506,7 +506,7 @@ QUnit.test("GlideToBrick", function (assert) {
             startTest3();
         };
 
-        var start = new Date();
+        var start = Date.now();
         b2.execute(new SmartJs.Event.EventListener(asyncHandler2, this), "gliding2");
     }
 

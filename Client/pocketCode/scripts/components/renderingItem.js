@@ -784,13 +784,8 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            //this._scaling = 1.0;
-            this._flipX = false;
-            //this._rotation = 0.0;
-            this._shadow = false;
-
-            this.penDown = false;
             this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
+            this._shadow = false;
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -862,8 +857,12 @@ PocketCode.merge({
                         cache = this._cacheCanvas,
                         ctx = this._cacheCtx;
 
+                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                        return;
+
                     cache.width = width;
                     cache.height = height;
+                    //reseet image cache to original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
@@ -947,7 +946,7 @@ PocketCode.merge({
 
                 ctx.rotate(this.rotation * Math.PI / 180.0);
                 ctx.scale(
-                    this.scaling * (this._flipX ? -1.0 : 1.0),
+                    this.scaling * (this.flipX ? -1.0 : 1.0),
                     this.scaling
                 );
 
