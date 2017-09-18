@@ -743,7 +743,6 @@ QUnit.test("BrickFactory", function (assert) {
     //^^ includes all types of bricks (once!!! take care if this is still correct)
 
     var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
-    var soundMgr = new PocketCode.SoundManager();
 
     var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
@@ -757,13 +756,6 @@ QUnit.test("BrickFactory", function (assert) {
 
     assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._scene === scene && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 14, "properties set correctly");
 
-    var progress = [];
-    var progressHandler = function (e) {
-        progress.push(e.progress);
-    };
-
-    //TODO bf.onProgressChange.addEventListener(new SmartJs.Event.EventListener(progressHandler, this));
-
     var unsupportedBricks = [];
     var unsupportedCalled = 0;
     var unsupportedHandler = function (e) {
@@ -771,6 +763,7 @@ QUnit.test("BrickFactory", function (assert) {
         unsupportedBricks = e.unsupportedBricks;
     };
 
+    assert.ok(bf.onUnsupportedBrickFound instanceof SmartJs.Event.Event, "event check");
     bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
 
     var controlBricks = [];
@@ -818,13 +811,8 @@ QUnit.test("BrickFactory", function (assert) {
     }
 
     assert.equal(bf._parsed, allBricksProject.header.bricksCount, "all bricks created");
-    assert.ok(progress.length > 0, "progress handler called");
-    assert.equal(progress[progress.length - 1], 100, "progress reached 100%");
-    assert.ok(progress.length <= 20, "limited progress events");
-
     assert.equal(unsupportedCalled, 0, "unsupported bricks not found, handler not called");
     assert.equal(unsupportedBricks.length, 0, "no unsupported found");
-
 
     //TEST INCLUDING UNSUPPORTED
     var allBricksProject = project1;    //using tests_testData.js
@@ -845,17 +833,10 @@ QUnit.test("BrickFactory", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, soundMgr, 26);//allBricksProject.header.bricksCount, 26);
+    var bf = new PocketCode.BrickFactory(device, gameEngine, scene, broadcastMgr, 26);//allBricksProject.header.bricksCount, 26);
     assert.ok(bf instanceof PocketCode.BrickFactory, "instance created");
 
-    assert.ok(bf._device === device && bf._project === gameEngine && bf._broadcastMgr === broadcastMgr && bf._soundMgr === soundMgr && bf._total === allBricksProject.header.bricksCount && bf._minLoopCycleTime === 26, "properties set correctly");
-
-    var progress = [];
-    var progressHandler = function (e) {
-        progress.push(e.progress);
-    };
-
-    //TODO bf.onProgressChange.addEventListener(new SmartJs.Event.EventListener(progressHandler, this));
+    assert.ok(bf._device === device && bf._gameEngine === gameEngine && bf._broadcastMgr === broadcastMgr && bf._minLoopCycleTime === 26, "properties set correctly");
 
     var unsupportedBricks = [];
     var unsupportedCalled = 0;
@@ -864,6 +845,7 @@ QUnit.test("BrickFactory", function (assert) {
         unsupportedBricks.push(e.unsupportedBricks);
     };
 
+    //events
     bf.onUnsupportedBrickFound.addEventListener(new SmartJs.Event.EventListener(unsupportedHandler, this));
 
     var controlBricks = [];
@@ -908,14 +890,13 @@ QUnit.test("BrickFactory", function (assert) {
         }
     }
 
-    assert.equal(bf._parsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
-    assert.ok(progress.length > 0, "unsupported: progress handler called");
-    assert.equal(progress[progress.length - 1], 100, "unsupported: progress reached 100%");
-    assert.ok(progress.length <= 20, "unsupported: limited progress events");
-
+    assert.equal(bf.bricksParsed, allBricksProject.header.bricksCount, "unsupported: all bricks created");
     assert.equal(unsupportedCalled, 2, "unsupported: unsupported bricks found, handler called once");
     assert.equal(unsupportedBricks.length, 2, "unsupported: 2 found");
 
+    bf.dispose();
+    assert.ok(bf._disposed, "disposed");
+    assert.ok(device && gameEngine && scene && broadcastMgr, "dispose without disposing other (shared) objects");
 });
 
 
@@ -924,7 +905,7 @@ QUnit.test("SpriteFactory", function (assert) {
     var allBricksProject = project1;    //using tests_testData.js
     //^^ includes all types of bricks 
 
-    var broadcastMgr = new PocketCode.BroadcastManager(allBricksProject.broadcasts);
+    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s23" } ]);
     var device = new PocketCode.MediaDevice();
     var gameEngine = new PocketCode.GameEngine(allBricksProject.id);
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
@@ -971,7 +952,7 @@ QUnit.test("SpriteFactory", function (assert) {
     sf.onUnsupportedBricksFound.addEventListener(unsupportedBricksFoundListener);
     sf.onSpriteLoaded.addEventListener(spriteLoadedListener);
 
-    var bg = sf.create(scene, broadcastMgr, allBricksProject.background, true);
+    var bg = sf.create(scene, broadcastMgr, spriteTest, true);
     assert.ok(bg instanceof PocketCode.Model.BackgroundSprite, "background sprite created");
     assert.equal(spritesLoaded, 1, "spritesLoaded event called including event args");
     assert.equal(unsupportedBricks, 0, "no unsupported bricks found");

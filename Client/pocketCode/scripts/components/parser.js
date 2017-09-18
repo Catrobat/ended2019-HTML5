@@ -104,33 +104,26 @@ PocketCode.merge({
             this._broadcastMgr = broadcastMgr;
             this._minLoopCycleTime = minLoopCycleTime;
 
-            //this._total = totalCount;
             this._parsed = 0;//loadedCount;
-            //this._updatePercentage = 0.0;
-            //this._unsupportedBricks = [];
 
-            //this._onProgressChange = new SmartJs.Event.Event(this);
             this._onUnsupportedBrickFound = new SmartJs.Event.Event(this);
         }
 
         //events
         Object.defineProperties(BrickFactory.prototype, {
-            //onProgressChange: {
-            //    get: function () { return this._onProgressChange; },
-            //    //enumerable: false,
-            //    //configurable: true,
-            //},
             onUnsupportedBrickFound: {
-                get: function () { return this._onUnsupportedBrickFound; },
-                //enumerable: false,
-                //configurable: true,
+                get: function () {
+                    return this._onUnsupportedBrickFound;
+                },
             },
         });
 
         //properties
         Object.defineProperties(BrickFactory.prototype, {
             bricksParsed: {
-                get: function () { return this._parsed; },
+                get: function () {
+                    return this._parsed;
+                },
             },
         });
 
@@ -292,11 +285,6 @@ PocketCode.merge({
                 }
 
                 this._parsed++; //this has to be incremented after creating the sub items to avoid the unsupported brick event trigger more than once
-                //this._updateProgress();
-
-                //if (this._total === this._parsed && this._unsupportedBricks.length > 0)
-                //    this._onUnsupportedBricksFound.dispatchEvent({ unsupportedBricks: this._unsupportedBricks });
-
                 return brick;
             },
             _createList: function (currentSprite, jsonBricks) {    //returns bricks as a BrickContainer
@@ -305,17 +293,6 @@ PocketCode.merge({
                     bricks.push(this.create(currentSprite, jsonBricks[i]));
                 return new PocketCode.Model.BrickContainer(bricks);
             },
-            //_updateProgress: function () {
-            //    var progress = 100.0 / this._total * this._parsed;
-            //    //we do not want to trigger several hundred progress updates.. every 5% should be enough
-            //    //todo introduce new condition to update
-            //    //if (this._total === this._parsed || (progress - this._updatePercentage) >= 5.0) {
-            //    this._updatePercentage = progress;
-            //    progress = Math.round(progress * 10) / 10;  //show only one decimal place
-            //    this._onProgressChange.dispatchEvent({ progress: progress, parsed: this._parsed });
-            //    // }
-
-            //},
             dispose: function () {
                 this._device = undefined;
                 this._gameEngine = undefined;

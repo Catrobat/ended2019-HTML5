@@ -28,9 +28,6 @@ PocketCode.Model.Scene = (function () {
         this._minLoopCycleTime = minLoopCycleTime || 20; //ms
         this._device = device;
 
-        //this._soundManager = new PocketCode.SoundManager();
-        //this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkForOnExecuted, this));
-
         this._broadcastMgr = new PocketCode.BroadcastManager(jsonBroadcasts || []);
         this._collisionManager = undefined; //set during loading
 
