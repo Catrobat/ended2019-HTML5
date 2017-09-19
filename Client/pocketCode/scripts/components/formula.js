@@ -14,7 +14,7 @@ PocketCode.Formula = (function () {
         this._sprite = sprite;
         this._userVariableHost = sprite;    //default
 
-        if (jsonFormula)
+        if (jsonFormula !== undefined)   //null is allowed
             this.json = jsonFormula;
     }
 
@@ -51,7 +51,7 @@ PocketCode.Formula = (function () {
     //methods
     Formula.prototype.merge({
         calculate: function() {
-            if (this._json)
+            if (this._json !== undefined)   //null is allowed
                 return this._calculate();
             throw new Error('No Formula objct loaded');
         },

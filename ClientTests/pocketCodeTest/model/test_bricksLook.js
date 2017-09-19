@@ -67,7 +67,7 @@ QUnit.test("SetLookByIndexBrick", function (assert) {
         assert.ok(true, "executed");
         assert.equal(e.loopDelay, true, "loopDelay received");
         assert.equal(e.id, "thread_id", "threadId handled correctly");
-        assert.equal(sprite.currentLookNumber, 1, "returns 2 for look_number - set");
+        assert.equal(sprite.currentLookNumber, 1, "returns 1 for look_number - changed");
         done1();
     };
     b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
@@ -750,35 +750,56 @@ QUnit.test("SetBackgroundAndWaitBrick", function (assert) {
 
 QUnit.test("SetBackgroundByIndexBrick", function (assert) {
 
-    assert.ok(false, "TODO");
-    //var done1 = assert.async();
+    var done1 = assert.async();
+    var done2 = assert.async();
 
-    //var device = "device";
-    //var gameEngine = new PocketCode.GameEngine();
-    //var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
-    //var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
-    //scene._background = sprite;
-    //var b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { lookId: "lookId" });
+    var device = "device";
+    var gameEngine = new PocketCode.GameEngine();
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    var sprite = new PocketCode.Model.BackgroundSprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
+    var looks = [
+        new PocketCode.Model.Look({ id: "s01" }),
+        new PocketCode.Model.Look({ id: "s02" }),
+    ];
+    sprite._looks = looks;
+    scene._background = sprite;
 
-    //assert.ok(b._device === device && b._sprite === sprite && b._lookId === "lookId", "brick created and properties set correctly");
-    //assert.ok(b instanceof PocketCode.Model.SetBackgroundByIndexBrick && b instanceof PocketCode.Model.BaseBrick, "instance check");
-    //assert.ok(b.objClassName === "SetBackgroundByIndexBrick", "objClassName check");
+    var idxFormulaJson = JSON.parse('{"type":"NUMBER","value":"1","right":null,"left":null}');
+    var b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { idx: idxFormulaJson });
 
-    //b.dispose();
-    //assert.ok(b._disposed && !scene._disposed, "disposed without disposing scene");
+    assert.ok(b._device === device && b._sprite === sprite && b.indexFormula instanceof PocketCode.Formula, "brick created and properties set correctly");
+    assert.equal(b.indexFormula.calculate(), 1, "internal formula loaded correctly");
+    assert.ok(b instanceof PocketCode.Model.SetBackgroundByIndexBrick, "instance check");
+    assert.ok(b.objClassName === "SetBackgroundByIndexBrick", "objClassName check");
 
-    ////recreate
-    //b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { lookId: "lookId" });
+    //no look set yet
+    assert.equal(scene.currentBackgroundNumber, 1, "returns 1 for look_number if not set");
+    sprite._currentLook = looks[1];
+    assert.equal(scene.currentBackgroundNumber, 2, "returns 2 for look_number - set");
 
-    ////execute
-    //var handler = function (e) {
-    //    assert.ok(true, "executed");
-    //    assert.equal(typeof e.loopDelay, "boolean", "loopDelay received");
-    //    assert.equal(e.id, "thread_id", "threadId handled correctly");
-    //    done1();
-    //};
-    //b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
+    //execute
+    var handler = function (e) {
+        assert.ok(true, "executed");
+        assert.equal(e.loopDelay, true, "loopDelay received");
+        assert.equal(e.id, "thread_id", "threadId handled correctly");
+        assert.equal(scene.currentBackgroundNumber, 1, "returns 1 for look_number - changed");
+        done1();
+    };
+    b.execute(new SmartJs.Event.EventListener(handler, this), "thread_id");
 
+    var handlerNull = function (e) {
+        assert.ok(true, "idx = null: executed");
+        assert.ok(!e.loopDelay, "idx = null: no loopDelay");
+        assert.equal(e.id, "thread_null", "idx = null: threadId handled correctly");
+        assert.equal(scene.currentBackgroundNumber, 1, "idx = null: returns 1 for look_number - changed");
+        done2();
+    };
+    b = new PocketCode.Model.SetBackgroundByIndexBrick(device, sprite, scene, { idx: null });
+    b.execute(new SmartJs.Event.EventListener(handlerNull, this), "thread_null");
+
+    b.dispose();
+    assert.ok(b._disposed, "disposed: super called");
+    assert.ok(scene instanceof PocketCode.Model.Scene, "scene not disposed");
 });
 
 
