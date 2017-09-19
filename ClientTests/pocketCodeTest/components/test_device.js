@@ -280,7 +280,6 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         }
         deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
         setTimeout(validateTwoKeysLeftRight, 5);
-
     }
 
     //Alternative Left and Right pressed
@@ -291,10 +290,105 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
             assert.equal(deviceEmulator.inclinationX, 0, "Alternative Left and Right Key released: no inclination");
-            testSpace();
+            testFirstKeyDownLeft();
         }
         deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
         setTimeout(validateTwoKeysLeftRightAlternative, 5);
+    }
+
+    //Left(first) and Right pressed --> left released, reset of inclination
+    function testFirstKeyDownLeft() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationX;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
+            assert.ok(tmpIncl1 > 0, "left and right key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationX;
+                assert.equal(tmpIncl1, tmpIncl2, "left and right key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.LEFT});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationX;
+                assert.ok(tmpIncl3 < 0, "left key released, inclination reseted and inclination to the right");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.RIGHT});
+                testFirstKeyDownLeftAlt();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+
+    //Alternative Left(first) and Right pressed --> left released, reset of inclination
+    function testFirstKeyDownLeftAlt() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationX;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
+            assert.ok(tmpIncl1 > 0, "left and right key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationX;
+                assert.equal(tmpIncl1, tmpIncl2, "left and right key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationX;
+                assert.ok(tmpIncl3 < 0, "alternative left key released, inclination reseted and inclination to the right");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
+                testFirstKeyDownRight();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+    //Left and Right(first) pressed --> right released, reset of inclination
+    function testFirstKeyDownRight() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationX;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
+            assert.ok(tmpIncl1 < 0, "left and right key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationX;
+                assert.equal(tmpIncl1, tmpIncl2, "left and right key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.RIGHT});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationX;
+                assert.ok(tmpIncl3 > 0, "right key released, inclination reseted and inclination to the left");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.LEFT});
+                testFirstKeyDownRightAlt();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.RIGHT});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+
+    //Alternative Left and Right(first) pressed --> right released, reset of inclination
+    function testFirstKeyDownRightAlt() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationX;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
+            assert.ok(tmpIncl1 < 0, "left and right key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationX;
+                assert.equal(tmpIncl1, tmpIncl2, "left and right key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationX;
+                assert.ok(tmpIncl3 > 0, "alternative right key released, inclination reseted and inclination to the left");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
+                testSpace();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
+        setTimeout(validateFirstKeyDown, 1000);
     }
 
     function testSpace() {
@@ -396,10 +490,105 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.UP});
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
             assert.equal(deviceEmulator.inclinationY, 0, "Alternative Up and Down Key released: no inclination");
-            testSpace();
+            testFirstKeyDownUp();
         }
         deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
         setTimeout(validateTwoKeysUpDownAlternative, 5);
+    }
+
+    //Up(first) and Down pressed --> up released, reset of inclination
+    function testFirstKeyDownUp() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationY;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
+            assert.ok(tmpIncl1 < 0, "up and down key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationY;
+                assert.equal(tmpIncl1, tmpIncl2, "up and down key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.UP});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationY;
+                assert.ok(tmpIncl3 > 0, "up key released, inclination reseted and inclination to the bottom");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.DOWN});
+                testFirstKeyDownUpAlt();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+
+    //Alternative Up(first) and Down pressed --> up released, reset of inclination
+    function testFirstKeyDownUpAlt() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationY;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
+            assert.ok(tmpIncl1 < 0, "up and down key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationY;
+                assert.equal(tmpIncl1, tmpIncl2, "up and down key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.UP});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationY;
+                assert.ok(tmpIncl3 > 0, "alternative up key released, inclination reseted and inclination to the bottom");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
+                testFirstKeyDownDown();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.UP});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+    //Up and Down(first) pressed --> down released, reset of inclination
+    function testFirstKeyDownDown() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationY;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
+            assert.ok(tmpIncl1 > 0, "up and down key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationY;
+                assert.equal(tmpIncl1, tmpIncl2, "up and down key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.DOWN});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationY;
+                assert.ok(tmpIncl3 < 0, "down key released, inclination reseted and inclination to the top");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.UP});
+                testFirstKeyDownDownAlt();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.DOWN});
+        setTimeout(validateFirstKeyDown, 1000);
+    }
+
+    //Alternative Up and Down(first) pressed --> left released, reset of inclination
+    function testFirstKeyDownDownAlt() {
+        var validateFirstKeyDown = function () {
+            var tmpIncl1 = deviceEmulator.inclinationY;
+            deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.UP});
+            assert.ok(tmpIncl1 > 0, "up and down key pressed");
+            var holdIncl = function () {
+                var tmpIncl2 = deviceEmulator.inclinationY;
+                assert.equal(tmpIncl1, tmpIncl2, "up and down key hold inclination");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
+                setTimeout(resetIncl, 200);
+            }
+            setTimeout(holdIncl, 200);
+            var resetIncl = function () {
+                var tmpIncl3 = deviceEmulator.inclinationY;
+                assert.ok(tmpIncl3 < 0, "down key released, inclination reseted and inclination to the top");
+                deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.UP});
+                testSpace();
+            }
+        }
+        deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
+        setTimeout(validateFirstKeyDown, 1000);
     }
 
     function testSpace() {
@@ -423,6 +612,5 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
         }
         setTimeout(testDispose, 5);
     }
-
 });
 

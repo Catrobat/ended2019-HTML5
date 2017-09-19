@@ -56,12 +56,6 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     assert.ok(maxDegreeSlider.onChange instanceof SmartJs.Event.Event, "Degree slider: event accessor check");
 
     //check for change event for Degree slider
-    // var changeCount = 0;
-    // var changeEvents = function (e) {
-    //     console.log("triggered");
-    //     changeCount++;
-    // };
-    // deviceEmulator._maxSlider._onChange.addEventListener(new SmartJs.Event.EventListener(changeEvents, this));
 
     assert.equal(maxDegreeSlider.value, 90, "onChange Event not triggered: no Degree change");
     deviceEmulator._maxDegreeChangeHandler({target: {value: 45}});

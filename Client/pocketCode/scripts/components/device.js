@@ -946,12 +946,6 @@ PocketCode.DeviceEmulator = (function () {
         inclinationX: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
-                // if (!this._inclinationTimer) {  //init on use
-                //     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
-                //     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
-                //     this._inclinationTimerTick();
-                //     //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
-                // }
                 this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                 this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
                 this._inclinationTimerTick();
@@ -962,12 +956,6 @@ PocketCode.DeviceEmulator = (function () {
         inclinationY: {
             get: function () {
                 this._features.INCLINATION.inUse = true;
-                // if (!this._inclinationTimer) {  //init on use
-                //     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
-                //     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
-                //     this._inclinationTimerTick();
-                //     //this._inclinationTimer = window.setInterval(this._inclinationTimerTick.bind(this), 1);
-                // }
                 this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                 this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
                 this._inclinationTimerTick();
@@ -1002,7 +990,7 @@ PocketCode.DeviceEmulator = (function () {
                     }
                     if (!this._keyDownDateTime.LEFT)
                     {
-                        this._keyDownDateTime.LEFT = new Date();
+                        this._keyDownDateTime.LEFT = Date.now();
                     }
 
                     this._keyPress.LEFT = true;
@@ -1020,7 +1008,7 @@ PocketCode.DeviceEmulator = (function () {
                     }
                     if (!this._keyDownDateTime.RIGHT)
                     {
-                        this._keyDownDateTime.RIGHT = new Date();
+                        this._keyDownDateTime.RIGHT = Date.now();
                     }
                     this._keyPress.RIGHT = true;
                     break;
@@ -1037,7 +1025,7 @@ PocketCode.DeviceEmulator = (function () {
                     }
                     if (!this._keyDownDateTime.UP)
                     {
-                        this._keyDownDateTime.UP = new Date();
+                        this._keyDownDateTime.UP = Date.now();
                     }
                     this._keyPress.UP = true;
                     break;
@@ -1054,7 +1042,7 @@ PocketCode.DeviceEmulator = (function () {
                     }
                     if (!this._keyDownDateTime.DOWN)
                     {
-                        this._keyDownDateTime.DOWN = new Date();
+                        this._keyDownDateTime.DOWN = Date.now();
                     }
                     this._keyPress.DOWN = true;
                     break;
@@ -1135,7 +1123,7 @@ PocketCode.DeviceEmulator = (function () {
                 return;
             if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
                 // left
-                this._elapsedTime.LEFT = (new Date() - this._keyDownDateTime.LEFT) / 1000;
+                this._elapsedTime.LEFT = (Date.now() - this._keyDownDateTime.LEFT) / 1000;
                 var inclDateTimeLeft = this._inclinationIncrTmp.X * this._elapsedTime.LEFT;
                 this._sensorData.X_INCLINATION += inclDateTimeLeft;
                 if (this._sensorData.X_INCLINATION > this.degreeChangeValue)
@@ -1143,7 +1131,7 @@ PocketCode.DeviceEmulator = (function () {
             }
             else if (!this._keyPress.LEFT && this._keyPress.RIGHT) {
                 // right
-                this._elapsedTime.RIGHT = (new Date() - this._keyDownDateTime.RIGHT) / 1000;
+                this._elapsedTime.RIGHT = (Date.now() - this._keyDownDateTime.RIGHT) / 1000;
                 var inclDateTimeRight = this._inclinationIncrTmp.X * this._elapsedTime.RIGHT;
                 this._sensorData.X_INCLINATION -= inclDateTimeRight;
                 if (this._sensorData.X_INCLINATION < this.degreeChangeValue * -1)
@@ -1151,7 +1139,7 @@ PocketCode.DeviceEmulator = (function () {
             }
             if (this._keyPress.UP && !this._keyPress.DOWN) {
                 // up
-                this._elapsedTime.UP = (new Date() - this._keyDownDateTime.UP) / 1000;
+                this._elapsedTime.UP = (Date.now() - this._keyDownDateTime.UP) / 1000;
                 var inclDateTimeUp = this._inclinationIncrTmp.Y * this._elapsedTime.UP;
                 this._sensorData.Y_INCLINATION -= inclDateTimeUp;
                 if (this._sensorData.Y_INCLINATION < this.degreeChangeValue * -1)
@@ -1159,7 +1147,7 @@ PocketCode.DeviceEmulator = (function () {
             }
             else if (!this._keyPress.UP && this._keyPress.DOWN) {
                 // down
-                this._elapsedTime.DOWN = (new Date() - this._keyDownDateTime.DOWN) / 1000;
+                this._elapsedTime.DOWN = (Date.now() - this._keyDownDateTime.DOWN) / 1000;
                 var inclDateTimeDown = this._inclinationIncrTmp.Y * this._elapsedTime.DOWN;
                 this._sensorData.Y_INCLINATION += inclDateTimeDown;
                 if (this._sensorData.Y_INCLINATION > this.degreeChangeValue)
@@ -1196,7 +1184,7 @@ PocketCode.DeviceEmulator = (function () {
             PocketCode.MediaDevice.prototype.reset.call(this);   //call super()
         },
         dispose: function () {
-            window.clearInterval(this._inclinationTimer);
+            //window.clearInterval(this._inclinationTimer);
             if (this._keyDownListener)
                 this._removeDomListener(document, 'keydown', this._keyDownListener);
             if (this._keyUpListener)
