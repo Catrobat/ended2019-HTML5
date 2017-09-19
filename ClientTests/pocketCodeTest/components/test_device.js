@@ -390,6 +390,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
         deviceEmulator._keyDown({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
         setTimeout(validateFirstKeyDown, 1000);
     }
+    //FirstKeyDown test: both keys pressed, first released, first pressed again
 
     function testSpace() {
         var validateKeySpace = function () {

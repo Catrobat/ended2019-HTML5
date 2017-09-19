@@ -30,7 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin / (46 * -1), max: device.degreeChangeMax * (90 / 46), value: device.degreeChangeValue * (90 / 46), minLabel: device.degreeChangeMin / (46 * -1), maxLabel: '&plusmn;' + device.degreeChangeMax * (90 / 46)});
+        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin, max: device.degreeChangeMax, value: device.degreeChangeValue, minLabel: device.degreeChangeMin, maxLabel: '&plusmn;' + device.degreeChangeMax});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -44,7 +44,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin / (8 * -1), max: device.accelerationChangeMax * (10 / 8), value: device.accelerationChangeValue * (5 / 8), minLabel: device.accelerationChangeMin / (8 * -1), maxLabel: device.accelerationChangeMax * (10 / 8)});
+        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin, max: device.accelerationChangeMax, value: device.accelerationChangeValue, minLabel: device.accelerationChangeMin, maxLabel: device.accelerationChangeMax});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -58,31 +58,27 @@ PocketCode.Ui.DeviceEmulator = (function () {
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationX');
-        var div = new SmartJs.Ui.HtmlTag('div');
-        span = new SmartJs.Ui.HtmlTag('span');
+        var div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
+        span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
         span.appendChild(tn);
         div.appendChild(span);
-        span = new SmartJs.Ui.HtmlTag('span');
+        this._inclXTextNode = new SmartJs.Ui.TextNode('');
+        span = new SmartJs.Ui.HtmlTag('div', {style: {display:'inline'}});
+        span.appendChild(this._inclXTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDInclinationY');
-        div = new SmartJs.Ui.HtmlTag('div');
-        span = new SmartJs.Ui.HtmlTag('span');
+        div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
+        span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
         span.appendChild(tn);
         div.appendChild(span);
-        span = new SmartJs.Ui.HtmlTag('span');
+        this._inclYTextNode = new SmartJs.Ui.TextNode('');
+        span = new SmartJs.Ui.HtmlTag('div', {style: {display:'inline'}});
+        span.appendChild(this._inclYTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
 
-        /*var tn = new PocketCode.Ui.I18nTextNode('lbFlashlight');
-        var span = new SmartJs.Ui.HtmlTag('span');
-        span.appendChild(tn);
-        scroll.appendChild(span);
-
-        this._flashSlider = new PocketCode.Ui.Slider({min: 0, max: 1, value: 0, minLabel: 'Off', maxLabel: 'On'});
-        this._flashSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._flashChangeHandler, this));
-        scroll.appendChild(this._flashSlider);*/
     }
 
     //properties
@@ -97,25 +93,19 @@ PocketCode.Ui.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            this._device.degreeChangeValue = e.value / 90 * 46;
+            this._device.degreeChangeValue = e.value;
         },
         _maxAccChangeHandler: function(e) {
             this._device.accelerationChangeValue = e.value;
         },
-        /*_flashChangeHandler: function (e) {
-            if (e.value == 1)
-                this._device.flashOn = true;
-            if (e.value == 0)
-                this._device.flashOn = false;
-        },*/
         _updateImageTransformation: function (e) {
-            var image = document.getElementById("sj69");
+            var image = this._img;
 
-            image.style.webkitTransform = "rotateX(" + this._device.inclinationY  + "deg) rotateY(" + this._device.inclinationX + "deg)";
-            image.style.transform = "rotateX(" + -this._device.inclinationY  + "deg) rotateY(" + -this._device.inclinationX  + "deg)";
+            image.style.webkitTransform = 'rotateX(' + this._device.inclinationY  + 'deg) rotateY(' + this._device.inclinationX + 'deg)';
+            image.style.transform = 'rotateX(' + -this._device.inclinationY  + 'deg) rotateY(' + -this._device.inclinationX  + 'deg)';
 
-            document.getElementById("sj73").innerHTML = Math.round(this._device.inclinationX * (90 / 46));
-            document.getElementById("sj76").innerHTML = Math.round(this._device.inclinationY * (90 / 46));
+            this._inclXTextNode.text = Math.round(this._device.inclinationX);
+            this._inclYTextNode.text = Math.round(this._device.inclinationY);
         },
         _openCloseHandler: function (e) {
             if (e.opened)

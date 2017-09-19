@@ -1451,7 +1451,7 @@
     position: absolute;
     bottom: 0;
     right: 18px;
-    margin: 15px 0px;
+    margin: 8px 0px;
     width: 360px;
     overflow: hidden;
     border: solid 1px #17a5b8;
@@ -1490,13 +1490,23 @@
 
     }
 
-        .pc-deviceEmulator .pc-expanderBody span {
+
+
+    .pc-deviceEmulator .pc-expanderBody span {
             display: block;
             padding: 3px;
         }
 
         .pc-deviceEmulator .pc-expanderBody .pc-dEImg {
             text-align: center;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-label {
+            display: inline;
+        }
+
+        .pc-deviceEmulator .pc-expanderBody .pc-label:after {
+            content: ': ';
         }
 
 .pc-deviceEmulatorScroll {
