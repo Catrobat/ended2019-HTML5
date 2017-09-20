@@ -15,6 +15,12 @@ QUnit.test("BaseBrick", function (assert) {
 
     assert.ok(brick instanceof PocketCode.BaseBrick && brick instanceof PocketCode.BaseController, "instance check + inheritance");
     assert.ok(brick.objClassName === "BaseBrick", "objClassName check");
+
+    assert.equal(brick._commentedOut, false, "_commentedOut set")
+    var brick = new PocketCode.BaseBrick(view, model, true);
+    assert.equal(brick._commentedOut, true, "_commentedOut set 2")
+    assert.ok(brick._model instanceof PocketCode.Model.BaseBrick, "_model set")
+
 });
 
 QUnit.test("UnsupportedBrick", function (assert) {

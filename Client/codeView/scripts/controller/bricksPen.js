@@ -44,10 +44,13 @@ PocketCode.merge({
 
     SetPenSizeBrick: (function () {
         SetPenSizeBrick.extends(PocketCode.BaseBrick, false);
-        function SetPenSizeBrick(model, commentedOut) {
+        function SetPenSizeBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetPenSizeBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -57,8 +60,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetPenSizeBrick' + PocketCode.SetPenSizeBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -70,10 +72,14 @@ PocketCode.merge({
 
     SetPenColorBrick: (function () {
         SetPenColorBrick.extends(PocketCode.BaseBrick, false);
-        function SetPenColorBrick(model, commentedOut) {
+        function SetPenColorBrick(model, commentedOut, formulaRed, formulaGreen, formulaBlue) {
             if (!(model instanceof PocketCode.Model.SetPenColorBrick)) {
                 throw new Error("Invalid argument Model");
             }
+            var _formulaRed = formulaRed || "";
+            var _formulaGreen = formulaGreen || "";
+            var _formulaBlue = formulaBlue || "";
+
             var content = {
                 content: [
                     {
@@ -90,8 +96,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[3].id,
-                        value: ''
+                        value: _formulaRed
                     },
                     {
                         type: 'text',
@@ -100,8 +105,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[5].id,
-                        value: ''
+                        value: _formulaGreen
                     },
                     {
                         type: 'text',
@@ -110,8 +114,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetPenColorBrick' + PocketCode.SetPenColorBrick.content[7].id,
-                        value: ''
+                        value: _formulaBlue
                     },
                 ]
             };

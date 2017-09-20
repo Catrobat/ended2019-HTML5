@@ -21,7 +21,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'PlaySoundBrick' + PocketCode.PlaySoundBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -52,7 +51,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'PlaySoundAndWaitBrick' + PocketCode.PlaySoundAndWaitBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -87,10 +85,13 @@ PocketCode.merge({
 
     SetVolumeBrick: (function () {
         SetVolumeBrick.extends(PocketCode.BaseBrick, false);
-        function SetVolumeBrick(model, commentedOut) {
+        function SetVolumeBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetVolumeBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -100,8 +101,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetVolumeBrick' + PocketCode.SetVolumeBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -114,10 +114,13 @@ PocketCode.merge({
 
     ChangeVolumeBrick: (function () {
         ChangeVolumeBrick.extends(PocketCode.BaseBrick, false);
-        function ChangeVolumeBrick(model, commentedOut) {
+        function ChangeVolumeBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.ChangeVolumeBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -127,8 +130,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'ChangeVolumeBrick' + PocketCode.ChangeVolumeBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -141,10 +143,13 @@ PocketCode.merge({
 
     SpeakBrick: (function () {
         SpeakBrick.extends(PocketCode.BaseBrick, false);
-        function SpeakBrick(model, commentedOut) {
+        function SpeakBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SpeakBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -154,8 +159,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                       // name: 'SpeakBrick' + PocketCode.SpeakBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -168,10 +172,13 @@ PocketCode.merge({
 
     SpeakAndWaitBrick: (function () {
         SpeakAndWaitBrick.extends(PocketCode.BaseBrick, false);
-        function SpeakAndWaitBrick(model, commentedOut) {
+        function SpeakAndWaitBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SpeakAndWaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -181,7 +188,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',

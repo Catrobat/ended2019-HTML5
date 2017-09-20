@@ -850,7 +850,8 @@ PocketCode.merge({
                             return jsonFormula;
                         }
 
-                        return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
+                        return '((' + this._parseJsonType(jsonFormula.left).toString().replace(/'/g, '\\\'').replace(/\n/g, '\\n')
+                            + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right).toString().replace(/'/g, '\\\'').replace(/\n/g, '\\n') + ') + \'\')';
 
                         //list
                     case 'NUMBER_OF_ITEMS':

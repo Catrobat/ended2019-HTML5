@@ -47,57 +47,47 @@ PocketCode.merge({
             if (!(model instanceof PocketCode.Model.WhenActionBrick)) {
                 throw new Error("Invalid argument Model");
             }
-
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_when'
-                    }
-                ],
-                endContent: [
-                    {
-                        type: 'text',
-                        i18n: ''
-                    }
-                ]
-            };
+            if(model.action == PocketCode.UserActionType.SPRITE_TOUCHED){
+                var content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_when_touched'
+                        }
+                    ],
+                    endContent: [
+                        {
+                            type: 'text',
+                            i18n: ''
+                        }
+                    ]
+                };
+            }
+            else if(model.action == PocketCode.UserActionType.TOUCH_START) {
+                var content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_when'
+                        }
+                    ],
+                    endContent: [
+                        {
+                            type: 'text',
+                            i18n: ''
+                        }
+                    ]
+                };
+            }
+            else{
+                throw new Error("Unknown UserActionType");
+            }
 
             var view = new PocketCode.View.EventBrick(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
         return WhenActionBrick;
-    })(),
-
-    WhenTouchBrick: (function () {
-        WhenTouchBrick.extends(PocketCode.BaseBrick, false); //todo extends WhenAction brick?
-
-        function WhenTouchBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.WhenTouchBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_when_touched'
-                    }
-                ],
-                endContent: [
-                    {
-                        type: 'text',
-                        i18n: ''
-                    }
-                ]
-            };
-
-            var view = new PocketCode.View.EventBrick(commentedOut, content, true);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-
-        return WhenTouchBrick;
     })(),
 
     WhenBroadcastReceiveBrick: (function () {
@@ -120,7 +110,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from message??
-                        //name: 'WhenBroadcastReceiveBrick'+ PocketCode.WhenBroadcastReceiveBrick.content[2].id,
                         value: ''
                     }
                 ],
@@ -159,7 +148,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from message??
-                        //name: 'BroadcastBrick'+ PocketCode.BroadcastBrick.content[2].id,
                         value: ''
                     }
                 ],
@@ -198,7 +186,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from message??
-                        //name: 'BroadcastAndWaitBrick'+ PocketCode.BroadcastAndWaitBrick.content[2].id,
                         value: ''
                     }
                 ],
@@ -220,10 +207,12 @@ PocketCode.merge({
     WhenConditionMetBrick: (function () {
         WhenConditionMetBrick.extends(PocketCode.BaseBrick, false);
 
-        function WhenConditionMetBrick(model, commentedOut) {
+        function WhenConditionMetBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.WhenConditionMetBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -234,8 +223,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'WhenConditionMetBrick'+ PocketCode.WhenConditionMetBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',
@@ -277,7 +265,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'WhenCollisionBrick'+ PocketCode.WhenCollisionBrick.content[2].id,
                         value: ''
                     }
                 ],
@@ -316,7 +303,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from background
-                        //name: 'WhenBackgroundChangesToBrick'+ PocketCode.WhenBackgroundChangesToBrick.content[2].id,
                         value: ''
                     }
                 ],

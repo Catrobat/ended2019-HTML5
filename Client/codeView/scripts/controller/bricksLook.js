@@ -20,7 +20,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'SetLookBrick' + PocketCode.SetLookBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -33,10 +32,13 @@ PocketCode.merge({
 
     SetLookByIndexBrick: (function () {
         SetLookByIndexBrick.extends(PocketCode.BaseBrick, false);
-        function SetLookByIndexBrick(model, commentedOut) {
+        function SetLookByIndexBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetLookByIndexBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -46,7 +48,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -98,10 +100,13 @@ PocketCode.merge({
 
     SetSizeBrick: (function () {
         SetSizeBrick.extends(PocketCode.BaseBrick, false);
-        function SetSizeBrick(model, commentedOut) {
+        function SetSizeBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetSizeBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -111,8 +116,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SetSizeBrick' + PocketCode.SetSizeBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',
@@ -128,10 +132,13 @@ PocketCode.merge({
 
     ChangeSizeBrick: (function () {
         ChangeSizeBrick.extends(PocketCode.BaseBrick, false);
-        function ChangeSizeBrick(model, commentedOut) {
+        function ChangeSizeBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.ChangeSizeBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -141,8 +148,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'ChangeSizeBrick' + PocketCode.ChangeSizeBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -195,10 +201,13 @@ PocketCode.merge({
     AskBrick: (function () {
         AskBrick.extends(PocketCode.BaseBrick, false);
 
-        function AskBrick(model, commentedOut) {
+        function AskBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.AskBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -208,8 +217,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'AskBrick' + PocketCode.AskBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'lf' //line feed
@@ -222,9 +230,8 @@ PocketCode.merge({
                         type: 'lf'
                     },
                     {
-                        type: 'formula',
+                        type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'AskBrick' + PocketCode.AskBrick.content[5].id,
                         value: ''
                     }
                 ]
@@ -237,10 +244,13 @@ PocketCode.merge({
 
     SayBrick: (function () {
         SayBrick.extends(PocketCode.BaseBrick, false);
-        function SayBrick(model, commentedOut) {
+        function SayBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SayBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -250,8 +260,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SayBrick' + PocketCode.SayBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -263,10 +272,14 @@ PocketCode.merge({
 
     SayForBrick: (function () {
         SayForBrick.extends(PocketCode.BaseBrick, false);
-        function SayForBrick(model, commentedOut) {
+        function SayForBrick(model, commentedOut, formulaValue, formulaTime) {
             if (!(model instanceof PocketCode.Model.SayForBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formulaValue = formulaValue || "";
+            var _formulaTime = formulaTime || "";
+
             var content = {
                 content: [
                     {
@@ -276,8 +289,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SayForBrick' + PocketCode.SayForBrick.content[1].id,
-                        value: ''
+                        value: _formulaValue
                     },
                     {
                         type: 'lf' //line feed
@@ -289,8 +301,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'SayForBrick' + PocketCode.SayForBrick.content[4].id,
-                        value: ''
+                        value: _formulaTime
                     },
                     {
                         type: 'text',
@@ -306,10 +317,13 @@ PocketCode.merge({
 
     ThinkBrick: (function () {
         ThinkBrick.extends(PocketCode.BaseBrick, false);
-        function ThinkBrick(model, commentedOut) {
+        function ThinkBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.ThinkBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
+
             var content = {
                 content: [
                     {
@@ -319,8 +333,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'ThinkBrick' + PocketCode.ThinkBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -332,10 +345,14 @@ PocketCode.merge({
 
     ThinkForBrick: (function () {
         ThinkForBrick.extends(PocketCode.BaseBrick, false);
-        function ThinkForBrick(model, commentedOut) {
+        function ThinkForBrick(model, commentedOut, formulaValue, formulaTime) {
             if (!(model instanceof PocketCode.Model.ThinkForBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formulaValue = formulaValue || "";
+            var _formulaTime = formulaTime || "";
+
             var content = {
                 content: [
                     {
@@ -345,8 +362,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[1].id,
-                        value: ''
+                        value: _formulaValue
                     },
                     {
                         type: 'lf' //line feed
@@ -358,8 +374,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'ThinkForBrick' + PocketCode.ThinkForBrick.content[4].id,
-                        value: ''
+                        value: _formulaTime
                     },
                     {
                         type: 'text',
@@ -376,12 +391,13 @@ PocketCode.merge({
     SetGraphicEffectBrick: (function () {
         SetGraphicEffectBrick.extends(PocketCode.BaseBrick, false);
 
-        function SetGraphicEffectBrick(model, commentedOut) {
+        function SetGraphicEffectBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetGraphicEffectBrick)) {
                 throw new Error("Invalid argument Model");
             }
 
             var content = {};
+            var _formula = formula || "";
 
             if(model._effect === "brightness"){
                 content = {
@@ -393,8 +409,7 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'SetBrightnessBrick' + PocketCode.SetBrightnessBrick.content[1].id,
-                            value: '' //range 0 - 100
+                            value: _formula //range 0 - 100
                         },
                         {
                             type: 'text',
@@ -404,7 +419,7 @@ PocketCode.merge({
                 }
 
             }
-            if(model._effect === "transparency"){
+            if(model._effect === "ghost"){
                 content = {
                     content: [
                         {
@@ -421,8 +436,7 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'SetTransparencyBrick' + PocketCode.SetTransparencyBrick.content[3].id,
-                            value: '' //range 0 - 100
+                            value: _formula //range 0 - 100
                         },
                         {
                             type: 'text',
@@ -442,8 +456,7 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'SetColorEffectBrick' + PocketCode.SetColorEffectBrick.content[1].id,
-                            value: ''
+                            value: _formula
                         }
                     ]
                 }
@@ -459,12 +472,13 @@ PocketCode.merge({
     ChangeGraphicEffectBrick: (function () {
         ChangeGraphicEffectBrick.extends(PocketCode.BaseBrick, false);
 
-        function ChangeGraphicEffectBrick(model, commentedOut) {
+        function ChangeGraphicEffectBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.ChangeGraphicEffectBrick)) {
                 throw new Error("Invalid argument Model");
             };
 
             var content = {};
+            var _formula = formula || "";
 
             if(model._effect === "brightness"){
                 content = {
@@ -476,13 +490,12 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'ChangeBrightnessBrick' + PocketCode.ChangeBrightnessBrick.content[1].id,
-                            value: ''
+                            value: _formula
                         }
                     ]
                 };
             }
-            if(model._effect === "transparency"){
+            if(model._effect === "ghost"){
                 content = {
                     content: [
                         {
@@ -492,8 +505,7 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'ChangeTransparencyBrick' + PocketCode.ChangeTransparencyBrick.content[1].id,
-                            value: '' //range 0 - 100 ??
+                            value: _formula //range 0 - 100 ??
                         }
                     ]
                 }
@@ -509,8 +521,7 @@ PocketCode.merge({
                         {
                             type: 'formula',
                             id: SmartJs.getNewId(),
-                            //name: 'ChangeColorEffectBrick' + PocketCode.ChangeColorEffectBrick.content[1].id,
-                            value: '' //range 0-255?
+                            value: _formula //range 0-255?
                         }
                     ]
                 }
@@ -563,7 +574,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'SetBackgroundBrick' + PocketCode.SetBackgroundBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -594,7 +604,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'SetBackgroundAndWaitBrick' + PocketCode.SetBackgroundAndWaitBrick.content[2].id,
                         value: ''
                     },
                     {
@@ -616,10 +625,12 @@ PocketCode.merge({
     SetBackgroundByIndexBrick: (function () {
         SetBackgroundByIndexBrick.extends(PocketCode.BaseBrick, false);
 
-        function SetBackgroundByIndexBrick(model, commentedOut) {
+        function SetBackgroundByIndexBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.SetBackgroundByIndexBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
             var content = {
                 content: [
                     {
@@ -629,7 +640,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        value: ''
+                        value: _formula
                     }
                 ]
             };
@@ -659,7 +670,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'CameraBrick' + PocketCode.CameraBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -690,7 +700,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'SelectCameraBrick' + PocketCode.SelectCameraBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -721,7 +730,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(),
-                        //name: 'FlashBrick' + PocketCode.FlashBrick.content[2].id,
                         value: ''
                     }
                 ]

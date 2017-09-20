@@ -389,6 +389,21 @@ PocketCode.Model.merge({
             this._ccw = propObject.ccw; //counterclockwise (=rotate left)
         }
 
+        //formula accessors
+        Object.defineProperties(SetRotationSpeedBrick.prototype, {
+            degPerSecFormula: {
+                get: function () {
+                    return this._degreesPerSecond;
+                },
+            },
+            ccw: {
+                get: function () {
+                    return this._ccw;
+                },
+            },
+        });
+
+
         SetRotationSpeedBrick.prototype._execute = function (scope) {
             var value = this._degreesPerSecond.calculate(scope);
 

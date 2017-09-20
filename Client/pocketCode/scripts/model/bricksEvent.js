@@ -133,7 +133,7 @@ PocketCode.Model.merge({
         BroadcastBrick.prototype.merge({
             _execute: function () {
                 this._broadcastMgr.publish(this._broadcastId);
-                this._return();
+                this._return(); // (id)
             },
             dispose: function () {
                 this._broadcastMgr = undefined;

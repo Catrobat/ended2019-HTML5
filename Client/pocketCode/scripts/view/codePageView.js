@@ -11,7 +11,20 @@ PocketCode.Ui.CodePageView = (function () {
 
         this._menu = new PocketCode.CodeView.Ui.Menu();
         this._header.appendChild(this._menu);
-        this._menu.navigationJson = ""; //TODO
+
+        //
+        var scenes = [{
+            id: "sceneid1",
+            name: "scene1",
+            sprites: [{ id: "spriteid1", name: "sprite1" }, { id: "spriteid2", name: "sprite2" }]
+        },
+            {
+                id: "sceneid2",
+                name: "scene2",
+                sprites: [{ id: "spriteid3", name: "sprite3" }, { id: "spriteid4", name: "sprite4" }]
+            }];
+
+        this._menu.navigationJson = scenes; //TODO
         this._menu._onNavigation.addEventListener(new SmartJs.Event.EventListener( function(e) {
             console.log(e.sceneId + ", " + e.spriteId);
         }));

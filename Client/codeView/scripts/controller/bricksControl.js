@@ -5,10 +5,11 @@ PocketCode.merge({
     WaitBrick: (function () {
         WaitBrick.extends(PocketCode.BaseBrick, false);
 
-        function WaitBrick(model, commentedOut) {
+        function WaitBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.WaitBrick)) {
                 throw new Error("Invalid argument Model");
             }
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -19,8 +20,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'WaitBrick'+ PocketCode.WaitBrick.content[1].id,
-                        value: '',
+                        value: _formula,
                     },
                     {
                         type: 'text',
@@ -40,10 +40,12 @@ PocketCode.merge({
     NoteBrick: (function () {
         NoteBrick.extends(PocketCode.BaseBrick, false);
 
-        function NoteBrick(model, commentedOut) {
+        function NoteBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.NoteBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
             var content = {
                 content: [
                     {
@@ -53,8 +55,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'NoteBrick' + PocketCode.NoteBrick.content[1].id,
-                        value: '',
+                        value: _formula,
                     }
                 ]
             };
@@ -99,10 +100,12 @@ PocketCode.merge({
     IfThenElseBrick: (function () {
         IfThenElseBrick.extends(PocketCode.BaseBrick, false);
 
-        function IfThenElseBrick(model, commentedOut, elseVisible) {
+        function IfThenElseBrick(model, commentedOut, elseVisible, formula) {
             if (!(model instanceof PocketCode.Model.IfThenElseBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -113,8 +116,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'IfThenElseBrick'+ PocketCode.IfThenElseBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',
@@ -149,10 +151,12 @@ PocketCode.merge({
     WaitUntilBrick: (function () {
         WaitUntilBrick.extends(PocketCode.BaseBrick, false);
 
-        function WaitUntilBrick(model, commentedOut) {
+        function WaitUntilBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.WaitUntilBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -163,8 +167,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'WaitUntilBrick'+ PocketCode.WaitUntilBrick.content[1].id,
-                        value: '',
+                        value: _formula,
                     },
                     {
                         type: 'text',
@@ -183,10 +186,12 @@ PocketCode.merge({
     RepeatBrick: (function () {
         RepeatBrick.extends(PocketCode.BaseBrick, false);
 
-        function RepeatBrick(model, commentedOut) {
+        function RepeatBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.RepeatBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -198,7 +203,7 @@ PocketCode.merge({
                         type: 'formula',
                         id: SmartJs.getNewId(),
                         //name: 'RepeatBrick'+ PocketCode.RepeatBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',
@@ -217,10 +222,12 @@ PocketCode.merge({
     RepeatUntilBrick: (function () {
         RepeatUntilBrick.extends(PocketCode.BaseBrick, false);
 
-        function RepeatUntilBrick(model, commentedOut) {
+        function RepeatUntilBrick(model, commentedOut, formula) {
             if (!(model instanceof PocketCode.Model.RepeatUntilBrick)) {
                 throw new Error("Invalid argument Model");
             }
+
+            var _formula = formula || "";
 
             var content = {
                 content: [
@@ -231,8 +238,7 @@ PocketCode.merge({
                     {
                         type: 'formula',
                         id: SmartJs.getNewId(),
-                        //name: 'RepeatUntilBrick'+ PocketCode.RepeatUntilBrick.content[1].id,
-                        value: ''
+                        value: _formula
                     },
                     {
                         type: 'text',
@@ -269,7 +275,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from scene??
-                        //name: 'SceneTransitionBrick'+ PocketCode.SceneTransitionBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -303,7 +308,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from scene??
-                        //name: 'StartSceneBrick'+ PocketCode.StartSceneBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -336,7 +340,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from sprites??
-                        //name: 'CloneBrick'+ PocketCode.CloneBrick.content[2].id,
                         value: ''
                     }
                 ]
@@ -398,7 +401,6 @@ PocketCode.merge({
                     {
                         type: 'select',
                         id: SmartJs.getNewId(), //todo take id from scripts??
-                        //name: 'StopBrick'+ PocketCode.StopBrick.content[2].id,
                         value: ''
                     }
                 ]
