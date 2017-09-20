@@ -1064,8 +1064,8 @@ PocketCode.DeviceEmulator = (function () {
             var inclinationDuration = this.degreeChangeValue / this.accelerationChangeValue;
             var inclinationPerStep = inclinationDuration / this.accelerationChangeValue;
 
-            this._inclinationIncrTmp.X = inclinationDuration / inclinationPerStep / 100;
-            this._inclinationIncrTmp.Y = inclinationDuration / inclinationPerStep / 100;
+            this._inclinationIncrTmp.X = inclinationDuration / inclinationPerStep;
+            this._inclinationIncrTmp.Y = inclinationDuration / inclinationPerStep;
         },
         _keyUp: function (e) {
             switch (e.keyCode) {
