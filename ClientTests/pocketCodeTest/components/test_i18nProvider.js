@@ -91,6 +91,11 @@ QUnit.test("I18nProvider", function (assert) {
                 assert.equal(e.language, "en", "language change event argument check"); //language is "en" even "en-GB" was loaded
                 assert.equal(i18n.currentLanguageDirection, "ltr", "language getter");
 
+                //make sure all event listeners are removed
+                i18n._onError = new SmartJs.Event.Event(i18n);
+                i18n._onLanguageChange = new SmartJs.Event.Event(i18n);
+                i18n._onDirectionChange = new SmartJs.Event.Event(i18n);
+
                 done3();
             };
         languageChangeListener2 = new SmartJs.Event.EventListener(languageChangeHandler2, this);

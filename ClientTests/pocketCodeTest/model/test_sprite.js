@@ -82,14 +82,15 @@ QUnit.test("Sprite", function (assert) {
     assert.ok(sprite.onExecuted === sprite._onExecuted && sprite.onExecuted instanceof SmartJs.Event.Event, "event: onExecuted accessor and instance");
 
     var props = { direction: 90 };
+    var prog2 = new PocketCode.GameEngine();
+    var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" });
     var onChangeHandler = function (e) {
         assert.equal(e.target, evSprite, "onChange target check");
         assert.equal(e.id, "newId", " onChange id check");
         assert.deepEqual(e.properties, props, "onChange event args properties check");
         evSprite._onChange.removeEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
+        prog2.dispose();    //make sure the gameEngine gets disposed to avoid side-effects with other tests
     };
-    var prog2 = new PocketCode.GameEngine();
-    var evSprite = new PocketCode.Model.Sprite(prog2, scene, { id: "newId", name: "myName" })
     evSprite._onChange.addEventListener(new SmartJs.Event.EventListener(onChangeHandler, this));
 
     evSprite._triggerOnChange(props);
@@ -748,7 +749,7 @@ QUnit.test("Sprite", function (assert) {
     assert.equal(sprite.scripts, tmpBricks, "bricks getter");
     assert.ok(sprite._scripts.length == 3, "bricks length");
 
-    assert.notOk(sprite.scriptsRunning, "scrips not running");
+    assert.notOk(sprite.scriptsOrSoundsExecuting, "scrips or sounds not running");
 
     //start, pause, resume, stop + executed
     //binding program events
@@ -769,7 +770,7 @@ QUnit.test("Sprite", function (assert) {
     //};
     //programAsync.onProgramExecuted.addEventListener(new SmartJs.Event.EventListener(programExecutedHandler, this));
     //scene.onStart.dispatchEvent();
-    //assert.ok(sprite.scriptsRunning, "scrips running: onExecute (program)");
+    //assert.ok(sprite.scriptsOrSoundsExecuting, "scrips running: onExecute (program)");
 
     brick1._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
     brick2._executionState = PocketCode.ExecutionState.RUNNING;  //simulate running
@@ -794,17 +795,17 @@ QUnit.test("Sprite", function (assert) {
 
     sprite.resumeScripts();
     assert.notOk(isPaused(), "all scripts resumed (not paused)");
-    assert.ok(sprite.scriptsRunning, "scrips running: running");
+    assert.ok(sprite.scriptsOrSoundsExecuting, "scrips running: running");
 
     //sprite.stopScript(true, "1");
-    //assert.ok(sprite.scriptsRunning, "scrips running: running (stopScript with non existing id)");
+    //assert.ok(sprite.scriptsOrSoundsExecuting, "scrips running: running (stopScript with non existing id)");
 
     //sprite.stopScript(true, "first");
     //assert.equal(sprite._scripts[0]._executionState, 0, "one script stopped");
     //assert.equal(sprite._scripts[1]._executionState, 1, "one script stopped, other still running");
 
     sprite.stopAllScripts(true);
-    assert.ok(!sprite.scriptsRunning, "scrips running: stopped");
+    assert.ok(!sprite.scriptsOrSoundsExecuting, "scrips running: stopped");
     assert.ok(function () {
         for (var p in testBrick._pendingOps)
             if (testBrick._pendingOps.hasOwnProperty(p))

@@ -35,6 +35,8 @@ PocketCode.Model.Sprite = (function () {
         this._sounds = [];
         this._audioPlayer = new PocketCode.AudioPlayer();
         this._audioPlayer.volume = 0.5; //set default
+        this._audioPlayer.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
+
         this._scripts = [];
 
         //property initialization
@@ -259,6 +261,14 @@ PocketCode.Model.Sprite = (function () {
                 this._audioPlayer.volume = value;
             },
         },
+        muted: {
+            set: function (value) {
+                if (typeof value !== 'boolean')
+                    throw new Error('invalid parameter: muted');
+
+                this._audioPlayer.muted = value;
+            },
+        },
         //pen & stamp
         penDown: {
             set: function (penDown) {
@@ -345,7 +355,7 @@ PocketCode.Model.Sprite = (function () {
                     //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
                     if (script.onExecutionStateChange)  //supported by all (root container) scripts
-                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
                 }
                 this._scripts = scripts;
             },
@@ -353,10 +363,12 @@ PocketCode.Model.Sprite = (function () {
                 return this._scripts;
             },
         },
-        scriptsRunning: {
+        scriptsOrSoundsExecuting: {
             get: function () {
                 var scripts = this._scripts,
                     script;
+                if (this._audioPlayer.isPlaying)
+                    return true;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
                     if (script.executionState == PocketCode.ExecutionState.RUNNING ||
@@ -408,19 +420,23 @@ PocketCode.Model.Sprite = (function () {
             this._resetVariables();
         },
 
-        pauseScripts: function () {
+        pauseScripts: function (andSounds) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].pause)
                     scripts[i].pause();
             }
+            if (andSounds)
+                this._audioPlayer.pauseAllSounds();
         },
-        resumeScripts: function () {
+        resumeScripts: function (andSounds) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].resume)
                     scripts[i].resume();
             }
+            if (andSounds)
+                this._audioPlayer.resumeAllSounds();
         },
         //stopScript: function (calledFromStopBrick, scriptId) {
         //    var scripts = this._scripts;
@@ -440,8 +456,8 @@ PocketCode.Model.Sprite = (function () {
             }
             return false;
         },
-        _scriptOnExecutionChangeHandler: function (e) {
-            if (e.executionState == PocketCode.ExecutionState.STOPPED && !this.scriptsRunning) {
+        _checkSpriteExecutionState: function (e) {
+            if (!this.scriptsOrSoundsExecuting) {
                 this._onExecuted.dispatchEvent();
             }
         },
@@ -1243,6 +1259,7 @@ PocketCode.Model.Sprite = (function () {
 
                 //sounds
                 volume: this.volume,
+                muted: this._audioPlayer.muted,
 
                 //pen
                 _penDown: this._penDown,
@@ -1270,6 +1287,8 @@ PocketCode.Model.Sprite = (function () {
         /* override */
         dispose: function () {
             this.stopAllScripts();
+            this._audioPlayer.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
+            this._audioPlayer.stopAllSounds();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
             this._scene = undefined;        //make sure the scene is not disposed
@@ -1279,7 +1298,7 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
                 script = scripts[i];
                 if (script.onExecuted)  //supported by all (root container) scripts
-                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
             }
 
             //call super
@@ -1314,6 +1333,8 @@ PocketCode.Model.merge({
             if (jsonSprite.sounds) {
                 this.sounds = jsonSprite.sounds;
             }
+            this._audioPlayer.muted = definition.muted || false;
+            delete definition.muted;
 
             //variables: a sprite may have no (local) variables
             this._variables = jsonSprite.variables || [];
@@ -1363,7 +1384,7 @@ PocketCode.Model.merge({
         //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
         //        //    script = scripts[i];
         //        //    if (script.onExecuted)  //supported by all (root container) scripts
-        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
         //        //}
 
         //        //call super
@@ -1373,10 +1394,7 @@ PocketCode.Model.merge({
 
         return SpriteClone;
     })(),
-});
 
-
-PocketCode.Model.merge({
     BackgroundSprite: (function () {
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 

@@ -254,17 +254,33 @@ PocketCode.AudioPlayer = (function () {
         this._onFinishedPlaying = new SmartJs.Event.Event(this);
 
         //bind on soundJs
-        this._fileLoadProxy = createjs.proxy(this._fileLoadHandler, this);
-        createjs.Sound.addEventListener('fileload', this._fileLoadProxy);
+        //this._fileLoadProxy = createjs.proxy(this._fileLoadHandler, this);
+        //createjs.Sound.addEventListener('fileload', this._fileLoadProxy);
 
-        this._fileErrorProxy = createjs.proxy(this._fileLoadingErrorHandler, this);
-        createjs.Sound.addEventListener('fileerror', this._fileErrorProxy);
+        //this._fileErrorProxy = createjs.proxy(this._fileLoadingErrorHandler, this);
+        //createjs.Sound.addEventListener('fileerror', this._fileErrorProxy);
     }
+
+    //events
+    Object.defineProperties(AudioPlayer.prototype, {
+        onFinishedPlaying: {    //executed if isPlaying = false
+            get: function () {
+                return this._onFinishedPlaying;
+            },
+        },
+    });
 
     //properties
     Object.defineProperties(AudioPlayer.prototype, {
         supported: {
             value: createjs.Sound.initializeDefaultPlugins(),
+        },
+        isPlaying: {
+            get: function () {
+                if (this._activeSounds.length > 0)
+                    return true;
+                return false;
+            },
         },
         volume: {
             get: function () {
@@ -307,15 +323,6 @@ PocketCode.AudioPlayer = (function () {
         },
     });
 
-    //events
-    Object.defineProperties(AudioPlayer.prototype, {
-        onFinishedPlaying: {    //executed if isPlaying = false
-            get: function () {
-                return this._onFinishedPlaying;
-            },
-        },
-    });
-
     //methods
     AudioPlayer.prototype.merge({
         //start sound returns the instanceId to let the calling brick handle stop
@@ -340,7 +347,7 @@ PocketCode.AudioPlayer = (function () {
                 if (this._activeSounds.length == 0)
                     this._onFinishedPlaying.dispatchEvent({ instance: soundInstance });
 
-                if (onExecutedCallback)                                                                                   //!!!!!! TODO !!!! always undefined??????????
+                if (onExecutedCallback)
                     onExecutedCallback();
             }, this, soundInstance, onExecutedCallback));
 
@@ -373,12 +380,7 @@ PocketCode.AudioPlayer = (function () {
                 onExecutedCallback();
             //return false;
         },
-        isPlaying: function () {
-            if (this._activeSounds.length > 0)
-                return true;
-            return false;
-        },
-        pause: function () {
+        pauseAllSounds: function () {
             var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
                 if (active[i].paused === false) {
@@ -391,27 +393,30 @@ PocketCode.AudioPlayer = (function () {
                 }
             }
         },
-        resume: function () {
+        resumeAllSounds: function () {
             var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
                 active[i].paused = false;
             }
         },
-        stopSound: function (instanceIid) {
+        stop: function (instanceIid) {
             var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
                 if (active[i].uniqueId === instanceIid) {
                     active[i].stop();
                     active.remove(active[i]);
-                    return;
+                    break;
                 }
             }
+            if (this._activeSounds.length == 0)
+                this._onFinishedPlaying.dispatchEvent();
         },
-        stop: function () {
+        stopAllSounds: function () {
             var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++)
                 active[i].stop();
             this._activeSounds = [];
+            this._onFinishedPlaying.dispatchEvent();
         },
         dispose: function () {
             this.abortLoading();    //make sure startSoundFromUrl ist sopped in the player

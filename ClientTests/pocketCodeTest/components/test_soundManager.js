@@ -12,31 +12,10 @@ QUnit.test("SoundManager", function (assert) {
 
     assert.ok(sm1 instanceof PocketCode.SoundManager, "instance check");
     assert.ok(sm1.onLoadingProgress instanceof SmartJs.Event.Event && sm1.onLoad instanceof SmartJs.Event.Event &&
-        sm1.onFinishedPlaying instanceof SmartJs.Event.Event && sm1.onLoadingError instanceof SmartJs.Event.Event, "events: accessors");
+        sm1.onLoadingError instanceof SmartJs.Event.Event, "events: accessors");
     var sceneId = "s01";
 
-    //initial
-    sm1.volume = -2;
-    assert.equal(Math.round(sm1.volume * 100) / 100, 0, "volume getter/setter check: range min");
-    sm1.volume = 200;
-    assert.equal(Math.round(sm1.volume * 100) / 100, 100, "volume getter/setter check: range max");
-    sm1.volume = 92;
-    assert.equal(Math.round(sm1.volume * 100) / 100, 92, "volume getter/setter check: initialized");
-    assert.throws(function () { sm1.volume = "failed" }, Error, "ERROR: volume setter with invalid parameter");
-    sm1.volume = 92;    //code coverage check only
-    assert.equal(Math.round(sm1.volume * 100) / 100, 92, "volume getter/setter check: not changed when same value applied");
-
-    //assert.throws(function () { sm1.isPlaying(); }, "ERROR: invalid scene id");
-    //assert.equal(sm1.isPlaying(sceneId), false, "not playing on initialized");
-    assert.equal(sm1.muted, false, "not muted on initialized");
-    assert.throws(function () { sm1.muted = "failed" }, Error, "ERROR: muted setter with invalid parameter");
-    sm1.muted = false;  //code coverage only
-    assert.equal(sm1.muted, false, "muted getter/setter");
-    sm1.muted = true;
-    assert.equal(sm1.muted, true, "muted getter/setter");
-
     //load
-
     assert.throws(function () { sm1.loadSounds('', [{ id: "", url: "", size: "" }]); }, Error, "ERROR: invalid parameter size != number");
     sm1 = new PocketCode.SoundManager();
 
@@ -64,15 +43,15 @@ QUnit.test("SoundManager", function (assert) {
     //        done3();
     //    }
     //}
-
+    //
     ////NOT SUPPORTED
     //function runLoadingTestsUnsupported() {
-
+    //
     //}
-
+    //
     ////SUPPORTED
     //function runLoadingTests() {
-
+    //
     //    //loading: start asap
     //    //var sm1InstanceStartedHandler = function (e) {
     //    //    sm1.pauseSounds();
@@ -81,7 +60,7 @@ QUnit.test("SoundManager", function (assert) {
     //    //    assert.equal(Math.round(si.volume * 100) / 100, 0.92, "volume on paused sound");
     //    //    sm1.volume = 80;
     //    //    assert.equal(Math.round(si.volume * 100) / 100, 0.8, "volume changed: on active sound");
-
+    //
     //    //    assert.equal(si.muted, true, "muted: on active/paused sound");
     //    //    sm1.muted = false;
     //    //    assert.equal(si.muted, false, "muted changed: on active sound");
@@ -89,7 +68,7 @@ QUnit.test("SoundManager", function (assert) {
     //    //};
     //    //var sm1FinishedPlayingHandler = function (e) {
     //    //    assert.equal(sm1.isPlaying(sceneId), false, "isPlaying = false when all finished");
-
+    //
     //    //    assert.throws(function () { sm1.loadSound(); }, Error, "ERROR: load sound missing args: url");
     //    //    assert.throws(function () { sm1.loadSound("url"); }, Error, "ERROR: load sound missing args: id");
     //    //    done1();
@@ -101,17 +80,17 @@ QUnit.test("SoundManager", function (assert) {
     //    sm1.volume = 92;
     //    sm1.muted = true;
     //    sm1.startSoundFromUrl(sceneId, "_resources/sounds/ba454104796ff54154552e6501870d10_a.mp3");
-
+    //
     //    //TODO:
     //    done1();
     //    runLoadingTests2();
     //};
-
+    //
     ////loading unsupported file formats
     //function runLoadingTests2() {
     //    var resourceBaseUrl2 = "_resources/";
     //    var sounds2 = JSON.parse('[{"id":"s32","url":"sounds\/a49fd671df65fb1c1b5f93bb56b53c85_record.mp3","size":3712},{"id":"s37","url":"sounds\/e47dbee99c20968043bcf8b5858c33e1_record.mp3","size":16192},{"id":"s114","url":"sounds\/5952a60f91ed000cf2c46f645698c018_record.mp3","size":12544}]');
-
+    //
     //    //load: sm2
     //    var sm2Progress = [],
     //        sm2Load,
@@ -128,7 +107,7 @@ QUnit.test("SoundManager", function (assert) {
     //        assert.equal(sm2Progress.length, 4, "count progress");
     //        assert.equal(sm2Progress[sm2Progress.length - 1].progress, 100, "last progress = 100%");
     //        assert.equal(sm2Error, 3, "all files failed loading due to unsupprted mp3 format");
-
+    //
     //        var success = sm2.startSound("s32");
     //        assert.equal(success, false, "start sound return false on invalid sound");
     //        done2();
@@ -142,14 +121,14 @@ QUnit.test("SoundManager", function (assert) {
     //    //    sm2Finished = e;
     //    //    console.log('finished playing2');
     //    //};
-
+    //
     //    sm2.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm2ProgressHandler, this));
     //    sm2.onLoad.addEventListener(new SmartJs.Event.EventListener(sm2LoadHandler, this));
     //    sm2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm2ErrorHandler, this));
     //    sm2.loadSounds(resourceBaseUrl2, sounds2);  //2 errors thrown: firefox: 
     //    sm2.abortLoading();
     //    sm2.dispose();
-
+    //
     //    var sm2Progress = [],
     //        sm2Load = undefined,
     //        sm2Error = 0,
@@ -160,11 +139,11 @@ QUnit.test("SoundManager", function (assert) {
     //    sm2.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm2ErrorHandler, this));
     //    sm2.loadSounds(resourceBaseUrl2, sounds2);
     //};
-
+    //
     ////loading success
     //var resourceBaseUrl1 = "_resources/";
     //var sounds1 = JSON.parse('[{"id":"s16","url":"sounds\/3ec79f9addcf5055e069ec794db954e8_c.mp3","size":11140},{"id":"s17","url":"sounds\/778fc114464dcf4b368c7d2841863beb_d.mp3","size":11140},{"id":"s18","url":"sounds\/152badadc1a428c7a89b46cf6d82a43b_e.mp3","size":11140},{"id":"s19","url":"sounds\/dbdd35220c46b04c7ace3f04af185702_f.mp3","size":11140},{"id":"s20","url":"sounds\/e2b1d3b4f3d65de8f6468539ad695e94_g.mp3","size":11140}]');//,{"id":"s21","url":"sounds\/ba454104796ff54154552e6501870d10_a.mp3","size":11140},{"id":"s22","url":"sounds\/9cfb811c257d934d69671369ac15e88e_H.mp3","size":139142},{"id":"s25","url":"sounds\/8586959b14c74023b91e2c17da40cab4_c#.mp3","size":141755},{"id":"s26","url":"sounds\/3bdf92aad67a35e1d67f8b9c304cc732_d#.mp3","size":94734},{"id":"s27","url":"sounds\/7511b8919dadb9d098d77ab228d41ca5_e#.mp3","size":159518},{"id":"s28","url":"sounds\/459ab4eb37f698e3cee4a7f773870a79_f#.mp3","size":23159},{"id":"s29","url":"sounds\/590e4930d1a4d647da8b5d43919fd2ab_g#.mp3","size":56595}]');
-
+    //
     //function runSuccessfulLoadingTests() {
     //    sm1 = new PocketCode.SoundManager();
     //    var sm1Progress = [],
@@ -190,21 +169,21 @@ QUnit.test("SoundManager", function (assert) {
     //        sm1Finished = e;
     //        //console.log('finished playing');
     //    };
-
+    //
     //    sm1.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(sm1ProgressHandler, this));
     //    sm1.onLoad.addEventListener(new SmartJs.Event.EventListener(sm1LoadHandler, this));
     //    sm1.onLoadingError.addEventListener(new SmartJs.Event.EventListener(sm1ErrorHandler, this));
     //    sm1.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(sm1FinishedPlayingHandler, this));
-
+    //
     //    assert.throws(function () { sm1.loadSounds(resourceBaseUrl1, "sounds1"); }, Error, "ERROR: no array");
     //    sm1.loadSounds(resourceBaseUrl1, sounds1);
     //    assert.throws(function () { sm1.loadSounds(resourceBaseUrl1, sounds1); }, Error, "ERROR: loading in progress");
-
+    //
     //    //done3();
     //};
-
+    //
     //function runStopTests() {
-
+    //
     //    var instanceCount = 0;
     //    var sm1StartPlayingHandler = function () {
     //        instanceCount = 4;
@@ -217,7 +196,7 @@ QUnit.test("SoundManager", function (assert) {
     //    };
     //    //TODO: sm1._onStartPlayingInstance.addEventListener(new SmartJs.Event.EventListener(sm1StartPlayingHandler, this));
     //    window.setTimeout(sm1StartPlayingHandler, 30);
-
+    //
     //    for (var i = 0, l = sm1._registeredFiles.length; i < l; i++) {
     //        if (instanceCount > 3)
     //            break;  //make sure no file is loaded after done3() is called
@@ -226,8 +205,6 @@ QUnit.test("SoundManager", function (assert) {
     //        sm1.startSound(sceneId, id);
     //    }
     //};
-
-
 
 });
 
@@ -335,7 +312,29 @@ QUnit.test("SoundManager: unsupported", function (assert) {
 
 QUnit.test("AudioPlayer", function (assert) {
 
-    assert.ok(false, "TODO");
+    var ap = new PocketCode.AudioPlayer();
+    assert.ok(ap instanceof PocketCode.AudioPlayer, "instance check");
+    assert.ok(ap.onFinishedPlaying instanceof SmartJs.Event.Event, "event initialized");
+
+    //initial
+    ap.volume = -2;
+    assert.equal(Math.round(ap.volume * 100) / 100, 0, "volume getter/setter check: range min");
+    ap.volume = 200;
+    assert.equal(Math.round(ap.volume * 100) / 100, 100, "volume getter/setter check: range max");
+    ap.volume = 92;
+    assert.equal(Math.round(ap.volume * 100) / 100, 92, "volume getter/setter check: initialized");
+    assert.throws(function () { ap.volume = "failed" }, Error, "ERROR: volume setter with invalid parameter");
+    ap.volume = 92;    //code coverage check only
+    assert.equal(Math.round(ap.volume * 100) / 100, 92, "volume getter/setter check: not changed when same value applied");
+
+    //assert.throws(function () { ap.isPlaying(); }, "ERROR: invalid scene id");
+    //assert.equal(ap.isPlaying(sceneId), false, "not playing on initialized");
+    assert.equal(ap.muted, false, "not muted on initialized");
+    assert.throws(function () { ap.muted = "failed" }, Error, "ERROR: muted setter with invalid parameter");
+    ap.muted = false;  //code coverage only
+    assert.equal(ap.muted, false, "muted getter/setter");
+    ap.muted = true;
+    assert.equal(ap.muted, true, "muted getter/setter");
 
 });
 

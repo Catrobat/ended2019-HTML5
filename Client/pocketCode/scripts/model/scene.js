@@ -123,6 +123,17 @@ PocketCode.Model.Scene = (function () {
                 return vars;
             },
         },
+        muted: {
+            set: function (value) {
+                if (typeof value !== 'boolean')
+                    throw new Error('invalid parameter: muted');
+
+                var sprites = this._sprites;
+                for (var i = 0, l = sprites.length; i < l; i++) {
+                    sprites[i].muted = value;
+                }
+            },
+        },
         //sprites: {
         //    get: function () {
         //        return this._sprites;
@@ -243,7 +254,7 @@ PocketCode.Model.Scene = (function () {
             return true;
         },
         pause: function (internal) {    //internal: for ask, .. 
-                                        //to make sure the execution state does not change to paused which will cause the UI to change as well
+            //to make sure the execution state does not change to paused which will cause the UI to change as well
             if (internal) {
                 if (this._executionState == PocketCode.ExecutionState.PAUSED_USERINTERACTION)
                     return false;
@@ -265,11 +276,11 @@ PocketCode.Model.Scene = (function () {
             //this._soundManager.pauseSounds();
 
             if (this._background)
-                this._background.pauseScripts();
+                this._background.pauseScripts(!internal);
 
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].pauseScripts();
+                sprites[i].pauseScripts(!internal);
             }
             if (internal)
                 this._executionState = PocketCode.ExecutionState.PAUSED_USERINTERACTION;
@@ -294,11 +305,11 @@ PocketCode.Model.Scene = (function () {
             //this._soundManager.resumeSounds();
 
             if (this._background)
-                this._background.resumeScripts();
+                this._background.resumeScripts(!internal);
 
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].resumeScripts();
+                sprites[i].resumeScripts(!internal);
             }
             return true;
         },
@@ -307,7 +318,7 @@ PocketCode.Model.Scene = (function () {
                 return;
 
             //this._projectTimer.stop();
-            this.stopAllScriptsAndSounds();  
+            this.stopAllScriptsAndSounds();
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
         stopAllScriptsAndSounds: function (calledFromStopBrick) {    //to make sure a WhenConditionMet-Brick doesn't stop running (listening to changes)
@@ -331,11 +342,11 @@ PocketCode.Model.Scene = (function () {
 
                 //if (this._soundManager.isPlaying())
                 //    return;
-                if (this._background && this._background.scriptsRunning)
+                if (this._background && this._background.scriptsOrSoundsExecuting)
                     return;
                 var sprites = this._sprites;
                 for (var i = 0, l = sprites.length; i < l; i++) {
-                    if (sprites[i].scriptsRunning)
+                    if (sprites[i].scriptsOrSoundsExecuting)
                         return;
                 }
 

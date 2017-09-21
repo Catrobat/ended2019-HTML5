@@ -197,12 +197,13 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
     gameEngine.loadProject(strProject817);
-    gameEngine.startScene("s1");
 
     function runTests() {
+        assert.ok(gameEngine._startScene, "start scene initialized");
         gameEngine.startScene("s1");
-        assert.ok(gameEngine._startScene, "Scene started");
 
+        assert.equal(gameEngine._currentScene, gameEngine._scenes["s1"], "current scene set");
+        assert.equal(gameEngine._currentScene.executionState, PocketCode.ExecutionState.RUNNING, "scene running");
         gameEngine.runProject();
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "runProject: Project running");
 
@@ -231,6 +232,7 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
         gameEngine.resumeOrStartScene("s1");
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: starting Scene");
 
+        gameEngine.dispose();   //make sure the listeners to internal (static) classes are removed to avoid side effects with other tests
         done();
     };
 
