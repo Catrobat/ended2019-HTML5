@@ -24,7 +24,7 @@ PocketCode.Model.merge({
                 }
                 if (!this._wait) {
                     try {
-                        this._sprite.startSound(this._soundId);                                                 //TODO: error handling: returns an instanceId or an exception
+                        this._sprite.startSound(this._soundId);
                     }
                     catch (e) { }   //silent catch if not supported
                     this._return(id);
@@ -41,30 +41,9 @@ PocketCode.Model.merge({
                         this._return(id);
                         return;
                     }
-                    po.soundInstanceId = instanceId;    //TODO: check for timing error on small sound files (timeout needed for ^^this._return.bind(thi.. ?)
+                    po.soundInstanceId = instanceId;
                 }
             },
-
-            //no need because pause/resume are handled by the sound manager, stop by threaded brick
-            //pause: function () {
-            //    var po,
-            //        pos = this._pendingOps;
-            //    for (var id in pos) {
-            //        po = pos[id];
-            //        if (po.soundInstanceId)
-            //            this._soundManager.pauseSound(this._sceneId, po.soundInstanceId);
-            //    }
-            //    PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
-            //},
-            //resume: function () {
-            //    var po, pos = this._pendingOps;
-            //    for (var id in pos) {
-            //        po = pos[id];
-            //        if (po.soundInstanceId)
-            //            this._soundManager.resumeSound(this._sceneId, po.soundInstanceId);
-            //    }
-            //    PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
-            //},
             stop: function () {
                 var po,
                     pos = this._pendingOps;
@@ -156,53 +135,6 @@ PocketCode.Model.merge({
 
         return ChangeVolumeBrick;
     })(),
-
-    //SpeakBrick: (function () {
-    //    SpeakBrick.extends(PocketCode.Model.BaseBrick, false);
-
-    //    function SpeakBrick(device, sprite, sceneId, soundManager, propObject) {
-    //        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-    //        this._sceneId = sceneId;
-    //        this._soundManager = soundManager;
-    //        this._text = new PocketCode.Formula(device, sprite, propObject.text);
-
-    //        if (this._text.isStatic) {  //sound will not change at runtime and can be cached in soundManager
-    //            this._soundId = SmartJs.getNewId();
-    //            var text = this._text.calculate().toString().replace(/\n,\r/g, '');
-    //            if (text == '') {
-    //                this._soundId = undefined;
-    //                return;
-    //            }
-    //            //caching
-    //            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-    //            this._soundManager.loadSound(request.url, this._soundId, 'mp3');
-    //        }
-    //    }
-
-    //    SpeakBrick.prototype.merge({
-    //        _execute: function (scope) {
-    //            if (this._soundId) {
-    //                this._soundManager.startSound(this._sceneId, this._soundId);
-    //            }
-    //            else {
-    //                var text = this._text.calculate(scope).toString().replace(/\n,\r/g, '');
-    //                if (text !== '') {
-    //                    //we use a request object here to generate an url
-    //                    var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-    //                    this._soundManager.startSoundFromUrl(this._sceneId, request.url);
-    //                }
-    //            }
-    //            this._return();
-    //        },
-    //        dispose: function () {
-    //            this._soundManager = undefined;
-    //            PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-    //        },
-    //    });
-
-    //    return SpeakBrick;
-    //})(),
 });
 
 PocketCode.Model.SpeakBrick = (function () {
@@ -303,31 +235,6 @@ PocketCode.Model.SpeakBrick = (function () {
                 }
             }
         },
-        //_execute: function (id, scope) {
-        //    var po = this._pendingOps[id];
-        //    if (!po)  //stopped
-        //        return;
-
-        //    var instanceId = false;
-        //    if (this._soundId) {
-        //        instanceId = this._sprite.startSound(this._soundId, this._return.bind(this, id, false));
-        //        if (instanceId === false)
-        //            this._return(id);
-        //        else
-        //            po.soundInstanceId = instanceId;    //TODO: timing error on small sounds? (like PlaySoundAndWait)
-        //    }
-        //    else {
-        //        var text = this._text.calculate(scope).toString().replace(/\n,\r/g, '');
-        //        if (text == '') {
-        //            this._return(id);
-        //        }
-        //        else {
-        //            //we use a request object here to generate an url
-        //            var request = new PocketCode.ServiceRequest(PocketCode.Services.TTS, SmartJs.RequestMethod.GET, { text: text });
-        //            this._sprite.startSoundFromUrl(request.url, this._onLoadHandler.bind(this, id), this._return.bind(this, id, false));
-        //        }
-        //    }
-        //},
     });
 
     return SpeakBrick;

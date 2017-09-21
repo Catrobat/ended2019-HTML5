@@ -6,6 +6,12 @@
 
 PocketCode.SoundManager = (function () {
 
+    /* Our sounds are played using the soundJs library
+    *  This lib works as a singleton, so we use a single sound manager instance in the gameEngine to preload all sounds of a project.
+    *  These preloaded sounds are available in each audioPlayer instance (defined per sprite) based on this singleton implementation, 
+    *  every sound that is currently played is a soundInstance and managed per sprite (per audioPlayer instance).
+    *  For preloading tts (text-to-speech) sound files or even load and play them directly each audioPlayer is derived from soundManager.
+    */
     function SoundManager() {
 
         this._loading = false;  //loading in progress
@@ -56,9 +62,6 @@ PocketCode.SoundManager = (function () {
     //methods
     SoundManager.prototype.merge({
         _fileLoadHandler: function (e) {
-            if (!e.data)
-                return;
-
             var idx,
                 file,
                 files = this._filesToLoad || [];
@@ -92,9 +95,6 @@ PocketCode.SoundManager = (function () {
                 this.startSound(e.id, e.data.onLoadCallback, e.data.onExecutedCallback);
         },
         _fileLoadingErrorHandler: function (e) {
-            if (!e.data)
-                return;
-
             var idx,
                 file,
                 files = this._filesToLoad || [];
@@ -137,18 +137,19 @@ PocketCode.SoundManager = (function () {
                 success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
             }
             catch (e) {
-                //even if an url is provided there are sounds with missing file extension
-                //that will cause an exception in soundJs
+                //silent catch -> success = false
+                //even if an url is provided there are sound files with missing file extension
+                //these will cause an exception in soundJs
             }
             if (!success)
-                this._fileLoadingErrorHandler(sound);   //false is returned if no loaded can be initialized (e.g. *.wav in IE) -> handle as error
+                this._fileLoadingErrorHandler(sound);   //false is returned if not initialized (e.g. *.wav in IE) -> handle as error
         },
         _createSoundObject: function (url, id, size, playOnLoad, onLoadCallback, onExecutedCallback) {
             url = url.split('/');
             var idx = url.length - 1;
             url[idx] = (url[idx]).replace(/([^.?]+)(.*)/, function (match, p1, p2) {
                 return encodeURIComponent(p1) + p2;
-            });  // encodeURIComponent(url[idx]);
+            });
             return {
                 id: id, src: url.join('/'),
                 data: {
@@ -247,18 +248,10 @@ PocketCode.AudioPlayer = (function () {
 
         this._volume = 0.5;
         this._muted = false;
-        //createjs.Sound.volume = this._volume;   //initial
         this._muted = createjs.Sound.muted;
 
         this._activeSounds = [];
         this._onFinishedPlaying = new SmartJs.Event.Event(this);
-
-        //bind on soundJs
-        //this._fileLoadProxy = createjs.proxy(this._fileLoadHandler, this);
-        //createjs.Sound.addEventListener('fileload', this._fileLoadProxy);
-
-        //this._fileErrorProxy = createjs.proxy(this._fileLoadingErrorHandler, this);
-        //createjs.Sound.addEventListener('fileerror', this._fileErrorProxy);
     }
 
     //events
@@ -360,7 +353,7 @@ PocketCode.AudioPlayer = (function () {
                     onExecutedCallback();
             }, this, soundInstance, onExecutedCallback));
 
-            //soundInstance.volume = this._volume;  //TODO
+            soundInstance.volume = this._volume
             soundInstance.muted = this._muted;
             soundInstance = soundInstance.play();
             if (soundInstance.playState === null || soundInstance.playState === 'playFailed')
@@ -368,17 +361,13 @@ PocketCode.AudioPlayer = (function () {
 
             return soundInstance.uniqueId;
         },
-        startSoundFromUrl: function (url, onLoadCallback, onExecutedCallback) {  //TODO
+        startSoundFromUrl: function (url, onLoadCallback, onExecutedCallback) {
             if (!this.supported)
                 return false;
             var soundId = SmartJs.getNewId();
             var success = this._loadSound(url, soundId, 'mp3', true, onLoadCallback, onExecutedCallback);
-            if (success)
-                return;
-            //else
-            if (onExecutedCallback)
+            if (!success && onExecutedCallback)
                 onExecutedCallback();
-            //return false;
         },
         pauseAllSounds: function () {
             var active = this._activeSounds;
