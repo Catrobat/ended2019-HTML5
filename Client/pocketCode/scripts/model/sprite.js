@@ -942,19 +942,19 @@ PocketCode.Model.Sprite = (function () {
         },
         //sound
         loadSound: function (requestUrl, soundId, fileExtension) {
-
+            this._audioPlayer.loadSound(requestUrl, soundId, fileExtension);
         },
-        startSound: function (soundId, onExecutedCallback) {
-            return 'soundInstanceId';
+        startSound: function (soundId, onExecutedCallback) {    //returns the instanceId
+            return this._audioPlayer.startSound(soundId, undefined, onExecutedCallback);
         },
-        startSoundFromUrl: function (requestUrl, onLoadCallback, onExecutedCallback) {
-
+        startSoundFromUrl: function (requestUrl, onLoadCallback, onExecutedCallback) {    //returns the instanceId using the load-callback
+            this._audioPlayer.startSoundFromUrl(requestUrl, onLoadCallback, onExecutedCallback);
         },
         stopSound: function (soundInstanceId) {
-
+            this._audioPlayer.stopSound(soundInstanceId);
         },
-        stopAllSounds: function (calledFromBrick) {
-
+        stopAllSounds: function () {//calledFromBrick) {
+            this._audioPlayer.stop();
         },
         //IOEB
         ifOnEdgeBounce: function (vpEdges, changes) {
