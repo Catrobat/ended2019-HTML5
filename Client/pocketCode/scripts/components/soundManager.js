@@ -142,7 +142,7 @@ PocketCode.SoundManager = (function () {
                 //these will cause an exception in soundJs
             }
             if (!success)
-                this._fileLoadingErrorHandler(sound);   //false is returned if not initialized (e.g. *.wav in IE) -> handle as error
+                this._fileLoadingErrorHandler(sound);
         },
         _createSoundObject: function (url, id, size, playOnLoad, onLoadCallback, onExecutedCallback) {
             url = url.split('/');
@@ -353,7 +353,7 @@ PocketCode.AudioPlayer = (function () {
                     onExecutedCallback();
             }, this, soundInstance, onExecutedCallback));
 
-            soundInstance.volume = this._volume
+            soundInstance.volume = this._volume;
             soundInstance.muted = this._muted;
             soundInstance = soundInstance.play();
             if (soundInstance.playState === null || soundInstance.playState === 'playFailed')

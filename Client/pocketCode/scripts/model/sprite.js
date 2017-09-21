@@ -34,7 +34,7 @@ PocketCode.Model.Sprite = (function () {
 
         this._sounds = [];
         this._audioPlayer = new PocketCode.AudioPlayer();
-        this._audioPlayer.volume = 0.5; //set default
+        this._audioPlayer.volume = 50; //set default
         this._audioPlayer.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
 
         this._scripts = [];
