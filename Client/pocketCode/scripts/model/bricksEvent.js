@@ -121,42 +121,25 @@ PocketCode.Model.merge({
     })(),
 
     BroadcastBrick: (function () {
-        BroadcastBrick.extends(PocketCode.Model.BaseBrick, false);
+        BroadcastBrick.extends(PocketCode.Model.ThreadedBrick, false);
 
         function BroadcastBrick(device, sprite, broadcastMgr, propObject) {
-            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._broadcastMgr = broadcastMgr;
-            this._broadcastId = propObject.broadcastId;
-        }
-
-        BroadcastBrick.prototype.merge({
-            _execute: function () {
-                this._broadcastMgr.publish(this._broadcastId);
-                this._return(); // (id)
-            },
-            dispose: function () {
-                this._broadcastMgr = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
-            },
-        });
-
-        return BroadcastBrick;
-    })(),
-
-    BroadcastAndWaitBrick: (function () {
-        BroadcastAndWaitBrick.extends(PocketCode.Model.ThreadedBrick, false);
-
-        function BroadcastAndWaitBrick(device, sprite, broadcastMgr, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
             this._broadcastId = propObject.broadcastId;
+            this._andWait = propObject.andWait;
         }
 
-        BroadcastAndWaitBrick.prototype.merge({
+        BroadcastBrick.prototype.merge({
             _execute: function (id) {
-                this._broadcastMgr.publish(this._broadcastId, this._return.bind(this, id));
+                if(this._andWait){
+                    this._broadcastMgr.publish(this._broadcastId, this._return.bind(this, id));
+                }
+                else{
+                    this._broadcastMgr.publish(this._broadcastId);
+                    this._return(id);
+                }
             },
             dispose: function () {
                 this._broadcastMgr = undefined;
@@ -164,7 +147,7 @@ PocketCode.Model.merge({
             },
         });
 
-        return BroadcastAndWaitBrick;
+        return BroadcastBrick;
     })(),
 
     WhenConditionMetBrick: (function () {

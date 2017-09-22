@@ -75,7 +75,7 @@ QUnit.test("WhenBroadcastReceiveBrick", function (assert) {
 QUnit.test("BroadcastBrick", function (assert) {
 
     var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
+    var b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastId: "s12", andWait: false });
 
     assert.throws(function () {new PocketCode.BroadcastBrick(new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
 
@@ -89,19 +89,10 @@ QUnit.test("BroadcastBrick", function (assert) {
     assert.ok(brick._view._childs[1]._childs[3] instanceof PocketCode.CodeView.Ui.BrickDropdown, "dropdown added");
     assert.ok(brick._view._childs[2] instanceof SmartJs.Ui.HtmlTag, "ul tag added");
     assert.equal(brick._view._childs[3]._childs[0]._textNode._text, "", "endContent added");
-});
 
-QUnit.test("BroadcastAndWaitBrick", function (assert) {
-
-    var broadcastMgr = new PocketCode.BroadcastManager([{ id: "s12", name: "test" }]);
-    var b = new PocketCode.Model.BroadcastAndWaitBrick("device", "sprite", broadcastMgr, { broadcastId: "s12" });
-
-    assert.throws(function () {new PocketCode.BroadcastAndWaitBrick(new PocketCode.Model.NoteBrick("device", "sprite", { text: "s12" }), false) }, Error, "ERRROR: Invalid argument Model");
-
-    var brick = new PocketCode.BroadcastAndWaitBrick(b, false);
-
-    assert.ok(brick instanceof PocketCode.BroadcastAndWaitBrick && brick instanceof PocketCode.BaseBrick, "instance check + inheritance");
-    assert.ok(brick.objClassName === "BroadcastAndWaitBrick", "objClassName check");
+    //andWait
+    b = new PocketCode.Model.BroadcastBrick("device", "sprite", broadcastMgr, { broadcastId: "s12", andWait: true });
+    brick = new PocketCode.BroadcastBrick(b, false);
 
     assert.equal(brick._view._childs[1]._childs[1]._textNode._text, "Broadcast and wait", "text \"Broadcast and wait\" added");
     assert.ok(brick._view._childs[1]._childs[2] instanceof SmartJs.Ui.Control, "lf added");

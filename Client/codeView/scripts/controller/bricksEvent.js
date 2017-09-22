@@ -136,72 +136,60 @@ PocketCode.merge({
                 throw new Error("Invalid argument Model");
             }
 
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_broadcast'
-                    },
-                    {
-                        type: 'lf'
-                    },
-                    {
-                        type: 'select',
-                        id: SmartJs.getNewId(), //todo take id from message??
-                        value: ''
-                    }
-                ],
-                endContent: [
-                    {
-                        type: 'text',
-                        i18n: ''
-                    }
-                ]
-            };
+            if(model._andWait){
+                var content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_broadcast_wait'
+                        },
+                        {
+                            type: 'lf'
+                        },
+                        {
+                            type: 'select',
+                            id: SmartJs.getNewId(), //todo take id from message??
+                            value: ''
+                        }
+                    ],
+                    endContent: [
+                        {
+                            type: 'text',
+                            i18n: ''
+                        }
+                    ]
+                };
+            }
+            else {
+                var content = {
+                    content: [
+                        {
+                            type: 'text',
+                            i18n: 'brick_broadcast'
+                        },
+                        {
+                            type: 'lf'
+                        },
+                        {
+                            type: 'select',
+                            id: SmartJs.getNewId(), //todo take id from message??
+                            value: ''
+                        }
+                    ],
+                    endContent: [
+                        {
+                            type: 'text',
+                            i18n: ''
+                        }
+                    ]
+                };
+            }
 
             var view = new PocketCode.View.EventBrick(commentedOut, content, true);
             PocketCode.BaseBrick.call(this, view, model, commentedOut);
         }
 
         return BroadcastBrick;
-    })(),
-
-    BroadcastAndWaitBrick: (function () {
-        BroadcastAndWaitBrick.extends(PocketCode.BaseBrick, false);
-
-        function BroadcastAndWaitBrick(model, commentedOut) {
-            if (!(model instanceof PocketCode.Model.BroadcastAndWaitBrick)) {
-                throw new Error("Invalid argument Model");
-            }
-
-            var content = {
-                content: [
-                    {
-                        type: 'text',
-                        i18n: 'brick_broadcast_wait'
-                    },
-                    {
-                        type: 'lf'
-                    },
-                    {
-                        type: 'select',
-                        id: SmartJs.getNewId(), //todo take id from message??
-                        value: ''
-                    }
-                ],
-                endContent: [
-                    {
-                        type: 'text',
-                        i18n: ''
-                    }
-                ]
-            };
-
-            var view = new PocketCode.View.EventBrick(commentedOut, content, true);
-            PocketCode.BaseBrick.call(this, view, model, commentedOut);
-        }
-
-        return BroadcastAndWaitBrick;
     })(),
 
     WhenConditionMetBrick: (function () {
