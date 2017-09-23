@@ -328,10 +328,8 @@ PocketCode.Model.Scene = (function () {
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
                 sprites[i].stopAllScripts(calledFromStopBrick);
+                sprites[i].stopAllSounds();
             }
-
-            //if (this._soundManager) //stop() may be called during dispose before loading the scene
-            //    this._soundManager.stopAllSounds();
         },
         _checkForOnExecuted: function (e) {
             window.setTimeout(function () {
@@ -489,6 +487,9 @@ PocketCode.Model.Scene = (function () {
         //ask
         showAskDialog: function (question, callback) {
             this._onSpriteUiChange.dispatchEvent({ properties: { showAskDialog: true, question: question, callback: callback } });
+        },
+        hideAskDialog: function (question, callback) {
+            this._onSpriteUiChange.dispatchEvent({ properties: { showAskDialog: false } });
         },
         //pen
         clearPenStampBackground: function () {

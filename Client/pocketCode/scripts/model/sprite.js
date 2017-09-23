@@ -438,16 +438,6 @@ PocketCode.Model.Sprite = (function () {
             if (andSounds)
                 this._audioPlayer.resumeAllSounds();
         },
-        //stopScript: function (calledFromStopBrick, scriptId) {
-        //    var scripts = this._scripts;
-        //    for (var i = 0, l = scripts.length; i < l; i++) {
-        //        if (scripts[i].id === scriptId) {
-        //            scripts[i].stop(calledFromStopBrick);
-        //            return false;
-        //        }
-        //    }
-        //    return false;
-        //},
         stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
@@ -969,7 +959,7 @@ PocketCode.Model.Sprite = (function () {
         stopSound: function (soundInstanceId) {
             this._audioPlayer.stopSound(soundInstanceId);
         },
-        stopAllSounds: function () {//calledFromBrick) {
+        stopAllSounds: function () {
             this._audioPlayer.stop();
         },
         //IOEB

@@ -103,13 +103,13 @@ PocketCode.Model.merge({
                 }
                 this._pendingOps = {};
             },
-            stop: function () {
+            stop: function (calledFromStopBrick) {
                 this._stopPendingOperations();
 
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].stop)
-                        bricks[i].stop();
+                        bricks[i].stop(calledFromStopBrick);
                 }
                 this._paused = false;
             },
@@ -320,9 +320,9 @@ PocketCode.Model.SingleContainerBrick = (function () {
             this._bricks.resume();
             PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
         },
-        stop: function () {
+        stop: function (calledFromStopBrick) {
             PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
-            this._bricks.stop();
+            this._bricks.stop(calledFromStopBrick);
         },
     });
 
@@ -393,8 +393,8 @@ PocketCode.Model.merge({
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
             },
-            stop: function () {
-                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);
+            stop: function (calledFromStopBrick) {
+                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this, calledFromStopBrick);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
             },
         });

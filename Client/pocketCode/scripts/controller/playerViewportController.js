@@ -69,11 +69,16 @@ PocketCode.PlayerViewportController = (function () {
                 imgs = this._renderingSprite,
                 visible;
 
-            if (properties.showAskDialog) {
-                this._view.showAskDialog(properties.question, properties.callback);
+            if (properties.showAskDialog !== undefined) {
+                if (properties.showAskDialog) {
+                    this._view.showAskDialog(properties.question, properties.callback);
+                    delete properties.question;
+                    delete properties.callback;
+                }
+                else {
+                    this._view.hideAskDialog();
+                }
                 delete properties.showAskDialog;
-                delete properties.question;
-                delete properties.callback;
                 if (Object.keys(properties).length == 0)
                     return;
             }

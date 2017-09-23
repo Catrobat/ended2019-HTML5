@@ -225,6 +225,7 @@ PocketCode.Model.merge({
                 this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, scope));
             },
             dispose: function () {
+                this._scene.hideAskDialog();
                 this._scene = undefined;
                 PocketCode.Model.BaseBrick.prototype.dispose.call(this);
             },

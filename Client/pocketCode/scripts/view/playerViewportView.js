@@ -166,6 +166,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 dialog.focusInputField();
             }
         },
+        hideAskDialog: function (){
+            var dialog = this._activeAskDialog;
+            if (dialog)
+                dialog.dispose();
+            this._activeAskDialog = undefined;
+        },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
             this._canvas.initScene(id, screenSize);
@@ -184,8 +190,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clearCurrentPenStampCache();
         },
         clear: function () {
-            if (this._activeAskDialog)
-                this._activeAskDialog.dispose();
+            this.hideAskDialog();
             this._canvas.clearPenStampCache();
         },
         //camera
