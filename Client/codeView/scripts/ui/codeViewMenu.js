@@ -93,7 +93,7 @@ PocketCode.CodeView.Ui.merge({
             this._onNavigation = new SmartJs.Event.Event(this);
         }
 
-        //events
+         //events
         Object.defineProperties(Menu.prototype, {
             onNavigation: {
                 get: function () {

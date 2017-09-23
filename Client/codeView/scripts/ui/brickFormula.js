@@ -69,10 +69,10 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     this._appendChild(item);
                     break;
                 case 'BRACKET':
-                    var item = new PocketCode.CodeView.Ui.BrickTextItem("(", false, { className: 'pc-bracketOpen' });
+                    var item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
                     this._appendChild(item);
                     this._goThroughObject(i18nKey.right);
-                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false, { className: 'pc-bracketClose' });
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
                     this._appendChild(item);
                     break;
                 case 'STRING':
@@ -82,7 +82,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                 case 'COLLISION_FORMULA':
                     var item = new PocketCode.CodeView.Ui.BrickTextItem("formula_editor_function_collision", true);
                     this._appendChild(item);
-                    item = new PocketCode.CodeView.Ui.BrickTextItem("(", false, { className: 'pc-bracketOpen' });
+                    item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
                     this._appendChild(item);
                     var sprite_id = i18nKey.objRef.id;
                     //var scene = null; //todo: get scene
@@ -90,7 +90,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
                     //item = new PocketCode.CodeView.Ui.BrickTextItem(sprite_name.name, false);
                     item = new PocketCode.CodeView.Ui.BrickTextItem(sprite_id, false);
                     this._appendChild(item);
-                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false, { className: 'pc-bracketClose' });
+                    item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
                     this._appendChild(item);
                     break;
             }
@@ -100,19 +100,19 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
                 var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
                 this._appendChild(item);
-                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false, { className: 'pc-bracketOpen' });
+                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
                 this._appendChild(item);
 
                 this._goThroughObject(i18nKey.left);
 
-                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false, { className: 'pc-bracketClose' });
+                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
                 this._appendChild(item);
             }
             else if (i18nKey.left != undefined && i18nKey.right != undefined) {
 
                 var item = new PocketCode.CodeView.Ui.BrickTextItem(i18nKey.i18nKey, true);
                 this._appendChild(item);
-                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false, { className: 'pc-bracketOpen' });
+                item = new PocketCode.CodeView.Ui.BrickTextItem("(", false);
                 this._appendChild(item);
 
                 this._goThroughObject(i18nKey.left);
@@ -122,7 +122,7 @@ PocketCode.CodeView.Ui.BrickFormula = (function () {
 
                 this._goThroughObject(i18nKey.right);
 
-                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false, { className: 'pc-bracketclose' });
+                item = new PocketCode.CodeView.Ui.BrickTextItem(")", false);
                 this._appendChild(item);
             }
             else if (i18nKey.left == undefined && i18nKey.right == undefined) {

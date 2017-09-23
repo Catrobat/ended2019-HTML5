@@ -12,6 +12,12 @@ QUnit.test("CodeViewMenu", function (assert) {
     assert.ok(view.objClassName === "Menu", "objClassName check");
     assert.equal(view._exp._childs[0]._childs[0]._textNode._text, "Navigation", "Navigation added to expander" );
 
+    //events
+    var onNavigation = view.onNavigation;
+    assert.ok(onNavigation instanceof SmartJs.Event.Event, "onNavigation" )
+
+    //properties
+
     //navigationJson
 
     //scene length > 1
@@ -55,6 +61,7 @@ QUnit.test("CodeViewMenu", function (assert) {
     assert.equal(view._exp._childs[1]._childs[4], undefined, "scene lenght == 0" );
 
 
-
-    //TODO verifyResize
+    //verifyResize
+    view.verifyResize();
+    assert.notEqual(view._container.style.maxHeight, "", "maxHeight set" )
 });

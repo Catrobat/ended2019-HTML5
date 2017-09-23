@@ -103,8 +103,15 @@ QUnit.test("BrickFormula _goThroughObject", function (assert) {
     ctrl = new PocketCode.CodeView.Ui.BrickFormula(i18nKey);
     assert.equal(ctrl._childs[0]._textNode._text, "string_test", "type STRING");
 
-    //todo: test type: COLLISION_FORMULA (scene in COLLISION_FORMULA missing)
+    //type COLLISION_FORMULA
+    i18nKey = { type: "COLLISION_FORMULA", value: "s22", left: undefined, right: undefined,
+        objRef: {type: "local", id: "s22"}};
+    ctrl = new PocketCode.CodeView.Ui.BrickFormula(i18nKey);
 
+    assert.equal(ctrl._childs[0]._textNode._text, "touches_object", "type COLLISION_FORMULA (touches_object added)");
+    assert.equal(ctrl._childs[1]._textNode._text, "(", "type COLLISION_FORMULA ");
+    assert.equal(ctrl._childs[2]._textNode._text, "s22", "type COLLISION_FORMULA (spriteId added)");
+    assert.equal(ctrl._childs[3]._textNode._text, ")", "type COLLISION_FORMULA 2");
 });
 
 QUnit.test("BrickFormula _addTypeFunction", function (assert) {
