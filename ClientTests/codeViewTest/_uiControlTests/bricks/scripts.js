@@ -52,10 +52,7 @@ window.onload = function () {
     brick = new PocketCode.IfThenElseBrick(b, false, true);
     container.appendChild(brick._view);
 
-
-    var gameEngine = new PocketCode.GameEngine();
     gameEngine._collisionManager = new PocketCode.CollisionManager(400, 200);  //make sure collisionMrg is initialized before calling an onStart event
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
     gameEngine.__currentScene = scene; //set internal: tests only
     gameEngine._startScene = scene;
 
@@ -119,5 +116,9 @@ window.onload = function () {
     var b = new PocketCode.Model.ChangeGraphicEffectBrick("device", "sprite", { commentedOut: "false", effect: "ghost", type: "SetGraphicEffect",
         value: {left: "null", right: "null", type: "NUMBER", value: "75"}});
     var brick = new PocketCode.ChangeGraphicEffectBrick(b, false);
+    container.appendChild(brick._view);
+
+    var b = new PocketCode.Model.SceneTransitionBrick("device", "sprite", gameEngine, { sceneId: "s2" });
+    var brick = new PocketCode.SceneTransitionBrick(b, false);
     container.appendChild(brick._view);
 }

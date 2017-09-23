@@ -26,6 +26,7 @@ QUnit.test("View EventBrick", function (assert) {
     assert.ok(brick instanceof PocketCode.View.EventBrick && brick instanceof PocketCode.View.BaseBrick, "instance check + inheritance");
     assert.ok(brick.objClassName === "EventBrick", "objClassName check");
 
+    assert.ok(brick._childs[0] instanceof PocketCode.CodeView.Ui.BrickDebugButton, "DebugButton added");
     assert.ok(brick._childs[2] instanceof SmartJs.Ui.HtmlTag, "ul tag added");
     assert.ok(brick._childs[3]._childs[0] instanceof PocketCode.CodeView.Ui.BrickTextItem, "endContent added")
 });

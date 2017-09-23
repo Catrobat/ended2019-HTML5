@@ -13,6 +13,12 @@ QUnit.test("View BaseBrick", function (assert) {
     assert.ok(view instanceof PocketCode.View.BaseBrick && view instanceof SmartJs.Ui.Control, "instance check + inheritance");
     assert.ok(view.objClassName === "BaseBrick", "objClassName check");
 
+    assert.equal(view._brickType, PocketCode.View.BrickType.CONTROL, "brickType set");
+    assert.equal(view._isEndBrick, false, "isEndBrick set");
+    assert.ok(view._childs[0] instanceof PocketCode.CodeView.Ui.BrickDebugButton, "DebugButton added");
+    assert.ok(view._onResize._listeners.length == 2, "add listener to _onResize");
+
+
     //properties
     view.selectable = false;
     assert.equal(view._selectable, false, "selectable set correctly");
