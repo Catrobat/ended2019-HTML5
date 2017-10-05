@@ -281,7 +281,7 @@ PocketCode.Ui.merge({
             var dom = input.dom;
             this._sliderDom = dom;
             dom.type = 'range';
-            this._addDomListener(dom, 'change', this._onChangeHandler.bind(this));
+            this._addDomListener(dom, 'change', this._onChangeHandler);
 
             //span for minLabel
             var spanMin = new SmartJs.Ui.HtmlTag('span');
@@ -369,9 +369,13 @@ PocketCode.Ui.merge({
             },
         });
 
-        Slider.prototype._onChangeHandler = function(e) {
-            this._onChange.dispatchEvent({value: e.target.value});
-        };
+        Slider.prototype.merge({
+            _onChangeHandler: function (e) {
+                this._onChange.dispatchEvent({ value: e.target.value });
+                this._sliderDom.blur();
+                document.body.focus();
+            },
+        });
 
         return Slider;
     })(),
