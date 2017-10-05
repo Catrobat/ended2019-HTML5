@@ -39,12 +39,12 @@ PocketCode.I18nProvider = (function (propObject) {
 
             //new: add new loc strings here until they are included in crowdin
             "lbDeviceEmulator": "Device Emulator",
-            "lbDeviceMaxDegree": "Max Degree",
-            "lbDeviceMaxDegreeDescr": "Max Degree Description",
-            "lbDeviceAcc": "Device Acceleration",
-            "lbDeviceAccDescr": "Device Acceleration Description",
-            "lbDInclinationX": "InclinationX",
-            "lbDInclinationY": "InclinationY",
+            "lbDeviceMaxDegree": "Maximum Speed",
+            "lbDeviceMaxDegreeDescr": "Represents the maximum angle your device can be rotated, e.g. the max speed a sprite can reach based on the inclination sonsor.",
+            "lbDeviceAcc": "Maximum Acceleration",
+            "lbDeviceAccDescr": "Represents the change (angle per second) the device will move to one side if you start pressing a cusor button, e.g. the maximum acceleration of a sprite based on the inclination sensor.",
+            "lbDeviceIncX": "Inclination X",
+            "lbDeviceIncY": "Inclination Y",
         };
 
         this._supportedLanguages = [];

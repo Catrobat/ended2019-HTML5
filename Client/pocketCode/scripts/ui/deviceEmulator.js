@@ -34,6 +34,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
+        scroll.appendChild(new SmartJs.Ui.Control('br'));
+
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(tn);
@@ -48,6 +50,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
+        scroll.appendChild(new SmartJs.Ui.Control('br'));
+
         this.hide();
         this._img = new SmartJs.Ui.Image();
         this._img.onLoad.addEventListener(new SmartJs.Event.EventListener(this.show, this));
@@ -57,7 +61,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.addClassName('pc-dEImg');
         scroll.appendChild(span);
 
-        tn = new PocketCode.Ui.I18nTextNode('lbDInclinationX');
+        tn = new PocketCode.Ui.I18nTextNode('lbDeviceIncX');
         var div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
         span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
         span.appendChild(tn);
@@ -68,7 +72,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         div.appendChild(span);
         scroll.appendChild(div);
 
-        tn = new PocketCode.Ui.I18nTextNode('lbDInclinationY');
+        tn = new PocketCode.Ui.I18nTextNode('lbDeviceIncY');
         div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
         span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
         span.appendChild(tn);
