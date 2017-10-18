@@ -8,7 +8,6 @@
 /// <reference path="../model/scene.js" />
 /// <reference path="publishSubscribe.js" />
 /// <reference path="soundManager.js" />
-/// <reference path="stopwatch.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {

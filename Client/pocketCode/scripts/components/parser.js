@@ -8,7 +8,7 @@
 /// <reference path="../model/bricksPen.js" />
 /// <reference path="../model/bricksData.js" />
 /// <reference path="../model/userVariable.js" />
-/// <reference path="../component/sprite.js" />
+/// <reference path="../model/sprite.js" />
 'use strict';
 
 PocketCode.merge({

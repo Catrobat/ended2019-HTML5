@@ -95,11 +95,11 @@ PocketCode.Device = (function () {
         this._flashOn = false;      //TODO: temp solution until flash supported
 
         //bind events
-        if (!isNaN(window.orientation)) {
-            if (window.DeviceOrientationEvent)
+        if (window.hasOwnProperty('orientation')) {
+            if (window.hasOwnProperty('DeviceOrientationEvent'))
                 this._initDeviceOrientationListener = this._addDomListener(window, 'deviceorientation', this._initDeviceOrientationHandler);
 
-            if (window.DeviceMotionEvent)
+            if (window.hasOwnProperty('DeviceMotionEvent'))
                 this._initDeviceMotionListener = this._addDomListener(window, 'devicemotion', this._initDeviceMotionHandler);
 
             this._orientationChangeListener = this._addDomListener(window, 'orientationchange', this._orientationChangeHandler);

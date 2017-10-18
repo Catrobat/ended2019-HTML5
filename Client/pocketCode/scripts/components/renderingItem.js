@@ -74,8 +74,10 @@ PocketCode.merge({
             PocketCode.RenderingItem.call(this, propObject);
 
             propObject = propObject || {};
+            this._text = '';
             this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
             //^^ this may be a PocketCode.Core.I18nString Object to support i18n
+
             this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.objectId;
             this._textAlign = propObject.textAlign || 'start';
@@ -784,7 +786,7 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
+            this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
             this._shadow = false;
 
             this.graphicEffects = propObject.graphicEffects || [];

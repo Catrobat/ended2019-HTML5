@@ -457,7 +457,7 @@ PocketCode.Model.merge({
                     }
                     else {
                         this._calls++;
-                        if (this._calls < PocketCode.treadCounter)
+                        if (this._calls < PocketCode.threadCounter)
                             this._execute.call(this, id, po.scope);
                         else
                             window.setTimeout(this._execute.bind(this, id, po.scope), 0);

@@ -354,9 +354,14 @@ PocketCode.Ui.merge({
         //cntr
         function BrowserNotSupportedDialog() {
             PocketCode.Ui.ErrorDialog.call(this, 'lblBrowserNotSupportedErrorCaption', 'msgBrowserNotSupportedError');
+            
             this.appendChild(new SmartJs.Ui.HtmlTag('br'));
-            this.appendChild(new SmartJs.Ui.HtmlTag('br'));
-            this.appendChild(new PocketCode.Ui.I18nTextNode('msgBrowserNotSupportedErrorOther'));
+            this.insertAt(2, new SmartJs.Ui.HtmlTag('br'));
+            this.insertAt(3, new PocketCode.Ui.I18nTextNode('msgBrowserNotSupportedErrorOther'));
+            this.insertAt(4, new SmartJs.Ui.HtmlTag('br'));
+
+            this.logMsgVisible = true;
+            this.closeMsgVisible = true;
         }
 
         return BrowserNotSupportedDialog;

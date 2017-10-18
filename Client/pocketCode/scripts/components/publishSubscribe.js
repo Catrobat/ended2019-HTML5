@@ -61,7 +61,7 @@ PocketCode.PublishSubscribeBroker = (function () {
                 var po = this._pendingOps[id] = { count: 0, waitCallback: waitCallback, loopDelay: false };
                 for (var i = 0, l = subs.length; i < l; i++) {
                     po.count++;
-                    if (this._calls < PocketCode.treadCounter)
+                    if (this._calls < PocketCode.threadCounter)
                         subs[i].call(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id);
                     else
                         window.setTimeout(subs[i].bind(this, execTime, new SmartJs.Event.EventListener(this._scriptExecutedCallback, this), id), 0);

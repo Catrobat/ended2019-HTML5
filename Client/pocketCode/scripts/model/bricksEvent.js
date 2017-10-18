@@ -41,6 +41,7 @@ PocketCode.Model.merge({
             PocketCode.Model.EventBrick.call(this, device, sprite, propObject);
 
             this._onActionEvents = actionEvents;
+            this._action = undefined;
             this.action = propObject.action;   //handling several actions: "spriteTouched", "screenTouched" (currently not supported: "video motion", "timer", "loudness", ...) 
             //TODO: make sure to handle pause/resume/stop if needed (when extending functionality to support other actions as well, e.g. 'VideoMotion', 'Timer', 'Loudness')
         }

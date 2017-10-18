@@ -82,14 +82,14 @@ PocketCode.PlayerViewportController = (function () {
                 if (Object.keys(properties).length == 0)
                     return;
             }
-            else if (properties.penX || properties.penY) {
+            else if (properties.hasOwnProperty('penX') || properties.hasOwnProperty('penY')) {
                 this._view.movePen(spriteId, properties.penX, properties.penY);
             }
-            else if (properties.drawStamp == true) {
+            else if (properties.hasOwnProperty('drawStamp') && properties.drawStamp) {
                 this._view.drawStamp(spriteId);
                 delete properties.drawStamp;
             }
-            else if (properties.clearBackground == true) {
+            else if (properties.hasOwnProperty('clearBackground') && properties.clearBackground) {
                 this._view.clearCurrentPenStampCache();
                 delete properties.clearBackground;
             }

@@ -74,7 +74,8 @@ PocketCode.Model.merge({
                     else
                         return new PocketCode.Model.UserVariableList(null, "New...");
                 }
-                return this._variables[id];
+                if (this._variables.hasOwnProperty(id))
+                    return this._variables[id];
             },
             getVariables: function () {
                 return this._variables;

@@ -8,6 +8,10 @@
 if (!PocketCode)
     var PocketCode = {};
 
+//set default server if not set already
+if(!PocketCode.hasOwnProperty('domain'))
+    PocketCode.domain = 'https://share.catrob.at/';
+
 //if (!PocketCode.crossOrigin)
 //    PocketCode.crossOrigin = new ((function () {
 
@@ -110,9 +114,9 @@ PocketCode.merge({
                 var bc = SmartJs.isBrowserCompatible();
                 if (!bc.result) {
                     _result = _full = false;
-                    return false;
+                    //return false;
                 }
-                return true;
+                return bc;
             }(),
             operaMini: function () {
                 if (window.operamini) {//!!window.['operamini']) {
@@ -120,7 +124,7 @@ PocketCode.merge({
                     return false;
                 }
                 return true;
-            },
+            }(),
             pushState: function () {
                 if (SmartJs.Device.isMobile && !history.pushState) {
                     _result = _full = false;

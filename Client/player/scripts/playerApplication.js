@@ -473,16 +473,16 @@ PocketCode.merge({
                     var compatible = pc.result;
 
                     if (!compatible) {	//framework not loaded correctly or compatibility failed
-                        if (!pc.tests.SmartJs) {
-                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
-                            this._onExit.dispatchEvent();
-                        }
-                        else {
+                        try {
+                            PocketCode.LoggingProvider.sendMessage('browser not supported: ' + JSON.stringify(pc.tests), this._currentProjectId);
                             var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                             d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                            //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                             this._onInit.dispatchEvent();   //hide splash screen
                             this._showDialog(d, false);
+                        }
+                        catch (e) {
+                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application. Details: ' + JSON.stringify(pc.tests));
+                            this._onExit.dispatchEvent();
                         }
                         return;
                     }

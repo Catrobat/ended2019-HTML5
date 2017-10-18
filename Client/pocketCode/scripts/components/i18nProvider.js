@@ -7,6 +7,8 @@ PocketCode.I18nProvider = (function (propObject) {
     function I18nProvider() {
 
         this._direction = PocketCode.Ui.Direction.LTR;
+        this._currentLanguage = undefined;
+        this._supportedLanguages = [];
 
         this._dictionary = {    //storage: including locStrings used before loading / errors on loading
             "lblLoadingResources": "Loading resources...",
@@ -39,8 +41,6 @@ PocketCode.I18nProvider = (function (propObject) {
 
             //new: add new loc strings here until they are included in crowdin
         };  
-
-        this._supportedLanguages = [];
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);

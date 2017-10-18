@@ -45,6 +45,7 @@ SmartJs.Animation = {
             if (render !== undefined && (typeof render !== 'function' || render(1) !== 1))  //!=undefined to allow base ctr calls
                 throw new Error('parameter \'render\' has to be a function with render(1) = 1 to terminate the animation correctly');
 
+            this._callbackArgs = {};
             this._paused = false;
 
             this._start = start;

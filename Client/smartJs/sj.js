@@ -162,6 +162,7 @@ var SmartJs = {
                     _result = false;
                     return false;
                 }
+                return true;
             }(),
             Object_defineProperty: function () {
                 if (!Object.defineProperty) {
@@ -192,7 +193,8 @@ var SmartJs = {
                 return false;
             }(),
             document_addEventListener: function () {
-                if (document.addEventListener) return true;
+                if (document.addEventListener)
+                    return true;
 
                 _result = false;
                 return false;
@@ -224,8 +226,9 @@ var SmartJs = {
                     _result = false;
                     return false;
                 }
+                return true;
             }(),
-            css_box_sizing__border_box: function () {
+            cssBoxSizing_borderBox: function () {
                 var box = document.createElement('div');
                 //box.style = {
                 //    position: 'absolute',
@@ -250,7 +253,8 @@ var SmartJs = {
                 document.body.removeChild(box);
                 box = undefined;
 
-                if (supported) return true;
+                if (supported)
+                    return true;
 
                 _result = false;
                 return false;
