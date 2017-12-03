@@ -149,7 +149,7 @@ QUnit.test("ChangeYBrick", function (assert) {
 });
 
 
-QUnit.test("SetRotionStyleBrick", function (assert) {
+QUnit.test("SetRotationStyleBrick", function (assert) {
 
     var done1 = assert.async();
 
@@ -158,18 +158,18 @@ QUnit.test("SetRotionStyleBrick", function (assert) {
     var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
-    var b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { id: "id" });
+    var b = new PocketCode.Model.SetRotationStyleBrick(device, sprite, { id: "id" });
 
     assert.ok(b._device === device && b._sprite === sprite, "brick created and properties set correctly");
-    assert.ok(b instanceof PocketCode.Model.SetRotionStyleBrick, "instance check");
-    assert.ok(b.objClassName === "SetRotionStyleBrick", "objClassName check");
+    assert.ok(b instanceof PocketCode.Model.SetRotationStyleBrick, "instance check");
+    assert.ok(b.objClassName === "SetRotationStyleBrick", "objClassName check");
 
     assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not defined");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 0 });
+    b = new PocketCode.Model.SetRotationStyleBrick(device, sprite, { selected: 0 });
     assert.ok(b._style == PocketCode.RotationStyle.LEFT_TO_RIGHT, "style: left to right");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 2 });
+    b = new PocketCode.Model.SetRotationStyleBrick(device, sprite, { selected: 2 });
     assert.ok(b._style == PocketCode.RotationStyle.DO_NOT_ROTATE, "style: don't rotate");
-    b = new PocketCode.Model.SetRotionStyleBrick(device, sprite, { selected: 10 });
+    b = new PocketCode.Model.SetRotationStyleBrick(device, sprite, { selected: 10 });
     assert.ok(b._style == PocketCode.RotationStyle.ALL_AROUND, "default style: all around: not listet in enum");
 
     //execute
