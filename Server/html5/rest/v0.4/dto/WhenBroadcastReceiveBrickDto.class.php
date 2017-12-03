@@ -2,11 +2,11 @@
 
 class WhenBroadcastReceiveBrickDto extends ScriptBlockDto {
 
-    public $receiveMsgId;	//id of projects broadcasts
+    public $msgId;	//id of projects broadcasts
 
-    public function __construct($id, $receiveMsgId, $commentedOut = false) {
+    public function __construct($id, $msgId, $commentedOut = false) {
         parent::__construct("WhenBroadcastReceive", $id, $commentedOut);
 
-        $this->receiveMsgId = $receiveMsgId;
+        $this->msgId = $msgId;
     }
 }

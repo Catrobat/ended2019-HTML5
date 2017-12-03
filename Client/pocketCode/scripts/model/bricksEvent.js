@@ -105,7 +105,7 @@ PocketCode.Model.merge({
         function WhenBroadcastReceiveBrick(device, sprite, broadcastMgr, propObject) {
             PocketCode.Model.ScriptBlock.call(this, device, sprite, propObject);
 
-            this._msgId = propObject.receiveMsgId;
+            this._msgId = propObject.msgId;
             this._callback = this._subscribeCallback.bind(this);
             this._broadcastMgr = broadcastMgr;
             broadcastMgr.subscribe(this._msgId, this._callback);
@@ -127,17 +127,17 @@ PocketCode.Model.merge({
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
 
             this._broadcastMgr = broadcastMgr;
-            this._broadcastId = propObject.broadcastId;
+            this._msgId = propObject.msgId;
             this._andWait = propObject.andWait;
         }
 
         BroadcastBrick.prototype.merge({
             _execute: function (id) {
                 if(this._andWait){
-                    this._broadcastMgr.publish(this._broadcastId, this._return.bind(this, id));
+                    this._broadcastMgr.publish(this._msgId, this._return.bind(this, id));
                 }
                 else{
-                    this._broadcastMgr.publish(this._broadcastId);
+                    this._broadcastMgr.publish(this._msgId);
                     this._return(id);
                 }
             },
