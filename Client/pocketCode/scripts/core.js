@@ -83,8 +83,8 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
-    threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
-
+    //threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+    //^^ currently disables.. allows several synchroneous calls (without theading timeout) to run script much faster: references: LoopBrick (bricksCore.js) and PublishSubscribeBroker (publishSubscribe.js)
     UserActionType: {
         SPRITE_TOUCHED: 'spriteTouched',
         TOUCH_START: 'touchStart',
