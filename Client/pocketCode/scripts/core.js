@@ -99,6 +99,11 @@ PocketCode.merge({
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
     },
+    StopEventType: {
+        SYSTEM: 0,  //default
+        BRICK: 1,
+        RUNNING_SCRIPT_CALL: 2,
+    },
     StopType: {
         THIS_SCRIPT: 0,
         OTHER_SCRIPTS: 1,
