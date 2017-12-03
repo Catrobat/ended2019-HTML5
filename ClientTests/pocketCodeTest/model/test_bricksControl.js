@@ -478,7 +478,7 @@ QUnit.test("WaitUntilBrick", function (assert) {
 
 QUnit.test("RepeatBrick", function (assert) {
 
-    assert.expect(9);   //init async asserts (to wait for)
+    assert.expect(11);   //init async asserts (to wait for)
     var done1 = assert.async();
     var done2 = assert.async();
 
@@ -498,7 +498,7 @@ QUnit.test("RepeatBrick", function (assert) {
         function TestBrick2(device, sprite, propObject) {
             PocketCode.Model.ThreadedBrick.call(this, device, sprite, propObject);
             this.executed = 0;
-            this._delay = 10;
+            this._delay = 40;   //greater than minLoopCycleTime
             this.loopDelay = false;
 
             //this.onTestFinished = new SmartJs.Event.Event(this);
@@ -506,14 +506,12 @@ QUnit.test("RepeatBrick", function (assert) {
 
         TestBrick2.prototype.merge({
             _execute: function (id) {
-                //this.executed++;
-                //if (this.executed === 6) {  //helper to terminate this loop, inlcuding 5 waits
-                //    this.onTestFinished.dispatchEvent();
-                //    return;
-                //}
-                //var _self = this;
-                //window.setTimeout(function () { _self._return(id, true) }, _self._delay);
-                this._return(id, this.loopDelay);
+                this.executed++;
+
+                if (this.loopDelay)
+                    window.setTimeout(this._return.bind(this, id, true), this._delay);
+                else
+                    this._return(id, false);    //set to avoid minLoopCycleTime
             },
             start: function () {
                 this._stopped = false;
@@ -532,6 +530,8 @@ QUnit.test("RepeatBrick", function (assert) {
     var tb = new TestBrick2("device", sprite, { id: "id" });
 
     bca.push(tb);
+    var startTime;
+
     //without delay
     var testFinishedHandler1 = function (e) {
         //async
@@ -539,42 +539,49 @@ QUnit.test("RepeatBrick", function (assert) {
         //assert.equal(tb.executed, 6, "loop running continuously");
         var delay = finishTime - startTime;
         //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
-        assert.ok(delay >= 10, "threading: without loop delay");
+        assert.ok(delay < 3, "sync call: ok");
         assert.equal(e.id, "n_times", "id returned correctly");
-        assert.equal(e.loopDelay, false, "loopDelay returned correctly");
+        assert.ok(!e.loopDelay, "loopDelay returned correctly (always false or undefined on loops)");
+        assert.equal(tb.executed, 6, "executed 6 times");
 
         done1();
+        runAsyncTests();
     };
 
     b.bricks = new PocketCode.Model.BrickContainer(bca);
-    var startTime = Date.now();
+    startTime = Date.now();
     b.execute(new SmartJs.Event.EventListener(testFinishedHandler1, this), "n_times");
 
     //with delay
-    var testFinishedHandler2 = function (e) {
-        //async
-        var finishTime = Date.now();
-        //assert.equal(tb.executed, 6, "loop running continuously");
-        var delay = finishTime - startTime;
-        //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
-        assert.ok(delay >= 50, "loop delay: threading: including loop delay");
-        assert.equal(e.id, "n_times2", "loop delay: id returned correctly");
-        assert.ok(!e.loopDelay, "loop delay: delay returned correctly: handles correctly but return value is always false or undefined");
+    function runAsyncTests() {
 
-        done2();
-    };
+        var testFinishedHandler2 = function (e) {
+            //async
+            var finishTime = Date.now();
+            //assert.equal(tb.executed, 6, "loop running continuously");
+            var delay = finishTime - startTime;
+            //console.log("running loop 6 times without loop delay (5 delays) = " + delay + "ms");
+            assert.ok(delay > 240, "async call: ok");
+            assert.equal(e.id, "n_times2", "loop delay: id returned correctly");
+            assert.ok(!e.loopDelay, "loop delay: delay returned correctly: handles correctly but return value is always false or undefined");
+            assert.equal(tb.executed, 6, "executed 6 times");
 
-    var b2 = new PocketCode.Model.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
-    var tb2 = new TestBrick2("device", "sprite", { id: "id" });
-    tb2.loopDelay = true;
-    bca = [];
-    bca.push(tb2);
-    b2.bricks = new PocketCode.Model.BrickContainer(bca);
-    //var removed = tb.onTestFinished.removeEventListener(new SmartJs.Event.EventListener(testFinishedHandler1, this));
-    //console.log("removed handler: " + removed);
-    //tb2.onTestFinished.addEventListener(new SmartJs.Event.EventListener(testFinishedHandler2, this));
+            done2();
+        };
 
-    b2.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "n_times2");
+        var b2 = new PocketCode.Model.RepeatBrick("device", sprite, 25, { timesToRepeat: nTimes });
+        var tb2 = new TestBrick2("device", "sprite", { id: "id" });
+        tb2.loopDelay = true;
+        bca = [];
+        bca.push(tb2);
+        b2.bricks = new PocketCode.Model.BrickContainer(bca);
+        //var removed = tb.onTestFinished.removeEventListener(new SmartJs.Event.EventListener(testFinishedHandler1, this));
+        //console.log("removed handler: " + removed);
+        //tb2.onTestFinished.addEventListener(new SmartJs.Event.EventListener(testFinishedHandler2, this));
+
+        startTime = Date.now();
+        b2.execute(new SmartJs.Event.EventListener(testFinishedHandler2, this), "n_times2");
+    }
 
 });
 
