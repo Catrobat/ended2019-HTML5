@@ -6,7 +6,7 @@
 if (!PocketCode)
     var PocketCode = {};
 
-PocketCode.server = 1;
+PocketCode.server = 0;
 
 if (PocketCode.server === 0)
     PocketCode.domain = 'https://share.catrob.at/';

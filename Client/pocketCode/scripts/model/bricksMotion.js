@@ -350,10 +350,10 @@ PocketCode.Model.merge({
         return SetDirectionToBrick;
     })(),
 
-    SetRotionStyleBrick: (function () {
-        SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetRotationStyleBrick: (function () {
+        SetRotationStyleBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetRotionStyleBrick(device, sprite, propObject) {
+        function SetRotationStyleBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (!propObject)
@@ -372,11 +372,11 @@ PocketCode.Model.merge({
                 }
         }
 
-        SetRotionStyleBrick.prototype._execute = function () {
+        SetRotationStyleBrick.prototype._execute = function () {
             this._return(this._sprite.setRotationStyle(this._style));
         };
 
-        return SetRotionStyleBrick;
+        return SetRotationStyleBrick;
     })(),
 
     SetRotationSpeedBrick: (function () {
