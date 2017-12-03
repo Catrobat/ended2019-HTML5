@@ -438,11 +438,11 @@ PocketCode.Model.Sprite = (function () {
             if (andSounds)
                 this._audioPlayer.resumeAllSounds();
         },
-        stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
+        stopAllScripts: function (stopEventType, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== exceptScriptId)
-                    scripts[i].stop(calledFromStopBrick);
+                    scripts[i].stop(stopEventType);
             }
             return false;
         },

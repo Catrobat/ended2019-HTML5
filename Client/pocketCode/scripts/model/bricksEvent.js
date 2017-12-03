@@ -48,7 +48,7 @@ PocketCode.Model.merge({
 
         Object.defineProperties(WhenActionBrick.prototype, {
             action: {
-                get: function() {
+                get: function () {
                     return this._action;
                 },
                 set: function (action) {
@@ -69,7 +69,7 @@ PocketCode.Model.merge({
                     var event = this._onActionEvents[action];
                     if (!(event instanceof SmartJs.Event.Event))
                         throw new Error('unrecognized event: check if all events were registered in out parser');
-                    if(this._actionEvent)
+                    if (this._actionEvent)
                         this._actionEvent.removeEventListener(new SmartJs.Event.EventListener(this._onActionHandler, this));
 
                     this._action = action;
@@ -159,6 +159,14 @@ PocketCode.Model.merge({
             _execute: function (id) {
                 this._broadcastMgr.publish(this._broadcastMsgId, this._return.bind(this, id));
             },
+            //test
+            pause: function () {
+                PocketCode.Model.ThreadedBrick.prototype.pause.call(this);
+            },
+            resume: function () {
+                PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
+            },
+            //test
             dispose: function () {
                 this._broadcastMgr = undefined;
                 PocketCode.Model.ThreadedBrick.prototype.dispose.call(this);
@@ -221,8 +229,8 @@ PocketCode.Model.merge({
                 PocketCode.Model.EventBrick.prototype.resume.call(this);
                 this._execute();
             },
-            stop: function (calledFromStopBrick) {
-                if (!calledFromStopBrick) {
+            stop: function (stopEventType) {
+                if (stopEventType != PocketCode.StopEventType.BRICK) {
                     window.clearTimeout(this._timeoutHandler);
                     this._previousMet = false;  //reinit
                 }

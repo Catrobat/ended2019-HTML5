@@ -103,15 +103,16 @@ PocketCode.Model.merge({
                 }
                 this._pendingOps = {};
             },
-            stop: function (calledFromStopBrick) {
+            stop: function (stopEventType) {
                 this._stopPendingOperations();
 
                 var bricks = this._bricks;
                 for (var i = 0, l = bricks.length; i < l; i++) {
                     if (bricks[i].stop)
-                        bricks[i].stop(calledFromStopBrick);
+                        bricks[i].stop(stopEventType);
                 }
-                this._paused = false;
+                if (stopEventType != PocketCode.StopEventType.RUNNING_SCRIPT_CALL)
+                    this._paused = false;
             },
             dispose: function () {
                 this.stop();
@@ -252,9 +253,10 @@ PocketCode.Model.merge({
                 }
                 this._pendingOps = {};
             },
-            stop: function () {
+            stop: function (stopEventType) {
                 this._stopPendingOperations();
-                this._paused = false;
+                //if (stopEventType != PocketCode.StopEventType.RUNNING_SCRIPT_CALL)    //to avoid pause error on event bricks (recursive broadcast calls)
+                this._paused = false;                                                   //handled in brick container only
             },
             /* override */
             dispose: function () {
@@ -320,9 +322,9 @@ PocketCode.Model.SingleContainerBrick = (function () {
             this._bricks.resume();
             PocketCode.Model.ThreadedBrick.prototype.resume.call(this);
         },
-        stop: function (calledFromStopBrick) {
-            PocketCode.Model.ThreadedBrick.prototype.stop.call(this);
-            this._bricks.stop(calledFromStopBrick);
+        stop: function (stopEventType) {
+            PocketCode.Model.ThreadedBrick.prototype.stop.call(this, stopEventType);
+            this._bricks.stop(stopEventType);
         },
     });
 
@@ -393,8 +395,8 @@ PocketCode.Model.merge({
                 this._executionState = PocketCode.ExecutionState.STOPPED;
                 PocketCode.Model.SingleContainerBrick.prototype._return.call(this, id, loopDelay, stopped);
             },
-            stop: function (calledFromStopBrick) {
-                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this, calledFromStopBrick);
+            stop: function (stopEventType) {
+                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this, stopEventType);
                 this._executionState = PocketCode.ExecutionState.STOPPED;
             },
         });
@@ -521,7 +523,7 @@ PocketCode.Model.EventBrick = (function () {
             }
 
             if (this.executionState == PocketCode.ExecutionState.RUNNING)
-                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this);    //call stop without changing executionState
+                PocketCode.Model.SingleContainerBrick.prototype.stop.call(this, PocketCode.StopEventType.RUNNING_SCRIPT_CALL);    //call stop without changing executionState
             else
                 this._executionState = PocketCode.ExecutionState.RUNNING;
 
@@ -544,10 +546,10 @@ PocketCode.Model.EventBrick = (function () {
                 });
             }
         },
-        stop: function (calledFromStopBrick) {
-            PocketCode.Model.ScriptBlock.prototype.stop.call(this);
+        stop: function (stopEventType) {
+            PocketCode.Model.ScriptBlock.prototype.stop.call(this, stopEventType);
 
-            if (calledFromStopBrick) {
+            if (stopEventType) {
                 this._stoppedAt = Date.now();
                 //make sure we call our callback handler (e.g. broadcastWait of other sprites) if this script is stopped - pending ops cleared in publishSubscribeHost
                 setTimeout(this._return.bind(this, this._threadId), 1);   //delay to make sure the recursived stop has reached all bricks before executing callback

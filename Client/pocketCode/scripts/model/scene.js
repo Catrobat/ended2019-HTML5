@@ -321,13 +321,13 @@ PocketCode.Model.Scene = (function () {
             this.stopAllScriptsAndSounds();
             this._executionState = PocketCode.ExecutionState.STOPPED;
         },
-        stopAllScriptsAndSounds: function (calledFromStopBrick) {    //to make sure a WhenConditionMet-Brick doesn't stop running (listening to changes)
+        stopAllScriptsAndSounds: function (stopEventType) {    //to make sure a WhenConditionMet-Brick doesn't stop running (listening to changes)
             if (this._background) {
-                this._background.stopAllScripts(calledFromStopBrick);
+                this._background.stopAllScripts(stopEventType);
             }
             var sprites = this._sprites;
             for (var i = 0, l = sprites.length; i < l; i++) {
-                sprites[i].stopAllScripts(calledFromStopBrick);
+                sprites[i].stopAllScripts(stopEventType);
                 sprites[i].stopAllSounds();
             }
         },
