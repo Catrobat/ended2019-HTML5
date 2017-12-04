@@ -704,6 +704,7 @@ PocketCode.Web = {
             this._resources = resources;
             this._root = resources.root;
             this._files = resources.files;
+            this._version = Date.now().toString().substring(4, 9); //prevent caching
 
             //events to override
             this.onProgress = function () { };
@@ -775,7 +776,8 @@ PocketCode.Web = {
                         }.bind(this);
                         oHead.appendChild(oScript);
                         //oHead.insertBefore(oScript, oHead.firstChild);    //alternative
-                        oScript.id = oScript.src = href;
+                        oScript.id = href;
+                        oScript.src = href + '?v=' + this._version;
                         break;
                     case 'css':
                         var oCss = document.createElement("link");
@@ -789,7 +791,7 @@ PocketCode.Web = {
                             oCss.href = href;
                             setTimeout(successHandler.bind(this), 10);
                         }.bind(this);
-                        oCssSim.src = href;
+                        oCssSim.src = href + '?v=' + this._version;
                         break;
                         //case 'img':
                         //	var oImg = new Image();
