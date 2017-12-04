@@ -161,6 +161,11 @@ PocketCode.merge({
 
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
+                        //bubbles
+                    case 'SayBrick':
+                    case 'SayForBrick':
+                    case 'ThinkBrick':
+                    case 'ThinkForBrick':
 
                         brick = new PocketCode.Model.UnsupportedBrick(this._device, currentSprite, jsonBrick);
                         break;
@@ -183,25 +188,19 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, actions);
                         break;
 
-                    case 'CloneBrick':
-                    case 'DeleteCloneBrick':
-                    case 'SetGravityBrick':
-                    case 'SetBackgroundBrick':
-                    case 'SetBackgroundAndWaitBrick':
-                    case 'ClearBackgroundBrick':
-                    case 'GoToBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
-                        //bubbles
-                    case 'SayBrick':
-                    case 'SayForBrick':
-                    case 'ThinkBrick':
-                    case 'ThinkForBrick':
-                        //background
-                    case 'SetBackgroundByIndexBrick':
-                    case 'WhenBackgroundChangesToBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
+                    case 'CloneBrick':
+                    case 'DeleteCloneBrick':
+                    case 'GoToBrick':
+                        //background
+                    case 'SetBackgroundBrick':
+                    case 'SetBackgroundAndWaitBrick':
+                    case 'SetBackgroundByIndexBrick':
+                    case 'ClearBackgroundBrick':
+                    case 'WhenBackgroundChangesToBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene, jsonBrick);
                         break;
 
