@@ -2234,7 +2234,7 @@ class ProjectFileParser_v0_992
         else if($type === "COLLISION_FORMULA")
         {
             $name = (string)$formula->value;   //either 'sp1 touches sp2' (v0.992) or 'sp1' (v0.993 - ?)
-            $spriteNames = explode(" touches ", $value);
+            $spriteNames = explode(" touches ", $name);
             if(count($spriteNames) == 2)    //v0.992
             {
                 $name = $spriteNames[1];
@@ -2249,6 +2249,7 @@ class ProjectFileParser_v0_992
             }
 
             //detect id by object name (unique): all sprites are already pre-parsed with id and name
+            $value = "";
             foreach($this->currentScene->sprites as $s)
             {
                 if($s->name === $name)
@@ -2257,6 +2258,9 @@ class ProjectFileParser_v0_992
                     break;
                 }
             }
+
+            if ($value == "")
+                throw new InvalidProjectFileException("Formula type error: COLLISION_FORMULA: sprite with name = $name not found.");
         }
         else
         {
