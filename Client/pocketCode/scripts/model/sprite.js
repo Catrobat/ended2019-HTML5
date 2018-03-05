@@ -1266,7 +1266,7 @@ PocketCode.Model.Sprite = (function () {
             return clone;
         },
         //collision: in formula
-        collidesWithSprite: function (spritId) {
+        collidesWithSprite: function (spriteId) {
             //var sprite = this._scene.getSpriteByName(spriteName);
             //if (!sprite)
             //    return false;
