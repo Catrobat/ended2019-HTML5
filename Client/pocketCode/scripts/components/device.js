@@ -954,19 +954,23 @@ PocketCode.DeviceEmulator = (function () {
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
-                    timestamp.LEFT = Date.now();
+                    if (!timestamp.LEFT)
+                        timestamp.LEFT = Date.now();
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
-                    timestamp.RIGHT = Date.now();
+                    if (!timestamp.RIGHT)
+                        timestamp.RIGHT = Date.now();
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
-                    timestamp.UP = Date.now();
+                    if (!timestamp.UP)
+                        timestamp.UP = Date.now();
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
-                    timestamp.DOWN = Date.now();
+                    if (!timestamp.DOWN)
+                        timestamp.DOWN = Date.now();
                     break;
                 case this._alternativeKeyCode.SPACE:
                 case this._keyCode.SPACE:
@@ -1006,16 +1010,16 @@ PocketCode.DeviceEmulator = (function () {
                     //    break;
             }
         },
-         _resetInclination: function () {
-              this._keyDownDateTime = {
-                  LEFT: undefined,
-                  RIGHT: undefined,
-                  UP: undefined,
-                  DOWN: undefined,
-              }
-             this._sensorData.X_INCLINATION = this._defaultInclination.X;
-             this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
-         },
+        _resetInclination: function () {
+            this._keyDownDateTime = {
+                LEFT: undefined,
+                RIGHT: undefined,
+                UP: undefined,
+                DOWN: undefined,
+            }
+            this._sensorData.X_INCLINATION = this._defaultInclination.X;
+            this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
+        },
         /* override */
         _getGeoLocationData: function () {
             this._features.GEO_LOCATION.inUse = true;
