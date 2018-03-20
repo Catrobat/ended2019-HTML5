@@ -218,6 +218,140 @@ SmartJs.Components = {
         return Stopwatch;
     })(),
 
+    WebWorker: (function () {
+        WebWorker.extends(SmartJs.Core.EventTarget);
+
+        function WebWorker(scope, workerMethod, helperMethods) {
+
+            if (!(scope instanceof Object))
+                throw new Error('invalid argument: scope');
+            this._scope = scope;
+            if (!(workerMethod instanceof Function))
+                throw new Error('invalid argument: workerMethod');
+            this._workerMethod = workerMethod;
+
+            this._running = false;
+            if (helperMethods && !(helperMethods instanceof Object))
+                throw new Error('invalid argument: helperMethods');
+
+            //create web worker internal code
+            var internalCode = ['onmessage=', this._internalOnMessage/*.toString()*/, '; var workerMethod=', this._workerMethod];
+            if (helperMethods) {
+                for (var prop in helperMethods) {
+                    if (!(helperMethods[prop] instanceof Function))
+                        throw new Error('invalid argument: helper methods {functionName: Function}');
+                    internalCode.concat([', ', prop, '=', helperMethods[prop]]);
+                }
+            }
+            internalCode.push(';');
+
+            //create inline worker
+            try {   //supported
+                var blobURL = URL.createObjectURL(new Blob(internalCode), { type: "text/javascript" });
+                this._worker = new Worker(blobURL);
+                URL.revokeObjectURL(blobURL);
+
+                this._onMessageListener = this._addDomListener(this._worker, 'message', this._onMessageHandler);
+                this._onErrorListener = this._addDomListener(this._worker, 'error', this._onErrorHandler);
+                this._onMessageErrorListener = this._addDomListener(this._worker, 'messageerror', this._onMessageErrorHandler);
+            }
+            catch (e) { //not supported
+                this._worker = undefined;
+            }
+
+            //events
+            this._onExecuted = new SmartJs.Event.Event(this);
+            this._onError = new SmartJs.Event.Event(this);
+        }
+
+        //events
+        Object.defineProperties(WebWorker.prototype, {
+            onExecuted: {
+                get: function () { return this._onExecuted; },
+            },
+            onError: {
+                get: function () { return this._onError; },
+            },
+        });
+
+        //properties
+        Object.defineProperties(WebWorker.prototype, {
+            isRunning: {
+                get: function () {
+                    return this._running;
+                },
+            },
+        });
+
+        //methods
+        WebWorker.prototype.merge({
+            /*code below is injected to run inside the worker*/
+            _internalOnMessage: function (e) {
+                var //args = e.data,
+                    returnValue = this.workerMethod.apply(this, e.data);
+
+                //TODO
+                this.postMessage(returnValue);
+                this.close();
+            },
+            /*code above is injected to run inside the worker*/
+
+            execute: function (/*arguments*/) {
+                if (!this._worker) {
+                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, arguments), async: false });
+                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+                }
+
+                if (this._running)
+                    throw new Error('worker currently in use');
+                this._running = true;
+                this._worker.postMessage(arguments);    //post as argument array
+            },
+            executeImageData: function (imageData) {
+                if (!(imageData instanceof ImageData))
+                    throw new Error('invalid argument: imageData');
+                if (!this._worker) {
+                    this._onExecuted.dispatchEvent({ result: this._workerMethod.call(this._scope, imageData), async: false });
+                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+                }
+
+                if (this._running)
+                    throw new Error('worker currently in use');
+                this._running = true;
+                this._worker.postMessage(imageData, [imageData.data.buffer]);
+            },
+            _onMessageHandler: function (e) {
+                this._running = false;
+                this._onExecuted.dispatchEvent({ result: e.data, async: true }); //TODO
+            },
+            _onErrorHandler: function (e) {
+                this._running = false;
+                this._onError.dispatchEvent({ error: e }); //TODO
+            },
+            _onMessageErrorHandler: function (e) {
+                this._running = false;
+                this._onError.dispatchEvent({ error: e }); //TODO
+            },
+            terminate: function () {
+                if (this._worker)
+                    this._worker.terminate();
+            },
+            /*override*/
+            dispose: function () {
+                if (this._worker) {
+                    this._worker.terminate();
+
+                    this._removeDomListener(this._worker, 'message', this._onMessageListener);
+                    this._removeDomListener(this._worker, 'error', this._onErrorListener);
+                    this._removeDomListener(this._worker, 'messageerror', this._onMessageErrorListener);
+                }
+                SmartJs.Core.EventTarget.prototype.dispose.call(this);
+            },
+        });
+
+        return WebWorker;
+    })(),
+
     StorageAdapter: (function () {
         StorageAdapter.extends(SmartJs.Core.Component);
 
@@ -328,6 +462,7 @@ SmartJs.Components = {
 
         return StorageAdapter;
     })(),
+
 };
 
 SmartJs.Components.merge({
@@ -433,3 +568,24 @@ SmartJs.Components.merge({
 
 });
 
+/*
+ * 
+ * example: https://jsbin.com/civemiruho/edit?js,console
+ * 
+var a = function() {return 2;}
+function run(fn) {
+  console.log(a.toString());
+  return new Worker(URL.createObjectURL(new Blob(['onmessage=',fn,'; var a=',a.toString(),';'])), { type: "text/javascript" });
+}
+
+const worker = run(function(d) {
+  
+  setTimeout(postMessage(JSON.stringify(d.data) + ', ' + this.a()), 10000)
+  //postMessage(JSON.stringify(this));
+  
+  //this.close();
+});
+
+worker.onmessage = (event) => console.log(event.data);
+setTimeout(worker.postMessage({a:1}), 5000);
+ */

@@ -252,6 +252,14 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
 });
 
 
+QUnit.test("SmartJs.Components.WebWorker", function (assert) {
+
+
+    assert.ok(false, "TODO");
+
+});
+
+
 QUnit.test("SmartJs.Components.StorageAdapter", function (assert) {
 
     var adapter = new SmartJs.Components.StorageAdapter();
