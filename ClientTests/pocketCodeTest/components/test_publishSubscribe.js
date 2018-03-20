@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/publishSubscribe.js" />
 'use strict';
@@ -57,6 +57,13 @@ QUnit.test("PublishSubscribeBroker", function (assert) {
     psb.publish("id2");
     psb.publish("id3"); //try to publish unknown id
 
+    //dispose
+    function dispose1stPsb() {
+        psb.dispose();
+        assert.deepEqual(psb._subscriptions, {}, "disposed: subscriptions deleted");
+        done4();
+    }
+
     //publish including wait callback
     var psb2 = new PocketCode.PublishSubscribeBroker();
 
@@ -92,20 +99,15 @@ QUnit.test("PublishSubscribeBroker", function (assert) {
     };
     psb2.subscribe("id1", asyncHandler2);
 
-    var asyncCallback = function (loopDelay) {
+    var asyncCallback1 = function (loopDelay) {
+        assert.ok(loopDelay == false, "loopDelay false because recalling results in stopping the 1st broadcast");
+    };
+    var asyncCallback2 = function (loopDelay) {
         assert.ok(loopDelay, "loopDelay true because one of the called handler returns true");
         done5();    //end
     };
-    psb2.publish("id1", asyncCallback); //calling twice: first one is stopped
-    psb2.publish("id1", asyncCallback);
-
-
-    //dispose
-    function dispose1stPsb() {
-        psb.dispose();
-        assert.deepEqual(psb._subscriptions, {}, "disposed: subscriptions deleted");
-        done4();
-    }
+    psb2.publish("id1", asyncCallback1); //calling twice: first one is stopped
+    psb2.publish("id1", asyncCallback2);
 
 });
 
@@ -139,7 +141,10 @@ QUnit.test("BroadcastManager", function (assert) {
     };
     bm.subscribe("s12", asyncHandler2);
 
-    var asyncCallback = function (loopDelay) {
+    var asyncCallback1 = function (loopDelay) {
+        assert.equal(loopDelay, false, "loopDelay false because the call was canceled during the second call");
+    };
+    var asyncCallback2 = function (loopDelay) {
         assert.ok(loopDelay, "loopDelay true because one of the called handler returns true");
         done1();    //end
     };
@@ -149,7 +154,7 @@ QUnit.test("BroadcastManager", function (assert) {
     //publish
     assert.throws(function () { bm.publish(13); }, Error, "ERROR: publish: id invalid");
 
-    bm.publish("s12", asyncCallback); //calling twice: first one is stopped
-    bm.publish("s12", asyncCallback);
+    bm.publish("s12", asyncCallback1); //calling twice: first one is stopped
+    bm.publish("s12", asyncCallback2);
 
 });

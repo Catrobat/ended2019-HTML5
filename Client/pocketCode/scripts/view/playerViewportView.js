@@ -33,7 +33,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
         //canvas events
         this._onUserAction = new SmartJs.Event.Event(this);
         this._canvas.onRenderingSpriteTouched.addEventListener(new SmartJs.Event.EventListener(function (e) {
-            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_CLICKED }));
+            this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.SPRITE_TOUCHED }));
         }, this));
         this._canvas.onTouchStart.addEventListener(new SmartJs.Event.EventListener(function (e) {
             this._onUserAction.dispatchEvent(e.merge({ action: PocketCode.UserActionType.TOUCH_START }));
@@ -166,6 +166,12 @@ PocketCode.Ui.PlayerViewportView = (function () {
                 dialog.focusInputField();
             }
         },
+        hideAskDialog: function (){
+            var dialog = this._activeAskDialog;
+            if (dialog)
+                dialog.dispose();
+            this._activeAskDialog = undefined;
+        },
         //pen, stamp
         initScene: function (id, screenSize, reinit) {
             this._canvas.initScene(id, screenSize);
@@ -184,8 +190,7 @@ PocketCode.Ui.PlayerViewportView = (function () {
             this._canvas.clearCurrentPenStampCache();
         },
         clear: function () {
-            if (this._activeAskDialog)
-                this._activeAskDialog.dispose();
+            this.hideAskDialog();
             this._canvas.clearPenStampCache();
         },
         //camera
@@ -277,5 +282,3 @@ PocketCode.Ui.PlayerViewportView = (function () {
 
     return PlayerViewportView;
 })();
-
-

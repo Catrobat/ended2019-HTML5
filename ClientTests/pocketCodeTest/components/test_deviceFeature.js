@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/deviceFeature.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
@@ -25,8 +25,7 @@ QUnit.test("DeviceFeature: Camera", function (assert) {
 
 QUnit.test("DeviceFeature: Face Detection", function (assert) {
 
-    var soundManager = new PocketCode.SoundManager();
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
     var df = new PocketCode.FaceDetection(device);
 
     assert.ok(false, "TODO");

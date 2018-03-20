@@ -36,6 +36,7 @@ PocketCode.merge({
         SCREENSHOT: 'file/screenshot',
         LOGGING_ID: 'logging/id',
         LOGGING: 'logging?id={id}&projectId={projectId}&type={type}&navigator={navigator}&jsonError={jsonError}',
+        GEO_LOCATION: 'geoLocation',
         //TODO:
     },
 

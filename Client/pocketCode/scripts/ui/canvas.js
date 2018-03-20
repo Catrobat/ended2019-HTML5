@@ -209,6 +209,8 @@ PocketCode.Ui.Canvas = (function () {
             penStampCacheCanvasEl.width = screenSize.width;
 
             var ctx = penStampCacheCanvasEl.getContext('2d');
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
             ctx.translate(screenSize.width * 0.5, screenSize.height * 0.5);
 
             this._penStampCache[id] = {

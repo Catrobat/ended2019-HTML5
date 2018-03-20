@@ -143,7 +143,7 @@ PocketCode.Ui.PlayerPageView = (function () {
         showStartScreen: function (title, thumbnailUrl) {
             this._startScreen.title = title;
             if (thumbnailUrl == "null")
-                this._startScreen.previewImage = 'https://share.catrob.at/images/default/screenshot.png';
+                this._startScreen.previewImage = PocketCode.domain + 'images/default/screenshot.png';
             else if (thumbnailUrl)
                 this._startScreen.previewImage = thumbnailUrl;
 

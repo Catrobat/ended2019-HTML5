@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/sprite.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/formula.js" />
@@ -12,9 +12,8 @@ QUnit.module("components/formula.js");
 QUnit.test("Formula", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
-    var soundManager = new PocketCode.SoundManager([]);
-    var device = new PocketCode.MediaDevice(soundManager);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
+    var device = new PocketCode.MediaDevice();
 
     var json = JSON.parse('{"type":"NUMBER","value":"500","right":null,"left":null}');
     var json2 = JSON.parse('{"type":"NUMBER","value":"20","right":null,"left":null}');
@@ -72,11 +71,10 @@ QUnit.test("Formula", function (assert) {
 
 QUnit.test("Formula: string encoding", function (assert) {
     //using: _resources/testDataFormula.js
-    var soundManager = new PocketCode.SoundManager([]);
-    var device = new PocketCode.MediaDevice(soundManager);
+    var device = new PocketCode.MediaDevice();
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var sprite = new PocketCode.Model.Sprite(gameEngine, scene, { id: "spriteId", name: "spriteName" });
 
     var f = new PocketCode.Formula(device, sprite, encoding1);

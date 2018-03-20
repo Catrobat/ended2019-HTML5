@@ -6,13 +6,14 @@
 if (!PocketCode)
     var PocketCode = {};
 
-PocketCode.Local = 0;
+PocketCode.server = 0;
 
-
-if (PocketCode.Local === 1)
+if (PocketCode.server === 0)
+    PocketCode.domain = 'https://share.catrob.at/';
+else if (PocketCode.server === 1)
     PocketCode.domain = 'https://web-test.catrob.at/';
 else
-    PocketCode.domain = 'https://share.catrob.at/';
+    PocketCode.domain = 'http://localhost/';
 
 PocketCode.websiteUrl = PocketCode.domain + 'pocketcode/';
 PocketCode.projectUrl = PocketCode.websiteUrl + 'program/{projectId}';
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
         href = 'pocketCodePlayer.css';
     else
-        href = PocketCode.domain + '/html5/player/pocketCodePlayer.css';
+        href = PocketCode.domain + 'html5/player/pocketCodePlayer.css';
 
     var link = document.createElement('link');
     link.href = href;
@@ -130,7 +131,7 @@ PocketCode.Web = {
                     this._addDomListener(document, 'mozfullscreenchange', this._fullscreenchangeHandler);
                     this._addDomListener(document, 'MSFullscreenChange', this._fullscreenchangeHandler);
                 }
-                this.lastExitDate = new Date(); //to prevent re-entering fullscreen in chrome: written when event occurs
+                this.lastExitDate = Date.now(); //to prevent re-entering fullscreen in chrome: written when event occurs
 
                 this.onFullscreenChange = function (state) {
                     //default event handler to be overwritten
@@ -218,7 +219,7 @@ PocketCode.Web = {
                 window.setTimeout(function () {  //needed to detect fullscreen correctly in IE
                     var fs = this.isJsFullscreen;
                     if (!fs())
-                        this.lastExitDate = new Date();
+                        this.lastExitDate = Date.now();
 
                     this.onFullscreenChange(fs());
                 }.bind(this), 10);
@@ -232,7 +233,7 @@ PocketCode.Web = {
                     e.stopPropagation();
 
                     if (e.type === 'keydown' && !this.lastKeyDown) {
-                        this.lastKeyDown = new Date();
+                        this.lastKeyDown = Date.now();
                     }
                     else if (e.type === 'keyup') {
                         var delay = this.lastKeyDown - this.lastExitDate;
@@ -484,6 +485,8 @@ PocketCode.Web = {
                 document.body.className = document.body.className.replace(' pc-webBody ', '').trim();
             },
             setHWRatio: function (ratio) {
+                if (this.hwRatio == ratio)
+                    return;
                 this.hwRatio = ratio;
                 //set the css min-height/min-width property according to the ratio & min-height: 450px
                 //var style = this.viewportContainer.style;
@@ -710,6 +713,7 @@ PocketCode.Web = {
             this._resources = resources;
             this._root = resources.root;
             this._files = resources.files;
+            this._version = Date.now().toString().substring(4, 9); //prevent caching
 
             //events to override
             this.onProgress = function () { };
@@ -781,7 +785,8 @@ PocketCode.Web = {
                         }.bind(this);
                         oHead.appendChild(oScript);
                         //oHead.insertBefore(oScript, oHead.firstChild);    //alternative
-                        oScript.id = oScript.src = href;
+                        oScript.id = href;
+                        oScript.src = href + '?v=' + this._version;
                         break;
                     case 'css':
                         var oCss = document.createElement("link");
@@ -795,7 +800,7 @@ PocketCode.Web = {
                             oCss.href = href;
                             setTimeout(successHandler.bind(this), 10);
                         }.bind(this);
-                        oCssSim.src = href;
+                        oCssSim.src = href + '?v=' + this._version;
                         break;
                         //case 'img':
                         //	var oImg = new Image();
@@ -1099,21 +1104,21 @@ PocketCode.Web.resources = {
         if (!localFile && (hn === 'localhost' || hn === ''))// || hn === 'web-test.catrob.at' || hn === 'share.catrob.at')
             return '../';
 
-        return PocketCode.domain + '/html5/';
+        return PocketCode.domain + 'html5/';
     }(),
     files: [
-		{ url: 'smartJs/sj.css', type: 'css' },
-		{ url: 'smartJs/sj.js', type: 'js' },
-		{ url: 'smartJs/sj-core.js', type: 'js' },
-		{ url: 'smartJs/sj-event.js', type: 'js' },
-		{ url: 'smartJs/sj-components.js', type: 'js' },
-		{ url: 'smartJs/sj-animation.js', type: 'js' },
-		{ url: 'smartJs/sj-communication.js', type: 'js' },
-		{ url: 'smartJs/sj-ui.js', type: 'js' },
-		//{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
+		//{ url: 'smartJs/sj.css', type: 'css' },
+		//{ url: 'smartJs/sj.js', type: 'js' },
+		//{ url: 'smartJs/sj-core.js', type: 'js' },
+		//{ url: 'smartJs/sj-event.js', type: 'js' },
+		//{ url: 'smartJs/sj-components.js', type: 'js' },
+		//{ url: 'smartJs/sj-animation.js', type: 'js' },
+		//{ url: 'smartJs/sj-communication.js', type: 'js' },
+		//{ url: 'smartJs/sj-ui.js', type: 'js' },
+		{ url: 'pocketCode/libs/smartJs/sj.custom.min.js', type: 'js' },
 
-		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.js', type: 'js' },
-		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.js', type: 'js' },
+		{ url: 'pocketCode/libs/soundjs/soundjs-0.6.1.custom.min.js', type: 'js' },
+		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
 
@@ -1180,7 +1185,5 @@ PocketCode.Web.resources = {
 if (!launchProject) {
     var launchProject = function (projectId, rfc3066, containerElement) {
         PocketCode.Web.PlayerInterface.launchProject(projectId, rfc3066, containerElement);
-    }
+    };
 }
-
-

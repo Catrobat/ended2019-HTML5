@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/gameEngine.js" />
 /// <reference path="E:/Programmieren/Test/817.catrobat" />
 'use strict';
@@ -10,7 +10,7 @@ QUnit.test("GameEngine", function (assert) {
 
     //dispose: testing dispose first should notify us on errors caused by disposing some core (prototype) properties or events
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
 
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof SmartJs.Core.Component, "instance check");
@@ -30,7 +30,7 @@ QUnit.test("GameEngine", function (assert) {
     };
 
     gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
     assert.ok(gameEngine instanceof PocketCode.GameEngine && gameEngine instanceof PocketCode.Model.UserVariableHost && gameEngine instanceof SmartJs.Core.Component, "instance check");
 
@@ -107,7 +107,7 @@ QUnit.test("GameEngine", function (assert) {
 QUnit.test("GameEngine: variable UI updates", function (assert) {
 
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     gameEngine.__currentScene = scene;
     assert.ok(gameEngine.onVariableUiChange instanceof SmartJs.Event.Event, "onVariableUiChange: event check");
 
@@ -197,12 +197,13 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
 
     gameEngine.onLoad.addEventListener(new SmartJs.Event.EventListener(onLoadHandler, this));
     gameEngine.loadProject(strProject817);
-    gameEngine.startScene("s1");
 
     function runTests() {
+        assert.ok(gameEngine._startScene, "start scene initialized");
         gameEngine.startScene("s1");
-        assert.ok(gameEngine._startScene, "Scene started");
 
+        assert.equal(gameEngine._currentScene, gameEngine._scenes["s1"], "current scene set");
+        assert.equal(gameEngine._currentScene.executionState, PocketCode.ExecutionState.RUNNING, "scene running");
         gameEngine.runProject();
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "runProject: Project running");
 
@@ -231,6 +232,7 @@ QUnit.test("GameEngine: tests with a testProject", function (assert) {
         gameEngine.resumeOrStartScene("s1");
         assert.deepEqual(gameEngine.executionState, PocketCode.ExecutionState.RUNNING, "resumeOrStartScene: starting Scene");
 
+        gameEngine.dispose();   //make sure the listeners to internal (static) classes are removed to avoid side effects with other tests
         done();
     };
 

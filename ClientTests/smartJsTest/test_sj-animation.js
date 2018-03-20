@@ -1,4 +1,4 @@
-﻿/// <reference path="../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../qunit/qunit-2.4.0.js" />
 /// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
@@ -26,7 +26,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
         assert.ok(events.length > 0, "update event handler dispatched correctly");
@@ -46,12 +46,13 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
         }
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value);
         assert.ok(!error, "continuous event & value update");
+        assert.equal(events[events.length - 1].value, 20, "end position reached");
         done1();
     }
     a.onUpdate.addEventListener(new SmartJs.Event.EventListener(updateEventHandler, this));
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     var b = new SmartJs.Animation.Animation(10, 20, 320, SmartJs.Animation.Type.LINEAR);
@@ -88,15 +89,15 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
-        var stopTime = new Date();
+        var stopTime = Date.now();
 
         assert.ok(events.length > 0, "update event handler dispatched correctly");
         assert.ok(true, "executed event handler dispatched correctly");
         assert.equal(e.callId, "validArgs", "callback arguments passed correctly");
-        //assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
+        assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
         //ok: events.length >= 10 && events.length <= 20.. x & y value can change on different times (in theory: for other animation type)
 
         var errorX = false;
@@ -115,6 +116,8 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value.x + ", " + events[events.length - 1].value.y);
         assert.ok(!errorX, "continuous event & x value update");
         assert.ok(!errorX, "continuous event & y value update");
+        assert.equal(events[events.length - 1].value.x, 20, "end position x reached");
+        assert.equal(events[events.length - 1].value.y, 20, "end position y reached");
 
         assert.ok(stopTime - startTime > 600, "pause/resume checked");
         done1();
@@ -123,7 +126,7 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
     assert.throws(function () { a.start("errorArgs"); }, Error, "ERROR: validation callback args");
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     window.setTimeout(function () { a.pause(); }, 120);

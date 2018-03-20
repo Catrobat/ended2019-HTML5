@@ -111,10 +111,10 @@ PocketCode.Model.merge({
         return ChangeYBrick;
     })(),
 
-    SetRotionStyleBrick: (function () {
-        SetRotionStyleBrick.extends(PocketCode.Model.BaseBrick, false);
+    SetRotationStyleBrick: (function () {
+        SetRotationStyleBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function SetRotionStyleBrick(device, sprite, propObject) {
+        function SetRotationStyleBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
 
             if (!propObject)
@@ -133,11 +133,11 @@ PocketCode.Model.merge({
                 }
         }
 
-        SetRotionStyleBrick.prototype._execute = function () {
+        SetRotationStyleBrick.prototype._execute = function () {
             this._return(this._sprite.setRotationStyle(this._style));
         };
 
-        return SetRotionStyleBrick;
+        return SetRotationStyleBrick;
     })(),
 
     GoToType: {
@@ -332,11 +332,15 @@ PocketCode.Model.merge({
 
                 po = this._pendingOps[id];
                 po.cancelCallback = this._cancel.bind(this, id);    //make sure callback is only created once per animation
+
                 //po.paused = this._paused;
                 var duration = this._duration.calculate(scope),
+                    duration = Math.round(duration * 1000),
                     x = this._x.calculate(scope),
                     y = this._y.calculate(scope);
-                if (isNaN(duration) || isNaN(x) || isNaN(y)) {
+
+                //handle invalid arguments
+                if (isNaN(duration) || duration == 0 || isNaN(x) || isNaN(y)) {
                     if (!isNaN(x) && !isNaN(y)) {
                         this._updatePositionHandler({ value: { x: x, y: y } });
                         this._return(id, true);
@@ -350,9 +354,9 @@ PocketCode.Model.merge({
                     dy = Math.abs(y - sprite.positionY);
                 this._velocity = Math.sqrt(dx * dx + dy * dy) / duration;
 
-                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, Math.round(duration * 1000), SmartJs.Animation.Type.LINEAR2D);
+                var animation = new SmartJs.Animation.Animation2D({ x: sprite.positionX, y: sprite.positionY }, { x: x, y: y }, duration, SmartJs.Animation.Type.LINEAR2D);
                 animation.onUpdate.addEventListener(new SmartJs.Event.EventListener(this._updatePositionHandler, this));
-                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true)));
+                animation.onExecuted.addEventListener(new SmartJs.Event.EventListener(this._return.bind(this, id, true, false)));
                 po.animation = animation;
                 animation.start();//{ callId: id });
                 if (this._paused)

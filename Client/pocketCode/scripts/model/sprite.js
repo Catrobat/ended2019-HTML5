@@ -33,6 +33,10 @@ PocketCode.Model.Sprite = (function () {
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
+        this._audioPlayer = new PocketCode.AudioPlayer();
+        this._audioPlayer.volume = 50; //set default
+        this._audioPlayer.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
+
         this._scripts = [];
 
         //property initialization
@@ -57,7 +61,7 @@ PocketCode.Model.Sprite = (function () {
 
         //pen
         this._penDown = false;
-        this._penSize = 3;
+        this._penSize = 4;
         this._penColor = { r: 0, g: 0, b: 255 };
 
         //events
@@ -239,14 +243,30 @@ PocketCode.Model.Sprite = (function () {
 
         //sound
         sounds: {
+            get: function () {
+                return this._sounds;
+            },
             set: function (sounds) {
                 if (!(sounds instanceof Array))
                     throw new Error('sounds setter expects type Array');
 
                 this._sounds = sounds;
             },
+        },
+        volume: {
             get: function () {
-                return this._sounds;
+                return this._audioPlayer.volume;
+            },
+            set: function (value) {
+                this._audioPlayer.volume = value;
+            },
+        },
+        muted: {
+            set: function (value) {
+                if (typeof value !== 'boolean')
+                    throw new Error('invalid parameter: muted');
+
+                this._audioPlayer.muted = value;
             },
         },
         //pen & stamp
@@ -335,7 +355,7 @@ PocketCode.Model.Sprite = (function () {
                     //if (!(script instanceof PocketCode.Model.ScriptBlock))                               //this change breaks our tests: //TODO: 
                     //    throw new Error('invalid script block: every brick has to be inherited from ScriptBlock');
                     if (script.onExecutionStateChange)  //supported by all (root container) scripts
-                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+                        script.onExecutionStateChange.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
                 }
                 this._scripts = scripts;
             },
@@ -343,10 +363,12 @@ PocketCode.Model.Sprite = (function () {
                 return this._scripts;
             },
         },
-        scriptsRunning: {
+        scriptsOrSoundsExecuting: {
             get: function () {
                 var scripts = this._scripts,
                     script;
+                if (this._audioPlayer.isPlaying)
+                    return true;
                 for (var i = 0, l = scripts.length; i < l; i++) {
                     script = scripts[i];
                     if (script.executionState == PocketCode.ExecutionState.RUNNING ||
@@ -398,40 +420,34 @@ PocketCode.Model.Sprite = (function () {
             this._resetVariables();
         },
 
-        pauseScripts: function () {
+        pauseScripts: function (andSounds) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].pause)
                     scripts[i].pause();
             }
+            if (andSounds)
+                this._audioPlayer.pauseAllSounds();
         },
-        resumeScripts: function () {
+        resumeScripts: function (andSounds) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].resume)
                     scripts[i].resume();
             }
+            if (andSounds)
+                this._audioPlayer.resumeAllSounds();
         },
-        stopScript: function (calledFromStopBrick, scriptId) {
-            var scripts = this._scripts;
-            for (var i = 0, l = scripts.length; i < l; i++) {
-                if (scripts[i].id === scriptId) {
-                    scripts[i].stop(calledFromStopBrick);
-                    return false;
-                }
-            }
-            return false;
-        },
-        stopAllScripts: function (calledFromStopBrick, /*optional*/ exceptScriptId) {
+        stopAllScripts: function (stopEventType, /*optional*/ exceptScriptId) {
             var scripts = this._scripts;
             for (var i = 0, l = scripts.length; i < l; i++) {
                 if (scripts[i].id !== exceptScriptId)
-                    scripts[i].stop(calledFromStopBrick);
+                    scripts[i].stop(stopEventType);
             }
             return false;
         },
-        _scriptOnExecutionChangeHandler: function (e) {
-            if (e.executionState == PocketCode.ExecutionState.STOPPED && !this.scriptsRunning) {
+        _checkSpriteExecutionState: function (e) {
+            if (!this.scriptsOrSoundsExecuting) {
                 this._onExecuted.dispatchEvent();
             }
         },
@@ -714,7 +730,7 @@ PocketCode.Model.Sprite = (function () {
                 return false;
 
             this._currentLook = this._looks[lookIdx - 1];
-            update = { look: this._currentLook.canvas };
+            var update = { look: this._currentLook.canvas };
 
             this._recalculateLookOffsets();
             update.x = this._positionX + this._lookOffsetX;
@@ -816,7 +832,7 @@ PocketCode.Model.Sprite = (function () {
         hide: function () {
             if (!this._visible && !this._bubbleVisible)
                 return false;
-            
+
             this._visible = false;
             this._bubbleVisible = false;
             return this._triggerOnChange({ visible: false, bubble: { visible: false } });
@@ -930,6 +946,23 @@ PocketCode.Model.Sprite = (function () {
                 return false;
             return this._triggerOnChange({ graphicEffects: graphicEffects });
         },
+        //sound
+        loadSound: function (requestUrl, soundId, fileExtension) {
+            this._audioPlayer.loadSound(requestUrl, soundId, fileExtension);
+        },
+        startSound: function (soundId, onExecutedCallback) {    //returns the instanceId
+            return this._audioPlayer.startSound(soundId, undefined, onExecutedCallback);
+        },
+        startSoundFromUrl: function (requestUrl, onLoadCallback, onExecutedCallback) {    //returns the instanceId using the load-callback
+            this._audioPlayer.startSoundFromUrl(requestUrl, onLoadCallback, onExecutedCallback);
+        },
+        stopSound: function (soundInstanceId) {
+            this._audioPlayer.stopSound(soundInstanceId);
+        },
+        stopAllSounds: function () {
+            this._audioPlayer.stop();
+        },
+        //IOEB
         ifOnEdgeBounce: function (vpEdges, changes) {
 
             if (!this._currentLook)   //no look defined (cannot be changed either): no need to handle this
@@ -1197,9 +1230,9 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ bubble: { visible: false } });
         },
 
-        clone: function (device, soundManager, broadcastMgr) {
+        clone: function (device, broadcastMgr) {
             if (!this._spriteFactory)
-                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine, soundManager);
+                this._spriteFactory = new PocketCode.SpriteFactory(device, this._gameEngine);
 
             var definition = {
                 _positionX: this._positionX,
@@ -1214,31 +1247,38 @@ PocketCode.Model.Sprite = (function () {
                 _brightness: this._brightness,
                 _colorEffect: this._colorEffect,
 
+                //sounds
+                volume: this.volume,
+                muted: this._audioPlayer.muted,
+
                 //pen
                 _penDown: this._penDown,
                 _penSize: this._penSize,
                 _penColor: this._penColor,
 
-                currentLookId: this._currentLook.id,
                 variables: this.getAllVariables().local,
                 lists: this.getAllLists().local,
             };
+            if (this._currentLook)  //may be undefined
+                definition.currentLookId = this._currentLook.id;
 
             var clone = this._spriteFactory.createClone(this._scene, broadcastMgr, this._json, definition);
             return clone;
         },
         //collision: in formula
-        collidesWithSprite: function (spriteName) {
-            var sprite = this._scene.getSpriteByName(spriteName);
-            if (!sprite)
-                return false;
+        collidesWithSprite: function (spriteId) {
+            //var sprite = this._scene.getSpriteByName(spriteName);
+            //if (!sprite)
+            //    return false;
 
             var collisionMgr = this._scene.collisionManager;
-            return collisionMgr.checkSpriteCollision(this.id, sprite.id);
+            return collisionMgr.checkSpriteCollision(this.id, spriteId);
         },
         /* override */
         dispose: function () {
             this.stopAllScripts();
+            this._audioPlayer.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
+            this._audioPlayer.stopAllSounds();
 
             this._gameEngine = undefined;   //make sure the game engine is not disposed
             this._scene = undefined;        //make sure the scene is not disposed
@@ -1248,7 +1288,7 @@ PocketCode.Model.Sprite = (function () {
             for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
                 script = scripts[i];
                 if (script.onExecuted)  //supported by all (root container) scripts
-                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+                    script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
             }
 
             //call super
@@ -1283,6 +1323,8 @@ PocketCode.Model.merge({
             if (jsonSprite.sounds) {
                 this.sounds = jsonSprite.sounds;
             }
+            this._audioPlayer.muted = definition.muted || false;
+            delete definition.muted;
 
             //variables: a sprite may have no (local) variables
             this._variables = jsonSprite.variables || [];
@@ -1332,7 +1374,7 @@ PocketCode.Model.merge({
         //        //for (var i = 0, l = scripts.length; i < l; i++) {  //remove handlers
         //        //    script = scripts[i];
         //        //    if (script.onExecuted)  //supported by all (root container) scripts
-        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._scriptOnExecutionChangeHandler, this));
+        //        //        script.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
         //        //}
 
         //        //call super
@@ -1342,10 +1384,7 @@ PocketCode.Model.merge({
 
         return SpriteClone;
     })(),
-});
 
-
-PocketCode.Model.merge({
     BackgroundSprite: (function () {
         BackgroundSprite.extends(PocketCode.Model.Sprite, false);
 

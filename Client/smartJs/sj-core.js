@@ -131,7 +131,7 @@ SmartJs.Core.EventTarget = (function () {
             var handler = function (e) {
                 e = e || {};
                 if (args) {
-                    if (args.stopPropagation !== false)
+                    if (args.hasOwnProperty('stopPropagation') && args.stopPropagation !== false)
                         e.stopPropagation();
                     e.merge(args);
                 }

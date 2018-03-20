@@ -906,6 +906,7 @@ SmartJs.Ui.merge({
         function Viewport(propObject) {
             SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });
 
+            this._parentHtmlElement = undefined;
             this._window = SmartJs.Ui.Window;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);

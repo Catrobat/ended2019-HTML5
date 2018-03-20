@@ -74,20 +74,16 @@ PocketCode.merge({
             PocketCode.RenderingItem.call(this, propObject);
 
             propObject = propObject || {};
+            this._text = '';
             this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
             //^^ this may be a PocketCode.Core.I18nString Object to support i18n
+
             this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
             delete propObject.objectId;
-            this._textAlign = propObject.textAlign || 'left';
+            this._textAlign = propObject.textAlign || 'start';
             delete propObject.textAlign;
 
             this.merge(propObject);
-            //this.text = propObject.text;
-            //this._fontFamily = 'Arial';
-            //this._fontSize = 46;
-            //this._fontWeight = 'bold';
-            //this._fontStyle = '';
-            //this._lineHeight = 54;
         }
 
         //properties
@@ -146,10 +142,6 @@ PocketCode.merge({
                 value: undefined,
                 writable: true,
             },
-            //textAlign: {
-            //    value: 'left',
-            //    writable: true,
-            //},
         });
 
         //methods
@@ -160,11 +152,16 @@ PocketCode.merge({
                     height: 0,
                     lines: [],
                 };
+
                 var ctx = this._cacheCtx,
                     maxLineWidth = this.maxLineWidth,
                     textLines = this._text.split(/\r?\n/),
                     line,// = '',
                     metrics;
+
+                //ctx.save();
+                ctx.textBaseline = 'top';   //'hanging';
+                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
                 if (!maxLineWidth) {
                     for (var i = 0, l = textLines.length; i < l; i++) {
@@ -214,121 +211,48 @@ PocketCode.merge({
                     }
                 }
 
-                block.height = block.lines.length * this.lineHeight - (this.lineHeight - this.fontSize);
+                //ctx.restore();
+                block.width = Math.ceil(block.width);
+                block.height = Math.ceil(block.lines.length * this.lineHeight);// - (this.lineHeight - this.fontSize) * 0.5);
                 return block;
             },
-            //_drawTextBlock: function (ctx, maxWidth, x, y) {
-            //    x = x || this.x;
-            //    y = -y || -this.y;
-            //    var newLines = this._text.split(/\r?\n/),
-            //        line = '',
-            //        //lineWidth = 0,
-            //        testLine = '',
-            //        metrics;//,
-            //    //maxLineWidth = 0;
-
-            //    for (var i = 0, l = newLines.length; i < l; i++) {
-            //        var words = newLines[i].trim().split(' ');
-
-            //        var wl = words.length;
-            //        if (wl > 0) {
-            //            for (var n = 0; n < wl; n++) {
-            //                testLine += words[n];// + ' ');
-            //                metrics = ctx.measureText(testLine);
-            //                //preLineWidth = lineWidth;
-
-            //                if (!maxWidth || maxWidth && metrics.width < maxWidth || line.length == 0) {
-            //                    line = (testLine += ' ');
-            //                    //lineWidth = metrics.width;
-            //                    //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //                }
-            //                else {
-            //                    ctx.fillText(line.trim(), x, y);
-            //                    //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //                    //lineWidth = metrics.width - lineWidth;
-            //                    y -= this._lineHeight;
-            //                    line = testLine = words[n] + ' ';
-            //                    //testLine = '';
-            //                    //lineWidth = metrics.width;
-            //                }
-            //                //lineWidth = metrics.width;
-            //            }
-            //            ctx.fillText(line.trim(), x, y);
-            //            //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-            //            //lineWidth = 0;
-            //            testLine = '';
-            //        }
-            //        y -= this._lineHeight;
-            //    }
-            //    //return { width: Math.ceil(maxLineWidth), height: y - lineHeight };
-            //},
             _redrawCache: function () {
                 var canvas = this._cacheCanvas,
                     ctx = this._cacheCtx;
-
-                ctx.save();
-                ctx.textBaseline = 'top';   //'hanging';
-                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
                 var textBlock = this._getTextBlock(); //{ width: ?, height: ?, lines: [] }
                 canvas.width = textBlock.width;
                 canvas.height = textBlock.height;
 
+                ctx.save();
+                ctx.textBaseline = 'top';   //'hanging';
+                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+
                 var dir = PocketCode.I18nProvider.getTextDirection(this._text);
                 canvas.dir = dir;
-                //if(this._textAlign == 'center')
-                //    ctx.moveTo(textBlock.width * 0.5, 0);
-                /*else*/ if (dir == PocketCode.Ui.Direction.RTL) {
-                    //ctx.moveTo(textBlock.width, 0);
+                if (dir == PocketCode.Ui.Direction.RTL) {
                     ctx.translate(textBlock.width, 0);
-                    ctx.textAlign = 'right';
                 }
 
                 //draw
                 var textLines = textBlock.lines,
                     yOffset;
-                for (var i = 0, l = textLines.length; i < l; i++) //{
-                    //yOffset = /*this._fontSize * */this._lineHeight * i;
-                    ctx.fillText(textLines[i], 0, this._lineHeight * i);
-                //    ctx.fillText(textLines[i], this.x, -this.y - heightOfLine);
-                //}
+                for (var i = 0, l = textLines.length; i < l; i++)
+                    ctx.fillText(textLines[i], 0, this.lineHeight * i);
                 ctx.restore();
             },
             /* override */
-            //_draw: function (ctx, maxWidth) {
-            //    if (this._text === '')
-            //        return;
+            _draw: function (ctx, maxWidth) {
+                if (this._text === '')
+                    return;
 
-            //    ctx.textBaseline = 'top';   //'hanging';
-            //    ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+                var canvas = this._cacheCanvas;
+                ctx.save();
+                ctx.translate(this.x, -this.y);
 
-            //    var text = this._text;
-            //    var lineFeeds = text.split(/\r?\n/).length > 1,
-            //        rtl = PocketCode.I18nProvider.getTextDirection(text) == PocketCode.Ui.Direction.RTL;
-
-            //    if (lineFeeds || maxWidth) {
-            //        //if (rtl) {
-            //        //    var size = this._getTextBlockSize(ctx, maxWidth, rtl);
-            //        //    this._drawTextBlock(ctx, maxWidth, rtl, this.x + size.width);
-            //        //}
-            //        //else
-            //        this._drawTextBlock(ctx, maxWidth);
-            //    }
-            //    else //draw in one line
-            //        ctx.fillText(text, this.x, -this.y);
-
-            //    //if maxWidth: check for breaks
-            //    //if rtl: and breaks
-
-            //    //// wrap lines
-            //    //var newline = /\r?\n/;
-            //    //var textLines = this._text.split(newline);
-
-            //    //for (var i = 0, len = textLines.length; i < len; i++) {
-            //    //    var heightOfLine = this._fontSize * this._lineHeight * i;
-            //    //    ctx.fillText(textLines[i], this.x, -this.y - heightOfLine);
-            //    //}
-            //},
+                ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            },
         });
 
         return RenderingText;
@@ -862,13 +786,8 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            //this._scaling = 1.0;
-            this._flipX = false;
-            //this._rotation = 0.0;
+            this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
             this._shadow = false;
-
-            this.penDown = false;
-            this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -940,8 +859,12 @@ PocketCode.merge({
                         cache = this._cacheCanvas,
                         ctx = this._cacheCtx;
 
+                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                        return;
+
                     cache.width = width;
                     cache.height = height;
+                    //reseet image cache to original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
@@ -1025,7 +948,7 @@ PocketCode.merge({
 
                 ctx.rotate(this.rotation * Math.PI / 180.0);
                 ctx.scale(
-                    this.scaling * (this._flipX ? -1.0 : 1.0),
+                    this.scaling * (this.flipX ? -1.0 : 1.0),
                     this.scaling
                 );
 

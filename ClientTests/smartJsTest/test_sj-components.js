@@ -1,4 +1,4 @@
-﻿/// <reference path="../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../qunit/qunit-2.4.0.js" />
 /// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-error.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
@@ -85,7 +85,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 	var i = new SmartJs.Components.Timer(0, new SmartJs.Event.EventListener(testHandler3, this), true);
 	
 	//test: pause & resume
-	var start = new Date();
+	var start = Date.now();
 	var testFinished = false;
 	var pauseCount = 0, resumeCount = 0;
 	
@@ -97,15 +97,15 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		done5();
 
 		var time = 1400 + 4 * 300;
-		assert.ok((new Date() - start) >= (time - 100) && (new Date() - start) <= (time + 100), "pause resume: total time (" + (new Date() - start) + "ms) == 2600 ms +/- 100ms");
+		assert.ok((Date.now() - start) >= (time - 100) && (Date.now() - start) <= (time + 100), "pause resume: total time (" + (Date.now() - start) + "ms) == 2600 ms +/- 100ms");
 		done6();
 		//console.log("pauseCount: " + pauseCount + ", resumeCount: " + resumeCount);
-		//console.log("finished after: " + (new Date() - start));
+		//console.log("finished after: " + (Date.now() - start));
 	};
 	var p = new SmartJs.Components.Timer(1400, new SmartJs.Event.EventListener(testHandler4, this), true);
 
 	var pauseHandler = function () {
-		//console.log("pause after: " + (new Date() - start));
+		//console.log("pause after: " + (Date.now() - start));
 		if (testFinished)
 			return;
 		p.pause();
@@ -113,7 +113,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		var t = window.setTimeout(resumeHandler, 300);//*0.96);
 	};
 	var resumeHandler = function () {
-		//console.log("resume after: " + (new Date() - start));
+		//console.log("resume after: " + (Date.now() - start));
 		if (testFinished)
 			return;
 		p.resume();
@@ -168,7 +168,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 
 	var p10 = new SmartJs.Components.Timer(30);
 	var testHandler10 = function (e) {
-		var diff = new Date() - startTime;
+		var diff = Date.now() - startTime;
 		assert.ok(diff >= 40, diff + " >= 25, check pause time part of full time");
 		done10();
 	};
@@ -180,7 +180,7 @@ QUnit.test("SmartJs.Components.Timer", function (assert) {
 		window.setTimeout(function () { p10.resume(); }, 10);
 	};
 
-	var startTime = new Date();
+	var startTime = Date.now();
 	p10.start();
 	window.setTimeout(function () { remainingRunning = p10.remainingTime; p10.pause(); restart(); }, 15);
 
