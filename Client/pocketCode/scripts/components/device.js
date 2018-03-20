@@ -845,19 +845,21 @@ PocketCode.DeviceEmulator = (function () {
         PocketCode.MediaDevice.call(this, soundManager);
 
         this._features.INCLINATION.supported = true;
-        this._inclinationValueRange = {
+
+        //set defaults for sliders (ui configuration)
+        this._inclinationMinMaxRange = {
             MIN: 1,
             MAX: 80,
-            DEFAULT: 65,
+            //DEFAULT: 65,
         };
-        this.inclinationMinMax = this._inclinationValueRange.DEFAULT;
+        this.inclinationMinMax = 65;//this._inclinationMinMaxRange.DEFAULT;
 
         this._inclinationChangePerSecRange = {
             MIN: 1,
             MAX: 100,
-            DEFAULT: 46,
+            //DEFAULT: 46,
         };
-        this.inclinationChangePerSec = this._inclinationChangePerSecRange.DEFAULT;
+        this.inclinationChangePerSec = 46;//this._inclinationChangePerSecRange.DEFAULT;
 
         // Arrow Keys 
         this._keyCode = {
@@ -888,31 +890,21 @@ PocketCode.DeviceEmulator = (function () {
 
     //properties
     Object.defineProperties(DeviceEmulator.prototype, {
-        inclinationRangeMin: {
+        inclinationMinMaxRange: {
             get: function () {
-                return this._inclinationValueRange.MIN;
-            }
-        },
-        inclinationRangeMax: {
-            get: function () {
-                return this._inclinationValueRange.MAX;
+                return this._inclinationMinMaxRange;
             }
         },
         inclinationMinMax: {   //TODO: setter only: also reset the current timestamps to avoid errors changing the slider and pressing keys at the same time
             value: 0,
             writable: true,
         },
-        inclinationChangePerSecRangeMin: {
+        inclinationChangePerSecRange: {
             get: function () {
-                return this._inclinationChangePerSecRange.MIN;
+                return this._inclinationChangePerSecRange;
             }
         },
-        inclinationChangePerSecRangeMax: {
-            get: function () {
-                return this._inclinationChangePerSecRange.MAX;
-            }
-        },
-        inclinationChangePerSec: {
+        inclinationChangePerSec: {  //TODO: setter online (like above)
             value: 0,
             writable: true,
         },

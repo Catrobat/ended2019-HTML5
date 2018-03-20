@@ -30,7 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({min: device.inclinationRangeMin, max: device.inclinationRangeMax, value: device.inclinationMinMax, minLabel: device.inclinationRangeMin, maxLabel: '&plusmn;' + device.inclinationRangeMax});
+        this._maxSlider = new PocketCode.Ui.Slider({min: device.inclinationMinMaxRange.MIN, max: device.inclinationMinMaxRange.MAX, value: device.inclinationMinMax, minLabel: device.inclinationMinMaxRange.MIN, maxLabel: '&plusmn;' + device.inclinationMinMaxRange.MAX});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,7 +46,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min: device.inclinationChangePerSecRangeMin, max: device.inclinationChangePerSecRangeMax, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRangeMin, maxLabel: device.inclinationChangePerSecRangeMax});
+        this._accSlider = new PocketCode.Ui.Slider({min: device.inclinationChangePerSecRange.MIN, max: device.inclinationChangePerSecRange.MAX, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRange.MIN, maxLabel: device.inclinationChangePerSecRange.MAX});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
