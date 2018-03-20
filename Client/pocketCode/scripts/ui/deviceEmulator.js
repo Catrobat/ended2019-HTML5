@@ -30,7 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({min: device.degreeChangeMin, max: device.degreeChangeMax, value: device.degreeChangeValue, minLabel: device.degreeChangeMin, maxLabel: '&plusmn;' + device.degreeChangeMax});
+        this._maxSlider = new PocketCode.Ui.Slider({min: device.inclinationRangeMin, max: device.inclinationRangeMax, value: device.inclinationMinMax, minLabel: device.inclinationRangeMin, maxLabel: '&plusmn;' + device.inclinationRangeMax});
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,7 +46,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min: device.accelerationChangeMin, max: device.accelerationChangeMax, value: device.accelerationChangeValue, minLabel: device.accelerationChangeMin, maxLabel: device.accelerationChangeMax});
+        this._accSlider = new PocketCode.Ui.Slider({min: device.inclinationChangePerSecRangeMin, max: device.inclinationChangePerSecRangeMax, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRangeMin, maxLabel: device.inclinationChangePerSecRangeMax});
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -97,10 +97,10 @@ PocketCode.Ui.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _maxDegreeChangeHandler: function(e) {
-            this._device.degreeChangeValue = e.value;
+            this._device.inclinationMinMax = e.value;
         },
         _maxAccChangeHandler: function(e) {
-            this._device.accelerationChangeValue = e.value;
+            this._device.inclinationChangePerSec = e.value;
         },
         _updateImageTransformation: function (e) {
             var image = this._img;

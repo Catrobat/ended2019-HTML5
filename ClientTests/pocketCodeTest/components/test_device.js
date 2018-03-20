@@ -497,18 +497,18 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     function testInclinationMaxLeft() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationX;
-            assert.equal(tmpMaxIncl, deviceEmulator.degreeChangeMax, "Left: Max Inclination reached");
+            assert.equal(tmpMaxIncl, deviceEmulator.inclinationRangeMax, "Left: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.LEFT});
             testInclinationMaxLeftAlt();
         }
-        deviceEmulator.degreeChangeValue = 80;
+        deviceEmulator.inclinationMinMax = 80;
         deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.LEFT});
         setTimeout(waitForMaxInclination, 5000);
     }
     function testInclinationMaxLeftAlt() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationX;
-            assert.equal(tmpMaxIncl, deviceEmulator.degreeChangeMax, "Alternative Left: Max Inclination reached");
+            assert.equal(tmpMaxIncl, deviceEmulator.inclinationRangeMax, "Alternative Left: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.LEFT});
             testInclinationMaxRight();
         }
@@ -518,7 +518,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     function testInclinationMaxRight() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationX;
-            assert.equal(tmpMaxIncl, -deviceEmulator.degreeChangeMax, "Right: Max Inclination reached");
+            assert.equal(tmpMaxIncl, -deviceEmulator.inclinationRangeMax, "Right: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.RIGHT});
             testInclinationMaxRightAlt();
         }
@@ -528,7 +528,7 @@ QUnit.test("DeviceEmulator Key Events Left/Right", function (assert) {
     function testInclinationMaxRightAlt() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationX;
-            assert.equal(tmpMaxIncl, -deviceEmulator.degreeChangeMax, "Alternative Right: Max Inclination reached");
+            assert.equal(tmpMaxIncl, -deviceEmulator.inclinationRangeMax, "Alternative Right: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.RIGHT});
             testSpace();
         }
@@ -853,18 +853,18 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
     function testInclinationMaxUp() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationY;
-            assert.equal(tmpMaxIncl, -deviceEmulator.degreeChangeMax, "Up: Max Inclination reached");
+            assert.equal(tmpMaxIncl, -deviceEmulator.inclinationRangeMax, "Up: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.UP});
             testInclinationMaxUpAlt();
         }
-        deviceEmulator.degreeChangeValue = 80;
+        deviceEmulator.inclinationMinMax = 80;
         deviceEmulator._keyDown({keyCode: deviceEmulator._keyCode.UP});
         setTimeout(waitForMaxInclination, 5000);
     }
     function testInclinationMaxUpAlt() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationY;
-            assert.equal(tmpMaxIncl, -deviceEmulator.degreeChangeMax, "Alternative Up: Max Inclination reached");
+            assert.equal(tmpMaxIncl, -deviceEmulator.inclinationRangeMax, "Alternative Up: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.UP});
             testInclinationMaxDown();
         }
@@ -874,7 +874,7 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
     function testInclinationMaxDown() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationY;
-            assert.equal(tmpMaxIncl, deviceEmulator.degreeChangeMax, "Down: Max Inclination reached");
+            assert.equal(tmpMaxIncl, deviceEmulator.inclinationRangeMax, "Down: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._keyCode.DOWN});
             testInclinationMaxDownAlt();
         }
@@ -884,7 +884,7 @@ QUnit.test("DeviceEmulator Key Events Up/Down", function (assert) {
     function testInclinationMaxDownAlt() {
         var waitForMaxInclination = function () {
             var tmpMaxIncl = deviceEmulator.inclinationY;
-            assert.equal(tmpMaxIncl, deviceEmulator.degreeChangeMax, "Alternative Down: Max Inclination reached");
+            assert.equal(tmpMaxIncl, deviceEmulator.inclinationRangeMax, "Alternative Down: Max Inclination reached");
             deviceEmulator._keyUp({keyCode: deviceEmulator._alternativeKeyCode.DOWN});
             testSpace();
         }

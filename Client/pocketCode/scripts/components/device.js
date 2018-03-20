@@ -1,12 +1,19 @@
 /// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
+/// <reference path="soundManager.js" />
 'use strict';
 
 PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
-    function Device() {
+    function Device(soundManager) {
+        if (!(soundManager instanceof PocketCode.SoundManager))
+            throw new Error('invalid cntr call: sound manager');
+        this._soundMgr = soundManager;
+
+        this._flashOn = false;      //TODO: temp solution until flash supported
+
         this._compass = 0;
         this._alpha = 0;
         this._beta = 0;
@@ -91,8 +98,6 @@ PocketCode.Device = (function () {
             active: {},
             history: [],
         };
-
-        this._flashOn = false;      //TODO: temp solution until flash supported
 
         //bind events
         if (window.hasOwnProperty('orientation')) {
@@ -306,6 +311,11 @@ PocketCode.Device = (function () {
         //		return this._sensorData.Y_ROTATION_RATE;
         //	},
         //},
+        loudness: {
+            get: function () {
+                return this._soundMgr.volume;
+            },
+        },
         //touch
         lastTouchIndex: {
             get: function () {
@@ -615,6 +625,8 @@ PocketCode.Device = (function () {
         },
         /* override */
         dispose: function () {
+            this._soundMgr = undefined; //make sure it does not get disposed as well
+
             if (this._initDeviceOrientationListener) {
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
                 //delete this._initDeviceOrientationListener;
@@ -644,8 +656,8 @@ PocketCode.Device = (function () {
 PocketCode.MediaDevice = (function () {
     MediaDevice.extends(PocketCode.Device, false);
 
-    function MediaDevice() {
-        PocketCode.Device.call(this);
+    function MediaDevice(soundManager) {
+        PocketCode.Device.call(this, soundManager);
 
         this._cameraTransparency = 50.0;    //default
 
@@ -728,9 +740,9 @@ PocketCode.MediaDevice = (function () {
             e.merge({ orientation: window.orientation || 0, transparency: this._cameraTransparency });
             this._camStatus = e;
             /**  if (e.on && e.width && e.height && e.src)
-                  this._fd.start(e.src, e.width, e.height, e.orientation);
-              else
-                  this._fd.stop(); **/
+             this._fd.start(e.src, e.width, e.height, e.orientation);
+             else
+             this._fd.stop(); **/
             this._onCameraChange.dispatchEvent(e);
         },
         /* override */
@@ -779,7 +791,14 @@ PocketCode.MediaDevice = (function () {
 
             this._cameraTransparency = value;
             if (this._cam.on) {
-                this._onCameraChange.dispatchEvent({ on: true, src: video, height: video.videoHeight, width: video.videoWidth, orientation: window.orientation || 0, transparency: value });
+                this._onCameraChange.dispatchEvent({
+                    on: true,
+                    src: video,
+                    height: video.videoHeight,
+                    width: video.videoWidth,
+                    orientation: window.orientation || 0,
+                    transparency: value
+                });
                 return true;
             }
             return false;
@@ -804,6 +823,7 @@ PocketCode.MediaDevice = (function () {
             this._cam.supported = false;    //override
             this._fd.supported = false;     //override
         },
+
         dispose: function () {
             this._removeDomListener(window, 'orientationchange', this._orientationListener);
             this._fd.dispose();
@@ -821,27 +841,23 @@ PocketCode.MediaDevice = (function () {
 PocketCode.DeviceEmulator = (function () {
     DeviceEmulator.extends(PocketCode.MediaDevice, false);
 
-    function DeviceEmulator() {
-        PocketCode.MediaDevice.call(this);
+    function DeviceEmulator(soundManager) {
+        PocketCode.MediaDevice.call(this, soundManager);
 
         this._features.INCLINATION.supported = true;
-        this._defaultInclination = {
-            X: 0.0,
-            Y: 0.0,
-        };
-        this._inclinationLimits = {
+        this._inclinationValueRange = {
             MIN: 1,
             MAX: 80,
             DEFAULT: 65,
         };
-        this.degreeChangeValue = this._inclinationLimits.DEFAULT;
+        this.inclinationMinMax = this._inclinationValueRange.DEFAULT;
 
-        this._accelerationLimits = {
+        this._inclinationChangePerSecRange = {
             MIN: 1,
             MAX: 100,
             DEFAULT: 46,
         };
-        this.accelerationChangeValue = this._accelerationLimits.DEFAULT;
+        this.inclinationChangePerSec = this._inclinationChangePerSecRange.DEFAULT;
 
         // Arrow Keys 
         this._keyCode = {
@@ -861,97 +877,83 @@ PocketCode.DeviceEmulator = (function () {
             SPACE: 32,
         };
 
-        //key down
-        this._keyPress = {
-            LEFT: false,
-            RIGHT: false,
-            UP: false,
-            DOWN: false,
-            SPACE: false,
-        };
-
+        //timestamps for inclination calculations are stored here
         this._keyDownDateTime = {
-            LEFT: 0,
-            RIGHT: 0,
-            UP: 0,
-            DOWN: 0,
+            LEFT: undefined,
+            RIGHT: undefined,
+            UP: undefined,
+            DOWN: undefined,
         };
-        this._elapsedTime = {
-            LEFT: 0,
-            RIGHT: 0,
-            UP: 0,
-            DOWN: 0,
-        };
-        this._firstKeyDown = {
-            LEFT: false,
-            RIGHT: false,
-            UP: false,
-            DOWN: false,
-        };
-
-        this._inclinationIncrTmp = {
-            X: 0.0,
-            Y: 0.0,
-        };
-
-        this._resetInclinationX();
-        this._resetInclinationY();
-
     }
 
     //properties
     Object.defineProperties(DeviceEmulator.prototype, {
-        degreeChangeMin: {
+        inclinationRangeMin: {
             get: function () {
-                return this._inclinationLimits.MIN;
+                return this._inclinationValueRange.MIN;
             }
         },
-        degreeChangeMax: {
+        inclinationRangeMax: {
             get: function () {
-                return this._inclinationLimits.MAX;
+                return this._inclinationValueRange.MAX;
             }
         },
-        degreeChangeValue: {
+        inclinationMinMax: {   //TODO: setter only: also reset the current timestamps to avoid errors changing the slider and pressing keys at the same time
             value: 0,
             writable: true,
         },
-        accelerationChangeMin: {
+        inclinationChangePerSecRangeMin: {
             get: function () {
-                return this._accelerationLimits.MIN;
+                return this._inclinationChangePerSecRange.MIN;
             }
         },
-        accelerationChangeMax: {
+        inclinationChangePerSecRangeMax: {
             get: function () {
-                return this._accelerationLimits.MAX;
+                return this._inclinationChangePerSecRange.MAX;
             }
         },
-        accelerationChangeValue: {
+        inclinationChangePerSec: {
             value: 0,
             writable: true,
         },
         inclinationX: {
             get: function () {
-                if (!this._features.INCLINATION.inUse)
-                {
+                if (!this._features.INCLINATION.inUse) {
                     this._features.INCLINATION.inUse = true;
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
                 }
-                this._updateInclination();
 
+                if (this._keyDownDateTime.LEFT && !this._keyDownDateTime.RIGHT) {
+                    this._sensorData.X_INCLINATION = Math.max((Date.now() - this._keyDownDateTime.LEFT) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                }
+                else if (!this._keyDownDateTime.LEFT && this._keyDownDateTime.RIGHT) {
+                    this._sensorData.X_INCLINATION = Math.min((Date.now() - this._keyDownDateTime.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                }
+                else if (this.timestamp.LEFT && this.timestamp.RIGHT) {
+                    this._sensorData.X_INCLINATION = Math.max(Math.min((this._keyDownDateTime.RIGHT - this._keyDownDateTime.LEFT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                }
                 return this._sensorData.X_INCLINATION;
             },
         },
         inclinationY: {
             get: function () {
-                if (!this._features.INCLINATION.inUse)
-                {
+                if (!this._features.INCLINATION.inUse) {
                     this._features.INCLINATION.inUse = true;
                     this._keyDownListener = this._addDomListener(document, 'keydown', this._keyDown);
                     this._keyUpListener = this._addDomListener(document, 'keyup', this._keyUp);
                 }
-                this._updateInclination();
 
+                if (this._keyDownDateTime.UP && !this._keyDownDateTime.DOWN) {
+                    this._sensorData.Y_INCLINATION = Math.min((Date.now() - this._keyDownDateTime.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                }
+                else if (!this._keyDownDateTime.UP && this._keyDownDateTime.DOWN) {
+                    this._sensorData.Y_INCLINATION = Math.max((Date.now() - this._keyDownDateTime.DOWN) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                }
+
+                else if (this._keyDownDateTime.UP && this._keyDownDateTime.DOWN) {
+                    this._sensorData.Y_INCLINATION = Math.max(Math.min((this._keyDownDateTime.UP - this._keyDownDateTime.DOWN) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                }
                 return this._sensorData.Y_INCLINATION;
             },
         },
@@ -968,214 +970,70 @@ PocketCode.DeviceEmulator = (function () {
     //methods
     DeviceEmulator.prototype.merge({
         _keyDown: function (e) {
+            var timestamp = this._keyDownDateTime;
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
-                    if (!this._firstKeyDown.LEFT && !this._firstKeyDown.RIGHT)
-                    {
-                        this._firstKeyDown.LEFT = true;
-                    }
-                    if (this._keyPress.RIGHT && this._firstKeyDown.LEFT)
-                    {
-                        this._firstKeyDown.LEFT = false;
-                        this._firstKeyDown.RIGHT = true;
-                    }
-                    if (!this._keyDownDateTime.LEFT)
-                    {
-                        this._keyDownDateTime.LEFT = Date.now();
-                    }
-                    this._keyPress.LEFT = true;
+                    timestamp.LEFT = Date.now();
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
-                    if (!this._firstKeyDown.LEFT && !this._firstKeyDown.RIGHT)
-                    {
-                        this._firstKeyDown.RIGHT = true;
-                    }
-                    if (this._keyPress.LEFT && this._firstKeyDown.RIGHT)
-                    {
-                        this._firstKeyDown.LEFT = true;
-                        this._firstKeyDown.RIGHT = false;
-                    }
-                    if (!this._keyDownDateTime.RIGHT)
-                    {
-                        this._keyDownDateTime.RIGHT = Date.now();
-                    }
-                    this._keyPress.RIGHT = true;
+                    timestamp.RIGHT = Date.now();
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
-                    if (!this._firstKeyDown.UP && !this._firstKeyDown.DOWN)
-                    {
-                        this._firstKeyDown.UP = true;
-                    }
-                    if (this._keyPress.DOWN && this._firstKeyDown.UP)
-                    {
-                        this._firstKeyDown.UP = false;
-                        this._firstKeyDown.DOWN = true;
-                    }
-                    if (!this._keyDownDateTime.UP)
-                    {
-                        this._keyDownDateTime.UP = Date.now();
-                    }
-                    this._keyPress.UP = true;
+                    timestamp.UP = Date.now();
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
-                    if (!this._firstKeyDown.UP && !this._firstKeyDown.DOWN)
-                    {
-                        this._firstKeyDown.DOWN = true;
-                    }
-                    if (this._keyPress.UP && this._firstKeyDown.DOWN)
-                    {
-                        this._firstKeyDown.UP = true;
-                        this._firstKeyDown.DOWN = false;
-                    }
-                    if (!this._keyDownDateTime.DOWN)
-                    {
-                        this._keyDownDateTime.DOWN = Date.now();
-                    }
-                    this._keyPress.DOWN = true;
+                    timestamp.DOWN = Date.now();
                     break;
                 case this._alternativeKeyCode.SPACE:
                 case this._keyCode.SPACE:
-                    if (this._keyPress.SPACE)
-                        break;
-                    this._keyPress.SPACE = true;
                     this._onSpaceKeyDown.dispatchEvent();
                     break;
             }
-            this._calculateInclination();
-        },
-        _calculateInclination: function () {
-            var inclinationDuration = this.degreeChangeValue / this.accelerationChangeValue;
-            var inclinationPerStep = inclinationDuration / this.accelerationChangeValue;
-
-            this._inclinationIncrTmp.X = inclinationDuration / inclinationPerStep;
-            this._inclinationIncrTmp.Y = inclinationDuration / inclinationPerStep;
         },
         _keyUp: function (e) {
+            var timestamp = this._keyDownDateTime;
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
-                    this._keyPress.LEFT = false;
-                    if (this._firstKeyDown.LEFT)
-                    {
-                        this._firstKeyDown.LEFT = false;
-                        this._resetInclinationX();
-                        if (this._keyDownDateTime.RIGHT)
-                            this._keyDownDateTime.RIGHT = Date.now() - Math.max(0, (this._keyDownDateTime.LEFT - this._keyDownDateTime.RIGHT));
-                    }
-                    if (!this._firstKeyDown.LEFT && this._keyDownDateTime.RIGHT)
-                    {
-                        this._keyDownDateTime.RIGHT = Date.now() - Math.max(0, (this._keyDownDateTime.LEFT - this._keyDownDateTime.RIGHT));
-                    }
-                    this._keyDownDateTime.LEFT = 0;
-                    if (!this._keyPress.RIGHT)
-                        this._resetInclinationX();
+                    if (timestamp.RIGHT)
+                        timestamp.RIGHT -= timestamp.LEFT;  //TODO: can get negative?
+                    timestamp.LEFT = undefined;
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
-                    this._keyPress.RIGHT = false;
-                    if (this._firstKeyDown.RIGHT)
-                    {
-                        this._firstKeyDown.RIGHT = false;
-                        this._resetInclinationX();
-                        if (this._keyDownDateTime.LEFT)
-                            this._keyDownDateTime.LEFT = Date.now() - Math.max(0, (this._keyDownDateTime.RIGHT - this._keyDownDateTime.LEFT));
-                    }
-                    if (!this._firstKeyDown.RIGHT && this._keyDownDateTime.LEFT)
-                    {
-                        this._keyDownDateTime.LEFT = Date.now() - Math.max(0, (this._keyDownDateTime.RIGHT - this._keyDownDateTime.LEFT));
-                    }
-                    this._keyDownDateTime.RIGHT = 0;
-                    if (!this._keyPress.LEFT)
-                        this._resetInclinationX();
+                    if (timestamp.LEFT)
+                        timestamp.LEFT = timestamp.RIGHT - timestamp.LEFT;
+                    timestamp.RIGHT = undefined;
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
-                    this._keyPress.UP = false;
-                    if (this._firstKeyDown.UP)
-                    {
-                        this._firstKeyDown.UP = false;
-                        this._resetInclinationY();
-                        if (this._keyDownDateTime.DOWN)
-                            this._keyDownDateTime.DOWN = Date.now() - Math.max(0, (this._keyDownDateTime.UP - this._keyDownDateTime.DOWN));
-                    }
-                    if (!this._firstKeyDown.UP && this._keyDownDateTime.DOWN)
-                    {
-                        this._keyDownDateTime.DOWN = Date.now() - Math.max(0, (this._keyDownDateTime.UP - this._keyDownDateTime.DOWN));
-                    }
-                    this._keyDownDateTime.UP = 0;
-                    if (!this._keyPress.DOWN)
-                        this._resetInclinationY();
+                    if (timestamp.DOWN)
+                        timestamp.DOWN -= timestamp.UP;
+                    timestamp.UP = undefined;
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
-                    this._keyPress.DOWN = false;
-                    if (this._firstKeyDown.DOWN)
-                    {
-                        this._firstKeyDown.DOWN = false;
-                        this._resetInclinationY();
-                        if (this._keyDownDateTime.UP)
-                            this._keyDownDateTime.UP = Date.now() - Math.max(0, (this._keyDownDateTime.DOWN - this._keyDownDateTime.UP));
-                    }
-                    if (!this._firstKeyDown.DOWN && this._keyDownDateTime.UP)
-                    {
-                        this._keyDownDateTime.UP = Date.now() - Math.max(0, (this._keyDownDateTime.DOWN - this._keyDownDateTime.UP));
-                    }
-                    this._keyDownDateTime.DOWN = 0;
-                    if (!this._keyPress.UP)
-                        this._resetInclinationY();
+                    if (timestamp.UP)
+                        timestamp.UP = timestamp.DOWN - timestamp.UP;
+                    timestamp.DOWN = undefined;
                     break;
-                case this._alternativeKeyCode.SPACE:
-                case this._keyCode.SPACE:
-                    this._keyPress.SPACE = false;
-                    break;
+                    //case this._alternativeKeyCode.SPACE:
+                    //case this._keyCode.SPACE:
+                    //    break;
             }
         },
-        _resetInclinationX: function () {
-            this._sensorData.X_INCLINATION = this._defaultInclination.X;
-        },
-        _resetInclinationY: function () {
-            this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
-        },
-        _updateInclination: function () {
-            if (this._disposed)
-                return;
-            if (this._keyPress.LEFT && !this._keyPress.RIGHT) {
-                // left
-                this._elapsedTime.LEFT = (Date.now() - this._keyDownDateTime.LEFT) / 1000;
-                var inclDateTimeLeft = this._inclinationIncrTmp.X * this._elapsedTime.LEFT;
-                this._sensorData.X_INCLINATION += inclDateTimeLeft;
-                if (this._sensorData.X_INCLINATION > this.degreeChangeValue)
-                    this._sensorData.X_INCLINATION = this.degreeChangeValue;
-            }
-            else if (!this._keyPress.LEFT && this._keyPress.RIGHT) {
-                // right
-                this._elapsedTime.RIGHT = (Date.now() - this._keyDownDateTime.RIGHT) / 1000;
-                var inclDateTimeRight = this._inclinationIncrTmp.X * this._elapsedTime.RIGHT;
-                this._sensorData.X_INCLINATION -= inclDateTimeRight;
-                if (this._sensorData.X_INCLINATION < this.degreeChangeValue * -1)
-                    this._sensorData.X_INCLINATION = this.degreeChangeValue * -1;
-            }
-            if (this._keyPress.UP && !this._keyPress.DOWN) {
-                // up
-                this._elapsedTime.UP = (Date.now() - this._keyDownDateTime.UP) / 1000;
-                var inclDateTimeUp = this._inclinationIncrTmp.Y * this._elapsedTime.UP;
-                this._sensorData.Y_INCLINATION -= inclDateTimeUp;
-                if (this._sensorData.Y_INCLINATION < this.degreeChangeValue * -1)
-                    this._sensorData.Y_INCLINATION = this.degreeChangeValue * -1;
-            }
-            else if (!this._keyPress.UP && this._keyPress.DOWN) {
-                // down
-                this._elapsedTime.DOWN = (Date.now() - this._keyDownDateTime.DOWN) / 1000;
-                var inclDateTimeDown = this._inclinationIncrTmp.Y * this._elapsedTime.DOWN;
-                this._sensorData.Y_INCLINATION += inclDateTimeDown;
-                if (this._sensorData.Y_INCLINATION > this.degreeChangeValue)
-                    this._sensorData.Y_INCLINATION = this.degreeChangeValue;
-            }
-        },
+
+        // _resetInclinationX: function () {
+        //     this._sensorData.X_INCLINATION = this._defaultInclination.X;
+        // },
+        // _resetInclinationY: function () {
+        //     this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
+        // },
+        
         /* override */
         _getGeoLocationData: function () {
             this._features.GEO_LOCATION.inUse = true;
@@ -1200,8 +1058,8 @@ PocketCode.DeviceEmulator = (function () {
         },
         /* override */
         reset: function () {   //called at program-restart
-            this._resetInclinationX();
-            this._resetInclinationY();
+            //this._resetInclinationX();
+            //this._resetInclinationY();
 
             PocketCode.MediaDevice.prototype.reset.call(this);   //call super()
         },

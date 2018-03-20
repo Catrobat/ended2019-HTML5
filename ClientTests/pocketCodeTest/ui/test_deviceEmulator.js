@@ -59,13 +59,13 @@ QUnit.test("DeviceEmulator UI: Slider tests", function (assert) {
     assert.equal(maxDegreeSlider.value, 65, "onChange Event not triggered: no Degree change");
     deviceEmulator._maxDegreeChangeHandler({value: 45});
 
-    assert.equal(deviceEmulator._device.degreeChangeValue, 45, "onChange Event triggered: Degree Slider change");
+    assert.equal(deviceEmulator._device.inclinationMinMax, 45, "onChange Event triggered: Degree Slider change");
 
     //check of change event for Acceleration slider
     assert.equal(accSlider.value, 46, "onChange Event not triggered: no Acceleration change");
     deviceEmulator._maxAccChangeHandler({value: 10});
 
-    assert.equal(deviceEmulator._device.accelerationChangeValue, 10, "onChange Event triggered: Acceleration Slider change");
+    assert.equal(deviceEmulator._device.inclinationChangePerSec, 10, "onChange Event triggered: Acceleration Slider change");
 });
 
 QUnit.test("DeviceEmulator UI: image Transformation tests", function (assert) {
