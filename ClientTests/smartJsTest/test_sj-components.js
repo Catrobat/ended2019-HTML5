@@ -254,8 +254,54 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
 
 QUnit.test("SmartJs.Components.WebWorker", function (assert) {
 
+    var done1 = assert.async();
+    var done2 = assert.async();
 
-    assert.ok(false, "TODO");
+    var TestClass = (function () {
+        function TestClass(value) {
+            this._value = value;
+        }
+
+        TestClass.prototype = {
+            exec: function (value) {
+                return value * this._value;
+            },
+            floor: function (value) {
+                return Math.floor(value);
+            },
+            ceil: function (value) {
+                return Math.ceil(value);
+            },
+            mult: function (value1, value2) {
+                return this.floor(value1) * this.ceil(value2);
+            },
+        };
+
+        return TestClass;
+    })();
+
+    var testInstance = new TestClass(3);
+    assert.equal(testInstance.exec(2), 6, "TestClass check");
+
+    //simple test
+    var worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor);
+    var onExecutedHandler = function (e) {
+        assert.equal(e.result, 4, "scope + method: simple test");
+        done1();
+    }
+    worker.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler, this));
+    worker.execute(4.98765);
+
+    //simple test
+    var worker2 = new SmartJs.Components.WebWorker(testInstance, testInstance.mult, { floor: testInstance.floor, ceil: testInstance.ceil });
+    var onExecutedHandler2 = function (e) {
+        assert.equal(e.result, 25, "scope + method + helpers: simple test");
+        done2();
+    }
+    worker2.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler2, this));
+    worker2.execute(5.98765, 4.001);
+
+    //assert.ok(false, "TODO");
 
 });
 

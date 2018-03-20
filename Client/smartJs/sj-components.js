@@ -240,7 +240,7 @@ SmartJs.Components = {
                 for (var prop in helperMethods) {
                     if (!(helperMethods[prop] instanceof Function))
                         throw new Error('invalid argument: helper methods {functionName: Function}');
-                    internalCode.concat([', ', prop, '=', helperMethods[prop]]);
+                    internalCode = internalCode.concat([', ', prop, '=', helperMethods[prop]]);
                 }
             }
             internalCode.push(';');
@@ -287,25 +287,27 @@ SmartJs.Components = {
         WebWorker.prototype.merge({
             /*code below is injected to run inside the worker*/
             _internalOnMessage: function (e) {
-                var //args = e.data,
-                    returnValue = this.workerMethod.apply(this, e.data);
+                var data = e.data,
+                    returnValue = this.workerMethod.apply(this, data.arguments);
 
-                //TODO
-                this.postMessage(returnValue);
-                this.close();
+                if (data.buffer)
+                    this.postMessage(returnValue, [returnValue.data.buffer]);
+                else
+                    this.postMessage(returnValue);
+                //this.close();
             },
             /*code above is injected to run inside the worker*/
 
             execute: function (/*arguments*/) {
                 if (!this._worker) {
-                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, arguments), async: false });
+                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, [].slice.call(arguments)), async: false });
                     return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
                 }
 
                 if (this._running)
                     throw new Error('worker currently in use');
                 this._running = true;
-                this._worker.postMessage(arguments);    //post as argument array
+                this._worker.postMessage({ arguments: [].slice.call(arguments), buffer: false });    //post as argument array
             },
             executeImageData: function (imageData) {
                 if (!(imageData instanceof ImageData))
@@ -318,7 +320,7 @@ SmartJs.Components = {
                 if (this._running)
                     throw new Error('worker currently in use');
                 this._running = true;
-                this._worker.postMessage(imageData, [imageData.data.buffer]);
+                this._worker.postMessage({ arguments: [imageData], buffer: true }, [imageData.data.buffer]);
             },
             _onMessageHandler: function (e) {
                 this._running = false;
