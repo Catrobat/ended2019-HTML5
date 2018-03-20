@@ -7,11 +7,7 @@
 PocketCode.Device = (function () {
     Device.extends(SmartJs.Core.EventTarget);
 
-    function Device(soundManager) {
-        if (!(soundManager instanceof PocketCode.SoundManager))
-            throw new Error('invalid cntr call: sound manager');
-        this._soundMgr = soundManager;
-
+    function Device() {
         this._flashOn = false;      //TODO: temp solution until flash supported
 
         this._compass = 0;
@@ -311,11 +307,7 @@ PocketCode.Device = (function () {
         //		return this._sensorData.Y_ROTATION_RATE;
         //	},
         //},
-        loudness: {
-            get: function () {
-                return this._soundMgr.volume;
-            },
-        },
+
         //touch
         lastTouchIndex: {
             get: function () {
@@ -625,8 +617,6 @@ PocketCode.Device = (function () {
         },
         /* override */
         dispose: function () {
-            this._soundMgr = undefined; //make sure it does not get disposed as well
-
             if (this._initDeviceOrientationListener) {
                 this._removeDomListener(window, 'deviceorientation', this._initDeviceOrientationListener);
                 //delete this._initDeviceOrientationListener;
@@ -654,12 +644,9 @@ PocketCode.Device = (function () {
 })();
 
 PocketCode.MediaDevice = (function () {
-    MediaDevice.extends(PocketCode.Device, false);
+    MediaDevice.extends(PocketCode.Device);
 
-    function MediaDevice(soundManager) {
-        PocketCode.Device.call(this, soundManager);
-
-        this._cameraTransparency = 50.0;    //default
+    function MediaDevice() {
 
         //camera
         this._features.CAMERA = new PocketCode.Camera();
@@ -667,6 +654,8 @@ PocketCode.MediaDevice = (function () {
         this._cam.onInit.addEventListener(new SmartJs.Event.EventListener(this._featureInitializedHandler, this));
         this._cam.onChange.addEventListener(new SmartJs.Event.EventListener(this._cameraChangeHandler, this));
         this._camStatus = { on: false };
+
+        this._cameraTransparency = 50.0;    //default
 
         this._orientationListener = this._addDomListener(window, 'orientationchange', this._orientationHandler);
 
@@ -839,13 +828,11 @@ PocketCode.MediaDevice = (function () {
 })();
 
 PocketCode.DeviceEmulator = (function () {
-    DeviceEmulator.extends(PocketCode.MediaDevice, false);
+    DeviceEmulator.extends(PocketCode.MediaDevice);
 
-    function DeviceEmulator(soundManager) {
-        PocketCode.MediaDevice.call(this, soundManager);
+    function DeviceEmulator() {
 
         this._features.INCLINATION.supported = true;
-
         //set defaults for sliders (ui configuration)
         this._inclinationMinMaxRange = {
             MIN: 1,
