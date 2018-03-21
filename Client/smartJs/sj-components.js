@@ -230,7 +230,7 @@ SmartJs.Components = {
                 throw new Error('invalid argument: workerMethod');
             this._workerMethod = workerMethod;
 
-            this._running = false;
+            this._busy = false;
             if (helperMethods && !(helperMethods instanceof Object))
                 throw new Error('invalid argument: helperMethods');
 
@@ -276,9 +276,9 @@ SmartJs.Components = {
 
         //properties
         Object.defineProperties(WebWorker.prototype, {
-            isRunning: {
+            isBusy: {
                 get: function () {
-                    return this._running;
+                    return this._busy;
                 },
             },
         });
@@ -304,9 +304,9 @@ SmartJs.Components = {
                     return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
                 }
 
-                if (this._running)
+                if (this._busy)
                     throw new Error('worker currently in use');
-                this._running = true;
+                this._busy = true;
                 this._worker.postMessage({ arguments: [].slice.call(arguments), buffer: false });    //post as argument array
             },
             executeImageData: function (imageData) {
@@ -317,21 +317,21 @@ SmartJs.Components = {
                     return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
                 }
 
-                if (this._running)
+                if (this._busy)
                     throw new Error('worker currently in use');
-                this._running = true;
+                this._busy = true;
                 this._worker.postMessage({ arguments: [imageData], buffer: true }, [imageData.data.buffer]);
             },
             _onMessageHandler: function (e) {
-                this._running = false;
+                this._busy = false;
                 this._onExecuted.dispatchEvent({ result: e.data, async: true }); //TODO
             },
             _onErrorHandler: function (e) {
-                this._running = false;
+                this._busy = false;
                 this._onError.dispatchEvent({ error: e }); //TODO
             },
             _onMessageErrorHandler: function (e) {
-                this._running = false;
+                this._busy = false;
                 this._onError.dispatchEvent({ error: e }); //TODO
             },
             terminate: function () {
