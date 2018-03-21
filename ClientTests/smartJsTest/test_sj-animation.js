@@ -72,6 +72,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
 
 });
 
+
 QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
     var done1 = assert.async();
@@ -134,3 +135,8 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
 });
 
+
+QUnit.test("SmartJs.Animation.Rotation", function (assert) {
+
+    assert.ok(false, "TODO")
+});

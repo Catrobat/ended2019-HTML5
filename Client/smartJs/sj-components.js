@@ -165,7 +165,7 @@ SmartJs.Components = {
     Stopwatch: (function () {
         Stopwatch.extends(SmartJs.Core.Component);
 
-        function Stopwatch(device, sprite, jsonStopwatch) {
+        function Stopwatch() {
             this._init();
         }
 
@@ -196,13 +196,21 @@ SmartJs.Components = {
                 this._init();
                 this._startDateTime = Date.now();
             },
-            reset: function () {
+            reset: function () {    //sets current timer to 0 (even if stated or paused)
+                var start = this._startDateTime,
+                    paused = this._pausedDateTime;
                 this._init();
+                if (paused)
+                    this._startDateTime = this._pausedDateTime = Date.now();
+                else if (start)
+                    this._startDateTime = Date.now();
             },
             pause: function () {
                 this._pausedDateTime = Date.now();
             },
             resume: function () {
+                if (!this._pausedDateTime)
+                    return;
                 this._pausedTimespan += Date.now() - this._pausedDateTime;
                 this._pausedDateTime = undefined;
             },

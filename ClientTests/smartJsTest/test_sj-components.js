@@ -249,6 +249,7 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
         done();
     };
 
+    assert.ok(false, "TODO: more tests needed for reset() including reset started as well es paused timers");
 });
 
 
