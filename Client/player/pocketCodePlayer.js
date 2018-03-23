@@ -704,7 +704,7 @@ PocketCode.Web = {
             this._resources = resources;
             this._root = resources.root;
             this._files = resources.files;
-            this._version = Date.now().toString().substring(4, 9); //prevent caching
+            this._version = Date.now().toString().substring(3, 6); //prevent caching
 
             //events to override
             this.onProgress = function () { };
