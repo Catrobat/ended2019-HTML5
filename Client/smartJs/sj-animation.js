@@ -195,7 +195,8 @@ SmartJs.Animation.Rotation = (function () {
 
         if (angle && isNaN(angle))
             throw new Error('invalid argument angle: expected type number');
-        this._startAngle = angle || 0;
+        this._prevAngle = this._startAngle = angle || 0.0;
+        this._rotationSpeed = 0.0;
 
         this._timer = new SmartJs.Components.Stopwatch();
         this._frameId = undefined;
@@ -217,36 +218,75 @@ SmartJs.Animation.Rotation = (function () {
     //properties
     Object.defineProperties(Rotation.prototype, {
         angle: {
-            get: function () { return this._startAngle; },
+            //get: function () { return this._startAngle; },
+            get: function () {
+                var angle = (this._startAngle + this._timer.value * this._rotationSpeed) % 360.0;
+                //modulo for negative numbers will return a negative number in js
+                if (angle < 0)
+                    angle += 360.0;
+                return angle;
+            },
             set: function (angle) {
                 if (isNaN(angle))
                     throw new Error('invalid argument angle: expected type number');
+                this._prevAngle = this.angle;
                 this._startAngle = angle;
                 this._timer.reset();
+                if (!this._timer.startTimestamp && this.angle != this._prevAngle) //not started and changed
+                    this._onUpdate.dispatchEvent({ value: this.angle, previous: this._prevAngle });
             },
         },
+        rotationSpeed: {    //angle per second
+            set: function (value) {
+                if (isNaN(angle))
+                    throw new Error('invalid argument rotationSpeed: expected type number');
+                if (value == this._rotationSpeed)
+                    return;
+                this._startAngle = this.angle;
+                this._rotationSpeed = value;
+                if (value === 0.0) {
+                    this.stop();
+                    this._onUpdate.dispatchEvent({ value: this.angle, previous: this._prevAngle });
+                }
+                else if (!this._timer.startTimestamp) //not started
+                    this._start();
+            },
+        },
+        //_currentAngle: {
+        //    get: function () {
+        //        return (this._startAngle + this._timer.value * this._rotationSpeed) % 360.0;
+        //        //modulo for negative numbers will return a negative number in js
+        //    },
+        //},
     });
 
     Rotation.prototype.merge({
         _executeAnimation: function () {
-            var timespan = this._timer.value,   //seconds
-                value = this._startAngle
-            //value = startValue + timespan * rotationPerSec .. including %360 (make sure this works for negative values as well
-            this._onUpdate.dispatchEvent({ value: value });
-            if (!this._paused)
-                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
-        },
-        start: function (anglePerSec, ccw) {//callbackArgs) {
-            if (ccw)
-                //TODO: set speed?
-
-            //if (callbackArgs) {
-            //    if (typeof callbackArgs !== 'object' || (callbackArgs instanceof Array))
-            //        throw new Error('invalid argument: callbackArgs: expected type: object');
-            //    this._callbackArgs = callbackArgs;  //introduced to enable threaded animation identification
-            //}
-            this._timer.start();
+            if (this._paused)
+                return;
+            var previous = this._prevAngle;
+            this._prevAngle = this.angle;
+            this._onUpdate.dispatchEvent({ value: this.angle, previous: previous });
             this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
+        },
+        toObject: function () { //alows exact cloning
+            return {
+                startAngle: this._startAngle,
+                startTimestamp: this._timer.startTimestamp,
+                rotationSpeed: this._rotationSpeed,
+            };
+        },
+        setObject: function (obj) { //alows exact cloning
+            this._startAngle = obj.startAngle || 0.0;
+            this._rotationSpeed = obj.rotationSpeed || 0.0;
+            if (obj.startTimestamp && !!obj.rotationSpeed)
+                this._start(obj.startTimestamp);
+        },
+        _start: function (startTimestamp) {   //or restart
+            this._timer.start(startTimestamp);
+            if (!this._frameId)
+                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
+            this._paused = false;
         },
         pause: function () {
             this._timer.pause();
@@ -259,8 +299,8 @@ SmartJs.Animation.Rotation = (function () {
             this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
         },
         stop: function () {
-            this._timer.stop();
             window.cancelAnimationFrame(this._frameId);
+            this._timer.stop();
             this._paused = false;
         },
         dispose: function () {
