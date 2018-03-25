@@ -236,7 +236,7 @@ SmartJs.Components = {
     WebWorker: (function () {
         WebWorker.extends(SmartJs.Core.EventTarget);
 
-        function WebWorker(scope, workerMethod, helperMethods) {
+        function WebWorker(scope, workerMethod, lookupObject) {
 
             if (!(scope instanceof Object))
                 throw new Error('invalid argument: scope');
@@ -246,18 +246,11 @@ SmartJs.Components = {
             this._workerMethod = workerMethod;
 
             this._busy = false;
-            if (helperMethods && !(helperMethods instanceof Object))
-                throw new Error('invalid argument: helperMethods');
 
             //create web worker internal code
-            var internalCode = ['onmessage=', this._internalOnMessage/*.toString()*/, '; var workerMethod=', this._workerMethod];
-            if (helperMethods) {
-                for (var prop in helperMethods) {
-                    if (!(helperMethods[prop] instanceof Function))
-                        throw new Error('invalid argument: helper methods {functionName: Function}');
-                    internalCode = internalCode.concat([', ', prop, '=', helperMethods[prop]]);
-                }
-            }
+            var internalCode = ['onmessage =', this._internalOnMessage/*.toString()*/, '; var workerMethod =', this._workerMethod, ', '];
+            internalCode = internalCode.concat(this._parseLookupObject(lookupObject));
+            internalCode.pop();    //remove last ', '
             internalCode.push(';');
 
             //create inline worker
@@ -313,29 +306,50 @@ SmartJs.Components = {
             },
             /*code above is injected to run inside the worker*/
 
-            execute: function (/*arguments*/) {
-                if (!this._worker) {
-                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, [].slice.call(arguments)), async: false });
-                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+            _parseLookupObject: function (obj, recursive) {
+                var code = [];
+                if (obj && typeof obj != 'object')
+                    throw new Error('invalid argument: lookupObject');
+                if (obj) {
+                    for (var prop in obj) {
+                        //if (!(obj[prop] instanceof Function))
+                        //    throw new Error('invalid argument: helper methods {functionName: Function}');
+                        code.push(prop);
+                        code.push(recursive ? ': ' : ' = ');
+                        if (typeof obj[prop] != 'object')
+                            code.push(obj[prop]);
+                        else {
+                            code.push('{ ');
+                            code = code.concat(this._parseLookupObject(obj[prop], true));
+                            code.push(' }');
+                        }
+                        code.push(', ');
+                    }
                 }
-
-                if (this._busy)
-                    throw new Error('worker currently in use');
-                this._busy = true;
-                this._worker.postMessage({ arguments: [].slice.call(arguments), buffer: false });    //post as argument array
+                return code;
             },
-            executeImageData: function (imageData) {
-                if (!(imageData instanceof ImageData))
-                    throw new Error('invalid argument: imageData');
+            _validateAndFallback: function (args) {
                 if (!this._worker) {
-                    this._onExecuted.dispatchEvent({ result: this._workerMethod.call(this._scope, imageData), async: false });
-                    return;// this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+                    this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, args), async: false });
+                    return true; //this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
                 }
 
                 if (this._busy)
                     throw new Error('worker currently in use');
                 this._busy = true;
-                this._worker.postMessage({ arguments: [imageData], buffer: true }, [imageData.data.buffer]);
+                return false;
+            },
+            execute: function (/*arguments*/) {
+                var args = [].slice.call(arguments);
+                if (!this._validateAndFallback(args))
+                    this._worker.postMessage({ arguments: args, buffer: false });    //post as argument array
+            },
+            executeImageData: function (/*arguments*/) {
+                var args = [].slice.call(arguments);
+                if (args.length == 0 || !(args[0] instanceof ImageData))
+                    throw new Error('invalid 1st argument: imageData');
+                if (!this._validateAndFallback(args))
+                    this._worker.postMessage({ arguments: args, buffer: true }, [args[0].data.buffer]);
             },
             _onMessageHandler: function (e) {
                 this._busy = false;

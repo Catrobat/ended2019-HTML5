@@ -76,8 +76,10 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     var done1 = assert.async();
     var done2 = assert.async();
     var done3 = assert.async();
+    var done4 = assert.async();
 
     //test class used in the test cases below
+    var ns1 = { ns2: "2", ns3: { number: 4, fnc: function (a, b) { return a * b; } } };
     var TestClass = (function () {
         function TestClass(value) {
             this._value = value;
@@ -95,6 +97,9 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
             },
             mult: function (value1, value2) {
                 return this.floor(value1) * this.ceil(value2);
+            },
+            objectTest: function () {
+                return ns1.ns3.fnc(parseInt(ns1.ns2), ns1.ns3.number);
             },
             longRunningTask: function (value1, value2) {   //delayed on purpose
                 for (var i = 0, l = 20000000; i < l; i++)
@@ -121,7 +126,7 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     worker.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler, this));
     worker.execute(4.98765);
 
-    //simple test
+    //test: simpe object
     var worker2 = new SmartJs.Components.WebWorker(testInstance, testInstance.mult, { floor: testInstance.floor, ceil: testInstance.ceil });
 
     var onExecutedHandler2 = function (e) {
@@ -131,18 +136,28 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     worker2.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler2, this));
     worker2.execute(5.98765, 4.001);
 
-    //long running test
-    var worker3 = new SmartJs.Components.WebWorker(testInstance, testInstance.longRunningTask, { floor: testInstance.floor, ceil: testInstance.ceil });
+    //test: complex object
+    var worker3 = new SmartJs.Components.WebWorker(testInstance, testInstance.objectTest, { ns1: ns1 });
+
     var onExecutedHandler3 = function (e) {
-        assert.equal(e.result, 25, "scope + method + helpers: simple test");
-        assert.notOk(worker3.isBusy, "isBusy set to false after processing completed");
+        assert.equal(e.result, 8, "scope + method + helpers: complex test");
         done3();
     }
     worker3.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler3, this));
-    worker3.execute(5.98765, 4.001);
+    worker3.execute();
 
-    assert.ok(worker3.isBusy, "isBusy set to true if currently processing");
-    assert.throws(function () { worker3.execute(5.98765, 4.001); }, Error, "ERROR: try to call worker again while it is busy");
+    //long running test
+    var worker4 = new SmartJs.Components.WebWorker(testInstance, testInstance.longRunningTask, { floor: testInstance.floor, ceil: testInstance.ceil });
+    var onExecutedHandler4 = function (e) {
+        assert.equal(e.result, 25, "scope + method + helpers: simple test");
+        assert.notOk(worker4.isBusy, "isBusy set to false after processing completed");
+        done4();
+    }
+    worker4.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler4, this));
+    worker4.execute(5.98765, 4.001);
+
+    assert.ok(worker4.isBusy, "isBusy set to true if currently processing");
+    assert.throws(function () { worker4.execute(5.98765, 4.001); }, Error, "ERROR: try to call worker again while it is busy");
 
 
     assert.ok(false, "TODO");
