@@ -248,7 +248,7 @@ SmartJs.Components = {
             this._busy = false;
 
             //create web worker internal code
-            var internalCode = ['onmessage =', this._internalOnMessage/*.toString()*/, '; var workerMethod =', this._workerMethod, ', '];
+            var internalCode = ['onmessage =', this._internalOnMessage, '; var workerMethod =', this._workerMethod, ', '];
             internalCode = internalCode.concat(this._parseLookupObject(lookupObject));
             internalCode.pop();    //remove last ', '
             internalCode.push(';');
@@ -312,8 +312,6 @@ SmartJs.Components = {
                     throw new Error('invalid argument: lookupObject');
                 if (obj) {
                     for (var prop in obj) {
-                        //if (!(obj[prop] instanceof Function))
-                        //    throw new Error('invalid argument: helper methods {functionName: Function}');
                         code.push(prop);
                         code.push(recursive ? ': ' : ' = ');
                         if (typeof obj[prop] != 'object')
@@ -328,10 +326,12 @@ SmartJs.Components = {
                 }
                 return code;
             },
-            _validateAndFallback: function (args) {
+            _checkFallback: function (args) {
+                if (this._disposed)
+                    throw new Error('worker disposed (terminated)');
                 if (!this._worker) {
                     this._onExecuted.dispatchEvent({ result: this._workerMethod.apply(this._scope, args), async: false });
-                    return true; //this._workerMethod.apply(this._scope, arguments);    //TODO dispatch event
+                    return true;
                 }
 
                 if (this._busy)
@@ -341,37 +341,37 @@ SmartJs.Components = {
             },
             execute: function (/*arguments*/) {
                 var args = [].slice.call(arguments);
-                if (!this._validateAndFallback(args))
+                if (!this._checkFallback(args))
                     this._worker.postMessage({ arguments: args, buffer: false });    //post as argument array
             },
-            executeImageData: function (/*arguments*/) {
+            executeOnImageData: function (/*arguments*/) {    //1st has to be imageData
                 var args = [].slice.call(arguments);
                 if (args.length == 0 || !(args[0] instanceof ImageData))
                     throw new Error('invalid 1st argument: imageData');
-                if (!this._validateAndFallback(args))
+                if (!this._checkFallback(args))
                     this._worker.postMessage({ arguments: args, buffer: true }, [args[0].data.buffer]);
             },
             _onMessageHandler: function (e) {
                 this._busy = false;
-                this._onExecuted.dispatchEvent({ result: e.data, async: true }); //TODO
+                this._onExecuted.dispatchEvent({ result: e.data, async: true });
             },
             _onErrorHandler: function (e) {
                 this._busy = false;
-                this._onError.dispatchEvent({ error: e }); //TODO
+                this._onError.dispatchEvent({ message: e.message });
             },
             _onMessageErrorHandler: function (e) {
                 this._busy = false;
-                this._onError.dispatchEvent({ error: e }); //TODO
+                this._onError.dispatchEvent({ message: e.message });
             },
-            terminate: function () {
-                if (this._worker)
-                    this._worker.terminate();
-            },
+            //terminate: function () {
+            //    if (this._worker)
+            //        this._worker.terminate();
+            //    this._busy = false;
+            //},
             /*override*/
             dispose: function () {
                 if (this._worker) {
                     this._worker.terminate();
-
                     this._removeDomListener(this._worker, 'message', this._onMessageListener);
                     this._removeDomListener(this._worker, 'error', this._onErrorListener);
                     this._removeDomListener(this._worker, 'messageerror', this._onMessageErrorListener);

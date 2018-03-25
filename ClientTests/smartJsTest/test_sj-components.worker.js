@@ -53,7 +53,7 @@ QUnit.test("SmartJs.Components.WebWorker", function (assert) {
     assert.throws(function () { worker = new SmartJs.Components.WebWorker(1); }, Error, "ERROR: wrong scope");
     assert.throws(function () { worker = new SmartJs.Components.WebWorker(testInstance, 1); }, Error, "ERROR: wrong worker method");
     assert.throws(function () { worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor, 1); }, Error, "ERROR: helper methods object");
-    assert.throws(function () { worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor, { a: 1 }); }, Error, "ERROR: helper method found");
+    assert.throws(function () { worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor, function () { }); }, Error, "ERROR: helper method found");
 
     //create worker including helper methods to cover complete cntr
     worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor, { ceil: testInstance.floor });
@@ -66,6 +66,10 @@ QUnit.test("SmartJs.Components.WebWorker", function (assert) {
     assert.equal(worker._worker, undefined, "internal worker not initialised on Error");
     worker.dispose();
     assert.ok(worker._disposed, "dispose: using fallback");
+    assert.throws(function () { worker.execute(); }, Error, "ERROR: calling execute() on disposed worker");
+
+    //recreate on complex objects
+    worker = new SmartJs.Components.WebWorker(testInstance, testInstance.floor, { bool: true, string: "string", fnc: testInstance.floor, number: 34, obj: { array: [1, "2", null], number: 45 } });
 
     URL.createObjectURL = store_url;    //restore
 });
@@ -77,9 +81,10 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     var done2 = assert.async();
     var done3 = assert.async();
     var done4 = assert.async();
+    var done5 = assert.async();
 
     //test class used in the test cases below
-    var ns1 = { ns2: "2", ns3: { number: 4, fnc: function (a, b) { return a * b; } } };
+    var ns1 = { ns2: "2", ns3: { array: [1, "2", null, 4], fnc: function (a, b) { return a * b; } } };
     var TestClass = (function () {
         function TestClass(value) {
             this._value = value;
@@ -99,12 +104,15 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
                 return this.floor(value1) * this.ceil(value2);
             },
             objectTest: function () {
-                return ns1.ns3.fnc(parseInt(ns1.ns2), ns1.ns3.number);
+                return ns1.ns3.fnc(parseInt(ns1.ns2), ns1.ns3.array[3]);
             },
             longRunningTask: function (value1, value2) {   //delayed on purpose
                 for (var i = 0, l = 20000000; i < l; i++)
                     this.floor(value1) * this.ceil(value2)
                 return this.floor(value1) * this.ceil(value2);
+            },
+            throwError: function () {
+                throw new Error("custom error");
             },
         };
 
@@ -149,7 +157,7 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     //long running test
     var worker4 = new SmartJs.Components.WebWorker(testInstance, testInstance.longRunningTask, { floor: testInstance.floor, ceil: testInstance.ceil });
     var onExecutedHandler4 = function (e) {
-        assert.equal(e.result, 25, "scope + method + helpers: simple test");
+        assert.equal(e.result, 25, "scope + method + helpers: long running test");
         assert.notOk(worker4.isBusy, "isBusy set to false after processing completed");
         done4();
     }
@@ -159,8 +167,15 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     assert.ok(worker4.isBusy, "isBusy set to true if currently processing");
     assert.throws(function () { worker4.execute(5.98765, 4.001); }, Error, "ERROR: try to call worker again while it is busy");
 
+    //test: error
+    var worker5 = new SmartJs.Components.WebWorker(testInstance, testInstance.throwError);
 
-    assert.ok(false, "TODO");
+    var onErrorHandler5 = function (e) {
+        assert.ok(true, "ERROR: error event thrown");
+        done5();
+    }
+    worker5.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler5, this));
+    worker5.execute();
 
 });
 
@@ -168,6 +183,7 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
 QUnit.test("SmartJs.Components.WebWorker: synchronous (using fallback)", function (assert) {
 
     //test class used in the test cases below
+    var ns1 = { ns2: "2", ns3: { array: [1, "2", null, 4], fnc: function (a, b) { return a * b; } } };
     var TestClass = (function () {
         function TestClass(value) {
             this._value = value;
@@ -186,10 +202,16 @@ QUnit.test("SmartJs.Components.WebWorker: synchronous (using fallback)", functio
             mult: function (value1, value2) {
                 return this.floor(value1) * this.ceil(value2);
             },
+            objectTest: function () {
+                return ns1.ns3.fnc(parseInt(ns1.ns2), ns1.ns3.array[3]);
+            },
             longRunningTask: function (value1, value2) {   //delayed on purpose
                 for (var i = 0, l = 20000000; i < l; i++)
                     this.floor(value1) * this.ceil(value2)
                 return this.floor(value1) * this.ceil(value2);
+            },
+            throwError: function () {
+                throw new Error("custom error");
             },
         };
 
@@ -225,18 +247,28 @@ QUnit.test("SmartJs.Components.WebWorker: synchronous (using fallback)", functio
     worker2.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler2, this));
     worker2.execute(5.98765, 4.001);
 
-    //long running test
-    var worker3 = new SmartJs.Components.WebWorker(testInstance, testInstance.longRunningTask, { floor: testInstance.floor, ceil: testInstance.ceil });
+    //test: complex object
+    var worker3 = new SmartJs.Components.WebWorker(testInstance, testInstance.objectTest, { ns1: ns1 });
     worker3._worker = undefined; //override internal worker to force fallback execution
 
     var onExecutedHandler3 = function (e) {
-        assert.equal(e.result, 25, "scope + method + helpers: simple test");
-        assert.notOk(worker3.isBusy, "isBusy set to false after processing completed");
+        assert.equal(e.result, 8, "scope + method + helpers: complex test");
     }
     worker3.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler3, this));
-    worker3.execute(5.98765, 4.001);
+    worker3.execute();
 
-    assert.notOk(worker3.isBusy, "isBusy set to false if synchronous processing");
+    //long running test
+    var worker4 = new SmartJs.Components.WebWorker(testInstance, testInstance.longRunningTask, { floor: testInstance.floor, ceil: testInstance.ceil });
+    worker4._worker = undefined; //override internal worker to force fallback execution
+
+    var onExecutedHandler4 = function (e) {
+        assert.equal(e.result, 25, "scope + method + helpers: simple test");
+        assert.notOk(worker4.isBusy, "isBusy set to false after processing completed");
+    }
+    worker4.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler4, this));
+    worker4.execute(5.98765, 4.001);
+
+    assert.notOk(worker4.isBusy, "isBusy set to false if synchronous processing");
 
 
     assert.ok(false, "TODO");
