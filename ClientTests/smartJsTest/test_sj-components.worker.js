@@ -82,6 +82,7 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     var done3 = assert.async();
     var done4 = assert.async();
     var done5 = assert.async();
+    var done6 = assert.async();
 
     //test class used in the test cases below
     var ns1 = { ns2: "2", ns3: { array: [1, "2", null, 4], fnc: function (a, b) { return a * b; } } };
@@ -177,6 +178,42 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     worker5.onError.addEventListener(new SmartJs.Event.EventListener(onErrorHandler5, this));
     worker5.execute();
 
+    //image data tests
+    var dom = document.getElementById("qunit-fixture");
+    var canvas = document.createElement("canvas");
+    dom.appendChild(canvas);
+
+    var ctx = canvas.getContext("2d");
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var filters = {
+        RED: 1,
+    };
+    var filter = {
+        apply: function (imageData, filter) {
+            switch (filter) {
+                case filters.RED:
+                    var data = imageData.data;
+                    for (var i = 0, l = data.length; i < l; i += 4)
+                        data[i] = 255;
+                    return imageData;
+                    break;
+                default:
+                    throw new Error("filter not found");
+            }
+        },
+    };
+    var worker6 = new SmartJs.Components.WebWorker(filter, filter.apply, { filters: filters });
+    var onExecutedHandler6 = function (e) {
+        assert.equal(e.result.data[12], 255, "pixels changed to red");
+        dom.removeChild(canvas);
+        done6();
+    }
+    worker6.onExecuted.addEventListener(new SmartJs.Event.EventListener(onExecutedHandler6, this));
+    assert.throws(function () { worker6.executeOnImageData([], filters.RED); }, Error, "ERROR: imageData violation");
+    assert.throws(function () { worker6.executeOnImageData(true, imageData, filters.RED); }, Error, "ERROR: imageData 1st argument violation");
+
+    worker6.executeOnImageData(imageData, filters.RED);
+
 });
 
 
@@ -269,9 +306,6 @@ QUnit.test("SmartJs.Components.WebWorker: synchronous (using fallback)", functio
     worker4.execute(5.98765, 4.001);
 
     assert.notOk(worker4.isBusy, "isBusy set to false if synchronous processing");
-
-
-    assert.ok(false, "TODO");
 
 });
 
