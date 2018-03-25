@@ -148,12 +148,12 @@ PocketCode.merge({
 
                     //in development:
                     case 'WhenCollisionBrick':
+
+                    //case 'SetRotationSpeedBrick':
+                    //case 'RotationSpeedLeftBrick':  //is removed
+                    //case 'RotationSpeedRightBrick': //is removed
                     case 'SetPhysicsObjectTypeBrick':
                     case 'SetVelocityBrick':
-
-                        //case 'SetRotationSpeedBrick':
-                    case 'RotationSpeedLeftBrick':  //is removed
-                    case 'RotationSpeedRightBrick': //is removed
                     case 'SetGravityBrick':
                     case 'SetMassBrick':
                     case 'SetBounceFactorBrick':
@@ -161,7 +161,7 @@ PocketCode.merge({
 
                     case 'SelectCameraBrick':
                     case 'CameraBrick':
-                        //bubbles
+                    //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
                     case 'ThinkBrick':
