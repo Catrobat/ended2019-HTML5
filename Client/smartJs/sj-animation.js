@@ -4,20 +4,6 @@
 /// <reference path="sj-components.js" />
 'use strict';
 
-//if (!window.requestAnimationFrame) {
-//    window.requestAnimationFrame = function () {
-//        return window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-//                function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
-//    }();
-//    Object.defineProperty(window, 'requestAnimationFrame', { enumerable: false });
-
-//    window.cancelAnimationFrame = function () {
-//        return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
-//                function (id) { window.clearTimeout(id) };
-//    }();
-//    Object.defineProperty(window, 'cancelAnimationFrame', { enumerable: false });
-//}
-
 SmartJs._AnimationFrame = (function () {
 
     function AnimationFrame() {
@@ -30,7 +16,7 @@ SmartJs._AnimationFrame = (function () {
             return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
                     function (id) { window.clearTimeout(id) };
         }();
-        
+
         this._frameId = undefined;
 
         //event (private)
@@ -39,29 +25,29 @@ SmartJs._AnimationFrame = (function () {
 
     //methods
     AnimationFrame.prototype.merge({
-        _run: function(){
+        _run: function () {
             this._onUpdate.dispatchEvent();
-            this._frameId = this._request(this._run.bind(this));
+            this._frameId = this._request.call(window, this._run.bind(this));
         },
         addEventListener: function (listener) {
             var e = this._onUpdate,
                 start = !e.listenersAttached;
             e.addEventListener(listener);
             if (start)
-                this._frameId = this._request(this._run.bind(this));
+                this._frameId = this._request.call(window, this._run.bind(this));
         },
         removeEventListener: function (listener) {
             var e = this._onUpdate
             e.removeEventListener(listener);
             if (!e.listenersAttached) {
-                this._cancel(this._frameId);
+                this._cancel.call(window, this._frameId);
                 this._frameId = undefined;
             }
         },
         /* override */
-        //dispose: function () {
-        //    //static class: cannot be disposed
-        //},
+        dispose: function () {
+            //static class: cannot be disposed
+        },
     });
 
     return AnimationFrame;
@@ -110,7 +96,7 @@ SmartJs.Animation = {
             this._render = render;  //the rendering function - SmartJs.Animation.TYPE
 
             this._timer = new SmartJs.Components.Timer(this._animationTime);
-            this._frameId = undefined;
+            this._afl = new SmartJs.Event.EventListener(this._executeAnimation, this);
 
             //events
             this._onUpdate = new SmartJs.Event.Event(this);
@@ -147,14 +133,17 @@ SmartJs.Animation = {
                 this._onUpdate.dispatchEvent({ value: value });
             },
             _executeAnimation: function () {
+                if (this._paused)
+                    return;
+
                 var remaining = this._timer.remainingTime;
                 var progress = Math.min(1.0, (this._animationTime - remaining) / this._animationTime);  //timers are not exact
                 this._updateValue(this._render(progress));
 
-                if (progress == 1.0)
+                if (progress == 1.0) {
                     this._onExecuted.dispatchEvent(this._callbackArgs);
-                else if (!this._paused)
-                    this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
+                    this.stop();
+                }
             },
             start: function (callbackArgs) {
                 if (callbackArgs) {
@@ -163,21 +152,19 @@ SmartJs.Animation = {
                     this._callbackArgs = callbackArgs;  //introduced to enable threaded animation identification
                 }
                 this._timer.start();
-                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
+                SmartJs.AnimationFrame.addEventListener(this._afl);
             },
             pause: function () {
                 this._timer.pause();
-                window.cancelAnimationFrame(this._frameId);
                 this._paused = true;
             },
             resume: function () {
                 this._timer.resume();
                 this._paused = false;
-                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
             },
             stop: function () {
                 this._timer.stop();
-                window.cancelAnimationFrame(this._frameId);
+                SmartJs.AnimationFrame.removeEventListener(this._afl);
                 this._paused = false;
             },
             dispose: function () {
@@ -251,7 +238,7 @@ SmartJs.Animation.Rotation = (function () {
         this._rotationSpeed = 0.0;
 
         this._timer = new SmartJs.Components.Stopwatch();
-        this._frameId = undefined;
+        this._afl = new SmartJs.Event.EventListener(this._executeAnimation, this);
         this._paused = false;
 
         //events
@@ -311,7 +298,6 @@ SmartJs.Animation.Rotation = (function () {
             if (this._paused)
                 return;
             this._onUpdate.dispatchEvent({ value: this.angle });
-            this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
         },
         toObject: function () { //alows exact cloning
             return {
@@ -328,8 +314,7 @@ SmartJs.Animation.Rotation = (function () {
         },
         _start: function (startTimestamp) {   //or restart
             this._timer.start(startTimestamp);
-            if (!this._frameId)
-                this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
+            SmartJs.AnimationFrame.addEventListener(this._afl);
             this._paused = false;
         },
         pause: function () {
@@ -340,10 +325,9 @@ SmartJs.Animation.Rotation = (function () {
         resume: function () {
             this._timer.resume();
             this._paused = false;
-            this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
         },
         stop: function () {
-            window.cancelAnimationFrame(this._frameId);
+            SmartJs.AnimationFrame.removeEventListener(this._afl);
             this._timer.stop();
             this._paused = false;
         },
