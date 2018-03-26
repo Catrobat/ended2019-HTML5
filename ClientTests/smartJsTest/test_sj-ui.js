@@ -13,7 +13,7 @@ QUnit.test("SmartJs.Ui.Window", function (assert) {
     assert.throws(function () { var window = new SmartJs.Ui.Window(); }, Error, "ERROR: static, no class definition/constructor");
     assert.throws(function () { SmartJs.Ui.Window instanceof SmartJs.Ui.Window && SmartJs.Ui.Window instanceof SmartJs.Core.EventTarget }, Error, "ERROR: static class: no instanceof allowed");
 
-    var win = SmartJs.Ui.Window;
+    var win = new SmartJs.Ui._Window(); //recreate the static class to avoid side effects in test framework
 
     //disposing without efect on the object
     var visible = win._visible;

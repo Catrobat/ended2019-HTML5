@@ -9,6 +9,39 @@
 QUnit.module("sj-animation.js");
 
 QUnit.test("SmartJs.AnimationFrame", function (assert) {
+
+    assert.throws(function () { var frame = new SmartJs.AnimationFrame(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { SmartJs.AnimationFrame instanceof SmartJs.AnimationFrame }, Error, "ERROR: static class: no instanceof allowed");
+
+    var frame = new SmartJs._AnimationFrame(); //recreate the static class to avoid side effects in test framework
+
+    //disposing without efect on the object
+    //var visible = frame._visible;
+    //frame.dispose()
+    //assert.ok(frame._visible != undefined && frame._visible === visible, "dispose: no effect");
+
+    //assert.ok(frame instanceof SmartJs.Core.EventTarget, "instance + inheritance check"); //frame instanceof SmartJs.Ui.framedow && 
+    //assert.ok(frame.objClassName === "framedow", "objClassName check");
+
+    //assert.ok(frame.onResize instanceof SmartJs.Event.Event, "onResize event accessor");
+    //assert.ok(frame.onVisibilityChange instanceof SmartJs.Event.Event, "onVisibilityChange event accessor");
+
+    //frame.title = "new framedow title";
+    //assert.equal(frame.title, "new framedow title", "title getter/setter");
+
+    //var handlerCalled = 0;
+    //var visHandler = function (e) {
+    //    handlerCalled = 1;
+    //};
+    //frame.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(visHandler, this));
+    //frame._visibilityChangeHandler({});   //simulate event
+    //assert.equal(handlerCalled, 1, "visibility change dispatched");
+    //assert.equal(frame.visible, true, "check visibility accessor");
+
+    //assert.ok(frame.height > 0, "height accessor");
+    //assert.ok(frame.width > 0, "width accessor");
+
+
     assert.ok(false, "TODO");
 });
 

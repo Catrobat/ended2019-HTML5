@@ -39,22 +39,24 @@ SmartJs._AnimationFrame = (function () {
 
     //methods
     AnimationFrame.prototype.merge({
-        _start: function(){
+        _run: function(){
             this._onUpdate.dispatchEvent();
-            this._frameId = this._request(this._start.bind(this));
+            this._frameId = this._request(this._run.bind(this));
         },
         addEventListener: function (listener) {
             var e = this._onUpdate,
                 start = !e.listenersAttached;
             e.addEventListener(listener);
             if (start)
-                this._frameId = this._request(this._start.bind(this));
+                this._frameId = this._request(this._run.bind(this));
         },
         removeEventListener: function (listener) {
             var e = this._onUpdate
             e.removeEventListener(listener);
-            if (!e.listenersAttached)
+            if (!e.listenersAttached) {
                 this._cancel(this._frameId);
+                this._frameId = undefined;
+            }
         },
         /* override */
         //dispose: function () {

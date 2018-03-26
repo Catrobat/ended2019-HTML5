@@ -595,25 +595,3 @@ SmartJs.Components.merge({
     })(),
 
 });
-
-/*
- * 
- * example: https://jsbin.com/civemiruho/edit?js,console
- * 
-var a = function() {return 2;}
-function run(fn) {
-  console.log(a.toString());
-  return new Worker(URL.createObjectURL(new Blob(['onmessage=',fn,'; var a=',a.toString(),';'])), { type: "text/javascript" });
-}
-
-const worker = run(function(d) {
-  
-  setTimeout(postMessage(JSON.stringify(d.data) + ', ' + this.a()), 10000)
-  //postMessage(JSON.stringify(this));
-  
-  //this.close();
-});
-
-worker.onmessage = (event) => console.log(event.data);
-setTimeout(worker.postMessage({a:1}), 5000);
- */

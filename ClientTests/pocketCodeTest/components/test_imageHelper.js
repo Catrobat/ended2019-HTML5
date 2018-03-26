@@ -35,13 +35,15 @@ QUnit.test("ImageFilter: color", function (assert) {
         3, 3, 2, 15
     ];
 
-    var originalHsvToRgb = PocketCode.ImageHelper.hsvToRgb;
-    PocketCode.ImageHelper.hsvToRgb = function(h, s, v){
+    var testImageHelper = new PocketCode._ImageHelper();    //recreate the static class to avoid side effects in test framework
+
+    var originalHsvToRgb = testImageHelper.hsvToRgb;
+    testImageHelper.hsvToRgb = function (h, s, v) {
         return {r: h, g: s, b: v};
     };
 
-    var originalRgbToHsv = PocketCode.ImageHelper.rgbToHsv;
-    PocketCode.ImageHelper.rgbToHsv = function(r, g, b){
+    var originalRgbToHsv = testImageHelper.rgbToHsv;
+    testImageHelper.rgbToHsv = function (r, g, b) {
         return {h: r, s: g, v: b};
     };
 
@@ -85,8 +87,8 @@ QUnit.test("ImageFilter: color", function (assert) {
     PocketCode.ImageFilter.color(modifiedData, colorShift);
     assert.ok(checkData(), "Color shifted correctly large value");
 
-    PocketCode.ImageHelper.hsvToRgb = originalHsvToRgb;
-    PocketCode.ImageHelper.rgbToHsv = originalRgbToHsv;
+    testImageHelper.hsvToRgb = originalHsvToRgb;
+    testImageHelper.rgbToHsv = originalRgbToHsv;
 });
 
 QUnit.test("ImageFilter: brightness", function (assert) {
@@ -136,7 +138,7 @@ QUnit.test("ImageHelper", function (assert) {
     };
 
     var img1, img2, img3, img4, img5, img6, img7, img8, img9, img11,
-        ih = PocketCode.ImageHelper;
+        ih = new PocketCode._ImageHelper(); //recreate the static class to avoid side effects in test framework
 
     var imgLoadCounter = 0;
     var imgLoadHandler = function () {

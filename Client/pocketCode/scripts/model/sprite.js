@@ -600,7 +600,7 @@ PocketCode.Model.Sprite = (function () {
                 new_d = e.value,
                 new_d = new_d > 180.0 ? new_d - 360.0 : new_d,
                 props = {};
-                this._direction = new_d;
+            this._direction = new_d;
 
             if (this._rotationStyle == PocketCode.RotationStyle.DO_NOT_ROTATE)  //rotation == 0.0
                 return false;
@@ -1328,7 +1328,7 @@ PocketCode.Model.merge({
             this.initLooks();
 
             //rotation
-            this._rotation.setObject(definition.rotation);
+            this._rotation.setObject(definition.rotation || {});
             delete definition.rotation;
 
             //sounds
