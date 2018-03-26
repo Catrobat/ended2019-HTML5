@@ -208,7 +208,7 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
 
     function initial() {
         var timestamp = sw.startTimestamp;
-        assert.ok(timestamp > 0 && timestamp <= Date.now() - 25, "startTimestamp accessor");
+        assert.ok(timestamp > 0 && timestamp < Date.now() - 22, "startTimestamp accessor");
         sw.resume();
         assert.equal(sw.startTimestamp, timestamp, "resume without effect if not paused");
         sw.reset();

@@ -213,4 +213,5 @@ QUnit.test("SmartJs.Animation.Rotation", function (assert) {
 
 
     done1();
+    assert.ok(false, "TODO");
 });

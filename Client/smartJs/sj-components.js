@@ -245,22 +245,37 @@ SmartJs.Components = {
             this._busy = false;
 
             //create web worker internal code
-            var internalCode = ['onmessage =', this._internalOnMessage, '; var workerMethod =', this._workerMethod, ', '];
+            var internalCode = ['onmessage = ', this._internalOnMessage, '; var workerMethod = ', this._workerMethod, ', '];
             internalCode = internalCode.concat(this._parseLookupObject(lookupObject));
             internalCode.pop();    //remove last ', '
             internalCode.push(';');
 
             //create inline worker
             try {   //supported
-                var blobURL = URL.createObjectURL(new Blob(internalCode), { type: "text/javascript" });
-                this._worker = new Worker(blobURL);
-                URL.revokeObjectURL(blobURL);
+                var blob;
+                try {
+                    blob = new Blob(internalCode);
+                }
+                catch (e) {
+                    //older browsers like IE11
+                    if (!window.BlobBuilder)
+                        window.BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
+                    if (window.BlobBuilder) {
+                        var bb = new BlobBuilder();
+                        bb.append(internalCode.join(''));
+                        blob = bb.getBlob();
+                    }
+                }
+                this._blobURL = URL.createObjectURL(blob, { type: "text/javascript" });
+                this._worker = new Worker(this._blobURL);
+                //URL.revokeObjectURL(this._blobURL); //IE needs the URL to successfully run the worker
 
                 this._onMessageListener = this._addDomListener(this._worker, 'message', this._onMessageHandler);
                 this._onErrorListener = this._addDomListener(this._worker, 'error', this._onErrorHandler);
                 this._onMessageErrorListener = this._addDomListener(this._worker, 'messageerror', this._onMessageErrorHandler);
             }
             catch (e) { //not supported
+                URL.revokeObjectURL(this._blobURL);
                 this._worker = undefined;
             }
 
@@ -299,7 +314,6 @@ SmartJs.Components = {
                     this.postMessage(returnValue, [returnValue.data.buffer]);
                 else
                     this.postMessage(returnValue);
-                //this.close();
             },
             /*code above is injected to run inside the worker*/
 
@@ -368,6 +382,8 @@ SmartJs.Components = {
             /*override*/
             dispose: function () {
                 if (this._worker) {
+                    if (this._blobURL)
+                        URL.revokeObjectURL(this._blobURL);
                     this._worker.terminate();
                     this._removeDomListener(this._worker, 'message', this._onMessageListener);
                     this._removeDomListener(this._worker, 'error', this._onErrorListener);
