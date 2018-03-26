@@ -12,11 +12,6 @@
     width: 100%;
     height: 100%;
     position: relative;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    /*background-color: #003041;
-	background-color: #002D3E;*/
-    background-color: #04222C;
     user-select: none;
     cursor: default;
 }

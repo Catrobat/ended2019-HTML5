@@ -1107,6 +1107,7 @@ PocketCode.Web.resources = {
 		{ url: 'pocketCode/libs/iscroll/iscroll-5.3.1.custom.min.js', type: 'js' },
 
 		{ url: 'pocketCode/css/pocketCode.css', type: 'css' },
+		{ url: 'pocketCode/css/themes/default.css', type: 'css' },
 
 		{ url: 'pocketCode/scripts/core.js', type: 'js' },
 		{ url: 'pocketCode/scripts/ui.js', type: 'js' },
