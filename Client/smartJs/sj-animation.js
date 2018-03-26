@@ -141,8 +141,8 @@ SmartJs.Animation = {
                 this._updateValue(this._render(progress));
 
                 if (progress == 1.0) {
-                    this._onExecuted.dispatchEvent(this._callbackArgs);
                     this.stop();
+                    this._onExecuted.dispatchEvent(this._callbackArgs);
                 }
             },
             start: function (callbackArgs) {
