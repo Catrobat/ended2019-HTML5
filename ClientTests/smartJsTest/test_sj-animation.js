@@ -8,6 +8,11 @@
 
 QUnit.module("sj-animation.js");
 
+QUnit.test("SmartJs.AnimationFrame", function (assert) {
+    assert.ok(false, "TODO");
+});
+
+
 QUnit.test("SmartJs.Animation.Animation", function (assert) {
 
     var done1 = assert.async();
@@ -138,5 +143,40 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
 QUnit.test("SmartJs.Animation.Rotation", function (assert) {
 
-    assert.ok(false, "TODO")
+    var done1 = assert.async();
+    //var done2 = assert.async();
+
+    var r = new SmartJs.Animation.Rotation(90);
+    assert.ok(r instanceof SmartJs.Animation.Rotation && r instanceof SmartJs.Core.Component, "instance check");
+
+    assert.throws(function () { var r2 = new SmartJs.Animation.Rotation("a"); }, Error, "ERROR: simple argument check");
+    assert.ok(r.onUpdate instanceof SmartJs.Event.Event, "event accessor");
+
+    assert.equal(r.angle, 90, "angle accessor: not started");
+    var obj = r.toObject();
+    assert.ok(obj.startAngle == 90 && obj.startTimestamp == undefined && obj.rotationSpeed == 0.0, "toObject: not started");
+
+    r.dispose();
+    assert.ok(r._disposed, "disposed");
+    r = new SmartJs.Animation.Rotation(10.0);
+
+    var updateCounter = 0,
+        lastUpdate,
+        onUpdateHandler = function (e) {
+            updateCounter++;
+            lastUpdate = e;
+        };
+
+    var r = new SmartJs.Animation.Rotation(370);
+    r.onUpdate.addEventListener(new SmartJs.Event.EventListener(onUpdateHandler, this));
+
+    assert.equal(r.angle, 10, "angle returns values bewteen 0..360");
+    assert.throws(function () { r.angle = "1"; }, Error, "ERRROR: invalid angle setter");
+    r.angle = -20.0;
+    assert.equal(lastUpdate.value, 340, "angle setter: update triggered (0..360)");
+    assert.equal(r.angle, 340, "angle getter (0..360)");
+
+
+
+    done1();
 });

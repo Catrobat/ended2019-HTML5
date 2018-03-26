@@ -165,10 +165,8 @@ SmartJs.Components = {
     Stopwatch: (function () {
         Stopwatch.extends(SmartJs.Core.Component);
 
-        function Stopwatch(/*startTimestamp*/) {
+        function Stopwatch() {
             this._init();
-            //if(startTimestamp)
-            //this._startDateTime = startTimestamp;
         }
 
         //accessors
@@ -179,9 +177,9 @@ SmartJs.Components = {
                     if (!this._startDateTime)
                         return ms;
                     if (this._pausedDateTime)   //currently paused
-                        ms = (this._pausedDateTime - this._startDateTime) - this._pausedTimespan;
+                        ms = (this._pausedDateTime - this._startDateTime);
                     else
-                        ms = (Date.now() - this._startDateTime) - this._pausedTimespan;
+                        ms = (Date.now() - this._startDateTime);
                     return ms / 1000.0;
                 },
             },
@@ -197,7 +195,6 @@ SmartJs.Components = {
             _init: function () {
                 this._startDateTime = undefined;
                 this._pausedDateTime = undefined;   //only set if currently paused
-                this._pausedTimespan = 0.0;
             },
             start: function (timestamp) {
                 this._init();
@@ -218,7 +215,7 @@ SmartJs.Components = {
             resume: function () {
                 if (!this._pausedDateTime)
                     return;
-                this._pausedTimespan += Date.now() - this._pausedDateTime;
+                this._startDateTime += Date.now() - this._pausedDateTime;
                 this._pausedDateTime = undefined;
             },
             stop: function () {

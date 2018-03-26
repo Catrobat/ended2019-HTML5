@@ -4,19 +4,69 @@
 /// <reference path="sj-components.js" />
 'use strict';
 
-if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = function () {
-        return window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-                function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
-    }();
-    Object.defineProperty(window, 'requestAnimationFrame', { enumerable: false });
+//if (!window.requestAnimationFrame) {
+//    window.requestAnimationFrame = function () {
+//        return window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
+//                function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+//    }();
+//    Object.defineProperty(window, 'requestAnimationFrame', { enumerable: false });
 
-    window.cancelAnimationFrame = function () {
-        return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
-                function (id) { window.clearTimeout(id) };
-    }();
-    Object.defineProperty(window, 'cancelAnimationFrame', { enumerable: false });
-}
+//    window.cancelAnimationFrame = function () {
+//        return window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
+//                function (id) { window.clearTimeout(id) };
+//    }();
+//    Object.defineProperty(window, 'cancelAnimationFrame', { enumerable: false });
+//}
+
+SmartJs._AnimationFrame = (function () {
+
+    function AnimationFrame() {
+        //helpers
+        this._request = function () {
+            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
+                    function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+        }();
+        this._cancel = function () {
+            return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
+                    function (id) { window.clearTimeout(id) };
+        }();
+        
+        this._frameId = undefined;
+
+        //event (private)
+        this._onUpdate = new SmartJs.Event.Event(this);
+    }
+
+    //methods
+    AnimationFrame.prototype.merge({
+        _start: function(){
+            this._onUpdate.dispatchEvent();
+            this._frameId = this._request(this._start.bind(this));
+        },
+        addEventListener: function (listener) {
+            var e = this._onUpdate,
+                start = !e.listenersAttached;
+            e.addEventListener(listener);
+            if (start)
+                this._frameId = this._request(this._start.bind(this));
+        },
+        removeEventListener: function (listener) {
+            var e = this._onUpdate
+            e.removeEventListener(listener);
+            if (!e.listenersAttached)
+                this._cancel(this._frameId);
+        },
+        /* override */
+        //dispose: function () {
+        //    //static class: cannot be disposed
+        //},
+    });
+
+    return AnimationFrame;
+})();
+
+//static class: constructor override (keeping code coverage enabled)
+SmartJs.AnimationFrame = new SmartJs._AnimationFrame();
 
 
 SmartJs.Animation = {
@@ -145,6 +195,7 @@ SmartJs.Animation.Animation2D = (function () {
     //ctr
     function Animation2D(start, end, time, /* function */ render/*, listener, startOnInit, callbackArgs*/) {
         SmartJs.Animation.Animation.call(this, 0, 0, time);//, render/*, listener, startOnInit, callbackArgs*/);
+
         if (isNaN(start.x) || isNaN(start.y) || isNaN(end.x) || isNaN(end.y))
             throw new Error('invalid argument: start and/or end: expected type: object { x: [number], y: [number] }');
 
@@ -192,16 +243,13 @@ SmartJs.Animation.Rotation = (function () {
 
     //ctr
     function Rotation(angle) {
-
-        if (angle && isNaN(angle))
+        if (angle && typeof angle != 'number')
             throw new Error('invalid argument angle: expected type number');
-        //this._prevAngle = this._startAngle = angle || 0.0;
+        this._startAngle = angle;
         this._rotationSpeed = 0.0;
 
         this._timer = new SmartJs.Components.Stopwatch();
         this._frameId = undefined;
-
-        //this._callbackArgs = {};
         this._paused = false;
 
         //events
@@ -218,7 +266,6 @@ SmartJs.Animation.Rotation = (function () {
     //properties
     Object.defineProperties(Rotation.prototype, {
         angle: {
-            //get: function () { return this._startAngle; },
             get: function () {
                 var angle = (this._startAngle + this._timer.value * this._rotationSpeed) % 360.0;
                 //modulo for negative numbers will return a negative number in js
@@ -227,46 +274,41 @@ SmartJs.Animation.Rotation = (function () {
                 return angle;
             },
             set: function (angle) {
-                if (isNaN(angle))
+                if (typeof angle != 'number')
                     throw new Error('invalid argument angle: expected type number');
-                //this._prevAngle = this.angle;
+
                 this._startAngle = angle;
                 this._timer.reset();
-                if (!this._timer.startTimestamp)// && this.angle != this._prevAngle) //not started and changed
-                    this._onUpdate.dispatchEvent({ value: this.angle });//, previous: this._prevAngle });
+                if (!this._timer.startTimestamp)
+                    this._onUpdate.dispatchEvent({ value: this.angle });
             },
         },
         rotationSpeed: {    //angle per second
+            get: function () {
+                return this._rotationSpeed;
+            },
             set: function (value) {
-                if (isNaN(value))
+                if (typeof value != 'number')
                     throw new Error('invalid argument rotationSpeed: expected type number');
                 if (value == this._rotationSpeed)
                     return;
-                this._startAngle = this.angle;
+                this._startAngle = this.angle;  //new start angle due to change
                 this._rotationSpeed = value;
                 if (value === 0.0) {
                     this.stop();
-                    this._onUpdate.dispatchEvent({ value: this.angle });//, previous: this._prevAngle });
+                    this._onUpdate.dispatchEvent({ value: this.angle });
                 }
                 else if (!this._timer.startTimestamp) //not started
                     this._start();
             },
         },
-        //_currentAngle: {
-        //    get: function () {
-        //        return (this._startAngle + this._timer.value * this._rotationSpeed) % 360.0;
-        //        //modulo for negative numbers will return a negative number in js
-        //    },
-        //},
     });
 
     Rotation.prototype.merge({
         _executeAnimation: function () {
             if (this._paused)
                 return;
-            //var previous = this._prevAngle;
-            //this._prevAngle = this.angle;
-            this._onUpdate.dispatchEvent({ value: this.angle });//, previous: previous });
+            this._onUpdate.dispatchEvent({ value: this.angle });
             this._frameId = window.requestAnimationFrame(this._executeAnimation.bind(this));
         },
         toObject: function () { //alows exact cloning

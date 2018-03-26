@@ -194,7 +194,6 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
     var done = assert.async();
 
     var sw = new SmartJs.Components.Stopwatch();
-    assert.equal(sw._pausedTimespan, 0.0, "ctr parameters set");
     assert.ok(sw instanceof SmartJs.Components.Stopwatch && sw instanceof SmartJs.Core.Component, "instance check");
     assert.ok(sw.objClassName === "Stopwatch", "objClassName check");
 
@@ -205,7 +204,18 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
     assert.equal(sw.value, 0, "initial: starts with 0");
 
     sw.start();
-    window.setTimeout(started, 625);
+    window.setTimeout(initial, 25);
+
+    function initial() {
+        var timestamp = sw.startTimestamp;
+        assert.ok(timestamp > 0 && timestamp <= Date.now() - 25, "startTimestamp accessor");
+        sw.resume();
+        assert.equal(sw.startTimestamp, timestamp, "resume without effect if not paused");
+        sw.reset();
+        assert.ok(sw.startTimestamp > timestamp, "reset() on running stopwatch");
+
+        window.setTimeout(started, 5);
+    }
 
     var pauseTimespan;
     function started() {
@@ -223,6 +233,8 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
     function paused() {
         var delay = sw.value;
         assert.equal(delay, pauseTimespan, "not changed during pause");
+        sw.reset();
+        assert.equal(sw.value, 0, "reset() during pause");
         sw.resume();
         window.setTimeout(resumed, 18);
     };
@@ -239,17 +251,15 @@ QUnit.test("SmartJs.Components.Stopwatch", function (assert) {
         var delay = sw.value;
         assert.equal(delay, pauseTimespan, "not changed during pause (2nd)");
         sw.stop();
-        assert.ok(sw._pausedTimespan == 0.0 && sw._startDateTime == undefined && sw._lastPausedDateTime == undefined, "reinit on stop");
+        assert.ok(sw._startDateTime == undefined && sw._lastPausedDateTime == undefined, "reinit on stop");
         sw.start();
         assert.ok(delay > sw.value && sw.value < 100.0, "reset after restart");
         sw.reset();
         assert.equal(sw.value, 0, "reset: starts with 0");
-        assert.ok(sw._startDateTime === undefined && sw._pausedDateTime === undefined && sw._pausedTimespan === 0.0, "reset: all internal properties set to init state");
+        assert.ok(sw.startTimestamp != undefined && sw._pausedDateTime === undefined, "reset(): when running");
 
         done();
     };
-
-    assert.ok(false, "TODO: more tests needed for reset() including reset started as well es paused timers");
 });
 
 
