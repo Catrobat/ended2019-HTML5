@@ -304,7 +304,7 @@ PocketCode.merge({
         return BrickFactory;
     })(),
 
-    FormulaParser: (function () {
+    _FormulaParser: (function () {
         function FormulaParser() {
             this._isStatic = false;
         }
@@ -1108,5 +1108,5 @@ PocketCode.merge({
 });
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.FormulaParser = new PocketCode.FormulaParser();
+PocketCode.FormulaParser = new PocketCode._FormulaParser();
 

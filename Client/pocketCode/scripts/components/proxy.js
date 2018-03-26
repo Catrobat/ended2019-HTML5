@@ -269,7 +269,7 @@ PocketCode.merge({
         return JsonpRequest;
     })(),
 
-    Proxy: (function () {
+    _Proxy: (function () {
         //each single request has its events, the proxy only maps this events to internal strong typed requests and triggers send()
 
         //ctr
@@ -370,4 +370,4 @@ PocketCode.merge({
 });
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.Proxy = new PocketCode.Proxy();
+PocketCode.Proxy = new PocketCode._Proxy();
