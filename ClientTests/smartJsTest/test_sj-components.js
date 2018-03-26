@@ -296,8 +296,8 @@ QUnit.test("SmartJs.Components.CookieAdapter", function (assert) {
     var adapter = new SmartJs.Components.CookieAdapter(25);
     assert.throws(function () { var a = new SmartJs.Components.CookieAdapter("25"); }, Error, "ERROR: invalid cntr argument");
 
-    var delay = Math.abs(adapter._expires - (new Date().getTime() + 1000 * 60 * 60 * 24 * 25));
-    assert.ok(delay < 10, "set individual expiration date");
+    var delay = Math.abs(Date.parse(adapter._expires) - (new Date().getTime() + 1000 * 60 * 60 * 24 * 25));
+    assert.ok(delay < 1000, "set individual expiration date");
     adapter.clear();    //clear cookie before running the tests
 
     assert.ok(adapter.onChange instanceof SmartJs.Event.Event, "event check");

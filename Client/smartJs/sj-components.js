@@ -522,9 +522,13 @@ SmartJs.Components.merge({
                 throw new Error('invalid argument: expected type: daysUntilExpire = number');
 
             daysUntilExpire || (daysUntilExpire = 365);  //default: in one year
-            this._expires = new Date().getTime() + 1000 * 60 * 60 * 24 * daysUntilExpire;
+            var date = new Date();
+            date.setTime(date.getTime() + (daysUntilExpire * 24 * 60 * 60 * 1000));
+            this._expires = date.toUTCString();
             this._supported = ('cookie' in document && (document.cookie.length > 0 ||
                               (document.cookie = 'test').indexOf.call(document.cookie, 'test') > -1)) && !!JSON;
+            if (this._supported)
+                this._deleteKey('test');
         }
 
         //methods
