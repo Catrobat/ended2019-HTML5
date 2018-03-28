@@ -233,43 +233,19 @@ PocketCode.merge({
                     if (loadingAlerts.deviceLockRequired)
                         alerts.push('msgDeviceLockScreen');
 
-                    if (loadingAlerts.invalidSoundFiles.length !== 0)
+                    if (loadingAlerts.invalidSoundFiles.length != 0)
                         warnings.push('lblUnsupportedSound');
-                    if (loadingAlerts.unsupportedBricks.length !== 0)
+                    if (loadingAlerts.unsupportedBricks.length != 0)
                         warnings.push('lblUnsupportedBricks');
                     warnings = warnings.concat(loadingAlerts.deviceUnsupportedFeatures);
-                    if(warnings.length > 0  || alerts.length >0 ) {
-                        var d = new PocketCode.Ui.ProjectLoadingAlertDialog(alerts, warnings);
-                        d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                        d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                            if(loadingAlerts.deviceBlockedFeatures){
-                                var blockedDialog = new PocketCode.Ui.BlockedFeaturesAlertDialog(loadingAlerts.deviceBlockedFeatures);
-                                blockedDialog.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                                    this._pages.PlayerPageController.enableView();
-                                    e.target.dispose();
-                                }, this));
-                                this._showDialog(blockedDialog, false);
-                            }
-                            e.target.dispose();
-                            if(!loadingAlerts.deviceBlockedFeatures){
-                                this._pages.PlayerPageController.enableView();
-                            }
 
-                        }, this));
-
-                        this._showDialog(d, false);
-                    }
-
-
-                     else if(loadingAlerts.deviceBlockedFeatures){
-                        var blockedDialog = new PocketCode.Ui.BlockedFeaturesAlertDialog(loadingAlerts.deviceBlockedFeatures);
-                        blockedDialog.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
-                            this._pages.PlayerPageController.enableView();
-                            e.target.dispose();
-                        }, this));
-                        this._showDialog(blockedDialog, false);
-                    }
-
+                    var d = new PocketCode.Ui.ProjectLoadingAlertDialog(alerts, warnings);
+                    d.onCancel.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
+                    d.onContinue.addEventListener(new SmartJs.Event.EventListener(function (e) {
+                        e.target.dispose();
+                        this._pages.PlayerPageController.enableView();
+                    }, this));
+                    this._showDialog(d, false);
                 },
                 _projectLoadingErrorHandler: function (e) {
                     this._loadingError = e;

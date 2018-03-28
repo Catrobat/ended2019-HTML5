@@ -37,13 +37,13 @@ PocketCode._I18nProvider = (function (propObject) {
             "msgInternetConnectionAvailable": "Please make sure you are connected to the internet.",
             "lblProjectLoadingErrorCaption": "Loading failed",
             "msgProjectLoadingError": "There was an error loading the project's resources.",
-            "msgBlockedWarningCaption":"Disabled features",
-            "msgBlockedWarning":"One or more features used in this program are disabled in your browser.",
-            "msgBlockedWarningContinue":"You can enable it and reload this site, or you can continue program execution without these features."
             //TODO: only add strings required if i18n strings fail to load at startup
 
             //new: add new loc strings here until they are included in crowdin
-        };  
+            //"msgBlockedWarningCaption": "Disabled features",
+            //"msgBlockedWarning": "One or more features used in this program are disabled in your browser.",
+            //"msgBlockedWarningContinue": "You can enable it and reload this site, or you can continue program execution without these features."
+        };
 
         this._onLanguageChange = new SmartJs.Event.Event(this);
         this._onDirectionChange = new SmartJs.Event.Event(this);
@@ -157,7 +157,7 @@ PocketCode._I18nProvider = (function (propObject) {
 
             return string;
         },
-        getTextDirection: function(string) {
+        getTextDirection: function (string) {
             return this._rtlRegExp.test(string) ? PocketCode.Ui.Direction.RTL : PocketCode.Ui.Direction.LTR;
         },
         /* override */

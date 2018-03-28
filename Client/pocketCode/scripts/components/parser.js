@@ -159,8 +159,6 @@ PocketCode.merge({
                     case 'SetBounceFactorBrick':
                     case 'SetFrictionBrick':
 
-                    case 'SelectCameraBrick':
-                    case 'CameraBrick':
                     //bubbles
                     case 'SayBrick':
                     case 'SayForBrick':
@@ -171,7 +169,7 @@ PocketCode.merge({
                         break;
                         //    //^^ in development: delete/comment out bricks for testing purpose (but do not push these changes until you've finished implementation + testing)
 
-                        //active:
+                    //active:
                     case 'SetPhysicsObjectTypeBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._scene.physicsWorld, jsonBrick);
                         break;
@@ -225,6 +223,7 @@ PocketCode.merge({
 
                     case 'StartSceneBrick':
                     case 'SceneTransitionBrick':
+                    case 'CameraBrick':
                         brick = new PocketCode.Model[type](this._device, currentSprite, this._gameEngine, jsonBrick);
                         break;
 
@@ -240,6 +239,7 @@ PocketCode.merge({
                         //look: SetLook, SetLookByIndex, NextLook, PreviousLook, SetSize, ChangeSize, Hide, Show, Say, SayFor, Think, ThinkFor, SetTransparency, 
                         //      .. all filters, .. ClearGraphicEffect
                         //sound
+                        //camera: SelectCameraBrick
                         //case 'PlaySoundBrick':
                         //case 'PlaySoundAndWaitBrick':   //disabled
                         //case 'SpeakBrick':
