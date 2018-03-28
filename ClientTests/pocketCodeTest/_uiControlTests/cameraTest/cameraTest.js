@@ -98,7 +98,7 @@ function onLoad() {
     //device
     device = new PocketCode.DeviceEmulator();
     var detected = device.faceDetected; //make sure face detection is initialized
-    
+
     //TODO: device.setSceneSize(videoWidth, videoHeight);    //= set at scene change
     device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(cameraUsageChangeHandler, this));
     device.onInit.addEventListener(new SmartJs.Event.EventListener(cameraInitHandler, this));

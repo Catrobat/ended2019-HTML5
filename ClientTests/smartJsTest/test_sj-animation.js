@@ -8,6 +8,45 @@
 
 QUnit.module("sj-animation.js");
 
+QUnit.test("SmartJs.AnimationFrame", function (assert) {
+
+    var done = assert.async();
+
+    assert.throws(function () { var frame = new SmartJs.AnimationFrame(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { SmartJs.AnimationFrame instanceof SmartJs.AnimationFrame }, Error, "ERROR: static class: no instanceof allowed");
+
+    var frame = new SmartJs._AnimationFrame(); //recreate the static class to avoid side effects in test framework
+
+    var handlerCalled = 0,
+        handler = function (e) {
+            handlerCalled++;
+        },
+        listener = new SmartJs.Event.EventListener(handler, this);
+
+    frame.addEventListener(listener);
+    frame.dispose();
+    assert.ok(frame._disposed == undefined && frame._onUpdate.listenersAttached, "not disposed");
+
+    window.setTimeout(validateHandler, 50);
+
+    var currentCalls;
+    function validateHandler() {
+        currentCalls = handlerCalled;
+        assert.ok(currentCalls > 0, "handler attached and called");
+        frame.removeEventListener(listener);
+        window.setTimeout(handlerRemoved, 50);
+    }
+
+    function handlerRemoved() {
+        assert.equal(currentCalls, handlerCalled, "no call after remove");
+        assert.equal(frame._frameId, undefined, "animation stopped");
+
+        done();
+    }
+
+});
+
+
 QUnit.test("SmartJs.Animation.Animation", function (assert) {
 
     var done1 = assert.async();
@@ -138,5 +177,41 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
 QUnit.test("SmartJs.Animation.Rotation", function (assert) {
 
-    assert.ok(false, "TODO")
+    var done1 = assert.async();
+    //var done2 = assert.async();
+
+    var r = new SmartJs.Animation.Rotation(90);
+    assert.ok(r instanceof SmartJs.Animation.Rotation && r instanceof SmartJs.Core.Component, "instance check");
+
+    assert.throws(function () { var r2 = new SmartJs.Animation.Rotation("a"); }, Error, "ERROR: simple argument check");
+    assert.ok(r.onUpdate instanceof SmartJs.Event.Event, "event accessor");
+
+    assert.equal(r.angle, 90, "angle accessor: not started");
+    var obj = r.toObject();
+    assert.ok(obj.startAngle == 90 && obj.startTimestamp == undefined && obj.rotationSpeed == 0.0, "toObject: not started");
+
+    r.dispose();
+    assert.ok(r._disposed, "disposed");
+    r = new SmartJs.Animation.Rotation(10.0);
+
+    var updateCounter = 0,
+        lastUpdate,
+        onUpdateHandler = function (e) {
+            updateCounter++;
+            lastUpdate = e;
+        };
+
+    var r = new SmartJs.Animation.Rotation(370);
+    r.onUpdate.addEventListener(new SmartJs.Event.EventListener(onUpdateHandler, this));
+
+    assert.equal(r.angle, 10, "angle returns values bewteen 0..360");
+    assert.throws(function () { r.angle = "1"; }, Error, "ERRROR: invalid angle setter");
+    r.angle = -20.0;
+    assert.equal(lastUpdate.value, 340, "angle setter: update triggered (0..360)");
+    assert.equal(r.angle, 340, "angle getter (0..360)");
+
+
+
+    done1();
+    assert.ok(false, "TODO");
 });

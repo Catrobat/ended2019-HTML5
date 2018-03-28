@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-PocketCode.LoggingProvider = (function (propObject) {
+PocketCode._LoggingProvider = (function (propObject) {
 
     function LoggingProvider() {
         this._disabled = false;
@@ -101,4 +101,4 @@ PocketCode.LoggingProvider = (function (propObject) {
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.LoggingProvider = new PocketCode.LoggingProvider();
+PocketCode.LoggingProvider = new PocketCode._LoggingProvider();
