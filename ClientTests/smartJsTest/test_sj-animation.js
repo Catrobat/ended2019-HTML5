@@ -1,4 +1,4 @@
-﻿/// <reference path="../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../qunit/qunit-2.4.0.js" />
 /// <reference path="../../client/smartJs/sj.js" />
 /// <reference path="../../client/smartJs/sj-core.js" />
 /// <reference path="../../client/smartJs/sj-event.js" />
@@ -7,6 +7,45 @@
 'use strict';
 
 QUnit.module("sj-animation.js");
+
+QUnit.test("SmartJs.AnimationFrame", function (assert) {
+
+    var done = assert.async();
+
+    assert.throws(function () { var frame = new SmartJs.AnimationFrame(); }, Error, "ERROR: static, no class definition/constructor");
+    assert.throws(function () { SmartJs.AnimationFrame instanceof SmartJs.AnimationFrame }, Error, "ERROR: static class: no instanceof allowed");
+
+    var frame = new SmartJs._AnimationFrame(); //recreate the static class to avoid side effects in test framework
+
+    var handlerCalled = 0,
+        handler = function (e) {
+            handlerCalled++;
+        },
+        listener = new SmartJs.Event.EventListener(handler, this);
+
+    frame.addEventListener(listener);
+    frame.dispose();
+    assert.ok(frame._disposed == undefined && frame._onUpdate.listenersAttached, "not disposed");
+
+    window.setTimeout(validateHandler, 50);
+
+    var currentCalls;
+    function validateHandler() {
+        currentCalls = handlerCalled;
+        assert.ok(currentCalls > 0, "handler attached and called");
+        frame.removeEventListener(listener);
+        window.setTimeout(handlerRemoved, 50);
+    }
+
+    function handlerRemoved() {
+        assert.equal(currentCalls, handlerCalled, "no call after remove");
+        assert.equal(frame._frameId, undefined, "animation stopped");
+
+        done();
+    }
+
+});
+
 
 QUnit.test("SmartJs.Animation.Animation", function (assert) {
 
@@ -26,7 +65,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
         assert.ok(events.length > 0, "update event handler dispatched correctly");
@@ -46,12 +85,13 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
         }
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value);
         assert.ok(!error, "continuous event & value update");
+        assert.equal(events[events.length - 1].value, 20, "end position reached");
         done1();
     }
     a.onUpdate.addEventListener(new SmartJs.Event.EventListener(updateEventHandler, this));
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     var b = new SmartJs.Animation.Animation(10, 20, 320, SmartJs.Animation.Type.LINEAR);
@@ -71,6 +111,7 @@ QUnit.test("SmartJs.Animation.Animation", function (assert) {
 
 });
 
+
 QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
     var done1 = assert.async();
@@ -88,15 +129,15 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     var events = [];
     var startTime;
     var updateEventHandler = function (e) {
-        events.push({ delay: (new Date() - startTime), value: e.value });
+        events.push({ delay: (Date.now() - startTime), value: e.value });
     };
     var executedEventHandler = function (e) {
-        var stopTime = new Date();
+        var stopTime = Date.now();
 
         assert.ok(events.length > 0, "update event handler dispatched correctly");
         assert.ok(true, "executed event handler dispatched correctly");
         assert.equal(e.callId, "validArgs", "callback arguments passed correctly");
-        //assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
+        assert.ok(events.length <= 20, events.length + ": max one update per step");  //not vaid anymore due to sub-pixel rendering
         //ok: events.length >= 10 && events.length <= 20.. x & y value can change on different times (in theory: for other animation type)
 
         var errorX = false;
@@ -115,6 +156,8 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
         //console.log(events[events.length - 1].delay + ': ' + events[events.length - 1].value.x + ", " + events[events.length - 1].value.y);
         assert.ok(!errorX, "continuous event & x value update");
         assert.ok(!errorX, "continuous event & y value update");
+        assert.equal(events[events.length - 1].value.x, 20, "end position x reached");
+        assert.equal(events[events.length - 1].value.y, 20, "end position y reached");
 
         assert.ok(stopTime - startTime > 600, "pause/resume checked");
         done1();
@@ -123,7 +166,7 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
     a.onExecuted.addEventListener(new SmartJs.Event.EventListener(executedEventHandler, this));
 
     assert.throws(function () { a.start("errorArgs"); }, Error, "ERROR: validation callback args");
-    startTime = new Date();
+    startTime = Date.now();
     a.start({ callId: "validArgs" });
 
     window.setTimeout(function () { a.pause(); }, 120);
@@ -131,3 +174,44 @@ QUnit.test("SmartJs.Animation.Animation2D", function (assert) {
 
 });
 
+
+QUnit.test("SmartJs.Animation.Rotation", function (assert) {
+
+    var done1 = assert.async();
+    //var done2 = assert.async();
+
+    var r = new SmartJs.Animation.Rotation(90);
+    assert.ok(r instanceof SmartJs.Animation.Rotation && r instanceof SmartJs.Core.Component, "instance check");
+
+    assert.throws(function () { var r2 = new SmartJs.Animation.Rotation("a"); }, Error, "ERROR: simple argument check");
+    assert.ok(r.onUpdate instanceof SmartJs.Event.Event, "event accessor");
+
+    assert.equal(r.angle, 90, "angle accessor: not started");
+    var obj = r.toObject();
+    assert.ok(obj.startAngle == 90 && obj.startTimestamp == undefined && obj.rotationSpeed == 0.0, "toObject: not started");
+
+    r.dispose();
+    assert.ok(r._disposed, "disposed");
+    r = new SmartJs.Animation.Rotation(10.0);
+
+    var updateCounter = 0,
+        lastUpdate,
+        onUpdateHandler = function (e) {
+            updateCounter++;
+            lastUpdate = e;
+        };
+
+    var r = new SmartJs.Animation.Rotation(370);
+    r.onUpdate.addEventListener(new SmartJs.Event.EventListener(onUpdateHandler, this));
+
+    assert.equal(r.angle, 10, "angle returns values bewteen 0..360");
+    assert.throws(function () { r.angle = "1"; }, Error, "ERRROR: invalid angle setter");
+    r.angle = -20.0;
+    assert.equal(lastUpdate.value, 340, "angle setter: update triggered (0..360)");
+    assert.equal(r.angle, 340, "angle getter (0..360)");
+
+
+
+    done1();
+    assert.ok(false, "TODO");
+});

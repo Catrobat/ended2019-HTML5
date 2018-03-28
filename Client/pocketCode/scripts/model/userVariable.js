@@ -74,7 +74,8 @@ PocketCode.Model.merge({
                     else
                         return new PocketCode.Model.UserVariableList(null, "New...");
                 }
-                return this._variables[id];
+                if (this._variables.hasOwnProperty(id))
+                    return this._variables[id];
             },
             getVariables: function () {
                 return this._variables;
@@ -104,7 +105,7 @@ PocketCode.Model.merge({
             //    this._value = 0.000001;   //prevent division by zero
             this._onChange = new SmartJs.Event.Event(this);
             //init
-            this._value = undefined;
+            this._value = 0;//undefined;
             if (value != undefined)
                 this._value = this._toTypedValue(value);
         }
@@ -156,8 +157,8 @@ PocketCode.Model.merge({
             },
             toString: function () {
                 var val = this._value;
-                if (val == undefined)
-                    return '';
+                //if (val == undefined)
+                //    return '';
                 return val.toString();  //we do not format variable values in any way
                 //if (typeof val != 'number')
                 //    return val.toString();
@@ -172,9 +173,7 @@ PocketCode.Model.merge({
                     y: 0,
                 };
 
-                if (this.value === undefined)
-                    return; //no event is triggered
-                this.value = undefined;
+                this.value = 0;
             },
             showAt: function (x, y) {
                 this._uiCache = {

@@ -128,6 +128,15 @@ PocketCode.Ui.merge({
             this._onButtonClicked = new SmartJs.Event.Event(this);
         }
 
+        //events
+        Object.defineProperties(PlayerToolbar.prototype, {
+            onButtonClicked: {
+                get: function () {
+                    return this._onButtonClicked;
+                },
+            }
+        });
+
         //properties
         Object.defineProperties(PlayerToolbar.prototype, {
             executionState: {
@@ -224,15 +233,6 @@ PocketCode.Ui.merge({
                     this._screenshotButton.disabled = value;
                 },
             },
-        });
-
-        //events
-        Object.defineProperties(PlayerToolbar.prototype, {
-            onButtonClicked: {
-                get: function () {
-                    return this._onButtonClicked;
-                },
-            }
         });
 
         //methods

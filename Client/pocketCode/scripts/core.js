@@ -8,6 +8,10 @@
 if (!PocketCode)
     var PocketCode = {};
 
+//set default server if not set already
+if(!PocketCode.hasOwnProperty('domain'))
+    PocketCode.domain = 'https://share.catrob.at/';
+
 //if (!PocketCode.crossOrigin)
 //    PocketCode.crossOrigin = new ((function () {
 
@@ -79,11 +83,13 @@ PocketCode.Model = {};  //PocketCode.Model || {};
 
 PocketCode.merge({
 
+    //threadCounter: 35, //SmartJs.Device.isMobile ? 35 : 70,  //to configure the a special amount of loop cycles without delay or broadcasts before a timeout is triggered to avoid call stack overflow
+    //^^ currently disables.. allows several synchroneous calls (without theading timeout) to run script much faster: references: LoopBrick (bricksCore.js) and PublishSubscribeBroker (publishSubscribe.js)
     UserActionType: {
-        SPRITE_CLICKED: 0,
-        TOUCH_START: 1,
-        TOUCH_MOVE: 2,
-        TOUCH_END: 3,
+        SPRITE_TOUCHED: 'spriteTouched',
+        TOUCH_START: 'touchStart',
+        TOUCH_MOVE: 'touchMove',
+        TOUCH_END: 'touchEnd',
     },
     ExecutionState: {   //used for program and bricks (sprites are UI Objects.. they do not have an executing state)
         INITIALIZED: -1,
@@ -92,6 +98,17 @@ PocketCode.merge({
         PAUSED: 3,  //and running
         PAUSED_USERINTERACTION: 5,  //and running, e.g. ask brick
         ERROR: 6,
+    },
+    StopEventType: {
+        SYSTEM: 0,  //default
+        BRICK: 1,
+        RUNNING_SCRIPT_CALL: 2,
+    },
+    StopType: {
+        THIS_SCRIPT: 0,
+        OTHER_SCRIPTS: 1,
+        ALL_SOUNDS: 2,
+        ALL: 3,
     },
 
     isPlayerCompatible: function () {
@@ -102,9 +119,9 @@ PocketCode.merge({
                 var bc = SmartJs.isBrowserCompatible();
                 if (!bc.result) {
                     _result = _full = false;
-                    return false;
+                    //return false;
                 }
-                return true;
+                return bc;
             }(),
             operaMini: function () {
                 if (window.operamini) {//!!window.['operamini']) {
@@ -112,7 +129,7 @@ PocketCode.merge({
                     return false;
                 }
                 return true;
-            },
+            }(),
             pushState: function () {
                 if (SmartJs.Device.isMobile && !history.pushState) {
                     _result = _full = false;

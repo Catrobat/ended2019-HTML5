@@ -19,7 +19,7 @@ PocketCode.Model.merge({
         SetGraphicEffectBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setGraphicEffect(this._effect, val));
         };
@@ -40,7 +40,7 @@ PocketCode.Model.merge({
         ChangeGraphicEffectBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.changeGraphicEffect(this._effect, val));
         };
@@ -63,11 +63,42 @@ PocketCode.Model.merge({
         }
 
         SetLookBrick.prototype._execute = function () {
-            if (this._lookId)  //can be null
+            if (!this._lookId)  //can be null
+                this._return();
+            else
                 this._return(this._sprite.setLook(this._lookId));
         };
 
         return SetLookBrick;
+    })(),
+
+    SetLookByIndexBrick: (function () {
+        SetLookByIndexBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetLookByIndexBrick(device, sprite, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._idx = new PocketCode.Formula(device, sprite, propObject.idx);
+        }
+
+        //formula accessors
+        Object.defineProperties(SetLookByIndexBrick.prototype, {
+            indexFormula: {
+                get: function () {
+                    return this._idx;
+                },
+            },
+        });
+
+        SetLookByIndexBrick.prototype._execute = function (scope) {
+            var idx = this._idx.calculate(scope);
+            if (isNaN(idx))
+                this._return();
+            else
+                this._return(this._sprite.setLookByIndex(idx));
+        };
+
+        return SetLookByIndexBrick;
     })(),
 
     NextLookBrick: (function () {
@@ -75,7 +106,6 @@ PocketCode.Model.merge({
 
         function NextLookBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
         }
 
         NextLookBrick.prototype._execute = function () {
@@ -90,7 +120,6 @@ PocketCode.Model.merge({
 
         function PreviousLookBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
         }
 
         PreviousLookBrick.prototype._execute = function () {
@@ -112,7 +141,7 @@ PocketCode.Model.merge({
         SetSizeBrick.prototype._execute = function (scope) {
             var val = this._percentage.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.setSize(val));
         };
@@ -132,7 +161,7 @@ PocketCode.Model.merge({
         ChangeSizeBrick.prototype._execute = function (scope) {
             var val = this._value.calculate(scope);
             if (isNaN(val))
-                this._return(false);
+                this._return();
             else
                 this._return(this._sprite.changeSize(val));
         };
@@ -196,6 +225,7 @@ PocketCode.Model.merge({
                 this._scene.showAskDialog(question, this._onAnswerHandler.bind(this, scope));
             },
             dispose: function () {
+                this._scene.hideAskDialog();
                 this._scene = undefined;
                 PocketCode.Model.BaseBrick.prototype.dispose.call(this);
             },
@@ -216,10 +246,10 @@ PocketCode.Model.merge({
         SayBrick.prototype._execute = function (scope) {
             var text = this._text.calculate(scope).toString().trim();
 
-            if (text !== '')
-                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, text));
+            if (text.trim() == '')
+                this._return();
             else
-                this._return(false);
+                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.SPEECH, text));
         };
 
         return SayBrick;
@@ -265,10 +295,10 @@ PocketCode.Model.merge({
         ThinkBrick.prototype._execute = function (scope) {
             var text = this._text.calculate(scope);
 
-            if (text !== '')
-                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, text));
+            if (text.trim() == '')
+                this._return();
             else
-                this._return(false);
+                this._return(this._sprite.showBubble(PocketCode.Ui.BubbleType.THINK, text));
         };
 
         return ThinkBrick;
@@ -312,7 +342,7 @@ PocketCode.Model.merge({
         }
 
         //SetTransparencyBrick.prototype._execute = function () {
-        //    this._return(this._sprite.setTransparency(this._value.calculate()));
+        //    this._return(this._sprite.setTransparency(this._value.calculate(scope)));
         //};
 
         return SetTransparencyBrick;
@@ -327,7 +357,7 @@ PocketCode.Model.merge({
         }
 
         //ChangeTransparencyBrick.prototype._execute = function () {
-        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //    this._return(this._sprite.changeTransparency(this._value.calculate(scope)));
         //};
 
         return ChangeTransparencyBrick;
@@ -342,7 +372,7 @@ PocketCode.Model.merge({
         }
 
         //SetBrightnessBrick.prototype._execute = function () {
-        //    this._return(this._sprite.setBrightness(this._value.calculate()));
+        //    this._return(this._sprite.setBrightness(this._value.calculate(scope)));
         //};
 
         return SetBrightnessBrick;
@@ -357,7 +387,7 @@ PocketCode.Model.merge({
         }
 
         //ChangeBrightnessBrick.prototype._execute = function () {
-        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //    this._return(this._sprite.changeTransparency(this._value.calculate(scope)));
         //};
 
         return ChangeBrightnessBrick;
@@ -372,7 +402,7 @@ PocketCode.Model.merge({
         }
 
         //SetBrightnessBrick.prototype._execute = function () {
-        //    this._return(this._sprite.setBrightness(this._value.calculate()));
+        //    this._return(this._sprite.setBrightness(this._value.calculate(scope)));
         //};
 
         return SetColorEffectBrick;
@@ -387,7 +417,7 @@ PocketCode.Model.merge({
         }
 
         //ChangeBrightnessBrick.prototype._execute = function () {
-        //    this._return(this._sprite.changeTransparency(this._value.calculate()));
+        //    this._return(this._sprite.changeTransparency(this._value.calculate(scope)));
         //};
 
         return ChangeColorEffectBrick;
@@ -420,7 +450,9 @@ PocketCode.Model.merge({
 
         SetBackgroundBrick.prototype.merge({
             _execute: function () {
-                if (this._lookId)  //can be null
+                if (!this._lookId)  //can be null
+                    this._return();
+                else
                     this._return(this._scene.setBackground(this._lookId));
             },
             dispose: function () {
@@ -444,7 +476,9 @@ PocketCode.Model.merge({
 
         SetBackgroundAndWaitBrick.prototype.merge({
             _execute: function (id) {
-                if (this._lookId)  //can be null
+                if (!this._lookId)  //can be null
+                    this._return(id);
+                else
                     this._return(this._scene.setBackground(this._lookId, this._return.bind(this, id)));
             },
             dispose: function () {
@@ -454,6 +488,42 @@ PocketCode.Model.merge({
         });
 
         return SetBackgroundAndWaitBrick;
+    })(),
+
+    SetBackgroundByIndexBrick: (function () {
+        SetBackgroundByIndexBrick.extends(PocketCode.Model.BaseBrick, false);
+
+        function SetBackgroundByIndexBrick(device, sprite, scene, propObject) {
+            PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
+
+            this._scene = scene;
+            this._idx = new PocketCode.Formula(device, sprite, propObject.idx);
+        }
+
+        //formula accessors
+        Object.defineProperties(SetBackgroundByIndexBrick.prototype, {
+            indexFormula: {
+                get: function () {
+                    return this._idx;
+                },
+            },
+        });
+
+        SetBackgroundByIndexBrick.prototype.merge({
+            _execute: function (scope) {
+                var idx = this._idx.calculate(scope);
+                if (isNaN(idx))
+                    this._return();
+                else
+                    this._return(this._scene.setBackgroundByIndex(idx));
+            },
+            dispose: function () {
+                this._scene = undefined;
+                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+            },
+        });
+
+        return SetBackgroundByIndexBrick;
     })(),
 
     CameraBrick: (function () {
@@ -502,14 +572,14 @@ PocketCode.Model.merge({
     //currently not planned?
     //SetCameraTransparencyBrick: (function () {
     //    SetCameraTransparencyBrick.extends(PocketCode.Model.BaseBrick, false);
-
+    //
     //    function SetCameraTransparencyBrick(device, sprite, scene, propObject) {
     //        PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
+    //
     //        this._scene = scene;
     //        this._value = new PocketCode.Formula(device, sprite, propObject.value);
     //    }
-
+    //
     //    SetCameraTransparencyBrick.prototype._execute = function (scope) {
     //        var val = this._value.calculate(scope);
     //        if (isNaN(val))
@@ -517,7 +587,7 @@ PocketCode.Model.merge({
     //        else
     //            return this._scene.setCameraTransparency(val);
     //    };
-
+    //
     //    return SetCameraTransparencyBrick;
     //})(),
 

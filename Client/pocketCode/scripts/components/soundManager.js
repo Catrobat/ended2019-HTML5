@@ -1,12 +1,17 @@
 ﻿/// <reference path="../../../smartJs/sj.js" />
 /// <reference path="../../../smartJs/sj-event.js" />
 /// <reference path="../core.js" />
-/// <reference path="https://code.createjs.com/createjs-2014.12.12.combined.js" />
 'use strict';
 
 
 PocketCode.SoundManager = (function () {
 
+    /* Our sounds are played using the soundJs library
+    *  This lib works as a singleton, so we use a single sound manager instance in the gameEngine to preload all sounds of a project.
+    *  These preloaded sounds are available in each audioPlayer instance (defined per sprite) based on this singleton implementation, 
+    *  every sound that is currently played is a soundInstance and managed per sprite (per audioPlayer instance).
+    *  For preloading tts (text-to-speech) sound files or even load and play them directly each audioPlayer is derived from soundManager.
+    */
     function SoundManager() {
 
         this._loading = false;  //loading in progress
@@ -14,24 +19,11 @@ PocketCode.SoundManager = (function () {
         this._loadedSize = 0;
         this._registeredFiles = []; //files to load
 
-        this._id = SmartJs.getNewId() + '_';
         this._maxInstancesOfSameSound = 20;
-        this._supported = createjs.Sound.initializeDefaultPlugins();
-
-        this._volume = 0.7;
-        this._muted = false;
-        createjs.Sound.volume = this._volume;   //initial
-        this._muted = createjs.Sound.muted;
-
-        this._activeSounds = {};    //an array of sound instances per scene id
 
         this._onLoadingProgress = new SmartJs.Event.Event(this);
         this._onLoad = new SmartJs.Event.Event(this);
         this._onLoadingError = new SmartJs.Event.Event(this);
-        //this._onStartPlayingInstance = new SmartJs.Event.Event(this);       //currently private only
-        //this._onFinishedPlayingInstance = new SmartJs.Event.Event(this);    //currently private only
-        //this._onFailedPlayingInstance = new SmartJs.Event.Event(this);      //currently private only
-        this._onFinishedPlaying = new SmartJs.Event.Event(this);
 
         //bind on soundJs
         this._fileLoadProxy = createjs.proxy(this._fileLoadHandler, this);
@@ -40,6 +32,13 @@ PocketCode.SoundManager = (function () {
         this._fileErrorProxy = createjs.proxy(this._fileLoadingErrorHandler, this);
         createjs.Sound.addEventListener('fileerror', this._fileErrorProxy);
     }
+
+    //properties
+    Object.defineProperties(SoundManager.prototype, {
+        supported: {
+            value: createjs.Sound.initializeDefaultPlugins(),
+        },
+    });
 
     //events
     Object.defineProperties(SoundManager.prototype, {
@@ -58,73 +57,11 @@ PocketCode.SoundManager = (function () {
                 return this._onLoadingError;
             },
         },
-        onFinishedPlaying: {    //executed if isPlaying = false
-            get: function () {
-                return this._onFinishedPlaying;
-            },
-        },
-    });
-
-    //properties
-    Object.defineProperties(SoundManager.prototype, {
-        supported: {
-            get: function () {
-                return this._supported;
-            },
-        },
-        volume: {
-            get: function () {
-                return this._volume * 100;
-            },
-            set: function (value) {
-                if (typeof value !== 'number')
-                    throw new Error('invalid argument: volume expects argument type: number');
-
-                if (value < 0)
-                    value = 0;
-                else if (value > 100)
-                    value = 100;
-
-                value = value / 100;
-                if (this._volume === value)
-                    return;
-
-                this._volume = value;
-                var sounds;
-                for (var id in this._activeSounds) {
-                    sounds = this._activeSounds[id];
-                    for (var i = 0, l = sounds.length; i < l; i++)
-                        sounds[i].volume = value;
-                }
-            }
-        },
-        muted: {
-            get: function () {
-                return this._muted;
-            },
-            set: function (value) {
-                if (typeof value !== 'boolean')
-                    throw new Error('invalid argument: muted expects argument type: boolean');
-                if (this._muted === value)
-                    return;
-
-                this._muted = value;
-                var sounds;
-                for (var id in this._activeSounds) {
-                    sounds = this._activeSounds[id];
-                    for (var i = 0, l = sounds.length; i < l; i++)
-                        sounds[i].muted = value;
-                }
-            },
-        },
     });
 
     //methods
     SoundManager.prototype.merge({
         _fileLoadHandler: function (e) {
-            if (!e.data || e.data.soundManagerId !== this._id)
-                return;
-
             var idx,
                 file,
                 files = this._filesToLoad || [];
@@ -145,23 +82,19 @@ PocketCode.SoundManager = (function () {
 
                 if (idx + 1 == this._filesToLoad.length) {
                     this._loading = false;
-                    //this._filesToLoad = [];
                     this._onLoad.dispatchEvent();
                 }
                 else {
                     var loadNextFile = this._requestFile.bind(this, idx + 1);
-                    window.setTimeout(loadNextFile, 20);    //make sure the ui gets rerendered
+                    setTimeout(loadNextFile, 20);    //make sure the ui gets rerendered
                 }
             }
             else   //single file loaded
                 this._onLoad.dispatchEvent();
             if (e.data && e.data.playOnLoad)
-                this.startSound(e.id.slice(this._id.length), e.data.finishedCallback, e.data.loadedCallback);
+                this.startSound(e.id, e.data.onLoadCallback, e.data.onExecutedCallback);
         },
         _fileLoadingErrorHandler: function (e) {
-            if (!e.data || e.data.soundManagerId !== this._id)
-                return;
-
             var idx,
                 file,
                 files = this._filesToLoad || [];
@@ -184,7 +117,6 @@ PocketCode.SoundManager = (function () {
 
                 if (idx + 1 == this._filesToLoad.length) {
                     this._loading = false;
-                    //this._filesToLoad = [];
                     this._onLoad.dispatchEvent();
                 }
                 else {
@@ -205,30 +137,33 @@ PocketCode.SoundManager = (function () {
                 success = createjs.Sound.registerSound(sound.src, sound.id, sound.data, '');
             }
             catch (e) {
-                //even if an url is provided there are sounds with missing file extension
-                //that will cause an exception in soundJs
+                //silent catch -> success = false
+                //even if an url is provided there are sound files with missing file extension
+                //these will cause an exception in soundJs
             }
             if (!success)
-                this._fileLoadingErrorHandler(sound);   //false is returned if no loaded can be initialized (e.g. *.wav in IE) -> handle as error
+                this._fileLoadingErrorHandler(sound);
         },
-        _createSoundObject: function (url, id, size, playOnLoad, finishedCallback, loadedCallback) {
+        _createSoundObject: function (url, id, size, playOnLoad, onLoadCallback, onExecutedCallback) {
             url = url.split('/');
             var idx = url.length - 1;
             url[idx] = (url[idx]).replace(/([^.?]+)(.*)/, function (match, p1, p2) {
                 return encodeURIComponent(p1) + p2;
-            });  // encodeURIComponent(url[idx]);
+            });
             return {
-                id: this._id + id, src: url.join('/'),
+                id: id, src: url.join('/'),
                 data: {
                     channels: this._maxInstancesOfSameSound,
                     playOnLoad: playOnLoad,
-                    finishedCallback: finishedCallback,
-                    loadedCallback: loadedCallback,
-                    soundManagerId: this._id
+                    onLoadCallback: onLoadCallback,
+                    onExecutedCallback: onExecutedCallback,
                 }, size: size
             };
         },
-        loadSound: function (url, id, type, playOnLoad, finishedCallback, loadedCallback) {
+        loadSound: function(url, id, type) {    //public interface for preloading TTS files
+            this._loadSound(url, id, type);
+        },
+        _loadSound: function (url, id, type, playOnLoad, onLoadCallback, onExecutedCallback) {
             //added to cache static tts sound files- detected by parser
             if (!id || !url) {
                 throw new Error('load sound: missing id or url');
@@ -238,7 +173,7 @@ PocketCode.SoundManager = (function () {
                 return false;
             }
 
-            var sound = this._createSoundObject(url, id, undefined, playOnLoad, finishedCallback, loadedCallback);
+            var sound = this._createSoundObject(url, id, undefined, playOnLoad, onLoadCallback, onExecutedCallback);
             var success;
             if (type) {
                 var src = {};
@@ -295,120 +230,147 @@ PocketCode.SoundManager = (function () {
         abortLoading: function () {
             this._loading = false;
         },
-        startSound: function (sceneId, id, loadedCallback, finishedCallback) {
-            if (!sceneId || !id)
-                throw new Error('missing argument: sceneId or soundId');
-            if (!this.supported) {
-                if (finishedCallback)
-                    finishedCallback(false);
+        dispose: function () {
+            this.abortLoading();
+            createjs.Sound.removeEventListener('fileload', this._fileLoadProxy);
+            createjs.Sound.removeEventListener('fileerror', this._fileErrorProxy);
+            this._removeAllSounds();
+        },
+    });
+
+    return SoundManager;
+})();
+
+PocketCode.AudioPlayer = (function () {
+    AudioPlayer.extends(PocketCode.SoundManager);
+
+    function AudioPlayer() {
+
+        this._volume = 0.5;
+        this._muted = false;
+        this._muted = createjs.Sound.muted;
+
+        this._activeSounds = [];
+        this._onFinishedPlaying = new SmartJs.Event.Event(this);
+    }
+
+    //events
+    Object.defineProperties(AudioPlayer.prototype, {
+        onFinishedPlaying: {    //executed if isPlaying = false
+            get: function () {
+                return this._onFinishedPlaying;
+            },
+        },
+    });
+
+    //properties
+    Object.defineProperties(AudioPlayer.prototype, {
+        supported: {
+            value: createjs.Sound.initializeDefaultPlugins(),
+        },
+        isPlaying: {
+            get: function () {
+                if (this._activeSounds.length > 0)
+                    return true;
                 return false;
+            },
+        },
+        volume: {
+            get: function () {
+                return this._volume * 100;
+            },
+            set: function (value) {
+                if (typeof value !== 'number')
+                    throw new Error('invalid argument: volume expects argument type: number');
+
+                value = Math.min(100, Math.max(0, value));
+                value = value / 100;
+                if (this._volume === value)
+                    return;
+
+                this._volume = value;
+                var sound;
+                for (var i = 0, l = this._activeSounds.length; i < l; i++) {
+                    sound = this._activeSounds[i];
+                    sound.volume = value;
+                }
             }
+        },
+        muted: {
+            get: function () {
+                return this._muted;
+            },
+            set: function (value) {
+                if (typeof value !== 'boolean')
+                    throw new Error('invalid argument: muted expects argument type: boolean');
+                if (this._muted === value)
+                    return;
+
+                this._muted = value;
+                var sound;
+                for (var i = 0, l = this._activeSounds.length; i < l; i++) {
+                    sound = this._activeSounds[i];
+                    sound.muted = value;
+                }
+            },
+        },
+    });
+
+    //methods
+    AudioPlayer.prototype.merge({
+        //start sound returns the instanceId to let the calling brick handle stop
+        startSound: function (id, onLoadCallback, onExecutedCallback) {
+            if (!this.supported)
+                throw new Error('AudioPlayer: not supported');
 
             try {
-                var soundInstance = createjs.Sound.createInstance(this._id + id);
+                var soundInstance = createjs.Sound.createInstance(id);
             }
             catch (e) {
-                if (finishedCallback)
-                    finishedCallback(false);
-                return false;
+                throw new Error('AudioPlayer: soundInstance could not be created');
             }
-            soundInstance.addEventListener('succeeded', createjs.proxy(function (e, sceneId, soundInstance) {
-                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
-                this._activeSounds[sceneId].push(soundInstance);
-                //this._onStartPlayingInstance.dispatchEvent({ instance: soundInstance });
-            }, this, sceneId, soundInstance));
+            soundInstance.addEventListener('succeeded', createjs.proxy(function (e, soundInstance, onLoadCallback) {
+                this._activeSounds.push(soundInstance);
+                if (onLoadCallback)
+                    onLoadCallback(soundInstance.uniqueId);
+            }, this, soundInstance, onLoadCallback));
 
-            soundInstance.addEventListener('complete', createjs.proxy(function (e, sceneId, soundInstance) {
-                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
-                var active = this._activeSounds[sceneId];
-                active.remove(soundInstance);
-                //this._onFinishedPlayingInstance.dispatchEvent({ instance: soundInstance });
-                if (active.length == 0)
+            soundInstance.addEventListener('complete', createjs.proxy(function (e, soundInstance, onExecutedCallback) {
+                this._activeSounds.remove(soundInstance);
+                if (this._activeSounds.length == 0)
                     this._onFinishedPlaying.dispatchEvent({ instance: soundInstance });
 
-                if (finishedCallback)
-                    finishedCallback(true);
-            }, this, sceneId, soundInstance));
+                if (onExecutedCallback)
+                    onExecutedCallback();
+            }, this, soundInstance, onExecutedCallback));
 
-            soundInstance.addEventListener('failed', createjs.proxy(function (e, sceneId, soundInstance) {
-                this._activeSounds[sceneId] || (this._activeSounds[sceneId] = []);
-                var active = this._activeSounds[sceneId];
-                active.remove(soundInstance);
-                //this._onFailedPlayingInstance.dispatchEvent({ instance: soundInstance });
-                if (active.length == 0)
+            soundInstance.addEventListener('failed', createjs.proxy(function (e, soundInstance, onExecutedCallback) {
+                this._activeSounds.remove(soundInstance);
+                if (this._activeSounds.length == 0)
                     this._onFinishedPlaying.dispatchEvent({ instance: soundInstance });
 
-                if (finishedCallback)
-                    finishedCallback(false);
-            }, this, sceneId, soundInstance));
+                if (onExecutedCallback)
+                    onExecutedCallback();
+            }, this, soundInstance, onExecutedCallback));
 
             soundInstance.volume = this._volume;
             soundInstance.muted = this._muted;
             soundInstance = soundInstance.play();
             if (soundInstance.playState === null || soundInstance.playState === 'playFailed')
-                return false;
-            if (loadedCallback)
-                loadedCallback(soundInstance.uniqueId);
+                throw new Error('AudioPlayer: soundInstance could not be started');
+
             return soundInstance.uniqueId;
         },
-        startSoundFromUrl: function (sceneId, url, loadedCallback, finishedCallback) {
-            if (!sceneId)
-                throw new Error('missing argument: sceneId');
-            if (!this.supported) {
-                if (finishedCallback)
-                    finishedCallback(false);
+        startSoundFromUrl: function (url, onLoadCallback, onExecutedCallback) {
+            if (!this.supported)
                 return false;
-            }
-
             var soundId = SmartJs.getNewId();
-            var success = this.loadSound(url, soundId, 'mp3', true, finishedCallback, loadedCallback);
-            if (success)
-                return true;
-            //else
-            if (finishedCallback)
-                finishedCallback(false);
-            return false;
+            var success = this._loadSound(url, soundId, 'mp3', true, onLoadCallback, onExecutedCallback);
+            if (!success && onExecutedCallback)
+                onExecutedCallback();
         },
-        isPlaying: function (sceneId) {
-            if (!sceneId)
-                throw new Error('missing argument: sceneId');
-            var active = this._activeSounds[sceneId];
-            if (active && active.length > 0)
-                return true;
-            return false;
-        },
-        pauseSound: function (sceneId, id) {
-            if (!sceneId || !id)
-                throw new Error('missing argument: sceneId or soundId');
-            var active = this._activeSounds[sceneId];
-            if (!active)
-                return;
-
-            for (var i = 0, l = active.length; i < l; i++) {
-                if (active[i].uniqueId === id) {
-                    active[i].paused = true;
-
-                    //fixes rounding errors in the framework that occurs when sounds are paused before 1ms
-                    if (active[i].position < 1) {
-                        active[i].position = 0;
-                    }
-                    return;
-                }
-            }
-        },
-        pauseSounds: function (/*optional*/ sceneId) {
-            var active = [];
-            if (sceneId) {
-                active = this._activeSounds[sceneId];
-                if (!active)
-                    return false;
-            }
-            else {
-                for (var id in this._activeSounds) {
-                    active = active.concat(this._activeSounds[id]);
-                }
-            }
-
+        pauseAllSounds: function () {
+            var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
                 if (active[i].paused === false) {
                     active[i].paused = true;
@@ -420,81 +382,37 @@ PocketCode.SoundManager = (function () {
                 }
             }
         },
-        resumeSound: function (sceneId, id) {
-            if (!sceneId || !id)
-                throw new Error('missing argument: sceneId or soundId');
-            var active = this._activeSounds[sceneId];
-            if (!active)
-                return;
-
+        resumeAllSounds: function () {
+            var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
-                if (active[i].uniqueId === id) {
-                    active[i].paused = false;
-                    return;
-                }
+                active[i].paused = false;
             }
         },
-        resumeSounds: function (/*optional*/ sceneId) {
-            var active = [];
-            if (sceneId) {
-                active = this._activeSounds[sceneId];
-                if (!active)
-                    return false;
-            }
-            else {
-                for (var id in this._activeSounds) {
-                    active = active.concat(this._activeSounds[id]);
-                }
-            }
-
+        stop: function (instanceIid) {
+            var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++) {
-                if (active[i].paused === true) {
-                    active[i].paused = false;
-                }
-            }
-        },
-        stopSound: function (sceneId, id) {
-            if (!sceneId || !id)
-                throw new Error('missing argument: sceneId or soundId');
-            var active = this._activeSounds[sceneId];
-            if (!active)
-                return;
-
-            for (var i = 0, l = active.length; i < l; i++) {
-                if (active[i].uniqueId === id) {
+                if (active[i].uniqueId === instanceIid) {
                     active[i].stop();
                     active.remove(active[i]);
-                    return;
+                    break;
                 }
             }
+            if (this._activeSounds.length == 0)
+                this._onFinishedPlaying.dispatchEvent();
         },
-        stopAllSounds: function (/*optional*/ sceneId) {
-            var active = [];
-            if (sceneId) {
-                active = this._activeSounds[sceneId];
-                if (!active) //e.g. gameEngine stopped all sounds before scenes try to stop them
-                    return false;
-            }
-            else {
-                for (var id in this._activeSounds) {
-                    active = active.concat(this._activeSounds[id]);
-                }
-            }
-
-
+        stopAllSounds: function () {
+            var active = this._activeSounds;
             for (var i = 0, l = active.length; i < l; i++)
                 active[i].stop();
-            this._activeSounds = {};
-            return true;
+            this._activeSounds = [];
+            this._onFinishedPlaying.dispatchEvent();
         },
         dispose: function () {
-            this.abortLoading();
-            createjs.Sound.removeEventListener('fileload', this._fileLoadProxy);
-            createjs.Sound.removeEventListener('fileerror', this._fileErrorProxy);
+            this.abortLoading();    //make sure startSoundFromUrl ist sopped in the player
             this.stopAllSounds();
-            this._removeAllSounds();
+            PocketCode.SoundManager.prototype.dispose.call(this);
         },
     });
 
-    return SoundManager;
+    return AudioPlayer;
 })();

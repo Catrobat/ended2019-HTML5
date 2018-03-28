@@ -21,6 +21,9 @@ PocketCode.Test = {
     },
 };
 
+//define endpoint (override)
+PocketCode._serviceEndpoint = 'https://web-test.catrob.at/html5/rest/v0.3/';   //TODO:
+
 PocketCode.Test.ProjectTester = (function () {
 
     /**
@@ -330,30 +333,34 @@ PocketCode.Test.ProjectTester = (function () {
                 this._startTimeOut();
                 this._gameEngine.loadProject(json);
             }
-            catch (error) {
-                var receivedObject = error;
+            catch (exc) {
+                var receivedObject = exc;
                 var type = "";
                 if ((receivedObject instanceof Object)) {
-                    type = "uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
+                    type = "Error: project loading: uncatched Error"; // receivedObject.target.keys()[0]; // e.g. ProjectNotFoundException
                 }
                 else {
-                    type = "Unknown target";
+                    type = "Error: project loading: Unknown target";
                 }
                 this._errorMsg = type;
-                e.print = "project " + this._currentID + " failed (" + this._errorMsg + ")";
-                this.onGetError.dispatchEvent(e);
+                exc.print = "project " + this._currentID + " failed (" + this._errorMsg + ")";
+                this.onGetError.dispatchEvent(exc);
             }
         },
 
         // TIMER functions
         _callTimeout: function () {
-            var e = {};
+            var e = {
+                target: {
+                    _responseJson: {},
+                },
+            };
             e.target._responseJson.type = "Timeout";
-            e.target._responseJson.message = "";
+            e.target._responseJson.message = "Error: project loading: timout";
             this._loadErrorHandler(e);
         },
         _startTimeOut: function () {
-            this._timeout_timer = setTimeout(this._callTimeout, this._settings.timeout);
+            this._timeout_timer = setTimeout(this._callTimeout.bind(this), this._settings.timeout);
         },
         _stopTimeOut: function () {
             clearTimeout(this._timeout_timer);

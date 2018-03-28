@@ -10,11 +10,13 @@ PocketCode.RenderingItem = (function () {
         //    throw new Error('The rendering item has to be initialized using an id');
 
         this._id = propObject.id;
+        delete propObject.id;
         this.x = propObject.x || 0.0;
         this.y = propObject.y || 0.0;
         this.visible = propObject.visible != undefined ? propObject.visible : true;
 
         this._cacheCanvas = document.createElement('canvas');
+        this._cacheCtx = this._cacheCanvas.getContext('2d');
     }
 
     //properties
@@ -40,13 +42,22 @@ PocketCode.RenderingItem = (function () {
 
     //methods
     RenderingItem.prototype.merge({
-        draw: function (ctx, maxWidth) {
+        draw: function (ctx) {
             if (!this.visible)
                 return;
-            this._draw(ctx, maxWidth);
+            this._draw(ctx);
         },
-        _draw: function (ctx, maxWidth) {
-            throw new Error('not implemented (abstract base class): override this method in inherited classes');
+        _draw: function (ctx) {
+            var canvas = this._cacheCanvas,
+                width = canvas.width,
+                height = canvas.height;
+            if (width === 0 && height === 0)
+                return; //drawing a canvas with size = 0 will throw an error
+
+            ctx.save();
+            ctx.translate(this.x, -this.y);
+            ctx.drawImage(canvas, 0, 0, width, height);
+            ctx.restore();
         },
     });
 
@@ -63,28 +74,33 @@ PocketCode.merge({
             PocketCode.RenderingItem.call(this, propObject);
 
             propObject = propObject || {};
-            this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitilaized
+            this._text = '';
+            this._UNDEFINED_TEXT = '';  //add a string to show if text (variable) is undefined/uninitialized
             //^^ this may be a PocketCode.Core.I18nString Object to support i18n
-            this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
-            this.text = propObject.text;
-            this._textAlign = propObject.textAlign || 'left';
 
-            this._fontFamily = 'Arial';
-            this._fontSize = 46;
-            this._fontWeight = 'bold';
-            this._fontStyle = '';
-            this._lineHeight = 54;
+            this._objectId = propObject.objectId;   //var ids not unique due to cloning: the id is the sprite (local scope) or project (global scope) id
+            delete propObject.objectId;
+            this._textAlign = propObject.textAlign || 'start';
+            delete propObject.textAlign;
+
+            this.merge(propObject);
         }
 
         //properties
         Object.defineProperties(RenderingText.prototype, {
-            //textAlign: {
-            //    value: 'left',
-            //    writable: true,
-            //},
             objectId: {
                 get: function () {
                     return this._objectId;
+                },
+            },
+            width: {
+                get: function () {
+                    return this._cacheCanvas.width;
+                },
+            },
+            height: {
+                get: function () {
+                    return this._cacheCanvas.height;
                 },
             },
             text: {
@@ -99,97 +115,143 @@ PocketCode.merge({
                     if (this._text == text)
                         return;
                     this._text = text;
-
-                    this._cacheCanvas.dir = PocketCode.I18nProvider.getTextDirection(text);
-                    //TODO: write to cache
+                    this._redrawCache();
                 },
+            },
+            fontFamily: {
+                value: 'Arial',
+                writable: true,
+            },
+            fontSize: {
+                value: 46,
+                writable: true,
+            },
+            fontWeight: {
+                value: 'bold',
+                writable: true,
+            },
+            fontStyle: {
+                value: 'normal',
+                writable: true,
+            },
+            lineHeight: {
+                value: 54,
+                writable: true,
+            },
+            maxLineWidth: {
+                value: undefined,
+                writable: true,
             },
         });
 
         //methods
         RenderingText.prototype.merge({
-            _getTextBlockSize: function (ctx, maxWidth, rtl) {
+            _getTextBlock: function () {
+                var block = {
+                    width: 0,
+                    height: 0,
+                    lines: [],
+                };
 
-            },
-            _drawTextBlock: function (ctx, maxWidth, x, y) {
-                x = x || this.x;
-                y = -y || -this.y;
-                var newLines = this._text.split(/\r?\n/),
-                    line = '',
-                    //lineWidth = 0,
-                    testLine = '',
-                    metrics;//,
-                    //maxLineWidth = 0;
+                var ctx = this._cacheCtx,
+                    maxLineWidth = this.maxLineWidth,
+                    textLines = this._text.split(/\r?\n/),
+                    line,// = '',
+                    metrics;
 
-                for (var i = 0, l = newLines.length; i < l; i++) {
-                    var words = newLines[i].trim().split(' ');
+                //ctx.save();
+                ctx.textBaseline = 'top';   //'hanging';
+                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
 
-                    var wl = words.length;
-                    if (wl > 0) {
-                        for (var n = 0; n < wl; n++) {
-                            testLine += words[n];// + ' ');
+                if (!maxLineWidth) {
+                    for (var i = 0, l = textLines.length; i < l; i++) {
+                        line = textLines[i].trim();
+                        metrics = ctx.measureText(line);
+                        block.lines.push(line);
+                        block.width = Math.max(block.width, metrics.width);
+                    }
+
+                }
+                else {  //split lines and words to fit maxLineWidth
+                    var words,
+                        testLine = '';
+
+                    for (var i = 0, l = textLines.length; i < l; i++) {
+                        line = textLines[i].trim();
+                        if (line.length == 0) { //empty lines
+                            block.lines.push(line);
+                            continue;
+                        }
+
+                        words = line.split(' ');
+                        for (var n = 0, wl = words.length; n < wl; n++) {
+                            testLine += words[n];
                             metrics = ctx.measureText(testLine);
-                            //preLineWidth = lineWidth;
-
-                            if (!maxWidth || maxWidth && metrics.width < maxWidth || line.length == 0) {
-                                line = (testLine += ' ');
-                                //lineWidth = metrics.width;
-                                //maxLineWidth = Math.max(maxLineWidth, lineWidth);
+                            if (metrics.width < maxLineWidth) {
+                                line = testLine;
+                                testLine += ' ';
+                            }
+                            else if (line == '') {  //word does not fit but line is empty: break word
+                                var chars = Math.floor(maxLineWidth / metrics.width * testLine.length) - 3, //-3 to make sure the resulting word fits
+                                    splitWord = testLine.substr(0, chars);
+                                block.lines.push(splitWord);
+                                metrics = ctx.measureText(splitWord);
+                                block.width = Math.max(block.width, metrics.width);
+                                words[n] = testLine.substring(chars + 1, testLine.length);
+                                n--;
+                                testLine = '';
                             }
                             else {
-                                ctx.fillText(line.trim(), x, y);
-                                //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-                                //lineWidth = metrics.width - lineWidth;
-                                y -= this._lineHeight;
-                                line = testLine = words[n] + ' ';
-                                //testLine = '';
-                                //lineWidth = metrics.width;
+                                block.lines.push(line);
+                                block.width = Math.max(block.width, metrics.width);
+                                testLine = '';
                             }
-                            //lineWidth = metrics.width;
+
                         }
-                        ctx.fillText(line.trim(), x, y);
-                        //maxLineWidth = Math.max(maxLineWidth, lineWidth);
-                        //lineWidth = 0;
-                        testLine = '';
                     }
-                    y -= this._lineHeight;
                 }
-                //return { width: Math.ceil(maxLineWidth), height: y - lineHeight };
+
+                //ctx.restore();
+                block.width = Math.ceil(block.width);
+                block.height = Math.ceil(block.lines.length * this.lineHeight);// - (this.lineHeight - this.fontSize) * 0.5);
+                return block;
+            },
+            _redrawCache: function () {
+                var canvas = this._cacheCanvas,
+                    ctx = this._cacheCtx;
+
+                var textBlock = this._getTextBlock(); //{ width: ?, height: ?, lines: [] }
+                canvas.width = textBlock.width;
+                canvas.height = textBlock.height;
+
+                ctx.save();
+                ctx.textBaseline = 'top';   //'hanging';
+                ctx.font = this.fontStyle + ' ' + this.fontWeight + ' ' + this.fontSize + 'px' + ' ' + this.fontFamily;
+
+                var dir = PocketCode.I18nProvider.getTextDirection(this._text);
+                canvas.dir = dir;
+                if (dir == PocketCode.Ui.Direction.RTL) {
+                    ctx.translate(textBlock.width, 0);
+                }
+
+                //draw
+                var textLines = textBlock.lines,
+                    yOffset;
+                for (var i = 0, l = textLines.length; i < l; i++)
+                    ctx.fillText(textLines[i], 0, this.lineHeight * i);
+                ctx.restore();
             },
             /* override */
             _draw: function (ctx, maxWidth) {
                 if (this._text === '')
                     return;
 
-                ctx.textBaseline = 'top';   //'hanging';
-                ctx.font = this._fontStyle + ' ' + this._fontWeight + ' ' + this._fontSize + 'px' + ' ' + this._fontFamily;
+                var canvas = this._cacheCanvas;
+                ctx.save();
+                ctx.translate(this.x, -this.y);
 
-                var text = this._text;
-                var lineFeeds = text.split(/\r?\n/).length > 1,
-                    rtl = PocketCode.I18nProvider.getTextDirection(text) == PocketCode.Ui.Direction.RTL;
-
-                if (lineFeeds || maxWidth) {
-                    //if (rtl) {
-                    //    var size = this._getTextBlockSize(ctx, maxWidth, rtl);
-                    //    this._drawTextBlock(ctx, maxWidth, rtl, this.x + size.width);
-                    //}
-                    //else
-                    this._drawTextBlock(ctx, maxWidth);
-                }
-                else //draw in one line
-                    ctx.fillText(text, this.x, -this.y);
-
-                //if maxWidth: check for breaks
-                //if rtl: and breaks
-
-                //// wrap lines
-                //var newline = /\r?\n/;
-                //var textLines = this._text.split(newline);
-
-                //for (var i = 0, len = textLines.length; i < len; i++) {
-                //    var heightOfLine = this._fontSize * this._lineHeight * i;
-                //    ctx.fillText(textLines[i], this.x, -this.y - heightOfLine);
-                //}
+                ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+                ctx.restore();
             },
         });
 
@@ -203,11 +265,6 @@ PocketCode.merge({
         TOPRIGHT: 3
     },
 
-    /* TODO:
-     * -move cacheCanvas to base class to cache text rendering as well
-     * -refactor renderingText for RTL support
-     * -implement bubbles: make sure to get the latest UX designs, check for an existing android implementation, ...
-     */
     RenderingBubble: (function () {
         RenderingBubble.extends(PocketCode.RenderingItem/*, false*/);
 
@@ -218,8 +275,10 @@ PocketCode.merge({
             this._lineWidth = 6,
             this._strokeStyle = '#a0a0a0',
             this._fillStyle = '#ffffff';
+            this._type = PocketCode.Ui.BubbleType.SPEECH;
+            this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
 
-            this._textObject = new PocketCode.RenderingText({ textAlign: 'center' });
+            this._textObject = new PocketCode.RenderingText({ fontWeight: 'normal', fontSize: 31, lineHeight: 36, textAlign: 'center', maxLineWidth: 270 });
             //propObject = propObject || {};
             this._offsetX = 0;
             this._offsetY = 0;
@@ -227,7 +286,6 @@ PocketCode.merge({
             //Todo: offset scaling
             //this._positionX = 0;
             //this._positionY = 0;
-            //this._orientation = PocketCode.BubbleOrientation.TOPRIGHT;
             //this._width = 0;
             //this._height = 0;
 
@@ -240,13 +298,17 @@ PocketCode.merge({
                 writable: true,
             },
             type: {
-                value: PocketCode.Ui.BubbleType.SPEECH,
-                writable: true,
+                set: function (value) {
+                    this._type = type;
+                    this._redrawCache();
+                },
             },
-           /* orientation: {
-                value: PocketCode.BubbleOrientation.TOPRIGHT,
-                writable: true,
-            },*/
+            orientation: {
+                set: function (value) {
+                    this._orientation = type;
+                    this._redrawCache();
+                },
+            },
             offsetX: {
                 get: function () {
                     return this._offsetX;
@@ -261,6 +323,7 @@ PocketCode.merge({
                 //Todo:
                 set: function (value) {
                     this._textObject.text = value;
+                    this._redrawCache();
                     //if (!value)
                     //  this._text = this._UNDEFINED_TEXT.toString();
                     //else if (typeof value == 'number' && Math.round(value) == value)
@@ -327,7 +390,7 @@ PocketCode.merge({
 
         //methods
         RenderingBubble.prototype.merge({
-            _redrawBubble: function () {
+            _redrawCache: function () {
                 //Todo: type Abfrage und think oder speak aufrufen
                 //var bType = this.bubbleType.get();
                 var type = this._type;
@@ -723,13 +786,8 @@ PocketCode.merge({
             this._width = 0;
             this._height = 0;
 
-            //this._scaling = 1.0;
-            this._flipX = false;
-            //this._rotation = 0.0;
+            this._penColor = {}; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
             this._shadow = false;
-
-            this.penDown = false;
-            this._penColor; //= { r: undefined, g: undefined, b: undefined };  //default values are only defined on sprite/bricks
 
             this.graphicEffects = propObject.graphicEffects || [];
 
@@ -799,10 +857,14 @@ PocketCode.merge({
                         width = img.width,
                         height = img.height,
                         cache = this._cacheCanvas,
-                        ctx = cache.getContext('2d');
+                        ctx = this._cacheCtx;
+
+                    if (width == 0 || height == 0)  //to avoid errors when drawing an image mit height/width = 0
+                        return;
 
                     cache.width = width;
                     cache.height = height;
+                    //reseet image cache to original iamge and re-apply filters 
                     ctx.clearRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
 
@@ -815,7 +877,7 @@ PocketCode.merge({
                 writable: true,
             },
             penSize: {
-                value: undefined,   //default calues are defined on sprite/bricks only
+                value: undefined,   //default values are defined on sprite/bricks only
                 writable: true,
             },
             penColor: { //providing a setter/getter is important to make sure the object is merged correctly
@@ -869,7 +931,7 @@ PocketCode.merge({
                     var centerToPoint = { x: point.x - this.x, y: point.y - this.y };
                     point = {
                         x: centerToPoint.x * Math.cos(rad) - centerToPoint.y * Math.sin(rad) + this.x,
-                        y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y
+                        y: centerToPoint.x * Math.sin(rad) + centerToPoint.y * Math.cos(rad) + this.y,
                     };
                 }
 
@@ -886,18 +948,18 @@ PocketCode.merge({
 
                 ctx.rotate(this.rotation * Math.PI / 180.0);
                 ctx.scale(
-                    this.scaling * (this._flipX ? -1.0 : 1.0),
+                    this.scaling * (this.flipX ? -1.0 : 1.0),
                     this.scaling
                 );
 
-                ctx.globalAlpha = this._cacheCanvas.getContext('2d').globalAlpha;
+                ctx.globalAlpha = this._cacheCtx.globalAlpha;
                 if (this._shadow) {
                     ctx.shadowOffsetX = 6;
                     ctx.shadowOffsetY = 6;
                     ctx.shadowBlur = 0.5;
                     ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
                 }
-                this._cacheCanvas && ctx.drawImage(this._cacheCanvas, -this._width * 0.5, -this._height * 0.5, this._width, this._height);
+                /*this._cacheCanvas && */ctx.drawImage(this._cacheCanvas, -this._width * 0.5, -this._height * 0.5, this._width, this._height);  //TODO: TopLeft2PhysicsCenter
                 ctx.restore();
             },
         });

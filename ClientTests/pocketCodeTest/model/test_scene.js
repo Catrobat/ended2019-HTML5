@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -8,149 +8,148 @@
 QUnit.module("model/scene.js");
 
 
-
-var TestSpriteClone = (function () {
-    TestSpriteClone.extends(PocketCode.Model.SpriteClone, false);
-
-    function TestSpriteClone(program, scene, args) {
-        PocketCode.Model.SpriteClone.call(this, program, scene, args, {});
-        this.status = PocketCode.ExecutionState.STOPPED;
-        //this.MOCK = true;   //flag makes debugging much easier
-        this.initCalled = 0;
-        this.initLooksCalled = 0;
-        this.setLookCounter = 0;
-        this.subscribeOnLookChangeCounter = 0;
-        this.unsubscribeFroLookChangeCounter = 0;
-        this.setPositionCounter = 0;
-        this._onCloneStart = new SmartJs.Event.Event(this);
-        this.isClone = false;
-        this.stopAllScriptsCalled=0;
-    }
-
-    TestSpriteClone.prototype.merge({
-        //execute: function () {
-        //    this.status = PocketCode.ExecutionState.RUNNING;
-        //    this.timesStarted++;
-        //},
-        pauseScripts: function () {
-            this.status = PocketCode.ExecutionState.PAUSED;
-        },
-        resumeScripts: function () {
-            this.status = PocketCode.ExecutionState.RUNNING;
-        },
-        init: function () {
-            this.initCalled++;
-            return true;    //required to test stop/restart
-        },
-        initLooks: function () {
-            this.initLooksCalled++;
-            return true;
-        },
-
-        setLook: function () {
-            this.setLookCounter++;
-        },
-
-        subscribeOnLookChange: function () {
-            this.subscribeOnLookChangeCounter++;
-        },
-
-        unsubscribeFromLookChange: function () {
-            this.unsubscribeFroLookChangeCounter++;
-        },
-        setPosition: function () {
-            this.setPositionCounter++;
-        },
-        clone:function(){
-            var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
-            clone.isClone = true;
-            return clone;
-        },
-        stopAllScripts: function(){
-        this.stopAllScriptsCalled ++;
-
-        }
-    });
-
-
-
-    return TestSpriteClone;
-})();
-
-var TestSprite = (function () {
-    TestSprite.extends(PocketCode.Model.Sprite, false);
-
-    function TestSprite(program, scene, args) {
-        PocketCode.Model.Sprite.call(this, program, scene, args);
-        this.status = PocketCode.ExecutionState.STOPPED;
-        //this.MOCK = true;   //flag makes debugging much easier
-        this.initCalled = 0;
-        this.initLooksCalled = 0;
-        this.setLookCounter = 0;
-        this.subscribeOnLookChangeCounter = 0;
-        this.unsubscribeFroLookChangeCounter = 0;
-        this.setPositionCounter = 0;
-        this._onCloneStart = new SmartJs.Event.Event(this);
-        this.isClone = false;
-        this.stopAllScriptsCalled=0;
-    }
-
-    TestSprite.prototype.merge({
-        //execute: function () {
-        //    this.status = PocketCode.ExecutionState.RUNNING;
-        //    this.timesStarted++;
-        //},
-        pauseScripts: function () {
-            this.status = PocketCode.ExecutionState.PAUSED;
-        },
-        resumeScripts: function () {
-            this.status = PocketCode.ExecutionState.RUNNING;
-        },
-        stopAllScripts: function(){
-            this.stopAllScriptsCalled ++;
-
-        },
-        init: function () {
-            this.initCalled++;
-            return true;    //required to test stop/restart
-        },
-        initLooks: function () {
-            this.initLooksCalled++;
-            return true;
-        },
-
-        setLook: function () {
-            this.setLookCounter++;
-        },
-
-        subscribeOnLookChange: function () {
-            this.subscribeOnLookChangeCounter++;
-        },
-
-        unsubscribeFromLookChange: function () {
-            this.unsubscribeFroLookChangeCounter++;
-        },
-        setPosition: function () {
-            this.setPositionCounter++;
-        },
-        clone:function(){
-            var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
-            clone.isClone = true;
-            return clone;
-        }
-    });
-
-
-
-    return TestSprite;
-})();
-
-
 QUnit.test("Scene", function (assert) {
+
+    var TestSpriteClone = (function () {
+        TestSpriteClone.extends(PocketCode.Model.SpriteClone, false);
+
+        function TestSpriteClone(program, scene, args) {
+            PocketCode.Model.SpriteClone.call(this, program, scene, args, {});
+            this.status = PocketCode.ExecutionState.STOPPED;
+            //this.MOCK = true;   //flag makes debugging much easier
+            this.initCalled = 0;
+            this.initLooksCalled = 0;
+            this.setLookCounter = 0;
+            this.subscribeOnLookChangeCounter = 0;
+            this.unsubscribeFroLookChangeCounter = 0;
+            this.setPositionCounter = 0;
+            this._onCloneStart = new SmartJs.Event.Event(this);
+            this.isClone = false;
+            this.stopAllScriptsCalled = 0;
+        }
+
+        TestSpriteClone.prototype.merge({
+            //execute: function () {
+            //    this.status = PocketCode.ExecutionState.RUNNING;
+            //    this.timesStarted++;
+            //},
+            pauseScripts: function () {
+                this.status = PocketCode.ExecutionState.PAUSED;
+            },
+            resumeScripts: function () {
+                this.status = PocketCode.ExecutionState.RUNNING;
+            },
+            init: function () {
+                this.initCalled++;
+                return true;    //required to test stop/restart
+            },
+            initLooks: function () {
+                this.initLooksCalled++;
+                return true;
+            },
+
+            setLook: function () {
+                this.setLookCounter++;
+            },
+
+            subscribeOnLookChange: function () {
+                this.subscribeOnLookChangeCounter++;
+            },
+
+            unsubscribeFromLookChange: function () {
+                this.unsubscribeFroLookChangeCounter++;
+            },
+            setPosition: function () {
+                this.setPositionCounter++;
+            },
+            clone: function () {
+                var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
+                clone.isClone = true;
+                return clone;
+            },
+            stopAllScripts: function () {
+                this.stopAllScriptsCalled++;
+
+            }
+        });
+
+
+
+        return TestSpriteClone;
+    })();
+
+    var TestSprite = (function () {
+        TestSprite.extends(PocketCode.Model.Sprite, false);
+
+        function TestSprite(program, scene, args) {
+            PocketCode.Model.Sprite.call(this, program, scene, args);
+            this.status = PocketCode.ExecutionState.STOPPED;
+            //this.MOCK = true;   //flag makes debugging much easier
+            this.initCalled = 0;
+            this.initLooksCalled = 0;
+            this.setLookCounter = 0;
+            this.subscribeOnLookChangeCounter = 0;
+            this.unsubscribeFroLookChangeCounter = 0;
+            this.setPositionCounter = 0;
+            this._onCloneStart = new SmartJs.Event.Event(this);
+            this.isClone = false;
+            this.stopAllScriptsCalled = 0;
+        }
+
+        TestSprite.prototype.merge({
+            //execute: function () {
+            //    this.status = PocketCode.ExecutionState.RUNNING;
+            //    this.timesStarted++;
+            //},
+            pauseScripts: function () {
+                this.status = PocketCode.ExecutionState.PAUSED;
+            },
+            resumeScripts: function () {
+                this.status = PocketCode.ExecutionState.RUNNING;
+            },
+            stopAllScripts: function () {
+                this.stopAllScriptsCalled++;
+
+            },
+            init: function () {
+                this.initCalled++;
+                return true;    //required to test stop/restart
+            },
+            initLooks: function () {
+                this.initLooksCalled++;
+                return true;
+            },
+
+            setLook: function () {
+                this.setLookCounter++;
+            },
+
+            subscribeOnLookChange: function () {
+                this.subscribeOnLookChangeCounter++;
+            },
+
+            unsubscribeFromLookChange: function () {
+                this.unsubscribeFroLookChangeCounter++;
+            },
+            setPosition: function () {
+                this.setPositionCounter++;
+            },
+            clone: function () {
+                var clone = new TestSpriteClone(this._gameEngine, this._scene, this._json);
+                clone.isClone = true;
+                return clone;
+            }
+        });
+
+
+
+        return TestSprite;
+    })();
+
 
     var done = assert.async();
     var gameEngine = new PocketCode.GameEngine();
-    var scene = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene = new PocketCode.Model.Scene(gameEngine, undefined, []);
     assert.ok(scene instanceof PocketCode.Model.Scene && scene instanceof SmartJs.Core.Component, "instance check");
     assert.ok(scene.objClassName === "Scene", "objClassName check");
 
@@ -176,7 +175,7 @@ QUnit.test("Scene", function (assert) {
 
 
     //test cloneSprite
-    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, undefined, []);
+    var scene2 = new PocketCode.Model.Scene(gameEngine, undefined, []);
     var device = "device";
 
     var is = new PocketCode.ImageStore();   //recreate
@@ -189,26 +188,24 @@ QUnit.test("Scene", function (assert) {
             { id: "s5", url: "imgHelper16.png", size: 2 },
         ];
 
-    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest));
+    is.onLoad.addEventListener(new SmartJs.Event.EventListener(startTest, this));
     is.loadImages(baseUrl, images);
 
     var clone, sprite;
     function startTest() {
 
-
-        assert.ok(scene2.onProgressChange instanceof  SmartJs.Event.Event , "onProgressChange is an event");
+        assert.ok(scene2.onProgressChange instanceof SmartJs.Event.Event, "onProgressChange is an event");
         assert.ok(scene2.onUnsupportedBricksFound instanceof SmartJs.Event.Event, "onUnsupportedBricksFound is an event");
-        assert.ok(scene2.onStart instanceof  SmartJs.Event.Event, "onStart is an event");
-        assert.ok(scene2.onExecuted instanceof  SmartJs.Event.Event, "onExecuted is an event");
-        assert.ok(scene2.onUiChange instanceof  SmartJs.Event.Event, "onUiChange is an event");
-        assert.ok(scene2.onSpriteUiChange instanceof  SmartJs.Event.Event, "onSpriteUiChange is an event");
-        assert.ok(scene2.onSpriteTappedAction instanceof  SmartJs.Event.Event, "onSpriteTappedAction is an event");
-        assert.ok(scene2.onTouchStartAction instanceof  SmartJs.Event.Event, "onTouchStartAction is an event");
-
+        assert.ok(scene2.onStart instanceof SmartJs.Event.Event, "onStart is an event");
+        assert.ok(scene2.onExecuted instanceof SmartJs.Event.Event, "onExecuted is an event");
+        assert.ok(scene2.onUiChange instanceof SmartJs.Event.Event, "onUiChange is an event");
+        assert.ok(scene2.onSpriteUiChange instanceof SmartJs.Event.Event, "onSpriteUiChange is an event");
+        assert.ok(scene2.onSpriteTappedAction instanceof SmartJs.Event.Event, "onSpriteTappedAction is an event");
+        assert.ok(scene2.onTouchStartAction instanceof SmartJs.Event.Event, "onTouchStartAction is an event");
 
         // testing scene load
         scene2.load(cloneScene); //global ressource defined in _resources/testDataProject
-        assert.ok(scene2.collisionManager instanceof  PocketCode.CollisionManager, "collisionManager is instance of PocketCode.CollisionManager");
+        assert.ok(scene2.collisionManager instanceof PocketCode.CollisionManager, "collisionManager is instance of PocketCode.CollisionManager");
         assert.ok(scene2.physicsWorld instanceof PocketCode.PhysicsWorld, "physicsWOrld is instance of PocketCode.PhysicsWorld");
         assert.equal(scene2.id, cloneScene.id, "id is set correctly");
         assert.equal(scene2.screenSize.height, cloneScene.screenHeight, "height is set correctly");
@@ -230,8 +227,8 @@ QUnit.test("Scene", function (assert) {
             var testSprite = new TestSprite(gameEngine, scene2, cloneScene.sprites[ind]);
             return testSprite;
         });
-        scene2._originalSpriteOrder =[];
-        for ( var i=0; i< scene2._sprites.length; i++){
+        scene2._originalSpriteOrder = [];
+        for (var i = 0; i < scene2._sprites.length; i++) {
             scene2._originalSpriteOrder.push(scene2._sprites[i]);
         }
         scene2._background = new TestSprite(gameEngine, scene2, cloneScene.background);
@@ -247,8 +244,6 @@ QUnit.test("Scene", function (assert) {
                 assert.equal(true, true, "pause sounds called");
             }
         }
-
-
 
         // testing sprite initialization
         scene2.initializeSprites();  //images already loaded- initilaze look objects
@@ -269,12 +264,12 @@ QUnit.test("Scene", function (assert) {
 
         }
 
-        function onExecuted(){
+        function onExecuted() {
 
             assert.equal(scene2.executionState, PocketCode.ExecutionState.STOPPED, " scene stopped after execution");
         }
-        scene2._onExecuted = new SmartJs.Event.EventListener(onExecuted);
-        scene2._onStart.addEventListener(new SmartJs.Event.EventListener(onStart));
+        scene2._onExecuted = new SmartJs.Event.EventListener(onExecuted, this);
+        scene2._onStart.addEventListener(new SmartJs.Event.EventListener(onStart, this));
         var result = scene2.start();
         assert.equal(onStartDispatched, true, "onStart event dispatched");
         assert.equal(result, true, "start() should return true if not already running");
@@ -328,9 +323,9 @@ QUnit.test("Scene", function (assert) {
                 assert.equal(true, true, "updateTouchEvent in device called!");
             }
         }
-        scene2._onSpriteTappedAction.addEventListener(new SmartJs.Event.EventListener(spriteTapped));
-        scene2._onTouchStartAction.addEventListener(new SmartJs.Event.EventListener(spriteTouchStarted));
-        scene2.handleUserAction({ action: PocketCode.UserActionType.SPRITE_CLICKED, targetId: scene2._sprites[0].id });
+        scene2._onSpriteTappedAction.addEventListener(new SmartJs.Event.EventListener(spriteTapped, this));
+        scene2._onTouchStartAction.addEventListener(new SmartJs.Event.EventListener(spriteTouchStarted, this));
+        scene2.handleUserAction({ action: PocketCode.UserActionType.SPRITE_TOUCHED, targetId: scene2._sprites[0].id });
         scene2.handleUserAction({ action: PocketCode.UserActionType.TOUCH_START, targetId: scene2._sprites[0].id });
 
         // getSpriteById
@@ -385,9 +380,9 @@ QUnit.test("Scene", function (assert) {
         function setLayerBackUIChange() {
             assert.equal(true, true, "setLayerBack triggered spriteUIChange");
         }
-        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(setLayerBackUIChange));
+        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(setLayerBackUIChange, this));
         scene2.setSpriteLayerBack(testSprite, 1);
-        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(setLayerBackUIChange));
+        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(setLayerBackUIChange, this));
         var newLayer = scene2.getSpriteLayer(testSprite);
         assert.equal(newLayer, oldLayer - 1, "setSpriteLayerBack works correctly");
         oldLayer = scene2.getSpriteLayer(testSprite);
@@ -396,10 +391,10 @@ QUnit.test("Scene", function (assert) {
             assert.equal(true, true, "setSpriteLayerToFront triggered onSpriteUIChange");
         }
 
-        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(setLayerFrontUIChange));
+        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(setLayerFrontUIChange, this));
         scene2.setSpriteLayerToFront(testSprite, 1);
         newLayer = scene2.getSpriteLayer(testSprite);
-        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(setLayerFrontUIChange));
+        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(setLayerFrontUIChange, this));
         assert.equal(newLayer, oldLayer + 1, "setSpriteLayerToFront works correctly");
 
         // setSpritePosition
@@ -423,15 +418,15 @@ QUnit.test("Scene", function (assert) {
             assert.equal(e.properties.showAskDialog, true, "showAskDialog event dispatched with correct properties");
             assert.equal(e.properties.question, "How are you?", "showAskDialog event dispatched with correct question");
         }
-        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(showAskDialogEvent));
+        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(showAskDialogEvent, this));
         scene2.showAskDialog("How are you?", function () { });
-        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(showAskDialogEvent));
+        scene2._onSpriteUiChange.removeEventListener(new SmartJs.Event.EventListener(showAskDialogEvent, this));
 
         //clearPenStampBackground
         function clearPenStampEvent(e) {
             assert.equal(e.properties.clearBackground, true, "clear penStamp event dispatched with correct parameters")
         }
-        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(clearPenStampEvent));
+        scene2._onSpriteUiChange.addEventListener(new SmartJs.Event.EventListener(clearPenStampEvent, this));
         scene2.clearPenStampBackground();
 
         //setGravity
@@ -446,21 +441,21 @@ QUnit.test("Scene", function (assert) {
         scene2.setGravity(2, 2);
 
         var renderingSprites = scene2.renderingSprites;
-        assert.equal(renderingSprites.length , scene2._sprites.length+1 , "correct number of rendering sprites returned");
+        assert.equal(renderingSprites.length, scene2._sprites.length + 1, "correct number of rendering sprites returned");
 
-        for(var i=0; i< renderingSprites.length; i++){
-            assert.ok(renderingSprites[i] instanceof  PocketCode.RenderingSprite, "renderingSprite is instanceof RenderingSprite");
+        for (var i = 0; i < renderingSprites.length; i++) {
+            assert.ok(renderingSprites[i] instanceof PocketCode.RenderingSprite, "renderingSprite is instanceof RenderingSprite");
         }
 
 
         var renderingVariables = scene2.renderingVariables;
-        var rendVarLength =0;
+        var rendVarLength = 0;
 
-        for(var i=0; i< scene2._sprites.length; i++){
+        for (var i = 0; i < scene2._sprites.length; i++) {
             rendVarLength += scene2._sprites[i].renderingVariables.length;
         }
 
-        rendVarLength +=  scene2._background.renderingVariables.length;
+        rendVarLength += scene2._background.renderingVariables.length;
         assert.equal(renderingVariables.length, rendVarLength, "renderingVariables returns correct number of variables");
 
 
@@ -468,7 +463,7 @@ QUnit.test("Scene", function (assert) {
 
         var screenSize = scene2.screenSize;
 
-        assert.equal(screenSize.height, scene2._originalScreenHeight,  "screenSize has correct Height");
+        assert.equal(screenSize.height, scene2._originalScreenHeight, "screenSize has correct Height");
         assert.equal(screenSize.width, scene2._originalScreenWidth, "screenSize has correct Width");
 
         clone = scene2._sprites[0];
@@ -483,7 +478,7 @@ QUnit.test("Scene", function (assert) {
 
         var cloneStillExists = false;
 
-        for (var i=0; i< scene2._sprites.length; i++){
+        for (var i = 0; i < scene2._sprites.length; i++) {
             if (scene2._sprites[i].id == cloneId)
                 cloneStillExists = true;
         }
@@ -493,38 +488,38 @@ QUnit.test("Scene", function (assert) {
         //reinitializeSprites
 
         scene2.reinitializeSprites();
-            spriteInitCounter =0;
+        spriteInitCounter = 0;
         for (var i = 0; i < scene2._sprites.length; i++) {
             spriteInitCounter += scene2._sprites[i].initCalled;
         }
 
 
 
-        assert.equal(spriteInitCounter, scene2._sprites.length*2 ,  "every sprite is reinitialized");
+        assert.equal(spriteInitCounter, scene2._sprites.length * 2, "every sprite is reinitialized");
         assert.equal(scene2._background.initCalled, 2, "background reinitialized");
 
         //stopAllScripts
+        assert.ok(false, "TODO");
+        //scene2.stopAllScripts();
+        //var stopScriptsCounter = 0;
+        //for (var i = 0; i < scene2._sprites.length; i++) {
+        //    stopScriptsCounter += scene2._sprites[i].stopAllScriptsCalled;
+        //}
 
-        scene2.stopAllScripts();
-        var stopScriptsCounter =0;
-        for (var i = 0; i < scene2._sprites.length; i++) {
-            stopScriptsCounter += scene2._sprites[i].stopAllScriptsCalled;
-        }
 
+        //assert.equal(stopScriptsCounter, scene2._sprites.length, "all scripts stopped");
+        //assert.equal(scene2.background.stopAllScriptsCalled, true, "background scripts stopped");
 
-        assert.equal(stopScriptsCounter, scene2._sprites.length, "all scripts stopped");
-        assert.equal(scene2.background.stopAllScriptsCalled, true, "background scripts stopped");
+        //scene2._soundManager = {
+        //    stopAllSounds: function () {
 
-            scene2._soundManager = {
-                stopAllSounds: function(){
+        //    }
+        //}
+        //scene2.dispose();
 
-                }
-            }
-        scene2.dispose();
-
-        assert.equal(scene2._device, undefined, "device disposed");
-        assert.equal(scene2._soundManager, undefined, "soundManager disposed");
-        assert.equal(scene2._originalSpriteOrder, undefined, "originalSpriteOrder disposed");
+        //assert.equal(scene2._device, undefined, "device disposed");
+        //assert.equal(scene2._soundManager, undefined, "soundManager disposed");
+        //assert.equal(scene2._originalSpriteOrder, undefined, "originalSpriteOrder disposed");
 
 
         done();

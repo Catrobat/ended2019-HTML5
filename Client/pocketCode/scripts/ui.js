@@ -130,6 +130,11 @@ PocketCode.Ui.merge({
                 this._dom.textContent = this._insertBefore.toString() + this._text + this._insertAfter.toString();
                 this._onResize.dispatchEvent();
             },
+            dispose: function () {
+                if (PocketCode.I18nProvider)
+                    PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._updateUiStrings, this));
+                SmartJs.Ui.TextNode.prototype.dispose.call(this);
+            },
         });
 
         return I18nTextNode;
@@ -142,14 +147,19 @@ PocketCode.Ui.merge({
         function I18nControl(element, propObject) {
             SmartJs.Ui.Control.call(this, element, propObject);
 
-            var languageChangeListener = new SmartJs.Event.EventListener(this._updateUiStrings, this);
-            PocketCode.I18nProvider.onLanguageChange.addEventListener(languageChangeListener);
+            if (PocketCode.I18nProvider)
+                PocketCode.I18nProvider.onLanguageChange.addEventListener(new SmartJs.Event.EventListener(this._updateUiStrings, this));
         }
 
         //methods
         I18nControl.prototype.merge({
             _updateUiStrings: function () {
                 //TODO: override this in the individual controls
+            },
+            dispose: function () {
+                if (PocketCode.I18nProvider)
+                    PocketCode.I18nProvider.onLanguageChange.removeEventListener(new SmartJs.Event.EventListener(this._updateUiStrings, this));
+                SmartJs.Ui.Control.prototype.dispose.call(this);
             },
         });
 

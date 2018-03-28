@@ -107,6 +107,7 @@ PocketCode.merge({
                 this._project = new PocketCode.GameEngine();
                 this._project.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
                 this._project.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                this._project.onSceneChange.addEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
                 this._currentProjectId = undefined;
 
                 //webOverlay is undefined if running in mobile page, no viewport defined
@@ -273,6 +274,10 @@ PocketCode.merge({
                 _projectLoadingErrorHandler: function (e) {
                     this._loadingError = e;
                 },
+                _sceneChangedHandler: function (e) {
+                    var screenSize = e.screenSize;
+                    this._onHWRatioChange.dispatchEvent({ ratio: screenSize.height / screenSize.width });
+                },
                 _requestProjectDetails: function () {
                     var req = new PocketCode.ServiceRequest(PocketCode.Services.PROJECT_DETAILS, SmartJs.RequestMethod.GET, { id: this._currentProjectId, imgDataMax: 0 });
                     req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._projectDetailsRequestLoadHandler, this));
@@ -292,6 +297,10 @@ PocketCode.merge({
                     this._requestProject();
                 },
                 _projectDetailsRequestErrorHandler: function (e) {
+                    if (PocketCode._serviceEndpoint.indexOf('http://localhost/') >= 0) {   //disable error on details-service for local debugging
+                        this._projectDetailsRequestLoadHandler({ target: { responseJson: { title: 'DEBUG MODE', baseUrl: '', thumbnailUrl: '' } } });
+                        return;
+                    }
                     if (this._disposing || this._disposed)
                         return;
 
@@ -488,16 +497,16 @@ PocketCode.merge({
                     var compatible = pc.result;
 
                     if (!compatible) {	//framework not loaded correctly or compatibility failed
-                        if (!pc.tests.SmartJs) {
-                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application');
-                            this._onExit.dispatchEvent();
-                        }
-                        else {
+                        try {
+                            PocketCode.LoggingProvider.sendMessage('browser not supported: ' + JSON.stringify(pc.tests), this._currentProjectId);
                             var d = new PocketCode.Ui.BrowserNotSupportedDialog();
                             d.onOK.addEventListener(new SmartJs.Event.EventListener(this._onExit.dispatchEvent, this._onExit));
-                            //d.bodyInnerHTML += '<br /><br />Application will be closed.';
                             this._onInit.dispatchEvent();   //hide splash screen
                             this._showDialog(d, false);
+                        }
+                        catch (e) {
+                            alert('sorry.. your browser does not meet the HTML5 feature requirements to run this application. Details: ' + JSON.stringify(pc.tests));
+                            this._onExit.dispatchEvent();
                         }
                         return;
                     }
@@ -534,8 +543,14 @@ PocketCode.merge({
                         this._removeDomListener(window, 'popstate', this._popstateListener);
                     if (this._escKeyListener)
                         this._removeDomListener(document, 'keyup', this._escKeyListener);
-                    if (this._project && this._project.onLoadingError)
-                        this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                    if (this._project) {
+                        if (this._project.onLoadingError)
+                            this._project.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadingErrorHandler, this));
+                        if (this._project.onLoad)
+                            this._project.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._projectLoadHandler, this));
+                        if (this._project.onSceneChange)
+                            this._project.onSceneChange.removeEventListener(new SmartJs.Event.EventListener(this._sceneChangedHandler, this));
+                    }
                     //this._project.dispose();    //make sure the project gets disposed befor disposing the UI  -> ? -> this way the ui cannot unbind
 
                     this._currentPage = undefined;

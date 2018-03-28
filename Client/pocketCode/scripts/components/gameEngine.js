@@ -8,7 +8,6 @@
 /// <reference path="../model/scene.js" />
 /// <reference path="publishSubscribe.js" />
 /// <reference path="soundManager.js" />
-/// <reference path="stopwatch.js" />
 'use strict';
 
 PocketCode.GameEngine = (function () {
@@ -44,7 +43,7 @@ PocketCode.GameEngine = (function () {
         this._soundManager.onLoadingProgress.addEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
         this._soundManager.onLoadingError.addEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
         this._soundManager.onLoad.addEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
-        this._soundManager.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));    //check if project has finished executing
+
         this._loadingAlerts = {
             invalidSoundFiles: [],
             unsupportedBricks: [],
@@ -156,7 +155,10 @@ PocketCode.GameEngine = (function () {
             set: function (value) {
                 if (typeof value !== 'boolean')
                     throw new Error('invalid parameter: muted');
-                this._soundManager.muted = value;
+
+                for (var id in this._scenes) {
+                    this._scenes[id].muted = value;
+                }
             },
         },
         _sounds: {
@@ -235,12 +237,10 @@ PocketCode.GameEngine = (function () {
 
             if (this._device)
                 this._device.dispose();
-            this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice(this._soundManager) : new PocketCode.DeviceEmulator(this._soundManager);
-            //console.log("STARTING GAME ENGINE");
+            this._device = SmartJs.Device.isMobile ? new PocketCode.MediaDevice() : new PocketCode.DeviceEmulator();
+
             this._device.onSpaceKeyDown.addEventListener(new SmartJs.Event.EventListener(this._deviceOnSpaceKeyDownHandler, this));
             this._device.onCameraChange.addEventListener(new SmartJs.Event.EventListener(this._deviceOnCameraChangeHandler, this));
-
-            //console.log("_onCameraUsageChange:", this._onCameraUsageChange);
 
             this._currentScene = undefined;
             for (var id in this._scenes) {
@@ -259,7 +259,7 @@ PocketCode.GameEngine = (function () {
                 scene;
 
             for (var i = 0, l = jsonScenes.length; i < l; i++) {
-                scene = new PocketCode.Model.Scene(this, this._device, this._soundManager, broadcasts, this._minLoopCycleTime);
+                scene = new PocketCode.Model.Scene(this, this._device, broadcasts, this._minLoopCycleTime);
                 //this._sceneIds.push(scene.id);
                 scene.onProgressChange.addEventListener(new SmartJs.Event.EventListener(this._sceneOnProgressChangeHandler, this));
                 scene.onUnsupportedBricksFound.addEventListener(new SmartJs.Event.EventListener(this._sceneUnsupportedBricksHandler, this));
@@ -371,13 +371,12 @@ PocketCode.GameEngine = (function () {
             var loadingAlerts = this._loadingAlerts;
             var device = this._device;
 
-            loadingAlerts.deviceUnsupportedFeatures = device.unsupportedFeatures;
-            loadingAlerts.deviceEmulation = device.emulationInUse;
-            loadingAlerts.deviceLockRequired = device.mobileLockRequired;
-            loadingAlerts.deviceBlockedFeatures = device.blockedFeatures;
+            loadingAlerts.deviceUnsupportedFeatures = device ? device.unsupportedFeatures : [];
+            loadingAlerts.deviceEmulation = device ? device.emulationInUse : [];
+            loadingAlerts.deviceLockRequired = device ? device.mobileLockRequired : [];
 
-            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length !== 0 ||
-                loadingAlerts.unsupportedBricks.length !== 0 || loadingAlerts.deviceUnsupportedFeatures.length !== 0 || loadingAlerts.deviceBlockedFeatures.length !== 0) {
+            if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
+                loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
                 this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
@@ -397,7 +396,6 @@ PocketCode.GameEngine = (function () {
         },
         //device
         _deviceOnCameraChangeHandler: function (e) {
-            //console.log("CAMERA CHANGED HANDLER");
             this._onCameraUsageChange.dispatchEvent(e);
         },
         _deviceOnSpaceKeyDownHandler: function (e) {
@@ -451,7 +449,6 @@ PocketCode.GameEngine = (function () {
             return false;
         },
         resumeProject: function () {
-            //console.log("current scene :", this._currentScene);
             if (this._device)
                 this._device.resume();
             if (this._currentScene)
@@ -459,16 +456,8 @@ PocketCode.GameEngine = (function () {
             return false;
         },
         stopProject: function () {
-            this._soundManager.stopAllSounds();
-            //TODO? this._device.stop();
             for (var id in this._scenes)
                 this._scenes[id].stop();
-            //if (this._currentScene)
-            //    return this._currentScene.stop();
-            return false;
-        },
-        _soundManagerFinishedPlayingHandler: function () {
-            //TODO: moved to scene: make sure to write another handler for sound checking if currentScene is stopped
         },
         getLookImage: function (id) {
             //used by the sprite to access an image during look init
@@ -568,8 +557,8 @@ PocketCode.GameEngine = (function () {
             }
             this._imageStore.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._imageStore.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
+            this._imageStore.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._imageStoreLoadHandler, this));
             this._imageStore.abortLoading();
-            //this._imageStore.dispose();
 
             var scene;
             for (var id in this._scenes) {
@@ -581,23 +570,7 @@ PocketCode.GameEngine = (function () {
 
             this._soundManager.onLoadingProgress.removeEventListener(new SmartJs.Event.EventListener(this._resourceProgressChangeHandler, this));
             this._soundManager.onLoadingError.removeEventListener(new SmartJs.Event.EventListener(this._resourceLoadingErrorHandler, this));
-            this._soundManager.onFinishedPlaying.removeEventListener(new SmartJs.Event.EventListener(this._soundManagerFinishedPlayingHandler, this));
-            //this._soundManager.stopAllSounds();   //already stopped in stopProject()
-            //this._soundManager.dispose();
-
-
-            //TODO: remove code below and make sure scenes are disposed
-            // if (this._background)
-            //     this._background.onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-            //
-            // delete this._originalSpriteOrder;
-            // var scenes = this._scenes;
-            // for (var j = 0, lengthScenes = scenes.length; j < lengthScenes; j++) {
-            //     var sprites = scenes[j].sprites;
-            //     for (var i = 0, l = sprites.length; i < l; i++) {
-            //         sprites[i].onExecuted.removeEventListener(new SmartJs.Event.EventListener(this._spriteOnExecutedHandler, this));
-            //     }
-            // }
+            this._soundManager.onLoad.removeEventListener(new SmartJs.Event.EventListener(this._soundManagerLoadHandler, this));
 
             //call super
             PocketCode.Model.UserVariableHost.prototype.dispose.call(this);

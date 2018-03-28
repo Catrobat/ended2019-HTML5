@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 //provides an interface for either localStorage or cookie based on browser support
-PocketCode.SettingsProvider = (function () {
+PocketCode._SettingsProvider = (function () {
     SettingsProvider.extends(SmartJs.Components.StorageAdapter, false);
 
     function SettingsProvider() {
@@ -41,4 +41,4 @@ PocketCode.SettingsProvider = (function () {
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-PocketCode.SettingsProvider = new PocketCode.SettingsProvider();
+PocketCode.SettingsProvider = new PocketCode._SettingsProvider();

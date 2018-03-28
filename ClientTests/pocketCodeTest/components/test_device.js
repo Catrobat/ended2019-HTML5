@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/soundManager.js" />
 /// <reference path="../../../Client/pocketCode/scripts/components/device.js" />
 'use strict';
@@ -8,10 +8,7 @@ QUnit.module("components/device.js");
 
 QUnit.test("Device", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    assert.throws(function () { var dev = new PocketCode.Device("sm"); }, Error, "ERROR: invalid cntr argument");
-    var dev = new PocketCode.Device(sm);
-
+    var dev = new PocketCode.Device();
     assert.ok(dev instanceof PocketCode.Device, "instance check");
     assert.ok(dev.onSpaceKeyDown instanceof SmartJs.Event.Event, "onSpaceKeyDown event check");
 
@@ -33,8 +30,6 @@ QUnit.test("Device", function (assert) {
     assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
     assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");
 
-    assert.equal(dev.loudness, sm.volume, "loudness getter");
-    
     dev._features.FLASH.inUse = false;
     assert.equal(dev.flashOn, false, "flashOn getter");
     assert.ok(dev._features.FLASH.inUse, "flashOn: flash inUser: after getter");
@@ -66,7 +61,7 @@ QUnit.test("Device", function (assert) {
     dev._features.VIBRATE.supported = false; //disable
     assert.notOk(dev.vibrate("10"), "vibrate: invalid argument");
     assert.equal(dev.vibrate(10), false, "vibrate call with parameter");
-    
+
     assert.equal(dev.emulationInUse, false, "emulationInUse getter: should always return false");
 
     assert.equal(dev.unsupportedFeatureDetected, true, "unsupported feature detected");
@@ -75,17 +70,15 @@ QUnit.test("Device", function (assert) {
     //dispose
     dev.dispose();
     assert.equal(dev._disposed, true, "dispose");
-    assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
-    dev = new PocketCode.Device(sm);  //recreate to check if there are any side effects
+    dev = new PocketCode.Device();  //recreate to check if there are any side effects
 
 });
 
 
 QUnit.test("Device: Touch", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.Device(sm);
+    var dev = new PocketCode.Device();
 
     assert.equal(dev.lastTouchIndex, 0, "initial: no touch");
     dev.updateTouchEvent(PocketCode.UserActionType.TOUCH_START, "m1", 0, 0);
@@ -126,8 +119,7 @@ QUnit.test("Device: Touch", function (assert) {
     assert.ok(pos.x == 3 && pos.y == 4, "latest active touch position");
 
     //geoLocation
-    var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.Device(sm);
+    var dev = new PocketCode.Device();
 
     //setting internal values
     dev._geoLocationData.latitude = 1;
@@ -145,38 +137,36 @@ QUnit.test("Device: Touch", function (assert) {
 
 QUnit.test("MediaDevice", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.MediaDevice(sm);
+    var dev = new PocketCode.MediaDevice();
 
     assert.ok(dev instanceof PocketCode.Device && dev instanceof PocketCode.MediaDevice, "instance check");
 
-    dev._features.CAMERA.inUse = false;
-    assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
-    dev._features.CAMERA.inUse = false;
-    assert.throws(function () { dev.selectedCamera = "OTHER"; }, Error, "ERROR: camera setter: invalid value");
-    assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
-    dev._features.CAMERA.inUse = false;
-    dev.selectedCamera = PocketCode.CameraType.FRONT;
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-    assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
+    //dev._features.CAMERA.inUse = false;
+    //assert.equal(dev.selectedCamera, PocketCode.CameraType.BACK, "selected camera: default selected");
+    //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    //dev._features.CAMERA.inUse = false;
+    //assert.throws(function () { dev.selectedCamera = "OTHER"; }, Error, "ERROR: camera setter: invalid value");
+    //assert.notOk(dev._features.CAMERA.inUse, "camera inUser: after invalid setter");
+    //dev._features.CAMERA.inUse = false;
+    //dev.selectedCamera = PocketCode.CameraType.FRONT;
+    //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    //assert.equal(dev.selectedCamera, PocketCode.CameraType.FRONT, "selected camera: getter/setter");
 
-    assert.equal(dev.cameraOn, false, "cameraOn: default");
-    dev._features.CAMERA.inUse = false;
-    assert.throws(function () { dev.cameraOn = "OTHER"; }, Error, "ERROR: cameraOn setter: invalid value");
-    assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
-    dev._features.CAMERA.inUse = false;
-    dev.cameraOn = true;
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
-    assert.ok(dev.cameraOn, "selected camera: getter/setter");
+    //assert.equal(dev.cameraOn, false, "cameraOn: default");
+    //dev._features.CAMERA.inUse = false;
+    //assert.throws(function () { dev.cameraOn = "OTHER"; }, Error, "ERROR: cameraOn setter: invalid value");
+    //assert.notOk(dev._features.CAMERA.inUse, "cameraOn: camera inUser: after invalid setter");
+    //dev._features.CAMERA.inUse = false;
+    //dev.cameraOn = true;
+    //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after setter");
+    //assert.ok(dev.cameraOn, "selected camera: getter/setter");
 
     dev._features.CAMERA.inUse = false;
     assert.ok(typeof dev.faceDetected === 'boolean', "faceDetected getter");
-    assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
+    //assert.ok(dev._features.CAMERA.inUse, "camera inUser: after getter");
     assert.ok(!isNaN(dev.faceSize), "faceSize getter");
     assert.ok(!isNaN(dev.facePositionX), "facePositionX getter");
     assert.ok(!isNaN(dev.facePositionY), "facePositionY getter");
-
 
     assert.ok(false, "TODO");
 });
@@ -184,8 +174,7 @@ QUnit.test("MediaDevice", function (assert) {
 
 QUnit.test("DeviceEmulator", function (assert) {
 
-    var sm = new PocketCode.SoundManager();
-    var dev = new PocketCode.DeviceEmulator(sm);
+    var dev = new PocketCode.DeviceEmulator();
 
     assert.ok(dev instanceof PocketCode.MediaDevice && dev instanceof PocketCode.DeviceEmulator, "instance check");
 
@@ -195,9 +184,8 @@ QUnit.test("DeviceEmulator", function (assert) {
     //dispose
     dev.dispose();
     assert.equal(dev._disposed, true, "dispose");
-    assert.notEqual(sm._disposed, true, "sound manager not disposed during dispose");
 
-    dev = new PocketCode.DeviceEmulator(sm);  //recreate to check if there are any side effects
+    dev = new PocketCode.DeviceEmulator();  //recreate to check if there are any side effects
     assert.equal(dev.emulationInUse, false, "emulationInUse getter: false on init");
     assert.ok(!isNaN(dev.inclinationX), "inclinationX getter");
     assert.ok(!isNaN(dev.inclinationY), "inclinationY getter");

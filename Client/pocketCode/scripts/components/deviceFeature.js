@@ -599,7 +599,7 @@ PocketCode.merge({
             };
 
             this._on = false;
-            this._foundDate = new Date();
+            this._foundDate = Date.now();
             this._recognitionDelay = 300;
 
             this._faceSize = 0;
@@ -610,7 +610,7 @@ PocketCode.merge({
             //this._features.FACE_DETECTION = {
             //    cache: {},
             //    defaultOrientation: 0,  //used if inclination noch supported (no gamma)
-            //    foundDate: new Date(),
+            //    foundDate: Date.now(),
             //    recognitionDelay: 240,  //ms a value is valid
             //    positionX: 0,
             //    positionY: 0,
@@ -634,7 +634,7 @@ PocketCode.merge({
                     if (!this._on || !this._supported)
                         return false;
 
-                    var delay = new Date() - this._foundDate;
+                    var delay = Date.now() - this._foundDate;
                     if (delay < this._recognitionDelay)
                         return true;
                     return false;
@@ -646,7 +646,7 @@ PocketCode.merge({
                     if (!this._on || !this._supported)
                         return 0.0;
 
-                    var delay = new Date() - this._foundDate;
+                    var delay = Date.now() - this._foundDate;
                     if (delay < this._recognitionDelay)
                         return this._faceSize;
                     return 0.0;
@@ -658,7 +658,7 @@ PocketCode.merge({
                     if (!this._on || !this._supported)
                         return 0.0;
 
-                    var delay = new Date() - this._foundDate;
+                    var delay = Date.now() - this._foundDate;
                     if (delay < this._recognitionDelay)
                         return this._facePositionX;
                     return 0.0;
@@ -670,7 +670,7 @@ PocketCode.merge({
                     if (!this._on || !this._supported)
                         return 0.0;
 
-                    var delay = new Date() - this._foundDate;
+                    var delay = Date.now() - this._foundDate;
                     if (delay < this._recognitionDelay)
                         return this._facePositionY;
                     return 0.0;
@@ -783,7 +783,7 @@ PocketCode.merge({
                 if (this._disposed)
                     return; //TODO
                 var ctx = this._ctx,
-                    testStart = new Date();
+                    testStart = Date.now();
 
                 var w = this._canvas.width,
                     h = this._canvas.height;
@@ -1055,7 +1055,7 @@ PocketCode.merge({
                         if (valid / foundLength > 0.74) {
                             face = { x: valX, y: valY, w: valRadius * 4, h: valRadius * 4 };
                             //TODO: calc size based on imgMap (optimization)
-                            this._foundDate = new Date();
+                            this._foundDate = Date.now();
                             this._positionX = face.x;  //TODO edit positions & size based on video and scene size
                             this._positionY = face.y;
                             this._size = face.w;
@@ -1070,7 +1070,7 @@ PocketCode.merge({
                     //y=sum(m_i*y_i)/sum(m_i)
 
                     //test
-                    var delay = new Date() - testStart;
+                    var delay = Date.now() - testStart;
                     // if (cycleTime != undefined ){
                     //   cycleTime.innerText = delay;
                     //}

@@ -222,6 +222,8 @@ PocketCode.Ui.Canvas = (function () {
             penStampCacheCanvasEl.width = screenSize.width;
 
             var ctx = penStampCacheCanvasEl.getContext('2d');
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
             ctx.translate(screenSize.width * 0.5, screenSize.height * 0.5);
 
             this._penStampCache[id] = {
@@ -549,7 +551,7 @@ PocketCode.Ui.Canvas = (function () {
                     ctx.moveTo(ri.penX, -ri.penY);
                     ctx.lineTo(toX, -toY);
                     ctx.strokeStyle = "rgb( " + ri.penColor.r + ", " + ri.penColor.g + ", " + ri.penColor.b + " )";
-                    ctx.lineWidth = ri._penSize;
+                    ctx.lineWidth = ri.penSize;
                     ctx.stroke();
                     ctx.closePath();
 

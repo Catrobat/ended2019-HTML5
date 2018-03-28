@@ -6,7 +6,7 @@
 
 SmartJs.Ui = {};    //user interface namespace
 
-SmartJs.Ui.Window = (function () {  //static class
+SmartJs.Ui._Window = (function () {  //static class
     Window.extends(SmartJs.Core.EventTarget);
 
     //ctr
@@ -169,7 +169,7 @@ SmartJs.Ui.Window = (function () {  //static class
 })();
 
 //static class: constructor override (keeping code coverage enabled)
-SmartJs.Ui.Window = new SmartJs.Ui.Window();
+SmartJs.Ui.Window = new SmartJs.Ui._Window();
 
 
 SmartJs.Ui.merge({
@@ -906,6 +906,7 @@ SmartJs.Ui.merge({
         function Viewport(propObject) {
             SmartJs.Ui.Control.call(this, 'div', propObject || { style: { height: '100%', width: '100%' } });
 
+            this._parentHtmlElement = undefined;
             this._window = SmartJs.Ui.Window;
             this._resizeListener = new SmartJs.Event.EventListener(this.verifyResize, this);
             this._window.onResize.addEventListener(this._resizeListener);

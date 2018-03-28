@@ -29,7 +29,7 @@ PocketCode.Ui.merge({
             if (base64previewImage)
                 this.previewImage = base64previewImage;
             else
-                this.previewImage = PocketCode.Local == 0 ? PocketCode.domain + '/images/default/screenshot.png' : '/images/default/screenshot.png' ;
+                this.previewImage = PocketCode.domain + 'images/default/screenshot.png';
 
             this._progressLayout = new SmartJs.Ui.Control('div');
             this._progressTextNode = new PocketCode.Ui.I18nTextNode('lblLoadingResources');

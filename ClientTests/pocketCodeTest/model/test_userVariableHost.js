@@ -1,4 +1,4 @@
-﻿/// <reference path="../../qunit/qunit-2.1.1.js" />
+﻿/// <reference path="../../qunit/qunit-2.4.0.js" />
 /// <reference path="../../../Client/smartJs/sj.js" />
 /// <reference path="../../../Client/smartJs/sj-core.js" />
 /// <reference path="../../../Client/smartJs/sj-event.js" />
@@ -65,7 +65,7 @@ QUnit.test("UserVariableHost", function (assert) {
     uvhl.getList("id1").append("list test");
     assert.ok(uvhl.getVariable("id1").value == "new text" && uvhl.getList("id1").length == 1, "init reset test");
     uvhl._resetVariables();
-    assert.equal(uvhl.getVariable("id1").value, undefined, "reset variable");
+    assert.equal(uvhl.getVariable("id1").value, 0, "reset variable (to 0)");
     assert.equal(uvhl.getList("id1").length, 0, "reset list");
 
     uvhp.dispose();
@@ -144,7 +144,7 @@ QUnit.test("UserVariableHost", function (assert) {
     var renderingVars = uvhl._getRenderingVariables();
     var r0 = renderingVars[0], r1 = renderingVars[1];
     assert.ok(r0.id === "id1" && r0._text === "txt" && r0.x === 0 && r0.y === 0 && r0.visible === false, "var0 id check (not initialized)");
-    assert.ok(r1.id === "id2" && r1._text === "" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
+    assert.ok(r1.id === "id2" && r1._text === "0" && r1.x === 0 && r1.y === 0 && r1.visible === false, "var1 id check (not initialized)");
 
     var varChangeCalled = 0;
     var onVarChange = function (e) {
@@ -153,9 +153,12 @@ QUnit.test("UserVariableHost", function (assert) {
         assert.equal(e.properties.text, "new text", "event args: text");
     };
     uvhl._onVariableChange.addEventListener(new SmartJs.Event.EventListener(onVarChange, this));
-    uvhl.getVariable("id1").value = "new text";
-
-    assert.equal(varChangeCalled, 1, "var change: event handler called");
+    var testVar = uvhl.getVariable("id1");
+    testVar.value = "new text (not visible)";
+    assert.equal(varChangeCalled, 0, "var change: event handler NOT called (not visisble)");
+    testVar._uiCache.visible = true;  //set to visible
+    testVar.value = "new text";
+    assert.equal(varChangeCalled, 1, "var change: event handler called (visisble)");
 
     uvhl._onVariableChange.removeEventListener(new SmartJs.Event.EventListener(onVarChange, this));
     //show variable
