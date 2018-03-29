@@ -77,6 +77,7 @@ PocketCode.Device = (function () {
 
         this._geoLocationData = {
             initialized: false,
+            navigatorSupport: false,
             latitude: 0,
             longitude: 0,
             altitude: 0,
@@ -501,12 +502,16 @@ PocketCode.Device = (function () {
         _orientationChangeHandler: function () {
             this._windowOrientation = window.orientation;
         },
-        _setGeoLocationInitialized: function(){
-            this._geoLocationData.initialized = true;
+        //geo location
+        _setGeoLocationInitialized: function () {
+            var geo = this._geoLocationData;
+            if (geo.initialized)    //only set once
+                return;
+            geo.initialized = true;
             this._featureInitializedHandler();
         },
         _getGeoLocationData: function () {
-            if (!this._features.GEO_LOCATION.inUse) {   //we only request the geoLocation data once
+            if (!this._features.GEO_LOCATION.inUse) {   //1st call: initialization
                 this._features.GEO_LOCATION.inUse = true;
                 //request IP lookup service
                 var req = new PocketCode.ServiceRequest(PocketCode.Services.GEO_LOCATION, SmartJs.RequestMethod.GET);
@@ -514,26 +519,29 @@ PocketCode.Device = (function () {
                 req.onError.addEventListener(new SmartJs.Event.EventListener(this._geoServiceErrorHandler, this));
                 PocketCode.Proxy.send(req);
             }
+            else if (this.isMobile && this._geoLocationData.navigatorSupport) {   //update positions on mobile devices (in the background)
+                this._geoLocationData.navigatorSupport = false; //avoid simutaneous calls and stops if popups are triggered and declined
+                this._requestGeoNavigator();
+            }
         },
         _geoServiceLoadHandler: function (response) {
             this._features.GEO_LOCATION.supported = true;
 
             var coords = response.responseJson;
-            this._geoLocationData = {
-                //initialized: true,
+            this._geoLocationData.merge({
                 latitude: coords.latitude || 0,
                 longitude: coords.longitude || 0,
                 altitude: coords.altitude || 0,  //already in meters
                 accuracy: coords.accuracy || 0  //already in meters
-            };
-            
+            });
+
             //try to fetch navigator data
-            if(!this._requestGeoNavigator())
+            if (!this._requestGeoNavigator())
                 this._setGeoLocationInitialized();
         },
         _geoServiceErrorHandler: function () {
             //try to fetch navigator data
-            if(!this._requestGeoNavigator())
+            if (!this._requestGeoNavigator())
                 this._setGeoLocationInitialized();
         },
         _requestGeoNavigator: function () {
@@ -545,7 +553,7 @@ PocketCode.Device = (function () {
                 this._geoNavigatorErrorHandler.bind(this),
                 {
                     //maximumAge:Infinity,
-                    timeout:10000
+                    timeout: 12000,
                     //enableHighAccuracy:true
                 }
             );
@@ -555,17 +563,17 @@ PocketCode.Device = (function () {
             this._features.GEO_LOCATION.supported = true;
 
             var coords = position.coords;
-            this._geoLocationData = {
-                //initialized: true,
+            this._geoLocationData.merge({
+                navigatorSupport: true,
                 latitude: coords.latitude || 0,
                 longitude: coords.longitude || 0,
                 altitude: coords.altitude || 0,  //already in meters
                 accuracy: coords.accuracy || 0  //already in meters
-            };
+            });
 
             this._setGeoLocationInitialized();
         },
-        _geoNavigatorErrorHandler: function(error) {
+        _geoNavigatorErrorHandler: function (error) {
             this._setGeoLocationInitialized();
         },
         vibrate: function (duration) {
