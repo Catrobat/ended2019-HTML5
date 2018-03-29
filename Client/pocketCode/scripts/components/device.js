@@ -63,7 +63,7 @@ PocketCode.Device = (function () {
             GEO_LOCATION: {
                 i18nKey: 'lblDeviceGeoLocation',
                 inUse: false,
-                supported: true
+                supported: false
             },
         };
 
@@ -81,7 +81,6 @@ PocketCode.Device = (function () {
 
         this._geoLocationData = {
             initialized: false,
-            request_send: false,
             latitude: 0,
             longitude: 0,
             altitude: 0,
@@ -131,8 +130,7 @@ PocketCode.Device = (function () {
     Object.defineProperties(Device.prototype, {
         initialized: {
             get: function () {
-                var geo = this._features.GEO_LOCATION;
-                return (geo.supported && geo.inUse) ? this._geoLocationData.initialized : true;
+                return (!this._features.GEO_LOCATION.inUse || this._geoLocationData.initialized);
             },
         },
         isMobile: {
@@ -420,6 +418,10 @@ PocketCode.Device = (function () {
 
     //methods
     Device.prototype.merge({
+        _featureInitializedHandler: function (e) {
+            if (this.initialized)
+                this._onInit.dispatchEvent();
+        },
         _getInclinationX: function (beta, gamma) {
             var x;
             if (this._windowOrientation == 0 || this._windowOrientation == -180) {
@@ -499,62 +501,75 @@ PocketCode.Device = (function () {
         _orientationChangeHandler: function () {
             this._windowOrientation = window.orientation;
         },
+        _setGeoLocationInitialized: function(){
+            this._geoLocationData.initialized = true;
+            this._featureInitializedHandler();
+        },
         _getGeoLocationData: function () {
-            if (this._features.GEO_LOCATION.supported && !this._geoLocationData.initialized) {   //we only request the geoLocation once on desktop
-                // always request geo location from server
-                if(!this._geoLocationData.request_send) {
-                    this._geoLocationData.request_send = true;
-                    this._requestGeoLocationFromServer();
-                }
-                navigator.geolocation.getCurrentPosition(
-                    this._currentPositionLoadHandler.bind(this),
-                    this._currentPositionErrorHandler.bind(this),
-                    {
-                        //maximumAge:Infinity,
-                        timeout:10000
-                        //enableHighAccuracy:true
-                    }
-                );
+            if (!this._geoLocationData.initialized) {   //we only request the geoLocation data once
+                this._features.GEO_LOCATION.inUse = true;
+                this._requestGeoService();
             }
         },
-        _currentPositionLoadHandler: function(position) {
-            var coords = position.coords;
+        _requestGeoService: function () {
+            //request IP lookup service
+            var req = new PocketCode.ServiceRequest(PocketCode.Services.GEO_LOCATION, SmartJs.RequestMethod.GET);
+            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._geoServiceLoadHandler, this));
+            req.onError.addEventListener(new SmartJs.Event.EventListener(this._geoServiceErrorHandler, this));
+            PocketCode.Proxy.send(req);
+        },
+        _geoServiceLoadHandler: function (response) {
+            this._features.GEO_LOCATION.supported = true;
+
+            var coords = response.responseJson;
             this._geoLocationData = {
-                initialized: true,
-                request_send: true,
+                //initialized: true,
                 latitude: coords.latitude || 0,
                 longitude: coords.longitude || 0,
                 altitude: coords.altitude || 0,  //already in meters
                 accuracy: coords.accuracy || 0  //already in meters
             };
+            
+            //try to fetch navigator data
+            if(!this._requestGeoNavigator())
+                this._setGeoLocationInitialized();
         },
-        _currentPositionErrorHandler: function(error) {
-            if(!this._geoLocationData.request_send) {
-                this._geoLocationData.request_send = true;
-                this._requestGeoLocationFromServer();
-            }
+        _geoServiceErrorHandler: function () {
+            //try to fetch navigator data
+            if(!this._requestGeoNavigator())
+                this._setGeoLocationInitialized();
         },
-        _requestGeoLocationFromServer: function() {
-            var req = new PocketCode.ServiceRequest(PocketCode.Services.GEO_LOCATION, SmartJs.RequestMethod.GET);
-            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._geoLocationRequestLoadHandler, this));
-            req.onError.addEventListener(new SmartJs.Event.EventListener(this._geoLocationRequestErrorHandler, this));
-            PocketCode.Proxy.send(req);
+        _requestGeoNavigator: function () {
+            if (!navigator.geolocation)
+                return false;
+
+            navigator.geolocation.getCurrentPosition(
+                this._geoNavigatorLoadHandler.bind(this),
+                this._geoNavigatorErrorHandler.bind(this),
+                {
+                    //maximumAge:Infinity,
+                    timeout:10000
+                    //enableHighAccuracy:true
+                }
+            );
+            return true;
         },
-        _geoLocationRequestLoadHandler: function (response) {
-            if (!this._geoLocationData.initialized) {
-                var coords = response.responseJson;
-                this._geoLocationData = {
-                    initialized: true,
-                    request_send: true,
-                    latitude: coords.latitude || 0,
-                    longitude: coords.longitude || 0,
-                    altitude: coords.altitude || 0,  //already in meters
-                    accuracy: coords.accuracy || 0  //already in meters
-                };
-            }
+        _geoNavigatorLoadHandler: function (position) {
+            this._features.GEO_LOCATION.supported = true;
+
+            var coords = position.coords;
+            this._geoLocationData = {
+                //initialized: true,
+                latitude: coords.latitude || 0,
+                longitude: coords.longitude || 0,
+                altitude: coords.altitude || 0,  //already in meters
+                accuracy: coords.accuracy || 0  //already in meters
+            };
+
+            this._setGeoLocationInitialized();
         },
-        _geoLocationRequestErrorHandler: function () {
-            this._features.GEO_LOCATION.supported = false;
+        _geoNavigatorErrorHandler: function(error) {
+            this._setGeoLocationInitialized();
         },
         vibrate: function (duration) {
             this._features.VIBRATE.inUse = true;
@@ -740,22 +755,15 @@ PocketCode.MediaDevice = (function () {
         initialized: {
             get: function () {
                 var features = this._features;
-                return ((!features.GEO_LOCATION.supported || !features.GEO_LOCATION.inUse || this._geoLocationData.initialized) &&
-                    (!features.CAMERA.supported || !features.CAMERA.inUse || this._cam.initialized) &&
-                    (!features.FACE_DETECTION.supported || !features.FACE_DETECTION.inUse || this._fd.initialized));
+                return ((!features.GEO_LOCATION.inUse || this._geoLocationData.initialized) &&
+                    (!features.CAMERA.inUse || this._cam.initialized) &&
+                    (!features.FACE_DETECTION.inUse || this._fd.initialized));
             },
         },
     });
 
     //methods
     MediaDevice.prototype.merge({
-        _featureInitializedHandler: function (e) {
-            //if (this._initialized)
-            //    return;
-            //this._initialized = this._cam.initialized && this._fd.initialized;
-            if (this.initialized)
-                this._onInit.dispatchEvent();
-        },
         _orientationHandler: function (e) {
             if (this.isMobile)
                 this._cameraChangeHandler();
