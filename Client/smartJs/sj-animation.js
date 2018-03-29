@@ -285,11 +285,11 @@ SmartJs.Animation.Rotation = (function () {
                     return;
                 this._startAngle = this.angle;  //new start angle due to change
                 this._rotationSpeed = value;
-                if (value === 0.0) {
+                if (value == 0.0) {
                     this.stop();
                     this._onUpdate.dispatchEvent({ value: this.angle });
                 }
-                else if (!this._timer.startTimestamp) //not started
+                else //reset timer
                     this._start();
             },
         },
