@@ -7,16 +7,6 @@
 SmartJs._AnimationFrame = (function () {
 
     function AnimationFrame() {
-        //helpers
-        this._request = function () {
-            return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-                    function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
-        }();
-        this._cancel = function () {
-            return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame ||
-                    function (id) { window.clearTimeout(id) };
-        }();
-
         this._frameId = undefined;
 
         //event (private)
@@ -25,22 +15,34 @@ SmartJs._AnimationFrame = (function () {
 
     //methods
     AnimationFrame.prototype.merge({
+        _request: function () {
+            var request = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame;
+            if (request)
+                return request.bind(window);
+            return function (callback) { return window.setTimeout(callback, 17); };   //~1000/60 (60fps)
+        }(),
+        _cancel: function () {
+            var cancel = window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.oCancelAnimationFrame;
+            if (cancel)
+                return cancel.bind(window);
+            return function (id) { window.clearTimeout(id) };
+        }(),
         _run: function () {
             this._onUpdate.dispatchEvent();
-            this._frameId = this._request.call(window, this._run.bind(this));
+            this._frameId = this._request(this._run.bind(this));
         },
         addEventListener: function (listener) {
             var e = this._onUpdate,
                 start = !e.listenersAttached;
             e.addEventListener(listener);
             if (start)
-                this._frameId = this._request.call(window, this._run.bind(this));
+                this._frameId = this._request(this._run.bind(this));
         },
         removeEventListener: function (listener) {
             var e = this._onUpdate
             e.removeEventListener(listener);
             if (!e.listenersAttached) {
-                this._cancel.call(window, this._frameId);
+                this._cancel(this._frameId);
                 this._frameId = undefined;
             }
         },

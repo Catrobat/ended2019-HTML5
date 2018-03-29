@@ -40,11 +40,7 @@ PocketCode.Device = (function () {
                 inUse: false,
                 supported: false
             },
-            VIBRATE: {
-                i18nKey: 'lblDeviceVibrate',
-                inUse: false,
-                supported: false   //temporarely disabled- missing functionality on pause/resume //!!(navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate),
-            },
+            VIBRATE: new PocketCode.DeviceVibration(),
             LEGO_NXT: {
                 i18nKey: 'lblDeviceLegoNXT',
                 inUse: false,
@@ -165,11 +161,6 @@ PocketCode.Device = (function () {
                 return false;
             },
         },
-        //features: {
-        //    get: function () {
-
-        //    },
-        //},
         unsupportedFeatures: {
             get: function () {
                 var unsupported = [], tmp;
@@ -181,6 +172,15 @@ PocketCode.Device = (function () {
                 return unsupported;
             },
         },
+        viewState: {
+            get: function () {
+                return {
+                    vibrate: this._features.VIBRATE.viewState,
+                };
+            },
+        },
+
+        //sensors
         accelerationX: {
             get: function () {
                 if (this._deviceMotionListener) { //supported
@@ -569,19 +569,7 @@ PocketCode.Device = (function () {
             this._setGeoLocationInitialized();
         },
         vibrate: function (duration) {
-            this._features.VIBRATE.inUse = true;
-            if (!this._features.VIBRATE.supported || typeof duration != 'number' || duration == 0) //isNaN('') = false
-                return false;
-
-            //TODO: as soon as html supports this feature
-            //var time = duration * 1000;
-            if (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate) {
-                var vibrate = (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate).bind(navigator);
-                vibrate(duration * 1000);   //TODO: pause/resume
-
-                return true;
-            }
-            return false;
+            return this._features.VIBRATE.start(duration);
         },
         //touch
         updateTouchEvent: function (type, id, x, y) {
@@ -749,6 +737,19 @@ PocketCode.MediaDevice = (function () {
             },
         },
         /* override */
+        viewState: {    //used for pause/resume scene
+            get: function () {
+                var features = this._features;
+                return {
+                    vibrate: features.VIBRATE.viewState,
+                    camera: features.CAMERA.viewState,
+                    faceDetection: features.FACE_DETECTION.viewState,
+                };
+            },
+            set: function (viewState) {
+                //TODO: load viewState when scene is resumed
+            },
+        },
         initialized: {
             get: function () {
                 var features = this._features;
