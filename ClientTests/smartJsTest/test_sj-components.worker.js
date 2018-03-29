@@ -124,7 +124,7 @@ QUnit.test("SmartJs.Components.WebWorker: asynchronous (using worker)", function
     assert.equal(testInstance.exec(2), 6, "TestClass check");
 
     var globalErrorHandler = function (e) {
-            alert(e.message);
+            alert(e.message + ": make sure to NOT run this test (async Worker) using code coverage.");
         },
         globalErrorListener = new SmartJs.Event.EventListener(globalErrorHandler, this);
 
