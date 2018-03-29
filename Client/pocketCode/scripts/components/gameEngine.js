@@ -266,6 +266,8 @@ PocketCode.GameEngine = (function () {
             this._scenesLoaded = true;
             this._sceneOnProgressChangeHandler({ bricksLoaded: 0 });
 
+            if (!this._device.initialized)    //divice ready?
+                this._device.onInit.addEventListener(new SmartJs.Event.EventListener(this._deviceInitHandler, this));
         },
         //loading handler
         _sceneOnProgressChangeHandler: function (e) {
@@ -290,7 +292,7 @@ PocketCode.GameEngine = (function () {
                 //    var id = this._sceneIds[i];
                 //    this._scenes[id].removeSpriteFactoryEventListeners();
                 //}
-                if (this._resourcesLoaded) {
+                if (this._resourcesLoaded && this._device.initialized) {
                     //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                     //this._initSceneSprites();
                     this._handleLoadingComplete();
@@ -337,14 +339,21 @@ PocketCode.GameEngine = (function () {
             this._onLoadingProgress.dispatchEvent({ progress: Math.min(resourceProgress, sceneProgress) });
         },
         _imageStoreLoadHandler: function (e) {
-            //init loading sound files (as soon images are loaded)
+            //init loading sound files (as soon as images are loaded)
             this._sounds = this._jsonProject.sounds || [];
         },
         _soundManagerLoadHandler: function (e) {
             if (this._resourceLoadedSize !== this._resourceTotalSize)
                 return; //load may trigger during loading single (cached) dynamic sound files (e.g. tts)
             this._resourcesLoaded = true;
-            if (this._scenesLoaded) {
+            if (this._scenesLoaded && this._device.initialized) {
+                //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
+                //this._initSceneSprites();
+                this._handleLoadingComplete();
+            }
+        },
+        _deviceInitHandler:function(){
+            if (this._scenesLoaded && this._resourcesLoaded) {
                 //window.setTimeout(function () { this._onLoad.dispatchEvent(); }.bind(this), 100);    //update UI before
                 //this._initSceneSprites();
                 this._handleLoadingComplete();
@@ -367,7 +376,7 @@ PocketCode.GameEngine = (function () {
 
             if (loadingAlerts.deviceEmulation || loadingAlerts.deviceLockRequired || loadingAlerts.invalidSoundFiles.length != 0 ||
                 loadingAlerts.unsupportedBricks.length != 0 || loadingAlerts.deviceUnsupportedFeatures.length != 0) {
-                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress
+                this._onLoadingProgress.dispatchEvent({ progress: 100 });       //update ui progress to hide loading indicator
                 this._onLoad.dispatchEvent({ loadingAlerts: loadingAlerts });   //dispatch warnings
             }
             else {

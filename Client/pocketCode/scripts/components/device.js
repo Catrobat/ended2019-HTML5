@@ -418,7 +418,7 @@ PocketCode.Device = (function () {
 
     //methods
     Device.prototype.merge({
-        _featureInitializedHandler: function (e) {
+        _featureInitializedHandler: function (e) {  //note: reused by derived classes
             if (this.initialized)
                 this._onInit.dispatchEvent();
         },
@@ -506,17 +506,14 @@ PocketCode.Device = (function () {
             this._featureInitializedHandler();
         },
         _getGeoLocationData: function () {
-            if (!this._geoLocationData.initialized) {   //we only request the geoLocation data once
+            if (!this._features.GEO_LOCATION.inUse) {   //we only request the geoLocation data once
                 this._features.GEO_LOCATION.inUse = true;
-                this._requestGeoService();
+                //request IP lookup service
+                var req = new PocketCode.ServiceRequest(PocketCode.Services.GEO_LOCATION, SmartJs.RequestMethod.GET);
+                req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._geoServiceLoadHandler, this));
+                req.onError.addEventListener(new SmartJs.Event.EventListener(this._geoServiceErrorHandler, this));
+                PocketCode.Proxy.send(req);
             }
-        },
-        _requestGeoService: function () {
-            //request IP lookup service
-            var req = new PocketCode.ServiceRequest(PocketCode.Services.GEO_LOCATION, SmartJs.RequestMethod.GET);
-            req.onLoad.addEventListener(new SmartJs.Event.EventListener(this._geoServiceLoadHandler, this));
-            req.onError.addEventListener(new SmartJs.Event.EventListener(this._geoServiceErrorHandler, this));
-            PocketCode.Proxy.send(req);
         },
         _geoServiceLoadHandler: function (response) {
             this._features.GEO_LOCATION.supported = true;
