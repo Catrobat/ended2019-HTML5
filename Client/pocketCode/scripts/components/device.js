@@ -905,15 +905,15 @@ PocketCode.DeviceEmulator = (function () {
 
                 var timestamp = this._keyDownDateTime;
                 if (timestamp.LEFT && !timestamp.RIGHT) {
-                    this._sensorData.X_INCLINATION = Math.max((Date.now() - timestamp.LEFT) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                    return Math.max((Date.now() - timestamp.LEFT) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
                 }
                 else if (!timestamp.LEFT && timestamp.RIGHT) {
-                    this._sensorData.X_INCLINATION = Math.min((Date.now() - timestamp.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                    return Math.min((Date.now() - timestamp.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
                 }
                 else if (timestamp.LEFT && timestamp.RIGHT) {
-                    this._sensorData.X_INCLINATION = Math.max(Math.min((timestamp.RIGHT - timestamp.LEFT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                    return Math.max(Math.min((timestamp.LEFT - timestamp.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
                 }
-                return this._sensorData.X_INCLINATION;
+                return 0.0;
             },
         },
         inclinationY: {
@@ -926,15 +926,15 @@ PocketCode.DeviceEmulator = (function () {
 
                 var timestamp = this._keyDownDateTime;
                 if (timestamp.UP && !timestamp.DOWN) {
-                    this._sensorData.Y_INCLINATION = Math.min((Date.now() - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                    return Math.min((Date.now() - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
                 }
                 else if (!timestamp.UP && timestamp.DOWN) {
-                    this._sensorData.Y_INCLINATION = Math.max((Date.now() - timestamp.DOWN) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                    return Math.max((Date.now() - timestamp.DOWN) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
                 }
                 else if (timestamp.UP && timestamp.DOWN) {
-                    this._sensorData.Y_INCLINATION = Math.max(Math.min((timestamp.DOWN - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                    return Math.max(Math.min((timestamp.DOWN - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
                 }
-                return this._sensorData.Y_INCLINATION;
+                return 0.0;
             },
         },
         /* override */
@@ -954,7 +954,7 @@ PocketCode.DeviceEmulator = (function () {
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
-                    if (!timestamp.LEFT)
+                    if (!timestamp.LEFT)    //event is triggered again as long as key is pressed
                         timestamp.LEFT = Date.now();
                     break;
                 case this._alternativeKeyCode.RIGHT:
@@ -983,26 +983,26 @@ PocketCode.DeviceEmulator = (function () {
             switch (e.keyCode) {
                 case this._alternativeKeyCode.LEFT:
                 case this._keyCode.LEFT:
-                    if (timestamp.RIGHT)
-                        timestamp.RIGHT -= timestamp.LEFT;  //TODO: can get negative?
+                    if (timestamp.RIGHT)    //both keys were pressed
+                        timestamp.RIGHT = Date.now() - Math.max(0, timestamp.LEFT - timestamp.RIGHT);
                     timestamp.LEFT = undefined;
                     break;
                 case this._alternativeKeyCode.RIGHT:
                 case this._keyCode.RIGHT:
                     if (timestamp.LEFT)
-                        timestamp.LEFT = timestamp.RIGHT - timestamp.LEFT;
+                        timestamp.LEFT = Date.now() - Math.max(0, timestamp.RIGHT - timestamp.LEFT);
                     timestamp.RIGHT = undefined;
                     break;
                 case this._alternativeKeyCode.UP:
                 case this._keyCode.UP:
                     if (timestamp.DOWN)
-                        timestamp.DOWN -= timestamp.UP;
+                        timestamp.DOWN = Date.now() - Math.max(0, timestamp.UP - timestamp.DOWN);
                     timestamp.UP = undefined;
                     break;
                 case this._alternativeKeyCode.DOWN:
                 case this._keyCode.DOWN:
                     if (timestamp.UP)
-                        timestamp.UP = timestamp.DOWN - timestamp.UP;
+                        timestamp.UP = Date.now() - Math.max(0, timestamp.DOWN - timestamp.UP);
                     timestamp.DOWN = undefined;
                     break;
                     //case this._alternativeKeyCode.SPACE:
@@ -1017,8 +1017,6 @@ PocketCode.DeviceEmulator = (function () {
                 UP: undefined,
                 DOWN: undefined,
             }
-            this._sensorData.X_INCLINATION = this._defaultInclination.X;
-            this._sensorData.Y_INCLINATION = this._defaultInclination.Y;
         },
         /* override */
         _getGeoLocationData: function () {

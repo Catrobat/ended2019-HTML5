@@ -108,8 +108,8 @@ PocketCode.Ui.DeviceEmulator = (function () {
             image.style.webkitTransform = 'rotateX(' + this._device.inclinationY  + 'deg) rotateY(' + this._device.inclinationX + 'deg)';
             image.style.transform = 'rotateX(' + -this._device.inclinationY  + 'deg) rotateY(' + -this._device.inclinationX  + 'deg)';
 
-            this._inclXTextNode.text = Math.round(this._device.inclinationX);
-            this._inclYTextNode.text = Math.round(this._device.inclinationY);
+            this._inclXTextNode.text = this._device.inclinationX.toFixed(1);
+            this._inclYTextNode.text = this._device.inclinationY.toFixed(1);
         },
         _openCloseHandler: function (e) {
             if (e.opened)
