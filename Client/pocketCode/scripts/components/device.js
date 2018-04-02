@@ -1016,15 +1016,6 @@ PocketCode.DeviceEmulator = (function () {
                     break;
             }
         },
-
-        // _calculateInclination: function () {
-        //     var inclinationDuration = this.degreeChangeValue / this.accelerationChangeValue;
-        //     var inclinationPerStep = inclinationDuration / this.accelerationChangeValue;
-        //
-        //     this._inclinationIncrTmp.X = inclinationDuration / inclinationPerStep;
-        //     this._inclinationIncrTmp.Y = inclinationDuration / inclinationPerStep;
-        // },
-        //this._keyDownDateTime.RIGHT = Date.now() - Math.max(0, (this._keyDownDateTime.LEFT - this._keyDownDateTime.RIGHT));
         _keyUp: function (e) {
             var timestamp = this._keyDownDateTime;
             switch (e.keyCode) {
