@@ -1340,7 +1340,7 @@
 }
 
 /*Slider Control*/
-.pc-slider input[type=range]{
+.pc-slider input[type=range] {
     -webkit-appearance: none;
     border-radius: 3px;
     width: 270px;
@@ -1367,9 +1367,9 @@
         outline: none;
     }
 
-    .pc-slider input[type=range]:focus::-webkit-slider-runnable-track {
-        background: #17A5B8;
-    }
+        .pc-slider input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #17A5B8;
+        }
 
     .pc-slider input[type=range]::-moz-range-track {
         width: 270px;
@@ -1387,7 +1387,7 @@
         background: #A9DCF1;
     }
 
-    .pc-slider input[type=range]:-moz-focusring{
+    .pc-slider input[type=range]:-moz-focusring {
         outline: 1px solid white;
         outline-offset: -1px;
     }
@@ -1436,10 +1436,10 @@
     width: 45px;
 }
 
-.pc-slider span:first-child {
-    position: relative;
-    width: 25px;
-}
+    .pc-slider span:first-child {
+        position: relative;
+        width: 25px;
+    }
 
 .pc-slider {
     display: -webkit-box;
@@ -1468,42 +1468,46 @@
     right: auto;
 }
 
-    .pc-deviceEmulator .pc-expander {
+.pc-deviceEmulator .pc-expander {
+}
+
+
+.pc-deviceEmulator .pc-expanderHeader {
+    background-color: #00475E;
+    background-color: rgba(0,71,94,.8);
+    color: #A9DCF1;
+    font-size: 19px;
+}
+
+    .pc-deviceEmulator .pc-expanderHeader label::after {
+        content: '<';
     }
 
+[dir='rtl'] .pc-deviceEmulator .pc-expanderHeader label::after {
+    right: auto;
+    left: 18px;
+}
 
-    .pc-deviceEmulator .pc-expanderHeader {
-        background-color: #00475E;
-        background-color: rgba(0,71,94,.8);
-        color: #A9DCF1;
-        font-size: 19px;
-    }
-        .pc-deviceEmulator .pc-expanderHeader label::after {
-            content: '<';
-        }
-        [dir='rtl'] .pc-deviceEmulator .pc-expanderHeader label::after {
-            right: auto;
-            left: 18px;
-        }
-
-    .pc-deviceEmulator .pc-expanderBody {
-
-    }
+.pc-deviceEmulator .pc-expanderBody {
+}
 
 
 
     .pc-deviceEmulator .pc-expanderBody span {
-            display: block;
-            padding: 3px;
-        }
+        display: block;
+        padding: 3px;
+    }
 
-        .pc-deviceEmulator .pc-expanderBody .pc-dEImg {
-            text-align: center;
-        }
+    .pc-deviceEmulator .pc-expanderBody .pc-dEImg {
+        text-align: center;
+        perspective: 600px;
+        -webkit-perspective: 600px;
+        -moz-perspective: 600px;
+    }
 
-        .pc-deviceEmulator .pc-expanderBody .pc-label {
-            display: inline;
-        }
+    .pc-deviceEmulator .pc-expanderBody .pc-label {
+        display: inline;
+    }
 
         .pc-deviceEmulator .pc-expanderBody .pc-label:after {
             content: ': ';
