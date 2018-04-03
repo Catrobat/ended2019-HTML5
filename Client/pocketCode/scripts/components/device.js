@@ -905,13 +905,13 @@ PocketCode.DeviceEmulator = (function () {
 
                 var timestamp = this._keyDownDateTime;
                 if (timestamp.LEFT && !timestamp.RIGHT) {
-                    return Math.max((Date.now() - timestamp.LEFT) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                    return Math.min((Date.now() - timestamp.LEFT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
                 }
                 else if (!timestamp.LEFT && timestamp.RIGHT) {
-                    return Math.min((Date.now() - timestamp.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                    return Math.max((Date.now() - timestamp.RIGHT) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
                 }
                 else if (timestamp.LEFT && timestamp.RIGHT) {
-                    return Math.max(Math.min((timestamp.LEFT - timestamp.RIGHT) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                    return Math.min(Math.max((timestamp.RIGHT - timestamp.LEFT) / 1000.0 * this.inclinationChangePerSec, -this.inclinationMinMax), this.inclinationMinMax);
                 }
                 return 0.0;
             },
@@ -926,13 +926,13 @@ PocketCode.DeviceEmulator = (function () {
 
                 var timestamp = this._keyDownDateTime;
                 if (timestamp.UP && !timestamp.DOWN) {
-                    return Math.min((Date.now() - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
+                    return Math.max((Date.now() - timestamp.UP) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
                 }
                 else if (!timestamp.UP && timestamp.DOWN) {
-                    return Math.max((Date.now() - timestamp.DOWN) / 1000.0 * -this.inclinationChangePerSec, -this.inclinationMinMax);
+                    return Math.min((Date.now() - timestamp.DOWN) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax);
                 }
                 else if (timestamp.UP && timestamp.DOWN) {
-                    return Math.max(Math.min((timestamp.DOWN - timestamp.UP) / 1000.0 * this.inclinationChangePerSec, this.inclinationMinMax), -this.inclinationMinMax);
+                    return Math.min(Math.max((timestamp.UP - timestamp.DOWN) / 1000.0 * this.inclinationChangePerSec, -this.inclinationMinMax), this.inclinationMinMax);
                 }
                 return 0.0;
             },

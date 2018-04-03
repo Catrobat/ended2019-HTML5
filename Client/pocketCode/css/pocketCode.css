@@ -1356,11 +1356,12 @@
     .pc-slider input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
         border: none;
-        height: 16px;
-        width: 16px;
+        height: 17px;
+        width: 17px;
         border-radius: 50%;
         background: #A9DCF1;
-        margin-top: -4px;
+        margin-top: -6px;
+        cursor: pointer;
     }
 
     .pc-slider input[type=range]:focus {
@@ -1381,10 +1382,11 @@
 
     .pc-slider input[type=range]::-moz-range-thumb {
         border: none;
-        height: 16px;
-        width: 16px;
+        height: 17px;
+        width: 17px;
         border-radius: 50%;
         background: #A9DCF1;
+        cursor: pointer;
     }
 
     .pc-slider input[type=range]:-moz-focusring {
@@ -1417,10 +1419,11 @@
 
     .pc-slider input[type=range]::-ms-thumb {
         border: none;
-        height: 16px;
-        width: 16px;
+        height: 17px;
+        width: 17px;
         border-radius: 50%;
         background: #A9DCF1;
+        cursor: pointer;
     }
 
     .pc-slider input[type=range]:focus::-ms-fill-lower {
