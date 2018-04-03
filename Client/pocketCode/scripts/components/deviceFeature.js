@@ -142,7 +142,7 @@ PocketCode.merge({
                     this.start(viewState.remainingTime);
                 }
             },
-            dispose() {
+            dispose: function () {
                 this.stop();
                 this._timer.dispose();
                 PocketCode.DeviceFeature.prototype.dispose.call(this);
