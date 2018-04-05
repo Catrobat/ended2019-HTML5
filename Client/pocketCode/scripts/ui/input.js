@@ -393,7 +393,7 @@ PocketCode.Ui.merge({
                     return this._minTextNode.text;
                 },
                 set: function (label) {
-                    this._minTextNode.text = label.toString();
+                    this._minTextNode.text = label;
                     window.setTimeout(this._updateValue.bind(this), 20);  //resize?
                 },
             },
@@ -402,7 +402,7 @@ PocketCode.Ui.merge({
                     return this._maxTextNode.text;
                 },
                 set: function (label) {
-                    this._maxTextNode.text = label.toString();
+                    this._maxTextNode.text = label;
                     window.setTimeout(this._updateValue.bind(this), 20);  //resize?
                 },
             },
@@ -478,17 +478,20 @@ PocketCode.Ui.merge({
                 this._mouseDownAt.margin = isNaN(margin) ? 0 : margin;
 
                 this._thumb.addClassName('pc-thumb-down');
+                e.preventDefault();
             },
             _thumbMoveHandler: function (e) {
                 if (!this._mouseDownAt)
                     return;
                 this._updatePosition(e);
+                e.preventDefault();
             },
             _thumbUpHandler: function (e) {
                 if (!this._mouseDownAt)
                     return;
                 this._mouseDownAt = undefined;
                 this._thumb.removeClassName('pc-thumb-down');
+                e.preventDefault();
             },
             /* override */
             dispose: function () {

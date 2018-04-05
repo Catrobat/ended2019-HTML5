@@ -30,11 +30,9 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({ min: device.inclinationMinMaxRange.MIN, max: device.inclinationMinMaxRange.MAX, value: device.inclinationMinMax, minLabel: device.inclinationMinMaxRange.MIN, maxLabel: '&plusmn;' + device.inclinationMinMaxRange.MAX });
+        this._maxSlider = new PocketCode.Ui.Slider({ minValue: device.inclinationMinMaxRange.MIN, maxValue: device.inclinationMinMaxRange.MAX, valueDigits: 0, value: device.inclinationMinMax, minLabel: device.inclinationMinMaxRange.MIN, maxLabel: '±' + device.inclinationMinMaxRange.MAX });
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
-
-        scroll.appendChild(new SmartJs.Ui.Control('br'));
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceAcc');
         span = new SmartJs.Ui.HtmlTag('span');
@@ -46,16 +44,14 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({ min: device.inclinationChangePerSecRange.MIN, max: device.inclinationChangePerSecRange.MAX, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRange.MIN, maxLabel: device.inclinationChangePerSecRange.MAX });
+        this._accSlider = new PocketCode.Ui.Slider({ minValue: device.inclinationChangePerSecRange.MIN, maxValue: device.inclinationChangePerSecRange.MAX, valueDigits: 0, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRange.MIN, maxLabel: device.inclinationChangePerSecRange.MAX });
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
-
-        scroll.appendChild(new SmartJs.Ui.Control('br'));
 
         this.hide();
         this._img = new SmartJs.Ui.Image();
         this._img.onLoad.addEventListener(new SmartJs.Event.EventListener(this.show, this));
-        this._img.src = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
+        this._img.src = PocketCode.domain + 'html5/pocketCode/img/emulatorPhone.png';
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._img);
         span.addClassName('pc-imgContainer');
@@ -82,7 +78,6 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(this._inclYTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
-
     }
 
     //properties
