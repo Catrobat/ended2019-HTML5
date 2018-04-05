@@ -30,7 +30,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._maxSlider = new PocketCode.Ui.Slider({min: device.inclinationMinMaxRange.MIN, max: device.inclinationMinMaxRange.MAX, value: device.inclinationMinMax, minLabel: device.inclinationMinMaxRange.MIN, maxLabel: '&plusmn;' + device.inclinationMinMaxRange.MAX});
+        this._maxSlider = new PocketCode.Ui.Slider({ min: device.inclinationMinMaxRange.MIN, max: device.inclinationMinMaxRange.MAX, value: device.inclinationMinMax, minLabel: device.inclinationMinMaxRange.MIN, maxLabel: '&plusmn;' + device.inclinationMinMaxRange.MAX });
         this._maxSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxDegreeChangeHandler, this));
         scroll.appendChild(this._maxSlider);
 
@@ -46,7 +46,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(tn);
         scroll.appendChild(span);
 
-        this._accSlider = new PocketCode.Ui.Slider({min: device.inclinationChangePerSecRange.MIN, max: device.inclinationChangePerSecRange.MAX, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRange.MIN, maxLabel: device.inclinationChangePerSecRange.MAX});
+        this._accSlider = new PocketCode.Ui.Slider({ min: device.inclinationChangePerSecRange.MIN, max: device.inclinationChangePerSecRange.MAX, value: device.inclinationChangePerSec, minLabel: device.inclinationChangePerSecRange.MIN, maxLabel: device.inclinationChangePerSecRange.MAX });
         this._accSlider.onChange.addEventListener(new SmartJs.Event.EventListener(this._maxAccChangeHandler, this));
         scroll.appendChild(this._accSlider);
 
@@ -58,27 +58,27 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._img.src = 'https://share.catrob.at/html5/pocketCode/img/emulatorPhone.png';
         span = new SmartJs.Ui.HtmlTag('span');
         span.appendChild(this._img);
-        span.addClassName('pc-dEImg');
+        span.addClassName('pc-imgContainer');
         scroll.appendChild(span);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceIncX');
-        var div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
-        span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
+        var div = new SmartJs.Ui.HtmlTag('div', { className: 'pc-inclinationLabel' });
+        span = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
         span.appendChild(tn);
         div.appendChild(span);
         this._inclXTextNode = new SmartJs.Ui.TextNode('');
-        span = new SmartJs.Ui.HtmlTag('div', {style: {display:'inline'}});
+        span = new SmartJs.Ui.HtmlTag('div', { style: { display: 'inline' } });
         span.appendChild(this._inclXTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
 
         tn = new PocketCode.Ui.I18nTextNode('lbDeviceIncY');
-        div = new SmartJs.Ui.HtmlTag('div', {className: 'pc-test1'});
-        span = new SmartJs.Ui.HtmlTag('div', {className: 'pc-label'});
+        div = new SmartJs.Ui.HtmlTag('div', { className: 'pc-inclinationLabel' });
+        span = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
         span.appendChild(tn);
         div.appendChild(span);
         this._inclYTextNode = new SmartJs.Ui.TextNode('');
-        span = new SmartJs.Ui.HtmlTag('div', {style: {display:'inline'}});
+        span = new SmartJs.Ui.HtmlTag('div', { style: { display: 'inline' } });
         span.appendChild(this._inclYTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
@@ -96,28 +96,26 @@ PocketCode.Ui.DeviceEmulator = (function () {
 
     //methods
     DeviceEmulator.prototype.merge({
-        _maxDegreeChangeHandler: function(e) {
+        _maxDegreeChangeHandler: function (e) {
             this._device.inclinationMinMax = e.value;
         },
-        _maxAccChangeHandler: function(e) {
+        _maxAccChangeHandler: function (e) {
             this._device.inclinationChangePerSec = e.value;
         },
         _updateImageTransformation: function (e) {
             var image = this._img;
 
-            image.style.webkitTransform = 'rotateX(' + this._device.inclinationY  + 'deg) rotateY(' + this._device.inclinationX + 'deg)';
-            image.style.transform = 'rotateX(' + -this._device.inclinationY  + 'deg) rotateY(' + -this._device.inclinationX  + 'deg)';
+            image.style.webkitTransform = 'rotateX(' + this._device.inclinationY + 'deg) rotateY(' + this._device.inclinationX + 'deg)';
+            image.style.transform = 'rotateX(' + -this._device.inclinationY + 'deg) rotateY(' + -this._device.inclinationX + 'deg)';
 
             this._inclXTextNode.text = this._device.inclinationX.toFixed(1);
             this._inclYTextNode.text = this._device.inclinationY.toFixed(1);
         },
         _openCloseHandler: function (e) {
-            if (e.opened)
-            {
+            if (e.opened) {
                 this._pollingTimer = setInterval(this._updateImageTransformation.bind(this), 100);
             }
-            else
-            {
+            else {
                 clearInterval(this._pollingTimer);
             }
 

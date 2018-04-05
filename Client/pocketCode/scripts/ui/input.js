@@ -277,6 +277,7 @@ PocketCode.Ui.merge({
         //cntr
         function Slider(propObj) {
             SmartJs.Ui.Control.call(this, 'div', { className: 'pc-slider' });
+
             var input = new SmartJs.Ui.HtmlTag('input');
             var dom = input.dom;
             this._sliderDom = dom;

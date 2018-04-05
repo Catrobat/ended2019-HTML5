@@ -24,8 +24,8 @@
     .pc-playerViewport button {
         border: 0;
         border-radius: 0;
-        /*display: inline-block;
-        padding: 0;*/
+        display: inline-block;
+        /*padding: 0;*/
         margin: 0;
         background: none;
         font-weight: normal;
@@ -189,10 +189,8 @@
     border-bottom: solid 1px #385F6E;
     background-color: #003041;
     /*display: table;
-	border-spacing: 0;
-*/
+	*/ border-spacing: 0;
 }
-
     /*	.pc-pageHeader div {
 		display: table-cell;
 		vertical-align: middle;
@@ -214,72 +212,10 @@
 		overflow: hidden;
 	}
 */
-    /*    .pc-pageHeader .pc-menuButton {
+    .pc-pageHeader .pc-menuButton {
         width: 4.8em;
         min-width: 4.8em;
     }
-    */
-    .pc-pageHeader .pc-headerIcon {
-        position: relative;
-        float: left;
-        height: 100%;
-        padding: 0;
-        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAYAAAASVl2WAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAAEGSURBVChTY0AGukGJSgXdU97VTZv3v27a/P82CblboFIQABR40zB9wf/66fP/R1e2fOc0dTGBSgF1hySHVk6a/R+koHLSrP92Cbm+UCkICCqq/Q6SbJgx/79DSuFdqDAEaAclbGyYsRAoueB/WnPvfxmPMFOoFAMDh7mHTWpTz796oO6aqfP+m8dkl0OlIMAprWh306xF/xuBJoSWNt7lt/EWhEpBgEt6MVxBSHEdpgKQFUB7cVsBAjrBiRtBJmB1JAyElDR8BykAYQxvgoBBeFpo1eQ5YAWgALNLLkANKBCwTcp/AzYF6J7Y6rbvnFaeiKAGAZOoTKXCnqnv6oBxAcI2iXlbAGXxj7p9JhqRAAAAAElFTkSuQmCC');
-        background-repeat: no-repeat;
-        background-position: 6px 18px;
-    }
-
-[dir='rtl'] .pc-pageHeader .pc-headerIcon {
-    float: right;
-    -moz-transform: scaleX(-1);
-    -o-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-    background-position: 6px 18px;
-}
-
-.pc-pageHeader .pc-headerIcon:disabled {
-    background-image: none;
-}
-
-.pc-pageHeader .pc-headerIcon div {
-    cursor: pointer;
-    height: 100%;
-    width: 48px;
-    background-image: url('data:image/png;base64,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');
-    background-repeat: no-repeat;
-    background-position: 18px 8px;
-}
-
-[dir='rtl'] .pc-pageHeader .pc-headerIcon div {
-    -moz-transform: scaleX(-1);
-    -o-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-    background-position: 4px 8px;
-}
-
-.pc-pageHeader .pc-headerIcon:disabled div {
-    cursor: default;
-}
-
-.pc-pageCaption {
-    position: relative;
-    float: left;
-    padding: 0px 8px;
-    height: 100%;
-    color: #8699A4;
-    font-size: 23px;
-    line-height: 48px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-[dir='rtl'] .pc-pageCaption {
-    float: right;
-}
 
 .pc-pageBodyLayout, .pc-pageBody {
     position: relative;
@@ -296,7 +232,7 @@
 }
 
 
-/* onscreen keyboard
+/* onscreen keyboard */
 .pc-cursorButton, .pc-cursorButton:active {
     margin: 0;
     width: 60px;
@@ -327,7 +263,7 @@
 
 .pc-cursorTableCell {
     display: table-cell;
-} */
+}
 
 
 /* overlay */
@@ -845,32 +781,12 @@
     font-size: 15px;
     color: #D3D3D3;
     position: relative;
-    z-index: 10000;
+    z-index: 200;
 }
 
-.pc-pageHeader .pc-menu {
-    float: left;
-    width: 46px;
-    /*    position: absolute;
-    width: 48px;
-    height: 48px;
-    top: 0px;
-    right: 3px;
-*/ color: #8699A4;
-    /*    font-size: 15px;
-    z-index: 10000;
-*/
+.pc-menuOpened {
+    z-index: 500;
 }
-
-    .pc-pageHeader .pc-menu .pc-webButton {
-        /*    width: 48px;
-    height: 48px;
-*/
-    }
-
-    .pc-pageHeader .pc-menu svg {
-        fill: #8699A4;
-    }
 
 .pc-menuButton {
     border-style: solid;
@@ -878,141 +794,87 @@
     border-color: transparent;
     border-radius: 2px 2px 0 0;
     background-color: transparent;
-    width: 44px;
-    height: 42px;
     margin: 3px;
     margin-bottom: 0;
     position: absolute;
     z-index: 2;
 }
 
-.pc-menu .pc-menuButton .pc-webButton {
-    margin: 2px;
-}
-
 .pc-menu .pc-menuButton span {
     visibility: hidden;
 }
 
-.pc-menu .pc-menuButton svg {
-    position: absolute;
-    width: inherit;
-    height: inherit;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
-}
-
-.pc-menuButtonOpened {
-    border-color: #484848;
-    background-color: #282828;
-}
-
 /* mobile menu */
 .pc-menuMobile {
-    /*    width: 50px;
+    width: 50px;
     height: 50px;
-*/ position: absolute;
+    position: absolute;
     top: 15px;
     right: 15px;
 }
 
-[dir='rtl'] .pc-menuMobile {
-    /*margin-right: 4px;
-    */ right: auto;
-    left: 15px;
-}
-
-[dir='rtl'] .pc-pageHeader .pc-menu {
-    left: 0px;
-    float: right;
-}
-
-
-.pc-menuMobile .pc-menuButton {
-    right: 0px;
-    height: 44px;
-    background-color: rgba(0,71,94,0.8);
-    border-radius: 2px;
-}
-
-[dir='rtl'] .pc-menuMobile .pc-menuButton {
-    right: auto;
-    left: 0px;
-}
-/*
-.pc-pageHeader .pc-menuButton {
-    background-color: transparent;
-}*/
-
-.pc-pageHeader .pc-menuButton button {
-    padding: 0;
-    margin: 6px;
-    /* margin-bottom: 10px; */
-    border-radius: 0;
-    cursor: pointer;
-    position: relative;
-    width: 38px;
-    height: 38px;
-    border: none;
-    fill: #A9DCF1;
-    color: #A9DCF1;
-    outline: none;
-    background: none;
-}
-
-/*    .pc-pageHeader .pc-menuButton svg {
-        fill:;
+    .pc-menuMobile .pc-menuButton {
+        background-color: #00475E;
+        background-color: rgba(0,71,94,0.8);
+        border-radius: 2px;
     }
-    */
-.pc-menuMobile .pc-menuButtonOpened {
-    height: 42px;
+
+.pc-menuOpened .pc-menuButton {
     border-color: #484848;
     background-color: #282828;
-    border-width: 1px 1px 0;
+}
+
+.pc-menuMobile .pc-menuOpened .pc-menuButton {
+    /*border-color: #484848;
+        background-color: #282828;
+        */ border-width: 1px 1px 0;
     border-radius: 2px 2px 0 0;
 }
 
+[dir='rtl'] .pc-menuMobile {
+    margin-right: 4px;
+    right: auto;
+    left: 15px;
+}
+
+
 .pc-subMenu {
-    position: relative;
+    position: absolute;
+    min-width: 150px;
     overflow: hidden;
     z-index: 1;
-    float: right;
-    top: 44px;
-    right: -1px;
+    top: 45px;
+    right: 3px;
     padding: 1px 0px;
+    float: right;
     background-color: #282828;
     border: 1px solid #484848;
     border-radius: 2px 0px 2px 2px;
-    margin: 2px;
 }
 
 [dir='rtl'] .pc-subMenu {
-    /*margin-left: 0px;
-    margin-right: 5px;
-    */ float: left;
+    margin-right: 4px;
     right: auto;
+    left: 3px;
 }
 
 /* menu item, separator*/
 .pc-menuItem, .pc-checkbox, .pc-radio {
-    /*position: relative;*/
+    position: relative;
     white-space: nowrap;
-    padding: 10px 22px 10px 11px;
+    padding: 10px 16px 10px 11px;
     margin: 0px;
     width: 100%;
-    height: 35px;
+    height: 33px;
     background: none;
     border: 0;
     text-align: inherit;
     color: inherit;
     font-size: inherit;
     font-weight: normal;
-    /*display: block;*/
+    display: block;
     text-shadow: none;
     text-transform: none;
-    /*white-space: nowrap;*/
 }
 
 .pc-menuSymbol {
@@ -1052,18 +914,10 @@
 
 .pc-checkbox label, .pc-radio label, .pc-expander label {
     line-height: 15px;
+    display: block;
     position: relative;
     white-space: nowrap;
     cursor: pointer;
-    display: block;
-}
-/*
-[dir='rtl'] .pc-expander .pc-expanderHeader label {
-    float: left;
-}*/
-
-[dir='rtl'] .pc-expander .pc-expanderTree .pc-expanderHeader label {
-    padding-right: 0px;
 }
 
 .pc-checkbox label, .pc-radio label {
@@ -1169,6 +1023,7 @@
     transform: scale(1);
 }
 
+/* expander control */
 .pc-expander {
     width: 100%;
     /*background: #303030;*/
@@ -1180,10 +1035,10 @@
     padding: 3px 0px 3px;
 }
 
-    .pc-expanderHeader input:checked + label {
+/*    .pc-expanderHeader input:checked + label {
         color: #17a5b8;
     }
-/*
+
 [dir='rtl'] .pc-expander .pc-expanderHeader label:after {
     content: '>';
     -webkit-transform: rotate(270deg);
@@ -1204,7 +1059,7 @@
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
-    right: 13px;
+    right: 10px;
     line-height: 29px;
     border: 0px;
     position: absolute;
@@ -1213,6 +1068,13 @@
     /* margin-top: -4px; */
     /* margin-right: 7px; */
 }
+
+[dir='rtl'] .pc-expander .pc-expanderHeader label::after {
+    right: auto;
+    left: 10px;
+    content: '>';
+}
+
 
 .pc-expander .pc-expanderHeader input:checked + label::after {
     -webkit-transform: rotate(270deg);
@@ -1223,6 +1085,10 @@
 
 .pc-expanderTree .pc-expanderHeader label::after {
     margin-left: 0px;
+}
+
+[dir='rtl'] .pc-expander .pc-expanderTree .pc-expanderHeader label {
+    padding-right: 0px;
 }
 
 .pc-expander .pc-expanderBody {
@@ -1305,7 +1171,7 @@
 }
 
 .pc-expander .pc-expanderHeader {
-    height: 32px;
+    height: 33px;
     width: 100%;
 }
     /*
@@ -1331,12 +1197,12 @@
     padding-right: 0px;
 }
 
-.pc-expander .pc-expanderBody button:hover {
+/*.pc-expander .pc-expanderBody button:hover {
     color: #17a5b8;
-}
+}*/
 
 .pc-expander .pc-expanderHeader label:hover {
-    color: #17a5b8;
+    color: #fff;
 }
 
 /*Slider Control*/
@@ -1452,10 +1318,11 @@
 /*Device Emulator*/
 .pc-deviceEmulator {
     position: absolute;
-    bottom: 0;
+    z-index:300;
+    bottom: 8px;
     right: 18px;
-    margin: 8px 0px;
-    width: 360px;
+    /*margin: 8px 0px;
+    */width: 360px;
     overflow: hidden;
     border: solid 1px #17a5b8;
     background-color: #003041;
@@ -1471,8 +1338,8 @@
     right: auto;
 }
 
-.pc-deviceEmulator .pc-expander {
-}
+/*.pc-deviceEmulator .pc-expander {
+}*/
 
 
 .pc-deviceEmulator .pc-expanderHeader {
@@ -1482,43 +1349,46 @@
     font-size: 19px;
 }
 
+    .pc-deviceEmulator .pc-expanderHeader label {
+        padding-left:7px;
+        padding-right:10px;
+    }
+
     .pc-deviceEmulator .pc-expanderHeader label::after {
         content: '<';
     }
 
-[dir='rtl'] .pc-deviceEmulator .pc-expanderHeader label::after {
-    right: auto;
-    left: 18px;
+/*.pc-deviceEmulator .pc-expanderBody {
+}
+*/
+
+.pc-deviceEmulator .pc-expanderBody span {
+    display: block;
+    padding-bottom: 3px;
 }
 
-.pc-deviceEmulator .pc-expanderBody {
+.pc-deviceEmulator .pc-expanderBody .pc-imgContainer {
+    text-align: center;
+    perspective: 600px;
+    -webkit-perspective: 600px;
+    -moz-perspective: 600px;
+}
+.pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel {
+    padding-top: 3px;
 }
 
+.pc-deviceEmulator .pc-expanderBody .pc-label {
+    display: inline;
+}
 
-
-    .pc-deviceEmulator .pc-expanderBody span {
-        display: block;
-        padding: 3px;
+    .pc-deviceEmulator .pc-expanderBody .pc-label:after {
+        content: ': ';
     }
-
-    .pc-deviceEmulator .pc-expanderBody .pc-dEImg {
-        text-align: center;
-        perspective: 600px;
-        -webkit-perspective: 600px;
-        -moz-perspective: 600px;
-    }
-
-    .pc-deviceEmulator .pc-expanderBody .pc-label {
-        display: inline;
-    }
-
-        .pc-deviceEmulator .pc-expanderBody .pc-label:after {
-            content: ': ';
-        }
 
 .pc-deviceEmulatorScroll {
     display: block;
     overflow: hidden;
     border-top: solid 1px #17a5b8;
-    padding: 10px;
+    padding: 8px 16px 8px 8px;
 }
+
