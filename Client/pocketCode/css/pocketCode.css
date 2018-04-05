@@ -1046,38 +1046,34 @@
 
     .pc-slider .pc-sliderControl {
         position: relative;
-        /*overflow: hidden;
-        */ width: 100%;
+        width: 100%;
     }
 
     .pc-slider .pc-track {
         width: 100%;
-        height: 4px;
+        height: 5px;
         display: inline-block;
-        /*margin-top: auto;
-        margin-bottom: auto;
-        */ background-color: green;
+        background-color: #17A5B8;
+        border-radius: 1px;
         cursor: pointer;
     }
 
     .pc-slider .pc-thumb {
         position: absolute;
-        top: 4px;
-        width: 16px;
-        height: 16px;
-        background-color: red;
-        /*margin-left: 35px;
-        margin-right: 35px;
-        margin: 0px 35px 0px 35px;
-        */ cursor: col-resize;
+        top: 3px;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background-color: #A9DCF1;
+        cursor: col-resize;
     }
 
         .pc-slider .pc-thumb:hover {
-            background-color: greenyellow;
+            background-color: #fff;
         }
 
     .pc-slider .pc-thumb-down, .pc-slider .pc-thumb-down:hover {
-        background-color: blue;
+        background-color: #fff;
     }
 
     .pc-slider .pc-thumb .pc-valueLabel {
@@ -1341,6 +1337,7 @@
 
     .pc-deviceEmulator .pc-slider .pc-valueLabel {
         font-size: 80%;
+        top: -15px;
     }
 
 .pc-deviceEmulator .pc-expanderBody .pc-imgContainer {
@@ -1354,9 +1351,9 @@
     padding-top: 3px;
 }
 
-.pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
-    display: inline;
-}
+    .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
+        display: inline;
+    }
 
     .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel .pc-label:after {
         content: ': ';
