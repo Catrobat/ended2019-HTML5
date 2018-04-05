@@ -97,20 +97,20 @@ PocketCode.Ui.merge({
         //properties
         Object.defineProperties(RadioGroup.prototype, {
             id: {
-                get: function() {
+                get: function () {
                     return this._id;
                 },
             },
             radios: {
-                get: function() {
+                get: function () {
                     return this._radios;
                 },
             },
             checked: {
-                get: function() {
+                get: function () {
                     return this._checked;
                 },
-                set: function(radio) {
+                set: function (radio) {
                     if (!(radio instanceof PocketCode.Ui.Radio))
                         throw new Error('invalid argument: expected type: Radio');
 
@@ -128,7 +128,7 @@ PocketCode.Ui.merge({
         //events
         Object.defineProperties(RadioGroup.prototype, {
             onCheckedChange: {
-                get: function() {
+                get: function () {
                     return this._onCheckedChange;
                 }
             }
@@ -278,34 +278,58 @@ PocketCode.Ui.merge({
         function Slider(propObj) {
             SmartJs.Ui.Control.call(this, 'div', { className: 'pc-slider' });
 
-            var input = new SmartJs.Ui.HtmlTag('input');
-            var dom = input.dom;
-            this._sliderDom = dom;
-            dom.type = 'range';
-            this._addDomListener(dom, 'change', this._onChangeHandler);
+            propObj = propObj || {};
 
-            //span for minLabel
-            var spanMin = new SmartJs.Ui.HtmlTag('span');
-            this._spanDomMin = spanMin.dom;
-            this._appendChild(spanMin);
+            //min label
+            this._minLabel = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
+            this._min = propObj.minValue || 0;
+            this._minTextNode = new SmartJs.Ui.TextNode();
+            this._minLabel.appendChild(this._minTextNode);
+            this._appendChild(this._minLabel);
 
-            this._appendChild(input);
+            //control
+            var cntr = new SmartJs.Ui.ContainerControl({ className: 'pc-sliderControl' });
+            this._track = new SmartJs.Ui.HtmlTag('div', { className: 'pc-track' });
+            cntr.appendChild(this._track);
+            this._thumb = new SmartJs.Ui.HtmlTag('div', { className: 'pc-thumb' });
 
-            //Span for maxLabel +-
-            var spanMax = new SmartJs.Ui.HtmlTag('span');
-            this._spanDomMax = spanMax.dom;
-            this.merge(propObj);
-            this._appendChild(spanMax);
+            this._valueLabel = new SmartJs.Ui.ContainerControl({ className: 'pc-valueLabel' });
+            this._valueTextNode = new SmartJs.Ui.TextNode();//this._min.toString());
+            this._valueLabel.appendChild(this._valueTextNode);
+            this._thumb.appendChild(this._valueLabel);
+            cntr.appendChild(this._thumb);
+            this._appendChild(cntr);
+
+            //max label
+            this._maxLabel = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
+            this._max = propObj.maxValue || 100;
+            this._maxTextNode = new SmartJs.Ui.TextNode();
+            this._maxLabel.appendChild(this._maxTextNode);
+            this._appendChild(this._maxLabel);
+
+            this._mouseDownAt = undefined;
+
+            this._trackDownListener = this._addDomListener(this._track.dom, 'mousedown', this._trackDownHandler);
+            this._mouseDownListener = this._addDomListener(this._thumb.dom, 'mousedown', this._thumbDownHandler);
+            this._mouseMoveListener = this._addDomListener(document, 'mousemove', this._thumbMoveHandler);
+            this._mouseUpListener = this._addDomListener(document, 'mouseup', this._thumbUpHandler);
+            this._mouseLeaveListener = this._addDomListener(document.body, 'mouseleave', this._thumbUpHandler);
 
             //events
             this._onChange = new SmartJs.Event.Event(this);
 
+            this._valueDigits = 1;
+            var value = propObj.value || this._min;
+            delete propObj.value;
+            this.merge(propObj);
+            this.value = value; //init min/max first
+            this._onResize.addEventListener(new SmartJs.Event.EventListener(this._updateValue, this));
         }
 
         //events
         Object.defineProperties(Slider.prototype, {
             onChange: {
-                get: function() {
+                get: function () {
                     return this._onChange;
                 },
             },
@@ -313,69 +337,170 @@ PocketCode.Ui.merge({
 
         //properties
         Object.defineProperties(Slider.prototype, {
-            //TODO: min, max, value, hor/vertical, ...
-            //min: minimal value of slider
-            min: {
+            minValue: {
                 get: function () {
-                    return this._sliderDom.min;
-                },
-                set: function (minVal) {
-                    this._sliderDom.min = minVal;
-                },
-            },
-            //max: maximal value of slider
-            max: {
-                get: function () {
-                    return this._sliderDom.max;
-                },
-                set: function (maxVal) {
-                    this._sliderDom.max = maxVal;
-                },
-            },
-            //value: start position of slider
-            value: {
-                get: function () {
-                    return this._sliderDom.value;
+                    return this._min;
                 },
                 set: function (value) {
-                    this._sliderDom.value = value;
+                    if (typeof value != 'number' || value > this._max)
+                        throw new Error('invalid setter: min value');
+                    this._min = value;
+                    if (value > this.value)
+                        this.value = value;
+                    else
+                        this._updateValue();
                 },
             },
-            //orient: orientation of slider
-            orientation: {
+            maxValue: {
                 get: function () {
-                    return this._sliderDom.orient;
+                    return this._max;
                 },
-                set: function (orientation) {
-                    this._sliderDom.orient = orientation;
+                set: function (value) {
+                    if (typeof value != 'number' || value < this._min)
+                        throw new Error('invalid setter: max value');
+                    this._max = value;
+                    if (value < this.value)
+                        this.value = value;
+                    else
+                        this._updateValue();
                 },
             },
-            //Label name for minimum
+            value: {
+                get: function () {
+                    return parseFloat(this._valueTextNode.text);
+                },
+                set: function (value) {
+                    if (typeof value != 'number')
+                        throw new Error('invalid setter: value');
+                    var valid = Math.min(Math.max(this._min, value), this._max);
+                    this._valueTextNode.text = valid.toFixed(this._valueDigits);
+                    this._updateValue();
+                },
+            },
+            valueDigits: {
+                get: function () {
+                    return this._valueDigits;
+                },
+                set: function (value) {
+                    if (typeof value != 'number' || parseInt(value) !== value)
+                        throw new Error('invalid setter: value');
+                    this._valueDigits = value;
+                    this.value = this.value;
+                },
+            },
             minLabel: {
                 get: function () {
-                    return this._spanDomMin.innerHTML;
+                    return this._minTextNode.text;
                 },
-                set: function (minLabel) {
-                    this._spanDomMin.innerHTML = minLabel;
+                set: function (label) {
+                    this._minTextNode.text = label.toString();
+                    window.setTimeout(this._updateValue.bind(this), 20);  //resize?
                 },
             },
-            //Label name for maximum
             maxLabel: {
                 get: function () {
-                    return this._spanDomMax.innerHTML;
+                    return this._maxTextNode.text;
                 },
-                set: function (maxLabel) {
-                    this._spanDomMax.innerHTML = maxLabel;
+                set: function (label) {
+                    this._maxTextNode.text = label.toString();
+                    window.setTimeout(this._updateValue.bind(this), 20);  //resize?
                 },
             },
         });
 
         Slider.prototype.merge({
-            _onChangeHandler: function (e) {
-                this._onChange.dispatchEvent({ value: e.target.value });
-                this._sliderDom.blur();
-                document.body.focus();
+            _updatePosition: function (e) {
+                var mousePos = this._getMousePosition(e),
+                    ltr = this._minLabel.dom.getBoundingClientRect().left < this._maxLabel.dom.getBoundingClientRect().left,
+                    style = this._thumb.style;
+
+                var margin = parseInt(this._thumb.style.marginLeft);
+                margin = isNaN(margin) ? 0 : margin;
+
+                var thumbWidth = this._thumb.width - 2 * margin,
+                    maxMargin = this._track.width - thumbWidth;//,
+
+                if (this._mouseDownAt) {
+                    var offset = mousePos.x - this._mouseDownAt.x;
+                    margin = ltr ? this._mouseDownAt.margin + offset : this._mouseDownAt.margin - offset;
+                }
+                else {
+                    var bcr = this._track.dom.getBoundingClientRect(),
+                    html = document.documentElement,
+                    trackPos = {
+                        top: bcr.top + window.pageYOffset - html.clientTop,
+                        left: bcr.left + window.pageXOffset - html.clientLeft,
+                    },
+
+                    margin = mousePos.x - trackPos.left;
+                    margin = ltr ? margin - Math.round(thumbWidth / 2) : this._track.width - margin - Math.round(thumbWidth / 2);
+                }
+                margin = Math.max(Math.min(margin, maxMargin), 0);
+                style.marginLeft = style.marginRight = margin + 'px';
+
+                var value = this._min + (this._max - this._min) / maxMargin * margin;
+                this._valueTextNode.text = value.toFixed(this._valueDigits);
+                this._onChange.dispatchEvent({ value: value });
             },
+            _updateValue: function () {
+                var margin = parseInt(this._thumb.style.marginLeft);
+                margin = isNaN(margin) ? 0 : margin;
+
+                var thumbWidth = this._thumb.width - 2 * margin,
+                    maxMargin = this._track.width - thumbWidth,
+                    margin = maxMargin / (this._max - this._min) * (this.value - this._min),
+                    style = this._thumb.style;
+
+                style.marginLeft = style.marginRight = margin + 'px';
+                this._onChange.dispatchEvent({ value: this.value });
+            },
+            _getMousePosition: function (e) {
+                var pos = { x: 0, y: 0 };
+                e = e || window.event;
+
+                if (e.pageX || e.pageY) {
+                    pos.x = e.pageX;
+                    pos.y = e.pageY;
+                }
+                else if (e.clientX || e.clientY) {
+                    pos.x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                    pos.y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+                }
+                return pos;
+            },
+            _trackDownHandler: function (e) {
+                this._updatePosition(e);
+                this._thumbDownHandler(e);
+            },
+            _thumbDownHandler: function (e) {
+                this._mouseDownAt = this._getMousePosition(e);
+                var margin = parseInt(this._thumb.style.marginLeft);
+                this._mouseDownAt.margin = isNaN(margin) ? 0 : margin;
+
+                this._thumb.addClassName('pc-thumb-down');
+            },
+            _thumbMoveHandler: function (e) {
+                if (!this._mouseDownAt)
+                    return;
+                this._updatePosition(e);
+            },
+            _thumbUpHandler: function (e) {
+                if (!this._mouseDownAt)
+                    return;
+                this._mouseDownAt = undefined;
+                this._thumb.removeClassName('pc-thumb-down');
+            },
+            /* override */
+            dispose: function () {
+                this._addDomListener(this._track.dom, 'mousedown', _trackDownListener);
+                this._removeDomListener(this._thumb.dom, 'mousedown', this._mouseDownListener);
+                this._removeDomListener(document, 'mousemove', this._mouseMoveListener);
+                this._removeDomListener(document, 'mouseup', this._mouseUpListener);
+                this._removeDomListener(document.body, 'mouseleave', this._mouseLeaveListener);
+
+                SmartJs.Ui.Control.prototype.dispose.call(this);    //call super()
+            }
+
         });
 
         return Slider;
