@@ -1285,14 +1285,11 @@
     z-index: 300;
     bottom: 8px;
     right: 18px;
-    /*margin: 8px 0px;
-    */ width: 360px;
+    width: 360px;
     overflow: hidden;
     border: solid 1px #17a5b8;
     background-color: #003041;
-    -moz-opacity: 0.92;
-    opacity: 0.92;
-    filter: alpha(opacity = 92);
+    background-color: rgba(0,48,65,0.92);
     font-size: 15px;
     color: #D3D3D3;
 }
@@ -1301,10 +1298,6 @@
     left: 18px;
     right: auto;
 }
-
-/*.pc-deviceEmulator .pc-expander {
-}*/
-
 
 .pc-deviceEmulator .pc-expanderHeader {
     background-color: #00475E;
@@ -1321,10 +1314,6 @@
         .pc-deviceEmulator .pc-expanderHeader label::after {
             content: '<';
         }
-
-/*.pc-deviceEmulator .pc-expanderBody {
-}
-*/
 
 .pc-deviceEmulator .pc-expanderBody span {
     display: block;
@@ -1357,8 +1346,12 @@
 }
 
 .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel {
-    padding-top: 3px;
+    padding-bottom: 3px;
 }
+
+    .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel:last-of-type {
+        padding-bottom: 10px;
+    }
 
     .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
         display: inline;
@@ -1374,3 +1367,4 @@
     border-top: solid 1px #17a5b8;
     padding: 8px 16px 8px 8px;
 }
+

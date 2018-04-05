@@ -281,7 +281,7 @@ PocketCode.Ui.merge({
             propObj = propObj || {};
 
             //min label
-            this._minLabel = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
+            this._minLabel = new SmartJs.Ui.ContainerControl({ className: 'pc-label' });
             this._min = propObj.minValue || 0;
             this._minTextNode = new SmartJs.Ui.TextNode();
             this._minLabel.appendChild(this._minTextNode);
@@ -301,7 +301,7 @@ PocketCode.Ui.merge({
             this._appendChild(cntr);
 
             //max label
-            this._maxLabel = new SmartJs.Ui.HtmlTag('div', { className: 'pc-label' });
+            this._maxLabel = new SmartJs.Ui.ContainerControl({ className: 'pc-label' });
             this._max = propObj.maxValue || 100;
             this._maxTextNode = new SmartJs.Ui.TextNode();
             this._maxLabel.appendChild(this._maxTextNode);
@@ -411,7 +411,7 @@ PocketCode.Ui.merge({
         Slider.prototype.merge({
             _updatePosition: function (e) {
                 var mousePos = this._getMousePosition(e),
-                    ltr = this._minLabel.dom.getBoundingClientRect().left < this._maxLabel.dom.getBoundingClientRect().left,
+                    ltr = this._minLabel.clientRect.left < this._maxLabel.clientRect.left,
                     style = this._thumb.style;
 
                 var margin = parseInt(this._thumb.style.marginLeft);
@@ -425,7 +425,7 @@ PocketCode.Ui.merge({
                     margin = ltr ? this._mouseDownAt.margin + offset : this._mouseDownAt.margin - offset;
                 }
                 else {
-                    var bcr = this._track.dom.getBoundingClientRect(),
+                    var bcr = this._track.clientRect,
                     html = document.documentElement,
                     trackPos = {
                         top: bcr.top + window.pageYOffset - html.clientTop,

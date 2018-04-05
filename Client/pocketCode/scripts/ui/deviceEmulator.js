@@ -78,6 +78,10 @@ PocketCode.Ui.DeviceEmulator = (function () {
         span.appendChild(this._inclYTextNode);
         div.appendChild(span);
         scroll.appendChild(div);
+        this._scollCntr = scroll;
+
+        //handling window resize
+        SmartJs.Ui.Window.onResize.addEventListener(new SmartJs.Event.EventListener(this.verifyResize, this));
     }
 
     //properties
@@ -109,22 +113,27 @@ PocketCode.Ui.DeviceEmulator = (function () {
         _openCloseHandler: function (e) {
             if (e.opened) {
                 this._pollingTimer = setInterval(this._updateImageTransformation.bind(this), 100);
+                window.setTimeout(this._updateScrollbars.bind(this), 200);   //make sure the scrollbars are updated correctly
+                window.setTimeout(this._updateScrollbars.bind(this), 400);
             }
             else {
                 clearInterval(this._pollingTimer);
             }
-
+        },
+        _updateScrollbars:function(){
+            this._scollCntr.onResize.dispatchEvent();
         },
         /* override */
         verifyResize: function () {
-            if (!this._container) //called during constructor call
-                return;
-            var clientRect = this._container.clientRect,
-                parentHeight = this._parent ? this._parent.height : document.body.clientHeight;
-            this._container.style.maxHeight = (parentHeight - clientRect.top - 10) + 'px';
+            var height = document.body.clientHeight;
+            this._scollCntr.style.maxHeight = Math.max(height - 101, 100) + 'px';
 
             SmartJs.Ui.ContainerControl.prototype.verifyResize.call(this);  //call super
-            this._container.verifyResize();
+            this._scollCntr.verifyResize();
+        },
+        dispose: function () {
+            SmartJs.Ui.Window.onResize.removeEventListener(new SmartJs.Event.EventListener(this._windowResizeHandler, this));
+            SmartJs.Ui.Control.prototype.dispose.call(this);
         },
     });
 
