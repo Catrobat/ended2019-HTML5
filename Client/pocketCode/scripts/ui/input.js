@@ -495,12 +495,13 @@ PocketCode.Ui.merge({
             },
             /* override */
             dispose: function () {
-                this._addDomListener(this._track.dom, 'mousedown', _trackDownListener);
+                this._removeDomListener(this._track.dom, 'mousedown', this._trackDownListener);
                 this._removeDomListener(this._thumb.dom, 'mousedown', this._mouseDownListener);
                 this._removeDomListener(document, 'mousemove', this._mouseMoveListener);
                 this._removeDomListener(document, 'mouseup', this._mouseUpListener);
                 this._removeDomListener(document.body, 'mouseleave', this._mouseLeaveListener);
 
+                this._onChange.dispose();   //dispose first to avoid events during dispose
                 SmartJs.Ui.Control.prototype.dispose.call(this);    //call super()
             }
 
