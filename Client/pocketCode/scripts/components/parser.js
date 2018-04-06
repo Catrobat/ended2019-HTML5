@@ -662,8 +662,9 @@ PocketCode.merge({
                         if (uiString)
                             return 'letter(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
-                        return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + idx + ')';
+                        //var idx = Number(this._parseJsonType(jsonFormula.left)) - 1; //given index (1..n)
+                        // changed: index can also be a variable
+                        return '((' + this._parseJsonType(jsonFormula.right) + ') + \'\').charAt(' + Number(this._parseJsonType(jsonFormula.left)) + ' - 1 )';
 
                     case 'JOIN':
                         if (uiString)
@@ -671,29 +672,29 @@ PocketCode.merge({
 
                         return '((' + this._parseJsonType(jsonFormula.left) + ') + \'\').concat((' + this._parseJsonType(jsonFormula.right) + ') + \'\')';
 
-                        //list
+                    //list
                     case 'NUMBER_OF_ITEMS':
                         if (uiString)
                             return 'number_of_items(' + this._parseJsonType(jsonFormula.left, uiString) + ')';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.length';
 
                     case 'LIST_ITEM':
                         if (uiString)
                             return 'element(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return this._parseJsonType(jsonFormula.right) + '.valueAt(' + this._parseJsonType(jsonFormula.left) + ')';
 
                     case 'CONTAINS':
                         if (uiString)
                             return 'contains(' + this._parseJsonType(jsonFormula.left, uiString) + ', ' + this._parseJsonType(jsonFormula.right, uiString) + ')';
 
-                        this._isStatic = false;
+                        //this._isStatic = false;
                         return this._parseJsonType(jsonFormula.left) + '.contains(' + this._parseJsonType(jsonFormula.right) + ')';
 
-                        //touch
+                    //touch
                     case 'MULTI_FINGER_X':
                         if (uiString)
                             return 'screen_touch_x( ' + this._parseJsonType(jsonFormula.left, uiString) + ' )';

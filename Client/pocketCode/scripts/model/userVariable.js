@@ -110,6 +110,13 @@ PocketCode.Model.merge({
                 this._value = this._toTypedValue(value);
         }
 
+        //events
+        Object.defineProperties(UserVariableSimple.prototype, {
+            onChange: {
+                get: function () { return this._onChange; },
+            },
+        });
+
         //properties
         Object.defineProperties(UserVariableSimple.prototype, {
             value: {
@@ -117,6 +124,8 @@ PocketCode.Model.merge({
                     return this._value;
                 },
                 set: function (value) {
+                    if (value === undefined)  //if a variable is set using e.g. an uninitialized list item
+                        return;
                     value = this._toTypedValue(value);  //assigning lists to valiables not allowed (ignored) in scratch- we support it using toString()
                     if (this._value == value)
                         return;
@@ -131,13 +140,6 @@ PocketCode.Model.merge({
                         return this._value;
                     return 0;
                 },
-            },
-        });
-
-        //events
-        Object.defineProperties(UserVariableSimple.prototype, {
-            onChange: {
-                get: function () { return this._onChange; },
             },
         });
 
@@ -157,7 +159,7 @@ PocketCode.Model.merge({
             },
             toString: function () {
                 var val = this._value;
-                //if (val == undefined)
+                //if (val === undefined)
                 //    return '';
                 return val.toString();  //we do not format variable values in any way
                 //if (typeof val != 'number')
@@ -215,19 +217,19 @@ PocketCode.Model.merge({
             }
         }
 
+        //events
+        Object.defineProperties(UserVariableList.prototype, {
+            onChange: {
+                get: function () { return this._onChange; },
+            },
+        });
+
         //properties
         Object.defineProperties(UserVariableList.prototype, {
             length: {
                 get: function () {
                     return this._value.length;
                 }
-            },
-        });
-
-        //events
-        Object.defineProperties(UserVariableList.prototype, {
-            onChange: {
-                get: function () { return this._onChange; },
             },
         });
 
