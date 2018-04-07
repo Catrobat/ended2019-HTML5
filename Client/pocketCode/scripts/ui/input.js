@@ -290,6 +290,8 @@ PocketCode.Ui.merge({
             //control
             var cntr = new SmartJs.Ui.ContainerControl({ className: 'pc-sliderControl' });
             this._track = new SmartJs.Ui.HtmlTag('div', { className: 'pc-track' });
+            this._trackValue = new SmartJs.Ui.HtmlTag('div');
+            this._track.appendChild(this._trackValue);
             cntr.appendChild(this._track);
             this._thumb = new SmartJs.Ui.HtmlTag('div', { className: 'pc-thumb' });
 
@@ -437,6 +439,7 @@ PocketCode.Ui.merge({
                 }
                 margin = Math.max(Math.min(margin, maxMargin), 0);
                 style.marginLeft = style.marginRight = margin + 'px';
+                this._trackValue.width = margin + thumbWidth / 2;
 
                 var value = this._min + (this._max - this._min) / maxMargin * margin;
                 this._valueTextNode.text = value.toFixed(this._valueDigits);
@@ -452,6 +455,8 @@ PocketCode.Ui.merge({
                     style = this._thumb.style;
 
                 style.marginLeft = style.marginRight = margin + 'px';
+                this._trackValue.width = margin + thumbWidth / 2;
+
                 this._onChange.dispatchEvent({ value: this.value });
             },
             _getMousePosition: function (e) {

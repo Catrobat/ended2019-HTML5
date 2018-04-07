@@ -1058,6 +1058,13 @@
         cursor: pointer;
     }
 
+        .pc-slider .pc-track div {
+            height: 3px;
+            margin: 1px;
+            border-radius: 1px;
+            background-color: #A9DCF1;
+        }
+
     .pc-slider .pc-thumb {
         position: absolute;
         top: 3px;
@@ -1367,4 +1374,3 @@
     border-top: solid 1px #17a5b8;
     padding: 8px 16px 8px 8px;
 }
-
