@@ -39,7 +39,7 @@ SmartJs._AnimationFrame = (function () {
                 this._frameId = this._request(this._run.bind(this));
         },
         removeEventListener: function (listener) {
-            var e = this._onUpdate
+            var e = this._onUpdate;
             e.removeEventListener(listener);
             if (!e.listenersAttached) {
                 this._cancel(this._frameId);
@@ -270,7 +270,7 @@ SmartJs.Animation.Rotation = (function () {
 
                 this._startAngle = angle;
                 this._timer.reset();
-                if (!this._timer.startTimestamp)
+                if (!this._timer.startTimestamp || this._paused)
                     this._onUpdate.dispatchEvent({ value: this.angle });
             },
         },
@@ -289,7 +289,9 @@ SmartJs.Animation.Rotation = (function () {
                     this.stop();
                     this._onUpdate.dispatchEvent({ value: this.angle });
                 }
-                else //reset timer
+                else if (this._paused)//reset timer
+                    this._timer.reset();
+                else
                     this._start();
             },
         },
