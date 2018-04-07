@@ -17,7 +17,7 @@ PocketCode.Ui.DeviceEmulator = (function () {
         this._container = new PocketCode.Ui.Expander('lbDeviceEmulator');
         this._container.onVisibilityChange.addEventListener(new SmartJs.Event.EventListener(this._openCloseHandler, this));
         this._appendChild(this._container);
-        var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorScroll' });
+        var scroll = new PocketCode.Ui.ScrollContainer({ className: 'pc-deviceEmulatorBody' }, { className: 'pc-deviceEmulatorContent' });
         this._container.appendChild(scroll);
 
         var tn = new PocketCode.Ui.I18nTextNode('lbDeviceMaxDegree');

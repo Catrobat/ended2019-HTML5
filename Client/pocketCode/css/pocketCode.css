@@ -1327,6 +1327,18 @@
     padding-bottom: 3px;
 }
 
+.pc-deviceEmulatorBody {
+    display: block;
+    overflow: hidden;
+    border-top: solid 1px #17a5b8;
+    padding: 0px 16px 0px 8px;
+}
+
+    .pc-deviceEmulatorBody .pc-deviceEmulatorContent {
+        padding-top: 6px;
+        padding-bottom: 3px;
+    }
+
 .pc-deviceEmulator .pc-slider {
     margin: 12px 0px 14px 0px;
     color: #A9DCF1;
@@ -1356,10 +1368,6 @@
     padding-bottom: 3px;
 }
 
-    .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel:last-of-type {
-        padding-bottom: 10px;
-    }
-
     .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel div {
         display: inline;
     }
@@ -1367,10 +1375,3 @@
     .pc-deviceEmulator .pc-expanderBody .pc-inclinationLabel .pc-label:after {
         content: ': ';
     }
-
-.pc-deviceEmulatorScroll {
-    display: block;
-    overflow: hidden;
-    border-top: solid 1px #17a5b8;
-    padding: 8px 16px 8px 8px;
-}
