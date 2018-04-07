@@ -31,7 +31,7 @@ QUnit.test("SmartJs.Event.Event", function (assert) {
 				get: function () { return this._divClicked },
 				//value: function () { return this._divClicked }(),
 				//writable: false,
-				enumerable: false,
+				//enumerable: false,
 				configurable: true,
 			},
 		});

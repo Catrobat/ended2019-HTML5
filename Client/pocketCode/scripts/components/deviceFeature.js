@@ -10,15 +10,17 @@ PocketCode.DeviceFeature = (function () {
     DeviceFeature.extends(SmartJs.Core.EventTarget);
 
     function DeviceFeature(i18nKey, supported) {
-        this._i18nKey = i18nKey;
-        this._supported = supported != undefined ? supported : true;
+        if (!i18nKey)
+            throw new Error('invalid cntr argument: i18nKey');
+        this._i18nKey = i18nKey.toString();
+        this._supported = supported != undefined ? !!supported : false;
         this._inUse = false;
         this._initialized = false;
         this._indistinguishableCameras = false;
 
         //events
         this._onInit = new SmartJs.Event.Event(this);
-        this._onindistinguishableCameras = new SmartJs.Event.Event(this);
+        this._onIndistinguishableCameras = new SmartJs.Event.Event(this);
     }
 
     //events
@@ -49,7 +51,7 @@ PocketCode.DeviceFeature = (function () {
         },
         initialized: {
             get: function () {
-                return !this.inUse || !this._supported || this._initialized ? true : false;
+                return !this.inUse || this._initialized ? true : false;
             },
         },
         viewState: {
@@ -98,9 +100,15 @@ PocketCode.merge({
         DeviceVibration.prototype.merge({
             _vibrate: function () {
                 var vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
-                if (vibrate)
-                    return vibrate.bind(navigator);
-                return function () { }; //add an empty method to avoid errors
+                if (vibrate) {
+                    var fnct = vibrate.bind(navigator);
+                    try {
+                        fnct(); //may throw an error due to mobile restrictions
+                        return fnct;
+                    }
+                    catch (e) { }
+                }
+                return function () { return true; }; //add an empty method to avoid errors and keep testability
             }(),
             start: function (duration) {
                 this._inUse = true;
@@ -108,6 +116,8 @@ PocketCode.merge({
                     return false;
                 if (typeof duration != 'number')
                     return false;
+                if (duration == 0)
+                    this.stop();
 
                 var timespan = duration * 1000;
                 if (this._vibrate(timespan)) {    //started
@@ -213,9 +223,9 @@ PocketCode.merge({
                     return this._onChange;
                 },
             },
-            onindistinguishableCameras: {
+            onIndistinguishableCameras: {
                 get: function () {
-                    return this._onindistinguishableCameras;
+                    return this._onIndistinguishableCameras;
                 },
             },
         });
