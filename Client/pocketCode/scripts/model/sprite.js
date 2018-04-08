@@ -34,8 +34,7 @@ PocketCode.Model.Sprite = (function () {
         this._onVariableChange.addEventListener(new SmartJs.Event.EventListener(function (e) { this._gameEngine.onVariableUiChange.dispatchEvent(e); }, this));
 
         this._sounds = [];
-        this._audioPlayer = new PocketCode.AudioPlayer();
-        this._audioPlayer.volume = 50; //set default
+        this._audioPlayer = new PocketCode.AudioPlayer(gameEngine.soundCollectionId);
         this._audioPlayer.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._checkSpriteExecutionState, this));
 
         this._scripts = [];
@@ -268,14 +267,14 @@ PocketCode.Model.Sprite = (function () {
                 this._audioPlayer.volume = value;
             },
         },
-        muted: {
-            set: function (value) {
-                if (typeof value !== 'boolean')
-                    throw new Error('invalid parameter: muted');
+        //muted: {
+        //    set: function (value) {
+        //        if (typeof value !== 'boolean')
+        //            throw new Error('invalid parameter: muted');
 
-                this._audioPlayer.muted = value;
-            },
-        },
+        //        this._audioPlayer.muted = value;
+        //    },
+        //},
         //pen & stamp
         penDown: {
             set: function (penDown) {
@@ -954,20 +953,17 @@ PocketCode.Model.Sprite = (function () {
             return this._triggerOnChange({ graphicEffects: graphicEffects });
         },
         //sound
-        loadSound: function (requestUrl, soundId, fileExtension) {
-            this._audioPlayer.loadSound(requestUrl, soundId, fileExtension);
+        loadSoundFile: function (soundId, requestUrl, fileExtension, playOnLoad, onStartCallback, onFinishCallback) {
+            return this._audioPlayer.loadSound(soundId, requestUrl, fileExtension, playOnLoad, onStartCallback, onFinishCallback);
         },
-        startSound: function (soundId, onExecutedCallback) {    //returns the instanceId
-            return this._audioPlayer.startSound(soundId, undefined, onExecutedCallback);
-        },
-        startSoundFromUrl: function (requestUrl, onLoadCallback, onExecutedCallback) {    //returns the instanceId using the load-callback
-            this._audioPlayer.startSoundFromUrl(requestUrl, onLoadCallback, onExecutedCallback);
+        startSound: function (soundId, onStartCallback, onFinishCallback) {
+            return this._audioPlayer.startSound(soundId, onStartCallback, onFinishCallback);
         },
         stopSound: function (soundInstanceId) {
             this._audioPlayer.stopSound(soundInstanceId);
         },
         stopAllSounds: function () {
-            this._audioPlayer.stop();
+            this._audioPlayer.stopAllSounds();
         },
         //IOEB
         ifOnEdgeBounce: function (vpEdges, changes) {
@@ -1257,7 +1253,7 @@ PocketCode.Model.Sprite = (function () {
 
                 //sounds
                 volume: this.volume,
-                muted: this._audioPlayer.muted,
+                //muted: this._audioPlayer.muted,
 
                 //pen
                 _penDown: this._penDown,
@@ -1320,7 +1316,7 @@ PocketCode.Model.merge({
                 throw new Error('clone needs a defnition object to merge paroperties from original sprite');
 
             this._id = SmartJs.getNewId();
-
+            
             //looks: a sprite doesn't always have a look
             if (jsonSprite.looks != undefined)
                 this.looks = jsonSprite.looks;
@@ -1335,8 +1331,8 @@ PocketCode.Model.merge({
             if (jsonSprite.sounds) {
                 this.sounds = jsonSprite.sounds;
             }
-            this._audioPlayer.muted = definition.muted || false;
-            delete definition.muted;
+            //this._audioPlayer.muted = definition.muted || false;
+            //delete definition.muted;
 
             //variables: a sprite may have no (local) variables
             this._variables = jsonSprite.variables || [];
@@ -1361,7 +1357,9 @@ PocketCode.Model.merge({
             this.merge(definition);
             this._recalculateLookOffsets();
 
+            //events
             this._onCloneStart = new SmartJs.Event.Event(this);
+            this._onReadyToDispose = new SmartJs.Event.Event(this);
         }
 
         //events
@@ -1371,9 +1369,27 @@ PocketCode.Model.merge({
                     return this._onCloneStart;
                 }
             },
+            onReadyToDispose: {
+                get: function () {
+                    return this._onReadyToDispose;
+                }
+            },
         });
 
-        //SpriteClone.prototype.merge({
+        SpriteClone.prototype.merge({
+            deleteClone: function () {
+                this.hide();
+                this.stopAllScripts();  //will trigger onExecutionStateChange on all scripts
+                if (this._audioPlayer.isPlaying)
+                    this._audioPlayer.onFinishedPlaying.addEventListener(new SmartJs.Event.EventListener(this._handleDelete, this));
+                else
+                    this._handleDelete();
+                return true;
+            },
+            _handleDelete: function () {
+                //alert('make sure clone is disposed and removed from lists including onExecuted handling');  //TODO
+                this._onReadyToDispose.dispatchEvent({ cloneId: this._id });
+            },
         //    /* override */
         //    dispose: function () {
         //        this.stopAllScripts();
@@ -1392,7 +1408,7 @@ PocketCode.Model.merge({
         //        //call super
         //        PocketCode.Model.Sprite.prototype.dispose.call(this);
         //    },
-        //});
+        });
 
         return SpriteClone;
     })(),

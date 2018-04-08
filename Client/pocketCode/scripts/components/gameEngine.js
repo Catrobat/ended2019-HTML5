@@ -143,12 +143,12 @@ PocketCode.GameEngine = (function () {
         //},
         muted: {
             set: function (value) {
-                if (typeof value !== 'boolean')
-                    throw new Error('invalid parameter: muted');
-
-                for (var id in this._scenes) {
-                    this._scenes[id].muted = value;
-                }
+                this._soundManager.muted = value;
+            },
+        },
+        soundCollectionId: {
+            get: function () {
+                return this._soundManager.soundCollectionId;
             },
         },
         _sounds: {

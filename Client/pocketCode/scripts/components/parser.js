@@ -188,12 +188,12 @@ PocketCode.merge({
                         brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick, actions);
                         break;
 
+                    case 'StopAllSoundsBrick':
                     case 'AskSpeechBrick':
                     case 'AskBrick':
                         if (type == 'AskSpeechBrick')  //providing a ask dialog instead the typical askSpeech brick
                             type = 'AskBrick';
                     case 'CloneBrick':
-                    case 'DeleteCloneBrick':
                     case 'GoToBrick':
                         //background
                     case 'SetBackgroundBrick':
@@ -233,7 +233,7 @@ PocketCode.merge({
                         break;
 
                     default:
-                        //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse
+                        //control: WaitBrick, NoteBrick, WhenStartAsCloneBrick, IfThenElse, DeleteCloneBrick
                         //motion: GoToPositionBrick, SetXBrick, SetYBrick, ChangeXBrick, ChangeYBrick, SetRotationStyleBrick, IfOnEdgeBounce
                         //        TurnLeft, TurnRight, SetDirection, SetDirectionTo, SetRotationStyle, GlideTo, GoBack, ComeToFront, Vibration
                         //motion physics: SetVelocity, RotationSpeedLeft, RotationSpeedRight, SetMass, SetBounceFactor, SetFriction
@@ -253,7 +253,6 @@ PocketCode.merge({
                             type = 'SpeakBrick';
                         }
 
-                        //case 'StopAllSoundsBrick':
                         //case 'SetVolumeBrick':
                         //case 'ChangeVolumeBrick':
                         //    brick = new PocketCode.Model[type](this._device, currentSprite, jsonBrick);

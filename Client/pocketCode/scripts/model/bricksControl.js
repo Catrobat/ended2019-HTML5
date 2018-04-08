@@ -364,10 +364,8 @@ PocketCode.Model.merge({
     DeleteCloneBrick: (function () {
         DeleteCloneBrick.extends(PocketCode.Model.BaseBrick, false);
 
-        function DeleteCloneBrick(device, sprite, scene, propObject) {
+        function DeleteCloneBrick(device, sprite, propObject) {
             PocketCode.Model.BaseBrick.call(this, device, sprite, propObject);
-
-            this._scene = scene;
         }
 
         DeleteCloneBrick.prototype.merge({
@@ -375,11 +373,7 @@ PocketCode.Model.merge({
                 if (!(this._sprite instanceof PocketCode.Model.SpriteClone))
                     this._return();
                 else
-                    this._return(this._scene.deleteClone(this._sprite.id));
-            },
-            dispose: function () {
-                this._scene = undefined;
-                PocketCode.Model.BaseBrick.prototype.dispose.call(this);
+                    this._return(this._sprite.deleteClone());
             },
         });
 
