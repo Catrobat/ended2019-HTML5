@@ -954,7 +954,7 @@ PocketCode.Model.Sprite = (function () {
         },
         //sound
         loadSoundFile: function (soundId, requestUrl, fileExtension, playOnLoad, onStartCallback, onFinishCallback) {
-            return this._audioPlayer.loadSound(soundId, requestUrl, fileExtension, playOnLoad, onStartCallback, onFinishCallback);
+            return this._audioPlayer.loadSoundFile(soundId, requestUrl, fileExtension, playOnLoad, onStartCallback, onFinishCallback);
         },
         startSound: function (soundId, onStartCallback, onFinishCallback) {
             return this._audioPlayer.startSound(soundId, onStartCallback, onFinishCallback);
