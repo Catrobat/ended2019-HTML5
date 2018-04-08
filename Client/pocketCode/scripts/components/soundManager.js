@@ -400,6 +400,7 @@ PocketCode.AudioPlayer = (function () {
             for (var i = 0, l = active.length; i < l; i++) {
                 if (active[i].uniqueId === instanceId) {
                     active[i].stop();
+                    active[i].dispatchEvent('complete');
                     active.remove(active[i]);
                     break;
                 }
@@ -409,8 +410,10 @@ PocketCode.AudioPlayer = (function () {
         },
         stopAllSounds: function () {
             var active = this._activeSounds;
-            for (var i = 0, l = active.length; i < l; i++)
+            for (var i = 0, l = active.length; i < l; i++) {
                 active[i].stop();
+                active[i].dispatchEvent('complete');
+            }
             this._activeSounds = [];
             this._onFinishedPlaying.dispatchEvent();
         },
