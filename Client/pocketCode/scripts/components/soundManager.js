@@ -179,10 +179,10 @@ PocketCode.SoundManager = (function () {
             };
         },
         loadSounds: function (resourceBaseUrl, files) {
+            if (typeof resourceBaseUrl != 'string' || !(files instanceof Array))
+                throw new Error('sounds expects type Array');
             if (this._loading)
                 throw new Error('loading in progress: you have to wait');
-            if (!(files instanceof Array))
-                throw new Error('sounds expects type Array');
 
             var file;
             this._filesToLoad = [];
